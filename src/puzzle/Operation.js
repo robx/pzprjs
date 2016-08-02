@@ -244,11 +244,11 @@ Operation:{
 		this.manager.position++;
 		
 		this.manager.trialpos.pop();
-		this.puzzle.emit('trial', this.num);
+		this.manager.emitTrial(this.old);
 	},
 	redo : function(){
 		this.manager.trialpos.push(this.manager.position);
-		this.puzzle.emit('trial', this.old);
+		this.manager.emitTrial(this.num);
 	},
 
 	decode : function(strs){
@@ -266,7 +266,7 @@ Operation:{
 'TrialFinalizeOperation:Operation':{
 	num : [],
 	setData : function(old){
-		this.old = old;
+		this.old = old;	// trialpos array
 	},
 	exec : function(num){
 		this.manager.trialpos = num.concat();
@@ -278,7 +278,7 @@ Operation:{
 			this.manager.resumeTrial();
 			this.manager.position++;
 		}
-		this.puzzle.emit('trial', num.length);
+		this.manager.emitTrial(num.length);
 		this.puzzle.redraw();
 	},
 
@@ -303,6 +303,7 @@ OperationManager:{
 		this.ope = [];			// Operationクラスを保持する二次元配列
 		this.position = 0;		// 現在の表示操作番号を保持する
 		this.trialpos = [];		// TrialModeの位置を保持する配列
+		this.disEmitTrial = 0;	// Trial eventの呼び出し有効無効フラグ
 
 		this.broken   = false;	// "以前の操作"を消して元に戻れなくなった状態
 		this.initpos  = 0;		// 盤面初期化時のposition
@@ -584,6 +585,7 @@ OperationManager:{
 	// opemgr.acceptTrial()  現在のTrial状態を確定する
 	// opemgr.rejectTrial()  Trial状態と履歴を破棄する
 	// opemgr.resumeTrial()  ファイル読み込み時などにTrial状態を復帰する
+	// opemgr.emtiTrial()    trial eventを呼び出す
 	//---------------------------------------------------------------------------
 	enterTrial : function(){
 		if(this.trialpos[this.trialpos.length-1]+1===this.position){ return;}
@@ -592,7 +594,7 @@ OperationManager:{
 		this.limitTrialUndo = true;
 		this.checkexec();
 		this.newOperation();
-		this.puzzle.emit('trial', this.trialpos.length);
+		this.emitTrial();
 	},
 	acceptTrial : function(){
 		if(this.trialpos[this.trialpos.length-1]+1===this.position){
@@ -609,7 +611,7 @@ OperationManager:{
 		this.removeDescendant();
 		this.checkexec();
 		this.newOperation();
-		this.puzzle.emit('trial', 0);
+		this.emitTrial();
 	},
 	rejectTrial : function(rejectall){
 		if(this.trialpos.length===0){ return;}
@@ -629,10 +631,11 @@ OperationManager:{
 		this.removeDescendant();
 		this.checkexec();
 		this.newOperation();
-		this.puzzle.emit('trial', this.trialpos.length);
+		this.emitTrial();
 	},
 	resumeTrial : function(){
 		if(this.trialpos.length>0){
+			this.disEmitTrial++;
 			var pos = this.position;
 			this.checkenable();
 			this.resumeGoto(this.trialpos[0]);
@@ -641,6 +644,12 @@ OperationManager:{
 				this.board.trialstage = 1;
 				this.resumeGoto(pos);
 			}
+			this.disEmitTrial--;
+		}
+	},
+	emitTrial : function(num){
+		if(this.disEmitTrial===0){
+			this.puzzle.emit('trial', ((num===void 0) ? this.trialpos.length : num));
 		}
 	}
 }
