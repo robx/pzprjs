@@ -293,12 +293,13 @@ FailCode:{
 
 "ImageTile@shwolf":{
 	initialize : function(){
+		var puzzle = this.puzzle;
 		if(typeof Image!=='undefined'){
 			this.image_canvas = this.image_svg = new Image();
-			this.image_canvas.onload = function(){ this.puzzle.painter.paintAll();}.bind(this);
+			this.image_canvas.onload = function(){ puzzle.painter.paintAll();};
 		}
 		else{
-			this.image_canvas = (!!this.puzzle.pzpr.Candle.Canvas ? new this.puzzle.pzpr.Candle.Canvas.Image() : {});
+			this.image_canvas = (!!puzzle.pzpr.Candle.Canvas ? new puzzle.pzpr.Candle.Canvas.Image() : {});
 			this.image_svg = {};
 		}
 		this.image_canvas.src    = this.image_svg.src    = this.imgsrc_dataurl;

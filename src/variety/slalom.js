@@ -378,8 +378,9 @@ LineGraph:{
 			nums   : [], // 旗門rにつながる数字
 			done   : [], // すでにどこかの旗門へアサイン済みの数字かどうか
 			erase : function(){
+				var doneobj = this.done;
 				for(var r=0;r<gates.length;r++){
-					this.nums[r] = this.nums[r].filter(function(num){ return !this.done[num];}.bind(this));
+					this.nums[r] = this.nums[r].filter(function(num){ return !doneobj[num];});
 				}
 			}
 		};

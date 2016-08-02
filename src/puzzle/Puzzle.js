@@ -95,7 +95,7 @@ pzpr.Puzzle.prototype =
 			for(var i=0;i<evlist.length;i++){
 				var ev = evlist[i];
 				if(evlist[i].once){ evlist.splice(i,1); i--;}
-				ev.func.apply(window,args);
+				ev.func.apply(this,args);
 			}
 		}
 	},

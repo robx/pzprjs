@@ -548,11 +548,12 @@ var debug = window.debug =
 		var result = true;
 		var pid = bd1.pid;
 		var ignore_qsub = (!!iskanpen && (pid==='fillomino'||pid==='hashikake'||pid==='heyabon'||pid==='kurodoko'||pid==='shikaku'||pid==='tentaisho'));
+		var self = this;
 		bd1.compareData(bd2,function(group, c, a){
 			if(ignore_qsub && (a==='qsub' || a==='qcmp')){ return;}
-			this.addTA(group+"["+c+"]."+a+" "+bd1[group][c][a]+" <- "+bd2[group][c][a]);
+			self.addTA(group+"["+c+"]."+a+" "+bd1[group][c][a]+" <- "+bd2[group][c][a]);
 			result = false;
-		}.bind(this));
+		});
 		return result;
 	}
 };
