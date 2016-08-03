@@ -99,12 +99,12 @@ Graphic:{
 	gridcolor_type : "DARK",
 
 	bgcellcolor_func : "qans1",
-	shadecolor : "rgb(96, 96, 96)",
-	errcolor2 : "rgb(32, 32, 255)"
+	shadecolor : "rgb(96, 96, 96)"
 },
 "Graphic@norinori":{
 	gridcolor_type : "LIGHT",
 
+	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
 	bcolor : "rgb(96, 224, 160)",
 	bbcolor : "rgb(96, 127, 127)"

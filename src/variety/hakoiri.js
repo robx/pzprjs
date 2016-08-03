@@ -82,7 +82,7 @@ AreaRoomGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bcolor_type : "GREEN",
+	enablebcolor : true,
 
 	bbcolor : "rgb(127, 127, 127)",
 

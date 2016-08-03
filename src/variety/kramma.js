@@ -95,7 +95,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bordercolor_func : "qans",
-	borderQanscolor : "rgb(64, 64, 255)",
+	qanscolor : "rgb(64, 64, 255)",
 
 	circlefillcolor_func   : "qnum2",
 	circlestrokecolor_func : "qnum2",

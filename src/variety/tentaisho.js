@@ -270,13 +270,12 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
 
 	bgcellcolor_func : "qsub3",
 	qsubcolor1 : "rgb(176,255,176)",
 	qsubcolor2 : "rgb(108,108,108)",
 
-	borderQanscolor : "rgb(72, 72, 72)",
+	qanscolor : "rgb(72, 72, 72)",
 
 	paint : function(){
 		this.drawBGCells();

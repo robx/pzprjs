@@ -108,7 +108,7 @@ Graphic:{
 		return null;
 	},
 	getBorderColor : function(border){
-		if(this.puzzle.getConfig('disptype_yajilin')===2 && border.isBorder()){ return this.borderQuescolor;}
+		if(this.puzzle.getConfig('disptype_yajilin')===2 && border.isBorder()){ return this.quescolor;}
 		return null;
 	}
 },

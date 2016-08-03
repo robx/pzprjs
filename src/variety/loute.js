@@ -271,7 +271,7 @@ Graphic:{
 			var cell = clist[i];
 			g.vid = "cell_text_h_"+cell.id;
 			if(cell.qdir===-2){
-				g.fillStyle = (cell.error===1 ? this.fontErrcolor : this.fontcolor);
+				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
 				this.disptext("?", cell.bx*this.bw, cell.by*this.bh, option);
 			}
 			else{ g.vhide();}

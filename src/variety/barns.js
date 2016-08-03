@@ -67,8 +67,6 @@ Graphic:{
 	irowake : true,
 
 	gridcolor_type : "LIGHT",
-	linecolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
 
 	bgcellcolor_func : "icebarn",
 

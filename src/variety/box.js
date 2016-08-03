@@ -224,7 +224,7 @@ Graphic:{
 
 		var option = {globalratio:0.95};
 		g = this.vinc('excell_number2', 'auto');
-		g.fillStyle = this.fontcolor;
+		g.fillStyle = this.quescolor;
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;
 			g.vid = ["ex2_cirtext_",list[i][0],list[i][1]].join("_");

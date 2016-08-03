@@ -97,8 +97,6 @@ LineGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
-	borderQuescolor : "white",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid(false);
@@ -114,7 +112,7 @@ Graphic:{
 	getBorderColor : function(border){
 		if(border.ques===1){
 			var cell2=border.sidecell[1];
-			return ((cell2.isnull || cell2.error===0) ? this.borderQuescolor : this.errbcolor1);
+			return ((cell2.isnull || cell2.error===0) ? "white" : this.errbcolor1);
 		}
 		return null;
 	},

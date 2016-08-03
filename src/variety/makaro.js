@@ -194,7 +194,6 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	cellcolor_func : "ques",
-	arrowQuescolor : "white",
 
 	paint : function(){
 		this.drawBGCells();
@@ -218,6 +217,9 @@ Graphic:{
 		if     (info===0){ return this.quescolor;}
 		else if(info===1){ return this.errcolor1;}
 		return null;
+	},
+	getCellArrowColor : function(cell){
+		return (cell.qdir!==0 ? "white" : null);
 	}
 },
 

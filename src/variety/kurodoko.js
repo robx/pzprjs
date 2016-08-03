@@ -54,8 +54,8 @@ Graphic:{
 	hideHatena : true,
 
 	gridcolor_type : "DLIGHT",
-	bcolor_type : "GREEN",
 
+	enablebcolor : true,
 	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 

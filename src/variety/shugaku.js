@@ -178,9 +178,7 @@ AreaShadeGraph:{
 Graphic:{
 	hideHatena : true,
 
-	errbcolor1_type : "DARK",
-
-	bgcolor : "rgb(208, 208, 208)",
+	bcolor : "rgb(208, 208, 208)",
 	targetbgcolor : "rgb(255, 192, 192)",	/* 入力中の布団の色 */
 
 	circleratio : [0.47, 0.42],

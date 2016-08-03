@@ -99,7 +99,7 @@ Graphic:{
 
 		var lm = Math.max(this.cw/12, 3)/2;	//LineWidth
 		var lp = this.bw*0.70;				//LineLength
-		g.fillStyle = this.borderQuescolor;
+		g.fillStyle = this.quescolor;
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

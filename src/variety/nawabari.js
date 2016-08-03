@@ -138,9 +138,9 @@ Graphic:{
 		if(border.qans===1){
 			var err = border.error;
 			if     (err=== 1){ return this.errcolor1;       }
-			else if(err===-1){ return this.errborderbgcolor;}
+			else if(err===-1){ return this.noerrcolor;      }
 			else if(border.trial){ return this.trialcolor;  }
-			else             { return this.borderQanscolor; }
+			else             { return this.qanscolor;       }
 		}
 		return null;
 	},

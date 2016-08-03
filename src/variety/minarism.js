@@ -207,7 +207,7 @@ Graphic:{
 			// 数字の描画
 			g.vid = "border_text_"+border.id;
 			if(border.qnum>0){
-				g.fillStyle = this.fontcolor;
+				g.fillStyle = this.quescolor;
 				this.disptext(""+border.qnum, px, py, option);
 			}
 			else{ g.vhide();}

@@ -128,8 +128,8 @@ Graphic:{
 
 	cellcolor_func : "qnum",
 
-	fontcolor : "white",
-	numbercolor_func : "fixed",
+	fontShadecolor : "white",
+	numbercolor_func : "fixed_shaded",
 
 	lightcolor : "rgb(192, 255, 127)",
 

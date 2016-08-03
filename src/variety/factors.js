@@ -131,7 +131,7 @@ Graphic:{
 	drawQuesNumbers_factors : function(){
 		var g = this.vinc('cell_qnumber', 'auto');
 
-		g.fillStyle = this.fontcolor;
+		g.fillStyle = this.quescolor;
 		var qnumoption = {
 			ratio : [0.45, 0.45, 0.45, 0.45, 0.36, 0.30],
 			position : this.TOPLEFT

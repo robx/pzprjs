@@ -60,7 +60,7 @@ AreaUnshadeGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	bcolor_type : "GREEN",
+	enablebcolor : true,
 
 	paint : function(){
 		this.drawBGCells();
@@ -87,9 +87,9 @@ Graphic:{
 			return this.qcmpcolor;
 		}
 		else if(cell.error===1){
-			return this.fontErrcolor;
+			return this.errcolor1;
 		}
-		return this.fontcolor;
+		return this.quescolor;
 	}
 },
 

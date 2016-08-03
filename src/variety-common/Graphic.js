@@ -102,7 +102,7 @@ Graphic:{
 			var info = cell.error || cell.qinfo;
 			if     (info===1){ return this.errbcolor1;}
 			else if(info===2){ return this.errbcolor2;}
-			else if(cell.qsub===1 && this.bcolor!=="white"){ return this.bcolor;}
+			else if(cell.qsub===1 && this.enablebcolor){ return this.bcolor;}
 		}
 		return null;
 	},
@@ -235,8 +235,8 @@ Graphic:{
 	getCellArrowColor : function(cell){
 		var dir=(!cell.numberAsObject ? cell.qdir : cell.getNum());
 		if(dir>=1 && dir<=4){
-			if(!cell.numberAsObject||cell.qnum!==-1){ return this.arrowQuescolor;}
-			else{ return (!cell.trial ? this.arrowQanscolor : this.trialcolor);}
+			if(!cell.numberAsObject||cell.qnum!==-1){ return this.quescolor;}
+			else{ return (!cell.trial ? this.qanscolor : this.trialcolor);}
 		}
 		return null;
 	},
@@ -261,7 +261,7 @@ Graphic:{
 				
 				if     (info===1){ color = this.errcolor1;}
 				else if(info===2){ color = this.errcolor2;}
-				else if(info===-1){color = this.errlinebgcolor;}
+				else if(info===-1){color = this.noerrcolor;}
 				else if(irowake && cell.path.color){ color = cell.path.color;}
 				else if(cell.trial){ color = this.trialcolor;}
 				else               { color = "black";}
@@ -323,6 +323,7 @@ Graphic:{
 		var type = this.numbercolor_func || "";
 		this.getNumberColor = (
 			(type==="fixed")? this.getNumberColor_fixed :
+			(type==="fixed_shaded")?this.getNumberColor_fixed_shaded :
 			(type==="qnum") ? this.getNumberColor_qnum :
 			(type==="move") ? this.getNumberColor_move :
 			(type==="anum") ? this.getNumberColor_anum :
@@ -331,27 +332,30 @@ Graphic:{
 		return this.getNumberColor(cell);
 	},
 	getNumberColor_fixed : function(cell){
-		return this.fontcolor;
+		return this.quescolor;
+	},
+	getNumberColor_fixed_shaded : function(cell){
+		return this.fontShadecolor;
 	},
 	getNumberColor_qnum : function(cell){
-		return ((cell.error || cell.qinfo)===1 ? this.fontErrcolor : this.fontcolor);
+		return ((cell.error || cell.qinfo)===1 ? this.errcolor1 : this.quescolor);
 	},
 	getNumberColor_move : function(cell){
 		var puzzle = this.puzzle;
 		var info = cell.error || cell.qinfo;
 		if(info===1 || info===4){
-			return this.fontErrcolor;
+			return this.errcolor1;
 		}
 		else if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===cell){
 			return this.movecolor;
 		}
-		return this.fontcolor;
+		return this.quescolor;
 	},
 	getNumberColor_anum : function(cell){
 		if((cell.error || cell.qinfo)===1){
-			return this.fontErrcolor;
+			return this.errcolor1;
 		}
-		return (!cell.trial ? this.fontAnscolor : this.trialcolor);
+		return (!cell.trial ? this.qanscolor : this.trialcolor);
 	},
 	getNumberColor_mixed : function(cell){
 		var info = cell.error || cell.qinfo;
@@ -359,12 +363,12 @@ Graphic:{
 			return this.fontShadecolor;
 		}
 		else if(info===1 || info===4){
-			return this.fontErrcolor;
+			return this.errcolor1;
 		}
 		else if(cell.qnum===-1 && cell.anum!==-1){
-			return (!cell.trial ? this.fontAnscolor : this.trialcolor);
+			return (!cell.trial ? this.qanscolor : this.trialcolor);
 		}
-		return this.fontcolor;
+		return this.quescolor;
 	},
 
 	//---------------------------------------------------------------------------
@@ -447,7 +451,7 @@ Graphic:{
 			// 数字の描画
 			g.vid = "cross_text_"+cross.id;
 			if(cross.qnum>=0){
-				g.fillStyle = this.fontcolor;
+				g.fillStyle = this.quescolor;
 				this.disptext(""+cross.qnum, px, py, option);
 			}
 			else{ g.vhide();}
@@ -509,16 +513,16 @@ Graphic:{
 		return this.getBorderColor(border);
 	},
 	getBorderColor_ques : function(border){
-		if(border.isBorder()){ return this.borderQuescolor;}
+		if(border.isBorder()){ return this.quescolor;}
 		return null;
 	},
 	getBorderColor_qans : function(border){
 		var err=border.error||border.qinfo;
 		if(border.isBorder()){
 			if     (err=== 1){ return this.errcolor1;       }
-			else if(err===-1){ return this.errborderbgcolor;}
+			else if(err===-1){ return this.noerrcolor;      }
 			else if(border.trial){ return this.trialcolor;  }
-			else             { return this.borderQanscolor; }
+			else             { return this.qanscolor;       }
 		}
 		return null;
 	},
@@ -548,11 +552,11 @@ Graphic:{
 	},
 
 	getQuesBorderColor : function(border){
-		if(border.ques===1){ return this.borderQuescolor;}
+		if(border.ques===1){ return this.quescolor;}
 		return null;
 	},
 	getQansBorderColor : function(border){
-		if(border.qans===1){ return (!border.trial ? this.borderQanscolor : this.trialcolor);}
+		if(border.qans===1){ return (!border.trial ? this.qanscolor : this.trialcolor);}
 		return null;
 	},
 
@@ -571,7 +575,7 @@ Graphic:{
 			g.vid = "b_qsub1_" + border.id;
 			if(border.qsub===1){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				g.fillStyle = (!border.trial ? this.borderQsubcolor : this.trialcolor);
+				g.fillStyle = (!border.trial ? this.pekecolor : this.trialcolor);
 				if(border.isHorz()){ g.fillRectCenter(px, py, 0.5, this.bh-m);}
 				else               { g.fillRectCenter(px, py, this.bw-m, 0.5);}
 			}
@@ -680,7 +684,7 @@ Graphic:{
 			else if(info===1){ this.addlw=1;}
 			
 			if     (info=== 1) { return this.errlinecolor;}
-			else if(info===-1) { return this.errlinebgcolor;}
+			else if(info===-1) { return this.noerrcolor;}
 			else if(isDispmove){ return (border.trial ? this.movetrialcolor : this.movelinecolor);}
 			else if(isIrowake) { return border.path.color;}
 			else               { return (border.trial ? this.trialcolor : this.linecolor);}
@@ -957,7 +961,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	drawLineParts : function(){
 		var g = this.vinc('cell_lineparts', 'crispEdges');
-		g.fillStyle = this.borderQuescolor;
+		g.fillStyle = this.quescolor;
 
 		var lm = this.lm, bw = this.bw, bh = this.bh;
 		var clist = this.range.cells;
@@ -1020,7 +1024,7 @@ Graphic:{
 		else if(isErr){ this.addlw=1;}
 		
 		if(isErr){ color = this.errlinecolor;}
-		else if(err!==0){ color = this.errlinebgcolor;}
+		else if(err!==0){ color = this.noerrcolor;}
 		else if(cell.trial){ color = this.trialcolor;}
 		else{ color = this.linecolor;}
 		return color;
@@ -1108,7 +1112,7 @@ Graphic:{
 	drawNumbersOn51_1 : function(piece){ /* cell or excell */
 		var g = this.context, val, adj, px = piece.bx*this.bw, py = piece.by*this.bh;
 		var option = {ratio:[0.45]};
-		g.fillStyle = (piece.error===1||piece.qinfo===1 ? this.fontErrcolor : this.fontcolor);
+		g.fillStyle = (piece.error===1||piece.qinfo===1 ? this.errcolor1 : this.quescolor);
 
 		adj = piece.relcell(2,0);
 		val = (piece.ques===51 ? piece.qnum : -1);

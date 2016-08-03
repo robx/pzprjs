@@ -46,7 +46,7 @@ Graphic:{
 
 	bordercolor_func : "qans",
 	numbercolor_func : "qnum",
-	borderQanscolor : "black",
+	qanscolor : "black",
 
 	crosssize : 0.15,
 

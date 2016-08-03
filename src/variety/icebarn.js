@@ -337,7 +337,6 @@ Graphic:{
 	irowake : true,
 
 	gridcolor_type : "LIGHT",
-	linecolor_type : "LIGHT",
 
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",

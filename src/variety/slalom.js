@@ -499,13 +499,12 @@ Graphic:{
 	irowake : true,
 
 	gridcolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
 
-	fontcolor : "white",
-	numbercolor_func : "fixed",
+	fontShadecolor : "white",
+	numbercolor_func : "fixed_shaded",
 
 	linecolor : "rgb(32, 32, 255)",			// 色分けなしの場合
-	errlinebgcolor : "rgb(160, 150, 255)",
+	noerrcolor : "rgb(160, 150, 255)",
 
 	paint : function(){
 		this.drawBGCells();

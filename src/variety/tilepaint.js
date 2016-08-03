@@ -124,10 +124,10 @@ AreaRoomGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bcolor_type : "GREEN",
-	bbcolor : "rgb(127, 127, 127)",
-
+	enablebcolor : true,
 	bgcellcolor_func : "qans3",
+
+	bbcolor : "rgb(127, 127, 127)",
 
 	paint : function(){
 		this.drawBGCells();

@@ -623,7 +623,7 @@ Graphic:{
 			else{ g.lineWidth = this.lw;}
 			
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
-			else if(seg.error===-1){ g.strokeStyle = this.errlinebgcolor;}
+			else if(seg.error===-1){ g.strokeStyle = this.noerrcolor;}
 			else if(this.puzzle.execConfig('irowake') && seg.path.color){ g.strokeStyle = seg.path.color;}
 			else if(seg.trial)     { g.strokeStyle = this.trialcolor;}
 			else{ g.strokeStyle = this.linecolor;}
@@ -660,7 +660,7 @@ Graphic:{
 			// アルファベットの描画
 			g.vid = "cross_text_"+cross.id;
 			if(cross.qnum>0){
-				g.fillStyle = (graydisp ? "gray" : this.fontcolor);
+				g.fillStyle = (graydisp ? "gray" : this.quescolor);
 				this.disptext((cross.qnum+9).toString(36).toUpperCase(), px, py, option);
 			}
 			else{ g.vhide();}

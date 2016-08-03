@@ -49,9 +49,9 @@ AreaRoomGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	enablebcolor : true,
 	bgcellcolor_func : "qans1",
 
-	bcolor_type : "GREEN",
 	bbcolor : "rgb(127, 127, 127)",
 
 	paint : function(){

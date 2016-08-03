@@ -65,8 +65,8 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	bcolor_type : "GREEN",
 
+	enablebcolor : true,
 	bgcellcolor_func : "qans1",
 
 	mbcolor : "rgb(0, 224, 0)",

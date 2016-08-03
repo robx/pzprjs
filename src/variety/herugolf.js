@@ -314,7 +314,7 @@ Graphic:{
 			else if(info===1){ this.addlw=1;}
 			
 			if     (info===1) { return this.errlinecolor;}
-			else if(info===-1){ return this.errlinebgcolor;}
+			else if(info===-1){ return this.noerrcolor;}
 			else if(border.trial){ return (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
 			
 			var cells = border.sidecell;
@@ -353,7 +353,7 @@ Graphic:{
 				g.lineWidth = this.lw + this.addlw; //LineWidth
 				
 				if     (info=== 1)       { g.strokeStyle = this.errlinecolor;}
-				else if(info===-1)       { g.strokeStyle = this.errlinebgcolor;}
+				else if(info===-1)       { g.strokeStyle = this.noerrcolor;}
 				else if(border.trial)    { g.strokeStyle = (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
 				else if(cell.distance>=0){ g.strokeStyle = this.linecolor;}
 				else                     { g.strokeStyle = this.invalidlinecolor;}
@@ -373,7 +373,7 @@ Graphic:{
 	drawHoles : function(){
 		var g = this.vinc('cell_hole', 'auto');
 
-		g.fillStyle = this.fontcolor;
+		g.fillStyle = this.quescolor;
 		var option = {globalratio:1};
 		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;

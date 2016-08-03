@@ -233,7 +233,7 @@ pzpr.classmgr.makeCommon({
 			this.setQnum(val);
 			this.setAnum(-1);
 			if(this.numberRemainsUnshaded) { this.setQans(0);}
-			if(this.puzzle.painter.bcolor==="white"){ this.setQsub(0);}
+			if(!this.puzzle.painter.enablebcolor){ this.setQsub(0);}
 			this.setQcmp(0);
 		}
 		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3

@@ -104,8 +104,7 @@ BoardExec:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	linecolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
+	fontShadecolor : "white",
 
 	paint : function(){
 		this.drawBGCells();
@@ -136,7 +135,7 @@ Graphic:{
 		}
 	},
 	getNumberColor : function(cell){
-		return (cell.ques!==1 ? this.fontcolor : "white");
+		return (cell.ques!==1 ? this.quescolor : this.fontShadecolor);
 	}
 },
 

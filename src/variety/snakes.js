@@ -150,8 +150,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	cellcolor_func : "qnum",
-	fontcolor : "white",
-	numbercolor_func : "fixed",
+	fontShadecolor : "white",
+	numbercolor_func : "fixed_shaded",
 
 	paint : function(){
 		this.drawBGCells();
@@ -178,7 +178,7 @@ Graphic:{
 		   (cell1.anum!==-1 || cell2.anum!==-1) &&
 		   ( ((cell1.anum===-1)!==(cell2.anum===-1)) || (Math.abs(cell1.anum-cell2.anum)!==1)) )
 		{
-			return (((!cell1.trial&&cell1.anum!==-1)||(!cell2.trial&&cell2.anum!==-1)) ? this.borderQanscolor : this.trialcolor);
+			return (((!cell1.trial&&cell1.anum!==-1)||(!cell2.trial&&cell2.anum!==-1)) ? this.qanscolor : this.trialcolor);
 		}
 		return null;
 	},
@@ -192,7 +192,7 @@ Graphic:{
 			var text = ((cell.qnum===-1 && cell.anum>0) ? ""+cell.anum : "");
 			g.vid = "cell_ansnum_"+cell.id;
 			if(!!text){
-				g.fillStyle = (!cell.trial ? this.fontAnscolor : this.trialcolor);
+				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
 				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}

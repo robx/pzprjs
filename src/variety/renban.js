@@ -15,8 +15,7 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn==='left') { this.inputborder();}
-				else if(this.btn==='right'){ this.inputQsubLine();}
+				this.inputborder();
 			}
 			else if(this.mouseend && this.notInputted()){
 				this.inputqnum();
@@ -89,8 +88,6 @@ BorderInfo:{
 Graphic:{
 	gridcolor_type : "DLIGHT",
 
-	borderQsubcolor : "black", /* borderQuescolor と同じ */
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -98,7 +95,6 @@ Graphic:{
 		this.drawNumbers();
 
 		this.drawBorders();
-		this.drawBorderQsubs();
 
 		this.drawChassis();
 
@@ -107,7 +103,7 @@ Graphic:{
 
 	getBorderColor : function(border){
 		if(border.ques===1){
-			return (border.error===1 ? this.errcolor1 : this.borderQuescolor);
+			return (border.error===1 ? this.errcolor1 : this.quescolor);
 		}
 		return null;
 	}
