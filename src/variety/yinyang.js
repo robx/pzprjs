@@ -26,7 +26,7 @@ MouseEvent:{
 			this.inputData = cell.getNum();
 			this.mouseCell = cell;
 		}
-		else{
+		else if(cell.getNum()!==this.inputData){
 			cell.setNum(this.inputData);
 			this.mouseCell = cell;
 			cell.draw();
