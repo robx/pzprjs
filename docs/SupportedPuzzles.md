@@ -13,6 +13,9 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Kurodoko (Kuromasu) `kurodoko`
 * LITS `lits`
 
+### Reserver
+* Uso-one `usoone`
+
 ### Nigun (Legacy)
 * Yajisan-Kazusan `yajikazu`
 * Mochikoro `mochikoro`
@@ -129,14 +132,12 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 * Fillomino `fillomino`
 * Ripple Effect `ripple` `hakyukoka`
 
-### Reserver
-* Makaro `makaro`
-
 ### Nigun (Legacy)
 * Minarism `minarism`
 * Factors `factors`
 * Sukoro `sukoro`
 * Hebi-Ichigo `snakes`
+* Makaro `makaro`
 
 ### Omopa
 * Kakuru `kakuru`
