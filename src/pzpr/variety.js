@@ -174,6 +174,7 @@ delete variety.extend;
 	yajikazu  :[1,0,"やじさんかずさん","Yajisan-Kazusan"],
 	yajirin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin'}],
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
+	yinyang   :[0,0,"しろまるくろまる","Yin-Yang"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
 
