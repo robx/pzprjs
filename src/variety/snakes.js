@@ -292,6 +292,7 @@ AnsCheck:{
 
 	checkArrowNumber : function(){
 		var result = true, bd = this.board;
+		var cell2, pos;
 		function gonext(){
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
@@ -304,7 +305,7 @@ AnsCheck:{
 			var cell=bd.cell[c], num=cell.qnum, dir=cell.qdir;
 			if(num<0 || dir===0){ continue;}
 
-			var cell2, pos=cell.getaddr();
+			pos=cell.getaddr();
 			pos.movedir(dir,2);
 			while(gonext()){ pos.movedir(dir,2);}
 			// cell2は数字のあるマスのIDか、null(盤面外)を指す
