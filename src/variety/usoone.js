@@ -15,7 +15,8 @@ MouseEvent:{
 
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ this.inputcell();}
+			if(this.mousestart){ this.inputcell_usoone();}
+			else if(this.mousemove){ this.inputcell();}
 			else if(this.mouseend && this.notInputted()){ this.inputqcmp_usoone();}
 		}
 		else if(this.puzzle.editmode){
@@ -24,12 +25,28 @@ MouseEvent:{
 		}
 	},
 
+	inputcell_usoone : function(){
+		var cell = this.getcell();
+		if(cell.isnull){}
+		else if(cell.isNum() && this.btn==='left'){
+			this.inputqcmp_usoone();
+		}
+		else{
+			this.inputcell();
+		}
+	},
 	inputqcmp_usoone : function(){
 		var cell = this.getcell();
 		if(cell.isnull || !cell.isNum()){ return;}
 
 		cell.setQcmp((this.btn==='left'?[2,0,1]:[1,2,0])[cell.qcmp]);
-		cell.draw();
+		if(this.puzzle.getConfig('use')===2 && cell.qcmp===0){
+			this.inputcell();
+		}
+		else{
+			this.mousereset();
+			cell.draw();
+		}
 	}
 },
 

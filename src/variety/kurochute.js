@@ -14,21 +14,33 @@ MouseEvent:{
 
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ this.inputcell();}
-			else if(this.mouseend && this.notInputted()){ this.inputqsub();}
+			if(this.mousestart){ this.inputcell_kurochute();}
+			else if(this.mousemove){ this.inputcell();}
+			else if(this.mouseend && this.notInputted()){ this.inputqcmp();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
 
-	inputqsub : function(){
+	inputcell_kurochute : function(){
+		var cell = this.getcell();
+		if(cell.isnull){}
+		else if(cell.isNum() && this.btn==='left'){
+			this.inputqcmp();
+		}
+		else{
+			this.inputcell();
+		}
+	},
+	inputqcmp : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if     (cell.qcmp===0){ cell.setQcmp(1);}
-		else if(cell.qcmp===1){ cell.setQcmp(0);}
+		cell.setQcmp(+!cell.qcmp);
 		cell.draw();
+
+		this.mousereset();
 	}
 },
 
