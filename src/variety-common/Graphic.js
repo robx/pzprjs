@@ -919,7 +919,7 @@ Graphic:{
 		if(cell.qnum!==-1){
 			var error = cell.error || cell.qinfo;
 			if(error===1||error===4){ return this.errbcolor1;}
-			else{ return this.circledcolor;}
+			else{ return this.circlebasecolor;}
 		}
 		return null;
 	},
@@ -939,7 +939,7 @@ Graphic:{
 		if(num!==-1){
 			if     (error===1||error===4)                        { return this.errbcolor1;}
 			else if(puzzle.execConfig('autocmp') && cell.isCmp()){ return this.qcmpcolor;}
-			else{ return this.circledcolor;}
+			else{ return this.circlebasecolor;}
 		}
 		return null;
 	},

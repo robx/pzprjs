@@ -211,7 +211,7 @@ Graphic:{
 
 		var g = this.vinc('excell_circle', 'auto', true);
 		var rsize = this.cw*0.36;
-		g.fillStyle   = this.circledcolor;
+		g.fillStyle   = this.circlebasecolor;
 		g.strokeStyle = this.quescolor;
 		for(var i=0;i<list.length;i++){
 			var num = ((list[i][0]!==bd.maxbx+1 ? list[i][0] : list[i][1])+1)>>1;

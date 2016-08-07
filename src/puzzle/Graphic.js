@@ -62,7 +62,7 @@ Graphic:{
 	erricecolor : "rgb(224,  96, 160)",
 
 	// セルの丸数字内部の背景色
-	circledcolor : "white",
+	circlebasecolor : "white",
 
 	// セルの○×の色(補助記号)
 	mbcolor : "rgb(0, 160, 0)",

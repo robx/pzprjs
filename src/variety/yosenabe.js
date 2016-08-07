@@ -219,7 +219,7 @@ Graphic:{
 		if(num!==-1){
 			if     (error===1||error===4){ return this.errbcolor1;}
 			else if(cell.isCmp())        { return this.qcmpcolor;}
-			else{ return this.circledcolor;}
+			else{ return this.circlebasecolor;}
 		}
 		return null;
 	},
