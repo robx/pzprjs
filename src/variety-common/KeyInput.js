@@ -69,6 +69,30 @@ KeyEvent:{
 	},
 
 	//---------------------------------------------------------------------------
+	// kc.key_inputletter_main() 1文字のアルファベットをCellの問題データとして入力する
+	//---------------------------------------------------------------------------
+	key_inputletter_main : function(cell,ca){
+		var val=-1;
+
+		if(ca.length>1 && ca!=='BS'){ return false;}
+		else if('a'<=ca && ca<='z'){
+			var num = parseInt(ca,36)-10, val = -1;
+			var canum = cell.getNum();
+			if(canum>0 && (canum-1)%26===num){ // Same alphabet
+				val = ((canum<=26) ? canum+26 : -1);
+			}
+			else{ val = num+1;}
+		}
+		else if(ca==='-') { val = ((this.puzzle.editmode&&!cell.disInputHatena)?-2:-1);}
+		else if(ca===' '||ca==='BS'){ val = -1;}
+		else if(ca==='s1'){ val = -2;}
+		else{ return false;}
+
+		cell.setNum(val);
+		return true;
+	},
+
+	//---------------------------------------------------------------------------
 	// kc.key_inputarrow()  四方向の矢印などを設定する
 	// kc.key_inputdirec()  四方向の矢印つき数字の矢印を設定する
 	//---------------------------------------------------------------------------

@@ -42,22 +42,7 @@ KeyEvent:{
 	enablemake : true,
 
 	key_inputqnum_main : function(cell,ca){
-		return this.key_inputqnum_main_kaero(cell,ca);
-	},
-	key_inputqnum_main_kaero : function(cell,ca){
-		if(ca.length>1 && ca!=='BS'){ return false;}
-		else if('a'<=ca && ca<='z'){
-			var num = parseInt(ca,36)-10;
-			var canum = cell.qnum;
-			if     ((canum-1)%26===num && canum>0 && canum<=26){ cell.setQnum(canum+26);}
-			else if((canum-1)%26===num){ cell.setQnum(-1);}
-			else{ cell.setQnum(num+1);}
-		}
-		else if(ca==='-'){ cell.setQnum(cell.qnum!==-2?-2:-1);}
-		else if(ca===' '||ca==='BS'){ cell.setQnum(-1);}
-		else{ return false;}
-
-		return true;
+		return this.key_inputletter_main(cell,ca);
 	}
 },
 
@@ -138,15 +123,8 @@ Graphic:{
 	},
 	textoption : {ratio:[0.85]},
 	getNumberText : function(cell){
-		var isdrawmove = this.puzzle.execConfig('dispmove');
-		var num = (isdrawmove ? cell.base : cell).qnum, text = "";
-		if     (num===-1)        { text = "";}
-		else if(num===-2)        { text = "?";}
-		else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-		else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-		else{ text = ""+num;}
-		return text;
-	},
+		return this.getNumberText_letter(cell);
+	}
 },
 
 //---------------------------------------------------------

@@ -319,6 +319,15 @@ Graphic:{
 		var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
 		return (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
 	},
+	getNumberText_letter : function(cell){
+		var num = cell.qnum, text = "";
+		if     (num===-1)        { text = "";}
+		else if(num===-2)        { text = "?";}
+		else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
+		else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
+		else{ text = ""+num;}
+		return text;
+	},
 	getNumberColor : function(cell){
 		var type = this.numbercolor_func || "";
 		this.getNumberColor = (
