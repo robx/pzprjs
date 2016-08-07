@@ -171,6 +171,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 * Gokigen-naname-wagiri `wagiri`
 * Rome `roma`
 * Toichika `toichika`
+* Nondango `nondango`
 
 ### Non-nikoli puzzle
 * Yin-Yang `yinyang`
