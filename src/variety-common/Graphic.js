@@ -320,7 +320,8 @@ Graphic:{
 		return (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
 	},
 	getNumberText_letter : function(cell){
-		var num = cell.qnum, text = "";
+		var isdrawmove = this.puzzle.execConfig('dispmove');
+		var num = (isdrawmove ? cell.base : cell).qnum, text = "";
 		if     (num===-1)        { text = "";}
 		else if(num===-2)        { text = "?";}
 		else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
