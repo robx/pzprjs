@@ -589,6 +589,7 @@ OperationManager:{
 	//---------------------------------------------------------------------------
 	enterTrial : function(){
 		if(this.trialpos[this.trialpos.length-1]+1===this.position){ return;}
+		this.newOperation();
 		this.add(new this.puzzle.klass.TrialEnterOperation(this.trialpos.length, this.trialpos.length+1));
 		this.trialpos.push(this.position-1);
 		this.limitTrialUndo = true;
@@ -603,6 +604,7 @@ OperationManager:{
 			this.trialpos.pop();
 		}
 		if(this.trialpos.length>0){
+			this.newOperation();
 			this.add(new this.puzzle.klass.TrialFinalizeOperation(this.trialpos));
 			this.board.trialclear();
 		}
