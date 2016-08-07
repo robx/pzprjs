@@ -96,7 +96,7 @@ Graphic:{
 	},
 },
 "Graphic@arukone":{
-	textoption : {ratio:[0.5]},
+	textoption : {ratio:[0.5],style:"900"},
 	getNumberText : function(cell){
 		return this.getNumberText_letter(cell);
 	},
