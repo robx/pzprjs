@@ -272,7 +272,6 @@ Graphic:{
 
 	cellcolor_func : "ques",
 	gridcolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
 
 	paint : function(){
 		this.drawBGCells();
@@ -306,7 +305,7 @@ Graphic:{
 			// 向き補助記号の描画
 			g.vid = "b_daux_"+border.id;
 			if(dir>=1 && dir<=8){
-				g.strokeStyle = (!border.trial ? this.borderQsubcolor2 : this.trialcolor);
+				g.strokeStyle = (!border.trial ? "rgb(64,64,64)" : this.trialcolor);
 				g.beginPath();
 				switch(dir){
 					case border.UP: g.setOffsetLinePath(px,py ,-ssize*2,+ssize ,0,-ssize ,+ssize*2,+ssize, false); break;

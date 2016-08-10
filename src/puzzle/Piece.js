@@ -11,7 +11,8 @@ pzpr.classmgr.makeCommon({
 
 	// デフォルト値
 	/* 問題データを保持するプロパティ */
-	ques  : 0,	// cell  :(1:黒マス 2-5:三角形 6:アイス・なべ等 7:盤面外 11-17:十字型パーツ 21-22:旗門 31:Hole 41-42:ぬりめいずの○△ 51:カックロ)
+	ques  : 0,	// cell  :(1:黒マス 2-5:三角形 6:アイス・なべ等 7:盤面外 8:盤面内だが入力不可
+				//         11-17:十字型パーツ 21-22:旗門 31:Hole 41-42:ぬりめいずの○△ 51:カックロ)
 				// cross :(交点の黒点)
 				// border:(問題の境界線)
 	qdir  : 0,	// cell  :(数字につく矢印の向き)
@@ -233,7 +234,7 @@ pzpr.classmgr.makeCommon({
 			this.setQnum(val);
 			this.setAnum(-1);
 			if(this.numberRemainsUnshaded) { this.setQans(0);}
-			if(this.puzzle.painter.bcolor==="white"){ this.setQsub(0);}
+			if(!this.puzzle.painter.enablebcolor){ this.setQsub(0);}
 			this.setQcmp(0);
 		}
 		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3

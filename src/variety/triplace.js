@@ -125,8 +125,6 @@ Graphic:{
 
 	bgcellcolor_func : "qsub2",
 
-	borderQanscolor : "rgb(0, 160, 0)",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawBGEXcells();

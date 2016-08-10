@@ -180,7 +180,6 @@ Graphic:{
 	irowake : true,
 
 	gridcolor_type : "LIGHT",
-	linecolor_type : "LIGHT",
 
 	circleratio : [0.42, 0.37],
 

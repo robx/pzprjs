@@ -98,7 +98,7 @@ Graphic:{
 	}
 },
 "Graphic@nuribou,mochikoro,mochinyoro":{
-	bcolor_type : "GREEN"
+	enablebcolor : true
 },
 
 //---------------------------------------------------------

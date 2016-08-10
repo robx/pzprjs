@@ -15,7 +15,7 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 
-		if(cell.numberRemainsUnshaded && cell.qnum!==-1 && (this.inputData===1||(this.inputData===2 && this.puzzle.painter.bcolor==="white"))){ return;}
+		if(cell.numberRemainsUnshaded && cell.qnum!==-1 && (this.inputData===1||(this.inputData===2 && !this.puzzle.painter.enablebcolor))){ return;}
 		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
@@ -77,8 +77,8 @@ MouseEvent:{
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
 		if     (puzzle.editmode)    { subtype =-1;}
 		else if(cell.numberWithMB)  { subtype = 2;}
+		else if(puzzle.pid==="roma" || puzzle.pid==="yinyang"){ subtype=0;} // 全マス埋めるタイプのパズルは補助記号なし
 		else if(cell.numberAsObject){ subtype = 1;}
-		if(puzzle.pid==="roma" && puzzle.playmode){ subtype=0;}
 
 		if(puzzle.playmode && cell.qnum!==puzzle.klass.Cell.prototype.qnum){ return;}
 

@@ -103,7 +103,7 @@ Graphic:{
 
 	getCircleFillColor : function(cell){
 		if(this.puzzle.execConfig('autocmp') && cell.isValidNum()){
-			return (cell.checkComplete() ? this.qcmpcolor : this.circledcolor);
+			return (cell.checkComplete() ? this.qcmpcolor : this.circlebasecolor);
 		}
 		return null;
 	}

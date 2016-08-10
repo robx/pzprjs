@@ -236,7 +236,6 @@ Graphic:{
 	irowake : true,
 
 	gridcolor_type : "LIGHT",
-	linecolor_type : "LIGHT",
 
 	numbercolor_func : "fixed",
 
@@ -323,7 +322,7 @@ Graphic:{
 			g.vid = "b_qsub2_"+border.id;
 			if(border.qsub===2){
 				var px = border.bx*this.bw, py = border.by*this.bh;
-				g.fillStyle = (!border.trial ? this.borderQsubcolor2 : this.trialcolor);
+				g.fillStyle = (!border.trial ? "rgb(64,64,64)" : this.trialcolor);
 				if(border.isVert()){ g.fillRectCenter(px, py, lm, rw+lm);}
 				else               { g.fillRectCenter(px, py, rw+lm, lm);}
 			}
@@ -338,7 +337,7 @@ Graphic:{
 		else if(isErr){ this.addlw=1;}
 		
 		if(isErr){ color = this.errlinecolor;}
-		else if(err!==0){ color = this.errlinebgcolor;}
+		else if(err!==0){ color = this.noerrcolor;}
 		else if(this.puzzle.execConfig('irowake') && cell.net && cell.net.color){ color = cell.net.color;}
 		else if(cell.trial){ color = this.trialcolor;}
 		else{ color = this.linecolor;}

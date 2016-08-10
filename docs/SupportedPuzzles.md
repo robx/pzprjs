@@ -13,6 +13,9 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Kurodoko (Kuromasu) `kurodoko`
 * LITS `lits`
 
+### Reserver
+* Uso-one `usoone`
+
 ### Nigun (Legacy)
 * Yajisan-Kazusan `yajikazu`
 * Mochikoro `mochikoro`
@@ -61,6 +64,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Icelom2 `icelom2`
 * Kouchoku `kouchoku`
 * Ring-ring `ringring`
+* The moon or the sun `moonsun`
 
 ## Line Puzzles
 ### Regular
@@ -89,6 +93,9 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Rectangle Slider `rectslider`
 
 Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
+
+### Non-nikoli puzzle
+* Arukone `arukone`
 
 ## Area Deviding Puzzles
 ### Regular
@@ -129,14 +136,12 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 * Fillomino `fillomino`
 * Ripple Effect `ripple` `hakyukoka`
 
-### Reserver
-* Makaro `makaro`
-
 ### Nigun (Legacy)
 * Minarism `minarism`
 * Factors `factors`
 * Sukoro `sukoro`
 * Hebi-Ichigo `snakes`
+* Makaro `makaro`
 
 ### Omopa
 * Kakuru `kakuru`
@@ -170,3 +175,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 * Gokigen-naname-wagiri `wagiri`
 * Rome `roma`
 * Toichika `toichika`
+* Nondango `nondango`
+
+### Non-nikoli puzzle
+* Yin-Yang `yinyang`

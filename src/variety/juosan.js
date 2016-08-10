@@ -69,8 +69,6 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	linecolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
 	numbercolor_func : "fixed",
 
 	paint : function(){
@@ -80,7 +78,6 @@ Graphic:{
 		this.drawTateyokos();
 
 		this.drawNumbers();
-		this.drawMBs();
 		this.drawBorders();
 
 		this.drawChassis();

@@ -50,9 +50,8 @@ AreaShadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
-
-	bcolor_type : "GREEN",
 
 	paint : function(){
 		this.drawBGCells();

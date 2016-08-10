@@ -243,7 +243,6 @@ Graphic:{
 	numbercolor_func : "fixed",
 
 	errcolor1 : "red",
-	errcolor2 : "rgb(32, 32, 255)",
 
 	crosssize : 0.33,
 

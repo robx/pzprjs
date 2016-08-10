@@ -352,9 +352,9 @@ Graphic:{
 		}
 	},
 	getNumberColor : function(excell){
-		if     (excell.error===1){ return this.fontErrcolor;}
-		else if(excell.qchar>52) { return this.fontAnscolor;} // 2色目
-		return this.fontcolor;
+		if     (excell.error===1){ return this.errcolor1;}
+		else if(excell.qchar>52) { return "blue";} // 2色目
+		return this.quescolor;
 	}
 },
 

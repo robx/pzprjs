@@ -82,6 +82,7 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
+	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
 
 	paint : function(){
@@ -103,9 +104,6 @@ Graphic:{
 "Graphic@shimaguni":{
 	bcolor : "rgb(191, 191, 255)",
 	bbcolor : "rgb(191, 191, 255)"
-},
-"Graphic@chocona":{
-	bcolor_type : "GREEN"
 },
 
 //---------------------------------------------------------

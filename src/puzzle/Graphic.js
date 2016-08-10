@@ -18,9 +18,6 @@ pzpr.classmgr.makeCommon({
 Graphic:{
 	initialize : function(){
 		this.gridcolor  = this.gridcolor_list [this.gridcolor_type]  || this.gridcolor;
-		this.bcolor     = this.bcolor_list    [this.bcolor_type]     || this.bcolor;
-		this.errbcolor1 = this.errbcolor1_list[this.errbcolor1_type] || this.errbcolor1;
-		this.linecolor  = this.linecolor_list [this.linecolor_type]  || this.linecolor;
 
 		this.resetRange();
 
@@ -39,67 +36,46 @@ Graphic:{
 	circlefillcolor_func : "",		// getCircleFillColor()の種類
 	circlestrokecolor_func : "",	// getCircleStrokeColor()の種類
 
-	// セルの色(黒マス)
+	// 標準の色設定
 	quescolor : "black",
-	shadecolor: "black",
+	qanscolor : "rgb(0, 160, 0)",
+	qcmpcolor : "silver",
 	trialcolor: "rgb(160, 160, 160)",
-	errcolor1 : "rgb(192, 0, 0)",
 
-	// セルの背景色(白マス)
-	bcolor : "white",
-	bcolor_type : "",
-	bcolor_list : { GREEN : "rgb(160, 255, 160)"},
+	// 黒マスの色
+	shadecolor: "black",
+	errcolor1 : "rgb(192, 0, 0)",
+	errcolor2 : "rgb(32, 32, 255)",
+	fontShadecolor : "rgb(224, 224, 224)",
+
+	// 白マス確定マスの背景色
+	enablebcolor : false,
+	bcolor : "rgb(160, 255, 160)",
+	errbcolor1 : "rgb(255, 160, 160)",
+	errbcolor2 : "rgb(64, 255, 64)",
 
 	qsubcolor1 : "rgb(160,255,160)",
 	qsubcolor2 : "rgb(255,255,127)",
 	qsubcolor3 : "rgb(192,192,192)",	// 絵が出るパズルの背景入力
 
-	errbcolor1 : "rgb(255, 160, 160)",
-	errbcolor1_type : "",
-	errbcolor1_list : { DARK : "rgb(255, 127, 127)"},
-
-	errbcolor2 : "rgb(64, 255, 64)",
-
 	icecolor    : "rgb(192, 224, 255)",
 	erricecolor : "rgb(224,  96, 160)",
 
 	// セルの丸数字内部の背景色
-	circledcolor : "white",
-	qcmpcolor : "silver",
-
-	// セルの矢印描画色
-	arrowQuescolor : "black",
-	arrowQanscolor : "rgb(0, 160, 0)",
-
-	// フォントの色
-	fontcolor : "black",
-	fontAnscolor : "rgb(0, 160, 0)",
-	fontErrcolor : "rgb(191, 0, 0)",
-	fontShadecolor : "rgb(224, 224, 224)",
+	circlebasecolor : "white",
 
 	// セルの○×の色(補助記号)
 	mbcolor : "rgb(0, 160, 0)",
 
 	// 線・×の色
-	linecolor : "rgb(0, 160, 0)",	// 色分けなしの場合
-	linecolor_type : "",
-	linecolor_list : { LIGHT : "rgb(0, 192, 0)"},
-
+	linecolor      : "rgb(0, 160, 0)",			// 色分けなしの場合
 	errlinecolor   : "rgb(255, 0, 0)",
-	errlinebgcolor : "rgb(160, 160, 160)",		// エラー表示時, エラーでない線の描画色
+	noerrcolor     : "rgb(160, 160, 160)",		// エラー表示時, エラーでない線/境界線の描画色
 
 	movelinecolor : "silver",
 	movetrialcolor: "rgb(255, 160, 0)",
 
-	pekecolor : "rgb(0, 160, 0)",
-
-	// 境界線の色
-	borderQuescolor : "black",
-	borderQanscolor : "rgb(0, 160, 0)",
-	borderQsubcolor : "rgb(0, 160, 0)",
-	borderQsubcolor2 : "rgb(64, 64, 64)",
-
-	errborderbgcolor : "rgb(160, 160, 160)",	// エラー表示時, エラーでない境界線の描画色
+	pekecolor : "rgb(0, 127, 0)",
 
 	// 境界線と黒マスを分ける色(BoxBorder)
 	bbcolor : "rgb(96, 96, 96)",

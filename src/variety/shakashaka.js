@@ -260,8 +260,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	cellcolor_func : "qnum",
-	fontcolor : "white",
-	numbercolor_func : "fixed",
+	fontShadecolor : "white",
+	numbercolor_func : "fixed_shaded",
 
 	paint : function(){
 		this.drawBGCells();

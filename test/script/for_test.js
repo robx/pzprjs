@@ -231,41 +231,45 @@ var debug = window.debug =
 		puzzle.restoreConfig(config);
 	},
 
-	alltimer : null,
-	phase : 99,
-	pid : '',
+	alltimer : false,
+	idlist : [],
+	pid  : '',
+	pnum : 0,
+	starttime : 0,
 	all_test : function(){
-		if(this.alltimer !== null){ return;}
-		var pnum=0, term, idlist=[], self = this, starttime = pzpr.util.currentTime();
-		self.phase = 99;
-
-		idlist = pzpr.variety.getList().sort();
-		term = idlist.length;
-
-		self.alltimer = setInterval(function(){
-			if(self.phase !== 99){ return;}
-
-			var newid = idlist[pnum];
-			if(!!newid && !self.urls[newid]){
-				self.includeDebugScript(newid);
-				return;
-			}
-
-			pnum++;
-			if(pnum > term){
-				clearInterval(self.alltimer);
-				self.alltimer = null;
-				var ms = ((pzpr.util.currentTime() - starttime)/100)|0;
+		if(this.alltimer!==false){ return;}
+		var self = this;
+		self.pnum = 0;
+		self.idlist = pzpr.variety.getList().sort();
+		self.starttime = pzpr.util.currentTime();
+		self.alltimer = true;
+		self.each_test();
+	},
+	each_test : function(){
+		var self = debug;
+		if(self.idlist.length===0){
+			if(self.alltimer){
+				var ms = ((pzpr.util.currentTime() - self.starttime)/100)|0;
 				self.addTA("Total time: "+((ms/10)|0)+"."+(ms%10)+" sec.");
-				return;
+				self.alltimer = false;
 			}
+			return;
+		}
 
-			puzzle.open(newid+"/"+self.urls[newid], function(){
-				/* スクリプトチェック開始 */
-				self.sccheck();
-				self.addTA("Test ("+pnum+", "+newid+") start.");
-			});
-		},50);
+		var newid = self.idlist[0];
+		if(!!newid && !self.urls[newid]){
+			self.includeDebugScript(newid);
+			setTimeout(self.each_test,0);
+			return;
+		}
+
+		self.idlist.shift();
+		self.pnum++;
+		puzzle.open(newid+"/"+self.urls[newid], function(){
+			/* スクリプトチェック開始 */
+			self.sccheck();
+			self.addTA("Test ("+self.pnum+", "+newid+") start.");
+		});
 	},
 
 	starttest : function(){
@@ -276,7 +280,6 @@ var debug = window.debug =
 	fails : 0,
 	sccheck : function(){
 		var self = this;
-		self.phase = 0;
 		self.fails = 0;
 		self.testing = false;
 		self.pid = puzzle.pid;
@@ -308,11 +311,12 @@ var debug = window.debug =
 		testlist.push('check_end');
 
 		setTimeout(function tests(){
-			while(!self.testing && testlist.length>0){
+			if(!self.testing && testlist.length>0){
 				self.testing = true;
 				self[testlist.shift()](self);
 			}
 			if(testlist.length>0){ setTimeout(tests,0);}
+			else{ self.each_test();}
 		},0);
 	},
 	//Encode test--------------------------------------------------------------
@@ -540,7 +544,7 @@ var debug = window.debug =
 	//test end--------------------------------------------------------------
 	check_end : function(self){
 		if(!self.alltimer){ self.addTA("Test end.");}
-		self.phase = 99;
+
 		self.testing = false;
 	},
 

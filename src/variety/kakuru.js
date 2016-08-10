@@ -71,7 +71,6 @@ Board:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	errbcolor1_type : "DARK",
 
 	cellcolor_func : "ques",
 

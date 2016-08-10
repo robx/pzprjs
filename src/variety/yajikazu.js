@@ -62,8 +62,7 @@ AreaUnshadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bcolor_type : "GREEN",
-
+	enablebcolor : true,
 	bgcellcolor_func : "qans1",
 
 	fontShadecolor : "rgb(96,96,96)",

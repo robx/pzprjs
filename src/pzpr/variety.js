@@ -69,6 +69,7 @@ delete variety.extend;
 {
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
+	arukone   :[0,0,"アルコネ","Arukone",'numlin'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
 	bag       :[1,0,"バッグ","BAG (Corral)",'',{alias:'correl'}],
 	barns     :[1,0,"バーンズ","Barns"],
@@ -127,10 +128,12 @@ delete variety.extend;
 	minarism  :[1,0,"マイナリズム","Minarism"],
 	mochikoro :[1,0,"モチコロ","Mochikoro",'nurikabe'],
 	mochinyoro:[1,0,"モチにょろ","Mochinyoro",'nurikabe'],
+	moonsun   :[0,0,"月か太陽","The moon or the sun",'country'],
 	nagare    :[0,0,"流れるループ","Nagareru-Loop"],
 	nagenawa  :[0,0,"なげなわ","Nagenawa",'nagenawa'],
 	nanro     :[0,1,"ナンロー","Nanro"],
 	nawabari  :[1,0,"なわばり","Territory",'nawabari'],
+	nondango  :[0,0,"ノンダンゴ","Nondango"],
 	norinori  :[0,1,"のりのり","Norinori",'lits'],
 	numlin    :[0,1,"ナンバーリンク","Numberlink",'',{kanpen:'numberlink'}],
 	nuribou   :[1,0,"ぬりぼう","Nuribou",'nurikabe'],
@@ -174,6 +177,7 @@ delete variety.extend;
 	yajikazu  :[1,0,"やじさんかずさん","Yajisan-Kazusan"],
 	yajirin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin'}],
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
+	yinyang   :[0,0,"しろまるくろまる","Yin-Yang"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
 });
 
