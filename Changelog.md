@@ -1,4 +1,24 @@
 
+## Version 0.5.0
+
+Release date: 2016/8/10
+
+#### New puzzle
+
+* moonsun: Introduce new puzzle: The moon and the sun
+* arukone: Introduce new puzzle: Arukone
+* nondango: Introduce new puzzle: Nondango
+* yinyang: Introduce new puzzle: Yin-Yang
+
+#### BugFix
+
+* Opeartion: Prevent trial operation from connecting to previous operation
+* usoone, kurochute: Fix aux. mark on numbers can't be inputted when one button input is selected
+
+#### Minor Changes
+
+* Graphic: Integrate some color definitions
+
 ## Version 0.4.0
 
 Release date: 2016/8/2
