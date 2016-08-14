@@ -30,14 +30,18 @@ KeyEvent:{
 	},
 	key_inputqnum_kakuru : function(ca){
 		var cell = this.cursor.getc();
-
-		if(('0'<=ca && ca<='9') || ca==='BS' || ca==='-'){
+		if(cell.enableSubNumberArray && ca==='shift' && cell.noNum()){
+			this.cursor.chtarget();
+		}
+		else if(('0'<=ca && ca<='9') || ca==='BS' || ca==='-'){
 			if(cell.ques===1){ return;}
-			if(!this.key_inputqnum_main(cell,ca)){ return;}
+			this.key_inputqnum_main(cell,ca);
 		}
 		else if(ca===' '){
 			if(this.puzzle.editmode){ cell.setQues(0);}
 			cell.setNum(-1);
+			cell.draw();
+			this.prev = cell;
 		}
 		// qはキーボードのQ, q1,q2はキーポップアップから
 		else if(this.puzzle.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
@@ -47,17 +51,17 @@ KeyEvent:{
 				cell.setNum(-1);
 			}
 			else if(ca==='q2'){ cell.setQues(0);}
+			cell.draw();
+			this.prev = cell;
 		}
 		else{ return;}
-
-		this.prev = cell;
-		cell.draw();
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return (this.puzzle.editmode?44:9);
 	}
@@ -76,9 +80,11 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 		this.drawShadedCells();
 
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawChassis();

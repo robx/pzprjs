@@ -41,7 +41,10 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==this.cursor.getc()){
+		if(this.cursor.modesnum && this.puzzle.playmode && !this.cursor.at(this.inputPoint) && cell.noNum()){
+			this.setcursorsnum(cell);
+		}
+		else if(cell!==this.cursor.getc()){
 			this.setcursor(cell);
 		}
 		else{
@@ -165,6 +168,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return Math.min(99, this.room.clist.length);
 	}
@@ -197,10 +201,12 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 		this.drawShadedCells();
 
 		this.drawCellArrows();
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawBorders();

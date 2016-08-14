@@ -127,6 +127,7 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return Math.max(this.board.cols,this.board.rows);
 	}
@@ -156,9 +157,11 @@ Graphic:{
 		this.drawBDBase();
 
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawDashedGrid();
 
 		this.drawBDNumbers_and_IneqSigns();
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawChassis();

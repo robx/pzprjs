@@ -186,7 +186,7 @@ Graphic:{
 		}
 	},
 	getNumberText : function(cell){
-		return (((cell.ques>=2 && cell.ques<=5) && cell.qnum>0) ? ""+cell.qnum : "");
+		return ((cell.ques>=2 && cell.ques<=5) ? this.getNumberTextCore(cell.qnum) : "");
 	},
 
 	repaintParts : function(blist){

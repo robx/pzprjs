@@ -97,6 +97,7 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return ((this.room.clist.length+1)/2)|0;
 	}
@@ -150,10 +151,12 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 		this.drawBorders();
 
 		this.drawBDNumbers();
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawChassis();

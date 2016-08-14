@@ -34,6 +34,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return this.room.clist.length;
 	}
@@ -57,8 +58,10 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawBorders();

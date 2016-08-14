@@ -29,8 +29,8 @@ MouseEvent:{
 	},
 	decIC : function(cell){
 		if(this.puzzle.getConfig('use')===1){
-			if     (this.btn==='left') { this.inputData=(cell.isUnshade()  ? 1 : 0); }
-			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1)? 2 : 0); }
+			if     (this.btn==='left') { this.inputData=(cell.isUnshade() ? 1 : 0); }
+			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1)  ? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
@@ -56,7 +56,10 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell!==this.cursor.getc()){
+		if(this.cursor.modesnum && this.puzzle.playmode && !this.cursor.at(this.inputPoint) && cell.noNum()){
+			this.setcursorsnum(cell);
+		}
+		else if(cell!==this.cursor.getc()){
 			this.setcursor(cell);
 		}
 		else{
@@ -65,8 +68,10 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 	inputqnum_main : function(cell){
-		var cell0=cell, puzzle=this.puzzle, bd=puzzle.board;
-		if(puzzle.editmode && bd.roommgr.hastop){
+		var cell0=cell, puzzle=this.puzzle;
+		if(puzzle.playmode && cell.qnum!==puzzle.klass.Cell.prototype.qnum && puzzle.pid!=='factors'){ return;}
+
+		if(puzzle.editmode && puzzle.board.roommgr.hastop){
 			cell0 = cell = cell.room.top;
 		}
 		else if(puzzle.execConfig('dispmove')){
@@ -74,17 +79,30 @@ MouseEvent:{
 			else if(cell.lcnt>0){ return;}
 		}
 
+		if(cell.enableSubNumberArray && puzzle.playmode && this.cursor.targetdir>=2){
+			var snumpos = [-1,-1,2,3,1,0][this.cursor.targetdir];
+			if(snumpos===-1){ return;}
+			cell.setSnum(snumpos, this.getNewNumber(cell, cell.snum[snumpos]));
+		}
+		else{
+			cell.setNum(this.getNewNumber(cell, cell.getNum()));
+		}
+
+		if(puzzle.execConfig('dispmove') && cell.noNum()){
+			cell.eraseMovedLines();		/* 丸数字がなくなったら付属する線も消去する */
+		}
+
+		cell0.draw();
+	},
+	getNewNumber : function(cell, num){
+		var puzzle=this.puzzle, ishatena=(puzzle.editmode && !cell.disInputHatena);
+		var max=cell.getmaxnum(), min=cell.getminnum(), val = -1, qs = cell.qsub;
+
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
 		if     (puzzle.editmode)    { subtype =-1;}
-		else if(cell.numberWithMB)  { subtype = 2;}
+		else if(cell.numberWithMB)  { subtype = 2; qs = cell.qsub;}
 		else if(puzzle.pid==="roma" || puzzle.pid==="yinyang"){ subtype=0;} // 全マス埋めるタイプのパズルは補助記号なし
 		else if(cell.numberAsObject){ subtype = 1;}
-
-		if(puzzle.playmode && cell.qnum!==puzzle.klass.Cell.prototype.qnum){ return;}
-
-		var max=cell.getmaxnum(), min=cell.getminnum();
-		var num=cell.getNum(), qs=(puzzle.editmode ? 0 : cell.qsub);
-		var val=-1, ishatena=(puzzle.editmode && !cell.disInputHatena);
 
 		// playmode: subtypeは0以上、 qsにqsub値が入る
 		// editmode: subtypeは-1固定、qsは常に0が入る
@@ -109,13 +127,7 @@ MouseEvent:{
 			else if(num===-2){ val = -1;}
 			else             { val = num-1;}
 		}
-		cell.setNum(val);
-
-		if(puzzle.execConfig('dispmove') && cell.noNum()){
-			cell.eraseMovedLines();		/* 丸数字がなくなったら付属する線も消去する */
-		}
-
-		cell0.draw();
+		return val;
 	},
 
 	//---------------------------------------------------------------------------

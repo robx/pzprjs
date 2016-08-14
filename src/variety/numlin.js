@@ -32,15 +32,11 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true
 },
-"KeyEvent@arukone":{
-	key_inputqnum_main : function(cell,ca){
-		return this.key_inputletter_main(cell,ca);
-	}
-},
 
 //---------------------------------------------------------
 // 盤面管理系
 "Cell@arukone":{
+	numberAsLetter : true,
 	maxnum : 52
 },
 Board:{
@@ -97,8 +93,8 @@ Graphic:{
 },
 "Graphic@arukone":{
 	textoption : {ratio:[0.5],style:"900"},
-	getNumberText : function(cell){
-		return this.getNumberText_letter(cell);
+	getNumberTextCore : function(num){
+		return this.getNumberTextCore_letter(num);
 	},
 	drawCrossSquares : function(){
 		var g = this.vinc('cross_mark', 'auto', true), bd = this.board;

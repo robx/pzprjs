@@ -297,8 +297,8 @@ Graphic:{
 },
 "Graphic@wagiri":{
 	textoption : {ratio:[0.70]},
-	getNumberText : function(cell){
-		return {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
+	getNumberTextCore : function(num){
+		return {'-2':"?",1:"輪",2:"切"}[num] || "";
 	},
 
 	drawTarget : function(){

@@ -21,31 +21,6 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
-	},
-
-	inputqnum_main : function(cell){
-		if(this.puzzle.editmode){
-			cell = cell.room.top;
-		}
-
-		var max=cell.getmaxnum(), min=cell.getminnum();
-		var num=(this.puzzle.editmode ? cell.qnum : cell.anum), val=-1;
-
-		// playmode: subtypeは0以上、 qsにqsub値が入る
-		// editmode: subtypeは-1固定、qsは常に0が入る
-		if(this.btn==='left'){
-			if     (num>=max){ val = -1;}
-			else if(num===-1){ val = 1;}
-			else{ val = num+1;}
-		}
-		else if(this.btn==='right'){
-			if     (num===-1){ val = max;}
-			else if(num<=min){ val = -1;}
-			else{ val = num-1;}
-		}
-		cell.setNum(val);
-
-		cell.draw();
 	}
 },
 
@@ -60,6 +35,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	disInputHatena : true,
+	enableSubNumberArray : true,
 
 	maxnum : function(){
 		return this.puzzle.editmode?999999:Math.max(this.board.cols,this.board.rows);
@@ -68,7 +44,13 @@ Cell:{
 	setNum : function(val){
 		if(val===0){ return;}
 		if(this.puzzle.editmode){ this.setQnum(val);}else{ this.setAnum(val);}
-	}
+		this.clrSnum();
+	},
+	getNum : function(){
+		if(this.puzzle.editmode){ return this.qnum;}else{ return this.anum;}
+	},
+	isNum : function(){ return !this.isnull && (this.anum!==this.temp.anum);},
+	noNum : function(){ return !this.isnull && (this.anum===this.temp.anum);}
 },
 
 CellList:{
@@ -101,8 +83,10 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 
+		this.drawSubNumbers();
 		this.drawQuesNumbers_factors();
 		this.drawAnswerNumbers();
 

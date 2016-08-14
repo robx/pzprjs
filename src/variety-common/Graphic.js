@@ -315,18 +315,19 @@ Graphic:{
 	},
 
 	getNumberText : function(cell){
+		var isdrawmove = this.puzzle.execConfig('dispmove');
+		return this.getNumberTextCore((isdrawmove ? cell.base : cell).getNum());
+	},
+	getNumberTextCore : function(num){
 		var hideHatena = (this.pid!=="yajirin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
-		var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
 		return (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
 	},
-	getNumberText_letter : function(cell){
-		var isdrawmove = this.puzzle.execConfig('dispmove');
-		var num = (isdrawmove ? cell.base : cell).qnum, text = "";
+	getNumberTextCore_letter : function(num){
+		var text = ""+num;
 		if     (num===-1)        { text = "";}
 		else if(num===-2)        { text = "?";}
-		else if(num> 0&&num<= 26){ text+=(num+ 9).toString(36).toUpperCase();}
-		else if(num>26&&num<= 52){ text+=(num-17).toString(36).toLowerCase();}
-		else{ text = ""+num;}
+		else if(num> 0&&num<= 26){ text = (num+ 9).toString(36).toUpperCase();}
+		else if(num>26&&num<= 52){ text = (num-17).toString(36).toLowerCase();}
 		return text;
 	},
 	getNumberColor : function(cell){
@@ -379,6 +380,28 @@ Graphic:{
 			return (!cell.trial ? this.qanscolor : this.trialcolor);
 		}
 		return this.quescolor;
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawSubNumbers()  Cellの補助数字をCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawSubNumbers : function(){
+		var g = this.vinc('cell_subnumber', 'auto');
+		var posarray = [5,4,2,3];
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			for(var n=0;n<4;n++){
+				var text = this.getNumberTextCore(cell.snum[n]);
+				g.vid = "cell_subtext_"+cell.id+"_"+n;
+				if(!!text){
+					g.fillStyle = (!cell.trial ? this.subcolor : this.trialcolor);
+					this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:posarray[n], ratio:[0.33], hoffset:0.8});
+				}
+				else{ g.vhide();}
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1148,6 +1171,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawTarget()  入力対象となる場所を描画する
 	// pc.drawCursor()  キーボードからの入力対象をCanvasに書き込む
+	// pc.drawTargetSubNumber() Cellの補助数字の入力対象に背景色をつける
 	// pc.drawTargetTriangle() [＼]のうち入力対象のほうに背景色をつける
 	//---------------------------------------------------------------------------
 	drawTarget : function(){
@@ -1174,6 +1198,28 @@ Graphic:{
 		g.vid = "ti4_"; if(isdraw){ g.fillRect(px+size-w, py-size,   w, size*2);}else{ g.vhide();}
 	},
 
+	drawTargetSubNumber : function(){
+		var g = this.vinc('target_subnum', 'crispEdges');
+
+		var d = this.range, cursor = this.puzzle.cursor;
+		if(cursor.bx < d.x1 || d.x2 < cursor.bx){ return;}
+		if(cursor.by < d.y1 || d.y2 < cursor.by){ return;}
+
+		var target = cursor.targetdir;
+
+		g.vid = "target_subnum";
+		g.fillStyle = this.ttcolor;
+		if(this.puzzle.playmode && target!==0){
+			var bw = this.bw, bh = this.bh;
+			var px = cursor.bx*bw+0.5, py = cursor.by*bh+0.5;
+			var tw = bw*0.8, th = bh*0.8;
+			if     (target===5){ g.fillRect(px-bw,    py-bh,    tw,th);}
+			else if(target===4){ g.fillRect(px+bw-tw, py-bh,    tw,th);}
+			else if(target===2){ g.fillRect(px-bw,    py+bh-th, tw,th);}
+			else if(target===3){ g.fillRect(px+bw-tw, py+bh-th, tw,th);}
+		}
+		else{ g.vhide();}
+	},
 	drawTargetTriangle : function(){
 		var g = this.vinc('target_triangle', 'auto');
 

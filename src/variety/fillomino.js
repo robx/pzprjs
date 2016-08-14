@@ -97,6 +97,9 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
+Cell:{
+	enableSubNumberArray : true
+},
 Board:{
 	hasborder : 1
 },
@@ -143,8 +146,10 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawDashedGrid();
 
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawBorders();

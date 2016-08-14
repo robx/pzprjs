@@ -301,8 +301,7 @@ Graphic:{
 			return ""+k;
 		}
 		else{
-			var num = cell.getNum();
-			return (num>=0 ? ""+num : "");
+			return this.getNumberTextCore(cell.getNum());
 		}
 	},
 
