@@ -50,10 +50,11 @@ Cell:{
 	maxnum : 2
 },
 Board:{
+	disable_subclear : true,
 	addExtraInfo : function(){
 		this.yingraph  = this.addInfoList(this.klass.AreaYinGraph);
 		this.yanggraph = this.addInfoList(this.klass.AreaYangGraph);
-	},
+	}
 },
 
 'AreaYinGraph:AreaGraphBase':{
