@@ -653,9 +653,9 @@ FailCode:{
 	cs2x2       : ["2x2の黒マスのかたまりがあります。","There is a 2x2 block of shaded cells."],
 	csNotSquare : ["正方形でない黒マスのカタマリがあります。","A mass of shaded cells is not regular rectangle."],
 	csAdjacent  : ["黒マスがタテヨコに連続しています。","Shaded cells are adjacent."],
-	csDivide    : ["黒マスが分断されています。","Shaded cells are devided,"],
-	cuDivide    : ["白マスが分断されています。","Unshaded cells are devided."],
-	cuDivideRB  : ["白マスが分断されています。","Unshaded cells are devided."], /* 連黒分断禁 */
+	csDivide    : ["黒マスが分断されています。","Shaded cells are divided,"],
+	cuDivide    : ["白マスが分断されています。","Unshaded cells are divided."],
+	cuDivideRB  : ["白マスが分断されています。","Unshaded cells are divided."], /* 連黒分断禁 */
 	brNoShade   : ["盤面に黒マスがありません。","There are no shaded cells on the board."],
 
 	/* ** 領域＋数字 ** */
@@ -668,7 +668,7 @@ FailCode:{
 	bkSizeNe : ["数字とブロックの大きさが違います。","The size of the block is not equal to the number."],
 	
 	bkShadeNe     : ["部屋の数字と黒マスの数が一致していません。","The number of shaded cells in the room and The number written in the room is different."],
-	bkShadeDivide : ["1つの部屋に入る黒マスが2つ以上に分裂しています。","Shaded cells are devided in one room."],
+	bkShadeDivide : ["1つの部屋に入る黒マスが2つ以上に分裂しています。","Shaded cells are divided in one room."],
 	bkNoShade     : ["黒マスがない部屋があります。","A room has no shaded cell."],
 	bkMixed       : ["白マスと黒マスの混在したタイルがあります。","A tile includes both shaded and unshaded cells."],
 	
@@ -717,6 +717,6 @@ FailCode:{
 	/* ** 数字系 ** */
 	nmAdjacent  : ["同じ数字がタテヨコに連続しています。","Same numbers are adjacent."],
 	nmDupRow : ["同じ列に同じ数字が入っています。","There are same numbers in a row."],
-	nmDivide : ["タテヨコにつながっていない数字があります。","Numbers are devided."]
+	nmDivide : ["タテヨコにつながっていない数字があります。","Numbers are divided."]
 }
 });

@@ -527,7 +527,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	lbDivide : ["棒が１つに繋がっていません。","Bars are devided."],
+	lbDivide : ["棒が１つに繋がっていません。","Bars are divided."],
 	lbLenGt : ["白丸から出る棒の長さが長いです。","The length of the bar is long."],
 	lbLenLt : ["白丸から出る棒の長さが短いです。","The length of the bar is short."],
 	lbLoop : ["棒で輪っかができています。","There is a looped bars."],

@@ -99,7 +99,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 
 ## Area Deviding Puzzles
 ### Regular
-* Shikaku (Devide By Box) `shikaku`
+* Shikaku (Divide By Box) `shikaku`
 
 ### Nigun (Legacy)
 * Border block `bdblock`
