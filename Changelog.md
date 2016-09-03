@@ -1,4 +1,19 @@
 
+## Version 0.5.1
+
+Release date: 2016/9/3
+
+#### BugFix
+
+* variety, Answer: Fix spell miss
+* yinyang: Set board.disable_subclear true not to show aux. erase button
+* Config: Add missing limitation for passallcell config
+
+#### Minor Changes
+
+* arukone: Fix error drawing range and descriptions
+* Graphic: Keep lines boldness regardless of irowake config
+
 ## Version 0.5.0
 
 Release date: 2016/8/10
