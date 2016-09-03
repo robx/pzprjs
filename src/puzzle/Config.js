@@ -44,6 +44,7 @@ Config.prototype =
 
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
+		this.add('singlenum', (!pzpr.env.API.touchevent));	/* hanare: 部屋に回答数字を一つだけ入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
@@ -167,6 +168,7 @@ Config.prototype =
 			case 'autocmp':  exec = (puzzle.painter.autocmp!==''); break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
 			case 'dirauxmark': exec = (pid==="nagare"); break;
+			case 'singlenum':exec = (pid==="hanare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;

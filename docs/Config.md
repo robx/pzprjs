@@ -26,6 +26,7 @@
 |`use_tri`|`number`|`1`|Input method for triangles from mouse for `'Shakashaka'` <br> Possible value: `1, 2 or 3`|
 |`bgcolor`|`boolean`|`false`|Enable to input background color for `'bag'` and `'slither'`|
 |`dirauxmark`|`boolean`|`true`|Enable to input direction auxiliary marks for `'Nagareru-loop'`|
+|`singlenum`|`boolean`|`true`|Disable to input plural answer numbers in a room for `'Hanare-gumi'`|
 |`enline`|`boolean`|`true`|Limit to input segments only between points for `'Kouchoku'`|
 |`lattice`|`boolean`|`true`|Restrict not to input segments if other points are on the lattice for `'Kouchoku'`|
 
