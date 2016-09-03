@@ -51,21 +51,12 @@ MouseEvent:{
 Cell:{
 	ques : 8, // 盤面内だが入力不可
 	posthook : {
-		qans : function(num){ this.room.clist.drawCmp();}
+		qans : function(num){ this.board.roommgr.setExtraData(this.room);}
 	}
 },
 CellList:{
-	cmp : null,
-	drawCmp : function(){
-		var bcnt=0;
-		for(var i=0;i<this.length;i++){
-			if(this[i].qans===1){ bcnt++;}
-		}
-		var iscmp = (bcnt===1);
-		if(this.cmp !== iscmp){
-			this.cmp = iscmp;
-			this.draw();
-		}
+	checkCmp : function(){
+		return (this.filter(function(cell){ return (cell.qans===1);}).length===1);
 	}
 },
 Board:{
@@ -73,11 +64,7 @@ Board:{
 },
 
 AreaRoomGraph:{
-	enabled : true,
-	setExtraData : function(component){
-		this.common.setExtraData.call(this, component);
-		component.clist.drawCmp();
-	}
+	enabled : true
 },
 
 //---------------------------------------------------------
@@ -88,7 +75,6 @@ Graphic:{
 	autocmp : 'room',
 
 	cellcolor_func : "ques",
-	qsubcolor1 : "rgb(224, 224, 255)",
 
 	paint : function(){
 		this.drawBGCells();
@@ -103,7 +89,7 @@ Graphic:{
 	getBGCellColor : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
 		else if(cell.qsub===1){ return "rgb(208, 208, 255)";}
-		else if(this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.clist.cmp){ return this.qsubcolor1;}
+		else if(this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
 		return null;
 	},
 

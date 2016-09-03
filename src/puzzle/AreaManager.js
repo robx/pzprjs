@@ -187,12 +187,12 @@ pzpr.classmgr.makeCommon({
 	// roommgr.setExtraData()   指定された領域の拡張データを設定する
 	//--------------------------------------------------------------------------------
 	setExtraData : function(component){
-		component.clist = new this.klass.CellList(component.getnodeobjs());
+		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
 		if(this.hastop){
-			component.top = component.clist.getTopCell();
+			component.top = clist.getTopCell();
 			
 			if(this.rebuildmode){
-				var val = -1, clist = component.clist, top = component.top;
+				var val = -1, clist = clist, top = component.top;
 				for(var i=0,len=clist.length;i<len;i++){
 					var cell = clist[i];
 					if(cell.room===component && cell.qnum!==-1){
@@ -203,6 +203,13 @@ pzpr.classmgr.makeCommon({
 				if(val!==-1 && top.qnum===-1){
 					top.qnum = val;
 				}
+			}
+		}
+		if(this.puzzle.painter.autocmp==='room'){
+			var iscmp = clist.checkCmp();
+			if(component.cmp !== iscmp){
+				component.cmp = iscmp;
+				clist.draw();
 			}
 		}
 	}

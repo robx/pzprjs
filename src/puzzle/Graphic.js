@@ -40,6 +40,7 @@ Graphic:{
 	quescolor : "black",
 	qanscolor : "rgb(0, 160, 0)",
 	qcmpcolor : "silver",
+	qcmpbgcolor : "rgb(224, 224, 255)",
 	trialcolor: "rgb(160, 160, 160)",
 
 	// 黒マスの色

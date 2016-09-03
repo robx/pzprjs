@@ -76,6 +76,7 @@ Graphic:{
 		this.getBGCellColor = (
 			(type==="error1") ? this.getBGCellColor_error1 :
 			(type==="error2") ? this.getBGCellColor_error2 :
+			(type==="qcmp1")  ? this.getBGCellColor_qcmp1 :
 			(type==="qans1")  ? this.getBGCellColor_qans1 :
 			(type==="qans3")  ? this.getBGCellColor_qans3 :
 			(type==="qsub1")  ? this.getBGCellColor_qsub1 :
@@ -94,6 +95,11 @@ Graphic:{
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errbcolor1;}
 		else if(info===2){ return this.errbcolor2;}
+		return null;
+	},
+	getBGCellColor_qcmp1 : function(cell){
+		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(this.autocmp==='room' && this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
 		return null;
 	},
 	getBGCellColor_qans1 : function(cell){

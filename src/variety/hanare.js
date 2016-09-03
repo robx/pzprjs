@@ -56,6 +56,10 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	posthook : {
+		qnum : function(num){ this.board.roommgr.setExtraData(this.room);},
+		anum : function(num){ this.board.roommgr.setExtraData(this.room);}
+	},
 	setNum_hanare : function(val){
 		if(val>=0){
 			var puzzle=this.puzzle;
@@ -80,6 +84,11 @@ Cell:{
 		return val;
 	}
 },
+CellList:{
+	checkCmp : function(){
+		return (this.filter(function(cell){ return cell.isNum();}).length===1);
+	}
+},
 Board:{
 	cols : 8,
 	rows : 8,
@@ -95,6 +104,10 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "DLIGHT",
+
+	autocmp : 'room',
+
+	bgcellcolor_func : "qcmp1",
 
 	paint : function(){
 		this.drawBGCells();
