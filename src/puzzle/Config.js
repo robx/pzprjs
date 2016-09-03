@@ -170,6 +170,7 @@ Config.prototype =
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
 			case 'uramashu': exec = (pid==="mashu"); break;
 			case 'forceallcell': exec = (pid==="fillomino"); break;
+			case 'passallcell': exec = (pid==="arukone"); break;
 			default: exec = !!this.list[name];
 		}
 		return exec;

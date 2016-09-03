@@ -271,6 +271,6 @@ FailCode:{
 "FailCode@mochikoro,mochinyoro":{
 	cuNotRect : ["四角形でない白マスのブロックがあります。","There is a block of unshaded cells that is not rectangle."],
 	csRect    : ["四角形になっている黒マスのブロックがあります。","There is a block of shaded cells that is rectangle."],
-	csDivide8 : ["孤立した白マスのブロックがあります。","Unshaded cells are devided."]
+	csDivide8 : ["孤立した白マスのブロックがあります。","Unshaded cells are divided."]
 }
 }));

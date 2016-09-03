@@ -256,7 +256,7 @@ Graphic:{
 			g.vid = "c_slash_"+cell.id;
 			if(cell.qans!==0){
 				var info = cell.error || cell.qinfo, addwidth = 0, color;
-				if(cell.trial){ addwidth = -basewidth/2;}
+				if(cell.trial && this.puzzle.execConfig('irowake')){ addwidth = -basewidth/2;}
 				else if(info===1||info===3){ addwidth = basewidth/2;}
 				
 				if     (info===1){ color = this.errcolor1;}
@@ -690,7 +690,7 @@ Graphic:{
 			var isIrowake = (puzzle.execConfig('irowake') && border.path && border.path.color);
 			var isDispmove = puzzle.execConfig('dispmove');
 			
-			if(border.trial){ this.addlw=-this.lm;}
+			if(border.trial && puzzle.execConfig('irowake')){ this.addlw=-this.lm;}
 			else if(info===1){ this.addlw=1;}
 			
 			if     (info=== 1) { return this.errlinecolor;}
@@ -1030,10 +1030,7 @@ Graphic:{
 	getBarColor : function(cell,vert){
 		var err=cell.error, isErr=(err===1||err===4||((err===5&&vert)||(err===6&&!vert))), color="";
 		this.addlw = 0;
-		if(cell.trial){ this.addlw=-this.lm;}
-		else if(isErr){ this.addlw=1;}
-		
-		if(isErr){ color = this.errlinecolor;}
+		if(isErr){ color = this.errlinecolor; this.addlw=1;}
 		else if(err!==0){ color = this.noerrcolor;}
 		else if(cell.trial){ color = this.trialcolor;}
 		else{ color = this.linecolor;}

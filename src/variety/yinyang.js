@@ -50,10 +50,11 @@ Cell:{
 	maxnum : 2
 },
 Board:{
+	disable_subclear : true,
 	addExtraInfo : function(){
 		this.yingraph  = this.addInfoList(this.klass.AreaYinGraph);
 		this.yanggraph = this.addInfoList(this.klass.AreaYangGraph);
-	},
+	}
 },
 
 'AreaYinGraph:AreaGraphBase':{
@@ -159,7 +160,7 @@ FailCode:{
 	ceNoNum : ["まるの入っていないマスがあります。","There is an empty cell."],
 	ms2x2 : ["2x2のくろまるのかたまりがあります。","There is a 2x2 block of shaded circles."],
 	mu2x2 : ["2x2のしろまるのかたまりがあります。","There is a 2x2 block of unshaded circles."],
-	msDivide : ["タテヨコにつながっていないくろまるがあります。","Shaded circles are devided."],
-	muDivide : ["タテヨコにつながっていないしろまるがあります。","Unshaded circles are devided."]
+	msDivide : ["タテヨコにつながっていないくろまるがあります。","Shaded circles are divided."],
+	muDivide : ["タテヨコにつながっていないしろまるがあります。","Unshaded circles are divided."]
 }
 }));

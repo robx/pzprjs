@@ -179,7 +179,7 @@ FileIO:{
 
 "FailCode@shimaguni":{
 	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","The number of shaded cells is not equals to the number."],
-	bkShadeDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are devided to plural ones."],
+	bkShadeDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are divided to plural ones."],
 	bkNoShade     : ["黒マスのカタマリがない海域があります。","A marine area has no shaded cells."],
 	cbShade       : ["異なる海域にある国どうしが辺を共有しています。","Countries in other marine area share the side over border line."],
 	bsEqShade     : ["隣り合う海域にある国の大きさが同じです。","The size of countries that there are in adjacent marine areas are the same."]
