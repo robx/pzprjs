@@ -134,6 +134,25 @@ Graphic:{
 		g.vid = "chs2_"; g.fillRect(dw+boardWidth-0.5,dh-(lw-0.5),        lw, boardHeight+2*lw-2);
 		g.vid = "chs3_"; g.fillRect(dw-(lw-0.5),      dh-(lw-0.5),        boardWidth+2*lw-2, lw);
 		g.vid = "chs4_"; g.fillRect(dw-(lw-0.5),      dh+boardHeight-0.5, boardWidth+2*lw-2, lw);
+	},
+	drawBGCells : function(){
+		var g = this.vinc('cell_back', 'crispEdges', true), bd = this.board;
+		
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], color = this.getBGCellColor(cell);
+			
+			g.vid = "c_full_"+cell.id;
+			if(!!color){
+				g.fillStyle = color;
+				var px1 = (cell.bx-(cell.bx>bd.minbx+1?1.5:0.6))*this.bw - 0.5;
+				var py1 = (cell.by-(cell.by>bd.minby+1?1.5:0.6))*this.bw - 0.5;
+				var px2 = (cell.bx+(cell.bx<bd.maxbx-1?1.5:0.6))*this.bw + 0.5;
+				var py2 = (cell.by+(cell.by<bd.maxby-1?1.5:0.6))*this.bw + 0.5;
+				g.fillRect(px1, py1, (px2-px1), (py2-py1));
+			}
+			else{ g.vhide();}
+		}
 	}
 },
 
@@ -263,5 +282,12 @@ AnsCheck:{
 
 FailCode:{
 	nmConnDiff : ["異なる数字がつながっています。","Different numbers are connected."]
+},
+"FailCode@arukone":{
+	lcTripleNum : ["3つ以上のアルファベットがつながっています。","Three or more alphabets are connected."],
+	lcIsolate : ["アルファベットにつながっていない線があります。","A line doesn't connect any alphabet."],
+	lcOnNum   : ["アルファベットの上を線が通過しています。","A line goes through an alphabet."],
+	nmConnDiff : ["異なるアルファベットがつながっています。","Different alphabets are connected."],
+	ceNoLine  : ["線が引かれていない交差点があります。","A crossing is left blank."]
 }
 }));
