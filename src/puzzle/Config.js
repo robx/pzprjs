@@ -30,6 +30,7 @@ Config.prototype =
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
+		this.add('dispqnumbg', false);							/* yinyang: 問題のまるに背景色をつける */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
 
@@ -159,6 +160,7 @@ Config.prototype =
 			case 'irowake':  exec = puzzle.painter.irowake; break;
 			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;
 			case 'snakebd':  exec = (pid==="snakes"); break;
+			case 'dispqnumbg':exec= (pid==='yinyang'); break;
 			case 'redline':  exec = puzzle.mouse.redline; break;
 			case 'redblk':   exec = puzzle.mouse.redblk;  break;
 			case 'redroad':  exec = (pid==="roma"); break;
@@ -184,7 +186,7 @@ Config.prototype =
 		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
 		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
-		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin':
+		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;
 		

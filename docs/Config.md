@@ -13,6 +13,7 @@
 |`disptype_pipelinkr`|`number`|`1`|Ice/circle display type for `'Pipelink Returns'` <br> Possible value: `1 or 2`|
 |`disptype_bosanowa`|`number`|`1`|Display type for `'Bosanova'` <br> Possible value: `1, 2 or 3`|
 |`snakebd`|`boolean`|`false`|Display the border between inside and outside the snake for `'Hebi-Ichigo'`|
+|`dispqnumbg`|`boolean`|`false`|Set back ground color of question circles silver for `'Yin Yang'`|
 |`squarecell`|`boolean`|`true`|Set cell on the board always square|
 |`color_shadecolor`|`string`|''|Set the color of the shaded cells. `''` means default color (probably black)|
 |`color_bgcolor`|`string`|`'white'`|Set the background color of the board. `''` indicates transparent|
