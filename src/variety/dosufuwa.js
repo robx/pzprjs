@@ -100,13 +100,12 @@ Graphic:{
 
 	autocmp : 'room',
 
-	cellcolor_func : "ques",
 	bgcellcolor_func : "qcmp1",
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawShadedCells();
+		this.drawQuesCells();
 
 		this.drawDotCells(false);
 		this.drawCircles();

@@ -270,13 +270,12 @@ BoardExec:{
 Graphic:{
 	irowake : true,
 
-	cellcolor_func : "ques",
 	gridcolor_type : "LIGHT",
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
-		this.drawShadedCells();
+		this.drawQuesCells();
 
 		this.drawCellArrows();
 

@@ -236,7 +236,7 @@ Graphic:{
 		this.drawDepartures();
 		this.drawLines();
 
-		this.drawShadedCells();
+		this.drawQuesCells();
 		this.drawMBs();
 
 		this.drawNumbers();
@@ -246,7 +246,7 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	getCellColor : function(cell){
+	getQuesCellColor : function(cell){
 		var puzzle = this.puzzle;
 		if((puzzle.execConfig('dispmove') ? cell.base : cell).qnum===-1){ return null;}
 		if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===cell){ return this.movecolor;}

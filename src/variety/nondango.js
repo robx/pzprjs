@@ -74,8 +74,6 @@ Graphic:{
 
 	autocmp : 'room',
 
-	cellcolor_func : "ques",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

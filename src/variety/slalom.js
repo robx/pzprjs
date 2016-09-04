@@ -512,7 +512,7 @@ Graphic:{
 
 		this.drawGates();
 
-		this.drawShadedCells();
+		this.drawQuesCells();
 		this.drawArrowNumbers();
 
 		this.drawPekes();
@@ -523,14 +523,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	getCellColor : function(cell){
-		if(cell.ques===1){
-			if     (cell.error===0){ return this.quescolor;}
-			else if(cell.error===1){ return this.errcolor1;}
-		}
-		return null;
 	},
 
 	drawGates : function(){

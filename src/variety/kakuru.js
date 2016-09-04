@@ -72,12 +72,10 @@ Board:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
-	cellcolor_func : "ques",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawShadedCells();
+		this.drawQuesCells();
 
 		this.drawNumbers();
 

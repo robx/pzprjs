@@ -28,7 +28,7 @@ Graphic:{
 	context    : null,
 	subcontext : null,
 
-	cellcolor_func : "",	// getCellColor()の種類
+	fgcellcolor_func : "",	// getQuesCellColor()の種類
 	bgcellcolor_func : "",	// getBGCellColor()の種類
 	bordercolor_func : "",	// getBorderColor()の種類
 	numbercolor_func : "",	// getNumberColor()の種類

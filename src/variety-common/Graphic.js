@@ -4,12 +4,11 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 Graphic:{
 	//---------------------------------------------------------------------------
-	// pc.drawShadedCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
-	// pc.getCellColor()    前景色の設定・描画判定する
+	// pc.drawShadedCells() Cellの、境界線の上から描画される黒マスをCanvasに書き込む
+	// pc.getCellColor()    黒マスの設定・描画判定する
 	//---------------------------------------------------------------------------
-	// err==2になるlitsは、drawBGCellsで描画します
 	drawShadedCells : function(){
-		var g = this.vinc('cell_front', 'crispEdges', true);
+		var g = this.vinc('cell_shaded', 'crispEdges', true);
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
@@ -24,32 +23,51 @@ Graphic:{
 		}
 	},
 	getCellColor : function(cell){
-		var type = this.cellcolor_func || "qans";
-		this.getCellColor = (
-			(type==="ques") ? this.getCellColor_ques :
-			(type==="qnum") ? this.getCellColor_qnum :
-			(type==="qans") ? this.getCellColor_qans :
-							  function(){ return null;}
-		);
-		return this.getCellColor(cell);
-	},
-	getCellColor_ques : function(cell){
-		if(cell.ques!==1){ return null;}
-		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
-		return this.quescolor;
-	},
-	getCellColor_qnum : function(cell){
-		if(cell.qnum===-1){ return null;}
-		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
-		return this.quescolor;
-	},
-	getCellColor_qans : function(cell){
 		if(cell.qans!==1){ return null;}
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
 		else if(cell.trial){ return this.trialcolor;}
 		return this.shadecolor;
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawQuesCells()    Cellの、境界線の上に描画される問題の黒マスをCanvasに書き込む
+	// pc.getQuesCellColor() 問題の黒マスの設定・描画判定する
+	//---------------------------------------------------------------------------
+	drawQuesCells : function(){
+		var g = this.vinc('cell_front', 'crispEdges', true);
+
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], color = this.getQuesCellColor(cell);
+			
+			g.vid = "c_fullb_"+cell.id;
+			if(!!color){
+				g.fillStyle = color;
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
+			}
+			else{ g.vhide();}
+		}
+	},
+	getQuesCellColor : function(cell){
+		var type = this.fgcellcolor_func || "ques";
+		this.getQuesCellColor = (
+			(type==="ques") ? this.getQuesCellColor_ques :
+			(type==="qnum") ? this.getQuesCellColor_qnum :
+							  function(){ return null;}
+		);
+		return this.getQuesCellColor(cell);
+	},
+	getQuesCellColor_ques : function(cell){
+		if(cell.ques!==1){ return null;}
+		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
+		return this.quescolor;
+	},
+	getQuesCellColor_qnum : function(cell){
+		if(cell.qnum===-1){ return null;}
+		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
+		return this.quescolor;
 	},
 
 	//---------------------------------------------------------------------------
@@ -103,7 +121,7 @@ Graphic:{
 		return null;
 	},
 	getBGCellColor_qans1 : function(cell){
-		if(cell.qans===1){ return this.getCellColor_qans(cell);}
+		if(cell.qans===1){ return this.getCellColor(cell);}
 		else{
 			var info = cell.error || cell.qinfo;
 			if     (info===1){ return this.errbcolor1;}
@@ -113,7 +131,7 @@ Graphic:{
 		return null;
 	},
 	getBGCellColor_qans3 : function(cell){
-		if(cell.qans===1){ return this.getCellColor_qans(cell);}
+		if(cell.qans===1){ return this.getCellColor(cell);}
 		else{
 			if((cell.error||cell.qinfo)===1){ return this.errbcolor1;}
 			else if(cell.qsub===1){ return this.qsubcolor1;}

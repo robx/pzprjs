@@ -259,7 +259,7 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
-	cellcolor_func : "qnum",
+	fgcellcolor_func : "qnum",
 	fontShadecolor : "white",
 	numbercolor_func : "fixed_shaded",
 
@@ -267,7 +267,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDotCells(false);
 		this.drawDashedGrid();
-		this.drawShadedCells();
+		this.drawQuesCells();
 		this.drawNumbers();
 
 		this.drawTriangle();
