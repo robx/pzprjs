@@ -69,7 +69,7 @@ Graphic:{
 
 	autocmp : "number",
 
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 	numbercolor_func : "qnum",
 
 	globalfontsizeratio : 0.85,
@@ -90,6 +90,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawGrid();
 

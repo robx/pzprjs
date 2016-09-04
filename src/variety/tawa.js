@@ -212,11 +212,11 @@ BoardExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawGrid_tawa();
 

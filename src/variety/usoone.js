@@ -84,7 +84,7 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	enablebcolor : true,
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 
 	mbcolor : "rgb(0, 224, 0)",
 	bbcolor : "rgb(160, 255, 191)",
@@ -92,6 +92,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
+		this.drawShadedCells();
 
 		this.drawMBs_usoone();
 		this.drawNumbers();

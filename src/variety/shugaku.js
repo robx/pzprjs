@@ -183,11 +183,11 @@ Graphic:{
 
 	circleratio : [0.47, 0.42],
 
-	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawDashedGrid();
 

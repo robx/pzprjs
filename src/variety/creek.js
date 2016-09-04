@@ -52,7 +52,7 @@ AreaUnshadeGraph:{
 Graphic:{
 	margin : 0.50,
 
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 
 	shadecolor : "rgb(96, 96, 96)",
 
@@ -60,6 +60,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawGrid();
 

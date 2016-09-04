@@ -160,10 +160,11 @@ BoardExec:{
 // 画像表示系
 Graphic:{
 	numbercolor_func : "qnum",
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawGrid();
 

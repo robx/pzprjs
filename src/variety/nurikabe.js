@@ -82,11 +82,12 @@ AreaUnshadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		if(this.pid==='nurikabe'){ this.drawDotCells(false);}
 		this.drawGrid();
 

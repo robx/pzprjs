@@ -66,7 +66,7 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	enablebcolor : true,
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 	numbercolor_func : "auto",
 
 	errcolor1 : "red",
@@ -75,6 +75,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
+		this.drawShadedCells();
 
 		this.drawNumbers_hitori();
 

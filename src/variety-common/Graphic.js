@@ -4,8 +4,8 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 Graphic:{
 	//---------------------------------------------------------------------------
-	// pc.drawShadedCells() Cellの、境界線の上から描画される黒マスをCanvasに書き込む
-	// pc.getCellColor()    黒マスの設定・描画判定する
+	// pc.drawShadedCells() Cellの、境界線の上から描画される回答の黒マスをCanvasに書き込む
+	// pc.getCellColor()    回答の黒マスの設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawShadedCells : function(){
 		var g = this.vinc('cell_shaded', 'crispEdges', true);
@@ -14,7 +14,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getCellColor(cell);
 			
-			g.vid = "c_fullb_"+cell.id;
+			g.vid = "c_fulls_"+cell.id;
 			if(!!color){
 				g.fillStyle = color;
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
@@ -81,7 +81,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
 			
-			g.vid = "c_full_"+cell.id;
+			g.vid = "c_fullb_"+cell.id;
 			if(!!color){
 				g.fillStyle = color;
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
@@ -95,8 +95,6 @@ Graphic:{
 			(type==="error1") ? this.getBGCellColor_error1 :
 			(type==="error2") ? this.getBGCellColor_error2 :
 			(type==="qcmp1")  ? this.getBGCellColor_qcmp1 :
-			(type==="qans1")  ? this.getBGCellColor_qans1 :
-			(type==="qans3")  ? this.getBGCellColor_qans3 :
 			(type==="qsub1")  ? this.getBGCellColor_qsub1 :
 			(type==="qsub2")  ? this.getBGCellColor_qsub2 :
 			(type==="qsub3")  ? this.getBGCellColor_qsub3 :
@@ -118,26 +116,6 @@ Graphic:{
 	getBGCellColor_qcmp1 : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
 		else if(this.autocmp==='room' && this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
-		return null;
-	},
-	getBGCellColor_qans1 : function(cell){
-		if(cell.qans===1){ return this.getCellColor(cell);}
-		else{
-			var info = cell.error || cell.qinfo;
-			if     (info===1){ return this.errbcolor1;}
-			else if(info===2){ return this.errbcolor2;}
-			else if(cell.qsub===1 && this.enablebcolor){ return this.bcolor;}
-		}
-		return null;
-	},
-	getBGCellColor_qans3 : function(cell){
-		if(cell.qans===1){ return this.getCellColor(cell);}
-		else{
-			if((cell.error||cell.qinfo)===1){ return this.errbcolor1;}
-			else if(cell.qsub===1){ return this.qsubcolor1;}
-			else if(cell.qsub===2){ return this.qsubcolor2;}
-			else if(cell.qsub===3){ return this.qsubcolor3;}
-		}
 		return null;
 	},
 	getBGCellColor_qsub1 : function(cell){
