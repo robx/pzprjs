@@ -14,9 +14,9 @@
   "license": "MIT",
   "repository": {
     "type": "hg",
-    "url": "https://bitbucket.org/sabo2/pzprjs"
+    "url": "https://github.com/sabo2/pzprjs"
   },
-  "homepage": "https://bitbucket.org/sabo2/pzprjs",
+  "homepage": "https://github.com/sabo2/pzprjs",
   "engines": {
     "node": ">= 4.0.0"
   },

@@ -2,10 +2,10 @@
  * @license
  * 
  * pzpr.js v<%= pkg.version %>
- *  https://bitbucket.org/sabo2/pzprv3
+ *  https://github.com/sabo2/pzprv3
  * 
  * This script includes candle.js, see below
- *  https://bitbucket.org/sabo2/candle
+ *  https://github.com/sabo2/candle
  * 
  * Copyright 2009-<%= grunt.template.today('yyyy') %> <%= pkg.author %>
  * 
