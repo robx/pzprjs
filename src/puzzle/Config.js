@@ -31,6 +31,7 @@ Config.prototype =
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
 		this.add('dispqnumbg', false);							/* yinyang: 問題のまるに背景色をつける */
+		this.add('undefcell', true);							/* shugaku: 未確定マスはグレー表示にする */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
 
@@ -162,6 +163,7 @@ Config.prototype =
 			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;
 			case 'snakebd':  exec = (pid==="snakes"); break;
 			case 'dispqnumbg':exec= (pid==='yinyang'); break;
+			case 'undefcell':exec = (pid==='shugaku'); break;
 			case 'redline':  exec = puzzle.mouse.redline; break;
 			case 'redblk':   exec = puzzle.mouse.redblk;  break;
 			case 'redroad':  exec = (pid==="roma"); break;
@@ -187,7 +189,7 @@ Config.prototype =
 		var puzzle = this.puzzle;
 		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
-		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
+		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr': case 'undefcell':
 		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;
