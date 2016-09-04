@@ -67,7 +67,7 @@ Graphic:{
 
 	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
-	numbercolor_func : "auto",
+	numbercolor_func : "mixed",
 
 	errcolor1 : "red",
 	fontShadecolor : "rgb(96,96,96)",
