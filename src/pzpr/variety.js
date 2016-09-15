@@ -128,7 +128,7 @@ delete variety.extend;
 	minarism  :[1,0,"マイナリズム","Minarism"],
 	mochikoro :[1,0,"モチコロ","Mochikoro",'nurikabe'],
 	mochinyoro:[1,0,"モチにょろ","Mochinyoro",'nurikabe'],
-	moonsun   :[0,0,"月か太陽","The moon or the sun",'country'],
+	moonsun   :[0,0,"月か太陽","Moon or Sun",'country'],
 	nagare    :[0,0,"流れるループ","Nagareru-Loop"],
 	nagenawa  :[0,0,"なげなわ","Nagenawa",'nagenawa'],
 	nanro     :[0,1,"ナンロー","Nanro"],

@@ -64,7 +64,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Icelom2 `icelom2`
 * Kouchoku `kouchoku`
 * Ring-ring `ringring`
-* The moon or the sun `moonsun`
+* Moon or Sun `moonsun`
 
 ## Line Puzzles
 ### Regular
