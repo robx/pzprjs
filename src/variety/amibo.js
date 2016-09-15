@@ -110,20 +110,16 @@ BoardExec:{
 		}
 	},
 	getLongColor : function(components){
-		return this.klass.LineGraph.prototype.getLongColor.call(this, components);
+		return this.klass.GraphBase.prototype.getLongColor.call(this, components);
 	},
 	setLongColor : function(components, longColor){
-		this.klass.LineGraph.prototype.setLongColor.call(this, components, longColor);
+		this.klass.GraphBase.prototype.setLongColor.call(this, components, longColor);
 	},
 	repaintNodes : function(components){
-		var clist_all = new this.klass.CellList();
-		for(var i=0;i<components.length;i++){
-			clist_all.extend(components[i].getnodeobjs());
-		}
-		this.puzzle.painter.repaintBlocks(clist_all);
+		this.klass.AreaShadeGraph.prototype.repaintNodes.call(this,components);
 	},
 	newIrowake : function(){
-		this.klass.LineGraph.prototype.newIrowake.call(this);
+		this.klass.GraphBase.prototype.newIrowake.call(this);
 	}
 },
 "AreaBarGraph:AreaGraphBase":{

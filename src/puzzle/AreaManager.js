@@ -61,7 +61,27 @@ pzpr.classmgr.makeCommon({
 	getObjNodeList   : function(nodeobj){ return nodeobj.sblknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.sblknodes = [];},
 	
-	isnodevalid : function(cell){ return cell.isShade();}
+	isnodevalid : function(cell){ return cell.isShade();},
+
+	//--------------------------------------------------------------------------------
+	// sblkmgr.setExtraData()   指定された領域の拡張データを設定する
+	//--------------------------------------------------------------------------------
+	setExtraData : function(component){
+		if(this.puzzle.painter.irowakeblk && !component.color){
+			component.color = this.puzzle.painter.getNewLineColor();
+		}
+	},
+
+	//--------------------------------------------------------------------------------
+	// sblkmgr.repaintNodes() ブロックを再描画する
+	//--------------------------------------------------------------------------------
+	repaintNodes : function(components){
+		var clist_all = new this.klass.CellList();
+		for(var i=0;i<components.length;i++){
+			clist_all.extend(components[i].getnodeobjs());
+		}
+		this.puzzle.painter.repaintBlocks(clist_all);
+	}
 },
 
 'AreaUnshadeGraph:AreaGraphBase':{

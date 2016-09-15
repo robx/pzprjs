@@ -39,6 +39,7 @@ Graphic:{
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
 		else if(cell.trial){ return this.trialcolor;}
+		else if(this.puzzle.execConfig('irowakeblk')){ return cell.sblk.color;}
 		return this.shadecolor;
 	},
 

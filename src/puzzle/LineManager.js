@@ -170,6 +170,17 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//--------------------------------------------------------------------------------
+	// linegraph.repaintNodes() ブロックを再描画する
+	//--------------------------------------------------------------------------------
+	repaintNodes : function(components){
+		var blist_all = new this.klass.BorderList();
+		for(var i=0;i<components.length;i++){
+			blist_all.extend(components[i].getedgeobjs());
+		}
+		this.puzzle.painter.repaintLines(blist_all);
+	},
+
+	//--------------------------------------------------------------------------------
 	// linemgr.initMovedBase()   指定されたセルの移動情報を初期化する
 	// linemgr.setMovedBase()    指定された領域の移動情報を設定する
 	//--------------------------------------------------------------------------------
@@ -200,57 +211,6 @@ pzpr.classmgr.makeCommon({
 			component.departure   = after.base = before;
 			component.destination = after;
 			component.movevalid = true;
-		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// linegraph.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
-	// linegraph.setLongColor() ブロックに色をつけなおす
-	// linegraph.repaintNodes() ブロックを再描画する
-	//--------------------------------------------------------------------------------
-	getLongColor : function(components){
-		// 周りで一番大きな線は？
-		var largeComponent = components[0];
-		for(var i=1;i<components.length;i++){
-			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
-		}
-		return (!!largeComponent ? largeComponent.color : this.puzzle.painter.getNewLineColor());
-	},
-	setLongColor : function(components, longColor){
-		if(components.length===0){ return;}
-		var puzzle = this.puzzle;
-		
-		// できた線の中でもっとも長いものを取得する
-		var largeComponent = components[0];
-		for(var i=1;i<components.length;i++){
-			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
-		}
-		
-		// 新しい色の設定
-		for(var i=0;i<components.length;i++){
-			var path = components[i];
-			path.color = (path===largeComponent ? longColor : path.color);
-		}
-		
-		if(puzzle.execConfig('irowake')){
-			this.repaintNodes(components);
-		}
-	},
-	repaintNodes : function(components){
-		var blist_all = new this.klass.BorderList();
-		for(var i=0;i<components.length;i++){
-			blist_all.extend(components[i].getedgeobjs());
-		}
-		this.puzzle.painter.repaintLines(blist_all);
-	},
-
-	//---------------------------------------------------------------------------
-	// linegraph.newIrowake()  線の情報が再構築された際、線に色をつける
-	//---------------------------------------------------------------------------
-	newIrowake : function(){
-		var paths = this.components;
-		for(var i=0;i<paths.length;i++){
-			paths[i].color = this.puzzle.painter.getNewLineColor();
 		}
 	}
 }

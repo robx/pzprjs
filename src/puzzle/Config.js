@@ -189,7 +189,7 @@ Config.prototype =
 		var puzzle = this.puzzle;
 		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
-		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr': case 'undefcell':
+		case 'irowake': case 'irowakeblk': case 'cursor': case 'autocmp': case 'autoerr': case 'undefcell':
 		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;
