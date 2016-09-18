@@ -170,15 +170,9 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		if(this.pid!=='stostone'){
-			this.drawGrid();
-			this.drawShadedCells();
-		}
-		else{
-			this.drawDotCells();
-			this.drawShadedCells();
-			this.drawGrid();
-		}
+		this.drawGrid();
+		if(this.pid==='stostone'){ this.drawDotCells();}
+		this.drawShadedCells();
 
 		this.drawNumbers();
 
