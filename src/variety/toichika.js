@@ -68,10 +68,19 @@ KeyEvent:{
 Cell:{
 	numberAsObject : true,
 
-	maxnum : 4
+	maxnum : 4,
+	posthook : {
+		qnum : function(num){ this.board.roommgr.setExtraData(this.room);},
+		anum : function(num){ this.board.roommgr.setExtraData(this.room);}
+	}
 },
 Board:{
 	hasborder : 1
+},
+CellList:{
+	checkCmp : function(){
+		return (this.filter(function(cell){ return cell.isNum();}).length===1);
+	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -104,6 +113,10 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
+
+	autocmp : 'room',
+
+	bgcellcolor_func : "qcmp1",
 
 	paint : function(){
 		this.drawBGCells();

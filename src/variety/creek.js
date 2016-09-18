@@ -52,14 +52,13 @@ AreaUnshadeGraph:{
 Graphic:{
 	margin : 0.50,
 
-	bgcellcolor_func : "qans1",
-
 	shadecolor : "rgb(96, 96, 96)",
 
 	crosssize : 0.35,
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawGrid();
 

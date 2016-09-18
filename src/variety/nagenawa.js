@@ -100,7 +100,7 @@ Graphic:{
 			this.drawBorders();
 		}
 		else if(pid==='ringring'){
-			this.drawShadedCells();
+			this.drawQuesCells();
 		}
 
 		this.drawLines();
@@ -113,8 +113,6 @@ Graphic:{
 	textoption : {ratio:[0.45], position:5} /* this.TOPLEFT */
 },
 "Graphic@ringring":{
-	cellcolor_func : "ques",
-
 	drawTarget : function(){}
 },
 

@@ -32,7 +32,7 @@ MouseEvent:{
 	inputqnum_hanare : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		var result = cell.setNum_hanare(1);
+		var result = cell.setNum_hanare(cell.room.clist.length);
 		if(result!==null){
 			this.inputData = (result===-1?0:1);
 			this.mouseCell = cell;
@@ -56,28 +56,39 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	posthook : {
+		qnum : function(num){ this.board.roommgr.setExtraData(this.room);},
+		anum : function(num){ this.board.roommgr.setExtraData(this.room);}
+	},
 	setNum_hanare : function(val){
 		if(val>=0){
-			var puzzle=this.puzzle;
-			val = this.room.clist.length;
 			if(val>this.getmaxnum()){ return null;}
-
+			var puzzle=this.puzzle, issingleansnum = puzzle.execConfig('singlenum');
 			var clist = this.room.clist, cell2=null;
 			for(var i=0;i<clist.length;i++){
-				if(clist[i].isNum()){ cell2=clist[i]; break;}
+				if(clist[i].qnum!==-1){ cell2=clist[i]; break;}
+				if(clist[i].anum!==-1 && issingleansnum){ cell2=clist[i]; break;}
 			}
 			if(this===cell2){ val=(puzzle.playmode?-2:-1);}
 			else if(cell2!==null){
 				if(puzzle.playmode && cell2.qnum!==-1){ return null;}
-				cell2.setNum(puzzle.playmode?-2:-1);
-				cell2.draw();
+				if(puzzle.editmode || issingleansnum){
+					cell2.setNum(puzzle.playmode?-2:-1);
+					cell2.draw();
+				}
 			}
 			else{ /* c2===null */
 				if(this.qsub===1){ val=-1;}
+				else if(this.anum!==-1 && !issingleansnum){ val=-2;}
 			}
 		}
 		this.setNum(val);
 		return val;
+	}
+},
+CellList:{
+	checkCmp : function(){
+		return (this.filter(function(cell){ return cell.isNum();}).length===1);
 	}
 },
 Board:{
@@ -95,6 +106,10 @@ AreaRoomGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "DLIGHT",
+
+	autocmp : 'room',
+
+	bgcellcolor_func : "qcmp1",
 
 	paint : function(){
 		this.drawBGCells();

@@ -47,11 +47,11 @@ Graphic:{
 
 	globalfontsizeratio : 0.85,
 
-	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawGrid();
 

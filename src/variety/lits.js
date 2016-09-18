@@ -84,6 +84,7 @@ AreaRoomGraph:{
 Graphic:{
 	paint : function(){
 		this.drawBGCells();
+		if(this.pid==='lits'){ this.drawShadedCells();}
 		if(this.pid==='lits'){ this.drawDotCells(false);}
 		this.drawGrid();
 		if(this.pid==='norinori'){ this.drawShadedCells();}
@@ -98,16 +99,14 @@ Graphic:{
 "Graphic@lits":{
 	gridcolor_type : "DARK",
 
-	bgcellcolor_func : "qans1",
 	shadecolor : "rgb(96, 96, 96)"
 },
 "Graphic@norinori":{
 	gridcolor_type : "LIGHT",
+	bgcellcolor_func : "qsub1",
 
 	enablebcolor : true,
-	bgcellcolor_func : "qsub1",
-	bcolor : "rgb(96, 224, 160)",
-	bbcolor : "rgb(96, 127, 127)"
+	bcolor : "rgb(96, 224, 160)"
 },
 
 //---------------------------------------------------------
