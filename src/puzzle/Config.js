@@ -30,6 +30,8 @@ Config.prototype =
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
 		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
+		this.add('dispqnumbg', false);							/* yinyang: 問題のまるに背景色をつける */
+		this.add('undefcell', true);							/* shugaku: 未確定マスはグレー表示にする */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
 
@@ -43,6 +45,7 @@ Config.prototype =
 
 		this.add('bgcolor', false);			/* 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
+		this.add('singlenum', (!pzpr.env.API.touchevent));	/* hanare: 部屋に回答数字を一つだけ入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
@@ -159,12 +162,15 @@ Config.prototype =
 			case 'irowake':  exec = puzzle.painter.irowake; break;
 			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;
 			case 'snakebd':  exec = (pid==="snakes"); break;
+			case 'dispqnumbg':exec= (pid==='yinyang'); break;
+			case 'undefcell':exec = (pid==='shugaku'); break;
 			case 'redline':  exec = puzzle.mouse.redline; break;
 			case 'redblk':   exec = puzzle.mouse.redblk;  break;
 			case 'redroad':  exec = (pid==="roma"); break;
 			case 'autocmp':  exec = (puzzle.painter.autocmp!==''); break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
 			case 'dirauxmark': exec = (pid==="nagare"); break;
+			case 'singlenum':exec = (pid==="hanare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
@@ -183,8 +189,8 @@ Config.prototype =
 		var puzzle = this.puzzle;
 		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
-		case 'irowake': case 'cursor': case 'autocmp': case 'autoerr':
-		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin':
+		case 'irowake': case 'irowakeblk': case 'cursor': case 'autocmp': case 'autoerr': case 'undefcell':
+		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;
 		

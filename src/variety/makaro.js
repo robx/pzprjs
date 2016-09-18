@@ -197,13 +197,11 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
-	cellcolor_func : "ques",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawTargetSubNumber();
 		this.drawGrid();
-		this.drawShadedCells();
+		this.drawQuesCells();
 
 		this.drawCellArrows();
 		this.drawSubNumbers();
@@ -216,14 +214,6 @@ Graphic:{
 		this.drawCursor();
 	},
 
-	// drawShadedCells用 オーバーライド
-	getCellColor : function(cell){
-		if(cell.ques!==1){ return null;}
-		var info = cell.error || cell.qinfo;
-		if     (info===0){ return this.quescolor;}
-		else if(info===1){ return this.errcolor1;}
-		return null;
-	},
 	getCellArrowColor : function(cell){
 		return (cell.qdir!==0 ? "white" : null);
 	}

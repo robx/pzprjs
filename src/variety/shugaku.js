@@ -180,14 +180,15 @@ Graphic:{
 
 	bcolor : "rgb(208, 208, 208)",
 	targetbgcolor : "rgb(255, 192, 192)",	/* 入力中の布団の色 */
+	undefcolor : "silver",					/* 未確定マスの色 */
 
 	circleratio : [0.47, 0.42],
 
-	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		this.drawDotCells(false);
 		this.drawDashedGrid();
 
@@ -201,6 +202,12 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
+	},
+
+	getBGCellColor_error1 : function(cell){
+		if(this.puzzle.execConfig('undefcell') && cell.qans===0 && cell.qnum===-1){ return this.undefcolor;}
+		else if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		return null;
 	},
 
 	drawFutons : function(){

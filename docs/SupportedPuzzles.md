@@ -1,7 +1,7 @@
 # Supported Puzzle
 
-They are the list of supported puzzle.
-As well as the name of the puzzle, acceptable pid for puzzle.open() API is described (first one is used for pid internally).
+They are the lists of supported puzzle by pzpr.js.
+As well as the name of the puzzle, acceptable pid for puzzle.open() API is indicated (first one is used for pid internally).
 
 ## Black Cells Puzzles
 ### Regular
@@ -31,6 +31,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Tawamurenga `tawa`
 * Kurochute `kurochute`
 * Look-air `lookair`
+* Stostone `stostone`
 
 ### Non-nikoli puzzle
 * Tapa `tapa`
@@ -48,7 +49,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Nagareru-loop `nagare`
 
 ### Nigun (Legacy)
-* BAG (Correl) `bag` `correl`
+* BAG (Correl) `bag` `correl` `cave`
 * Country-road `country`
 * Reflect-link `reflect`
 * Icebarn `icebarn`
@@ -64,7 +65,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Icelom2 `icelom2`
 * Kouchoku `kouchoku`
 * Ring-ring `ringring`
-* The moon or the sun `moonsun`
+* Moon or Sun `moonsun`
 
 ## Line Puzzles
 ### Regular
@@ -99,7 +100,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 
 ## Area Deviding Puzzles
 ### Regular
-* Shikaku (Devide By Box) `shikaku`
+* Shikaku (Divide By Box) `shikaku`
 
 ### Nigun (Legacy)
 * Border block `bdblock`
@@ -146,7 +147,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 ### Omopa
 * Kakuru `kakuru`
 * Nanro `nanro`
-* Bosanowa `bosanowa`
+* Bosanowa `bosanowa` `bossanova`
 * Cojun `cojun`
 * Renban-madoguchi `renban`
 * Sukoro room `sukororoom`
@@ -173,7 +174,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 * Hokoiri-masashi `hakoiri`
 * School Trip `shugaku`
 * Gokigen-naname-wagiri `wagiri`
-* Rome `roma`
+* Roma `roma` `rome`
 * Toichika `toichika`
 * Nondango `nondango`
 

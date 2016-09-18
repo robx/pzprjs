@@ -309,7 +309,7 @@ Graphic:{
 		this.addlw = 0;
 		if(border.isLine()){
 			var info = border.error || border.qinfo;
-			if(border.trial){ this.addlw=-this.lm;}
+			if(border.trial && this.puzzle.getConfig('irowake')){ this.addlw=-this.lm;}
 			else if(info===1){ this.addlw=1;}
 			
 			if     (info===1) { return this.errlinecolor;}
@@ -347,7 +347,7 @@ Graphic:{
 			g.vid = "c_tip_"+cell.id;
 			if(dir!==0){
 				var info = border.error || border.qinfo;
-				if(border.trial){ this.addlw=-this.lm;}
+				if(border.trial && this.puzzle.getConfig('irowake')){ this.addlw=-this.lm;}
 				else if(info===1){ this.addlw=1;}
 				g.lineWidth = this.lw + this.addlw; //LineWidth
 				

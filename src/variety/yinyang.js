@@ -50,10 +50,11 @@ Cell:{
 	maxnum : 2
 },
 Board:{
+	disable_subclear : true,
 	addExtraInfo : function(){
 		this.yingraph  = this.addInfoList(this.klass.AreaYinGraph);
 		this.yanggraph = this.addInfoList(this.klass.AreaYangGraph);
-	},
+	}
 },
 
 'AreaYinGraph:AreaGraphBase':{
@@ -89,12 +90,17 @@ Graphic:{
 		this.drawCursor();
 	},
 
+	getBGCellColor_error1 : function(cell){
+		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(this.puzzle.execConfig('dispqnumbg') && cell.qnum!==-1){ return "silver";}
+		return null;
+	},
 	getCircleStrokeColor : function(cell){
 		if(cell.qnum===1 || cell.anum===1){
 			if(cell.error===1){ return this.errcolor1;}
 			else if(cell.qnum===1){ return this.quescolor;}
 			else if(cell.trial){ return this.trialcolor;}
-			else if(this.puzzle.editmode){ return "silver";}
+			else if(this.puzzle.editmode && !this.puzzle.execConfig('dispqnumbg')){ return "silver";}
 			else{ return this.quescolor;}
 		}
 		return null;
@@ -106,6 +112,9 @@ Graphic:{
 			else if(cell.trial){ return this.trialcolor;}
 			else if(this.puzzle.editmode){ return "silver";}
 			else{ return this.quescolor;}
+		}
+		else if(cell.qnum===1 && this.puzzle.execConfig('dispqnumbg') && cell.error===0){
+			return 'white';
 		}
 		return null;
 	}
@@ -159,7 +168,7 @@ FailCode:{
 	ceNoNum : ["まるの入っていないマスがあります。","There is an empty cell."],
 	ms2x2 : ["2x2のくろまるのかたまりがあります。","There is a 2x2 block of shaded circles."],
 	mu2x2 : ["2x2のしろまるのかたまりがあります。","There is a 2x2 block of unshaded circles."],
-	msDivide : ["タテヨコにつながっていないくろまるがあります。","Shaded circles are devided."],
-	muDivide : ["タテヨコにつながっていないしろまるがあります。","Unshaded circles are devided."]
+	msDivide : ["タテヨコにつながっていないくろまるがあります。","Shaded circles are divided."],
+	muDivide : ["タテヨコにつながっていないしろまるがあります。","Unshaded circles are divided."]
 }
 }));

@@ -4,51 +4,42 @@ pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 Graphic:{
 	//---------------------------------------------------------------------------
-	// pc.drawShadedCells() Cellの、境界線の上から描画される■黒マスをCanvasに書き込む
-	// pc.getCellColor()    前景色の設定・描画判定する
+	// pc.drawQuesCells()    Cellの、境界線の上に描画される問題の黒マスをCanvasに書き込む
+	// pc.getQuesCellColor() 問題の黒マスの設定・描画判定する
 	//---------------------------------------------------------------------------
-	// err==2になるlitsは、drawBGCellsで描画します
-	drawShadedCells : function(){
-		var g = this.vinc('cell_front', 'crispEdges', true);
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], color = this.getCellColor(cell);
-			
-			g.vid = "c_fullb_"+cell.id;
-			if(!!color){
-				g.fillStyle = color;
-				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
-			}
-			else{ g.vhide();}
-		}
+	drawQuesCells : function(){
+		this.vinc('cell_front', 'crispEdges', true);
+		this.drawCells_common("c_fullf_", this.getQuesCellColor);
 	},
-	getCellColor : function(cell){
-		var type = this.cellcolor_func || "qans";
-		this.getCellColor = (
-			(type==="ques") ? this.getCellColor_ques :
-			(type==="qnum") ? this.getCellColor_qnum :
-			(type==="qans") ? this.getCellColor_qans :
-							  function(){ return null;}
-		);
-		return this.getCellColor(cell);
+	getQuesCellColor : function(cell){ // initialize()で上書きされる
+		return null;
 	},
-	getCellColor_ques : function(cell){
+	getQuesCellColor_ques : function(cell){
 		if(cell.ques!==1){ return null;}
 		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
 		return this.quescolor;
 	},
-	getCellColor_qnum : function(cell){
+	getQuesCellColor_qnum : function(cell){
 		if(cell.qnum===-1){ return null;}
 		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
 		return this.quescolor;
 	},
-	getCellColor_qans : function(cell){
+
+	//---------------------------------------------------------------------------
+	// pc.drawShadedCells()    Cellの、境界線の上から描画される回答の黒マスをCanvasに書き込む
+	// pc.getShadedCellColor() 回答の黒マスの設定・描画判定する
+	//---------------------------------------------------------------------------
+	drawShadedCells : function(){
+		this.vinc('cell_shaded', 'crispEdges', true);
+		this.drawCells_common("c_fulls_", this.getShadedCellColor);
+	},
+	getShadedCellColor : function(cell){
 		if(cell.qans!==1){ return null;}
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
 		else if(cell.trial){ return this.trialcolor;}
+		else if(this.puzzle.execConfig('irowakeblk')){ return cell.sblk.color;}
 		return this.shadecolor;
 	},
 
@@ -57,34 +48,11 @@ Graphic:{
 	// pc.getBGCellColor() 背景色の設定・描画判定する
 	//---------------------------------------------------------------------------
 	drawBGCells : function(){
-		var g = this.vinc('cell_back', 'crispEdges', true);
-		
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], color = this.getBGCellColor(cell);
-			
-			g.vid = "c_full_"+cell.id;
-			if(!!color){
-				g.fillStyle = color;
-				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
-			}
-			else{ g.vhide();}
-		}
+		this.vinc('cell_back', 'crispEdges', true);
+		this.drawCells_common("c_fullb_", this.getBGCellColor);
 	},
-	getBGCellColor : function(cell){
-		var type = this.bgcellcolor_func || "error1";
-		this.getBGCellColor = (
-			(type==="error1") ? this.getBGCellColor_error1 :
-			(type==="error2") ? this.getBGCellColor_error2 :
-			(type==="qans1")  ? this.getBGCellColor_qans1 :
-			(type==="qans3")  ? this.getBGCellColor_qans3 :
-			(type==="qsub1")  ? this.getBGCellColor_qsub1 :
-			(type==="qsub2")  ? this.getBGCellColor_qsub2 :
-			(type==="qsub3")  ? this.getBGCellColor_qsub3 :
-			(type==="icebarn")? this.getBGCellColor_icebarn :
-								function(){ return null;}
-		);
-		return this.getBGCellColor(cell);
+	getBGCellColor : function(cell){ // initialize()で上書きされる
+		return null;
 	},
 	getBGCellColor_error1 : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
@@ -96,24 +64,9 @@ Graphic:{
 		else if(info===2){ return this.errbcolor2;}
 		return null;
 	},
-	getBGCellColor_qans1 : function(cell){
-		if(cell.qans===1){ return this.getCellColor_qans(cell);}
-		else{
-			var info = cell.error || cell.qinfo;
-			if     (info===1){ return this.errbcolor1;}
-			else if(info===2){ return this.errbcolor2;}
-			else if(cell.qsub===1 && this.enablebcolor){ return this.bcolor;}
-		}
-		return null;
-	},
-	getBGCellColor_qans3 : function(cell){
-		if(cell.qans===1){ return this.getCellColor_qans(cell);}
-		else{
-			if((cell.error||cell.qinfo)===1){ return this.errbcolor1;}
-			else if(cell.qsub===1){ return this.qsubcolor1;}
-			else if(cell.qsub===2){ return this.qsubcolor2;}
-			else if(cell.qsub===3){ return this.qsubcolor3;}
-		}
+	getBGCellColor_qcmp1 : function(cell){
+		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(this.autocmp==='room' && this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
 		return null;
 	},
 	getBGCellColor_qsub1 : function(cell){
@@ -142,6 +95,23 @@ Graphic:{
 		}
 		else if(cell.ques===6){ return this.icecolor;}
 		return null;
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawCells_common()  drawShadedCells, drawQuesCells, drawBGCellsの共通ルーチン
+	//---------------------------------------------------------------------------
+	drawCells_common : function(header, colorfunc){
+		var g = this.context;
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], color = colorfunc.call(this, cell);
+			g.vid = header+cell.id;
+			if(!!color){
+				g.fillStyle = color;
+				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, this.bw+0.5, this.bh+0.5);
+			}
+			else{ g.vhide();}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -256,7 +226,7 @@ Graphic:{
 			g.vid = "c_slash_"+cell.id;
 			if(cell.qans!==0){
 				var info = cell.error || cell.qinfo, addwidth = 0, color;
-				if(cell.trial){ addwidth = -basewidth/2;}
+				if(cell.trial && this.puzzle.execConfig('irowake')){ addwidth = -basewidth/2;}
 				else if(info===1||info===3){ addwidth = basewidth/2;}
 				
 				if     (info===1){ color = this.errcolor1;}
@@ -330,17 +300,8 @@ Graphic:{
 		else if(num>26&&num<= 52){ text = (num-17).toString(36).toLowerCase();}
 		return text;
 	},
-	getNumberColor : function(cell){
-		var type = this.numbercolor_func || "";
-		this.getNumberColor = (
-			(type==="fixed")? this.getNumberColor_fixed :
-			(type==="fixed_shaded")?this.getNumberColor_fixed_shaded :
-			(type==="qnum") ? this.getNumberColor_qnum :
-			(type==="move") ? this.getNumberColor_move :
-			(type==="anum") ? this.getNumberColor_anum :
-							  this.getNumberColor_mixed
-		);
-		return this.getNumberColor(cell);
+	getNumberColor : function(cell){ // initialize()で上書きされる
+		return null;
 	},
 	getNumberColor_fixed : function(cell){
 		return this.quescolor;
@@ -535,15 +496,8 @@ Graphic:{
 		}
 	},
 
-	getBorderColor : function(border){
-		var type = this.bordercolor_func || "ques";
-		this.getBorderColor = (
-			(type==="ques") ? this.getBorderColor_ques :
-			(type==="qans") ? this.getBorderColor_qans :
-			(type==="ice")  ? this.getBorderColor_ice :
-							  function(){ return null;}
-		);
-		return this.getBorderColor(border);
+	getBorderColor : function(border){ // initialize()で上書きされる
+		return null;
 	},
 	getBorderColor_ques : function(border){
 		if(border.isBorder()){ return this.quescolor;}
@@ -629,10 +583,11 @@ Graphic:{
 		
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
+			var cell = clist[i], isdraw = (cell.qans===1);
+			if(this.pid==='stostone' && this.board.falling){ isdraw = (cell.base.qans===1);}
 
 			g.vid = "c_bb_"+cell.id;
-			if(cell.qans===1){
+			if(isdraw){
 				var px = (cell.bx-1)*this.bw, py = (cell.by-1)*this.bh;
 				var px0 = px-0.5, px1 = px+lm+0.5, px2 = px+cw-lm-0.5, px3 = px+cw+0.5;
 				var py0 = py-0.5, py1 = py+lm+0.5, py2 = py+ch-lm-0.5, py3 = py+ch+0.5;
@@ -713,7 +668,7 @@ Graphic:{
 			var isIrowake = (puzzle.execConfig('irowake') && border.path && border.path.color);
 			var isDispmove = puzzle.execConfig('dispmove');
 			
-			if(border.trial){ this.addlw=-this.lm;}
+			if(border.trial && puzzle.execConfig('irowake')){ this.addlw=-this.lm;}
 			else if(info===1){ this.addlw=1;}
 			
 			if     (info=== 1) { return this.errlinecolor;}
@@ -901,14 +856,8 @@ Graphic:{
 		}
 	},
 
-	getCircleStrokeColor : function(cell){
-		var type = this.circlestrokecolor_func || "qnum";
-		this.getCircleStrokeColor = (
-			(type==="qnum")  ? this.getCircleStrokeColor_qnum :
-			(type==="qnum2") ? this.getCircleStrokeColor_qnum2 :
-								function(){ return null;}
-		);
-		return this.getCircleStrokeColor(cell);
+	getCircleStrokeColor : function(cell){ // initialize()で上書きされる
+		return null;
 	},
 	getCircleStrokeColor_qnum : function(cell){
 		var puzzle = this.puzzle, error = cell.error || cell.qinfo;
@@ -928,15 +877,8 @@ Graphic:{
 		return null;
 	},
 
-	getCircleFillColor : function(cell){
-		var type = this.circlefillcolor_func || "qnum";
-		this.getCircleFillColor = (
-			(type==="qnum")  ? this.getCircleFillColor_qnum :
-			(type==="qnum2") ? this.getCircleFillColor_qnum2 :
-			(type==="qcmp")  ? this.getCircleFillColor_qcmp :
-								function(){ return null;}
-		);
-		return this.getCircleFillColor(cell);
+	getCircleFillColor : function(cell){ // initialize()で上書きされる
+		return null;
 	},
 	getCircleFillColor_qnum : function(cell){
 		if(cell.qnum!==-1){
@@ -1053,10 +995,7 @@ Graphic:{
 	getBarColor : function(cell,vert){
 		var err=cell.error, isErr=(err===1||err===4||((err===5&&vert)||(err===6&&!vert))), color="";
 		this.addlw = 0;
-		if(cell.trial){ this.addlw=-this.lm;}
-		else if(isErr){ this.addlw=1;}
-		
-		if(isErr){ color = this.errlinecolor;}
+		if(isErr){ color = this.errlinecolor; this.addlw=1;}
 		else if(err!==0){ color = this.noerrcolor;}
 		else if(cell.trial){ color = this.trialcolor;}
 		else{ color = this.linecolor;}
@@ -1344,13 +1283,14 @@ Graphic:{
 		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
 		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
 
-		var lw = (this.pid!=='bosanowa'?this.lw:1);
 		var boardWidth = bd.cols*this.cw, boardHeight = bd.rows*this.ch;
-		g.fillStyle = "black";
-		g.vid = "chs1_"; g.fillRect(-(lw-0.5),       -(lw-0.5), lw, boardHeight+2*lw-2);
-		g.vid = "chs2_"; g.fillRect(boardWidth-0.5,  -(lw-0.5), lw, boardHeight+2*lw-2);
-		g.vid = "chs3_"; g.fillRect(-(lw-0.5),       -(lw-0.5), boardWidth+2*lw-2, lw);
-		g.vid = "chs4_"; g.fillRect(-(lw-0.5), boardHeight-0.5, boardWidth+2*lw-2, lw);
+		var lw = this.lw, lm = this.lm;
+		if(this.pid==='bosanowa'){ lw=1; lm=0.5;}
+		g.fillStyle = this.quescolor;
+		g.vid = "chs1_"; g.fillRect(-lm,           -lm, lw, boardHeight+lw);
+		g.vid = "chs2_"; g.fillRect(boardWidth-lm, -lm, lw, boardHeight+lw);
+		g.vid = "chs3_"; g.fillRect(-lm,           -lm, boardWidth+lw, lw);
+		g.vid = "chs4_"; g.fillRect(-lm,boardHeight-lm, boardWidth+lw, lw);
 	},
 	drawChassis_ex1 : function(boldflag){
 		var g = this.vinc('chassis_ex1', 'crispEdges', true), bd = this.board;
@@ -1363,17 +1303,17 @@ Graphic:{
 		var boardWidth = bd.cols*this.cw, boardHeight = bd.rows*this.ch;
 
 		// extendcell==1も含んだ外枠の描画
-		g.fillStyle = "black";
-		g.vid = "chsex1_1_"; g.fillRect(-this.cw-(lw-0.5), -this.ch-(lw-0.5), lw, boardHeight+this.ch+2*lw-2);
-		g.vid = "chsex1_2_"; g.fillRect(   boardWidth-0.5, -this.ch-(lw-0.5), lw, boardHeight+this.ch+2*lw-2);
-		g.vid = "chsex1_3_"; g.fillRect(-this.cw-(lw-0.5), -this.ch-(lw-0.5), boardWidth+this.cw+2*lw-2, lw);
-		g.vid = "chsex1_4_"; g.fillRect(-this.cw-(lw-0.5),   boardHeight-0.5, boardWidth+this.cw+2*lw-2, lw);
+		g.fillStyle = this.quescolor;
+		g.vid = "chsex1_1_"; g.fillRect(-this.cw-lm,   -this.ch-lm, lw, boardHeight+this.ch+lw);
+		g.vid = "chsex1_2_"; g.fillRect(boardWidth-lm, -this.ch-lm, lw, boardHeight+this.ch+lw);
+		g.vid = "chsex1_3_"; g.fillRect(-this.cw-lm,   -this.ch-lm, boardWidth+this.cw+lw, lw);
+		g.vid = "chsex1_4_"; g.fillRect(-this.cw-lm,boardHeight-lm, boardWidth+this.cw+lw, lw);
 
 		// 通常のセルとextendcell==1の間の描画
 		if(boldflag){
 			// すべて太線で描画する場合
-			g.vid = "chs1_"; g.fillRect(-(lw-0.5), -(lw-0.5), lw, boardHeight+lw-1);
-			g.vid = "chs2_"; g.fillRect(-(lw-0.5), -(lw-0.5), boardWidth+lw-1,  lw);
+			g.vid = "chs1_"; g.fillRect(-lm, -lm, lw, boardHeight+lw-1);
+			g.vid = "chs2_"; g.fillRect(-lm, -lm, boardWidth+lw-1,  lw);
 		}
 		else{
 			// ques==51のセルが隣接している時に細線を描画する場合
@@ -1386,12 +1326,12 @@ Graphic:{
 				
 				if(cell.bx===1){
 					g.vid = "chs1_sub_"+cell.by;
-					if(cell.ques!==51){ g.fillRect(-lm-0.5, py-lm-0.5, lw, this.ch+lw);}else{ g.vhide();}
+					if(cell.ques!==51){ g.fillRect(-lm, py-lm, lw, this.ch+lw);}else{ g.vhide();}
 				}
 				
 				if(cell.by===1){
 					g.vid = "chs2_sub_"+cell.bx;
-					if(cell.ques!==51){ g.fillRect(px-lm-0.5, -lm-0.5, this.cw+lw, lw);}else{ g.vhide();}
+					if(cell.ques!==51){ g.fillRect(px-lm, -lm, this.cw+lw, lw);}else{ g.vhide();}
 				}
 			}
 		}

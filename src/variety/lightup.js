@@ -126,7 +126,7 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
-	cellcolor_func : "qnum",
+	fgcellcolor_func : "qnum",
 
 	fontShadecolor : "white",
 	numbercolor_func : "fixed_shaded",
@@ -136,7 +136,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		this.drawShadedCells();
+		this.drawQuesCells();
 		this.drawNumbers();
 
 		this.drawAkari();

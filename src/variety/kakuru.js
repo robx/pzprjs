@@ -76,13 +76,11 @@ Board:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
-	cellcolor_func : "ques",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawTargetSubNumber();
 		this.drawGrid();
-		this.drawShadedCells();
+		this.drawQuesCells();
 
 		this.drawSubNumbers();
 		this.drawNumbers();

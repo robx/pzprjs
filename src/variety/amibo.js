@@ -110,20 +110,16 @@ BoardExec:{
 		}
 	},
 	getLongColor : function(components){
-		return this.klass.LineGraph.prototype.getLongColor.call(this, components);
+		return this.klass.GraphBase.prototype.getLongColor.call(this, components);
 	},
 	setLongColor : function(components, longColor){
-		this.klass.LineGraph.prototype.setLongColor.call(this, components, longColor);
+		this.klass.GraphBase.prototype.setLongColor.call(this, components, longColor);
 	},
 	repaintNodes : function(components){
-		var clist_all = new this.klass.CellList();
-		for(var i=0;i<components.length;i++){
-			clist_all.extend(components[i].getnodeobjs());
-		}
-		this.puzzle.painter.repaintBlocks(clist_all);
+		this.klass.AreaShadeGraph.prototype.repaintNodes.call(this,components);
 	},
 	newIrowake : function(){
-		this.klass.LineGraph.prototype.newIrowake.call(this);
+		this.klass.GraphBase.prototype.newIrowake.call(this);
 	}
 },
 "AreaBarGraph:AreaGraphBase":{
@@ -333,7 +329,7 @@ Graphic:{
 	getBarColor : function(cell,vert){
 		var err=cell.error, isErr=(err===1||err===4||((err===5&&vert)||(err===6&&!vert))), color="";
 		this.addlw = 0;
-		if(cell.trial){ this.addlw = -this.lm;}
+		if(cell.trial && this.puzzle.execConfig('irowake')){ this.addlw = -this.lm;}
 		else if(isErr){ this.addlw=1;}
 		
 		if(isErr){ color = this.errlinecolor;}
@@ -527,7 +523,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	lbDivide : ["棒が１つに繋がっていません。","Bars are devided."],
+	lbDivide : ["棒が１つに繋がっていません。","Bars are divided."],
 	lbLenGt : ["白丸から出る棒の長さが長いです。","The length of the bar is long."],
 	lbLenLt : ["白丸から出る棒の長さが短いです。","The length of the bar is short."],
 	lbLoop : ["棒で輪っかができています。","There is a looped bars."],

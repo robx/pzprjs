@@ -474,9 +474,47 @@ GraphBase:{
 	//--------------------------------------------------------------------------------
 	// graph.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
 	// graph.setLongColor() ブロックに色をつけなおす
+	// graph.repaintNodes() ブロックを再描画する
 	//--------------------------------------------------------------------------------
-	getLongColor : function(components){ return '';},
-	setLongColor : function(components, longColor){}
+	getLongColor : function(components){
+		// 周りで一番大きな線は？
+		var largeComponent = components[0];
+		for(var i=1;i<components.length;i++){
+			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+		}
+		return (!!largeComponent ? largeComponent.color : this.puzzle.painter.getNewLineColor());
+	},
+	setLongColor : function(components, longColor){
+		if(components.length===0){ return;}
+		var puzzle = this.puzzle;
+		
+		// できた線の中でもっとも長いものを取得する
+		var largeComponent = components[0];
+		for(var i=1;i<components.length;i++){
+			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+		}
+		
+		// 新しい色の設定
+		for(var i=0;i<components.length;i++){
+			var path = components[i];
+			path.color = (path===largeComponent ? longColor : path.color);
+		}
+		
+		if(puzzle.execConfig('irowake') || puzzle.execConfig('irowakeblk')){
+			this.repaintNodes(components);
+		}
+	},
+	repaintNodes : function(components){},
+
+	//---------------------------------------------------------------------------
+	// graph.newIrowake()  線の情報が再構築された際、線に色をつける
+	//---------------------------------------------------------------------------
+	newIrowake : function(){
+		var paths = this.components;
+		for(var i=0;i<paths.length;i++){
+			paths[i].color = this.puzzle.painter.getNewLineColor();
+		}
+	}
 },
 GraphComponent:{
 	initialize : function(){

@@ -149,7 +149,7 @@ pzpr.Puzzle.prototype =
 	},
 	irowake : function(){
 		this.board.irowakeRemake();
-		if(this.execConfig('irowake')){
+		if(this.execConfig('irowake') || this.execConfig('irowakeblk')){
 			this.redraw();
 		}
 	},

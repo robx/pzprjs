@@ -63,13 +63,14 @@ AreaUnshadeGraph:{
 // 画像表示系
 Graphic:{
 	enablebcolor : true,
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 
 	fontShadecolor : "rgb(96,96,96)",
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
+		this.drawShadedCells();
 
 		this.drawArrowNumbers();
 

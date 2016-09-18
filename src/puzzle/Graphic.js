@@ -19,6 +19,18 @@ Graphic:{
 	initialize : function(){
 		this.gridcolor  = this.gridcolor_list [this.gridcolor_type]  || this.gridcolor;
 
+		var pc = this;
+		[['getQuesCellColor',    this.fgcellcolor_func],
+		 ['getBGCellColor',      this.bgcellcolor_func],
+		 ['getBorderColor',      this.bordercolor_func],
+		 ['getNumberColor',      this.numbercolor_func],
+		 ['getCircleFillColor',  this.circlefillcolor_func],
+		 ['getCircleStrokeColor',this.circlestrokecolor_func],
+		].forEach(function(item){
+			if(pc[item[0]]!==pzpr.common.Graphic.prototype[item[0]]){ return;} // パズル個別の関数が定義されている場合はそのまま使用
+			pc[item[0]] = pc[item[0]+'_'+item[1]] || pc[item[0]];
+		});
+
 		this.resetRange();
 
 		this.initColor();
@@ -28,18 +40,19 @@ Graphic:{
 	context    : null,
 	subcontext : null,
 
-	cellcolor_func : "",	// getCellColor()の種類
-	bgcellcolor_func : "",	// getBGCellColor()の種類
-	bordercolor_func : "",	// getBorderColor()の種類
-	numbercolor_func : "",	// getNumberColor()の種類
+	fgcellcolor_func : "ques",		// getQuesCellColor()の種類
+	bgcellcolor_func : "error1",	// getBGCellColor()の種類
+	bordercolor_func : "ques",		// getBorderColor()の種類
+	numbercolor_func : "mixed",		// getNumberColor()の種類
 
-	circlefillcolor_func : "",		// getCircleFillColor()の種類
-	circlestrokecolor_func : "",	// getCircleStrokeColor()の種類
+	circlefillcolor_func   : "qnum",	// getCircleFillColor()の種類
+	circlestrokecolor_func : "qnum",	// getCircleStrokeColor()の種類
 
 	// 標準の色設定
 	quescolor : "black",
 	qanscolor : "rgb(0, 160, 0)",
 	qcmpcolor : "silver",
+	qcmpbgcolor : "rgb(224, 224, 255)",
 	trialcolor: "rgb(160, 160, 160)",
 	subcolor  : "rgb(127, 127, 255)",
 
@@ -79,7 +92,7 @@ Graphic:{
 	pekecolor : "rgb(0, 127, 0)",
 
 	// 境界線と黒マスを分ける色(BoxBorder)
-	bbcolor : "rgb(96, 96, 96)",
+	bbcolor : "rgb(160, 160, 160)",
 
 	// 入力ターゲットの色
 	targetColor1 : "rgb(255, 64,  64)",

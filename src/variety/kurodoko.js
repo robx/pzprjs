@@ -56,7 +56,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	enablebcolor : true,
-	bgcellcolor_func : "qans1",
+	bgcellcolor_func : "qsub1",
 	numbercolor_func : "qnum",
 
 	globalfontsizeratio : 0.85,
@@ -65,6 +65,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
+		this.drawShadedCells();
 
 		this.drawCircles();
 		this.drawNumbers();

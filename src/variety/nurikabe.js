@@ -82,11 +82,11 @@ AreaUnshadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bgcellcolor_func : "qans1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawShadedCells();
 		if(this.pid==='nurikabe'){ this.drawDotCells(false);}
 		this.drawGrid();
 
@@ -98,6 +98,7 @@ Graphic:{
 	}
 },
 "Graphic@nuribou,mochikoro,mochinyoro":{
+	bgcellcolor_func : "qsub1",
 	enablebcolor : true
 },
 
@@ -271,6 +272,6 @@ FailCode:{
 "FailCode@mochikoro,mochinyoro":{
 	cuNotRect : ["四角形でない白マスのブロックがあります。","There is a block of unshaded cells that is not rectangle."],
 	csRect    : ["四角形になっている黒マスのブロックがあります。","There is a block of shaded cells that is rectangle."],
-	csDivide8 : ["孤立した白マスのブロックがあります。","Unshaded cells are devided."]
+	csDivide8 : ["孤立した白マスのブロックがあります。","Unshaded cells are divided."]
 }
 }));
