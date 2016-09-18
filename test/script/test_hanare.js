@@ -11,7 +11,7 @@ ui.debug.addDebugData('hanare', {
 	],
 	inputs : [
 		/* 問題入力テスト */
-		{ input:["newboard,4,2", "editmode", "mouse,left, 0,2, 8,2"] },
+		{ input:["newboard,4,2", "editmode", "mouse,left, 0,2, 8,2", "setconfig,singlenum,true"] },
 		{ input:["mouse,left, 1,1", "mouse,left, 3,3"],
 		  result:"pzprv3/hanare/2/4/0 0 0 /0 0 0 /1 1 1 1 /4 . . . /. 4 . . /. . . . /. . . . /" },
 		{ input:["mouse,left, 5,1", "mouse,left, 7,3"],
