@@ -91,7 +91,7 @@ Graphic:{
 	pekecolor : "rgb(0, 127, 0)",
 
 	// 境界線と黒マスを分ける色(BoxBorder)
-	bbcolor : "rgb(96, 96, 96)",
+	bbcolor : "rgb(160, 160, 160)",
 
 	// 入力ターゲットの色
 	targetColor1 : "rgb(255, 64,  64)",

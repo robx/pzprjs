@@ -84,8 +84,6 @@ AreaRoomGraph:{
 Graphic:{
 	enablebcolor : true,
 
-	bbcolor : "rgb(127, 127, 127)",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

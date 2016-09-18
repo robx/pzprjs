@@ -127,7 +127,7 @@ Graphic:{
 	enablebcolor : true,
 	bgcellcolor_func : "qsub3",
 
-	bbcolor : "rgb(127, 127, 127)",
+	bbcolor : "rgb(96, 96, 96)",
 
 	paint : function(){
 		this.drawBGCells();

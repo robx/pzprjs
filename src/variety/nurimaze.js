@@ -296,8 +296,7 @@ Graphic:{
 	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
 	errbcolor2 : "rgb(192, 192, 255)",
-
-	bbcolor : "rgb(127, 127, 127)",
+	bbcolor : "rgb(96, 96, 96)",
 
 	paint : function(){
 		this.drawBGCells();

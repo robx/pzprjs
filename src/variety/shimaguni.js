@@ -191,12 +191,12 @@ Graphic:{
 	}
 },
 "Graphic@shimaguni":{
-	bcolor : "rgb(191, 191, 255)",
-	bbcolor : "rgb(191, 191, 255)"
+	bcolor : "rgb(191, 191, 255)"
 },
 "Graphic@stostone":{
 	irowakeblk : true,
 	enablebcolor : false,
+	bgcellcolor_func : "error1",
 
 	minYdeg : 0.08,
 	maxYdeg : 0.50,

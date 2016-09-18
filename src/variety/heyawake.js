@@ -72,8 +72,6 @@ Graphic:{
 	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
 
-	bbcolor : "rgb(160, 255, 191)",
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();

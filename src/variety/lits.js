@@ -106,8 +106,7 @@ Graphic:{
 	bgcellcolor_func : "qsub1",
 
 	enablebcolor : true,
-	bcolor : "rgb(96, 224, 160)",
-	bbcolor : "rgb(96, 127, 127)"
+	bcolor : "rgb(96, 224, 160)"
 },
 
 //---------------------------------------------------------
