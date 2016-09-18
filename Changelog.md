@@ -1,4 +1,31 @@
 
+## Version 0.6.0
+
+Release date: 2016/9/16
+
+#### New puzzle
+
+* stostone: Introduce new puzzle: Stostone
+
+#### Improvement
+
+* Config: Add config to paint circles background for yinyang
+* hanare: Add singlenum config to allow prural numbers in a room
+* shugaku: Add undefcell config to paint background color of unfilled cells
+* toichika, hanare: Enable autocmp config
+* Graph: Validate 'irowakeblk' config to set and draw color of shaded cell blocks
+* variety: Make it enable to use 'cave', 'rome' and 'bossanova' for alias
+
+#### Minor Changes
+
+* moonsun: Set name to 'Moon or Sun' from 'The moon or the sun'
+* Graphic: Set the color of lines between border lines and shaded cells brighter
+* Graphic: Stop expanding chassis pos to set cells exactly square
+* Graphic: Commonize color calculation functions
+* Graphic: Separate drawing shaded cell routine from drawBGCells
+* Graphic: Separate drawQuesCells from drawShadedCells
+* Change project URL to github.com
+
 ## Version 0.5.1
 
 Release date: 2016/9/3
