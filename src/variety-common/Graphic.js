@@ -1237,13 +1237,14 @@ Graphic:{
 		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
 		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
 
-		var lw = (this.pid!=='bosanowa'?this.lw:1);
 		var boardWidth = bd.cols*this.cw, boardHeight = bd.rows*this.ch;
-		g.fillStyle = "black";
-		g.vid = "chs1_"; g.fillRect(-(lw-0.5),       -(lw-0.5), lw, boardHeight+2*lw-2);
-		g.vid = "chs2_"; g.fillRect(boardWidth-0.5,  -(lw-0.5), lw, boardHeight+2*lw-2);
-		g.vid = "chs3_"; g.fillRect(-(lw-0.5),       -(lw-0.5), boardWidth+2*lw-2, lw);
-		g.vid = "chs4_"; g.fillRect(-(lw-0.5), boardHeight-0.5, boardWidth+2*lw-2, lw);
+		var lw = this.lw, lm = this.lm;
+		if(this.pid==='bosanowa'){ lw=1; lm=0.5;}
+		g.fillStyle = this.quescolor;
+		g.vid = "chs1_"; g.fillRect(-lm,           -lm, lw, boardHeight+lw);
+		g.vid = "chs2_"; g.fillRect(boardWidth-lm, -lm, lw, boardHeight+lw);
+		g.vid = "chs3_"; g.fillRect(-lm,           -lm, boardWidth+lw, lw);
+		g.vid = "chs4_"; g.fillRect(-lm,boardHeight-lm, boardWidth+lw, lw);
 	},
 	drawChassis_ex1 : function(boldflag){
 		var g = this.vinc('chassis_ex1', 'crispEdges', true), bd = this.board;
@@ -1256,17 +1257,17 @@ Graphic:{
 		var boardWidth = bd.cols*this.cw, boardHeight = bd.rows*this.ch;
 
 		// extendcell==1も含んだ外枠の描画
-		g.fillStyle = "black";
-		g.vid = "chsex1_1_"; g.fillRect(-this.cw-(lw-0.5), -this.ch-(lw-0.5), lw, boardHeight+this.ch+2*lw-2);
-		g.vid = "chsex1_2_"; g.fillRect(   boardWidth-0.5, -this.ch-(lw-0.5), lw, boardHeight+this.ch+2*lw-2);
-		g.vid = "chsex1_3_"; g.fillRect(-this.cw-(lw-0.5), -this.ch-(lw-0.5), boardWidth+this.cw+2*lw-2, lw);
-		g.vid = "chsex1_4_"; g.fillRect(-this.cw-(lw-0.5),   boardHeight-0.5, boardWidth+this.cw+2*lw-2, lw);
+		g.fillStyle = this.quescolor;
+		g.vid = "chsex1_1_"; g.fillRect(-this.cw-lm,   -this.ch-lm, lw, boardHeight+this.ch+lw);
+		g.vid = "chsex1_2_"; g.fillRect(boardWidth-lm, -this.ch-lm, lw, boardHeight+this.ch+lw);
+		g.vid = "chsex1_3_"; g.fillRect(-this.cw-lm,   -this.ch-lm, boardWidth+this.cw+lw, lw);
+		g.vid = "chsex1_4_"; g.fillRect(-this.cw-lm,boardHeight-lm, boardWidth+this.cw+lw, lw);
 
 		// 通常のセルとextendcell==1の間の描画
 		if(boldflag){
 			// すべて太線で描画する場合
-			g.vid = "chs1_"; g.fillRect(-(lw-0.5), -(lw-0.5), lw, boardHeight+lw-1);
-			g.vid = "chs2_"; g.fillRect(-(lw-0.5), -(lw-0.5), boardWidth+lw-1,  lw);
+			g.vid = "chs1_"; g.fillRect(-lm, -lm, lw, boardHeight+lw-1);
+			g.vid = "chs2_"; g.fillRect(-lm, -lm, boardWidth+lw-1,  lw);
 		}
 		else{
 			// ques==51のセルが隣接している時に細線を描画する場合
@@ -1279,12 +1280,12 @@ Graphic:{
 				
 				if(cell.bx===1){
 					g.vid = "chs1_sub_"+cell.by;
-					if(cell.ques!==51){ g.fillRect(-lm-0.5, py-lm-0.5, lw, this.ch+lw);}else{ g.vhide();}
+					if(cell.ques!==51){ g.fillRect(-lm, py-lm, lw, this.ch+lw);}else{ g.vhide();}
 				}
 				
 				if(cell.by===1){
 					g.vid = "chs2_sub_"+cell.bx;
-					if(cell.ques!==51){ g.fillRect(px-lm-0.5, -lm-0.5, this.cw+lw, lw);}else{ g.vhide();}
+					if(cell.ques!==51){ g.fillRect(px-lm, -lm, this.cw+lw, lw);}else{ g.vhide();}
 				}
 			}
 		}
