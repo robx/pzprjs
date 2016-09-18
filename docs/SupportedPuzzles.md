@@ -49,7 +49,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is indic
 * Nagareru-loop `nagare`
 
 ### Nigun (Legacy)
-* BAG (Correl) `bag` `correl`
+* BAG (Correl) `bag` `correl` `cave`
 * Country-road `country`
 * Reflect-link `reflect`
 * Icebarn `icebarn`
@@ -147,7 +147,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 ### Omopa
 * Kakuru `kakuru`
 * Nanro `nanro`
-* Bosanowa `bosanowa`
+* Bosanowa `bosanowa` `bossanova`
 * Cojun `cojun`
 * Renban-madoguchi `renban`
 * Sukoro room `sukororoom`
@@ -174,7 +174,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 * Hokoiri-masashi `hakoiri`
 * School Trip `shugaku`
 * Gokigen-naname-wagiri `wagiri`
-* Rome `roma`
+* Roma `roma` `rome`
 * Toichika `toichika`
 * Nondango `nondango`
 
