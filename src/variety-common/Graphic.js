@@ -560,10 +560,11 @@ Graphic:{
 		
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
+			var cell = clist[i], isdraw = (cell.qans===1);
+			if(this.pid==='stostone' && this.board.falling){ isdraw = (cell.base.qans===1);}
 
 			g.vid = "c_bb_"+cell.id;
-			if(cell.qans===1){
+			if(isdraw){
 				var px = (cell.bx-1)*this.bw, py = (cell.by-1)*this.bh;
 				var px0 = px-0.5, px1 = px+lm+0.5, px2 = px+cw-lm-0.5, px3 = px+cw+0.5;
 				var py0 = py-0.5, py1 = py+lm+0.5, py2 = py+ch-lm-0.5, py3 = py+ch+0.5;

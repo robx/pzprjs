@@ -67,6 +67,7 @@ pzpr.classmgr.makeCommon({
 	// sblkmgr.setExtraData()   指定された領域の拡張データを設定する
 	//--------------------------------------------------------------------------------
 	setExtraData : function(component){
+		component.clist = new this.klass.CellList(component.getnodeobjs());
 		if(this.puzzle.painter.irowakeblk && !component.color){
 			component.color = this.puzzle.painter.getNewLineColor();
 		}

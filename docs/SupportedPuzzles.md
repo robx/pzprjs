@@ -1,7 +1,7 @@
 # Supported Puzzle
 
-They are the list of supported puzzle.
-As well as the name of the puzzle, acceptable pid for puzzle.open() API is described (first one is used for pid internally).
+They are the lists of supported puzzle by pzpr.js.
+As well as the name of the puzzle, acceptable pid for puzzle.open() API is indicated (first one is used for pid internally).
 
 ## Black Cells Puzzles
 ### Regular
@@ -31,6 +31,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is descr
 * Tawamurenga `tawa`
 * Kurochute `kurochute`
 * Look-air `lookair`
+* Stostone `stostone`
 
 ### Non-nikoli puzzle
 * Tapa `tapa`

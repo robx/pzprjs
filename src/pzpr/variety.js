@@ -157,6 +157,7 @@ delete variety.extend;
 	slalom    :[1,1,"スラローム","Slalom"],
 	slither   :[0,1,"スリザーリンク","Slitherlink",'',{kanpen:'slitherlink'}],
 	snakes    :[1,0,"へびいちご","Hebi-Ichigo"],
+	stostone  :[0,0,"ストストーン","StoStone",'shimaguni'],
 	sudoku    :[0,1,"数独","Sudoku"],
 	sukoro    :[1,0,"数コロ","Sukoro",'sukoro'],
 	sukororoom:[0,0,"数コロ部屋","Sukoro-room",'sukoro'],
