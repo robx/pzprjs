@@ -132,18 +132,19 @@ CellList:{
 },
 "CellList@stostone":{
 	fall : function(isdrop){
-		var length = this.board.rows;
+		var length = this.board.rows, move = ((isdrop!==false) ? 2 : -2);
 		for(var i=0;i<this.length;i++){
+			if(this[i].sblk===this[i].relcell(0,move).sblk){ continue;} // Skip if the block also contains bottom neighbor cell
 			var len = this[i].destination.getFallableLength(isdrop);
 			if(length>len){ length = len;}
+			if(length===0){ return 0;}
 		}
-		if(length===0){ return 0;}
 		var totallen = length + (Math.abs(this[0].destination.by - this[0].by)>>1);
 		for(var i=0;i<this.length;i++){
 			this[i].destination.base = this.board.emptycell;
 		}
 		for(var i=0;i<this.length;i++){
-			var newcell = this[i].relcell(0, (isdrop!==false ? 2*totallen : -2*totallen));
+			var newcell = this[i].relcell(0,move*totallen);
 			this[i].destination = newcell;
 			newcell.base = this[i];
 		}
