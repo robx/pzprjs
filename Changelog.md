@@ -1,7 +1,7 @@
 
 ## Version 0.6.0
 
-Release date: 2016/9/16
+Release date: 2016/9/18
 
 #### New puzzle
 
