@@ -69,7 +69,6 @@ Graphic:{
 
 	autocmp : "number",
 
-	bgcellcolor_func : "qsub1",
 	numbercolor_func : "qnum",
 
 	globalfontsizeratio : 0.85,

@@ -52,8 +52,6 @@ AreaUnshadeGraph:{
 Graphic:{
 	margin : 0.50,
 
-	bgcellcolor_func : "qsub1",
-
 	shadecolor : "rgb(96, 96, 96)",
 
 	crosssize : 0.35,

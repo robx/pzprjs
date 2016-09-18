@@ -82,7 +82,6 @@ AreaUnshadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bgcellcolor_func : "qsub1",
 	numbercolor_func : "qnum",
 
 	paint : function(){
@@ -99,6 +98,7 @@ Graphic:{
 	}
 },
 "Graphic@nuribou,mochikoro,mochinyoro":{
+	bgcellcolor_func : "qsub1",
 	enablebcolor : true
 },
 

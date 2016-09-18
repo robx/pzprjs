@@ -82,8 +82,6 @@ AreaRoomGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	bgcellcolor_func : "qsub1",
-
 	paint : function(){
 		this.drawBGCells();
 		if(this.pid==='lits'){ this.drawShadedCells();}
@@ -105,6 +103,7 @@ Graphic:{
 },
 "Graphic@norinori":{
 	gridcolor_type : "LIGHT",
+	bgcellcolor_func : "qsub1",
 
 	enablebcolor : true,
 	bcolor : "rgb(96, 224, 160)",
