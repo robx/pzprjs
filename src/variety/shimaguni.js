@@ -50,11 +50,11 @@ Cell:{
 },
 "Cell@stostone":{
 	getFallableLength : function(isdrop){
-		if(!this.base.sblk){ return 0;}
+		if(!this.base.stone){ return 0;}
 		var cell2 = this, len = 0, move = ((isdrop!==false) ? 2 : -2);
 		while(!cell2.isnull){
 			cell2 = cell2.relcell(0,move);
-			if(cell2.isnull || (!!cell2.base.sblk && this.base.sblk!==cell2.base.sblk)){ break;}
+			if(cell2.isnull || (!!cell2.base.stone && this.base.stone!==cell2.base.stone)){ break;}
 			len++;
 		}
 		return len;
@@ -149,7 +149,7 @@ CellList:{
 	fall : function(isdrop){
 		var length = this.board.rows, move = ((isdrop!==false) ? 2 : -2);
 		for(var i=0;i<this.length;i++){
-			if(this[i].sblk===this[i].relcell(0,move).sblk){ continue;} // Skip if the block also contains bottom neighbor cell
+			if(this[i].stone===this[i].relcell(0,move).stone){ continue;} // Skip if the block also contains bottom neighbor cell
 			var len = this[i].destination.getFallableLength(isdrop);
 			if(length>len){ length = len;}
 			if(length===0){ return 0;}
@@ -172,6 +172,9 @@ CellList:{
 },
 "AreaStoneGraph:AreaShadeGraph@shimaguni,stostone":{ // Same as LITS AreaTetrominoGraph
 	enabled : true,
+	setComponentRefs : function(obj, component){ obj.stone = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.stonenodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.stonenodes = [];},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
 	}
@@ -225,13 +228,13 @@ Graphic:{
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
 		else if(cell.trial){ return this.trialcolor;}
-		else if(this.puzzle.execConfig('irowakeblk')){ return cell.sblk.color;}
+		else if(this.puzzle.execConfig('irowakeblk')){ return cell.stone.color;}
 		return this.shadecolor;
 	},
 	getBorderColor : function(border){
 		if(this.board.falling){
-			var sblk1 = border.sidecell[0].base.sblk;
-			var sblk2 = border.sidecell[1].base.sblk;
+			var sblk1 = border.sidecell[0].base.stone;
+			var sblk2 = border.sidecell[1].base.stone;
 			if(sblk1!==sblk2){ return "white";}
 			else if(!!sblk1 || !!sblk2){ return null;}
 		}
