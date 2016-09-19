@@ -332,7 +332,7 @@ FileIO:{
 	}
 },
 
-"FailCode@shimaguni,stostone":{
+"FailCode@shimaguni":{
 	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","The number of shaded cells is not equals to the number."],
 	bkShadeDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are divided to plural ones."],
 	bkNoShade     : ["黒マスのカタマリがない海域があります。","A marine area has no shaded cells."],
@@ -346,7 +346,7 @@ FileIO:{
 },
 
 "FailCode@stostone":{
-	cbShade : ["異なる領域にある黒マスどうしが辺を共有しています。","Shade cell blocks in other region are adjacent over border line."],
+	cbShade : ["異なる部屋にある黒マスどうしが辺を共有しています。","Shade cell blocks in other region are adjacent over border line."],
 	csUpper : ["ブロックを落とした後に黒マスが盤面の上半分に残っています。","Shaded cells are remained in upper half of the board after they are fallen."],
 	cuLower : ["ブロックを落とした後の空間が盤面の下半分にあります。","Unshaded cells exist in lower half of the board after blocks are fallen."]
 }
