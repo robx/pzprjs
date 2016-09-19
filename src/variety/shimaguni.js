@@ -120,31 +120,6 @@ Board:{
 	}
 },
 
-CellList:{
-	getLandAreaOfClist : function(){
-		var cnt = 0;
-		for(var i=0,len=this.length;i<len;i++){
-			if(this[i].isShade()){ cnt++;}
-		}
-		return cnt;
-	},
-
-	isSeqBlock : function(){
-		var stack=(this.length>0?[this[0]]:[]), count=this.length, passed={};
-		for(var i=0;i<count;i++){ passed[this[i].id]=0;}
-		while(stack.length>0){
-			var cell=stack.pop();
-			if(passed[cell.id]===1){ continue;}
-			count--;
-			passed[cell.id]=1;
-			var list = cell.getdir4clist();
-			for(var i=0;i<list.length;i++){
-				if(passed[list[i][0].id]===0){ stack.push(list[i][0]);}
-			}
-		}
-		return (count===0);
-	}
-},
 "CellList@stostone":{
 	fall : function(isdrop){
 		var length = this.board.rows, move = ((isdrop!==false) ? 2 : -2);
@@ -298,15 +273,22 @@ FileIO:{
 		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
 	},
 	checkSideAreaLandSide : function(){
-		this.checkSideAreaSize(function(area){ return area.clist.getLandAreaOfClist();}, "bsEqShade");
+		this.checkSideAreaSize(function(area){ return area.clist.filter(function(cell){ return cell.isShade();}).length;}, "bsEqShade");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
-			var clist = rooms[r].clist.filter(function(cell){ return cell.isShade();});
-			if(clist.isSeqBlock()){ continue;}
+			var clist = rooms[r].clist, stonebase = null, check = true;
+			for(var i=0;i<clist.length;i++){
+				if(clist[i].stone===null){ }
+				else if(clist[i].stone!==stonebase){
+					if(stonebase===null){ stonebase=clist[i].stone;}
+					else{ check = false; break;}
+				}
+			}
+			if(check){ continue;}
 			
 			this.failcode.add("bkShadeDivide");
 			if(this.checkOnly){ break;}
