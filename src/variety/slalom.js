@@ -149,25 +149,22 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
-	enableplay : true,
-	keyup_event : true,
 	moveTarget : function(ca){
 		if(ca.match(/shift/)){ return false;}
-		if(this.puzzle.editmode && ca!=='x'){ return this.moveTCell(ca);}
-		return false;
+		return this.moveTCell(ca);
+	},
+	keyDispInfo : function(ca){
+		if(ca==='x'){
+			/* 押した時:true, 離したとき:false */
+			this.puzzle.painter.drawNumbersOnGate(!!this.keydown);
+			return false;
+		}
+		return true;
 	},
 
 	keyinput : function(ca){
-		if(ca!=='x'){
-			if(this.keydown && this.puzzle.editmode){
-				if(this.key_inputdirec(ca)){ return;}
-				this.key_inputqnum_slalom(ca);
-			}
-		}
-		else{
-			/* 押した時:true, 離したとき:false */
-			this.puzzle.painter.drawNumbersOnGate(!!this.keydown);
-		}
+		if(this.key_inputdirec(ca)){ return;}
+		this.key_inputqnum_slalom(ca);
 	},
 	key_inputqnum_slalom : function(ca){
 		var cell = this.cursor.getc(), bd = this.board;

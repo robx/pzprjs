@@ -27,6 +27,16 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true
 },
+"KeyEvent@stostone":{
+	keyDispInfo : function(ca){
+		if(ca==='x'){
+			/* 押した時:true, 離したとき:false */
+			this.board.operate(!!this.keydown ? 'drop' : 'resetpos');
+			return false;
+		}
+		return true;
+	}
+},
 
 //---------------------------------------------------------
 // 盤面管理系
