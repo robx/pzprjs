@@ -110,7 +110,7 @@ Graphic:{
 			if(cell.error===1){ return this.errcolor1;}
 			else if(cell.qnum===2){ return this.quescolor;}
 			else if(cell.trial){ return this.trialcolor;}
-			else if(this.puzzle.editmode){ return "silver";}
+			else if(this.puzzle.editmode && !this.puzzle.execConfig('dispqnumbg')){ return "silver";}
 			else{ return this.quescolor;}
 		}
 		else if(cell.qnum===1 && this.puzzle.execConfig('dispqnumbg') && cell.error===0){
