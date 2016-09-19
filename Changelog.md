@@ -1,7 +1,29 @@
 
+## Version 0.6.1
+
+Release date: 2016/9/18
+
+#### BugFix
+
+* stostone: Tweak puzzle genre name
+* stostone: Divide blocks by border lines
+* stostone: Modify error descriptions and test problem
+* stostone: Prevent borderline from being drawn when blocks are moving
+* stostone: Set separation lines thinner when blocks are moving
+* stostone: Fix the shape of the blocks when they are moving
+* shimaguni, stostone: Use common routine with lits to reduce code size
+* shimaguni, stostone: Use stone property instead of sblk for disambiguation
+* norinori: Prevent generating unused graph object
+* yinyang: Fix shaded circle is drawn gray when dispqnumbg config is true
+
+#### Minor Changes
+
+* KeyInput: Add keyDispInfo function to show some information
+* slalom: Implement show/hidegatenumber operation into board object
+
 ## Version 0.6.0
 
-Release date: 2016/9/16
+Release date: 2016/9/18
 
 #### New puzzle
 
