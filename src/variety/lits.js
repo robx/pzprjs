@@ -31,8 +31,9 @@ Cell:{
 	shapeblk : null	// getTetrominoInfo用
 },
 Board:{
-	hasborder : 1,
-
+	hasborder : 1
+},
+"Board@lits":{
 	addExtraInfo : function(){
 		this.tetrograph = this.addInfoList(this.klass.AreaTetrominoGraph);
 	}
@@ -49,7 +50,7 @@ AreaShadeGraph:{
 AreaRoomGraph:{
 	enabled : true
 },
-'AreaTetrominoGraph:AreaGraphBase':{
+'AreaTetrominoGraph:AreaGraphBase@lits':{
 	enabled : true,
 	setComponentRefs : function(obj, component){ obj.tetro = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tetronodes;},
