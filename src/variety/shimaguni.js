@@ -54,6 +54,11 @@ Cell:{
 Board:{
 	hasborder : 1
 },
+"Board@shimaguni,stostone":{
+	addExtraInfo : function(){
+		this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
+	}
+},
 "Board@stostone":{
 	cols : 8,
 	rows : 8,
@@ -94,7 +99,7 @@ Board:{
 	},
 	drop : function(isdrop){
 		this.resetpos();
-		var fallable = true, blks = this.sblkmgr.components;
+		var fallable = true, blks = this.stonegraph.components;
 		while(fallable){
 			fallable = false;
 			for(var n=blks.length-1;n>=0;--n){
@@ -152,8 +157,14 @@ CellList:{
 	}
 },
 
-AreaShadeGraph:{
+"AreaShadeGraph@chocona":{
 	enabled : true
+},
+"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone":{ // Same as LITS AreaTetrominoGraph
+	enabled : true,
+	isedgevalidbynodeobj : function(cell1, cell2){
+		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	}
 },
 AreaRoomGraph:{
 	enabled : true,
