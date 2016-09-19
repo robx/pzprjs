@@ -208,10 +208,11 @@ Graphic:{
 		return this.shadecolor;
 	},
 	getBorderColor : function(border){
-		if(this.board.falling && (border.sidecell[0].base.sblk !== border.sidecell[1].base.sblk)){
+		if(this.board.falling){
 			var sblk1 = border.sidecell[0].base.sblk;
 			var sblk2 = border.sidecell[1].base.sblk;
 			if(!!sblk1 && !!sblk2 && sblk1!==sblk2){ return "white";}
+			else if(!!sblk1 || !!sblk2){ return null;}
 		}
 		if(border.isBorder()){ return this.quescolor;}
 		return null;

@@ -561,7 +561,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], isdraw = (cell.qans===1);
-			if(this.pid==='stostone' && this.board.falling){ isdraw = (cell.base.qans===1);}
+			if(this.pid==='stostone' && this.board.falling){ isdraw = false;}
 
 			g.vid = "c_bb_"+cell.id;
 			if(isdraw){
