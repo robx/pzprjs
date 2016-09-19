@@ -176,6 +176,7 @@ Graphic:{
 		this.drawNumbers();
 
 		this.drawBorders();
+		if(this.pid==='stostone'){ this.drawNarrowBorders();}
 
 		this.drawChassis();
 
@@ -195,6 +196,20 @@ Graphic:{
 	minYdeg : 0.08,
 	maxYdeg : 0.50,
 
+	drawNarrowBorders : function(){
+		this.vinc('border_narrow', 'crispEdges', true);
+		if(this.board.falling){
+			var func = this.getBorderColor;
+			this.getBorderColor = this.getNarrowBorderColor;
+			this.lw /= 2;
+			this.lm /= 2;
+			this.drawBorders_common("b_bd2_");
+			this.getBorderColor = func;
+			this.lw *= 2;
+			this.lm *= 2;
+		}
+	},
+
 	getShadedCellColor : function(cell){
 		var cell0 = cell;
 		if(this.board.falling){ cell = cell.base;}
@@ -210,10 +225,15 @@ Graphic:{
 		if(this.board.falling){
 			var sblk1 = border.sidecell[0].base.stone;
 			var sblk2 = border.sidecell[1].base.stone;
-			if(sblk1!==sblk2){ return "white";}
-			else if(!!sblk1 || !!sblk2){ return null;}
+			if(!!sblk1 || !!sblk2){ return null;}
 		}
 		if(border.isBorder()){ return this.quescolor;}
+		return null;
+	},
+	getNarrowBorderColor : function(border){
+		var sblk1 = border.sidecell[0].base.stone;
+		var sblk2 = border.sidecell[1].base.stone;
+		if(sblk1!==sblk2){ return "white";}
 		return null;
 	},
 	getNumberColor : function(cell){

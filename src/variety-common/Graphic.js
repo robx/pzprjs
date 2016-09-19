@@ -452,7 +452,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	drawBorders : function(){
 		this.vinc('border', 'crispEdges', true);
-		this.drawBorders_common("b_bd");
+		this.drawBorders_common("b_bd_");
 	},
 	drawBorders_common : function(header){
 		var g = this.context;
@@ -507,12 +507,12 @@ Graphic:{
 	drawQansBorders : function(){
 		this.vinc('border_answer', 'crispEdges', true);
 		this.getBorderColor = this.getQansBorderColor;
-		this.drawBorders_common("b_bdans");
+		this.drawBorders_common("b_bdans_");
 	},
 	drawQuesBorders : function(){
 		this.vinc('border_question', 'crispEdges', true);
 		this.getBorderColor = this.getQuesBorderColor;
-		this.drawBorders_common("b_bdques");
+		this.drawBorders_common("b_bdques_");
 	},
 
 	getQuesBorderColor : function(border){
