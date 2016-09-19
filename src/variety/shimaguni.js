@@ -241,6 +241,10 @@ Graphic:{
 		if(sblk1!==sblk2){ return "white";}
 		return null;
 	},
+	getNumberText : function(cell){
+		if(this.board.falling && !!cell.base.stone){ return '';}
+		return this.common.getNumberText.call(this,cell);
+	},
 	getNumberColor : function(cell){
 		if(this.board.falling){ cell = cell.base;}
 		return this.common.getNumberColor_mixed.call(this,cell);
