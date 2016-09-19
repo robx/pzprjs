@@ -67,6 +67,11 @@ Board:{
 "Board@shimaguni,stostone":{
 	addExtraInfo : function(){
 		this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
+	},
+	irowakeRemake : function(){
+		if(this.puzzle.painter.irowakeblk){
+			this.stonegraph.newIrowake();
+		}
 	}
 },
 "Board@stostone":{
