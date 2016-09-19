@@ -232,7 +232,21 @@ Board:{
 	},
 	initExtraObject : function(col,row){
 		this.startpos.set(this.cell[0]);
-	}
+	},
+
+	operate : function(type){
+		switch(type){
+		case 'showgatenumber':
+			this.puzzle.painter.drawNumbersOnGate(true);
+			break;
+		case 'hidegatenumber':
+			this.puzzle.painter.drawNumbersOnGate(false);
+			break;
+		default:
+			this.common.operate.call(this,type);
+			break;
+		}
+	},
 },
 BoardExec:{
 	posinfo : {},
