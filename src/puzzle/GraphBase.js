@@ -43,7 +43,7 @@ GraphBase:{
 	isedgevalidbynodeobj  : function(nodeobj1, nodeobj2){ return true;},
 	isedgeexistsbylinkobj : function(linkobj){
 		var sidenodes = this.getSideNodesBySeparator(linkobj);
-		if(!sidenodes[0] || !sidenodes[1]){ return false;}
+		if(sidenodes.length<2){ return false;}
 		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
 	},
 	
@@ -214,7 +214,7 @@ GraphBase:{
 		var sidenodes = [], sidenodeobj = border.sideobj;
 		for(var i=0;i<sidenodeobj.length;i++){
 			var nodes = this.getObjNodeList(sidenodeobj[i]);
-			sidenodes.push(!!nodes ? nodes[0] : null);
+			if(!!nodes && !!nodes[0]){ sidenodes.push(nodes[0]);}
 		}
 		return sidenodes;
 	},
@@ -309,13 +309,15 @@ GraphBase:{
 	//---------------------------------------------------------------------------
 	addEdgeBySeparator : function(border){
 		var sidenodes = this.getSideNodesBySeparator(border);
-
-		this.addEdge(sidenodes[0], sidenodes[1]);
+		if(sidenodes.length>=2){
+			this.addEdge(sidenodes[0], sidenodes[1]);
+		}
 	},
 	removeEdgeBySeparator : function(border){
 		var sidenodes = this.getSideNodesBySeparator(border);
-
-		this.removeEdge(sidenodes[0], sidenodes[1]);
+		if(sidenodes.length>=2){
+			this.removeEdge(sidenodes[0], sidenodes[1]);
+		}
 	},
 
 	//---------------------------------------------------------------------------

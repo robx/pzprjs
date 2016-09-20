@@ -167,18 +167,17 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	addEdgeBySeparator : function(border){
 		var sidenodes = this.getSideNodesBySeparator(border);
-
-		this.addEdge(sidenodes[0], sidenodes[1]);
-
-		if(this.hastop){ this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);}
-
+		if(sidenodes.length>=2){
+			this.addEdge(sidenodes[0], sidenodes[1]);
+			if(this.hastop){ this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);}
+		}
 		this.incdecBorderCount(border, false);
 	},
 	removeEdgeBySeparator : function(border){
 		var sidenodes = this.getSideNodesBySeparator(border);
-
-		this.removeEdge(sidenodes[0], sidenodes[1]);
-
+		if(sidenodes.length>=2){
+			this.removeEdge(sidenodes[0], sidenodes[1]);
+		}
 		this.incdecBorderCount(border, true);
 	},
 
