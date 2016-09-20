@@ -79,10 +79,12 @@ Board:{
 	rows : 8,
 
 	falling : false,
+	fallstate : 0,	// 落下ブロックが計算済みかどうか 0:無効 1:落ちた状態 2:上がった状態
 
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 		this.falling = false;
+		this.fallstate = 0;
 	},
 	errclear : function(){
 		this.falling = false;
@@ -98,7 +100,6 @@ Board:{
 			this.puzzle.redraw();
 			break;
 		case 'resetpos':
-			this.resetpos();
 			this.board.errclear();
 			break;
 		default:
@@ -113,6 +114,8 @@ Board:{
 		}
 	},
 	drop : function(isdrop){
+		var afterstate = (isdrop!==false?1:2);
+		if(this.fallstate===afterstate){ return;}
 		this.resetpos();
 		var fallable = true, blks = this.stonegraph.components;
 		while(fallable){
@@ -122,6 +125,7 @@ Board:{
 				if(length>0){ fallable = true;}
 			}
 		}
+		this.fallstate = afterstate;
 	}
 },
 
@@ -330,6 +334,11 @@ FileIO:{
 		this.board.drop();
 		this.common.checkAns.call(this,break_if_error);
 	},
+	resetCache : function(){
+		this.common.resetCache.call(this);
+		this.board.fallstate = 0;
+	},
+
 	checkFallenBlock : function(){
 		var bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
