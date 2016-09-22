@@ -86,7 +86,7 @@ GraphBase:{
 		}
 		else{
 			for(var c=0;c<nodeobjs.length;c++){
-				if(this.isnodevalid(nodeobjs[c])){ this.putEdgeByNodeObj(nodeobjs[c]);}
+				if(this.isnodevalid(nodeobjs[c])){ this.setEdgeByNodeObj(nodeobjs[c]);}
 			}
 		}
 	},
@@ -224,12 +224,17 @@ GraphBase:{
 	//---------------------------------------------------------------------------
 	modifyInfo : function(obj, type){
 		if(!this.enabled){ return;}
+
+		this.modifyNodes = [];
+
 		switch(this.relation[type]){
 			case 'node':      this.setEdgeByNodeObj(obj); break;
 			case 'link':      this.setEdgeByLinkObj(obj); break;
 			case 'separator': this.setEdgeBySeparator(obj); break;
 			default:          this.modifyOtherInfo(obj,type); break;
 		}
+
+		if(this.modifyNodes.length>0){ this.remakeComponent();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -243,12 +248,8 @@ GraphBase:{
 			this.incdecLineCount(linkobj, isset);
 		}
 
-		this.modifyNodes = [];
-
 		if(isset){ this.addEdgeByLinkObj(linkobj);}
 		else     { this.removeEdgeByLinkObj(linkobj);}
-
-		this.remakeComponent();
 	},
 
 	//---------------------------------------------------------------------------
@@ -262,33 +263,23 @@ GraphBase:{
 			this.incdecBorderCount(border, !isset);
 		}
 
-		this.modifyNodes = [];
-
 		if(isset){ this.addEdgeBySeparator(border);}
 		else     { this.removeEdgeBySeparator(border);}
-
-		this.remakeComponent();
 	},
 
 	//---------------------------------------------------------------------------
 	// graph.setEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
-	// graph.putEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
 	//---------------------------------------------------------------------------
 	setEdgeByNodeObj : function(nodeobj){
-		this.modifyNodes = [];
-
-		this.putEdgeByNodeObj(nodeobj);
-
-		this.remakeComponent();
-	},
-	putEdgeByNodeObj : function(cell){
-		if(this.calcNodeCount(cell)===0 && this.getObjNodeList(cell).length===0){ return;}
-		
 		// 一度Edgeを取り外す
-		this.removeEdgeByNodeObj(cell);
-			
+		if(this.getObjNodeList(nodeobj).length>0){
+			this.removeEdgeByNodeObj(nodeobj);
+		}
+		
 		// Edgeを付け直す
-		this.addEdgeByNodeObj(cell);
+		if(this.calcNodeCount(nodeobj)>0){
+			this.addEdgeByNodeObj(nodeobj);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -420,7 +411,6 @@ GraphBase:{
 			for(var i=0;i<this.modifyNodes.length;i++){
 				var node = this.modifyNodes[i];
 				node.component = component;
-				this.setComponentRefs(node.obj, component);
 				component.nodes.push(node);
 			}
 			this.modifyNodes = [];

@@ -179,12 +179,8 @@ LineGraph:{
 	isnodevalid : function(cell){ return cell.base.qnum!==-1;},
 	
 	modifyOtherInfo : function(border,type){
-		this.modifyNodes = [];
-
-		this.putEdgeByNodeObj(border.sidecell[0]);
-		this.putEdgeByNodeObj(border.sidecell[1]);
-
-		this.remakeComponent();
+		this.setEdgeByNodeObj(border.sidecell[0]);
+		this.setEdgeByNodeObj(border.sidecell[1]);
 	}
 },
 

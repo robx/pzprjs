@@ -169,8 +169,6 @@ LineGraph:{
 	isedgevalidbylinkobj : function(cell){ return cell.qans>0;},
 	
 	setEdgeByLinkObj : function(cell){
-		this.modifyNodes = [];
-
 		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する
 		if(cell.path!==null){
 			this.incdecLineCount(cell, false);
@@ -181,8 +179,6 @@ LineGraph:{
 			this.incdecLineCount(cell, true);
 			this.addEdgeByLinkObj(cell);
 		}
-
-		this.remakeComponent();
 	},
 	
 	setExtraData : function(component){
