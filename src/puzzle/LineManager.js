@@ -46,8 +46,13 @@ pzpr.classmgr.makeCommon({
 	iscrossing           : function(cell)  { return this.isLineCross;},
 
 	//---------------------------------------------------------------------------
+	// linegraph.rebuild()  既存の情報からデータを再設定する
 	// linegraph.rebuild2() 継承先に固有のデータを設定する
 	//---------------------------------------------------------------------------
+	rebuild : function(){
+		if(this.board.borderAsLine){ this.pointgroup = 'cross';}
+		pzpr.common.GraphBase.prototype.rebuild.call(this);
+	},
 	rebuild2 : function(){
 		this.resetLineCount();
 		pzpr.common.GraphBase.prototype.rebuild2.call(this);

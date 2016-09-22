@@ -88,8 +88,7 @@ Board:{
 },
 
 LineGraph:{
-	enabled : true,
-	pointgroup : 'cross'
+	enabled : true
 },
 
 //---------------------------------------------------------

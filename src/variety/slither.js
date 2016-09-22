@@ -91,7 +91,6 @@ Board:{
 },
 
 LineGraph:{
-	pointgroup : 'cross',
 	enabled : true
 },
 

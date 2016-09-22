@@ -79,8 +79,7 @@ Board:{
 },
 
 LineGraph:{
-	enabled : true,
-	pointgroup : 'cross'
+	enabled : true
 },
 "AreaTileGraph:AreaGraphBase":{
 	enabled : true,

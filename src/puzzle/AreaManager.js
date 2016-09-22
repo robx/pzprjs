@@ -99,7 +99,6 @@ pzpr.classmgr.makeCommon({
 //--------------------------------------------------------------------------------
 'AreaRoomGraph:AreaGraphBase':{
 	relation : {'cell.ques':'node', 'border.ques':'separator', 'border.qans':'separator'},
-	pointgroup : 'cell',
 
 	hastop : false,
 
