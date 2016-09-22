@@ -157,12 +157,12 @@ pzpr.classmgr.makeCommon({
 	// roommgr.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
 	//--------------------------------------------------------------------------------
 	setTopOfRoom_combine : function(cell1,cell2){
-		if(!cell1.room || !cell2.room){ return;}
+		if(!cell1.room || !cell2.room || cell1.room===cell2.room){ return;}
 		var merged, keep;
 		var tcell1 = cell1.room.top;
 		var tcell2 = cell2.room.top;
-		if(cell1.bx>cell2.bx || (cell1.bx===cell2.bx && cell1.id>cell2.id)){ merged = tcell1; keep = tcell2;}
-		else                                                               { merged = tcell2; keep = tcell1;}
+		if(tcell1.bx>tcell2.bx || (tcell1.bx===tcell2.bx && tcell1.by>tcell2.by)){ merged = tcell1; keep = tcell2;}
+		else                                                                     { merged = tcell2; keep = tcell1;}
 
 		// 消える部屋のほうの数字を消す
 		if(merged.isNum()){
