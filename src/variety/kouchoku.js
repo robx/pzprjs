@@ -146,6 +146,7 @@ Cross:{
 	maxnum : 26
 },
 Segment:{
+	group : "segment",
 	initialize : function(bx1, by1, bx2, by2){
 		this.path = null;
 		this.isnull = true;

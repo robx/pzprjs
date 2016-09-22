@@ -173,10 +173,12 @@ LineGraph:{
 
 		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する
 		if(cell.path!==null){
+			this.incdecLineCount(cell, false);
 			this.removeEdgeByLinkObj(cell);
 		}
 		if(cell.qans>0){
 			cell.setSideObj();
+			this.incdecLineCount(cell, true);
 			this.addEdgeByLinkObj(cell);
 		}
 

@@ -161,31 +161,18 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// roomgraph.addEdgeBySeparator()    指定されたオブジェクトの場所にEdgeを生成する
-	// roomgraph.removeEdgeBySeparator() 指定されたオブジェクトの場所からEdgeを除去する
+	// roommgr.addEdge() 境界線を消した時の処理
 	//---------------------------------------------------------------------------
-	addEdgeBySeparator : function(border){
-		this.incdecBorderCount(border, false);
-		
-		var sidenodes = this.getSideNodesBySeparator(border);
-		if(sidenodes.length>=2){
-			this.addEdge(sidenodes[0], sidenodes[1]);
-			if(this.hastop){ this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);}
-		}
-	},
-	removeEdgeBySeparator : function(border){
-		this.incdecBorderCount(border, true);
-		
-		var sidenodes = this.getSideNodesBySeparator(border);
-		if(sidenodes.length>=2){
-			this.removeEdge(sidenodes[0], sidenodes[1]);
-		}
+	addEdge : function(node1, node2){
+		this.klass.GraphBase.prototype.addEdge.call(this,node1,node2);
+		if(this.hastop && !this.rebuildmode){ this.setTopOfRoom_combine(node1.obj,node2.obj);}
 	},
 
 	//--------------------------------------------------------------------------------
 	// roommgr.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
 	//--------------------------------------------------------------------------------
 	setTopOfRoom_combine : function(cell1,cell2){
+		if(!cell1.room || !cell2.room){ return;}
 		var merged, keep;
 		var tcell1 = cell1.room.top;
 		var tcell2 = cell2.room.top;

@@ -226,6 +226,10 @@ GraphBase:{
 		var isset = this.isedgevalidbylinkobj(linkobj);
 		if(isset===this.isedgeexistsbylinkobj(linkobj)){ return;}
 
+		if(!!this.incdecLineCount){
+			this.incdecLineCount(linkobj, isset);
+		}
+
 		this.modifyNodes = [];
 
 		if(isset){ this.addEdgeByLinkObj(linkobj);}
@@ -240,6 +244,10 @@ GraphBase:{
 	setEdgeBySeparator : function(border){
 		var isset = this.isedgevalidbylinkobj(border);
 		if(isset===this.isedgeexistsbylinkobj(border)){ return;}
+
+		if(!!this.incdecBorderCount){
+			this.incdecBorderCount(border, !isset);
+		}
 
 		this.modifyNodes = [];
 
@@ -274,7 +282,7 @@ GraphBase:{
 	// graph.addEdgeByLinkObj()    指定されたオブジェクトの場所にEdgeを生成する
 	// graph.removeEdgeByLinkObj() 指定されたオブジェクトの場所からEdgeを除去する
 	//---------------------------------------------------------------------------
-	addEdgeByLinkObj : function(linkobj){
+	addEdgeByLinkObj : function(linkobj){ // 線(など)を引いた時の処理
 		var sidenodeobj = this.getSideObjByLinkObj(linkobj);
 		
 		// 周囲のNodeをグラフに追加するかどうか確認する
@@ -287,7 +295,7 @@ GraphBase:{
 		// 周囲のNodeとlink
 		this.addEdge(sidenodes[0], sidenodes[1]);
 	},
-	removeEdgeByLinkObj : function(linkobj){
+	removeEdgeByLinkObj : function(linkobj){ // 線(など)を消した時の処理
 		// unlinkするNodeを取得する
 		var sidenodes = this.getSideNodesByLinkObj(linkobj);
 
@@ -307,13 +315,13 @@ GraphBase:{
 	// graph.addEdgeBySeparator()    指定されたオブジェクトの場所にEdgeを生成する
 	// graph.removeEdgeBySeparator() 指定されたオブジェクトの場所からEdgeを除去する
 	//---------------------------------------------------------------------------
-	addEdgeBySeparator : function(border){
+	addEdgeBySeparator : function(border){ // 境界線を消した時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
 		if(sidenodes.length>=2){
 			this.addEdge(sidenodes[0], sidenodes[1]);
 		}
 	},
-	removeEdgeBySeparator : function(border){
+	removeEdgeBySeparator : function(border){ // 境界線を引いた時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
 		if(sidenodes.length>=2){
 			this.removeEdge(sidenodes[0], sidenodes[1]);

@@ -58,15 +58,26 @@ pzpr.classmgr.makeCommon({
 	// linegraph.incdecLineCount() 線が引かれたり消された時に、lcnt変数を生成し直す
 	//---------------------------------------------------------------------------
 	resetLineCount : function(){
-		var cells = this.board[this.pointgroup];
+		var cells = this.board[this.pointgroup], borders = this.board[this.linkgroup];
 		this.ltotal=[cells.length];
-		for(var c=0;c<cells.length;c++){ cells[c].lcnt = 0;}
+		for(var c=0;c<cells.length;c++){
+			cells[c].lcnt = 0;
+		}
+		for(var id=0;id<borders.length;id++){
+			if(this.isedgevalidbylinkobj(borders[id])){
+				this.incdecLineCount(borders[id], true);
+			}
+		}
 	},
-	incdecLineCount : function(cell, isset){
-		if(cell.group===this.pointgroup && !cell.isnull){
-			this.ltotal[cell.lcnt]--;
-			if(isset){ cell.lcnt++;}else{ cell.lcnt--;}
-			this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;
+	incdecLineCount : function(border, isset){
+		if(border.group!==this.linkgroup){ return;}
+		for(var i=0;i<2;i++){
+			var cell = border.sideobj[i];
+			if(!cell.isnull){
+				this.ltotal[cell.lcnt]--;
+				if(isset){ cell.lcnt++;}else{ cell.lcnt--;}
+				this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;
+			}
 		}
 	},
 
@@ -95,9 +106,6 @@ pzpr.classmgr.makeCommon({
 	createNodeIfEmpty : function(cell){
 		var nodes = this.getObjNodeList(cell);
 		
-		// ここどうする？
-		this.incdecLineCount(cell, true);
-		
 		// 周囲のNode生成が必要かもしれないのでチェック＆create
 		if(nodes.length===0){
 			this.createNode(cell);
@@ -123,9 +131,6 @@ pzpr.classmgr.makeCommon({
 	},
 	deleteNodeIfEmpty : function(cell){
 		var nodes = this.getObjNodeList(cell);
-		
-		// ここどうする？
-		this.incdecLineCount(cell, false);
 		
 		// 周囲のNodeが消えるかもしれないのでチェック＆remove
 		if(nodes.length===1 && nodes[0].nodes.length===0 && !this.isnodevalid(cell)){
