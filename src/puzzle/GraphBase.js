@@ -577,6 +577,19 @@ GraphComponent:{
 	},
 
 	//---------------------------------------------------------------------------
+	// component.checkAutoCmp()  autocmp設定有効時に条件を満たしているかチェックして背景を描画する
+	//---------------------------------------------------------------------------
+	checkAutoCmp : function(){
+		var iscmp = this.clist.checkCmp();
+		if(this.cmp !== iscmp){
+			this.cmp = iscmp;
+			if(this.puzzle.execConfig('autocmp')){
+				this.clist.draw();
+			}
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// component.setedgeerr()   edgeにerror値を設定する
 	// component.setedgeinfo()  edgeにqinfo値を設定する
 	//---------------------------------------------------------------------------

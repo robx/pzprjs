@@ -199,11 +199,7 @@ pzpr.classmgr.makeCommon({
 			}
 		}
 		if(this.puzzle.painter.autocmp==='room'){
-			var iscmp = clist.checkCmp();
-			if(component.cmp !== iscmp){
-				component.cmp = iscmp;
-				clist.draw();
-			}
+			component.checkAutoCmp();
 		}
 	}
 }
