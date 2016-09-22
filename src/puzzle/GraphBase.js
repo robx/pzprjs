@@ -43,7 +43,7 @@ GraphBase:{
 	isedgevalidbynodeobj  : function(nodeobj1, nodeobj2){ return true;},
 	isedgeexistsbylinkobj : function(linkobj){
 		var sidenodes = this.getSideNodesBySeparator(linkobj);
-		if(sidenodes.length<2){ return false;}
+		if(!sidenodes){ return false;}
 		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
 	},
 	
@@ -216,7 +216,7 @@ GraphBase:{
 			var nodes = this.getObjNodeList(sidenodeobj[i]);
 			if(!!nodes && !!nodes[0]){ sidenodes.push(nodes[0]);}
 		}
-		return sidenodes;
+		return (sidenodes.length>=2 ? sidenodes : null);
 	},
 
 	//---------------------------------------------------------------------------
@@ -224,14 +224,16 @@ GraphBase:{
 	//---------------------------------------------------------------------------
 	modifyInfo : function(obj, type){
 		if(!this.enabled){ return;}
+		var relation = this.relation[type];
+		if(!relation){ return;}
 
 		this.modifyNodes = [];
 
-		switch(this.relation[type]){
+		switch(relation){
 			case 'node':      this.setEdgeByNodeObj(obj); break;
 			case 'link':      this.setEdgeByLinkObj(obj); break;
 			case 'separator': this.setEdgeBySeparator(obj); break;
-			default:          this.modifyOtherInfo(obj,type); break;
+			default:          this.modifyOtherInfo(obj,relation); break;
 		}
 
 		if(this.modifyNodes.length>0){ this.remakeComponent();}
@@ -258,15 +260,22 @@ GraphBase:{
 	//---------------------------------------------------------------------------
 	addEdgeBySeparator : function(border){ // 境界線を消した時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
-		if(sidenodes.length>=2){
-			this.addEdge(sidenodes[0], sidenodes[1]);
-		}
+		if(!sidenodes){ return;}
+		this.addEdge(sidenodes[0], sidenodes[1]);
 	},
 	removeEdgeBySeparator : function(border){ // 境界線を引いた時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
-		if(sidenodes.length>=2){
-			this.removeEdge(sidenodes[0], sidenodes[1]);
-		}
+		if(!sidenodes){ return;}
+		this.removeEdge(sidenodes[0], sidenodes[1]);
+	},
+
+	//---------------------------------------------------------------------------
+	// graph.attachNode()    指定されたオブジェクトを別Componentにくっつけて終了する
+	//---------------------------------------------------------------------------
+	attachNode : function(node, component){
+		node.component = component;
+		component.nodes.push(node);
+		this.setComponentInfo(component);
 	},
 
 	//---------------------------------------------------------------------------

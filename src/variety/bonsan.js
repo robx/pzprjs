@@ -178,7 +178,7 @@ LineGraph:{
 	relation : {'cell.qnum':'node','border.line':'move'},
 	isnodevalid : function(cell){ return cell.base.qnum!==-1;},
 	
-	modifyOtherInfo : function(border,type){
+	modifyOtherInfo : function(border,relation){
 		this.setEdgeByNodeObj(border.sidecell[0]);
 		this.setEdgeByNodeObj(border.sidecell[1]);
 	}

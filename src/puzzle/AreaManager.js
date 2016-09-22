@@ -37,6 +37,7 @@ pzpr.classmgr.makeCommon({
 		// Edgeの除去
 		var sidenodeobj = this.getSideObjByNodeObj(cell);
 		var node1 = this.getObjNodeList(cell)[0];
+		var preedges = node1.nodes.length, component = node1.component;
 		for(var i=0;i<sidenodeobj.length;i++){
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
 			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
@@ -44,6 +45,12 @@ pzpr.classmgr.makeCommon({
 
 		// Nodeを一旦取り除く
 		if(!!node1){ this.deleteNode(node1);}
+
+		// 周囲のComponent末端から切り離されただけの場合は情報を更新して終了
+		if(!this.rebuildmode && preedges===1){
+			this.setComponentInfo(component);
+			this.modifyNodes = [];
+		}
 	},
 	addEdgeByNodeObj : function(cell){
 		// Nodeを付加する
@@ -56,6 +63,12 @@ pzpr.classmgr.makeCommon({
 			if(!this.isedgevalidbynodeobj(cell, sidenodeobj[i])){ continue;}
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
 			if(!!node1 && !!node2){ this.addEdge(node1, node2);}
+		}
+
+		// 周囲のComponentに1か所くっついただけの場合は情報を更新して終了
+		if(!this.rebuildmode && node1.nodes.length===1){
+			this.attachNode(node1, node1.nodes[0].component);
+			this.modifyNodes = [];
 		}
 	},
 
@@ -131,7 +144,7 @@ pzpr.classmgr.makeCommon({
 },
 
 'AreaNumberGraph:AreaGraphBase':{
-	relation : {'cell.qnum':'node', 'cell.anum':'node', 'cell.qsub':'node'},
+	relation : {'cell.qnum':'node', 'cell.anum':'node', 'cell.qsub':'node', 'cell.qans':''},
 	setComponentRefs : function(obj, component){ obj.nblk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.nblknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.nblknodes = [];},
@@ -143,7 +156,7 @@ pzpr.classmgr.makeCommon({
 // ☆AreaRoomGraphクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
 'AreaRoomGraph:AreaGraphBase':{
-	relation : {'cell.ques':'node', 'border.ques':'separator', 'border.qans':'separator'},
+	relation : {'cell.ques':'node', 'border.ques':'separator', 'border.qans':'separator', 'cell.qans':''},
 
 	hastop : false,
 
@@ -195,23 +208,21 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	addEdgeBySeparator : function(border){ // 境界線を消した時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
-		if(sidenodes.length>=2){
-			this.addEdge(sidenodes[0], sidenodes[1]);
-			if(border.sidecross[0].lcnt===0 || border.sidecross[1].lcnt===0){
-				this.modifyNodes = [];
-			}
-			else if(this.hastop){
-				this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);
-			}
+		if(!sidenodes){ return;}
+		this.addEdge(sidenodes[0], sidenodes[1]);
+		if(border.sidecross[0].lcnt===0 || border.sidecross[1].lcnt===0){
+			this.modifyNodes = [];
+		}
+		else if(this.hastop && sidenodes.length>=2){
+			this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);
 		}
 	},
 	removeEdgeBySeparator : function(border){ // 境界線を引いた時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
-		if(sidenodes.length>=2){
-			this.removeEdge(sidenodes[0], sidenodes[1]);
-			if(border.sidecross[0].lcnt===1 || border.sidecross[1].lcnt===1){
-				this.modifyNodes = [];
-			}
+		if(!sidenodes){ return;}
+		this.removeEdge(sidenodes[0], sidenodes[1]);
+		if(border.sidecross[0].lcnt===1 || border.sidecross[1].lcnt===1){
+			this.modifyNodes = [];
 		}
 	},
 

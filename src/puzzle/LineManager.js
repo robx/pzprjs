@@ -121,12 +121,8 @@ pzpr.classmgr.makeCommon({
 		var lcnt1 = sidenodes[0].obj.lcnt, lcnt2 = sidenodes[1].obj.lcnt;
 		if((lcnt1===1 && (lcnt2===2 || (!this.isLineCross && lcnt2>2))) ||
 		   (lcnt2===1 && (lcnt1===2 || (!this.isLineCross && lcnt1>2))) ) {
-			var node = sidenodes[lcnt1===1 ? 0 : 1];
-			var component = sidenodes[lcnt1===1 ? 1 : 0].component;
-			node.component = component;
-			component.nodes.push(node);
+			this.attachNode(sidenodes[lcnt1===1 ? 0 : 1], sidenodes[lcnt1===1 ? 1 : 0].component);
 			this.modifyNodes = [];
-			this.setComponentInfo(component);
 		}
 	},
 	removeEdgeByLinkObj : function(linkobj){ // 線(など)を消した時の処理
@@ -146,15 +142,15 @@ pzpr.classmgr.makeCommon({
 		var lcnt1 = sidenodes[0].obj.lcnt, lcnt2 = sidenodes[1].obj.lcnt;
 		if((lcnt1===0 && (lcnt2===1 || (!this.isLineCross && lcnt2>1))) ||
 		   (lcnt2===0 && (lcnt1===1 || (!this.isLineCross && lcnt1>1))) ) {
-			this.modifyNodes = [];
 			this.setComponentInfo(sidenodes[lcnt1===0 ? 1 : 0].component);
+			this.modifyNodes = [];
 		}
 	},
 
 	//---------------------------------------------------------------------------
 	// linegraph.setOtherInformation() 移動系パズルで数字などが入力された時に線の情報を生成しなおす
 	//---------------------------------------------------------------------------
-	modifyOtherInfo : function(cell, type){
+	modifyOtherInfo : function(cell, relation){
 		if(!!cell.path){ this.setComponentInfo(cell.path);}
 		else           { this.resetExtraData(cell);}
 	},

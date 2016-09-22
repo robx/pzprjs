@@ -164,7 +164,7 @@ LineGraph:{
 	isLineCross : true,
 	relation : {'border.line':'link', 'cell.ques':'cell'},
 	isedgevalidbylinkobj : function(border){ return border.isLine() || border.isLineEX();},
-	modifyOtherInfo : function(cell,type){
+	modifyOtherInfo : function(cell,relation){
 		var cblist = cell.getdir4cblist();
 		for(var i=0;i<cblist.length;i++){
 			this.setEdgeByLinkObj(cblist[i][1]);
