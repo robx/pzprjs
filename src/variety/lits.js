@@ -52,16 +52,13 @@ AreaRoomGraph:{
 },
 'AreaTetrominoGraph:AreaShadeGraph@lits':{
 	enabled : true,
-	relation : ['cell', 'border'],
+	relation : {'cell.qans':'node', 'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.tetro = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tetronodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tetronodes = [];},
 	
 	isedgevalidbylinkobj : function(border){
 		return !border.isBorder();
-	},
-	setBorder : function(border){
-		this.setEdgeBySeparator(border);
 	},
 
 	resetExtraData : function(cell){ cell.shape = null;},

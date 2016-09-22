@@ -235,6 +235,7 @@ BoardExec:{
 },
 "AreaWrectGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.qnum':'node', 'cell.qans':'node'},
 	setComponentRefs : function(obj, component){ obj.wrect = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.wrectnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.wrectnodes = [];},

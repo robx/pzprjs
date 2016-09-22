@@ -317,7 +317,7 @@ Segment:{
 		if(this===bd.segment){
 			bd.getx(seg.bx1, seg.by1).seglist.add(seg);
 			bd.getx(seg.bx2, seg.by2).seglist.add(seg);
-			if(bd.isenableInfo()){ bd.linegraph.setLine(seg);}
+			if(bd.isenableInfo()){ bd.linegraph.modifyInfo(seg, 'segment');}
 			seg.addOpe(0, 1);
 			
 			if(bd.trialstage>0){ seg.trial = bd.trialstage;}
@@ -332,7 +332,7 @@ Segment:{
 		if(this===bd.segment){
 			bd.getx(seg.bx1, seg.by1).seglist.remove(seg);
 			bd.getx(seg.bx2, seg.by2).seglist.remove(seg);
-			if(bd.isenableInfo()){ bd.linegraph.setLine(seg);}
+			if(bd.isenableInfo()){ bd.linegraph.modifyInfo(seg, 'segment');}
 			seg.addOpe(1, 0);
 			if(!!this.puzzle.canvas){
 				this.puzzle.painter.eraseSegment1(seg); // 描画が残りっぱなしになってしまうのを防止
@@ -504,7 +504,7 @@ BoardExec:{
 
 LineGraph:{
 	enabled : true,
-	relation : [],
+	relation : {'segment':'link'},
 	
 	pointgroup : 'cross',
 	linkgroup  : 'segment',

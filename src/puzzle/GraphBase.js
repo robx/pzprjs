@@ -8,7 +8,7 @@ pzpr.classmgr.makeCommon({
 GraphBase:{
 
 	enabled : false,
-	relation : [],
+	relation : {},
 	
 	pointgroup : '',
 	linkgroup  : '',
@@ -217,6 +217,19 @@ GraphBase:{
 			if(!!nodes && !!nodes[0]){ sidenodes.push(nodes[0]);}
 		}
 		return sidenodes;
+	},
+
+	//---------------------------------------------------------------------------
+	// graph.modifyInfo() 黒マスや線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	//---------------------------------------------------------------------------
+	modifyInfo : function(obj, type){
+		if(!this.enabled){ return;}
+		switch(this.relation[type]){
+			case 'node':      this.setEdgeByNodeObj(obj); break;
+			case 'link':      this.setEdgeByLinkObj(obj); break;
+			case 'separator': this.setEdgeBySeparator(obj); break;
+			default:          this.modifyOtherInfo(obj,type); break;
+		}
 	},
 
 	//---------------------------------------------------------------------------

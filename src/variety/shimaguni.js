@@ -156,16 +156,13 @@ Board:{
 },
 "AreaStoneGraph:AreaShadeGraph@shimaguni,stostone":{ // Same as LITS AreaTetrominoGraph
 	enabled : true,
-	relation : ['cell', 'border'],
+	relation : {'cell.qans':'node', 'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.stone = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.stonenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.stonenodes = [];},
 	
 	isedgevalidbylinkobj : function(border){
 		return !border.isBorder();
-	},
-	setBorder : function(border){
-		this.setEdgeBySeparator(border);
 	}
 },
 AreaRoomGraph:{

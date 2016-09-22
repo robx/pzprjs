@@ -132,6 +132,7 @@ BoardExec:{
 },
 'AreaSnakeGraph:AreaGraphBase':{
 	enabled : true,
+	relation : {'cell.anum':'node'},
 	setComponentRefs : function(obj, component){ obj.snake = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.snakenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.snakenodes = [];},

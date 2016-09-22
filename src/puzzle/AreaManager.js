@@ -7,19 +7,11 @@ pzpr.classmgr.makeCommon({
 //     回答チェックやURL出力前には一旦resetRoomNumber()等が必要です。
 //--------------------------------------------------------------------------------
 "AreaGraphBase:GraphBase":{
-	relation : ['cell'],
+	relation : {'cell.qans':'node'},
 	pointgroup : 'cell',
 
 	isedgevalidbynodeobj : function(cell1, cell2){
 		return this.isedgevalidbylinkobj(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)));
-	},
-
-	//---------------------------------------------------------------------------
-	// areagraph.setCell()     黒マスになったりした時にブロックの情報を生成しなおす
-	//---------------------------------------------------------------------------
-	setCell : function(cell){
-		if(!this.enabled){ return;}
-		this.setEdgeByNodeObj(cell);
 	},
 
 	//--------------------------------------------------------------------------------
@@ -94,6 +86,7 @@ pzpr.classmgr.makeCommon({
 },
 
 'AreaNumberGraph:AreaGraphBase':{
+	relation : {'cell.qnum':'node', 'cell.anum':'node', 'cell.qsub':'node'},
 	setComponentRefs : function(obj, component){ obj.nblk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.nblknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.nblknodes = [];},
@@ -105,7 +98,7 @@ pzpr.classmgr.makeCommon({
 // ☆AreaRoomGraphクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
 'AreaRoomGraph:AreaGraphBase':{
-	relation : ['cell', 'border'],
+	relation : {'cell.ques':'node', 'border.ques':'separator', 'border.qans':'separator'},
 	pointgroup : 'cell',
 
 	hastop : false,
@@ -150,14 +143,6 @@ pzpr.classmgr.makeCommon({
 				if(isset){ cross.lcnt++;}else{ cross.lcnt--;}
 			}
 		}
-	},
-
-	//--------------------------------------------------------------------------------
-	// roomgraph.setBorder() 部屋情報の再設定を行う
-	//--------------------------------------------------------------------------------
-	setBorder : function(border){
-		if(!this.enabled){ return;}
-		this.setEdgeBySeparator(border);
 	},
 
 	//---------------------------------------------------------------------------

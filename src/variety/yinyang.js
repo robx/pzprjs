@@ -59,6 +59,7 @@ Board:{
 
 'AreaYinGraph:AreaGraphBase':{
 	enabled : true,
+	relation : {'cell.qnum':'node', 'cell.anum':'node'},
 	setComponentRefs : function(obj, component){ obj.yin = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.yinnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.yinnodes = [];},
@@ -68,6 +69,7 @@ Board:{
 
 'AreaYangGraph:AreaGraphBase':{
 	enabled : true,
+	relation : {'cell.qnum':'node', 'cell.anum':'node'},
 	setComponentRefs : function(obj, component){ obj.yang = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.yangnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.yangnodes = [];},

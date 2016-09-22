@@ -71,16 +71,12 @@ KeyEvent:{
 	maxnum : 2,
 
 	posthook : {
-		qnum : function(num){
-			this.board.setInfoByCell(this);
-			this.room.countMarkAndLine();
-		},
+		qnum : function(num){ this.room.countMarkAndLine();}
 	}
 },
 "Border@moonsun":{
 	posthook : {
 		line : function(num){
-			this.board.setInfoByLine(this);
 			var room1 = this.sidecell[0].room, room2 = this.sidecell[1].room;
 			room1.countMarkAndLine();
 			if(room1!==room2){ room2.countMarkAndLine();}

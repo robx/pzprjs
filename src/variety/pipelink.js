@@ -162,9 +162,9 @@ BoardExec:{
 LineGraph:{
 	enabled : true,
 	isLineCross : true,
-	relation : ['cell','line'],
+	relation : {'border.line':'link', 'cell.ques':'cell'},
 	isedgevalidbylinkobj : function(border){ return border.isLine() || border.isLineEX();},
-	setCell : function(cell){
+	modifyOtherInfo : function(cell,type){
 		var cblist = cell.getdir4cblist();
 		for(var i=0;i<cblist.length;i++){
 			this.setEdgeByLinkObj(cblist[i][1]);

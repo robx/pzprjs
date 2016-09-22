@@ -103,6 +103,7 @@ Board:{
 
 AreaRoomGraph:{
 	enabled : true,
+	relation : {'cell.qnum':'node', 'cell.anum':'node', 'border.qans':'separator'},
 
 	isedgevalidbylinkobj : function(border){
 		if(border.isBorder()){ return false;}

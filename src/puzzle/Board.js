@@ -47,7 +47,7 @@ Board:{
 
 		// 補助オブジェクト
 		this.disrecinfo = 0;
-		this.infolist = {cell:[],border:[],line:[],all:[]};
+		this.infolist = [];
 
 		this.linegraph  = this.addInfoList(classes.LineGraph);			// 交差なし線のグラフ
 		this.roommgr = this.addInfoList(classes.AreaRoomGraph);			// 部屋情報を保持する
@@ -65,10 +65,7 @@ Board:{
 	addInfoList : function(Klass){
 		var instance = new Klass();
 		if(instance.enabled){
-			for(var i=0;i<instance.relation.length;i++){
-				this.infolist[instance.relation[i]].push(instance);
-			}
-			this.infolist.all.push(instance);
+			this.infolist.push(instance);
 		}
 		return instance;
 	},
@@ -503,24 +500,17 @@ Board:{
 
 	//--------------------------------------------------------------------------------
 	// bd.rebuildInfo()      部屋、黒マス、白マスの情報を再生成する
-	// bd.setInfoByCell()    黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
-	// bd.setInfoByBorder()  境界線が引かれたり消されてたりした時に、部屋情報を更新する
-	// bd.setInfoByLine()    線が引かれたり消されてたりした時に、線情報を更新する
+	// bd.modifyInfo()       黒マス・白マス・境界線や線が入力されたり消された時に情報を変更する
 	//--------------------------------------------------------------------------------
 	rebuildInfo : function(){
-		this.infolist.all.forEach(function(info){ info.rebuild();});
+		this.infolist.forEach(function(info){ info.rebuild();});
 	},
-	setInfoByCell : function(cell){
+	modifyInfo : function(obj, type){
 		if(!this.isenableInfo()){ return;}
-		this.infolist.cell.forEach(function(info){ info.setCell(cell);});
-	},
-	setInfoByBorder : function(border){
-		if(!this.isenableInfo()){ return;}
-		this.infolist.border.forEach(function(info){ info.setBorder(border);});
-	},
-	setInfoByLine : function(border){
-		if(!this.isenableInfo()){ return;}
-		this.infolist.line.forEach(function(info){ info.setLine(border);});
+		for(var i=0;i<this.infolist.length;++i){
+			var info = this.infolist[i];
+			if(!!info.relation[type]){ info.modifyInfo(obj, type);}
+		}
 	},
 
 	//---------------------------------------------------------------------------

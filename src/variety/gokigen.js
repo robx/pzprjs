@@ -151,7 +151,7 @@ BoardExec:{
 
 LineGraph:{
 	enabled : true,
-	relation : ['cell'],
+	relation : {'cell.qans':'link'},
 	
 	pointgroup : 'cross',
 	linkgroup  : 'cell',
@@ -168,7 +168,7 @@ LineGraph:{
 	
 	isedgevalidbylinkobj : function(cell){ return cell.qans>0;},
 	
-	setCell : function(cell){
+	setEdgeByLinkObj : function(cell){
 		this.modifyNodes = [];
 
 		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する

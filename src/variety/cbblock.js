@@ -52,6 +52,7 @@ Board:{
 
 "AreaTileGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.tile = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},

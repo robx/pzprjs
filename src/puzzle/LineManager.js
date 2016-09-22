@@ -6,11 +6,11 @@
 pzpr.classmgr.makeCommon({
 "LineGraph:GraphBase":{
 	initialize : function(){
-		if(this.moveline){ this.relation.push('cell');}
+		if(this.moveline){ this.relation['cell.qnum'] = 'cell';}
 	},
 	
 	enabled : false,
-	relation : ['line'],
+	relation : {'border.line':'link'},
 	
 	pointgroup : 'cell',
 	linkgroup  : 'border',
@@ -82,21 +82,11 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// linegraph.setLine()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// linegraph.setOtherInformation() 移動系パズルで数字などが入力された時に線の情報を生成しなおす
 	//---------------------------------------------------------------------------
-	setLine : function(border){
-		if(!this.enabled){ return;}
-		this.setEdgeByLinkObj(border);
-	},
-
-	//---------------------------------------------------------------------------
-	// linegraph.setCell()     移動系パズルで数字などが入力された時に線の情報を生成しなおす
-	//---------------------------------------------------------------------------
-	setCell : function(cell){
-		if(this.moveline){
-			if(!!cell.path){ this.setComponentInfo(cell.path);}
-			else           { this.resetExtraData(cell);}
-		}
+	modifyOtherInfo : function(cell, type){
+		if(!!cell.path){ this.setComponentInfo(cell.path);}
+		else           { this.resetExtraData(cell);}
 	},
 
 	//---------------------------------------------------------------------------
