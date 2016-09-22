@@ -36,7 +36,7 @@ pzpr.classmgr.makeCommon({
 		// Edgeの除去
 		var sidenodeobj = this.getSideObjByNodeObj(cell);
 		var node1 = this.getObjNodeList(cell)[0];
-		var preedges = node1.nodes.length, component = node1.component;
+		var preedges = node1.nodes.length, component = node1.component, endetach = (this.modifyNodes.length===0);
 		for(var i=0;i<sidenodeobj.length;i++){
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
 			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
@@ -46,7 +46,7 @@ pzpr.classmgr.makeCommon({
 		if(!!node1){ this.deleteNode(node1);}
 
 		// 周囲のComponent末端から切り離されただけの場合は情報を更新して終了
-		if(!this.rebuildmode && preedges===1){
+		if(!this.rebuildmode && preedges===1 && endetach){
 			this.setComponentInfo(component);
 			this.modifyNodes = [];
 		}
@@ -58,6 +58,7 @@ pzpr.classmgr.makeCommon({
 		// Edgeの付加
 		var sidenodeobj = this.getSideObjByNodeObj(cell);
 		var node1 = this.getObjNodeList(cell)[0];
+		var enattach = (this.modifyNodes.length===0);
 		for(var i=0;i<sidenodeobj.length;i++){
 			if(!this.isedgevalidbynodeobj(cell, sidenodeobj[i])){ continue;}
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
@@ -65,7 +66,7 @@ pzpr.classmgr.makeCommon({
 		}
 
 		// 周囲のComponentに1か所くっついただけの場合は情報を更新して終了
-		if(!this.rebuildmode && node1.nodes.length===1){
+		if(!this.rebuildmode && node1.nodes.length===1 && enattach){
 			this.attachNode(node1, node1.nodes[0].component);
 			this.modifyNodes = [];
 		}
