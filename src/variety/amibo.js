@@ -91,6 +91,7 @@ BoardExec:{
 
 "AreaNetGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.qans':'node'},
 	setComponentRefs : function(obj, component){ obj.net = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.netnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.netnodes = [];},
@@ -124,6 +125,7 @@ BoardExec:{
 },
 "AreaBarGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.qans':'node'},
 	setComponentRefs : function(obj, component){ obj.bar = component;}, // 2つのbarが設定されることがあるため信頼できない
 	getObjNodeList   : function(nodeobj){ return nodeobj.barnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},

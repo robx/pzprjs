@@ -7,7 +7,6 @@ pzpr.classmgr.makeCommon({
 //     回答チェックやURL出力前には一旦resetRoomNumber()等が必要です。
 //--------------------------------------------------------------------------------
 "AreaGraphBase:GraphBase":{
-	relation : {'cell.qans':'node'},
 	pointgroup : 'cell',
 
 	isedgevalidbynodeobj : function(cell1, cell2){
@@ -107,6 +106,7 @@ pzpr.classmgr.makeCommon({
 // ☆AreaNumberGraphクラス 数字情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
 'AreaShadeGraph:AreaGraphBase':{
+	relation : {'cell.qans':'node'},
 	setComponentRefs : function(obj, component){ obj.sblk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.sblknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.sblknodes = [];},
@@ -136,6 +136,7 @@ pzpr.classmgr.makeCommon({
 },
 
 'AreaUnshadeGraph:AreaGraphBase':{
+	relation : {'cell.qans':'node'},
 	setComponentRefs : function(obj, component){ obj.ublk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.ublknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.ublknodes = [];},
@@ -144,7 +145,7 @@ pzpr.classmgr.makeCommon({
 },
 
 'AreaNumberGraph:AreaGraphBase':{
-	relation : {'cell.qnum':'node', 'cell.anum':'node', 'cell.qsub':'node', 'cell.qans':''},
+	relation : {'cell.qnum':'node', 'cell.anum':'node', 'cell.qsub':'node'},
 	setComponentRefs : function(obj, component){ obj.nblk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.nblknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.nblknodes = [];},
@@ -156,7 +157,7 @@ pzpr.classmgr.makeCommon({
 // ☆AreaRoomGraphクラス 部屋情報オブジェクトのクラス
 //--------------------------------------------------------------------------------
 'AreaRoomGraph:AreaGraphBase':{
-	relation : {'cell.ques':'node', 'border.ques':'separator', 'border.qans':'separator', 'cell.qans':''},
+	relation : {'cell.ques':'node', 'border.ques':'separator', 'border.qans':'separator'},
 
 	hastop : false,
 
