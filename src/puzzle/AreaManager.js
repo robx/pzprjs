@@ -152,11 +152,11 @@ pzpr.classmgr.makeCommon({
 		var sidenodes = this.getSideNodesBySeparator(border);
 		if(sidenodes.length>=2){
 			this.addEdge(sidenodes[0], sidenodes[1]);
-			if(this.hastop){
-				this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);
-			}
 			if(border.sidecross[0].lcnt===0 || border.sidecross[1].lcnt===0){
 				this.modifyNodes = [];
+			}
+			else if(this.hastop){
+				this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);
 			}
 		}
 	},
