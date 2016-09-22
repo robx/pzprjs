@@ -74,7 +74,7 @@ Board:{
 	cols : 10,		/* 盤面の横幅(デフォルト) */
 	rows : 10,		/* 盤面の縦幅(デフォルト) */
 
-	hascross  : 2,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	hascross  : 2,	// 1:盤面内側のCrossが操作可能なパズル 2:外枠上を含めてCrossが操作可能なパズル (どちらもCrossは外枠上に存在します)
 	hasborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 	hasexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 	borderAsLine : false,	// 境界線をlineとして扱う

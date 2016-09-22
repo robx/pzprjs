@@ -145,11 +145,29 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// roommgr.addEdge() 境界線を消した時の処理
+	// roommgr.addEdgeBySeparator()    指定されたオブジェクトの場所にEdgeを生成する
+	// roommgr.removeEdgeBySeparator() 指定されたオブジェクトの場所からEdgeを除去する
 	//---------------------------------------------------------------------------
-	addEdge : function(node1, node2){
-		this.klass.GraphBase.prototype.addEdge.call(this,node1,node2);
-		if(this.hastop && !this.rebuildmode){ this.setTopOfRoom_combine(node1.obj,node2.obj);}
+	addEdgeBySeparator : function(border){ // 境界線を消した時の処理
+		var sidenodes = this.getSideNodesBySeparator(border);
+		if(sidenodes.length>=2){
+			this.addEdge(sidenodes[0], sidenodes[1]);
+			if(this.hastop){
+				this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);
+			}
+			if(border.sidecross[0].lcnt===0 || border.sidecross[1].lcnt===0){
+				this.modifyNodes = [];
+			}
+		}
+	},
+	removeEdgeBySeparator : function(border){ // 境界線を引いた時の処理
+		var sidenodes = this.getSideNodesBySeparator(border);
+		if(sidenodes.length>=2){
+			this.removeEdge(sidenodes[0], sidenodes[1]);
+			if(border.sidecross[0].lcnt===1 || border.sidecross[1].lcnt===1){
+				this.modifyNodes = [];
+			}
+		}
 	},
 
 	//--------------------------------------------------------------------------------
