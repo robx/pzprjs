@@ -14,6 +14,51 @@ pzpr.classmgr.makeCommon({
 		return this.isedgevalidbylinkobj(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)));
 	},
 
+	//---------------------------------------------------------------------------
+	// areagraph.setEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
+	//---------------------------------------------------------------------------
+	setEdgeByNodeObj : function(nodeobj){
+		// 一度Edgeを取り外す
+		if(this.getObjNodeList(nodeobj).length>0){
+			this.removeEdgeByNodeObj(nodeobj);
+		}
+		
+		// Edgeを付け直す
+		if(this.calcNodeCount(nodeobj)>0){
+			this.addEdgeByNodeObj(nodeobj);
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// areagraph.removeEdgeByNodeObj() 黒マスになったりした時にブロックの情報を消去する
+	// areagraph.addEdgeByNodeObj()    黒マスになったりした時にブロックの情報を生成する
+	//---------------------------------------------------------------------------
+	removeEdgeByNodeObj : function(cell){
+		// Edgeの除去
+		var sidenodeobj = this.getSideObjByNodeObj(cell);
+		var node1 = this.getObjNodeList(cell)[0];
+		for(var i=0;i<sidenodeobj.length;i++){
+			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
+			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
+		}
+
+		// Nodeを一旦取り除く
+		if(!!node1){ this.deleteNode(node1);}
+	},
+	addEdgeByNodeObj : function(cell){
+		// Nodeを付加する
+		for(var i=0,len=this.calcNodeCount(cell);i<len;i++){ this.createNode(cell);}
+		
+		// Edgeの付加
+		var sidenodeobj = this.getSideObjByNodeObj(cell);
+		var node1 = this.getObjNodeList(cell)[0];
+		for(var i=0;i<sidenodeobj.length;i++){
+			if(!this.isedgevalidbynodeobj(cell, sidenodeobj[i])){ continue;}
+			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
+			if(!!node1 && !!node2){ this.addEdge(node1, node2);}
+		}
+	},
+
 	//--------------------------------------------------------------------------------
 	// areagraph.setExtraData()   指定された領域の拡張データを設定する
 	//--------------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 pzpr.classmgr.makeCommon({
 "LineGraph:GraphBase":{
 	initialize : function(){
-		if(this.moveline){ this.relation['cell.qnum'] = 'cell';}
+		if(this.moveline){ this.relation['cell.qnum'] = 'move';}
 	},
 	
 	enabled : false,
@@ -84,6 +84,50 @@ pzpr.classmgr.makeCommon({
 				this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;
 			}
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.setEdgeByLinkObj() 線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	//---------------------------------------------------------------------------
+	setEdgeByLinkObj : function(linkobj){
+		var isset = this.isedgevalidbylinkobj(linkobj);
+		if(isset===this.isedgeexistsbylinkobj(linkobj)){ return;}
+
+		this.incdecLineCount(linkobj, isset);
+
+		if(isset){ this.addEdgeByLinkObj(linkobj);}
+		else     { this.removeEdgeByLinkObj(linkobj);}
+	},
+
+	//---------------------------------------------------------------------------
+	// graph.addEdgeByLinkObj()    指定されたオブジェクトの場所にEdgeを生成する
+	// graph.removeEdgeByLinkObj() 指定されたオブジェクトの場所からEdgeを除去する
+	//---------------------------------------------------------------------------
+	addEdgeByLinkObj : function(linkobj){ // 線(など)を引いた時の処理
+		var sidenodeobj = this.getSideObjByLinkObj(linkobj);
+		
+		// 周囲のNodeをグラフに追加するかどうか確認する
+		this.createNodeIfEmpty(sidenodeobj[0]);
+		this.createNodeIfEmpty(sidenodeobj[1]);
+
+		// linkするNodeを取得する
+		var sidenodes = this.getSideNodesByLinkObj(linkobj);
+
+		// 周囲のNodeとlink
+		this.addEdge(sidenodes[0], sidenodes[1]);
+	},
+	removeEdgeByLinkObj : function(linkobj){ // 線(など)を消した時の処理
+		// unlinkするNodeを取得する
+		var sidenodes = this.getSideNodesByLinkObj(linkobj);
+
+		// 周囲のNodeとunlink
+		this.removeEdge(sidenodes[0], sidenodes[1]);
+
+		// 周囲のNodeをグラフから取り除くかどうか確認する
+		this.deleteNodeIfEmpty(sidenodes[0].obj);
+		this.deleteNodeIfEmpty(sidenodes[1].obj);
+
+		this.setComponentRefs(linkobj, null);
 	},
 
 	//---------------------------------------------------------------------------
