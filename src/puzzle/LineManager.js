@@ -49,16 +49,19 @@ pzpr.classmgr.makeCommon({
 	// linegraph.rebuild2() 継承先に固有のデータを設定する
 	//---------------------------------------------------------------------------
 	rebuild2 : function(){
-		var cells = this.board[this.pointgroup];
-		this.ltotal=[cells.length];
-		for(var c=0;c<cells.length;c++){ cells[c].lcnt = 0;}
-		
+		this.resetLineCount();
 		pzpr.common.GraphBase.prototype.rebuild2.call(this);
 	},
 
 	//---------------------------------------------------------------------------
+	// linegraph.resetLineCount()  初期化時に、lcnt情報を初期化する
 	// linegraph.incdecLineCount() 線が引かれたり消された時に、lcnt変数を生成し直す
 	//---------------------------------------------------------------------------
+	resetLineCount : function(){
+		var cells = this.board[this.pointgroup];
+		this.ltotal=[cells.length];
+		for(var c=0;c<cells.length;c++){ cells[c].lcnt = 0;}
+	},
 	incdecLineCount : function(cell, isset){
 		if(cell.group===this.pointgroup && !cell.isnull){
 			this.ltotal[cell.lcnt]--;

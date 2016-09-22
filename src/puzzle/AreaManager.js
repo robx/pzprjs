@@ -122,15 +122,20 @@ pzpr.classmgr.makeCommon({
 	//--------------------------------------------------------------------------------
 	rebuild2 : function(){
 		this.klass.AreaGraphBase.prototype.rebuild2.call(this);
+		this.resetBorderCount();
+	},
 
+	//---------------------------------------------------------------------------
+	// roomgraph.resetBorderCount()  初期化時に、lcnt情報を初期化する
+	// roomgraph.incdecBorderCount() 線が引かれたり消された時に、lcnt変数を生成し直す
+	//---------------------------------------------------------------------------
+	resetBorderCount : function(){
 		var bd = this.board, borders = bd.border;
-		this.ltotal=[];
 		/* 外枠のカウントをあらかじめ足しておく */
 		for(var c=0;c<bd.cross.length;c++){
 			var cross = bd.cross[c], bx = cross.bx, by = cross.by;
 			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
 			cross.lcnt = (ischassis?2:0);
-			this.ltotal[cross.lcnt] = (this.ltotal[cross.lcnt] || 0) + 1;
 		}
 		for(var id=0;id<borders.length;id++){
 			if(!this.isedgevalidbylinkobj(borders[id])){
@@ -138,17 +143,11 @@ pzpr.classmgr.makeCommon({
 			}
 		}
 	},
-
-	//---------------------------------------------------------------------------
-	// roomgraph.incdecBorderCount() 線が引かれたり消された時に、lcnt変数を生成し直す
-	//---------------------------------------------------------------------------
 	incdecBorderCount : function(border, isset){
 		for(var i=0;i<2;i++){
 			var cross = border.sidecross[i];
 			if(!cross.isnull){
-				this.ltotal[cross.lcnt]--;
 				if(isset){ cross.lcnt++;}else{ cross.lcnt--;}
-				this.ltotal[cross.lcnt] = (this.ltotal[cross.lcnt] || 0) + 1;
 			}
 		}
 	},
@@ -166,19 +165,21 @@ pzpr.classmgr.makeCommon({
 	// roomgraph.removeEdgeBySeparator() 指定されたオブジェクトの場所からEdgeを除去する
 	//---------------------------------------------------------------------------
 	addEdgeBySeparator : function(border){
+		this.incdecBorderCount(border, false);
+		
 		var sidenodes = this.getSideNodesBySeparator(border);
 		if(sidenodes.length>=2){
 			this.addEdge(sidenodes[0], sidenodes[1]);
 			if(this.hastop){ this.setTopOfRoom_combine(sidenodes[0].obj,sidenodes[1].obj);}
 		}
-		this.incdecBorderCount(border, false);
 	},
 	removeEdgeBySeparator : function(border){
+		this.incdecBorderCount(border, true);
+		
 		var sidenodes = this.getSideNodesBySeparator(border);
 		if(sidenodes.length>=2){
 			this.removeEdge(sidenodes[0], sidenodes[1]);
 		}
-		this.incdecBorderCount(border, true);
 	},
 
 	//--------------------------------------------------------------------------------
