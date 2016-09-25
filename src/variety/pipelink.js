@@ -504,7 +504,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add(code);
-			this.board.border.setnoerr();
+			if(!this.checkOnly){ this.board.border.setnoerr();}
 		}
 	}
 },

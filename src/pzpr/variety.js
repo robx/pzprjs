@@ -139,6 +139,7 @@ delete variety.extend;
 	nuribou   :[1,0,"ぬりぼう","Nuribou",'nurikabe'],
 	nurikabe  :[0,1,"ぬりかべ","Nurikabe",'nurikabe'],
 	nurimaze  :[0,0,"ぬりめいず","Nuri-Maze",'nurimaze'],
+	onsen     :[0,0,"温泉めぐり","Onsen-meguri",'country'],
 	paintarea :[1,0,"ペイントエリア","Paintarea"],
 	pipelink  :[1,0,"パイプリンク","Pipelink",'pipelink'],
 	pipelinkr :[1,0,"帰ってきたパイプリンク","Pipelink Returns",'pipelink'],

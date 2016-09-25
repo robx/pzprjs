@@ -269,6 +269,9 @@ GraphBase:{
 		var sidenodes = this.getSideNodesBySeparator(border);
 		if(!sidenodes){ return;}
 		this.removeEdge(sidenodes[0], sidenodes[1]);
+		if(this.linkgroup){
+			this.setComponentRefs(border, null);
+		}
 	},
 
 	//---------------------------------------------------------------------------
