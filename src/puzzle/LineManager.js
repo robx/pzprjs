@@ -20,6 +20,8 @@ pzpr.classmgr.makeCommon({
 	makeClist : false,		// 線が存在するclistを生成する
 	moveline  : false,		// 丸数字などを動かすパズル
 	
+	coloring : true,
+	
 	//--------------------------------------------------------------------------------
 	// linegraph.setComponentRefs()    objにcomponentの設定を行う (性能対策)
 	// linegraph.isedgeexistsbylinkobj() linkobjにedgeが存在するか判定する
@@ -54,7 +56,9 @@ pzpr.classmgr.makeCommon({
 		pzpr.common.GraphBase.prototype.rebuild.call(this);
 	},
 	rebuild2 : function(){
-		this.resetLineCount();
+		if(!!this.incdecLineCount){
+			this.resetLineCount();
+		}
 		pzpr.common.GraphBase.prototype.rebuild2.call(this);
 	},
 
@@ -93,7 +97,9 @@ pzpr.classmgr.makeCommon({
 		var isset = this.isedgevalidbylinkobj(linkobj);
 		if(isset===this.isedgeexistsbylinkobj(linkobj)){ return;}
 
-		this.incdecLineCount(linkobj, isset);
+		if(!!this.incdecLineCount){
+			this.incdecLineCount(linkobj, isset);
+		}
 
 		if(isset){ this.addEdgeByLinkObj(linkobj);}
 		else     { this.removeEdgeByLinkObj(linkobj);}
@@ -218,7 +224,7 @@ pzpr.classmgr.makeCommon({
 		if(this.moveline){ nodeobj.base = (nodeobj.isNum() ? nodeobj : this.board.emptycell);}
 	},
 	setExtraData : function(component){
-		if(!component.color){
+		if(this.coloring && !component.color){
 			component.color = this.puzzle.painter.getNewLineColor();
 		}
 		

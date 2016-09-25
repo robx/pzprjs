@@ -98,7 +98,7 @@ pzpr.classmgr.makeCommon({
 	//--------------------------------------------------------------------------------
 	setExtraData : function(component){
 		component.clist = new this.klass.CellList(component.getnodeobjs());
-		if(this.puzzle.painter.irowakeblk && !component.color){
+		if(this.coloring && !component.color){
 			component.color = this.puzzle.painter.getNewLineColor();
 		}
 	},

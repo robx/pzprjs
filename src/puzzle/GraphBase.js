@@ -13,6 +13,8 @@ GraphBase:{
 	pointgroup : '',
 	linkgroup  : '',
 	
+	coloring : false,
+	
 	//--------------------------------------------------------------------------------
 	// graph.removeFromArray()    Arrayからitemを取り除く
 	//--------------------------------------------------------------------------------
@@ -336,12 +338,12 @@ GraphBase:{
 		// subgraphがひとつながりでないなら再探索ルーチンを回す
 	},
 	remakeMaximalComonents : function(remakeComponents){
-		var longColor = this.getLongColor(remakeComponents);
+		var longColor = (this.coloring ? this.getLongColor(remakeComponents) : null);
 		for(var p=0;p<remakeComponents.length;p++){
 			this.deleteComponent(remakeComponents[p]);
 		}
 		var newComponents = this.searchGraph();
-		this.setLongColor(newComponents, longColor);
+		if(this.coloring){ this.setLongColor(newComponents, longColor);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -411,16 +413,19 @@ GraphBase:{
 		for(var i=1;i<components.length;i++){
 			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
 		}
-		return (!!largeComponent ? largeComponent.color : this.puzzle.painter.getNewLineColor());
+		return (!!largeComponent ? largeComponent.color : null);
 	},
 	setLongColor : function(components, longColor){
 		if(components.length===0){ return;}
 		var puzzle = this.puzzle;
 		
 		// できた線の中でもっとも長いものを取得する
-		var largeComponent = components[0];
-		for(var i=1;i<components.length;i++){
-			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+		var largeComponent = null;
+		if(!!longColor){
+			largeComponent = components[0];
+			for(var i=1;i<components.length;i++){
+				if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+			}
 		}
 		
 		// 新しい色の設定
@@ -429,7 +434,7 @@ GraphBase:{
 			path.color = (path===largeComponent ? longColor : path.color);
 		}
 		
-		if(puzzle.execConfig('irowake') || puzzle.execConfig('irowakeblk')){
+		if(this.coloring && (puzzle.execConfig('irowake') || puzzle.execConfig('irowakeblk'))){
 			this.repaintNodes(components);
 		}
 	},

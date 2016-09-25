@@ -517,11 +517,9 @@ Board:{
 	// bd.irowakeRemake() 「色分けしなおす」ボタンを押した時などに色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		if(this.puzzle.painter.irowake){
-			this.linegraph.newIrowake();
-		}
-		if(this.puzzle.painter.irowakeblk){
-			this.sblkmgr.newIrowake();
+		for(var i=0;i<this.infolist.length;++i){
+			var info = this.infolist[i];
+			if(info.coloring){ info.newIrowake();}
 		}
 	},
 

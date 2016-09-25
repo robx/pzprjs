@@ -92,6 +92,7 @@ BoardExec:{
 "AreaNetGraph:AreaGraphBase":{
 	enabled : true,
 	relation : {'cell.qans':'node'},
+	coloring : true,
 	setComponentRefs : function(obj, component){ obj.net = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.netnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.netnodes = [];},
