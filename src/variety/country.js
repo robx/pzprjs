@@ -87,6 +87,9 @@ Board:{
 	hasborder : 1
 },
 "Board@onsen":{
+	cols : 8,
+	rows : 8,
+
 	addExtraInfo : function(){
 		this.lineblkgraph = this.addInfoList(this.klass.LineBlockGraph);
 	}
