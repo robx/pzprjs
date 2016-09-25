@@ -16,7 +16,7 @@ function toPID(name){
 	return '';
 }
 
-var variety = pzpr.variety = function(pid){
+var variety = pzpr.variety = pzpr.genre = function(pid){
 	return _info[toPID(pid)] || {valid:false};
 };
 variety.extend = function(obj){ for(var n in obj){ this[n] = obj[n];}};
@@ -35,9 +35,9 @@ variety.extend({
 });
 delete variety.extend;
 
-(function(Variety, obj){
+(function(Genre, obj){
 	for(var pzprid in obj){
-		_info[pzprid] = new Variety(pzprid,obj[pzprid]);
+		_info[pzprid] = new Genre(pzprid,obj[pzprid]);
 		try{
 			Object.freeze(_info[pzprid]);
 			Object.freeze(_info[pzprid].exists);
@@ -45,7 +45,7 @@ delete variety.extend;
 		}catch(e){}
 	}
 })
-(function Variety(pzprid, datalist){
+(function Genre(pzprid, datalist){
 	this.valid  = true;
 	this.pid    = pzprid;		/* パズルID */
 	this.script = (!!datalist[4] ? datalist[4] : pzprid);	/* スクリプトファイル(クラス) */
