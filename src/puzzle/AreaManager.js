@@ -77,27 +77,6 @@ pzpr.classmgr.makeCommon({
 	//--------------------------------------------------------------------------------
 	setExtraData : function(component){
 		component.clist = new this.klass.CellList(component.getnodeobjs());
-	},
-
-	//---------------------------------------------------------------------------
-	// areagraph.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する
-	//---------------------------------------------------------------------------
-	getSideAreaInfo : function(cellinfo){
-		var sides=[], len=this.components.length, adjs={}, bd=this.board;
-		for(var r=0;r<this.components.length;r++){ this.components[r].id = r;}
-		for(var id=0;id<bd.border.length;id++){
-			var cell1 = bd.border[id].sidecell[0], cell2 = bd.border[id].sidecell[1];
-			if(cell1.isnull || cell2.isnull){ continue;}
-			var room1=cell1[cellinfo], room2=cell2[cellinfo];
-			if(room1===room2 || room1===null || room2===null){ continue;}
-
-			var key = (room1.id<room2.id ? room1.id*len+room2.id : room2.id*len+room1.id);
-			if(!!adjs[key]){ continue;}
-			adjs[key] = true;
-
-			sides.push([room1,room2]);
-		}
-		return sides;
 	}
 },
 
@@ -162,6 +141,7 @@ pzpr.classmgr.makeCommon({
 
 	hastop : false,
 
+	getComponentRefs : function(obj){ return obj.room;}, // getSideAreaInfo用
 	setComponentRefs : function(obj, component){ obj.room = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.roomnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.roomnodes = [];},
@@ -276,6 +256,26 @@ pzpr.classmgr.makeCommon({
 		if(this.puzzle.painter.autocmp==='room'){
 			component.checkAutoCmp();
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// roommgr.getSideAreaInfo()  接しているが異なる領域部屋の情報を取得する
+	//---------------------------------------------------------------------------
+	getSideAreaInfo : function(){
+		var sides=[], len=this.components.length, adjs={}, bd=this.board;
+		for(var r=0;r<this.components.length;r++){ this.components[r].id = r;}
+		for(var id=0;id<bd.border.length;id++){
+			var room1=this.getComponentRefs(bd.border[id].sidecell[0]);
+			var room2=this.getComponentRefs(bd.border[id].sidecell[1]);
+			if(room1===room2 || !room1 || !room2){ continue;}
+
+			var key = (room1.id<room2.id ? room1.id*len+room2.id : room2.id*len+room1.id);
+			if(!!adjs[key]){ continue;}
+			adjs[key] = true;
+
+			sides.push([room1,room2]);
+		}
+		return sides;
 	}
 }
 });

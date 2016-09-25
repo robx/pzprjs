@@ -108,7 +108,7 @@ FileIO:{
 		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (w===1||h===1)&&a<=4;}, "bkLenGt4");
 	},
 	checkSideAreaRoomSize : function(){
-		this.checkSideAreaSize(function(area){ return area.clist.length;}, "bsSizeEq");
+		this.checkSideAreaSize(this.board.roommgr, function(area){ return area.clist.length;}, "bsSizeEq");
 	}
 },
 "AnsCheck@usotatami":{

@@ -98,21 +98,21 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
-	hasborder : 1
+	hasborder : 1,
+
+	addExtraInfo : function(){
+		this.numblkgraph = this.addInfoList(this.klass.AreaNumBlockGraph);
+	}
 },
 
-AreaRoomGraph:{
+"AreaNumBlockGraph:AreaNumberGraph":{
 	enabled : true,
 	relation : {'cell.qnum':'node', 'cell.anum':'node', 'border.qans':'separator'},
 
+	isnodevalid : function(cell){ return true;},
 	isedgevalidbylinkobj : function(border){
 		if(border.isBorder()){ return false;}
 		var num1 = border.sidecell[0].getNum(), num2 = border.sidecell[1].getNum();
-		return (num1===num2 || num1<0 || num2<0);
-	},
-	isedgevalidbynodeobj : function(cell1, cell2){
-		if(this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder()){ return false;}
-		var num1 = cell1.getNum(), num2 = cell2.getNum();
 		return (num1===num2 || num1<0 || num2<0);
 	},
 
@@ -132,6 +132,11 @@ AreaRoomGraph:{
 		if(numkind>1 && !!nums[-2]){ --numkind;}
 		component.numkind = numkind;
 		component.number = (numkind===1 ? filled : -1);
+	},
+
+	getComponentRefs : function(cell){ return cell.nblk;}, // getSideAreaInfo用
+	getSideAreaInfo : function(){
+		return this.klass.AreaRoomGraph.prototype.getSideAreaInfo.call(this);
 	}
 },
 
@@ -237,7 +242,7 @@ AnsCheck:{
 	],
 
 	checkSideAreaNumberSize : function(){
-		this.checkSideAreaSize(function(area){ return area.number;}, "bsSameNum");
+		this.checkSideAreaSize(this.board.numblkgraph, function(area){ return area.number;}, "bsSameNum");
 	},
 
 	checkSmallArea : function(){ this.checkAllErrorRoom(function(area){ return !(area.number>area.clist.length && area.number>0);}, "bkSizeLt");},
@@ -245,7 +250,7 @@ AnsCheck:{
 	checkNumKinds  : function(){ this.checkAllErrorRoom(function(area){ return area.numkind<=1;}, "bkMixedNum");},
 	checkNoNumArea : function(){ this.checkAllErrorRoom(function(area){ return area.numkind>=1;}, "bkNoNum");},
 	checkAllErrorRoom : function(evalfunc, code){
-		var rooms = this.board.roommgr.components;
+		var rooms = this.board.numblkgraph.components;
 		for(var id=0;id<rooms.length;id++){
 			var area = rooms[id];
 			if( !area || evalfunc(area) ){ continue;}

@@ -66,14 +66,14 @@ AnsCheck:{
 		var result = true, bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], cell2 = cell.adjacent.right;
-			if(cell.bx<bd.maxbx-1 && func(cell,cell2)){
+			if(cell.bx < bd.maxbx-1 && func(cell,cell2)){
 				result = false;
 				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell2.seterr(1);
 			}
 			cell2 = cell.adjacent.bottom;
-			if(cell.by<bd.maxby-1 && func(cell,cell2)){
+			if(cell.by < bd.maxby-1 && func(cell,cell2)){
 				result = false;
 				if(this.checkOnly){ break;}
 				cell.seterr(1);
@@ -362,8 +362,8 @@ AnsCheck:{
 	// ans.checkSideAreaSize() 境界線をはさんで接する部屋のgetvalで得られるサイズが異なることを判定する
 	// ans.checkSideAreaCell() 境界線をはさんでタテヨコに接するセルの判定を行う
 	//---------------------------------------------------------------------------
-	checkSideAreaSize : function(getval, code){
-		var sides = this.board.roommgr.getSideAreaInfo('room');
+	checkSideAreaSize : function(graph, getval, code){
+		var sides = graph.getSideAreaInfo();
 		for(var i=0;i<sides.length;i++){
 			var a1=getval(sides[i][0]), a2=getval(sides[i][1]);
 			if(a1<=0 || a2<=0 || a1!==a2){ continue;}

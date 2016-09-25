@@ -308,7 +308,7 @@ FileIO:{
 		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
 	},
 	checkSideAreaLandSide : function(){
-		this.checkSideAreaSize(function(area){ return area.clist.filter(function(cell){ return cell.isShade();}).length;}, "bsEqShade");
+		this.checkSideAreaSize(this.board.roommgr, function(area){ return area.clist.filter(function(cell){ return cell.isShade();}).length;}, "bsEqShade");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
