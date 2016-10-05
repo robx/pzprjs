@@ -17,7 +17,8 @@ MouseEvent:{
 				if(this.btn==='left'){ this.inputLine();}
 				else if(this.btn==='right' && this.pid!=='country'){ this.inputpeke();}
 			}
-			else if(this.mouseend && this.notInputted() && this.pid!=='onsen'){
+			else if(this.mouseend && this.notInputted()){
+				if(this.pid!=='country' && this.inputpeke_onend()){ return;}
 				this.inputMB();
 			}
 		}
@@ -29,17 +30,20 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
+	},
+
+	inputpeke_onend : function(){
+		var border = this.getpos(0.22).getb();
+		if(border.group==='border' && !border.isnull){
+			this.inputpeke();
+			return true;
+		}
+		return false;
 	}
 },
 "MouseEvent@moonsun":{
 	// オーバーライド
 	inputMB : function(){
-		var border = this.getpos(0.22).getb();
-		if(border.group==='border' && !border.isnull){
-			this.inputpeke();
-			return;
-		}
-		
 		var cell = this.getcell();
 		if(cell.isnull || cell.qnum===-1){ return;}
 		var clist = cell.room.clist.filter(function(cell2){ return cell.qnum===cell2.qnum;});
