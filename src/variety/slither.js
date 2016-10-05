@@ -12,37 +12,37 @@
 	redline : true,
 },
 MouseEvent:{
-	bgcolor : true,
-	
 	mouseinput : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode){
-			var inputbg = false;
-			if     (this.mousestart){ inputbg = (!!puzzle.getConfig('bgcolor') && this.inputBGcolor0());}
-			else if(this.mousemove) { inputbg = (!!puzzle.getConfig('bgcolor') && this.inputData>=10);}
-
-			if(!inputbg){
-				if(this.btn==='left'){
-					if(this.mousestart || this.mousemove){ this.inputLine();}
-					else if(this.pid==='slither' && this.mouseend && this.notInputted()){
-						this.prevPos.reset();
-						this.inputpeke();
-					}
-				}
-				else if(this.btn==='right'){
-					if(this.pid==='slither' && (this.mousestart || this.mousemove)){ this.inputpeke();}
-					else if(this.pid==='bag'){ this.inputBGcolor(true);}
+			if(this.checkInputBGcolor()){
+				this.inputBGcolor(false);
+			}
+			else if(this.btn==='left'){
+				if(this.mousestart || this.mousemove){ this.inputLine();}
+				else if(this.pid==='slither' && this.mouseend && this.notInputted()){
+					this.prevPos.reset();
+					this.inputpeke();
 				}
 			}
-			else{ this.inputBGcolor(false);}
+			else if(this.btn==='right'){
+				if(this.pid==='slither' && (this.mousestart || this.mousemove)){ this.inputpeke();}
+				else if(this.pid==='bag'){ this.inputBGcolor(true);}
+			}
 		}
 		else if(puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
 	},
 
-	inputBGcolor0 : function(){
-		return this.getpos(0.25).oncell();
+	checkInputBGcolor : function(){
+		var inputbg = (this.pid==='bag'||this.puzzle.execConfig('bgcolor'));
+		if(inputbg){
+			if     (this.mousestart){ inputbg = this.getpos(0.25).oncell();}
+			else if(this.mousemove) { inputbg = (this.inputData>=10);}
+			else                    { inputbg = false;}
+		}
+		return inputbg;
 	},
 	inputBGcolor : function(isnormal){
 		var cell = this.getcell();

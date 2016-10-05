@@ -43,7 +43,7 @@ Config.prototype =
 		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
-		this.add('bgcolor', false);			/* 背景色入力 */
+		this.add('bgcolor', false);			/* slither 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
 		this.add('singlenum', (!pzpr.env.API.touchevent));	/* hanare: 部屋に回答数字を一つだけ入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
@@ -158,7 +158,7 @@ Config.prototype =
 			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
 			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
 			case 'disptype_yajilin':   exec = (pid==="yajirin"); break;
-			case 'bgcolor':  exec = puzzle.mouse.bgcolor; break;
+			case 'bgcolor':  exec = (pid==='slither'); break;
 			case 'irowake':  exec = puzzle.painter.irowake; break;
 			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;
 			case 'snakebd':  exec = (pid==="snakes"); break;
