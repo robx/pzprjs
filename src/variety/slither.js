@@ -1,15 +1,17 @@
 //
-// パズル固有スクリプト部 スリザーリンク版 slither.js
+// パズル固有スクリプト部 スリザーリンク・バッグ版 slither.js
 //
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['slither'], {
+['slither','bag'], {
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
+"MouseEvent@slither":{
 	redline : true,
+},
+MouseEvent:{
 	bgcolor : true,
 	
 	mouseinput : function(){
@@ -22,16 +24,17 @@ MouseEvent:{
 			if(!inputbg){
 				if(this.btn==='left'){
 					if(this.mousestart || this.mousemove){ this.inputLine();}
-					else if(this.mouseend && this.notInputted()){
+					else if(this.pid==='slither' && this.mouseend && this.notInputted()){
 						this.prevPos.reset();
 						this.inputpeke();
 					}
 				}
 				else if(this.btn==='right'){
-					if(this.mousestart || this.mousemove){ this.inputpeke();}
+					if(this.pid==='slither' && (this.mousestart || this.mousemove)){ this.inputpeke();}
+					else if(this.pid==='bag'){ this.inputBGcolor(true);}
 				}
 			}
-			else{ this.inputBGcolor();}
+			else{ this.inputBGcolor(false);}
 		}
 		else if(puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
@@ -41,11 +44,11 @@ MouseEvent:{
 	inputBGcolor0 : function(){
 		return this.getpos(0.25).oncell();
 	},
-	inputBGcolor : function(){
+	inputBGcolor : function(isnormal){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){
-			if(this.btn==='left'){
+			if(isnormal || this.btn==='left'){
 				if     (cell.qsub===0){ this.inputData=11;}
 				else if(cell.qsub===1){ this.inputData=12;}
 				else                  { this.inputData=10;}
@@ -71,7 +74,7 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Cell:{
+"Cell@slither":{
 	maxnum : 3,
 	minnum : 0,
 
@@ -84,10 +87,29 @@ Cell:{
 		return cnt;
 	}
 },
+"Cell@bag":{
+	maxnum : function(){
+		return Math.min(255, this.board.cols+this.board.rows-1);
+	},
+	minnum : 2,
+
+	inside : false /* 正答判定用 */
+},
 
 Board:{
 	hasborder : 2,
 	borderAsLine : true
+},
+"Board@bag":{
+	searchInsideArea : function(){
+		this.cell[0].inside = (this.cross[0].lcnt!==0);
+		for(var by=1;by<this.maxby;by+=2){
+			if(by>1){ this.getc(1,by).inside = !!(this.getc(1,by-2).inside ^ this.getb(1,by-1).isLine());}
+			for(var bx=3;bx<this.maxbx;bx+=2){
+				this.getc(bx,by).inside = !!(this.getc(bx-2,by).inside ^ this.getb(bx-1,by).isLine());
+			}
+		}
+	}
 },
 
 LineGraph:{
@@ -96,36 +118,41 @@ LineGraph:{
 
 //---------------------------------------------------------
 // 画像表示系
+"Graphic@slither":{
+	irowake : true
+},
+"Graphic@bag":{
+	gridcolor_type : "DLIGHT"
+},
 Graphic:{
-	irowake : true,
-
 	bgcellcolor_func : "qsub2",
 	numbercolor_func : "qnum",
 
 	paint : function(){
 		this.drawBGCells();
-
+		if(this.pid==='bag'){ this.drawDashedGrid(false);}
 		this.drawLines();
 
-		this.drawBaseMarks();
+		if(this.pid==='slither'){ this.drawBaseMarks();}
 
 		this.drawNumbers();
 
-		this.drawPekes();
+		if(this.pid==='slither'){ this.drawPekes();}
 
 		this.drawTarget();
 	},
 
 	repaintParts : function(blist){
-		this.range.crosses = blist.crossinside();
-
-		this.drawBaseMarks();
+		if(this.pid==='slither'){
+			this.range.crosses = blist.crossinside();
+			this.drawBaseMarks();
+		}
 	}
 },
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@slither":{
 	decodePzpr : function(type){
 		this.decode4Cell();
 	},
@@ -140,10 +167,18 @@ Encode:{
 		this.fio.encodeCellQnum_kanpen();
 	}
 },
+"Encode@bag":{
+	decodePzpr : function(type){
+		this.decodeNumber16();
+	},
+	encodePzpr : function(type){
+		this.encodeNumber16();
+	}
+},
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		if(this.filever===1){
+		if(this.filever===1 || this.pid!=='slither'){
 			this.decodeCellQnum();
 			this.decodeCellQsub();
 			this.decodeBorderLine();
@@ -154,12 +189,13 @@ FileIO:{
 		}
 	},
 	encodeData : function(){
-		this.filever = 1;
+		if(this.pid==='slither'){ this.filever = 1;}
 		this.encodeCellQnum();
 		this.encodeCellQsub();
 		this.encodeBorderLine();
-	},
-
+	}
+},
+"FileIO@slither":{
 	kanpenOpen : function(){
 		this.decodeCellQnum_kanpen();
 		this.decodeBorderLine();
@@ -225,17 +261,53 @@ AnsCheck:{
 		"checkLineExist+",
 		"checkBranchLine",
 		"checkCrossLine",
-		"checkdir4BorderLine",
+
+		"checkdir4BorderLine@slither",
+
 		"checkOneLoop",
-		"checkDeadendLine+"
-	],
-	
+		"checkDeadendLine+",
+
+		"checkOutsideNumber@bag",
+		"checkViewOfNumber@bag"
+	]
+},
+"AnsCheck@slither":{
 	checkdir4BorderLine : function(){
 		this.checkAllCell(function(cell){ return (cell.qnum>=0 && cell.getdir4BorderLine1()!==cell.qnum);}, "nmLineNe");
 	}
 },
+"AnsCheck@bag":{
+	checkOutsideNumber : function(){
+		this.board.searchInsideArea();	/* cell.insideを設定する */
+		this.checkAllCell(function(cell){ return (!cell.inside && cell.isNum());}, "nmOutside");
+	},
+	checkViewOfNumber : function(icheck){
+		var bd = this.board;
+		for(var cc=0;cc<bd.cell.length;cc++){
+			var cell=bd.cell[cc];
+			if(!cell.isValidNum()){ continue;}
 
-FailCode:{
+			var clist = new this.klass.CellList(), adc = cell.adjacent, target;
+			clist.add(cell);
+			target=adc.left;   while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.left;  }
+			target=adc.right;  while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.right; }
+			target=adc.top;    while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.top;   }
+			target=adc.bottom; while(!target.isnull && target.inside){ clist.add(target); target=target.adjacent.bottom;}
+
+			if(cell.qnum===clist.length){ continue;}
+			
+			this.failcode.add("nmSumViewNe");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
+		}
+	}
+},
+
+"FailCode@slither":{
 	nmLineNe : ["数字の周りにある線の本数が違います。","The number is not equal to the number of lines around it."]
+},
+"FailCode@bag":{
+	nmOutside   : ["輪の内側に入っていない数字があります。","There is an outside number."],
+	nmSumViewNe : ["数字と輪の内側になる4方向のマスの合計が違います。","The number and the sum of the inside cells of four direction is different."]
 }
 }));

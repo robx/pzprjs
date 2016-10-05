@@ -71,7 +71,7 @@ delete variety.extend;
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
 	arukone   :[0,0,"アルコネ","Arukone",'numlin'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
-	bag       :[1,0,"バッグ","BAG (Corral)",'',{alias:'correl',alias2:'cave'}],
+	bag       :[1,0,"バッグ","BAG (Corral)",'slither',{alias:'correl',alias2:'cave'}],
 	barns     :[1,0,"バーンズ","Barns"],
 	bdblock   :[1,0,"ボーダーブロック","Border Block"],
 	bonsan    :[1,0,"ぼんさん","Bonsan",'bonsan'],
