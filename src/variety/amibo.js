@@ -16,6 +16,7 @@ MouseEvent:{
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			if(this.mouseend && this.notInputted()){
+				if(this.inputpeke_onend()){ return;}
 				this.clickTateyoko();
 			}
 		}
@@ -24,6 +25,14 @@ MouseEvent:{
 		}
 	},
 
+	inputpeke_onend : function(){
+		var border = this.getpos(0.22).getb();
+		if(border.group==='border' && !border.isnull){
+			this.inputpeke();
+			return true;
+		}
+		return false;
+	},
 	clickTateyoko : function(){
 		var cell  = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}
