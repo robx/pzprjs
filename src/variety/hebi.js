@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js
+// パズル固有スクリプト部 へびいちご版 hebi.js
 //
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['snakes'], {
+['hebi'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

@@ -29,7 +29,7 @@ Config.prototype =
 		this.add('disptype_yajilin', 1, [1,2]);					/* yajilin: 表示形式 */
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
-		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
+		this.add('snakebd', false);								/* hebi: へびの境界線を表示する */
 		this.add('dispqnumbg', false);							/* yinyang: 問題のまるに背景色をつける */
 		this.add('undefcell', true);							/* shugaku: 未確定マスはグレー表示にする */
 
@@ -161,7 +161,7 @@ Config.prototype =
 			case 'bgcolor':  exec = (pid==='slither'); break;
 			case 'irowake':  exec = puzzle.painter.irowake; break;
 			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;
-			case 'snakebd':  exec = (pid==="snakes"); break;
+			case 'snakebd':  exec = (pid==="hebi"); break;
 			case 'dispqnumbg':exec= (pid==='yinyang'); break;
 			case 'undefcell':exec = (pid==='shugaku'); break;
 			case 'redline':  exec = puzzle.mouse.redline; break;
