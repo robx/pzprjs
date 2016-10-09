@@ -60,7 +60,18 @@ MouseEvent:{
 			this.setcursor(cell);
 		}
 		else{
-			this.inputqnum_main(cell);
+			var isQuesShaded = (this.pid==='makaro'||this.pid==='kakuru');
+			if(isQuesShaded){
+				if(this.puzzle.editmode){
+					if(this.inputshade_preqnum(cell)){ return;}
+				}
+				if(cell.ques!==1){
+					this.inputqnum_main(cell);
+				}
+			}
+			else{
+				this.inputqnum_main(cell);
+			}
 		}
 		this.mouseCell = cell;
 	},
@@ -117,6 +128,11 @@ MouseEvent:{
 
 		cell0.draw();
 	},
+
+	//---------------------------------------------------------------------------
+	// mv.inputQues() Cellの黒マスを入力する
+	//---------------------------------------------------------------------------
+	inputshade : function(cell){},
 
 	//---------------------------------------------------------------------------
 	// mv.inputQues() Cellのquesデータをarrayのとおりに入力する
