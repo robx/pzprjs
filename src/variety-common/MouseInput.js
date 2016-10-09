@@ -60,7 +60,18 @@ MouseEvent:{
 			this.setcursor(cell);
 		}
 		else{
-			this.inputqnum_main(cell);
+			var isQuesShaded = (this.pid==='makaro'||this.pid==='kakuru');
+			if(isQuesShaded){
+				if(this.puzzle.editmode){
+					if(this.inputshade_preqnum(cell)){ return;}
+				}
+				if(cell.ques!==1){
+					this.inputqnum_main(cell);
+				}
+			}
+			else{
+				this.inputqnum_main(cell);
+			}
 		}
 		this.mouseCell = cell;
 	},
@@ -78,7 +89,7 @@ MouseEvent:{
 		if     (puzzle.editmode)    { subtype =-1;}
 		else if(cell.numberWithMB)  { subtype = 2;}
 		else if(puzzle.pid==="roma" || puzzle.pid==="yinyang"){ subtype=0;} // 全マス埋めるタイプのパズルは補助記号なし
-		else if(cell.numberAsObject){ subtype = 1;}
+		else if(cell.numberAsObject || puzzle.pid==="hebi"){ subtype = 1;}
 
 		if(puzzle.playmode && cell.qnum!==puzzle.klass.Cell.prototype.qnum){ return;}
 
@@ -117,6 +128,11 @@ MouseEvent:{
 
 		cell0.draw();
 	},
+
+	//---------------------------------------------------------------------------
+	// mv.inputQues() Cellの黒マスを入力する
+	//---------------------------------------------------------------------------
+	inputshade : function(cell){},
 
 	//---------------------------------------------------------------------------
 	// mv.inputQues() Cellのquesデータをarrayのとおりに入力する
@@ -399,11 +415,9 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		var amibo = (this.pid==="amibo");
-
 		// 黒マス上なら何もしない
-		if     (!amibo && cell.ques===1){ }
-		else if( amibo && cell.isNum()){ }
+		if     (this.pid!=="amibo" && cell.ques===1){ }
+		else if(this.pid==="amibo" && cell.isNum()){ }
 		// 初回 or 入力し続けていて別のマスに移動した場合
 		else if(this.mouseCell!==cell){
 			this.firstPoint.set(this.inputPoint);
@@ -417,20 +431,28 @@ MouseEvent:{
 			else if(dx<=-0.50 || 0.50<=dx){ val=2;}
 			
 			if(val!==null){
-				var shape = {0:0,11:3,12:1,13:2}[cell.qans];
+				var plus = (this.pid==="amibo"||this.pid==="tatamibari");
+				
+				var shape = 0;
+				if(this.puzzle.playmode){ shape = {0:0,11:3,12:1,13:2}[cell.qans];}
+				else                    { shape = {'-1':0,1:3,2:1,3:2}[cell.qnum];}
 				if((this.inputData===null) ? (shape & val) : this.inputData<=0){
-					val = (!amibo ? 0 : -val);
+					val = (!plus ? 0 : -val);
 				}
 				
 				// 描画・後処理
-				if(!amibo)    { shape  = val;}
+				if(!plus)     { shape  = val;}
 				else if(val>0){ shape |= val;}
 				else          { shape &= ~(-val);}
-				cell.setQans([0,12,13,11][shape]);
+				
+				if(this.puzzle.playmode){ cell.setQans([0,12,13,11][shape]);}
+				else                    { cell.setQnum([-1,2,3,1][shape]);}
 				cell.draw();
 				
 				this.inputData = +(val>0);
 				this.firstPoint.reset();
+				
+				if(this.pid==="tatamibari"){ this.mousereset();}
 			}
 		}
 

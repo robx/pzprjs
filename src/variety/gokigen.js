@@ -151,7 +151,7 @@ BoardExec:{
 
 LineGraph:{
 	enabled : true,
-	relation : ['cell'],
+	relation : {'cell.qans':'link'},
 	
 	pointgroup : 'cross',
 	linkgroup  : 'cell',
@@ -168,19 +168,17 @@ LineGraph:{
 	
 	isedgevalidbylinkobj : function(cell){ return cell.qans>0;},
 	
-	setCell : function(cell){
-		this.modifyNodes = [];
-
+	setEdgeByLinkObj : function(cell){
 		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する
 		if(cell.path!==null){
+			this.incdecLineCount(cell, false);
 			this.removeEdgeByLinkObj(cell);
 		}
 		if(cell.qans>0){
 			cell.setSideObj();
+			this.incdecLineCount(cell, true);
 			this.addEdgeByLinkObj(cell);
 		}
-
-		this.remakeComponent();
 	},
 	
 	setExtraData : function(component){

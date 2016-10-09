@@ -29,7 +29,7 @@ Config.prototype =
 		this.add('disptype_yajilin', 1, [1,2]);					/* yajilin: 表示形式 */
 		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
 		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
-		this.add('snakebd', false);								/* snakes: へびの境界線を表示する */
+		this.add('snakebd', false);								/* hebi: へびの境界線を表示する */
 		this.add('dispqnumbg', false);							/* yinyang: 問題のまるに背景色をつける */
 		this.add('undefcell', true);							/* shugaku: 未確定マスはグレー表示にする */
 
@@ -43,7 +43,7 @@ Config.prototype =
 		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
-		this.add('bgcolor', false);			/* 背景色入力 */
+		this.add('bgcolor', false);			/* slither 背景色入力 */
 		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
 		this.add('singlenum', (!pzpr.env.API.touchevent));	/* hanare: 部屋に回答数字を一つだけ入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
@@ -158,10 +158,10 @@ Config.prototype =
 			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
 			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
 			case 'disptype_yajilin':   exec = (pid==="yajirin"); break;
-			case 'bgcolor':  exec = puzzle.mouse.bgcolor; break;
+			case 'bgcolor':  exec = (pid==='slither'); break;
 			case 'irowake':  exec = puzzle.painter.irowake; break;
 			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;
-			case 'snakebd':  exec = (pid==="snakes"); break;
+			case 'snakebd':  exec = (pid==="hebi"); break;
 			case 'dispqnumbg':exec= (pid==='yinyang'); break;
 			case 'undefcell':exec = (pid==='shugaku'); break;
 			case 'redline':  exec = puzzle.mouse.redline; break;

@@ -346,6 +346,7 @@ LineGraph:{
 
 "AreaHurdleGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.ques':'node'},
 	setComponentRefs : function(obj, component){ obj.gate = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.gatenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.gatenodes = [];},

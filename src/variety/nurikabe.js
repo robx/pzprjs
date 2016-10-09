@@ -83,6 +83,7 @@ AreaUnshadeGraph:{
 // 画像表示系
 Graphic:{
 	numbercolor_func : "qnum",
+	qanscolor : "black",
 
 	paint : function(){
 		this.drawBGCells();

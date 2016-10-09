@@ -52,6 +52,7 @@ AreaUnshadeGraph:{
 Graphic:{
 	margin : 0.50,
 
+	qanscolor : "black",
 	shadecolor : "rgb(96, 96, 96)",
 
 	crosssize : 0.35,

@@ -57,8 +57,6 @@ Cell:{
 
 	disInputHatena : true,
 
-	numberRemainsUnshaded : true,
-
 	minnum : 0,
 
 	// 一部qsubで消したくないものがあるため上書き

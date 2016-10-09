@@ -17,7 +17,8 @@ MouseEvent:{
 			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.inputqnum();}
+			if(this.mousestart || this.mousemove){ this.inputTateyoko();}
+			else if(this.mouseend && this.notInputted()){ this.mouseCell = null; this.inputqnum();}
 		}
 	}
 },

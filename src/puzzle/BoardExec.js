@@ -78,6 +78,8 @@ BoardExec:{
 	// bd.exec.execadjust_main() 盤面の調整、回転、反転処理の実行部
 	//------------------------------------------------------------------------------
 	execadjust : function(name){
+		if(!this.boardtype[name]){ return;}
+
 		var puzzle = this.puzzle, bd = this.board;
 		if(name.indexOf("reduce")===0){
 			if(name==="reduceup"||name==="reducedn"){

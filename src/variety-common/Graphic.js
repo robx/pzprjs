@@ -151,7 +151,7 @@ Graphic:{
 			
 			g.vid = "c_dot_"+cell.id;
 			if(cell.qsub===1){
-				g.fillStyle = (!cell.trial ? "black" : this.trialcolor);
+				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
 				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}
 			else{ g.vhide();}

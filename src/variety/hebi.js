@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 へびいちご版 snakes.js
+// パズル固有スクリプト部 へびいちご版 hebi.js
 //
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['snakes'], {
+['hebi'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -34,25 +34,43 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull||cell===this.mouseCell){ return;}
 		if(this.mouseCell.isnull){
-			this.inputData = cell.anum!==-1?cell.anum:10;
+			if     (cell.qnum!==-1){ this.inputData = -3;}
+			else if(cell.anum!==-1){ this.inputData = cell.anum;}
+			else if(cell.qsub=== 1){ this.inputData = -2;}
+			else                   { this.inputData = 10;}
 			this.mouseCell = cell;
+			return;
 		}
-		else if(cell.qnum===-1 && this.inputData>=1 && this.inputData<=5){
+		else if(this.inputData===-3){
+			if     (cell.qnum!==-1){}
+			else if(cell.anum!==-1){ this.inputData = -2;}
+			else if(cell.qsub=== 1){ this.inputData = 10;}
+			else                   { this.inputData = -2;}
+		}
+		
+		if(cell.qnum!==-1){ return;}
+		else if(this.inputData>=1 && this.inputData<=5){
 			if     (this.btn==='left' ){ this.inputData++;}
 			else if(this.btn==='right'){ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=5){
 				cell.setQdir(0);
 				cell.setAnum(this.inputData);
 				cell.setQsub(0);
-				this.mouseCell = cell;
-				cell.draw();
 			}
+			else{ return;}
 		}
-		else if(cell.qnum===-1 && this.inputData===10){
+		else if(this.inputData===-2){
+			cell.setAnum(-1);
+			cell.setQsub(1);
+		}
+		else if(this.inputData===10){
 			cell.setAnum(-1);
 			cell.setQsub(0);
-			cell.draw();
 		}
+		else{ return;}
+		
+		this.mouseCell = cell;
+		cell.draw();
 	},
 	inputDot_snakes : function(){
 		if(this.btn!=='right' || (this.inputData!==null && this.inputData>=0)){ return false;}
@@ -132,6 +150,7 @@ BoardExec:{
 },
 'AreaSnakeGraph:AreaGraphBase':{
 	enabled : true,
+	relation : {'cell.anum':'node'},
 	setComponentRefs : function(obj, component){ obj.snake = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.snakenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.snakenodes = [];},

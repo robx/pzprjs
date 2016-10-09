@@ -171,6 +171,7 @@ LineGraph:{
 },
 "AreaCrockGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.ques':'node'},
 	setComponentRefs : function(obj, component){ obj.icebarn = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.icebarnnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.icebarnnodes = [];},

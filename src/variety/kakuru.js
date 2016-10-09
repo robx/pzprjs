@@ -10,14 +10,43 @@
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.mousestart){ this.inputqnum_kakuru();}
+		if(this.mousestart){ this.inputqnum();}
 	},
-	inputqnum_kakuru : function(){
-		var cell = this.getcell();
-		if(cell.isnull || (cell.ques===1 && cell===this.cursor.getc())){ return;}
-		this.inputqnum();
-	}
-},
+	inputshade_preqnum : function(cell){
+		var val = null;
+		if(cell.ques===1){
+			if     (this.btn==='left') { val = -2;}
+			else if(this.btn==='right'){ val = -1;}
+		}
+		/* inputqnum_mainの空白-?マーク間に黒マスのフェーズを挿入する */
+		else if(cell.ques===0 && cell.qnum===-1){
+			if(this.btn==='left'){ val = -3;}
+		}
+		else if(cell.qnum===-2){
+			if(this.btn==='right'){ val = -3;}
+		}
+
+		if(val===-3){
+			cell.setQues(1);
+			cell.setQnum(-1);
+			cell.setAnum(-1);
+			cell.draw();
+		}
+		else if(val===-1){
+			cell.setQues(0);
+			cell.setQnum(-1);
+			cell.setAnum(-1);
+			cell.draw();
+		}
+		else if(val===-2){
+			cell.setQues(0);
+			cell.setQnum(-2);
+			cell.setAnum(-1);
+			cell.draw();
+		}
+
+		return (val!==null);
+	}},
 
 //---------------------------------------------------------
 // キーボード入力系

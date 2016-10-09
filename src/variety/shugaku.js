@@ -27,45 +27,56 @@ MouseEvent:{
 	inputFuton : function(){
 		var cell = this.getcell();
 
-		if(this.firstPoint.bx===null){
+		if(this.inputData===null){
 			if(cell.isnull || cell.isNum()){ return;}
-			this.mouseCell = cell;
-			this.inputData = 1;
-			this.firstPoint.set(this.inputPoint);
-			cell.draw();
+			if(cell.qans===46 || cell.qans===1 || cell.qsub===1){
+				this.inputcell_shugaku();
+			}
+			else{
+				this.mouseCell = cell;
+				this.inputData = 41;
+				this.firstPoint.set(this.inputPoint);
+				cell.draw();
+			}
+			return;
+		}
+
+		if(this.inputData<=3){
+			this.inputcell_shugaku();
 		}
 		else{
 			var old = this.inputData, adj = null;
 			if(cell.isnull){ /* nop */} // 何もしない
-			else if(this.mouseCell===cell){ this.inputData = 1;} // 入力開始時と同じセルの場合
+			else if(this.mouseCell===cell){ this.inputData = 41;} // 入力開始時と同じセルの場合
 			else{
 				var dx=(this.inputPoint.bx-this.firstPoint.bx), dy=(this.inputPoint.by-this.firstPoint.by);
 				var adc = this.mouseCell.adjacent;
-				if     (dx-dy>0 && dx+dy>0){ adj=adc.right;  this.inputData=5;}
-				else if(dx-dy>0 && dx+dy<0){ adj=adc.top;    this.inputData=2;}
-				else if(dx-dy<0 && dx+dy>0){ adj=adc.bottom; this.inputData=3;}
-				else if(dx-dy<0 && dx+dy<0){ adj=adc.left;   this.inputData=4;}
-				if(adj===null || adj.isnull || adj.isNum()){ this.inputData=6;}
+				if     (dx-dy>0 && dx+dy>0){ adj=adc.right;  this.inputData=45;}
+				else if(dx-dy>0 && dx+dy<0){ adj=adc.top;    this.inputData=42;}
+				else if(dx-dy<0 && dx+dy>0){ adj=adc.bottom; this.inputData=43;}
+				else if(dx-dy<0 && dx+dy<0){ adj=adc.left;   this.inputData=44;}
+				if(adj===null || adj.isnull || adj.isNum()){ this.inputData=46;}
 			}
 			if(old!==this.inputData){ this.mouseCell.drawaround();}
 		}
 	},
 	inputFuton2 : function(){
-		if(this.mouseCell.isnull){ return;}
+		if(this.mouseCell.isnull || !this.inputData || this.inputData<=3){ return;}
 		var cell = this.mouseCell;
 
 		this.changeHalf(cell);
-		if(this.inputData!==1 && this.inputData!==6){ cell.setQans(40+this.inputData); cell.setQsub(0);}
-		else if(this.inputData=== 6){ cell.setQans(41); cell.setQsub(0);}
+		if(this.inputData!==41 && this.inputData!==46){ cell.setQans(this.inputData); cell.setQsub(0);}
+		else if(this.inputData===46){ cell.setQans(41); cell.setQsub(0);}
 		else if(cell.qans===41){ cell.setQans(46); cell.setQsub(0);}
-		else if(cell.qans===46){ cell.setQans(0);  cell.setQsub(1);}
-//		else if(cell.qans=== 1){ cell.setQans(0);  cell.setQsub(0);}
+		else if(cell.qans===46){ cell.setQans(1);  cell.setQsub(0);}
+		else if(cell.qans=== 1){ cell.setQans(0);  cell.setQsub(1);}
+		else if(cell.qsub=== 1){ cell.setQans(0);  cell.setQsub(0);}
 		else                   { cell.setQans(41); cell.setQsub(0);}
 
 		var adj = this.currentTargetADJ();
 		if(!adj.isnull){
 			this.changeHalf(adj);
-			adj.setQans({2:48,3:47,4:50,5:49}[this.inputData]);
+			adj.setQans({42:48,43:47,44:50,45:49}[this.inputData]);
 			adj.setQsub(0);
 		}
 
@@ -106,10 +117,10 @@ MouseEvent:{
 		if(!this.mouseCell.isnull){
 			var adc = this.mouseCell.adjacent;
 			switch(this.inputData){
-				case 2: return adc.top;
-				case 3: return adc.bottom;
-				case 4: return adc.left;
-				case 5: return adc.right;
+				case 42: return adc.top;
+				case 43: return adc.bottom;
+				case 44: return adc.left;
+				case 45: return adc.right;
 			}
 		}
 		return this.board.emptycell;
@@ -178,6 +189,7 @@ AreaShadeGraph:{
 Graphic:{
 	hideHatena : true,
 
+	qanscolor : "black",
 	bcolor : "rgb(208, 208, 208)",
 	targetbgcolor : "rgb(255, 192, 192)",	/* 入力中の布団の色 */
 	undefcolor : "silver",					/* 未確定マスの色 */
@@ -213,7 +225,7 @@ Graphic:{
 	drawFutons : function(){
 		var g = this.vinc('cell_futon', 'crispEdges', true), mv = this.puzzle.mouse, tc = null, adj = null;
 
-		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null);
+		var inputting=(!mv.mouseCell.isnull && mv.firstPoint.bx!==null && mv.inputData>=40);
 		if(inputting){ // ふとん入力中
 			tc  = mv.mouseCell;
 			adj = mv.currentTargetADJ();

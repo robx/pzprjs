@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 カントリーロード・月か太陽版 country.js
+// パズル固有スクリプト部 カントリーロード・月か太陽・温泉めぐり版 country.js
 //
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['country','moonsun'], {
+['country','moonsun','onsen'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -15,9 +15,10 @@ MouseEvent:{
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left'){ this.inputLine();}
-				else if(this.btn==='right' && this.pid==='moonsun'){ this.inputpeke();}
+				else if(this.btn==='right' && this.pid!=='country'){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){
+				if(this.pid!=='country' && this.inputpeke_onend()){ return;}
 				this.inputMB();
 			}
 		}
@@ -29,6 +30,15 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
+	},
+
+	inputpeke_onend : function(){
+		var border = this.getpos(0.22).getb();
+		if(border.group==='border' && !border.isnull){
+			this.inputpeke();
+			return true;
+		}
+		return false;
 	}
 },
 "MouseEvent@moonsun":{
@@ -53,7 +63,7 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-"Cell@country":{
+"Cell@country,onsen":{
 	maxnum : function(){
 		return Math.min(255, this.room.clist.length);
 	}
@@ -65,16 +75,12 @@ KeyEvent:{
 	maxnum : 2,
 
 	posthook : {
-		qnum : function(num){
-			this.board.setInfoByCell(this);
-			this.room.countMarkAndLine();
-		},
+		qnum : function(num){ this.room.countMarkAndLine();}
 	}
 },
 "Border@moonsun":{
 	posthook : {
 		line : function(num){
-			this.board.setInfoByLine(this);
 			var room1 = this.sidecell[0].room, room2 = this.sidecell[1].room;
 			room1.countMarkAndLine();
 			if(room1!==room2){ room2.countMarkAndLine();}
@@ -84,9 +90,50 @@ KeyEvent:{
 Board:{
 	hasborder : 1
 },
+"Board@onsen":{
+	cols : 8,
+	rows : 8,
+
+	addExtraInfo : function(){
+		this.lineblkgraph = this.addInfoList(this.klass.LineBlockGraph);
+	}
+},
 
 LineGraph:{
 	enabled : true
+},
+"LineGraph@onsen":{
+	makeClist : true
+},
+"LineBlockGraph:LineGraph@onsen":{
+	enabled : true,
+	relation : {'border.line':'link', 'border.ques':'separator'},
+	makeClist : true,
+	coloring : false,
+	
+	setComponentRefs : function(obj, component){ obj.lpath = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.lpathnodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.lpathnodes = [];},
+	
+	incdecLineCount : null,
+	isedgevalidbylinkobj : function(border){ return border.isLine() && !border.isBorder();},
+	isedgeexistsbylinkobj : function(border){ return border.lpath!==null;},
+
+	setEdgeByLinkObj : function(linkobj){
+		var isset = this.isedgevalidbylinkobj(linkobj);
+		if(isset===this.isedgeexistsbylinkobj(linkobj)){
+			var cells = this.getSideObjByLinkObj(linkobj);
+			for(var i=0;i<cells.length;i++){
+				var cell = cells[i];
+				if(this.isnodevalid(cell)){ this.createNodeIfEmpty(cell);}
+				else                      { this.deleteNodeIfEmpty(cell);}
+			}
+			return;
+		}
+
+		if(isset){ this.addEdgeByLinkObj(linkobj);}
+		else     { this.removeEdgeByLinkObj(linkobj);}
+	}
 },
 
 AreaRoomGraph:{
@@ -132,18 +179,35 @@ Graphic:{
 		this.drawBGCells();
 		if     (this.pid==='country'){ this.drawNumbers();}
 		else if(this.pid==='moonsun'){ this.drawMarks();}
+		else if(this.pid==='onsen'){
+			this.drawCircles();
+			this.drawNumbers();
+		}
 
 		if     (this.pid==='country'){ this.drawGrid();}
-		else if(this.pid==='moonsun'){ this.drawDashedGrid();}
+		else if(this.pid!=='country'){ this.drawDashedGrid();}
 		this.drawBorders();
 
-		this.drawMBs();
+		if(this.pid!=='onsen'){ this.drawMBs();}
 		this.drawLines();
 		this.drawPekes();
 
 		this.drawChassis();
 
 		this.drawTarget();
+	}
+},
+"Graphic@onsen":{
+	hideHatena : true,
+	circleratio : [0.40, 0.37],
+	globalfontsizeratio : 0.75,
+	gridcolor_type : "LIGHT",
+
+	repaintParts : function(blist){
+		this.range.cells = blist.cellinside();
+
+		this.drawCircles();
+		this.drawNumbers();
 	}
 },
 "Graphic@moonsun":{
@@ -192,24 +256,18 @@ Graphic:{
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-"Encode@country":{
+Encode:{
 	decodePzpr : function(type){
 		this.decodeBorder();
-		this.decodeRoomNumber16();
+		if     (this.pid==='country') { this.decodeRoomNumber16();}
+		else if(this.pid==='moonsun') { this.decodeCircle();}
+		else if(this.pid==='onsen'){ this.decodeNumber16();}
 	},
 	encodePzpr : function(type){
 		this.encodeBorder();
-		this.encodeRoomNumber16();
-	}
-},
-"Encode@moonsun":{
-	decodePzpr : function(type){
-		this.decodeBorder();
-		this.decodeCircle();
-	},
-	encodePzpr : function(type){
-		this.encodeBorder();
-		this.encodeCircle();
+		if     (this.pid==='country') { this.encodeRoomNumber16();}
+		else if(this.pid==='moonsun') { this.encodeCircle();}
+		else if(this.pid==='onsen'){ this.encodeNumber16();}
 	}
 },
 //---------------------------------------------------------
@@ -218,19 +276,19 @@ FileIO:{
 		this.decodeAreaRoom();
 		this.decodeCellQnum();
 		this.decodeBorderLine();
-		this.decodeCellQsub();
+		if(this.pid!=='onsen'){ this.decodeCellQsub();}
 	},
 	encodeData : function(){
 		this.encodeAreaRoom();
 		this.encodeCellQnum();
 		this.encodeBorderLine();
-		this.encodeCellQsub();
+		if(this.pid!=='onsen'){ this.encodeCellQsub();}
 	}
 },
 
 //---------------------------------------------------------
 // 正解判定処理実行部
-AnsCheck:{
+"AnsCheck@country#1":{
 	checklist : [
 		"checkBranchLine",
 		"checkCrossLine",
@@ -243,18 +301,50 @@ AnsCheck:{
 
 		"checkDeadendLine+",
 		"checkOneLoop"
-	],
+	]
+},
+"AnsCheck@moonsun#1":{
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
 
-	checkRoadCount : function(){
-		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (n<=0||n===a);}, "bkLineNe");
-	},
+		"checkRoomPassOnce",
+
+		"checkPassesSingleMarks",
+		"checkNextRoomIsNotMoon",
+		"checkNextRoomIsNotSun",
+
+		"checkAllMoonPassed",
+		"checkAllSunPassed",
+
+		"checkNoRoadCountry",
+		"checkPassesAnyMarks",
+
+		"checkDeadendLine+",
+		"checkOneLoop"
+	]
+},
+"AnsCheck@onsen#1":{
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+
+		"checkSingleNumberInLoop",
+
+		"checkLineRoomPassOnce",
+		"checkLineRoomLength",
+
+		"checkNoRoadCountry",
+		"checkNumberExistsInLoop",
+		"checkLineLengthInEachRoom",
+
+		"checkDeadendLine+"
+	]
+},
+AnsCheck:{
 	checkNoRoadCountry : function(){
 		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (a!==0);}, "bkNoLine");
 	},
-	checkSideAreaGrass : function(){
-		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false, "cbNoLine");
-	},
-
 	checkRoomPassOnce : function(){
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
@@ -274,27 +364,15 @@ AnsCheck:{
 		}
 	}
 },
+"AnsCheck@country":{
+	checkRoadCount : function(){
+		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (n<=0||n===a);}, "bkLineNe");
+	},
+	checkSideAreaGrass : function(){
+		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.lcnt===0 && cell2.lcnt===0);}, false, "cbNoLine");
+	}
+},
 "AnsCheck@moonsun":{
-	checklist : [
-		"checkBranchLine",
-		"checkCrossLine",
-
-		"checkRoomPassOnce",
-
-		"checkPassesSingleMarks",
-		"checkNextRoomIsNotMoon",
-		"checkNextRoomIsNotSun",
-
-		"checkAllMoonPassed",
-		"checkAllSunPassed",
-
-		"checkNoRoadCountry",
-		"checkPassesAnyMarks",
-
-		"checkDeadendLine+",
-		"checkOneLoop"
-	],
-
 	checkPassesSingleMarks : function(){
 		this.checkAllRoom(function(count){ return (count.moon.passed===0 || count.sun.passed===0);},
 						  function(cell){ return cell.qnum!==-1 && cell.lcnt>0;}, "bkBothMarksPassed");
@@ -347,10 +425,96 @@ AnsCheck:{
 		}
 	}
 },
+"AnsCheck@onsen":{
+	checkLineRoomPassOnce : function(){
+		var bd = this.board;
+		var paths = bd.linegraph.components;
+		var rooms = bd.roommgr.components;
+		allloop:
+		for(var r=0;r<paths.length;r++){
+			var lpaths = [];
+			for(var i=0;i<paths[r].clist.length;i++){
+				var cell = paths[r].clist[i];
+				var roomid = rooms.indexOf(cell.room);
+				if(!lpaths[roomid]){ lpaths[roomid] = cell.lpath;}
+				else if(lpaths[roomid]!==cell.lpath){
+					this.failcode.add("blPassTwice");
+					if(this.checkOnly){ break allloop;}
+					lpaths[roomid].clist.seterr(1);
+					cell.lpath.clist.seterr(1);
+				}
+			}
+		}
+	},
+	checkLineRoomLength : function(){
+		var bd = this.board;
+		var paths  = bd.linegraph.components;
+		var lpaths = bd.lineblkgraph.components;
+		var numcache = [];
+		for(var r=0;r<lpaths.length;r++){
+			var path = lpaths[r].clist[0].path;
+			var pathid = paths.indexOf(path);
+			var num = numcache[pathid];
+			if(!num){ num = (numcache[pathid] || path.clist.getQnumCell().getNum());}
+			if(num<0 || num===lpaths[r].clist.length){ continue;}
+			
+			this.failcode.add("blLineNe");
+			if(this.checkOnly){ break;}
+			lpaths[r].clist.seterr(1);
+		}
+	},
+	checkLineLengthInEachRoom : function(){
+		// 数字が入っている場合はcheckLineRoomLengthで判定されるので、数字が入っていないのまるのループのみ判定します
+		var bd = this.board;
+		var paths  = bd.linegraph.components;
+		var lpaths = bd.lineblkgraph.components;
+		allloop:
+		for(var r=0;r<paths.length;r++){
+			var path = paths[r], num = path.clist.getQnumCell().getNum();
+			if(num>=0){ continue;}
+			
+			var lpathlen = {}, length = null;
+			for(var i=0;i<path.clist.length;i++){
+				var id = lpaths.indexOf(path.clist[i].lpath);
+				lpathlen[id] = (lpathlen[id] || 0) + 1;
+			}
+			for(var lpathid in lpathlen){
+				if(!length){ length = lpathlen[lpathid]; continue;}
+				else if(length===lpathlen[lpathid]){ continue;}
+				this.failcode.add("blLineDiff");
+				if(this.checkOnly){ break allloop;}
+				path.clist.seterr(1);
+				break;
+			}
+		}
+	},
+
+	checkSingleNumberInLoop : function(){
+		this.checkNumbersInLoop(function(cnt){ return (cnt <= 1);}, "lpNumGt2");
+	},
+	checkNumberExistsInLoop : function(){
+		this.checkNumbersInLoop(function(cnt){ return (cnt > 0);}, "lpNoNum");
+	},
+	checkNumbersInLoop : function(func, code){
+		var result = true;
+		var paths = this.board.linegraph.components;
+		for(var r=0;r<paths.length;r++){
+			if(func(paths[r].clist.filter(function(cell){ return cell.isNum();}).length)){ continue;}
+
+			result = false;
+			if(this.checkOnly){ break;}
+			paths[r].setedgeerr(1);
+		}
+		if(!result){
+			this.failcode.add(code);
+			if(!this.checkOnly){ this.board.border.setnoerr();}
+		}
+	}
+},
 
 "FailCode@country":{
 	bkPassTwice : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."],
-	bkNoLine : ["線の通っていない国があります。","A line doesn't pass a room."],
+	bkNoLine : ["線の通っていない国があります。","A line doesn't pass a country."],
 	bkLineNe : ["数字のある国と線が通過するマスの数が違います。","The number of the cells that is passed any line in the country and the number written in the country is diffrerent."],
 	cbNoLine : ["線が通らないマスが、太線をはさんでタテヨコにとなりあっています。","The cells that is not passed any line are adjacent over border line."]
 },
@@ -363,5 +527,13 @@ AnsCheck:{
 	bkNotAllMUPassed : ["線が全ての太陽を通っていません。","A line doesn't pass all of the marks of the sun."],
 	bkMSPassedGt2 : ["月を通った部屋が連続しています。","A line passes the marks of the moon for two rooms in a row."],
 	bkMUPassedGt2 : ["太陽を通った部屋が連続しています。","A line passes the marks of the sun for two rooms in a row."]
+},
+"FailCode@onsen":{
+	blPassTwice : ["ある線が１つの部屋を２回以上通っています。","A line passes a room twice or more."],
+	blLineNe   : ["線が通過するマスの数が数字と違います。","The Length of the path in a room is different from the number of the loop."],
+	blLineDiff : ["各部屋で線が通過するマスの数が違います。","The Length of the path in a room is different in each room."],
+	bkNoLine : ["線の通っていない部屋があります。","A room remains blank."],
+	lpNumGt2 : ["数字が2つ以上含まれたループがあります。","A loop has plural numbers."],
+	lpNoNum  : ["○を含んでいないループがあります。","A loop has no numbers."]
 }
 }));

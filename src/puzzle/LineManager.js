@@ -6,11 +6,11 @@
 pzpr.classmgr.makeCommon({
 "LineGraph:GraphBase":{
 	initialize : function(){
-		if(this.moveline){ this.relation.push('cell');}
+		if(this.moveline){ this.relation['cell.qnum'] = 'move';}
 	},
 	
 	enabled : false,
-	relation : ['line'],
+	relation : {'border.line':'link'},
 	
 	pointgroup : 'cell',
 	linkgroup  : 'border',
@@ -19,6 +19,8 @@ pzpr.classmgr.makeCommon({
 	
 	makeClist : false,		// 線が存在するclistを生成する
 	moveline  : false,		// 丸数字などを動かすパズル
+	
+	coloring : true,
 	
 	//--------------------------------------------------------------------------------
 	// linegraph.setComponentRefs()    objにcomponentの設定を行う (性能対策)
@@ -46,43 +48,117 @@ pzpr.classmgr.makeCommon({
 	iscrossing           : function(cell)  { return this.isLineCross;},
 
 	//---------------------------------------------------------------------------
+	// linegraph.rebuild()  既存の情報からデータを再設定する
 	// linegraph.rebuild2() 継承先に固有のデータを設定する
 	//---------------------------------------------------------------------------
+	rebuild : function(){
+		if(this.board.borderAsLine){ this.pointgroup = 'cross';}
+		pzpr.common.GraphBase.prototype.rebuild.call(this);
+	},
 	rebuild2 : function(){
-		var cells = this.board[this.pointgroup];
-		this.ltotal=[cells.length];
-		for(var c=0;c<cells.length;c++){ cells[c].lcnt = 0;}
-		
+		if(!!this.incdecLineCount){
+			this.resetLineCount();
+		}
 		pzpr.common.GraphBase.prototype.rebuild2.call(this);
 	},
 
 	//---------------------------------------------------------------------------
+	// linegraph.resetLineCount()  初期化時に、lcnt情報を初期化する
 	// linegraph.incdecLineCount() 線が引かれたり消された時に、lcnt変数を生成し直す
 	//---------------------------------------------------------------------------
-	incdecLineCount : function(cell, isset){
-		if(cell.group===this.pointgroup && !cell.isnull){
-			this.ltotal[cell.lcnt]--;
-			if(isset){ cell.lcnt++;}else{ cell.lcnt--;}
-			this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;
+	resetLineCount : function(){
+		var cells = this.board[this.pointgroup], borders = this.board[this.linkgroup];
+		this.ltotal=[cells.length];
+		for(var c=0;c<cells.length;c++){
+			cells[c].lcnt = 0;
+		}
+		for(var id=0;id<borders.length;id++){
+			if(this.isedgevalidbylinkobj(borders[id])){
+				this.incdecLineCount(borders[id], true);
+			}
+		}
+	},
+	incdecLineCount : function(border, isset){
+		if(border.group!==this.linkgroup){ return;}
+		for(var i=0;i<2;i++){
+			var cell = border.sideobj[i];
+			if(!cell.isnull){
+				this.ltotal[cell.lcnt]--;
+				if(isset){ cell.lcnt++;}else{ cell.lcnt--;}
+				this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;
+			}
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// linegraph.setLine()     線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// linegraph.setEdgeByLinkObj() 線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
 	//---------------------------------------------------------------------------
-	setLine : function(border){
-		if(!this.enabled){ return;}
-		this.setEdgeByLinkObj(border);
+	setEdgeByLinkObj : function(linkobj){
+		var isset = this.isedgevalidbylinkobj(linkobj);
+		if(isset===this.isedgeexistsbylinkobj(linkobj)){ return;}
+
+		if(!!this.incdecLineCount){
+			this.incdecLineCount(linkobj, isset);
+		}
+
+		if(isset){ this.addEdgeByLinkObj(linkobj);}
+		else     { this.removeEdgeByLinkObj(linkobj);}
 	},
 
 	//---------------------------------------------------------------------------
-	// linegraph.setCell()     移動系パズルで数字などが入力された時に線の情報を生成しなおす
+	// graph.addEdgeByLinkObj()    指定されたオブジェクトの場所にEdgeを生成する
+	// graph.removeEdgeByLinkObj() 指定されたオブジェクトの場所からEdgeを除去する
 	//---------------------------------------------------------------------------
-	setCell : function(cell){
-		if(this.moveline){
-			if(!!cell.path){ this.setComponentInfo(cell.path);}
-			else           { this.resetExtraData(cell);}
+	addEdgeByLinkObj : function(linkobj){ // 線(など)を引いた時の処理
+		var sidenodeobj = this.getSideObjByLinkObj(linkobj);
+		
+		// 周囲のNodeをグラフに追加するかどうか確認する
+		this.createNodeIfEmpty(sidenodeobj[0]);
+		this.createNodeIfEmpty(sidenodeobj[1]);
+
+		// linkするNodeを取得する
+		var sidenodes = this.getSideNodesByLinkObj(linkobj);
+
+		// 周囲のNodeとlink
+		this.addEdge(sidenodes[0], sidenodes[1]);
+
+		// 周囲のComponentにくっついただけの場合は情報を更新して終了
+		if(this.rebuildmode){ return;}
+		var lcnt1 = sidenodes[0].obj.lcnt, lcnt2 = sidenodes[1].obj.lcnt;
+		if((lcnt1===1 && (lcnt2===2 || (!this.isLineCross && lcnt2>2))) ||
+		   (lcnt2===1 && (lcnt1===2 || (!this.isLineCross && lcnt1>2))) ) {
+			this.attachNode(sidenodes[lcnt1===1 ? 0 : 1], sidenodes[lcnt1===1 ? 1 : 0].component);
+			this.modifyNodes = [];
 		}
+	},
+	removeEdgeByLinkObj : function(linkobj){ // 線(など)を消した時の処理
+		// unlinkするNodeを取得する
+		var sidenodes = this.getSideNodesByLinkObj(linkobj);
+
+		// 周囲のNodeとunlink
+		this.removeEdge(sidenodes[0], sidenodes[1]);
+
+		// 周囲のNodeをグラフから取り除くかどうか確認する
+		this.deleteNodeIfEmpty(sidenodes[0].obj);
+		this.deleteNodeIfEmpty(sidenodes[1].obj);
+
+		this.setComponentRefs(linkobj, null);
+
+		// 周囲のComponent末端から切り離されただけの場合は情報を更新して終了
+		var lcnt1 = sidenodes[0].obj.lcnt, lcnt2 = sidenodes[1].obj.lcnt;
+		if((lcnt1===0 && (lcnt2===1 || (!this.isLineCross && lcnt2>1))) ||
+		   (lcnt2===0 && (lcnt1===1 || (!this.isLineCross && lcnt1>1))) ) {
+			this.setComponentInfo(sidenodes[lcnt1===0 ? 1 : 0].component);
+			this.modifyNodes = [];
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// linegraph.setOtherInformation() 移動系パズルで数字などが入力された時に線の情報を生成しなおす
+	//---------------------------------------------------------------------------
+	modifyOtherInfo : function(cell, relation){
+		if(!!cell.path){ this.setComponentInfo(cell.path);}
+		else           { this.resetExtraData(cell);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -91,9 +167,6 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	createNodeIfEmpty : function(cell){
 		var nodes = this.getObjNodeList(cell);
-		
-		// ここどうする？
-		this.incdecLineCount(cell, true);
 		
 		// 周囲のNode生成が必要かもしれないのでチェック＆create
 		if(nodes.length===0){
@@ -120,9 +193,6 @@ pzpr.classmgr.makeCommon({
 	},
 	deleteNodeIfEmpty : function(cell){
 		var nodes = this.getObjNodeList(cell);
-		
-		// ここどうする？
-		this.incdecLineCount(cell, false);
 		
 		// 周囲のNodeが消えるかもしれないのでチェック＆remove
 		if(nodes.length===1 && nodes[0].nodes.length===0 && !this.isnodevalid(cell)){
@@ -154,7 +224,7 @@ pzpr.classmgr.makeCommon({
 		if(this.moveline){ nodeobj.base = (nodeobj.isNum() ? nodeobj : this.board.emptycell);}
 	},
 	setExtraData : function(component){
-		if(!component.color){
+		if(this.coloring && !component.color){
 			component.color = this.puzzle.painter.getNewLineColor();
 		}
 		

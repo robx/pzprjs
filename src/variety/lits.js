@@ -50,15 +50,15 @@ AreaShadeGraph:{
 AreaRoomGraph:{
 	enabled : true
 },
-'AreaTetrominoGraph:AreaGraphBase@lits':{
+'AreaTetrominoGraph:AreaShadeGraph@lits':{
 	enabled : true,
+	relation : {'cell.qans':'node', 'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.tetro = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tetronodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tetronodes = [];},
 	
-	isnodevalid : function(cell){ return cell.isShade();},
-	isedgevalidbynodeobj : function(cell1, cell2){
-		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	isedgevalidbylinkobj : function(border){
+		return !border.isBorder();
 	},
 
 	resetExtraData : function(cell){ cell.shape = null;},
@@ -100,6 +100,7 @@ Graphic:{
 "Graphic@lits":{
 	gridcolor_type : "DARK",
 
+	qanscolor : "black",
 	shadecolor : "rgb(96, 96, 96)"
 },
 "Graphic@norinori":{

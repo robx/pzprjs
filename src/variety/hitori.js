@@ -39,8 +39,8 @@ Cell:{
 	},
 
 	posthook : {
-		qnum : function(num){ this.board.setInfoByCell(this); this.redDisp();},
-		qans : function(num){ this.board.setInfoByCell(this); this.redDisp();}
+		qnum : function(num){ this.redDisp();},
+		qans : function(num){ this.redDisp();}
 	},
 
 	redDisp : function(){

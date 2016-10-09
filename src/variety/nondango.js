@@ -51,7 +51,7 @@ MouseEvent:{
 Cell:{
 	ques : 8, // 盤面内だが入力不可
 	posthook : {
-		qans : function(num){ this.board.roommgr.setExtraData(this.room);}
+		qans : function(num){ this.room.checkAutoCmp();}
 	}
 },
 CellList:{

@@ -52,6 +52,7 @@ Board:{
 
 "AreaTileGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.tile = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},
@@ -61,6 +62,7 @@ Board:{
 },
 "AreaBlockGraph:AreaRoomGraph":{
 	enabled : true,
+	getComponentRefs : function(obj){ return obj.block;}, // getSideAreaInfo用
 	setComponentRefs : function(obj, component){ obj.block = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.blocknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.blocknodes = [];},
@@ -227,7 +229,7 @@ AnsCheck:{
 	},
 
 	checkDifferentShapeBlock : function(){
-		var sides = this.board.blockgraph.getSideAreaInfo('block');
+		var sides = this.board.blockgraph.getSideAreaInfo();
 		for(var i=0;i<sides.length;i++){
 			var area1 = sides[i][0], area2 = sides[i][1];
 			if(this.isDifferentShapeBlock(area1, area2)){ continue;}

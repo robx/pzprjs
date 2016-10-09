@@ -16,6 +16,7 @@ MouseEvent:{
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			if(this.mouseend && this.notInputted()){
+				if(this.inputpeke_onend()){ return;}
 				this.clickTateyoko();
 			}
 		}
@@ -24,6 +25,14 @@ MouseEvent:{
 		}
 	},
 
+	inputpeke_onend : function(){
+		var border = this.getpos(0.22).getb();
+		if(border.group==='border' && !border.isnull){
+			this.inputpeke();
+			return true;
+		}
+		return false;
+	},
 	clickTateyoko : function(){
 		var cell  = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}
@@ -91,6 +100,8 @@ BoardExec:{
 
 "AreaNetGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.qans':'node'},
+	coloring : true,
 	setComponentRefs : function(obj, component){ obj.net = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.netnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.netnodes = [];},
@@ -124,6 +135,7 @@ BoardExec:{
 },
 "AreaBarGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.qans':'node'},
 	setComponentRefs : function(obj, component){ obj.bar = component;}, // 2つのbarが設定されることがあるため信頼できない
 	getObjNodeList   : function(nodeobj){ return nodeobj.barnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},

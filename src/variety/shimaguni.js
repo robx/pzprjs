@@ -74,10 +74,12 @@ Board:{
 	rows : 8,
 
 	falling : false,
+	fallstate : 0,	// 落下ブロックが計算済みかどうか 0:無効 1:落ちた状態 2:上がった状態
 
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 		this.falling = false;
+		this.fallstate = 0;
 	},
 	errclear : function(){
 		this.falling = false;
@@ -93,7 +95,6 @@ Board:{
 			this.puzzle.redraw();
 			break;
 		case 'resetpos':
-			this.resetpos();
 			this.board.errclear();
 			break;
 		default:
@@ -108,6 +109,8 @@ Board:{
 		}
 	},
 	drop : function(isdrop){
+		var afterstate = (isdrop!==false?1:2);
+		if(this.fallstate===afterstate){ return;}
 		this.resetpos();
 		var fallable = true, blks = this.stonegraph.components;
 		while(fallable){
@@ -117,6 +120,7 @@ Board:{
 				if(length>0){ fallable = true;}
 			}
 		}
+		this.fallstate = afterstate;
 	}
 },
 
@@ -147,12 +151,17 @@ Board:{
 },
 "AreaStoneGraph:AreaShadeGraph@shimaguni,stostone":{ // Same as LITS AreaTetrominoGraph
 	enabled : true,
+	relation : {'cell.qans':'node', 'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.stone = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.stonenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.stonenodes = [];},
-	isedgevalidbynodeobj : function(cell1, cell2){
-		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	
+	isedgevalidbylinkobj : function(border){
+		return !border.isBorder();
 	}
+},
+"AreaStoneGraph@stostone":{
+	coloring : true
 },
 AreaRoomGraph:{
 	enabled : true,
@@ -192,6 +201,7 @@ Graphic:{
 	irowakeblk : true,
 	enablebcolor : false,
 	bgcellcolor_func : "error1",
+	qanscolor : "black",
 
 	minYdeg : 0.08,
 	maxYdeg : 0.50,
@@ -235,6 +245,10 @@ Graphic:{
 		var sblk2 = border.sidecell[1].base.stone;
 		if(sblk1!==sblk2){ return "white";}
 		return null;
+	},
+	getNumberText : function(cell){
+		if(this.board.falling && !!cell.base.stone){ return '';}
+		return this.common.getNumberText.call(this,cell);
 	},
 	getNumberColor : function(cell){
 		if(this.board.falling){ cell = cell.base;}
@@ -293,7 +307,7 @@ FileIO:{
 		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
 	},
 	checkSideAreaLandSide : function(){
-		this.checkSideAreaSize(function(area){ return area.clist.filter(function(cell){ return cell.isShade();}).length;}, "bsEqShade");
+		this.checkSideAreaSize(this.board.roommgr, function(area){ return area.clist.filter(function(cell){ return cell.isShade();}).length;}, "bsEqShade");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
@@ -321,6 +335,11 @@ FileIO:{
 		this.board.drop();
 		this.common.checkAns.call(this,break_if_error);
 	},
+	resetCache : function(){
+		this.common.resetCache.call(this);
+		this.board.fallstate = 0;
+	},
+
 	checkFallenBlock : function(){
 		var bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){

@@ -162,9 +162,9 @@ BoardExec:{
 LineGraph:{
 	enabled : true,
 	isLineCross : true,
-	relation : ['cell','line'],
+	relation : {'border.line':'link', 'cell.ques':'cell'},
 	isedgevalidbylinkobj : function(border){ return border.isLine() || border.isLineEX();},
-	setCell : function(cell){
+	modifyOtherInfo : function(cell,relation){
 		var cblist = cell.getdir4cblist();
 		for(var i=0;i<cblist.length;i++){
 			this.setEdgeByLinkObj(cblist[i][1]);
@@ -504,7 +504,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add(code);
-			this.board.border.setnoerr();
+			if(!this.checkOnly){ this.board.border.setnoerr();}
 		}
 	}
 },

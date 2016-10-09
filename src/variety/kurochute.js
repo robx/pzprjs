@@ -71,6 +71,7 @@ AreaUnshadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	qanscolor : "black",
 	gridcolor_type : "LIGHT",
 	enablebcolor : true,
 

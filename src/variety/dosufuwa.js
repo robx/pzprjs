@@ -66,7 +66,7 @@ MouseEvent:{
 // 盤面管理系
 Cell:{
 	posthook : {
-		qans : function(num){ this.board.roommgr.setExtraData(this.room);}
+		qans : function(num){ this.room.checkAutoCmp();}
 	}
 },
 Border:{
@@ -100,6 +100,7 @@ Graphic:{
 
 	autocmp : 'room',
 
+	qanscolor : "black",
 	bgcellcolor_func : "qcmp1",
 
 	paint : function(){

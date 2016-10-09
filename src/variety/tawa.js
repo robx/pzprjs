@@ -212,6 +212,7 @@ BoardExec:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	qanscolor : "black",
 	numbercolor_func : "qnum",
 
 	paint : function(){

@@ -11,7 +11,7 @@
 MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart){ this.inputqnum_makaro();}
+			if(this.mousestart){ this.inputqnum();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
@@ -19,7 +19,7 @@ MouseEvent:{
 				else                   { this.inputarrow_cell();}
 			}
 			else if(this.mouseend && this.notInputted()){
- 				this.inputqnum_makaro();
+ 				this.inputqnum();
 			}
 		}
 	},
@@ -37,25 +37,7 @@ MouseEvent:{
 		}
 	},
 
-	inputqnum_makaro : function(){
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
-
-		if(cell!==this.cursor.getc()){
-			this.setcursor(cell);
-		}
-		else{
-			if(this.puzzle.editmode){
-				if(this.inputcell_makaro_edit(cell)){ return;}
-			}
-			
-			if(cell.ques!==1){
-				this.inputqnum_main(cell);
-			}
-		}
-		this.mouseCell = cell;
-	},
-	inputcell_makaro_edit : function(cell){
+	inputshade_preqnum : function(cell){
 		var val = null;
 		if(cell.ques===1 && cell.qdir!==cell.NDIR){
 			val = -3;

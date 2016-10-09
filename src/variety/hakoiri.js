@@ -12,7 +12,7 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
-				if(this.mousestart){ this.inputqnum();}
+				if(this.mousestart || this.mousemove){ this.dragDots();}
 			}
 			else if(this.btn==='right'){
 				if(this.mousemove){ this.inputDot();}
@@ -25,10 +25,33 @@ MouseEvent:{
 		}
 		
 		if(this.mouseend && this.notInputted()){
+			this.mouseCell = null;
 			this.inputqnum();
 		}
 	},
 
+	dragDots : function(){
+		var cell = this.getcell();
+		if(cell.isnull||cell===this.mouseCell){ return;}
+		if(cell.qnum!==-1){ return;}
+		if(this.mouseCell.isnull){
+			if(cell.anum!==-1){ return;}
+			this.inputData = (cell.qsub===1 ? -2 : 10);
+			this.mouseCell = cell;
+			return;
+		}
+		
+		if(this.inputData===-2){
+			cell.setAnum(-1);
+			cell.setQsub(1);
+		}
+		else if(this.inputData===10){
+			cell.setAnum(-1);
+			cell.setQsub(0);
+		}
+		this.mouseCell = cell;
+		cell.draw();
+	},
 	inputDot : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.qnum!==-1){ return;}

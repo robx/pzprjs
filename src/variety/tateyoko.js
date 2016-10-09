@@ -87,6 +87,7 @@ BoardExec:{
 
 "AreaBarGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.qans':'node'},
 	setComponentRefs : function(obj, component){ obj.bar = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.barnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},
