@@ -39,7 +39,13 @@ pzpr.classmgr.makeCommon({
 		var preedges = node1.nodes.length, component = node1.component, endetach = (this.modifyNodes.length===0);
 		for(var i=0;i<sidenodeobj.length;i++){
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
-			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
+			if(!!node1 && !!node2){
+				this.removeEdge(node1, node2);
+				
+				if(!!this.incdecBorderCount){
+					this.incdecBorderCount(this.board.getb(((node1.obj.bx+node2.obj.bx)>>1), ((node1.obj.by+node2.obj.by)>>1)), true);
+				}
+			}
 		}
 
 		// Nodeを一旦取り除く
@@ -62,7 +68,13 @@ pzpr.classmgr.makeCommon({
 		for(var i=0;i<sidenodeobj.length;i++){
 			if(!this.isedgevalidbynodeobj(cell, sidenodeobj[i])){ continue;}
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
-			if(!!node1 && !!node2){ this.addEdge(node1, node2);}
+			if(!!node1 && !!node2){
+				this.addEdge(node1, node2);
+				
+				if(!!this.incdecBorderCount){
+					this.incdecBorderCount(this.board.getb(((node1.obj.bx+node2.obj.bx)>>1), ((node1.obj.by+node2.obj.by)>>1)), false);
+				}
+			}
 		}
 
 		// 周囲のComponentに1か所くっついただけの場合は情報を更新して終了
@@ -166,7 +178,7 @@ pzpr.classmgr.makeCommon({
 		/* 外枠のカウントをあらかじめ足しておく */
 		for(var c=0;c<bd.cross.length;c++){
 			var cross = bd.cross[c], bx = cross.bx, by = cross.by;
-			var ischassis = (bd.hasborder===1 ? (bx===bd.minbx||bx===bd.maxbx||by===bd.minby||by===bd.maxby) : false);
+			var ischassis = (bd.hasborder===1 ? (bx===0||bx===bd.cols*2||by===0||by===bd.rows*2) : false);
 			cross.lcnt = (ischassis?2:0);
 		}
 		for(var id=0;id<borders.length;id++){
