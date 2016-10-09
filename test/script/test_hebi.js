@@ -39,6 +39,12 @@ ui.debug.addDebugData('hebi', {
 		{ input:["cursor,5,5", "key,3", "mouse,left, 5,5, 5,1, 1,1"],
 		  result:"pzprv3/hebi/3/3/. . . /. 4,1 . /. . . /. . 5 /. . 4 /. . 3 /" },
 		{ input:["mouse,right, 5,1, 1,1, 1,5, 5,5"],
-		  result:"pzprv3/hebi/3/3/. . . /. 4,1 . /. . . /3 4 5 /2 . 4 /1 . 3 /" }
+		  result:"pzprv3/hebi/3/3/. . . /. 4,1 . /. . . /3 4 5 /2 . 4 /1 . 3 /" },
+		{ input:["mouse,left, 3,3, 5,3, 5,5"],
+		  result:"pzprv3/hebi/3/3/. . . /. 4,1 . /. . . /3 4 5 /2 . + /1 . + /" },
+		{ input:["mouse,left, 3,3, 5,3, 5,5"],
+		  result:"pzprv3/hebi/3/3/. . . /. 4,1 . /. . . /3 4 5 /2 . . /1 . . /" },
+		{ input:["mouse,left, 3,3, 5,3, 5,5"],
+		  result:"pzprv3/hebi/3/3/. . . /. 4,1 . /. . . /3 4 5 /2 . + /1 . + /" }
 	]
 });

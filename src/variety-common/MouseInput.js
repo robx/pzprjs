@@ -78,7 +78,7 @@ MouseEvent:{
 		if     (puzzle.editmode)    { subtype =-1;}
 		else if(cell.numberWithMB)  { subtype = 2;}
 		else if(puzzle.pid==="roma" || puzzle.pid==="yinyang"){ subtype=0;} // 全マス埋めるタイプのパズルは補助記号なし
-		else if(cell.numberAsObject){ subtype = 1;}
+		else if(cell.numberAsObject || puzzle.pid==="hebi"){ subtype = 1;}
 
 		if(puzzle.playmode && cell.qnum!==puzzle.klass.Cell.prototype.qnum){ return;}
 
