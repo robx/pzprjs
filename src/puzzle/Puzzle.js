@@ -129,7 +129,7 @@ pzpr.Puzzle.prototype =
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
-		if(this.painter){
+		if(!this.preInitCanvasInfo){
 			this.painter.resizeCanvas(width, height);
 		}
 		else{
@@ -138,7 +138,7 @@ pzpr.Puzzle.prototype =
 		}
 	},
 	setCanvasSizeByCellSize : function(cellsize){
-		if(this.painter){
+		if(!this.preInitCanvasInfo){
 			this.painter.resizeCanvasByCellSize(cellsize);
 		}
 		else{
