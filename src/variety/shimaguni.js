@@ -201,6 +201,7 @@ Graphic:{
 	irowakeblk : true,
 	enablebcolor : false,
 	bgcellcolor_func : "error1",
+	qanscolor : "black",
 
 	minYdeg : 0.08,
 	maxYdeg : 0.50,

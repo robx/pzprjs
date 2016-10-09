@@ -178,6 +178,7 @@ AreaShadeGraph:{
 Graphic:{
 	hideHatena : true,
 
+	qanscolor : "black",
 	bcolor : "rgb(208, 208, 208)",
 	targetbgcolor : "rgb(255, 192, 192)",	/* 入力中の布団の色 */
 	undefcolor : "silver",					/* 未確定マスの色 */

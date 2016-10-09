@@ -292,6 +292,8 @@ AreaShadeGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	qanscolor : "black",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawShadedCells();

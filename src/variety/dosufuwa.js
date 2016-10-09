@@ -100,6 +100,7 @@ Graphic:{
 
 	autocmp : 'room',
 
+	qanscolor : "black",
 	bgcellcolor_func : "qcmp1",
 
 	paint : function(){

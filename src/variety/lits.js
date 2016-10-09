@@ -100,6 +100,7 @@ Graphic:{
 "Graphic@lits":{
 	gridcolor_type : "DARK",
 
+	qanscolor : "black",
 	shadecolor : "rgb(96, 96, 96)"
 },
 "Graphic@norinori":{

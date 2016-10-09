@@ -84,7 +84,6 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		this.drawDotCells();
 		this.drawCircles();
 
 		this.drawChassis();

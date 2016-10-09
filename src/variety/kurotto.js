@@ -69,6 +69,7 @@ Graphic:{
 
 	autocmp : "number",
 
+	qanscolor : "black",
 	numbercolor_func : "qnum",
 
 	globalfontsizeratio : 0.85,

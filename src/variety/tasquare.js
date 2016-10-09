@@ -47,6 +47,7 @@ Graphic:{
 
 	globalfontsizeratio : 0.85,
 
+	qanscolor : "black",
 	numbercolor_func : "qnum",
 
 	paint : function(){

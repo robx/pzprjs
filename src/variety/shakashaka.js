@@ -260,6 +260,7 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
+	qanscolor : "black",
 	fgcellcolor_func : "qnum",
 	fontShadecolor : "white",
 	numbercolor_func : "fixed_shaded",
