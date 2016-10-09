@@ -1,4 +1,55 @@
 
+## Version 0.7.0
+
+Release date: 2016/10/10
+
+#### New puzzle
+
+* onsen: Introduce new puzzle: Onsen-meguri
+
+#### Improvement
+
+* variety: Add pzpr.genre as an alias of pzpr.variety
+* moonsun: Enable to input cross marks by smartphone or tablet
+* shugaku: Add an ability to input shaded cells by tap
+* kakuru: Enable to input shaded cells by tap
+* hakoiri: Enable to drag dots
+* hebi: Make it possible to drag dots
+* tatamibari: Enable to input question marks as amibo manner
+* amibo: Enable to input aux. marks by tap
+* bag: Make it possible to input background color regardless of bgcolor config
+* tilepaint: Make it possible to input shaded cells if config.use is 2
+* Graph: Add coloring property that indicates if the graph generates individual color
+* AreaGraph: Prevent attaching if node has been valid before modifying info
+* AreaGraph: Stop searching components unless necessary
+* LineGraph: Avoid searching components when path end is attached or detached
+* Graph: Prevent room info regeneration if border line does not really divide rooms
+
+#### BugFix
+
+* BoardExec: Prevent errors when board.exec.execadjust is called with invalid type
+* Puzzle: Fix setCanvasSize before puzzle.open() doesn't work
+
+#### Minor Changes
+
+* Puzzle: Copy contents of init option data to avoid unexpected init option change
+* Puzzle: Hide cursor if puzzle instance type is viewer
+* Graphic: Change default dot color to green from black
+* variety: Change some puzzle name
+* stostone: Cache calculated fallen blocks position
+* stostone: Stop drawing number behind fallen blocks
+* stostone: Fix board.newIrowake() occurs an error
+* slither, bag: Intergate bag script into slitherlink
+* hebi: Change script name to hebi.js from snakes.js
+* Graph: Make AreaNumBlockGraph of fillomino inherit AreaNumberGraph instead of AreaRoomGraph
+* Graph: Move setting info by node, edge obj to LineGraph or AreaGraphBase
+* Graph: Move calling remakeComponent to common modifyInfo method
+* Graph: Set pointgroup = cross automatically if genre's board.borderAsLine is true
+* Graph: Add GraphComponent::checkAutoCmp
+* Graph: Integrate calling graph info updating methods
+* Graph: Change when the number of lines linked to the cell is counted
+* Graph: Separate initializing ltotal, lcnt method
+
 ## Version 0.6.1
 
 Release date: 2016/9/18
