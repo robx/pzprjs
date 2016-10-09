@@ -462,6 +462,9 @@ function postCanvasReady(puzzle){
 		if(opt.type!=='viewer'){
 			setCanvasEvents(puzzle);
 		}
+		else{
+			pc.outputImage = true;
+		}
 		if(!pc.canvasWidth || !pc.canvasHeight){
 			if(!!opt.width && !!opt.height){
 				pc.resizeCanvas(opt.width, opt.height);
