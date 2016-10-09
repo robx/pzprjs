@@ -101,10 +101,18 @@ AreaNumberGraph:{
 },
 AreaRoomGraph:{
 	enabled : true,
+	relation : {'cell.qnum':'info', 'cell.anum':'info', 'border.ques':'separator'},
 
 	// オーバーライド
+	modifyOtherInfo : function(cell,relation){
+		this.setNumOfRoom(cell.room);
+	},
 	setExtraData : function(component){
-		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
+		this.common.setExtraData.call(this,component);
+		this.setNumOfRoom(component);
+	},
+	setNumOfRoom : function(component){
+		var clist = component.clist;
 		var nums = [];
 		var numkind=0, filled=-1;
 		for(var i=0;i<clist.length;i++){
