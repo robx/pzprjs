@@ -338,7 +338,8 @@ FileIO:{
 		"checkNumberExistsInLoop",
 		"checkLineLengthInEachRoom",
 
-		"checkDeadendLine+"
+		"checkDeadendLine+",
+		"checkIsolatedCircle+"
 	]
 },
 AnsCheck:{
@@ -488,6 +489,9 @@ AnsCheck:{
 			}
 		}
 	},
+	checkIsolatedCircle : function(){
+		this.checkAllCell( function(cell){ return (cell.lcnt===0 && cell.isNum());}, "lnIsolate");
+	},
 
 	checkSingleNumberInLoop : function(){
 		this.checkNumbersInLoop(function(cnt){ return (cnt <= 1);}, "lpNumGt2");
@@ -533,6 +537,7 @@ AnsCheck:{
 	blLineNe   : ["線が通過するマスの数が数字と違います。","The Length of the path in a room is different from the number of the loop."],
 	blLineDiff : ["各部屋で線が通過するマスの数が違います。","The Length of the path in a room is different in each room."],
 	bkNoLine : ["線の通っていない部屋があります。","A room remains blank."],
+	lnIsolate : ["線の通っていない○があります。","Lines doesn't pass a circle."],
 	lpNumGt2 : ["数字が2つ以上含まれたループがあります。","A loop has plural numbers."],
 	lpNoNum  : ["○を含んでいないループがあります。","A loop has no numbers."]
 }
