@@ -66,7 +66,7 @@ Graphic:{
 	},
 	getBGCellColor_qcmp1 : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-		else if(this.autocmp==='room' && this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
+		else if(this.puzzle.execConfig('autocmp_area') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
 		return null;
 	},
 	getBGCellColor_qsub1 : function(cell){
