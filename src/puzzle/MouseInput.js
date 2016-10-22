@@ -111,7 +111,7 @@ MouseEvent:{
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.puzzle.key;
 		kc.checkmodifiers(e);
-		if((kc.isSHIFT || kc.isMETA)!==this.puzzle.getConfig('lrcheck')){
+		if(kc.isSHIFT || kc.isMETA){
 			if     (this.btn==='left'){ this.btn = 'right';}
 			else if(this.btn==='right'){ this.btn = 'left';}
 		}

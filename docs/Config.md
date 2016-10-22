@@ -33,7 +33,6 @@
 
 |Name|Type|Default value|Description|
 |---|---|---|---|
-|`lrcheck`|`boolean`|`false`|Invert mouse button's left and right|
 |`redline`|`boolean`|`false`|Display continuous lines if the player clicks|
 |`redblk`|`boolean`|`false`|Display continuous shaded cells if the player clicks|
 |`redroad`|`boolean`|`false`|Display continuous road if the player clicks for `'Roma'`|

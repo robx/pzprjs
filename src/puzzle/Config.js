@@ -50,11 +50,9 @@ Config.prototype =
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 補助入力設定 */
-		this.add('lrcheck', false);			/* マウス左右反転 */
 		this.add('redline', false);			/* 線の繋がりチェック */
 		this.add('redblk', false);			/* 黒マスつながりチェック (連黒分断禁も) */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
-		this.list.lrcheck.volatile = true;
 		this.list.redline.volatile = true;
 		this.list.redblk.volatile = true;
 		this.list.redroad.volatile = true;
