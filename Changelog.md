@@ -1,4 +1,17 @@
 
+## Version 0.7.1
+
+Release date: 2016/11/26
+
+#### BugFix
+
+* LineManager: Fix modified line could not reculcurate loop info for gokigen
+* onsen: Add checking isolated circles for answer check
+
+#### Minor Changes
+
+* Install in-publish to stop working prepublish hook for npm 4 or earlier
+
 ## Version 0.7.0
 
 Release date: 2016/10/10
