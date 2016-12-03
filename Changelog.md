@@ -1,7 +1,7 @@
 
 ## Version 0.7.1
 
-Release date: 2016/11/26
+Release date: 2016/12/3
 
 #### BugFix
 
