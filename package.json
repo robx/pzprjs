@@ -1,6 +1,6 @@
 {
   "name": "pzpr",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Scripts for handling puzzle objects",
   "main": "./index.js",
   "directories": {
@@ -29,9 +29,11 @@
     "clean": "grunt clean",
     "lint": "grunt lint",
     "test": "grunt lint && mocha -R progress --recursive test",
-    "prepublish": "npm run release"
+    "prepublish": "in-publish && npm run release || not-in-publish"
   },
-  "dependencies": {},
+  "dependencies": {
+    "in-publish": "^2.0.0"
+  },
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
