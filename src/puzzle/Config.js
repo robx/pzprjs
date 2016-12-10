@@ -83,23 +83,34 @@ Config.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// config.getCurrnetName() 以前のconfig名から現在使用している名称を取得する
+	//---------------------------------------------------------------------------
+	getCurrnetName : function(name){
+		switch(name){
+			case 'color_qanscolor': name = 'color_shadecolor'; break;
+			case 'autocmp': if(this.getexec('autocmp_area')){ name = 'autocmp_area';} break;
+		}
+		return name;
+	},
+
+	//---------------------------------------------------------------------------
 	// config.get()  各フラグの設定値を返す
 	// config.set()  各フラグの設定値を設定する
 	// config.reset()各フラグの設定値を初期値に戻す
 	//---------------------------------------------------------------------------
 	get : function(name){
-		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
+		name = this.getCurrnetName(name);
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
-		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
+		name = this.getCurrnetName(name);
 		if(!this.list[name]){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
 	},
 	reset : function(name){
-		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
+		name = this.getCurrnetName(name);
 		if(!this.list[name]){ return;}
 		this.set(name, this.list[name].defval);
 	},
