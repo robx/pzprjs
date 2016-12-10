@@ -109,7 +109,7 @@ Graphic:{
 
 	autocmp : 'room',
 
-	bgcellcolor_func : "qcmp1",
+	bgcellcolor_func : "qcmp",
 
 	paint : function(){
 		this.drawBGCells();

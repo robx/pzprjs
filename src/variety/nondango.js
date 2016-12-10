@@ -73,6 +73,8 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 
 	autocmp : 'room',
+	bcolor : "rgb(208, 208, 255)",
+	bgcellcolor_func : "qcmp1",
 
 	paint : function(){
 		this.drawBGCells();
@@ -83,12 +85,6 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawChassis();
-	},
-	getBGCellColor : function(cell){
-		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-		else if(cell.qsub===1){ return "rgb(208, 208, 255)";}
-		else if(this.puzzle.execConfig('autocmp_area') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
-		return null;
 	},
 
 	getCircleStrokeColor : function(cell){

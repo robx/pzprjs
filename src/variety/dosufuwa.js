@@ -101,7 +101,7 @@ Graphic:{
 	autocmp : 'room',
 
 	qanscolor : "black",
-	bgcellcolor_func : "qcmp1",
+	bgcellcolor_func : "qcmp",
 
 	paint : function(){
 		this.drawBGCells();
