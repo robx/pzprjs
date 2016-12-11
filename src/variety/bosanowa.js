@@ -75,8 +75,12 @@ KeyEvent:{
 			var cell = cursor.getc();
 			if(this.puzzle.editmode){
 				if     (ca==='w'){ cell.setQues(cell.ques!==7?7:0); cell.setNum(-1);}
-				else if(ca==='-'||ca===' '){ cell.setQues(0); cell.setNum(-1);}
-				else if(('0'<=ca && ca<='9') || ca==='BS'){
+				else if(ca==='-'){ cell.setQues(0); cell.setNum(-1);}
+				else if(ca===' '||ca==='BS'){
+					if(cell.getNum()!==-1){ this.key_inputqnum(ca);}
+					else{ cell.setQues(7);}
+				}
+				else if('0'<=ca && ca<='9'){
 					if(cell.ques!==0){ cell.setQues(0); cell.setNum(-1);}
 					this.key_inputqnum(ca);
 				}

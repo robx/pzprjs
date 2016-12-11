@@ -8,10 +8,12 @@ pzpr.classmgr.makeCommon({
 GraphBase:{
 
 	enabled : false,
-	relation : [],
+	relation : {},
 	
 	pointgroup : '',
 	linkgroup  : '',
+	
+	coloring : false,
 	
 	//--------------------------------------------------------------------------------
 	// graph.removeFromArray()    Arrayからitemを取り除く
@@ -43,7 +45,7 @@ GraphBase:{
 	isedgevalidbynodeobj  : function(nodeobj1, nodeobj2){ return true;},
 	isedgeexistsbylinkobj : function(linkobj){
 		var sidenodes = this.getSideNodesBySeparator(linkobj);
-		if(!sidenodes[0] || !sidenodes[1]){ return false;}
+		if(!sidenodes){ return false;}
 		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
 	},
 	
@@ -86,7 +88,7 @@ GraphBase:{
 		}
 		else{
 			for(var c=0;c<nodeobjs.length;c++){
-				if(this.isnodevalid(nodeobjs[c])){ this.putEdgeByNodeObj(nodeobjs[c]);}
+				if(this.isnodevalid(nodeobjs[c])){ this.setEdgeByNodeObj(nodeobjs[c]);}
 			}
 		}
 	},
@@ -214,24 +216,29 @@ GraphBase:{
 		var sidenodes = [], sidenodeobj = border.sideobj;
 		for(var i=0;i<sidenodeobj.length;i++){
 			var nodes = this.getObjNodeList(sidenodeobj[i]);
-			sidenodes.push(!!nodes ? nodes[0] : null);
+			if(!!nodes && !!nodes[0]){ sidenodes.push(nodes[0]);}
 		}
-		return sidenodes;
+		return (sidenodes.length>=2 ? sidenodes : null);
 	},
 
 	//---------------------------------------------------------------------------
-	// graph.setEdgeByLinkObj() 線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
+	// graph.modifyInfo() 黒マスや線が引かれたり消された時に、lcnt変数や線の情報を生成しなおす
 	//---------------------------------------------------------------------------
-	setEdgeByLinkObj : function(linkobj){
-		var isset = this.isedgevalidbylinkobj(linkobj);
-		if(isset===this.isedgeexistsbylinkobj(linkobj)){ return;}
+	modifyInfo : function(obj, type){
+		if(!this.enabled){ return;}
+		var relation = this.relation[type];
+		if(!relation){ return;}
 
 		this.modifyNodes = [];
 
-		if(isset){ this.addEdgeByLinkObj(linkobj);}
-		else     { this.removeEdgeByLinkObj(linkobj);}
+		switch(relation){
+			case 'node':      this.setEdgeByNodeObj(obj); break;
+			case 'link':      this.setEdgeByLinkObj(obj); break;
+			case 'separator': this.setEdgeBySeparator(obj); break;
+			default:          this.modifyOtherInfo(obj,relation); break;
+		}
 
-		this.remakeComponent();
+		if(this.modifyNodes.length>0){ this.remakeComponent();}
 	},
 
 	//---------------------------------------------------------------------------
@@ -241,111 +248,39 @@ GraphBase:{
 		var isset = this.isedgevalidbylinkobj(border);
 		if(isset===this.isedgeexistsbylinkobj(border)){ return;}
 
-		this.modifyNodes = [];
+		if(!!this.incdecBorderCount){
+			this.incdecBorderCount(border, !isset);
+		}
 
 		if(isset){ this.addEdgeBySeparator(border);}
 		else     { this.removeEdgeBySeparator(border);}
-
-		this.remakeComponent();
-	},
-
-	//---------------------------------------------------------------------------
-	// graph.setEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
-	// graph.putEdgeByNodeObj() 黒マスになったりした時にブロックの情報を生成しなおす
-	//---------------------------------------------------------------------------
-	setEdgeByNodeObj : function(nodeobj){
-		this.modifyNodes = [];
-
-		this.putEdgeByNodeObj(nodeobj);
-
-		this.remakeComponent();
-	},
-	putEdgeByNodeObj : function(cell){
-		if(this.calcNodeCount(cell)===0 && this.getObjNodeList(cell).length===0){ return;}
-		
-		// 一度Edgeを取り外す
-		this.removeEdgeByNodeObj(cell);
-			
-		// Edgeを付け直す
-		this.addEdgeByNodeObj(cell);
-	},
-
-	//---------------------------------------------------------------------------
-	// graph.addEdgeByLinkObj()    指定されたオブジェクトの場所にEdgeを生成する
-	// graph.removeEdgeByLinkObj() 指定されたオブジェクトの場所からEdgeを除去する
-	//---------------------------------------------------------------------------
-	addEdgeByLinkObj : function(linkobj){
-		var sidenodeobj = this.getSideObjByLinkObj(linkobj);
-		
-		// 周囲のNodeをグラフに追加するかどうか確認する
-		this.createNodeIfEmpty(sidenodeobj[0]);
-		this.createNodeIfEmpty(sidenodeobj[1]);
-
-		// linkするNodeを取得する
-		var sidenodes = this.getSideNodesByLinkObj(linkobj);
-
-		// 周囲のNodeとlink
-		this.addEdge(sidenodes[0], sidenodes[1]);
-	},
-	removeEdgeByLinkObj : function(linkobj){
-		// unlinkするNodeを取得する
-		var sidenodes = this.getSideNodesByLinkObj(linkobj);
-
-		// 周囲のNodeとunlink
-		this.removeEdge(sidenodes[0], sidenodes[1]);
-
-		// 周囲のNodeをグラフから取り除くかどうか確認する
-		this.deleteNodeIfEmpty(sidenodes[0].obj);
-		this.deleteNodeIfEmpty(sidenodes[1].obj);
-
-		if(this.linkgroup){
-			this.setComponentRefs(linkobj, null);
-		}
 	},
 
 	//---------------------------------------------------------------------------
 	// graph.addEdgeBySeparator()    指定されたオブジェクトの場所にEdgeを生成する
 	// graph.removeEdgeBySeparator() 指定されたオブジェクトの場所からEdgeを除去する
 	//---------------------------------------------------------------------------
-	addEdgeBySeparator : function(border){
+	addEdgeBySeparator : function(border){ // 境界線を消した時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
-
+		if(!sidenodes){ return;}
 		this.addEdge(sidenodes[0], sidenodes[1]);
 	},
-	removeEdgeBySeparator : function(border){
+	removeEdgeBySeparator : function(border){ // 境界線を引いた時の処理
 		var sidenodes = this.getSideNodesBySeparator(border);
-
+		if(!sidenodes){ return;}
 		this.removeEdge(sidenodes[0], sidenodes[1]);
+		if(this.linkgroup){
+			this.setComponentRefs(border, null);
+		}
 	},
 
 	//---------------------------------------------------------------------------
-	// graph.removeEdgeByNodeObj() 黒マスになったりした時にブロックの情報を消去する
-	// graph.addEdgeByNodeObj()    黒マスになったりした時にブロックの情報を生成する
+	// graph.attachNode()    指定されたオブジェクトを別Componentにくっつけて終了する
 	//---------------------------------------------------------------------------
-	removeEdgeByNodeObj : function(cell){
-		// Edgeの除去
-		var sidenodeobj = this.getSideObjByNodeObj(cell);
-		var node1 = this.getObjNodeList(cell)[0];
-		for(var i=0;i<sidenodeobj.length;i++){
-			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
-			if(!!node1 && !!node2){ this.removeEdge(node1, node2);}
-		}
-
-		// Nodeを一旦取り除く
-		if(!!node1){ this.deleteNode(node1);}
-	},
-	addEdgeByNodeObj : function(cell){
-		// Nodeを付加する
-		for(var i=0,len=this.calcNodeCount(cell);i<len;i++){ this.createNode(cell);}
-		
-		// Edgeの付加
-		var sidenodeobj = this.getSideObjByNodeObj(cell);
-		var node1 = this.getObjNodeList(cell)[0];
-		for(var i=0;i<sidenodeobj.length;i++){
-			if(!this.isedgevalidbynodeobj(cell, sidenodeobj[i])){ continue;}
-			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
-			if(!!node1 && !!node2){ this.addEdge(node1, node2);}
-		}
+	attachNode : function(node, component){
+		node.component = component;
+		component.nodes.push(node);
+		this.setComponentInfo(component);
 	},
 
 	//---------------------------------------------------------------------------
@@ -397,7 +332,6 @@ GraphBase:{
 			for(var i=0;i<this.modifyNodes.length;i++){
 				var node = this.modifyNodes[i];
 				node.component = component;
-				this.setComponentRefs(node.obj, component);
 				component.nodes.push(node);
 			}
 			this.modifyNodes = [];
@@ -407,12 +341,12 @@ GraphBase:{
 		// subgraphがひとつながりでないなら再探索ルーチンを回す
 	},
 	remakeMaximalComonents : function(remakeComponents){
-		var longColor = this.getLongColor(remakeComponents);
+		var longColor = (this.coloring ? this.getLongColor(remakeComponents) : null);
 		for(var p=0;p<remakeComponents.length;p++){
 			this.deleteComponent(remakeComponents[p]);
 		}
 		var newComponents = this.searchGraph();
-		this.setLongColor(newComponents, longColor);
+		if(this.coloring){ this.setLongColor(newComponents, longColor);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -482,16 +416,19 @@ GraphBase:{
 		for(var i=1;i<components.length;i++){
 			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
 		}
-		return (!!largeComponent ? largeComponent.color : this.puzzle.painter.getNewLineColor());
+		return (!!largeComponent ? largeComponent.color : null);
 	},
 	setLongColor : function(components, longColor){
 		if(components.length===0){ return;}
 		var puzzle = this.puzzle;
 		
 		// できた線の中でもっとも長いものを取得する
-		var largeComponent = components[0];
-		for(var i=1;i<components.length;i++){
-			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+		var largeComponent = null;
+		if(!!longColor){
+			largeComponent = components[0];
+			for(var i=1;i<components.length;i++){
+				if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+			}
 		}
 		
 		// 新しい色の設定
@@ -500,7 +437,7 @@ GraphBase:{
 			path.color = (path===largeComponent ? longColor : path.color);
 		}
 		
-		if(puzzle.execConfig('irowake') || puzzle.execConfig('irowakeblk')){
+		if(this.coloring && (puzzle.execConfig('irowake') || puzzle.execConfig('irowakeblk'))){
 			this.repaintNodes(components);
 		}
 	},
@@ -551,6 +488,19 @@ GraphComponent:{
 			}
 		}
 		return objs;
+	},
+
+	//---------------------------------------------------------------------------
+	// component.checkAutoCmp()  autocmp_area設定有効時に条件を満たしているかチェックして背景を描画する
+	//---------------------------------------------------------------------------
+	checkAutoCmp : function(){
+		var iscmp = this.clist.checkCmp();
+		if(this.cmp !== iscmp){
+			this.cmp = iscmp;
+			if(this.puzzle.execConfig('autocmp_area')){
+				this.clist.draw();
+			}
+		}
 	},
 
 	//---------------------------------------------------------------------------

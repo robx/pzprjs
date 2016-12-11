@@ -13,24 +13,30 @@ pzpr.Puzzle = function(canvas, option){
 	if(option===void 0 && (!canvas || !canvas.parentNode)){
 		option=canvas; canvas=(void 0);
 	}
-	this.opt = option || {};
+	option = option || {};
 
-	var modeid = {player:1,viewer:2}[this.opt.type||0] || 0;
+	this.instancetype = option.type || 'editor';
+	var modeid = {player:1,viewer:2}[this.instancetype||0] || 0;
 	this.playeronly = !!modeid;			// 回答モードのみで動作する
 	this.editmode = !this.playeronly;	// 問題配置モード
 	this.playmode = !this.editmode;		// 回答モード
 
 	this.resetTime();
 
-	this.preInitCanvas = true;
+	this.preInitCanvasInfo = {
+		type     : option.graphic  || '',
+		width    : option.width    || null,
+		height   : option.height   || null,
+		cellsize : option.cellsize || null
+	};
 
 	this.listeners = {};
 
 	this.metadata =  new pzpr.MetaData();
 
 	this.config = new this.Config(this);
-	if(this.opt.config!==void 0){ this.config.setAll(this.opt.config);}
-	if(this.opt.mode!==void 0){ this.setMode(this.opt.mode);}
+	if(option.config!==void 0){ this.config.setAll(option.config);}
+	if(option.mode!==void 0){ this.setMode(option.mode);}
 
 	if(!!canvas){ this.setCanvas(canvas);}
 
@@ -48,6 +54,7 @@ pzpr.Puzzle.prototype =
 	editmode : false,	// 問題配置モード
 	playmode : false,	// 回答モード
 	playeronly : false,	// 回答モードのみで動作する
+	instancetype : '',	// editpr/player/viewerのいずれか
 	
 	starttime : 0,
 	
@@ -114,7 +121,7 @@ pzpr.Puzzle.prototype =
 		el.appendChild(_div);
 		this.canvas = _div;
 		
-		setCanvas_main(this, (type || this.opt.graphic || ''));
+		setCanvas_main(this, (type || this.preInitCanvasInfo.type));
 	},
 
 	//---------------------------------------------------------------------------
@@ -122,20 +129,20 @@ pzpr.Puzzle.prototype =
 	// owner.setCanvasSizeByCellSize() セルのサイズを指定して盤面のサイズを設定する
 	//---------------------------------------------------------------------------
 	setCanvasSize : function(width, height){
-		if(this.painter){
+		if(!this.preInitCanvasInfo){
 			this.painter.resizeCanvas(width, height);
 		}
 		else{
-			this.opt.width  = width;
-			this.opt.height = height;
+			this.preInitCanvasInfo.width  = width;
+			this.preInitCanvasInfo.height = height;
 		}
 	},
 	setCanvasSizeByCellSize : function(cellsize){
-		if(this.painter){
+		if(!this.preInitCanvasInfo){
 			this.painter.resizeCanvasByCellSize(cellsize);
 		}
 		else{
-			this.opt.cellsize = cellsize;
+			this.preInitCanvasInfo.cellsize = cellsize;
 		}
 	},
 
@@ -199,7 +206,7 @@ pzpr.Puzzle.prototype =
 	clone : function(option){
 		option = option || {};
 		var opt = {
-			type   : (option.type   || this.opt.type || ''),
+			type   : (option.type   || this.instancetype || ''),
 			width  : (option.width  || this.painter.canvasWidth),
 			height : (option.height || this.painter.canvasHeight)
 		};
@@ -320,7 +327,7 @@ pzpr.Puzzle.prototype =
 		if(!!this.klass){
 			this.cursor.adjust_modechange();
 			this.key.keyreset();
-			this.mouse.mousereset();
+			this.mouse.modechange();
 			if(this.board.haserror){
 				this.board.errclear();
 			}
@@ -456,11 +463,14 @@ function createSubCanvas(type){
 //  postCanvasReady()  Canvas設定＆ready後の初期化処理を行う
 //---------------------------------------------------------------------------
 function postCanvasReady(puzzle){
-	var pc = puzzle.painter, opt = puzzle.opt;
+	var pc = puzzle.painter, opt = puzzle.preInitCanvasInfo;
 	
-	if(puzzle.preInitCanvas){
-		if(opt.type!=='viewer'){
+	if(puzzle.preInitCanvasInfo){
+		if(puzzle.instancetype!=='viewer'){
 			setCanvasEvents(puzzle);
+		}
+		else{
+			pc.outputImage = true;
 		}
 		if(!pc.canvasWidth || !pc.canvasHeight){
 			if(!!opt.width && !!opt.height){
@@ -470,7 +480,7 @@ function postCanvasReady(puzzle){
 				pc.resizeCanvasByCellSize(opt.cellsize);
 			}
 		}
-		delete puzzle.preInitCanvas;
+		delete puzzle.preInitCanvasInfo;
 	}
 	
 	pc.initCanvas();

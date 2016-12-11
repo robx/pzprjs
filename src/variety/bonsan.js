@@ -175,16 +175,12 @@ LineGraph:{
 },
 "AreaShadeGraph@rectslider":{
 	enabled : true,
-	relation : ['cell','line'],
+	relation : {'cell.qnum':'node','border.line':'move'},
 	isnodevalid : function(cell){ return cell.base.qnum!==-1;},
 	
-	setLine : function(border){
-		this.modifyNodes = [];
-
-		this.putEdgeByNodeObj(border.sidecell[0]);
-		this.putEdgeByNodeObj(border.sidecell[1]);
-
-		this.remakeComponent();
+	modifyOtherInfo : function(border,relation){
+		this.setEdgeByNodeObj(border.sidecell[0]);
+		this.setEdgeByNodeObj(border.sidecell[1]);
 	}
 },
 

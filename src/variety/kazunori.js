@@ -129,6 +129,7 @@ AreaRoomGraph:{
 },
 "AreaNoriGraph:AreaGraphBase":{
 	enabled : true,
+	relation : {'cell.anum':'node', 'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.nori = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.norinodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.norinodes = [];},

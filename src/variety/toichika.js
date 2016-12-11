@@ -70,8 +70,8 @@ Cell:{
 
 	maxnum : 4,
 	posthook : {
-		qnum : function(num){ this.board.roommgr.setExtraData(this.room);},
-		anum : function(num){ this.board.roommgr.setExtraData(this.room);}
+		qnum : function(num){ this.room.checkAutoCmp();},
+		anum : function(num){ this.room.checkAutoCmp();}
 	}
 },
 Board:{
@@ -116,7 +116,7 @@ Graphic:{
 
 	autocmp : 'room',
 
-	bgcellcolor_func : "qcmp1",
+	bgcellcolor_func : "qcmp",
 
 	paint : function(){
 		this.drawBGCells();

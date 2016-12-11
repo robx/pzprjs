@@ -18,6 +18,11 @@ ui.debug.addDebugData('gokigen', {
 		{ input:["newboard,3,2", "playmode", "setconfig,use,2", "ansclear"] },
 		{ input:["mouse,left, 1,1",  "mouse,leftx2, 3,1",  "mouse,leftx3, 5,1",
 				 "mouse,right, 1,3", "mouse,rightx2, 3,3", "mouse,rightx3, 5,3"],
-		  result:"pzprv3/gokigen/2/3/. . . . /. . . . /. . . . /1 2 . /2 1 . /" }
+		  result:"pzprv3/gokigen/2/3/. . . . /. . . . /. . . . /1 2 . /2 1 . /" },
+		{ input:["newboard,3,2", "playmode"] },
+		{ input:["mouse,left, 1,1, 4,4", "mouse,left, 1,3, 4,0, 5,1"],
+		  result:"pzprv3/gokigen/2/3/. . . . /. . . . /. . . . /1 2 1 /2 1 . /" },
+		{ input:["mouse,left, 0,4, 2,2, 1.9,4, 4,0"],
+		  result:"pzprv3/gokigen/2/3/. . . . /. . . . /. . . . /1 . 1 /. 1 . /" }
 	]
 });

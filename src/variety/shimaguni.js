@@ -27,6 +27,16 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true
 },
+"KeyEvent@stostone":{
+	keyDispInfo : function(ca){
+		if(ca==='x'){
+			/* 押した時:true, 離したとき:false */
+			this.board.operate(!!this.keydown ? 'drop' : 'resetpos');
+			return false;
+		}
+		return true;
+	}
+},
 
 //---------------------------------------------------------
 // 盤面管理系
@@ -40,11 +50,11 @@ Cell:{
 },
 "Cell@stostone":{
 	getFallableLength : function(isdrop){
-		if(!this.base.sblk){ return 0;}
+		if(!this.base.stone){ return 0;}
 		var cell2 = this, len = 0, move = ((isdrop!==false) ? 2 : -2);
 		while(!cell2.isnull){
 			cell2 = cell2.relcell(0,move);
-			if(cell2.isnull || (!!cell2.base.sblk && this.base.sblk!==cell2.base.sblk)){ break;}
+			if(cell2.isnull || (!!cell2.base.stone && this.base.stone!==cell2.base.stone)){ break;}
 			len++;
 		}
 		return len;
@@ -54,15 +64,22 @@ Cell:{
 Board:{
 	hasborder : 1
 },
+"Board@shimaguni,stostone":{
+	addExtraInfo : function(){
+		this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
+	}
+},
 "Board@stostone":{
 	cols : 8,
 	rows : 8,
 
 	falling : false,
+	fallstate : 0,	// 落下ブロックが計算済みかどうか 0:無効 1:落ちた状態 2:上がった状態
 
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 		this.falling = false;
+		this.fallstate = 0;
 	},
 	errclear : function(){
 		this.falling = false;
@@ -78,7 +95,6 @@ Board:{
 			this.puzzle.redraw();
 			break;
 		case 'resetpos':
-			this.resetpos();
 			this.board.errclear();
 			break;
 		default:
@@ -93,8 +109,10 @@ Board:{
 		}
 	},
 	drop : function(isdrop){
+		var afterstate = (isdrop!==false?1:2);
+		if(this.fallstate===afterstate){ return;}
 		this.resetpos();
-		var fallable = true, blks = this.sblkmgr.components;
+		var fallable = true, blks = this.stonegraph.components;
 		while(fallable){
 			fallable = false;
 			for(var n=blks.length-1;n>=0;--n){
@@ -102,39 +120,15 @@ Board:{
 				if(length>0){ fallable = true;}
 			}
 		}
+		this.fallstate = afterstate;
 	}
 },
 
-CellList:{
-	getLandAreaOfClist : function(){
-		var cnt = 0;
-		for(var i=0,len=this.length;i<len;i++){
-			if(this[i].isShade()){ cnt++;}
-		}
-		return cnt;
-	},
-
-	isSeqBlock : function(){
-		var stack=(this.length>0?[this[0]]:[]), count=this.length, passed={};
-		for(var i=0;i<count;i++){ passed[this[i].id]=0;}
-		while(stack.length>0){
-			var cell=stack.pop();
-			if(passed[cell.id]===1){ continue;}
-			count--;
-			passed[cell.id]=1;
-			var list = cell.getdir4clist();
-			for(var i=0;i<list.length;i++){
-				if(passed[list[i][0].id]===0){ stack.push(list[i][0]);}
-			}
-		}
-		return (count===0);
-	}
-},
 "CellList@stostone":{
 	fall : function(isdrop){
 		var length = this.board.rows, move = ((isdrop!==false) ? 2 : -2);
 		for(var i=0;i<this.length;i++){
-			if(this[i].sblk===this[i].relcell(0,move).sblk){ continue;} // Skip if the block also contains bottom neighbor cell
+			if(this[i].stone===this[i].relcell(0,move).stone){ continue;} // Skip if the block also contains bottom neighbor cell
 			var len = this[i].destination.getFallableLength(isdrop);
 			if(length>len){ length = len;}
 			if(length===0){ return 0;}
@@ -152,8 +146,22 @@ CellList:{
 	}
 },
 
-AreaShadeGraph:{
+"AreaShadeGraph@chocona":{
 	enabled : true
+},
+"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone":{ // Same as LITS AreaTetrominoGraph
+	enabled : true,
+	relation : {'cell.qans':'node', 'border.ques':'separator'},
+	setComponentRefs : function(obj, component){ obj.stone = component;},
+	getObjNodeList   : function(nodeobj){ return nodeobj.stonenodes;},
+	resetObjNodeList : function(nodeobj){ nodeobj.stonenodes = [];},
+	
+	isedgevalidbylinkobj : function(border){
+		return !border.isBorder();
+	}
+},
+"AreaStoneGraph@stostone":{
+	coloring : true
 },
 AreaRoomGraph:{
 	enabled : true,
@@ -177,6 +185,7 @@ Graphic:{
 		this.drawNumbers();
 
 		this.drawBorders();
+		if(this.pid==='stostone'){ this.drawNarrowBorders();}
 
 		this.drawChassis();
 
@@ -192,9 +201,24 @@ Graphic:{
 	irowakeblk : true,
 	enablebcolor : false,
 	bgcellcolor_func : "error1",
+	qanscolor : "black",
 
 	minYdeg : 0.08,
 	maxYdeg : 0.50,
+
+	drawNarrowBorders : function(){
+		this.vinc('border_narrow', 'crispEdges', true);
+		if(this.board.falling){
+			var func = this.getBorderColor;
+			this.getBorderColor = this.getNarrowBorderColor;
+			this.lw /= 2;
+			this.lm /= 2;
+			this.drawBorders_common("b_bd2_");
+			this.getBorderColor = func;
+			this.lw *= 2;
+			this.lm *= 2;
+		}
+	},
 
 	getShadedCellColor : function(cell){
 		var cell0 = cell;
@@ -204,17 +228,27 @@ Graphic:{
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
 		else if(cell.trial){ return this.trialcolor;}
-		else if(this.puzzle.execConfig('irowakeblk')){ return cell.sblk.color;}
+		else if(this.puzzle.execConfig('irowakeblk')){ return cell.stone.color;}
 		return this.shadecolor;
 	},
 	getBorderColor : function(border){
-		if(this.board.falling && (border.sidecell[0].base.sblk !== border.sidecell[1].base.sblk)){
-			var sblk1 = border.sidecell[0].base.sblk;
-			var sblk2 = border.sidecell[1].base.sblk;
-			if(!!sblk1 && !!sblk2 && sblk1!==sblk2){ return "white";}
+		if(this.board.falling){
+			var sblk1 = border.sidecell[0].base.stone;
+			var sblk2 = border.sidecell[1].base.stone;
+			if(!!sblk1 || !!sblk2){ return null;}
 		}
 		if(border.isBorder()){ return this.quescolor;}
 		return null;
+	},
+	getNarrowBorderColor : function(border){
+		var sblk1 = border.sidecell[0].base.stone;
+		var sblk2 = border.sidecell[1].base.stone;
+		if(sblk1!==sblk2){ return "white";}
+		return null;
+	},
+	getNumberText : function(cell){
+		if(this.board.falling && !!cell.base.stone){ return '';}
+		return this.common.getNumberText.call(this,cell);
 	},
 	getNumberColor : function(cell){
 		if(this.board.falling){ cell = cell.base;}
@@ -273,15 +307,22 @@ FileIO:{
 		this.checkSideAreaCell(function(cell1,cell2){ return (cell1.isShade() && cell2.isShade());}, true, "cbShade");
 	},
 	checkSideAreaLandSide : function(){
-		this.checkSideAreaSize(function(area){ return area.clist.getLandAreaOfClist();}, "bsEqShade");
+		this.checkSideAreaSize(this.board.roommgr, function(area){ return area.clist.filter(function(cell){ return cell.isShade();}).length;}, "bsEqShade");
 	},
 
 	// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 	checkSeqBlocksInRoom : function(){
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
-			var clist = rooms[r].clist.filter(function(cell){ return cell.isShade();});
-			if(clist.isSeqBlock()){ continue;}
+			var clist = rooms[r].clist, stonebase = null, check = true;
+			for(var i=0;i<clist.length;i++){
+				if(clist[i].stone===null){ }
+				else if(clist[i].stone!==stonebase){
+					if(stonebase===null){ stonebase=clist[i].stone;}
+					else{ check = false; break;}
+				}
+			}
+			if(check){ continue;}
 			
 			this.failcode.add("bkShadeDivide");
 			if(this.checkOnly){ break;}
@@ -294,6 +335,11 @@ FileIO:{
 		this.board.drop();
 		this.common.checkAns.call(this,break_if_error);
 	},
+	resetCache : function(){
+		this.common.resetCache.call(this);
+		this.board.fallstate = 0;
+	},
+
 	checkFallenBlock : function(){
 		var bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
@@ -325,7 +371,7 @@ FileIO:{
 	}
 },
 
-"FailCode@shimaguni,stostone":{
+"FailCode@shimaguni":{
 	bkShadeNe     : ["海域内の数字と国のマス数が一致していません。","The number of shaded cells is not equals to the number."],
 	bkShadeDivide : ["1つの海域に入る国が2つ以上に分裂しています。","Countries in one marine area are divided to plural ones."],
 	bkNoShade     : ["黒マスのカタマリがない海域があります。","A marine area has no shaded cells."],
@@ -339,7 +385,7 @@ FileIO:{
 },
 
 "FailCode@stostone":{
-	cbShade : ["異なる領域にある黒マスどうしが辺を共有しています。","Shade cell blocks in other region are adjacent over border line."],
+	cbShade : ["異なる部屋にある黒マスどうしが辺を共有しています。","Shade cell blocks in other region are adjacent over border line."],
 	csUpper : ["ブロックを落とした後に黒マスが盤面の上半分に残っています。","Shaded cells are remained in upper half of the board after they are fallen."],
 	cuLower : ["ブロックを落とした後の空間が盤面の下半分にあります。","Unshaded cells exist in lower half of the board after blocks are fallen."]
 }

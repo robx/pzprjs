@@ -47,7 +47,7 @@ Board:{
 
 		// 補助オブジェクト
 		this.disrecinfo = 0;
-		this.infolist = {cell:[],border:[],line:[],all:[]};
+		this.infolist = [];
 
 		this.linegraph  = this.addInfoList(classes.LineGraph);			// 交差なし線のグラフ
 		this.roommgr = this.addInfoList(classes.AreaRoomGraph);			// 部屋情報を保持する
@@ -65,10 +65,7 @@ Board:{
 	addInfoList : function(Klass){
 		var instance = new Klass();
 		if(instance.enabled){
-			for(var i=0;i<instance.relation.length;i++){
-				this.infolist[instance.relation[i]].push(instance);
-			}
-			this.infolist.all.push(instance);
+			this.infolist.push(instance);
 		}
 		return instance;
 	},
@@ -77,7 +74,7 @@ Board:{
 	cols : 10,		/* 盤面の横幅(デフォルト) */
 	rows : 10,		/* 盤面の縦幅(デフォルト) */
 
-	hascross  : 2,	// 1:盤面内側のCrossがあるパズル 2:外枠上を含めてCrossがあるパズル
+	hascross  : 2,	// 1:盤面内側のCrossが操作可能なパズル 2:外枠上を含めてCrossが操作可能なパズル (どちらもCrossは外枠上に存在します)
 	hasborder : 0,	// 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 	hasexcell : 0,	// 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
 	borderAsLine : false,	// 境界線をlineとして扱う
@@ -503,35 +500,26 @@ Board:{
 
 	//--------------------------------------------------------------------------------
 	// bd.rebuildInfo()      部屋、黒マス、白マスの情報を再生成する
-	// bd.setInfoByCell()    黒マス・白マスが入力されたり消された時に、黒マス/白マスIDの情報を変更する
-	// bd.setInfoByBorder()  境界線が引かれたり消されてたりした時に、部屋情報を更新する
-	// bd.setInfoByLine()    線が引かれたり消されてたりした時に、線情報を更新する
+	// bd.modifyInfo()       黒マス・白マス・境界線や線が入力されたり消された時に情報を変更する
 	//--------------------------------------------------------------------------------
 	rebuildInfo : function(){
-		this.infolist.all.forEach(function(info){ info.rebuild();});
+		this.infolist.forEach(function(info){ info.rebuild();});
 	},
-	setInfoByCell : function(cell){
+	modifyInfo : function(obj, type){
 		if(!this.isenableInfo()){ return;}
-		this.infolist.cell.forEach(function(info){ info.setCell(cell);});
-	},
-	setInfoByBorder : function(border){
-		if(!this.isenableInfo()){ return;}
-		this.infolist.border.forEach(function(info){ info.setBorder(border);});
-	},
-	setInfoByLine : function(border){
-		if(!this.isenableInfo()){ return;}
-		this.infolist.line.forEach(function(info){ info.setLine(border);});
+		for(var i=0;i<this.infolist.length;++i){
+			var info = this.infolist[i];
+			if(!!info.relation[type]){ info.modifyInfo(obj, type);}
+		}
 	},
 
 	//---------------------------------------------------------------------------
 	// bd.irowakeRemake() 「色分けしなおす」ボタンを押した時などに色分けしなおす
 	//---------------------------------------------------------------------------
 	irowakeRemake : function(){
-		if(this.puzzle.painter.irowake){
-			this.linegraph.newIrowake();
-		}
-		if(this.puzzle.painter.irowakeblk){
-			this.sblkmgr.newIrowake();
+		for(var i=0;i<this.infolist.length;++i){
+			var info = this.infolist[i];
+			if(info.coloring){ info.newIrowake();}
 		}
 	},
 

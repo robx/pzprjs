@@ -157,6 +157,7 @@ KeyEvent:{
 		puzzle.emit('key',c);
 		if(this.cancelEvent){ return;}
 		if(!this.keyexec(c)){ return;}
+		if(!this.keyDispInfo(c)){ return;}
 		if(!this.isenablemode()){ return;}
 		if(this.keydown && this.moveTarget(c)){ this.cancelDefault=true; return;}
 		if(this.keydown || (this.keyup && this.keyup_event)){ this.keyinput(c);}	/* 各パズルのルーチンへ */
@@ -173,6 +174,11 @@ KeyEvent:{
 		}
 		return true;
 	},
+
+	//---------------------------------------------------------------------------
+	// kc.keyDispInfo() 一時的に情報を表示する処理を追加します
+	//---------------------------------------------------------------------------
+	keyDispInfo : function(c){ return true;},
 
 	//---------------------------------------------------------------------------
 	// kc.keyinput() キーを押した/離した際の各パズルごとのイベント処理。

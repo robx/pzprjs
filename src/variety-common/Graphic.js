@@ -64,9 +64,15 @@ Graphic:{
 		else if(info===2){ return this.errbcolor2;}
 		return null;
 	},
+	getBGCellColor_qcmp : function(cell){
+		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
+		else if(this.puzzle.execConfig('autocmp_area') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
+		return null;
+	},
 	getBGCellColor_qcmp1 : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-		else if(this.autocmp==='room' && this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
+		else if(cell.qsub===1){ return this.bcolor;}
+		else if(this.puzzle.execConfig('autocmp_area') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
 		return null;
 	},
 	getBGCellColor_qsub1 : function(cell){
@@ -151,7 +157,7 @@ Graphic:{
 			
 			g.vid = "c_dot_"+cell.id;
 			if(cell.qsub===1){
-				g.fillStyle = (!cell.trial ? "black" : this.trialcolor);
+				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
 				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}
 			else{ g.vhide();}
@@ -475,7 +481,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	drawBorders : function(){
 		this.vinc('border', 'crispEdges', true);
-		this.drawBorders_common("b_bd");
+		this.drawBorders_common("b_bd_");
 	},
 	drawBorders_common : function(header){
 		var g = this.context;
@@ -530,12 +536,12 @@ Graphic:{
 	drawQansBorders : function(){
 		this.vinc('border_answer', 'crispEdges', true);
 		this.getBorderColor = this.getQansBorderColor;
-		this.drawBorders_common("b_bdans");
+		this.drawBorders_common("b_bdans_");
 	},
 	drawQuesBorders : function(){
 		this.vinc('border_question', 'crispEdges', true);
 		this.getBorderColor = this.getQuesBorderColor;
-		this.drawBorders_common("b_bdques");
+		this.drawBorders_common("b_bdques_");
 	},
 
 	getQuesBorderColor : function(border){
@@ -584,7 +590,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], isdraw = (cell.qans===1);
-			if(this.pid==='stostone' && this.board.falling){ isdraw = (cell.base.qans===1);}
+			if(this.pid==='stostone' && this.board.falling){ isdraw = false;}
 
 			g.vid = "c_bb_"+cell.id;
 			if(isdraw){

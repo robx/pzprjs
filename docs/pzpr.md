@@ -23,15 +23,15 @@ In addition, pzpr.variety itself is a function to return puzzle genre's informat
 
 #### Methods
 
-* `pzpr.variety.exists(pid)` Return if puzzle variety is supported.
+* `pzpr.genre.exists(pid)` or `pzpr.variety.exists(pid)` Return if puzzle variety is supported.
     * Return value: `boolean`
     * `pid:string` Puzzle variety type.
     * It is the same as `pzpr.variety(pid).valid`.
 
-* `pzpr.variety(pid)` Return puzzle genre's information.
-    * Return value: `VarietyInfo`
+* `pzpr.genre(pid)` or `pzpr.variety(pid)` Return puzzle genre's information.
+    * Return value: `GenreInfo`
 
-* `VarietyInfo`
+* `GenreInfo`
     * `info.valid` Whether the given pid is valid.
     * `info.en` Puzzle name in English.
     * `info.ja` Puzzle name in Japanese.

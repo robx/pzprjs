@@ -100,6 +100,8 @@ pzpr.classmgr.makeCommon({
 		var trialstage = this.board.trialstage;
 		if(trialstage>0){ this.trial = trialstage;}
 
+		this.board.modifyInfo(this, this.group+'.'+prop);
+
 		if(!!this.posthook[prop]){ this.posthook[prop].call(this,num);}
 	},
 	addOpe : function(property, old, num){
@@ -229,14 +231,7 @@ pzpr.classmgr.makeCommon({
 		qnum2 : function(num){ return (this.getminnum()>0 && num===0);},
 		anum  : function(num){ return (this.getminnum()>0 && num===0);}
 	},
-	posthook : {
-		ques  : function(num){ this.board.setInfoByCell(this);},
-		qnum  : function(num){ this.board.setInfoByCell(this);},
-		qnum2 : function(num){ this.board.setInfoByCell(this);},
-		anum  : function(num){ this.board.setInfoByCell(this);},
-		qans  : function(num){ this.board.setInfoByCell(this);},
-		qsub  : function(num){ if(this.numberWithMB){ this.board.setInfoByCell(this);}} /* numberWithMBの○を文字扱い */
-	},
+	posthook : {},
 
 	//---------------------------------------------------------------------------
 	// cell.isShade()   該当するCellが黒マスかどうか返す
@@ -514,11 +509,7 @@ pzpr.classmgr.makeCommon({
 		qans : function(num){ return (this.ques!==0);},
 		line : function(num){ return (this.checkStableLine(num));}
 	},
-	posthook : {
-		ques : function(num){ this.board.setInfoByBorder(this);},
-		qans : function(num){ this.board.setInfoByBorder(this);},
-		line : function(num){ this.board.setInfoByLine(this);}
-	},
+	posthook : {},
 
 	//---------------------------------------------------------------------------
 	// border.draw() 盤面に自分の周囲を描画する (Borderはちょっと範囲が広い)

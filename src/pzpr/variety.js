@@ -16,7 +16,7 @@ function toPID(name){
 	return '';
 }
 
-var variety = pzpr.variety = function(pid){
+var variety = pzpr.variety = pzpr.genre = function(pid){
 	return _info[toPID(pid)] || {valid:false};
 };
 variety.extend = function(obj){ for(var n in obj){ this[n] = obj[n];}};
@@ -35,9 +35,9 @@ variety.extend({
 });
 delete variety.extend;
 
-(function(Variety, obj){
+(function(Genre, obj){
 	for(var pzprid in obj){
-		_info[pzprid] = new Variety(pzprid,obj[pzprid]);
+		_info[pzprid] = new Genre(pzprid,obj[pzprid]);
 		try{
 			Object.freeze(_info[pzprid]);
 			Object.freeze(_info[pzprid].exists);
@@ -45,7 +45,7 @@ delete variety.extend;
 		}catch(e){}
 	}
 })
-(function Variety(pzprid, datalist){
+(function Genre(pzprid, datalist){
 	this.valid  = true;
 	this.pid    = pzprid;		/* パズルID */
 	this.script = (!!datalist[4] ? datalist[4] : pzprid);	/* スクリプトファイル(クラス) */
@@ -71,7 +71,7 @@ delete variety.extend;
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
 	arukone   :[0,0,"アルコネ","Arukone",'numlin'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
-	bag       :[1,0,"バッグ","BAG (Corral)",'',{alias:'correl',alias2:'cave'}],
+	bag       :[1,0,"バッグ","BAG (Corral)",'slither',{alias:'correl',alias2:'cave'}],
 	barns     :[1,0,"バーンズ","Barns"],
 	bdblock   :[1,0,"ボーダーブロック","Border Block"],
 	bonsan    :[1,0,"ぼんさん","Bonsan",'bonsan'],
@@ -90,10 +90,11 @@ delete variety.extend;
 	fivecells :[0,0,"ファイブセルズ","FiveCells",'nawabari'],
 	fourcells :[0,0,"フォーセルズ","FourCells",'nawabari'],
 	goishi    :[0,1,"碁石ひろい","Goishi"],
-	gokigen   :[1,0,"ごきげんななめ","Gokigen-naname",'gokigen'],
+	gokigen   :[1,0,"ごきげんななめ","Gokigen-naname (Slalom, Slant)",'gokigen'],
 	hakoiri   :[1,0,"はこいり○△□","Hokoiri-masashi"],
 	hanare    :[0,0,"はなれ組","Hanare-gumi",'hanare'],
 	hashikake :[0,1,"橋をかけろ","Hashiwokakero (Bridges)",'',{pzprurl:'hashi',kanpen:'hashi',alias:'bridges'}],
+	hebi      :[1,0,"へびいちご","Hebi-Ichigo",'',{old:'snakes'}],
 	herugolf  :[0,0,"ヘルゴルフ","Herugolf"],
 	heyawake  :[0,1,"へやわけ","Heyawake",'heyawake'],
 	heyabon   :[1,1,"へやぼん","Heya-Bon",'bonsan',{kanpen:'satogaeri'}],
@@ -139,6 +140,7 @@ delete variety.extend;
 	nuribou   :[1,0,"ぬりぼう","Nuribou",'nurikabe'],
 	nurikabe  :[0,1,"ぬりかべ","Nurikabe",'nurikabe'],
 	nurimaze  :[0,0,"ぬりめいず","Nuri-Maze",'nurimaze'],
+	onsen     :[0,0,"温泉めぐり","Onsen-meguri",'country'],
 	paintarea :[1,0,"ペイントエリア","Paintarea"],
 	pipelink  :[1,0,"パイプリンク","Pipelink",'pipelink'],
 	pipelinkr :[1,0,"帰ってきたパイプリンク","Pipelink Returns",'pipelink'],
@@ -154,10 +156,9 @@ delete variety.extend;
 	shimaguni :[1,0,"島国","Islands",'shimaguni'],
 	shugaku   :[1,0,"修学旅行の夜","School Trip"],
 	shwolf    :[0,0,"ヤギとオオカミ","Sheeps and Wolves",'kramma'],
-	slalom    :[1,1,"スラローム","Slalom"],
+	slalom    :[1,1,"スラローム","Slalom (Suraromu)",'',{alias:'suraromu'}],
 	slither   :[0,1,"スリザーリンク","Slitherlink",'',{kanpen:'slitherlink'}],
-	snakes    :[1,0,"へびいちご","Hebi-Ichigo"],
-	stostone  :[0,0,"ストストーン","StoStone",'shimaguni'],
+	stostone  :[0,0,"ストストーン","Stostone",'shimaguni'],
 	sudoku    :[0,1,"数独","Sudoku"],
 	sukoro    :[1,0,"数コロ","Sukoro",'sukoro'],
 	sukororoom:[0,0,"数コロ部屋","Sukoro-room",'sukoro'],

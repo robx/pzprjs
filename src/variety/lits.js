@@ -30,16 +30,31 @@ Cell:{
 	shape : null,	// getTetrominoInfo用
 	shapeblk : null	// getTetrominoInfo用
 },
+"Cell@norinori":{
+	posthook : {
+		qans : function(num){ this.room.checkAutoCmp();}
+	}
+},
 Board:{
-	hasborder : 1,
-
+	hasborder : 1
+},
+"Board@lits":{
 	addExtraInfo : function(){
 		this.tetrograph = this.addInfoList(this.klass.AreaTetrominoGraph);
 	}
 },
-CellList:{
+"CellList@lits":{
 	sort : function(cond){
 		return Array.prototype.sort.call(this, (cond || function(a,b){ return a.id - b.id;}));
+	}
+},
+"CellList@norinori":{
+	checkCmp : function(){
+		var scnt=0;
+		for(var i=0;i<this.length;i++){
+			if(this[i].qans===1){ scnt++;}
+		}
+		return (scnt===2);
 	}
 },
 
@@ -49,15 +64,15 @@ AreaShadeGraph:{
 AreaRoomGraph:{
 	enabled : true
 },
-'AreaTetrominoGraph:AreaGraphBase':{
+'AreaTetrominoGraph:AreaShadeGraph@lits':{
 	enabled : true,
+	relation : {'cell.qans':'node', 'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.tetro = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tetronodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tetronodes = [];},
 	
-	isnodevalid : function(cell){ return cell.isShade();},
-	isedgevalidbynodeobj : function(cell1, cell2){
-		return !this.board.getb(((cell1.bx+cell2.bx)>>1), ((cell1.by+cell2.by)>>1)).isBorder();
+	isedgevalidbylinkobj : function(border){
+		return !border.isBorder();
 	},
 
 	resetExtraData : function(cell){ cell.shape = null;},
@@ -99,14 +114,18 @@ Graphic:{
 "Graphic@lits":{
 	gridcolor_type : "DARK",
 
+	qanscolor : "black",
 	shadecolor : "rgb(96, 96, 96)"
 },
 "Graphic@norinori":{
+	autocmp : 'room',
+
 	gridcolor_type : "LIGHT",
-	bgcellcolor_func : "qsub1",
 
 	enablebcolor : true,
-	bcolor : "rgb(96, 224, 160)"
+	bcolor : "rgb(96, 224, 160)",
+	qcmpbgcolor : "rgb(96, 255, 160)",
+	bgcellcolor_func : "qcmp1"
 },
 
 //---------------------------------------------------------

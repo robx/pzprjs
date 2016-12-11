@@ -10,18 +10,21 @@
 // マウス入力系
 MouseEvent:{
 	redline : true,
+	inputModes : {play:['diraux']},
 	
 	mouseinput : function(){
-		if(this.puzzle.playmode){
-			if(this.btn==='left'){
-				if(this.mousestart || this.mousemove){ this.inputLine();}
-				else if(this.mouseend && this.notInputted()){ this.clickmark();}
-			}
-			else if(this.btn==='right'){
-				if     (this.mousestart){ this.inputmark_mousedown();}
-				else if(this.inputData===2 || this.inputData===3){ this.inputpeke();}
-				else if(this.mousemove) { this.inputmark_mousemove();}
-			}
+		if(this.inputMode==='diraux'){
+			if(this.mousestart || this.mousemove){ this.inputmark_mousemove();}
+			else if(this.mouseend && this.notInputted()){ this.clickmark();}
+		}
+		else if(this.puzzle.playmode && this.btn==='right'){
+			if     (this.mousestart){ this.inputmark_mousedown();}
+			else if(this.inputData===2 || this.inputData===3){ this.inputpeke();}
+			else if(this.mousemove) { this.inputmark_mousemove();}
+		}
+		else if(this.puzzle.playmode && this.btn==='left'){
+			if(this.mousestart || this.mousemove){ this.inputLine();}
+			else if(this.mouseend && this.notInputted()){ this.clickmark();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove)       { this.inputarrow_cell();}
@@ -36,18 +39,18 @@ MouseEvent:{
 		var border = pos.getb();
 		if(border.isnull){ return;}
 
-		var trans = {0:2,2:0}, diraux = this.puzzle.getConfig("dirauxmark");
-		if(diraux){
-			if(!border.isvert){ trans = (this.btn==='left'?{0:2,2:11,11:12,12:0}:{0:12,12:11,11:2,2:0});}
-			else              { trans = (this.btn==='left'?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
-		}
-		border.setQsub(trans[border.qsub] || 0);
-		if(!diraux){ border.setLineVal(0);}
+		var trans = {0:2,2:0}, qs = border.qsub;
+		if(!border.isvert){ trans = (this.btn==='left'?{0:2,2:11,11:12,12:0}:{0:12,12:11,11:2,2:0});}
+		else              { trans = (this.btn==='left'?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
+		qs = trans[qs] || 0;
+		if(this.inputMode==='diraux' && qs===2){ qs=trans[qs] || 0;}
+		
+		border.setQsub(qs);
 		border.draw();
 	},
 	inputmark_mousedown : function(){
 		var pos = this.getpos(0.22), border = pos.getb();
-		if(!this.puzzle.getConfig("dirauxmark") || !border.isnull){
+		if(!border.isnull){
 			this.inputData = ((border.isnull||border.qsub!==2)?2:3);
 			this.inputpeke();
 		}

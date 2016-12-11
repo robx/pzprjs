@@ -59,6 +59,7 @@ Board:{
 
 'AreaYinGraph:AreaGraphBase':{
 	enabled : true,
+	relation : {'cell.qnum':'node', 'cell.anum':'node'},
 	setComponentRefs : function(obj, component){ obj.yin = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.yinnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.yinnodes = [];},
@@ -68,6 +69,7 @@ Board:{
 
 'AreaYangGraph:AreaGraphBase':{
 	enabled : true,
+	relation : {'cell.qnum':'node', 'cell.anum':'node'},
 	setComponentRefs : function(obj, component){ obj.yang = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.yangnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.yangnodes = [];},
@@ -82,7 +84,6 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 
-		this.drawDotCells();
 		this.drawCircles();
 
 		this.drawChassis();
@@ -110,7 +111,7 @@ Graphic:{
 			if(cell.error===1){ return this.errcolor1;}
 			else if(cell.qnum===2){ return this.quescolor;}
 			else if(cell.trial){ return this.trialcolor;}
-			else if(this.puzzle.editmode){ return "silver";}
+			else if(this.puzzle.editmode && !this.puzzle.execConfig('dispqnumbg')){ return "silver";}
 			else{ return this.quescolor;}
 		}
 		else if(cell.qnum===1 && this.puzzle.execConfig('dispqnumbg') && cell.error===0){

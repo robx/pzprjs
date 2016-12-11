@@ -13,10 +13,13 @@ This sub-object contains board model data.
     * `operation==='turnl'` Turn left the board by 90 degree.
     * `operation==='expand(up|dn|lt|rt)'` Expand the board by a row.
     * `operation==='reduce(up|dn|lt|rt)'` Reduce the board by a row.
-    * These three blow operations are for 'Stostone' only.
+    * These two below operations are for 'Slalom' only.
+        * `operation==='showgatenumber'` Show numbers on gates.
+        * `operation==='hidegatenumber'` Reset `'showgatenumber'` effect.
+    * These three below operations are for 'Stostone' only.
         * `operation==='drop'` Drop all blocks and display them.
         * `operation==='raise'` Raise all blocks and display them.
-        * `operation==='resetpos` Reset the blocks position.
+        * `operation==='resetpos'` Reset the blocks position.
 * `puzzle.board.getc(bx,by)` Returns the `Cell` object at the coordinate `(bx,by)`.
 * `puzzle.board.getb(bx,by)` Returns the `Border` object at the coordinate `(bx,by)`.
 * `puzzle.board.getx(bx,by)` Returns the `Cross` object at the coordinate `(bx,by)`.
@@ -32,6 +35,8 @@ This sub-obejct handles mouse or touch event.
 * `puzzle.mouse.moveTo(bx,by)` Set the mouse position and emulate mousedown/touchstart event.
 * `puzzle.mouse.lineTo(bx,by)` Move the mouse position incrementally and emulate mousemove/touchmove event.
 * `puzzle.mouse.inputEnd()` Emulate mouseup/touchend event.
+* `puzzle.mouse.setInputMode()` Set current inputMode to input specific marks (e.g. icebarn, waterhazaad, etc.)
+* `puzzle.mouse.getInputModeList()` Return an array of valid inputModes.
 
 ### Properties
 

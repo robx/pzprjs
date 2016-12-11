@@ -141,7 +141,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 * Minarism `minarism`
 * Factors `factors`
 * Sukoro `sukoro`
-* Hebi-Ichigo `snakes`
+* Hebi-Ichigo `hebi`
 * Makaro `makaro`
 
 ### Omopa
