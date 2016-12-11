@@ -37,6 +37,12 @@ MouseEvent:{
 		}
 	},
 
+	inputqnum_main : function(cell){	// オーバーライド
+		if(this.puzzle.editmode && this.inputshade_preqnum(cell)){ return;}
+		if(cell.ques===1){ return;}
+
+		this.common.inputqnum_main.call(this,cell);
+	},
 	inputshade_preqnum : function(cell){
 		var val = null;
 		if(cell.ques===1 && cell.qdir!==cell.NDIR){

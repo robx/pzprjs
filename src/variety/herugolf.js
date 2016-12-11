@@ -24,7 +24,7 @@ MouseEvent:{
 				if(this.btn==='right'){ this.inputWater();}
 			}
 			else if(this.mouseend && this.notInputted()){
-				this.inputqnum_herugolf();
+				this.inputqnum();
 			}
 		}
 	},
@@ -99,21 +99,12 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 
-	inputqnum_herugolf : function(){
-		var cell = this.getcell();
-		if(cell.isnull || cell.ice()){ return;}
+	inputqnum_main : function(cell){	// オーバーライド
+		if(cell.ice()){ return;}
+		if(this.inputcell_herugolf(cell)){ return;}
+		if(cell.ques!==0){ return;}
 
-		if(cell!==this.cursor.getc()){
-			this.setcursor(cell);
-		}
-		else{
-			if(this.inputcell_herugolf(cell)){ return;}
-			
-			if(cell.ques===0){
-				this.inputqnum_main(cell);
-			}
-		}
-		this.mouseCell = cell;
+		this.common.inputqnum_main.call(this,cell);
 	},
 	inputcell_herugolf : function(cell){
 		var val = null;
