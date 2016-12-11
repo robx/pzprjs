@@ -127,6 +127,7 @@ FileIO:{
 	//---------------------------------------------------------------------------
 	decodeCellAnumsub : function(){
 		this.decodeCell( function(cell,ca){
+			if(cell.enableSubNumberArray && ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
 			if     (ca==="+"){ cell.qsub = 1;}
 			else if(ca==="-"){ cell.qsub = 2;}
 			else if(ca==="="){ cell.qsub = 3;}
@@ -136,13 +137,36 @@ FileIO:{
 	},
 	encodeCellAnumsub : function(){
 		this.encodeCell( function(cell){
-			if     (cell.anum!==-1){ return cell.anum+" ";}
-			else if(cell.qsub===1) { return "+ ";}
-			else if(cell.qsub===2) { return "- ";}
-			else if(cell.qsub===3) { return "= ";}
-			else if(cell.qsub===4) { return "% ";}
-			else                   { return ". ";}
+			var ca = ".";
+			if     (cell.anum!==-1){ ca = ""+cell.anum;}
+			else if(cell.qsub===1) { ca = "+";}
+			else if(cell.qsub===2) { ca = "-";}
+			else if(cell.qsub===3) { ca = "=";}
+			else if(cell.qsub===4) { ca = "%";}
+			else                   { ca = ".";}
+			if(cell.enableSubNumberArray && cell.anum===-1){ ca += this.getCellSnum(cell);}
+			return ca+" ";
 		});
+	},
+	//---------------------------------------------------------------------------
+	// fio.setCellSnum() 補助数字のデコードを行う   (decodeCellAnumsubで内部的に使用)
+	// fio.getCellSnum() 補助数字のエンコードを行う (encodeCellAnumsubで内部的に使用)
+	//---------------------------------------------------------------------------
+	setCellSnum : function(cell,ca){
+		var snumtext = ca.substring(ca.indexOf('[')+1, ca.indexOf(']'));
+		var list = snumtext.split(/,/);
+		for(var i=0;i<list.length;++i){
+			cell.snum[i] = (!!list[i] ? +list[i] : -1);
+		}
+		return ca.substr(0, ca.indexOf('['));
+	},
+	getCellSnum : function(cell){
+		var list = [];
+		for(var i=0;i<cell.snum.length;++i){
+			list[i] = (cell.snum[i]!==-1 ? ''+cell.snum[i] : '');
+		}
+		var snumtext = list.join(',');
+		return (snumtext!==',,,' ? '['+snumtext+']' : '');
 	},
 	//---------------------------------------------------------------------------
 	// fio.decodeCellQsub() 背景色のデコードを行う

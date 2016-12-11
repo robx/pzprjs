@@ -200,7 +200,8 @@ FileIO:{
 			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeCell( function(cell,ca){
-			if(ca!=="."&&ca!=="0"){ cell.anum = +ca;}
+			if(cell.enableSubNumberArray && ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
+			if(ca!=="." && ca!=="0"){ cell.anum = +ca;}
 		});
 	},
 	encodeData : function(){
@@ -211,8 +212,12 @@ FileIO:{
 			else{ return ". ";}
 		});
 		this.encodeCell( function(cell){
-			if(cell.ques===1||cell.qnum!==-1){ return ". ";}
-			return (cell.anum!==-1 ? cell.anum+" " : "0 ");
+			var ca = ".";
+			if(cell.ques!==1 && cell.qnum===-1){
+				ca = (cell.anum!==-1 ? cell.anum : "0");
+			}
+			if(cell.enableSubNumberArray && cell.anum===-1){ ca += this.getCellSnum(cell);}
+			return ca+" ";
 		});
 	}
 },
