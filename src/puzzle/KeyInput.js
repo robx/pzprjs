@@ -227,6 +227,9 @@ KeyEvent:{
 	initialize : function(){
 		this.bx = 1;
 		this.by = 1;
+		this.mode51 = (this.puzzle.klass.EXCell.prototype.ques===51);
+		this.modesnum = (this.puzzle.klass.Cell.prototype.enableSubNumberArray);
+		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
 	},
 
 	// 有効な範囲(minx,miny)-(maxx,maxy)
@@ -266,7 +269,39 @@ KeyEvent:{
 		if(this.bx>this.maxx){ this.bx=this.maxx;}
 		if(this.by>this.maxy){ this.by=this.maxy;}
 	},
-	adjust_modechange : function(){ },
+	adjust_modechange : function(){
+		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
+		else if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
+	},
+
+	//---------------------------------------------------------------------------
+	// tc.checksnum()  ターゲットの位置かどうか判定する (Cellのみ)
+	//---------------------------------------------------------------------------
+	checksnum : function(pos){
+		var bx = ((((pos.bx+12)/2)|0)-6)*2+1;
+		var by = ((((pos.by+12)/2)|0)-6)*2+1;
+		var result = (this.bx===bx && this.by===by);
+		if(result && this.modesnum && this.puzzle.playmode){
+			var tmpx = (((pos.bx+12)%2)*1.5)|0;
+			var tmpy = (((pos.by+12)%2)*1.5)|0;
+			if(this.pid!=='factors'){
+				result = ([5,0,4,0,0,0,2,0,3][tmpy*3+tmpx] === this.targetdir);
+			}
+			else{
+				result = ([0,0,4,0,0,0,2,0,3][tmpy*3+tmpx] === this.targetdir);
+			}
+		}
+		return result;
+	},
+
+	//---------------------------------------------------------------------------
+	// tc.getaddr() ターゲットの位置を移動する
+	//---------------------------------------------------------------------------
+	movedir : function(dir,mv){
+		this.puzzle.klass.Address.prototype.movedir.call(this,dir,mv);
+		if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
+		return this;
+	},
 
 	//---------------------------------------------------------------------------
 	// tc.getaddr() ターゲットの位置をAddressクラスのオブジェクトで取得する
@@ -275,22 +310,35 @@ KeyEvent:{
 	setaddr : function(pos){ /* Address, Cellなどのオブジェクトいずれを入力しても良い */
 		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny || this.maxy<pos.by){ return;}
 		this.set(pos);
+		if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
 	},
 
 	//---------------------------------------------------------------------------
 	// tc.moveTo() ターゲットの位置を指定した(bx,by)に設定する
 	//---------------------------------------------------------------------------
-	moveTo : function(bx,by){ this.init(bx,by);},
+	moveTo : function(bx,by){
+		this.init(bx,by);
+		if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
+	},
 
 	//---------------------------------------------------------------------------
 	// tc.chtarget()     SHIFTを押した時に[＼]の入力するところを選択する
 	// tc.detectTarget() [＼]の右・下どちらに数字を入力するか判断する
 	//---------------------------------------------------------------------------
-	targetdir : 2,
+	targetdir : 0,
 	chtarget : function(){
-		this.targetdir = (this.targetdir===2?4:2);
+		if(this.oncell() && this.modesnum && this.puzzle.playmode){
+			if(this.pid!=='factors'){
+				this.targetdir = [5,1,3,0,2,4][this.targetdir];
+			}
+			else{
+				this.targetdir = [4,1,3,0,2,0][this.targetdir];
+			}
+		}
+		else{
+			this.targetdir = (this.targetdir===2?4:2);
+		}
 		this.draw();
-		return true;
 	},
 	detectTarget : function(piece){
 		var bd = this.board, adc=piece.adjacent;

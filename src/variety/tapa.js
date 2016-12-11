@@ -168,6 +168,7 @@ Cell:{
 	numberRemainsUnshaded : true,
 	
 	initialize : function(){
+		this.common.initialize.call(this);
 		this.qnums = [];
 	},
 	setNums : function(val){

@@ -297,7 +297,7 @@ Graphic:{
 			var border=blist[i];
 			g.vid = "border_text_"+border.id;
 			if(border.qsub>=0){
-				g.fillStyle = (!border.trial ? "blue" : this.trialcolor);
+				g.fillStyle = (!border.trial ? this.subcolor : this.trialcolor);
 				this.disptext(""+border.qsub, border.bx*this.bw, border.by*this.bh, option);
 			}
 			else{ g.vhide();}

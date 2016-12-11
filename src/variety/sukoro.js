@@ -74,6 +74,7 @@ Cell:{
 	}
 },
 "Cell@view":{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return Math.min(255, this.board.cols+this.board.rows-2);
 	},
@@ -103,11 +104,13 @@ AreaNumberGraph:{
 Graphic:{
 	paint : function(){
 		this.drawBGCells();
+		if(this.pid==='view'){ this.drawTargetSubNumber();}
 		this.drawGrid();
 
 		if(this.pid==='sukororoom'){ this.drawBorders();}
 
 		this.drawMBs();
+		if(this.pid==='view'){ this.drawSubNumbers();}
 		this.drawNumbers();
 
 		this.drawChassis();

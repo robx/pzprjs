@@ -73,8 +73,8 @@ Graphic:{
 	},
 
 	textoption : {ratio:[0.65]},
-	getNumberText : function(cell){
-		return {1:"同",2:"短",3:"長"}[cell.qnum] || "";
+	getNumberTextCore : function(num){
+		return {1:"同",2:"短",3:"長"}[num] || "";
 	}
 },
 

@@ -12,6 +12,12 @@ MouseEvent:{
 	mouseinput : function(){
 		if(this.mousestart){ this.inputqnum();}
 	},
+	inputqnum_main : function(cell){	// オーバーライド
+		if(this.puzzle.editmode && this.inputshade_preqnum(cell)){ return;}
+		if(cell.ques===1){ return;}
+
+		this.common.inputqnum_main.call(this,cell);
+	},
 	inputshade_preqnum : function(cell){
 		var val = null;
 		if(cell.ques===1){
@@ -59,14 +65,18 @@ KeyEvent:{
 	},
 	key_inputqnum_kakuru : function(ca){
 		var cell = this.cursor.getc();
-
-		if(('0'<=ca && ca<='9') || ca==='BS' || ca==='-'){
+		if(cell.enableSubNumberArray && ca==='shift' && cell.noNum()){
+			this.cursor.chtarget();
+		}
+		else if(('0'<=ca && ca<='9') || ca==='BS' || ca==='-'){
 			if(cell.ques===1){ return;}
-			if(!this.key_inputqnum_main(cell,ca)){ return;}
+			this.key_inputqnum_main(cell,ca);
 		}
 		else if(ca===' '){
 			if(this.puzzle.editmode){ cell.setQues(0);}
 			cell.setNum(-1);
+			cell.draw();
+			this.prev = cell;
 		}
 		// qはキーボードのQ, q1,q2はキーポップアップから
 		else if(this.puzzle.editmode && (ca==='q'||ca==='q1'||ca==='q2')){
@@ -76,17 +86,17 @@ KeyEvent:{
 				cell.setNum(-1);
 			}
 			else if(ca==='q2'){ cell.setQues(0);}
+			cell.draw();
+			this.prev = cell;
 		}
 		else{ return;}
-
-		this.prev = cell;
-		cell.draw();
 	}
 },
 
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return (this.puzzle.editmode?44:9);
 	}
@@ -103,9 +113,11 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 		this.drawQuesCells();
 
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawChassis();
@@ -188,7 +200,8 @@ FileIO:{
 			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeCell( function(cell,ca){
-			if(ca!=="."&&ca!=="0"){ cell.anum = +ca;}
+			if(cell.enableSubNumberArray && ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
+			if(ca!=="." && ca!=="0"){ cell.anum = +ca;}
 		});
 	},
 	encodeData : function(){
@@ -199,8 +212,12 @@ FileIO:{
 			else{ return ". ";}
 		});
 		this.encodeCell( function(cell){
-			if(cell.ques===1||cell.qnum!==-1){ return ". ";}
-			return (cell.anum!==-1 ? cell.anum+" " : "0 ");
+			var ca = ".";
+			if(cell.ques!==1 && cell.qnum===-1){
+				ca = (cell.anum!==-1 ? cell.anum : "0");
+			}
+			if(cell.enableSubNumberArray && cell.anum===-1){ ca += this.getCellSnum(cell);}
+			return ca+" ";
 		});
 	}
 },

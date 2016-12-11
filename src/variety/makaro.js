@@ -37,6 +37,12 @@ MouseEvent:{
 		}
 	},
 
+	inputqnum_main : function(cell){	// オーバーライド
+		if(this.puzzle.editmode && this.inputshade_preqnum(cell)){ return;}
+		if(cell.ques===1){ return;}
+
+		this.common.inputqnum_main.call(this,cell);
+	},
 	inputshade_preqnum : function(cell){
 		var val = null;
 		if(cell.ques===1 && cell.qdir!==cell.NDIR){
@@ -147,6 +153,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return Math.min(99, this.room.clist.length);
 	}
@@ -177,10 +184,12 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 		this.drawQuesCells();
 
 		this.drawCellArrows();
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawBorders();

@@ -315,10 +315,30 @@ MouseEvent:{
 
 	//---------------------------------------------------------------------------
 	// mv.setcursor() TargetCursorの場所を移動する
+	// mv.setcursorsnum() TargetCursorの補助記号に対する場所を移動する
 	//---------------------------------------------------------------------------
 	setcursor : function(pos){
 		var pos0 = this.cursor.getaddr();
 		this.cursor.setaddr(pos);
+		pos0.draw();
+		pos.draw();
+	},
+	setcursorsnum : function(pos){
+		var pos0 = this.cursor.getaddr();
+		this.cursor.setaddr(pos);
+		var bx = this.inputPoint.bx, by = this.inputPoint.by;
+		bx = (((bx + 12) % 2)*1.5)|0;
+		by = (((by + 12) % 2)*1.5)|0;
+		var target;
+		if(this.pid!=='factors'){
+			target = [5,0,4,0,0,0,2,0,3][by*3+bx];
+		}
+		else{
+			target = [0,0,4,0,0,0,2,0,3][by*3+bx];
+		}
+		if(this.cursor.targetdir !== target){
+			this.cursor.targetdir = target;
+		}
 		pos0.draw();
 		pos.draw();
 	}

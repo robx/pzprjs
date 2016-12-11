@@ -54,6 +54,7 @@ Graphic:{
 	qcmpcolor : "silver",
 	qcmpbgcolor : "rgb(224, 224, 255)",
 	trialcolor: "rgb(160, 160, 160)",
+	subcolor  : "rgb(127, 127, 255)",
 
 	// 黒マスの色
 	shadecolor: "black",
@@ -571,17 +572,19 @@ Graphic:{
 		ratio *= (option.globalratio || this.globalfontsizeratio);
 		var realsize = ((this.cw * ratio)|0);
 		g.font = style + realsize + "px " + this.fontfamily;
+		var hoffset = this.bw*(option.hoffset || 0.9);
+		var voffset = this.bh*(option.voffset || 0.82);
 
 		var position = option.position || CENTER;
 		switch(position){
-			case CENTER:                     g.textAlign='center';                 break;
-			case BOTTOMLEFT:  case TOPLEFT:  g.textAlign='left';  px-=(this.bw-2); break;
-			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=(this.bw-2); break;
+			case CENTER:                     g.textAlign='center';             break;
+			case BOTTOMLEFT:  case TOPLEFT:  g.textAlign='left';  px-=hoffset; break;
+			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=hoffset; break;
 		}
 		switch(position){
-			case CENTER:                       g.textBaseline='middle';                         break;
-			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=(this.bh*0.82); break;
-			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh*0.82); break;
+			case CENTER:                       g.textBaseline='middle';                  break;
+			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=voffset; break;
+			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=voffset; break;
 		}
 
 		g.fillText(text, px, py);

@@ -96,7 +96,8 @@ KeyEvent:{
 			}
 			else{
 				if((ca>='0' && ca<='9') || ca==='-'){
-					if(this.key_inputqnum_main(cell,ca)){ cell.setQues(0);}
+					this.key_inputqnum_main(cell,ca);
+					if(cell.qnum!==-1){ cell.setQues(0);}
 				}
 				else{ return;}
 			}

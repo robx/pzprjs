@@ -208,7 +208,7 @@ FileIO:{
 		var bx=startbx, by=startby, step=2;
 		var item=this.getItemList((endby-startby)/step+1);
 		for(var i=0;i<item.length;i++){
-			func(this.board.getObjectPos(group, bx, by), item[i]);
+			func.call(this, this.board.getObjectPos(group, bx, by), item[i]);
 
 			bx+=step;
 			if(bx>endbx){ bx=startbx; by+=step;}
@@ -255,7 +255,7 @@ FileIO:{
 		for(var by=startby;by<=endby;by+=step){
 			var data = '';
 			for(var bx=startbx;bx<=endbx;bx+=step){
-				data += func(this.board.getObjectPos(group, bx, by));
+				data += func.call(this, this.board.getObjectPos(group, bx, by));
 			}
 			this.writeLine(data);
 		}
