@@ -10,9 +10,11 @@
 // マウス入力系
 MouseEvent:{
 	redline : true,
+	inputModes : {edit:['ice']},
 	
 	mouseinput : function(){
-		if(this.puzzle.playmode){
+		if(this.inputMode==='ice'){ this.inputIcebarn();}
+		else if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -35,7 +37,7 @@ MouseEvent:{
 	inputIcebarn : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.pid!=='icebarn' && cell.isNum()){ this.inputqnum(); return;}
+		if(this.pid!=='icebarn' && cell.isNum() && this.inputMode!=='ice'){ this.inputqnum(); return;}
 
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 

@@ -9,8 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	inputModes : {edit:['nabe']},
+
 	mouseinput : function(){
-		if(this.puzzle.playmode){
+		if(this.inputMode==='nabe'){ this.inputNabe();}
+		else if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputMoveLine();}
 				else if(this.btn==='right'){ this.inputpeke();}
@@ -43,8 +46,10 @@ MouseEvent:{
 	inputNabe : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(cell.isNum()){ this.inputqnum(); return;}
-		else if(cell.qnum2!==-1){ this.inputqnum_yosenabe(); return;}
+		if(this.inputMode!=='nabe'){
+			if(cell.isNum()){ this.inputqnum(); return;}
+			else if(cell.qnum2!==-1){ this.inputqnum_yosenabe(); return;}
+		}
 
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 

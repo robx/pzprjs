@@ -10,7 +10,8 @@
 // マウス入力系
 MouseEvent:{
 	mouseinput : function(){
-		if(this.puzzle.playmode){
+		if(this.inputMode==='empty'){ this.inputempty();}
+		else if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
@@ -19,6 +20,20 @@ MouseEvent:{
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
+	}
+},
+"MouseEvent@fivecells":{
+	inputModes : {edit:['empty']},
+	inputempty : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		if(this.inputData===null){ this.inputData = (cell.isEmpty()?0:7);}
+
+		cell.setQues(this.inputData);
+		cell.setQnum(-1);
+		cell.drawaround();
+		this.mouseCell = cell;
 	}
 },
 
