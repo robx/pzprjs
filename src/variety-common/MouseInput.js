@@ -56,7 +56,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(this.cursor.modesnum && this.puzzle.playmode && !this.cursor.at(this.inputPoint) && cell.noNum()){
+		if(this.cursor.modesnum && this.puzzle.playmode && !this.cursor.checksnum(this.inputPoint) && cell.noNum()){
 			this.setcursorsnum(cell);
 		}
 		else if(cell!==this.cursor.getc()){
