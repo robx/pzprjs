@@ -1,4 +1,24 @@
 
+## Version 0.8.0-beta1 (beta)
+
+Release date: 2016/12/31
+
+#### Notable change
+
+* Board: Enable to input sub numbers
+
+#### Improvement
+
+* bosanowa: Enable to erase circles by BS or space key
+* gokigen: Enable to input diagonal lines by mouse drag
+* norinori: Stop inputting shaded cells if a mouse drag sequence puts two cells
+* Mouse: Introduce setInputMode and getInputModeList method for smart devices to input icebarn etc.
+
+#### Breaking changes
+
+* Config: Separate autocmp_area from autocmp config for painting background genres (Currently autocmp can be still used)
+* Config: Get rid of lrcheck config
+
 ## Version 0.7.1
 
 Release date: 2016/12/3
