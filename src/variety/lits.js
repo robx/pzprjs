@@ -23,6 +23,24 @@ MouseEvent:{
 "MouseEvent@lits":{
 	redblk : true
 },
+"MouseEvent@norinori":{
+	shadeCount : 0,
+	mousereset : function(){
+		this.shadeCount = 0;
+		this.common.mousereset.call(this);
+	},
+	inputcell : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		this.common.inputcell.call(this);
+
+		if(this.inputData===1){
+			++this.shadeCount;
+			if(this.shadeCount>=2){ this.mousereset();}
+		}
+	}
+},
 
 //---------------------------------------------------------
 // 盤面管理系
