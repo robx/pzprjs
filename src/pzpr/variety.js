@@ -77,6 +77,7 @@ delete variety.extend;
 	bonsan    :[1,0,"ぼんさん","Bonsan",'bonsan'],
 	bosanowa  :[1,0,"ボサノワ","Bosanowa",'',{alias:'bossanova'}],
 	box       :[0,0,"ボックス","Box"],
+	building  :[0,0,"ビルディングパズル","Skyscrapers",'',{alias:'skyscrapers',alias2:'skyscraper'}],
 	cbblock   :[0,0,"コンビブロック","Combi Block"],
 	chocona   :[0,0,"チョコナ","Chocona",'shimaguni'],
 	cojun     :[0,0,"コージュン","Cojun",'ripple'],

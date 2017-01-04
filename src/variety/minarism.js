@@ -346,9 +346,6 @@ AnsCheck:{
 		"checkNoNumCell+"
 	],
 
-	checkDifferentNumberInLine : function(){
-		this.checkRowsCols(this.isDifferentNumberInClist, "nmDupRow");
-	},
 	checkSubOfNumber : function(){
 		this.checkHintSideCell(function(border,a1,a2){
 			return (border.qnum>0 && border.qnum!==Math.abs(a1-a2));

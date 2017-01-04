@@ -90,35 +90,8 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
-	moveTarget : function(ca){
-		var cursor = this.cursor;
-		var excell0 = cursor.getex(), flag = true, dir = excell0.NDIR;
-
-		if     (ca==='up'){
-			if(cursor.by===cursor.maxy && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.miny;}
-			else if(cursor.by>cursor.miny){ dir=excell0.UP;}else{ flag=false;}
-		}
-		else if(ca==='down'){
-			if(cursor.by===cursor.miny && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.maxy;}
-			else if(cursor.by<cursor.maxy){ dir=excell0.DN;}else{ flag=false;}
-		}
-		else if(ca==='left'){
-			if(cursor.bx===cursor.maxx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.minx;}
-			else if(cursor.bx>cursor.minx){ dir=excell0.LT;}else{ flag=false;}
-		}
-		else if(ca==='right'){
-			if(cursor.bx===cursor.minx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.maxx;}
-			else if(cursor.bx<cursor.maxx){ dir=excell0.RT;}else{ flag=false;}
-		}
-		else{ flag=false;}
-
-		if(flag){
-			if(dir!==excell0.NDIR){ cursor.movedir(dir,2);}
-
-			excell0.draw();
-			cursor.draw();
-		}
-		return flag;
+	moveTarget  : function(ca){
+		return this.moveEXCell(ca);
 	},
 
 	keyinput : function(ca){
@@ -174,8 +147,6 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	qlight : 0,
-	propinfo : ['error', 'qinfo', 'qlight'],
-	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
 	
 	// Qans/Qsubを統合して扱うkanpen的な関数
 	// ここでは なし=0, 斜線=1/2, 補助記号=-1
@@ -191,9 +162,6 @@ Cell:{
 
 EXCell:{
 	qlight : 0,
-	propinfo : ['error', 'qinfo', 'qlight'],
-	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
-
 	minnum : 0
 },
 
@@ -216,6 +184,11 @@ Board:{
 		this.lightclear();
 		this.searchLight(excell, true);
 		this.puzzle.redraw();
+	},
+
+	errclear : function(){
+		if(this.haslight){ this.lightclear();}
+		this.common.errclear.call(this);
 	},
 
 	searchLight : function(startexcell, setlight){

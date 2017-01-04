@@ -201,22 +201,56 @@ KeyEvent:{
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var cursor = this.cursor, pos0 = cursor.getaddr(), dir = cursor.NDIR;
+		var cursor = this.cursor, pos0 = cursor.getaddr(), flag = true, dir = cursor.NDIR;
 		switch(ca){
 			case 'up':    if(cursor.by-mv>=cursor.miny){ dir = cursor.UP;} break;
 			case 'down':  if(cursor.by+mv<=cursor.maxy){ dir = cursor.DN;} break;
 			case 'left':  if(cursor.bx-mv>=cursor.minx){ dir = cursor.LT;} break;
 			case 'right': if(cursor.bx+mv<=cursor.maxx){ dir = cursor.RT;} break;
-			default: return false;
+			default: flag = false; break;
 		}
 
-		if(dir!==cursor.NDIR){
+		if(flag){
 			cursor.movedir(dir,mv);
 
 			pos0.draw();
 			cursor.draw();
 		}
-		return (dir!==cursor.NDIR);
+		return flag;
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.moveEXCell()  EXCellのキーボードからの入力対象を矢印キーで動かす
+	//---------------------------------------------------------------------------
+	moveEXCell : function(ca){
+		var cursor = this.cursor, excell0 = cursor.getex(), flag = true, dir = excell0.NDIR;
+		switch(ca){
+		case 'up':
+			if(cursor.by===cursor.maxy && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.miny;}
+			else if(cursor.by>cursor.miny){ dir=excell0.UP;}else{ flag=false;}
+			break;
+		case 'down':
+			if(cursor.by===cursor.miny && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.maxy;}
+			else if(cursor.by<cursor.maxy){ dir=excell0.DN;}else{ flag=false;}
+			break;
+		case 'left':
+			if(cursor.bx===cursor.maxx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.minx;}
+			else if(cursor.bx>cursor.minx){ dir=excell0.LT;}else{ flag=false;}
+			break;
+		case 'right':
+			if(cursor.bx===cursor.minx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.maxx;}
+			else if(cursor.bx<cursor.maxx){ dir=excell0.RT;}else{ flag=false;}
+			break;
+		default: flag = false; break;
+		}
+
+		if(flag){
+			if(dir!==excell0.NDIR){ cursor.movedir(dir,2);}
+
+			excell0.draw();
+			cursor.draw();
+		}
+		return flag;
 	}
 },
 

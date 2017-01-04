@@ -157,6 +157,9 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 ### Puzzles (not in puzzle communication nikoli)
 * View `view`
 
+### Non-nikoli puzzle
+* Skyscrapers `building` `skyscrapers` `skyscraper`
+
 ## Variety Puzzles
 ### Regular
 * Goishi `goishi`
