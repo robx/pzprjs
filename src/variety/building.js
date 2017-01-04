@@ -114,35 +114,25 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qlight : 0,
 	enableSubNumberArray : true,
 	
+	qlight : 0,
 	maxnum : function(){
 		return Math.max(this.board.cols,this.board.rows);
-	},
-	
-	// Qans/Qsubを統合して扱うkanpen的な関数
-	// ここでは なし=0, 斜線=1/2, 補助記号=-1
-	getState : function(){
-		return (this.qans>30 ? this.qans-30 : (this.qsub!==0 ? -1 : 0));
-	},
-	setState : function(val){
-		var qans = [-1,0,31,32][val+1];
-		if(qans!==-1){ this.setQans(qans); this.setQsub(0);}
-		else         { this.setQans(0);    this.setQsub(1);}
 	}
 },
 
 EXCell:{
-	qlight : 0,
-	
 	disInputHatena : true,
+	
+	qlight : 0,
 	maxnum : function(){
-		if(this.by<0 || this.by>this.board.rows*2){
-			return this.board.rows;
+		var bd = this.board;
+		if(this.by<0 || this.by>bd.rows*2){
+			return bd.rows;
 		}
 		else{
-			return this.board.cols;
+			return bd.cols;
 		}
 	},
 	getNum : function(){ return this.qnum;},
@@ -151,8 +141,8 @@ EXCell:{
 },
 
 Board:{
-	cols : 8,
-	rows : 8,
+	cols : 5,
+	rows : 5,
 
 	hasborder : 1,
 	hasexcell : 2,
@@ -395,7 +385,8 @@ FileIO:{
 AnsCheck:{
 	checklist : [
 		"checkDifferentNumberInLine",
-		"checkSight"
+		"checkSight",
+		"checkNoNumCell+"
 	],
 
 	checkSight : function(type){
