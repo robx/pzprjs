@@ -115,6 +115,7 @@ delete variety.extend;
 	kouchoku  :[0,0,"交差は直角に限る","Kouchoku"],
 	kramma    :[0,0,"快刀乱麻","KaitoRamma",'kramma'],
 	kramman   :[0,0,"新・快刀乱麻","New KaitoRamma",'kramma'],
+	kropki    :[0,0,"Kropki","Kropki",'minarism'],
 	kurochute :[0,1,"クロシュート","Kurochute"],
 	kurodoko  :[0,1,"黒どこ(黒マスはどこだ)","Kurodoko"],
 	kurotto   :[0,0,"クロット","Kurotto"],
