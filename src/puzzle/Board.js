@@ -149,8 +149,8 @@ Board:{
 			else if(this.hasborder===2){ return 2*col*row+(col+row);}
 		}
 		else if(group==='excell'){
-			if     (this.hasexcell===1){ return col+row+1;}
-			else if(this.hasexcell===2){ return 2*col+2*row+4;}
+			if     (this.hasexcell===1){ return col+row+(this.emptyexcell.ques===51?1:0);} /* 左上角のEXCellを追加 */
+			else if(this.hasexcell===2){ return 2*(col+row);}
 		}
 		return 0;
 	},
@@ -247,17 +247,13 @@ Board:{
 			if(this.hasexcell===1){
 				if(i>=0 && i<qc){ excell.bx=i*2+1; excell.by=-1;   } i-=qc;
 				if(i>=0 && i<qr){ excell.bx=-1;    excell.by=i*2+1;} i-=qr;
-				if(i===0)       { excell.bx=-1;    excell.by=-1;   } i--;
+				if(i===0 && excell.ques===51){ excell.bx=-1;    excell.by=-1;   } i--;	/* 左上角のEXCellを追加 */
 			}
 			else if(this.hasexcell===2){
 				if(i>=0 && i<qc){ excell.bx=i*2+1;  excell.by=-1;    } i-=qc;
 				if(i>=0 && i<qc){ excell.bx=i*2+1;  excell.by=2*qr+1;} i-=qc;
 				if(i>=0 && i<qr){ excell.bx=-1;     excell.by=i*2+1; } i-=qr;
 				if(i>=0 && i<qr){ excell.bx=2*qc+1; excell.by=i*2+1; } i-=qr;
-				if(i===0)       { excell.bx=-1;     excell.by=-1;    } i--;
-				if(i===0)       { excell.bx=2*qc+1; excell.by=-1;    } i--;
-				if(i===0)       { excell.bx=-1;     excell.by=2*qr+1;} i--;
-				if(i===0)       { excell.bx=2*qc+1; excell.by=2*qr+1;} i--;
 			}
 
 			excell.initAdjacent();
@@ -392,7 +388,7 @@ Board:{
 	getex : function(bx,by){
 		var id = null, qc=this.cols, qr=this.rows;
 		if(this.hasexcell===1){
-			if(bx===-1&&by===-1){ id = qc+qr;}
+			if(this.emptyexcell.ques===51 && bx===-1&&by===-1){ id = qc+qr;}	/* 左上角のEXCellを追加 */
 			else if(by===-1&&bx>0&&bx<2*qc){ id = (bx>>1);}
 			else if(bx===-1&&by>0&&by<2*qr){ id = qc+(by>>1);}
 		}
@@ -401,10 +397,6 @@ Board:{
 			else if(by===2*qr+1&&bx>0&&bx<2*qc){ id = qc+(bx>>1);}
 			else if(bx===-1    &&by>0&&by<2*qr){ id = 2*qc+(by>>1);}
 			else if(bx===2*qc+1&&by>0&&by<2*qr){ id = 2*qc+qr+(by>>1);}
-			else if(bx===-1    &&by===-1    ){ id = 2*qc+2*qr;}
-			else if(bx===2*qc+1&&by===-1    ){ id = 2*qc+2*qr+1;}
-			else if(bx===-1    &&by===2*qr+1){ id = 2*qc+2*qr+2;}
-			else if(bx===2*qc+1&&by===2*qr+1){ id = 2*qc+2*qr+3;}
 		}
 
 		return (id!==null ? this.excell[id] : this.emptyexcell);

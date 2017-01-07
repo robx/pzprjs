@@ -29,7 +29,7 @@ MouseEvent:{
 		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
 		if(excell.isnull){ return;}
 
-		if(excell.id>=board.excell.length-4 || excell.qlight===1){
+		if(!excell.isnull || excell.qlight===1){
 			board.lightclear();
 		}
 		else{
@@ -304,7 +304,7 @@ Encode:{
 			else if(ca >= 'g' && ca <= 'z'){ ec += (parseInt(ca,36)-16);}
 
 			ec++;
-			if(ec>=bd.excell.length-4){ break;}
+			if(ec>=bd.excell.length){ break;}
 		}
 
 		this.outbstr = bstr.substr(i+1);
@@ -312,7 +312,7 @@ Encode:{
 	encodeNumber16EXCell : function(){
 		// 盤面外数字のエンコード
 		var count=0, cm="", bd = this.board;
-		for(var ec=0;ec<bd.excell.length-4;ec++){
+		for(var ec=0;ec<bd.excell.length;ec++){
 			var pstr = "", qn = bd.excell[ec].qnum;
 
 			if     (qn=== -2           ){ pstr = ".";}
@@ -391,7 +391,7 @@ AnsCheck:{
 
 	checkSight : function(type){
 		var bd = this.board, result = true, errorExcell = null;
-		for(var ec=0;ec<bd.excell.length-4;ec++){
+		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			if(excell.qnum===-1){ continue;}
 			var count = bd.searchLight(excell, false).cnt;
