@@ -325,7 +325,7 @@ Graphic:{
 		}
 	},
 	getNumberColor : function(excell){
-		if     (excell.error===1){ return this.errcolor1;}
+		if     (excell.error===1){ return "rgb(192, 0, 0)";}
 		else if(excell.qchar>52) { return "blue";} // 2色目
 		return this.quescolor;
 	}
@@ -473,18 +473,26 @@ AnsCheck:{
 	checkPairMirror      : function(){ this.checkMirrors(1, "pairedLetterNe");},
 	checkReflectionCount : function(){ this.checkMirrors(2, "pairedNumberNe");},
 	checkMirrors : function(type, code){
-		var d = [], bd = this.board;
+		var d = [], bd = this.board, result = true, errorExcell = null;
 		for(var ec=0;ec<bd.excell.length-4;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}
-			var ret = bd.searchLight(excell, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
+			var ret = bd.searchLight(excell, false), excell2 = bd.excell[ret.dest];
 			if( (type===1&& (excell.qchar!==excell2.qchar) )||
 				(type===2&&((excell.qnum !==excell2.qnum) || excell.qnum!==ret.cnt))
 			){
-				this.failcode.add(code);
-				break;
+				result = false;
+				if(this.checkOnly){ break;}
+				
+				excell.seterr(1);
+				excell2.seterr(1);
+				if(!errorExcell){ errorExcell = excell;}
 			}
 			d[ec]=1; d[ret.dest]=1;
+		}
+		if(!result){
+			this.failcode.add(code);
+			if(errorExcell){ bd.searchLight(errorExcell, true);}
 		}
 	}
 },

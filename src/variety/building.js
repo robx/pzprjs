@@ -390,20 +390,22 @@ AnsCheck:{
 	],
 
 	checkSight : function(type){
-		var bd = this.board, result = true;
+		var bd = this.board, result = true, errorExcell = null;
 		for(var ec=0;ec<bd.excell.length-4;ec++){
 			var excell = bd.excell[ec];
 			if(excell.qnum===-1){ continue;}
-			var count = bd.searchLight(excell, (!this.checkOnly && result)).cnt;
+			var count = bd.searchLight(excell, false).cnt;
 			if(excell.qnum===count){ continue;}
 			
 			result = false;
 			if(this.checkOnly){ break;}
 			
 			excell.seterr(1);
+			if(!errorExcell){ errorExcell = excell;}
 		}
 		if(!result){
 			this.failcode.add("nmSightNe");
+			if(errorExcell){ bd.searchLight(errorExcell, true);}
 		}
 	}
 },
