@@ -51,8 +51,8 @@ MouseEvent:{
 		}
 	},
 	inputEdit_first : function(){
-		var bd = this.board, bx = this.inputPoint.bx, by = this.inputPoint.by;
-		if((bx>=bd.maxbx-3.15) && (bx<=bd.maxbx-0.15) && (by>=-1.8) && (by<=-0.2)){
+		var bd = this.board, bx = this.inputPoint.bx, by = this.inputPoint.by, rect = bd.starCount.rect;
+		if((bx>=rect.bx1) && (bx<=rect.bx2) && (by>=rect.by1) && (by<=rect.by2)){
 			var val = this.getNewNumber(bd.starCount, bd.starCount.count);
 			if(val===null){ return;}
 			bd.starCount.set(val);
@@ -103,11 +103,21 @@ Board:{
 },
 StarCount:{
 	count : 1,
+	rect : null,
 	initialize : function(val){
 		this.count = val;
+		this.rect = {
+			bx1 : -1, by1 : -1,
+			bx2 : -1, by2 : -1
+		};
 	},
 	init : function(val){
 		this.count = val;
+		var bd=this.puzzle.board;
+		this.rect = {
+			bx1 : bd.maxbx-3.15, by1 : -1.8,
+			bx2 : bd.maxbx-0.15, by2 : -0.2
+		};
 	},
 	set : function(val){
 		if(val<=0){ val = 1;}
@@ -224,7 +234,7 @@ Graphic:{
 		g.font         = ((this.ch*0.66)|0) + "px " + this.fontfamily;
 		g.textAlign    = 'right';
 		g.textBaseline = 'middle';
-		g.fillText(''+bd.starCount.count, (bd.maxby-1.8)*this.bw, -this.bh);
+		g.fillText(''+bd.starCount.count, (bd.maxbx-1.8)*this.bw, -this.bh);
 
 		g.vid = 'bd_star';
 		this.dispStar(g, (bd.maxby-1)*this.bw, -this.bh, this.bw*0.7, this.bh*0.7);
@@ -236,9 +246,10 @@ Graphic:{
 		var isdraw = (this.puzzle.editmode && this.puzzle.getConfig('cursor') && !this.outputImage);
 		g.vid = "ti";
 		if(isdraw){
+			var rect = bd.starCount.rect;
 			g.strokeStyle = this.targetColor1;
 			g.lineWidth = (Math.max(this.cw/16, 2))|0;
-			g.strokeRect((bd.maxbx-3.15)*this.bw, -1.8*this.bh, 3*this.bw, 1.6*this.bh);
+			g.strokeRect(rect.bx1*this.bw, rect.by1*this.bh, (rect.bx2-rect.bx1)*this.bw, (rect.by2-rect.by1)*this.bh);
 		}
 		else{ g.vhide();}
 	},
