@@ -42,7 +42,7 @@ pzpr.classmgr.makeCommon({
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
 	propans  : ['qans', 'anum', 'line', 'trial'],
-	propsub  : ['qsub', 'qcmp'],
+	propsub  : ['qsub', 'qcmp', 'snum'],
 	propinfo : ['error', 'qinfo'],
 	propnorec : { color:1, error:1, qinfo:1 },
 
@@ -163,6 +163,9 @@ pzpr.classmgr.makeCommon({
 				case 'trial': array1 = ['trial']; break;
 			}
 			array = array.concat(array1);
+		}
+		if(array.indexOf('snum')>=0 && this.enableSubNumberArray){
+			array.splice(array.indexOf('snum'), 1, 'snum0', 'snum1', 'snum2', 'snum3');
 		}
 		return array;
 	},
