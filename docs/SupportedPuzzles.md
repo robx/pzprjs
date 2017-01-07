@@ -184,3 +184,4 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 
 ### Non-nikoli puzzle
 * Yin-Yang `yinyang`
+* Star Battle `starbattle`

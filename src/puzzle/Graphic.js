@@ -400,7 +400,7 @@ Graphic:{
 		var bd = this.board, bm=2*this.margin,
 			x1 = this.range.x1, y1 = this.range.y1,
 			x2 = this.range.x2, y2 = this.range.y2;
-		if(x1>x2 || y1>y2 || x1>=bd.maxbx+bm || y1>=bd.maxby+bm || x2<=bd.minbx-bm || y2<=bd.minby-bm){
+		if(x1>x2 || y1>y2 || x1>=bd.maxbx+bm || y1>=bd.maxby+bm || x2<=bd.minbx-bm || y2<=bd.minby-(bm+(this.pid==='starbattle'?2:0))){
 			/* 入力が範囲外ならば何もしない */
 		}
 		else if(!this.useBuffer){

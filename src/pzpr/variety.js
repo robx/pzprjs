@@ -160,6 +160,7 @@ delete variety.extend;
 	shwolf    :[0,0,"ヤギとオオカミ","Sheeps and Wolves",'kramma'],
 	slalom    :[1,1,"スラローム","Slalom (Suraromu)",'',{alias:'suraromu'}],
 	slither   :[0,1,"スリザーリンク","Slitherlink",'',{kanpen:'slitherlink'}],
+	starbattle:[0,0,"スターバトル","Star Battle"],
 	stostone  :[0,0,"ストストーン","Stostone",'shimaguni'],
 	sudoku    :[0,1,"数独","Sudoku"],
 	sukoro    :[1,0,"数コロ","Sukoro",'sukoro'],
