@@ -84,6 +84,7 @@ delete variety.extend;
 	country   :[1,0,"カントリーロード","Country Road"],
 	creek     :[1,0,"クリーク","Creek"],
 	dosufuwa  :[0,0,"ドッスンフワリ","Dosun-Fuwari"],
+	easyasabc :[0,0,"ABCプレース","Easy as ABC"],
 	factors   :[0,0,"因子の部屋","Rooms of Factors"],
 	fillmat   :[1,0,"フィルマット","Fillmat",'fillmat'],
 	fillomino :[0,1,"フィルオミノ","Fillomino",'',{kanpen2:'fillomino01'}],

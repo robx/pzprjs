@@ -102,6 +102,13 @@ Graphic:{
 		else if(cell.ques===6){ return this.icecolor;}
 		return null;
 	},
+	getBGCellColor_light : function(cell){
+		if(cell.qnum===-1){
+			if     (cell.error ===1){ return this.errbcolor1;}
+			else if(cell.qlight===1){ return this.lightcolor;}
+		}
+		return null;
+	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawCells_common()  drawShadedCells, drawQuesCells, drawBGCellsの共通ルーチン
@@ -139,8 +146,16 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	getBGEXcellColor : function(excell){
+
+	getBGEXcellColor : function(cell){ // initialize()で上書きされる
+		return null;
+	},
+	getBGEXcellColor_error1 : function(excell){
 		if(excell.error===1||excell.qinfo===1){ return this.errbcolor1;}
+		return null;
+	},
+	getBGEXcellColor_light : function(excell){
+		if(excell.qlight===1){ return this.lightcolor;}
 		return null;
 	},
 
@@ -284,15 +299,20 @@ Graphic:{
 			g.vid = "cell_text_"+cell.id;
 			if(cell.ques===-2||cell.qnum===-2){
 				g.fillStyle = this.getNumberColor_qnum(cell);
-				this.disptext("?", cell.bx*this.bw, cell.by*this.bh);
+				this.disptext("?", cell.bx*this.bw, cell.by*this.bh, this.textoption);
 			}
 			else{ g.vhide();}
 		}
 	},
 
 	getNumberText : function(cell){
-		var isdrawmove = this.puzzle.execConfig('dispmove');
-		return this.getNumberTextCore((isdrawmove ? cell.base : cell).getNum());
+		var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
+		if(!cell.numberAsLetter){
+			return this.getNumberTextCore(num);
+		}
+		else{
+			return this.getNumberTextCore_letter(num);
+		}
 	},
 	getNumberTextCore : function(num){
 		var hideHatena = (this.pid!=="yajirin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
@@ -350,6 +370,26 @@ Graphic:{
 	},
 
 	//---------------------------------------------------------------------------
+	// pc.drawNumbersEXcell()  EXCellの数字をCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawNumbersEXcell : function(){
+		var g = this.vinc('excell_number', 'auto');
+
+		var exlist = this.range.excells;
+		for(var i=0;i<exlist.length;i++){
+			var excell = exlist[i];
+			var text = this.getNumberText(excell);
+
+			g.vid = "excell_text_"+excell.id;
+			if(!!text){
+				g.fillStyle = this.getNumberColor(excell);
+				this.disptext(text, excell.bx*this.bw, excell.by*this.bh, this.textoption);
+			}
+			else{ g.vhide();}
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// pc.drawSubNumbers()  Cellの補助数字をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawSubNumbers : function(){
@@ -360,7 +400,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			for(var n=0;n<4;n++){
-				var text = this.getNumberTextCore(cell.snum[n]);
+				var text = (!cell.numberAsLetter ? this.getNumberTextCore(cell.snum[n]) : this.getNumberTextCore_letter(cell.snum[n]));
 				g.vid = "cell_subtext_"+cell.id+"_"+n;
 				if(!!text){
 					g.fillStyle = (!cell.trial ? this.subcolor : this.trialcolor);

@@ -223,31 +223,33 @@ KeyEvent:{
 	// kc.moveEXCell()  EXCellのキーボードからの入力対象を矢印キーで動かす
 	//---------------------------------------------------------------------------
 	moveEXCell : function(ca){
-		var cursor = this.cursor, excell0 = cursor.getex(), flag = true, dir = excell0.NDIR;
+		var cursor = this.cursor, addr0 = cursor.getaddr(), flag = true, dir = addr0.NDIR;
 		switch(ca){
 		case 'up':
 			if(cursor.by===cursor.maxy && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.miny;}
-			else if(cursor.by>cursor.miny){ dir=excell0.UP;}else{ flag=false;}
+			else if(cursor.by>cursor.miny){ dir=addr0.UP;}
+			else if(this.pid==="easyasabc" && cursor.by===-1){ dir=addr0.UP;}else{ flag=false;}
 			break;
 		case 'down':
 			if(cursor.by===cursor.miny && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.maxy;}
-			else if(cursor.by<cursor.maxy){ dir=excell0.DN;}else{ flag=false;}
+			else if(cursor.by<cursor.maxy){ dir=addr0.DN;}
+			else if(this.pid==="easyasabc" && cursor.by===-3){ dir=addr0.DN;}else{ flag=false;}
 			break;
 		case 'left':
 			if(cursor.bx===cursor.maxx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.minx;}
-			else if(cursor.bx>cursor.minx){ dir=excell0.LT;}else{ flag=false;}
+			else if(cursor.bx>cursor.minx){ dir=addr0.LT;}else{ flag=false;}
 			break;
 		case 'right':
 			if(cursor.bx===cursor.minx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.maxx;}
-			else if(cursor.bx<cursor.maxx){ dir=excell0.RT;}else{ flag=false;}
+			else if(cursor.bx<cursor.maxx){ dir=addr0.RT;}else{ flag=false;}
 			break;
 		default: flag = false; break;
 		}
 
 		if(flag){
-			if(dir!==excell0.NDIR){ cursor.movedir(dir,2);}
+			if(dir!==addr0.NDIR){ cursor.movedir(dir,2);}
 
-			excell0.draw();
+			addr0.draw();
 			cursor.draw();
 		}
 		return flag;
@@ -264,6 +266,12 @@ KeyEvent:{
 		this.mode51 = (this.puzzle.klass.EXCell.prototype.ques===51);
 		this.modesnum = (this.puzzle.klass.Cell.prototype.enableSubNumberArray);
 		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
+	},
+	init : function(bx,by){
+		this.bx  = bx;
+		this.by  = by;
+		if(!this.mode51){ this.targetdir = 0;}
+		return this;
 	},
 
 	// 有効な範囲(minx,miny)-(maxx,maxy)
@@ -342,7 +350,7 @@ KeyEvent:{
 	// tc.setaddr() ターゲットの位置をAddressクラス等のオブジェクトで設定する
 	//---------------------------------------------------------------------------
 	setaddr : function(pos){ /* Address, Cellなどのオブジェクトいずれを入力しても良い */
-		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny || this.maxy<pos.by){ return;}
+		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny-(this.pid==='easyasabc'?2:0) || this.maxy<pos.by){ return;}
 		this.set(pos);
 		if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
 	},

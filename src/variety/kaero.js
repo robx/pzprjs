@@ -118,10 +118,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	textoption : {ratio:[0.85]},
-	getNumberTextCore : function(num){
-		return this.getNumberTextCore_letter(num);
-	}
+	textoption : {ratio:[0.85]}
 },
 
 //---------------------------------------------------------

@@ -160,6 +160,7 @@ Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
 ### Non-nikoli puzzle
 * Skyscrapers `building` `skyscrapers` `skyscraper`
 * Kropki `kropki`
+* Easy as ABC `easyasabc`
 
 ## Variety Puzzles
 ### Regular

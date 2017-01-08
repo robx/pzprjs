@@ -93,9 +93,6 @@ Graphic:{
 },
 "Graphic@arukone":{
 	textoption : {ratio:[0.5],style:"900"},
-	getNumberTextCore : function(num){
-		return this.getNumberTextCore_letter(num);
-	},
 	drawCrossSquares : function(){
 		var g = this.vinc('cross_mark', 'auto', true), bd = this.board;
 		g.fillStyle = this.quescolor;

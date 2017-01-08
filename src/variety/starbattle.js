@@ -96,9 +96,7 @@ Board:{
 		this.starCount = new this.klass.StarCount(1);
 	},
 	initExtraObject : function(col,row){
-		this.disableInfo();
 		this.starCount.init(1);
-		this.enableInfo();
 	}
 },
 StarCount:{
@@ -122,16 +120,22 @@ StarCount:{
 	set : function(val){
 		if(val<=0){ val = 1;}
 		if(this.count !== val){
-			this.puzzle.opemgr.add(new this.klass.StarCountOperation(this.count, val));
+			this.addOpe(this.count, val);
 			this.count = val;
-			this.puzzle.painter.paintRange(this.board.minbx,-1,this.board.maxbx,-1);
+			this.draw();
 		}
 	},
 	getmaxnum:function(){
 		var bd = this.board;
 		return Math.max(Math.floor(bd.cols/4),1);
 	},
-	getminnum:function(){ return 1;}
+	getminnum:function(){ return 1;},
+	addOpe : function(old,num){
+		this.puzzle.opemgr.add(new this.klass.StarCountOperation(old, num));
+	},
+	draw : function(){
+		this.puzzle.painter.paintRange(this.board.minbx,-1,this.board.maxbx,-1);
+	}
 },
 "StarCountOperation:Operation":{
 	type : 'starCount',

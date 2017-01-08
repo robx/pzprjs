@@ -116,7 +116,6 @@ TargetCursor:{
 Cell:{
 	enableSubNumberArray : true,
 	
-	qlight : 0,
 	maxnum : function(){
 		return Math.max(this.board.cols,this.board.rows);
 	}
@@ -125,7 +124,6 @@ Cell:{
 EXCell:{
 	disInputHatena : true,
 	
-	qlight : 0,
 	maxnum : function(){
 		var bd = this.board;
 		if(this.by<0 || this.by>bd.rows*2){
@@ -134,10 +132,7 @@ EXCell:{
 		else{
 			return bd.cols;
 		}
-	},
-	getNum : function(){ return this.qnum;},
-	setNum : function(val){ this.setQnum(val);},
-	noNum : function(){ return !this.isnull && this.qnum===-1;},
+	}
 },
 
 Board:{
@@ -146,25 +141,6 @@ Board:{
 
 	hasborder : 1,
 	hasexcell : 2,
-
-	haslight : false,
-	lightclear : function(){
-		if(!this.haslight){ return;}
-		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
-		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
-		this.haslight = false;
-		this.puzzle.redraw();
-	},
-	flashlight : function(excell){
-		this.lightclear();
-		this.searchLight(excell, true);
-		this.puzzle.redraw();
-	},
-
-	errclear : function(){
-		if(this.haslight){ this.lightclear();}
-		this.common.errclear.call(this);
-	},
 
 	searchLight : function(startexcell, setlight){
 		var ccnt=0, ldata = [];
@@ -204,6 +180,8 @@ Board:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 	lightcolor : "rgb(255, 255, 127)",
+	bgcellcolor_func : "light",
+	bgexcellcolor_func : 'light',
 
 	paint : function(){
 		this.drawBGCells();
@@ -215,27 +193,14 @@ Graphic:{
 
 		this.drawSubNumbers();
 		this.drawNumbers();
-		this.drawNumbers_EXCell_skyscrapers();
+		this.drawArrowNumbersEXCell_skyscrapers();
 
 		this.drawChassis();
 
 		this.drawCursor();
 	},
 
-	// オーバーライド drawBGCells用
-	getBGCellColor : function(cell){
-		if(cell.qnum===-1){
-			if     (cell.error ===1){ return this.errbcolor1;}
-			else if(cell.qlight===1){ return this.lightcolor;}
-		}
-		return null;
-	},
-	getBGEXcellColor : function(excell){
-		if(excell.qlight===1){ return this.lightcolor;}
-		return null;
-	},
-
-	drawNumbers_EXCell_skyscrapers : function(){
+	drawArrowNumbersEXCell_skyscrapers : function(){
 		var g = this.vinc('excell_number', 'auto'), bd = this.board;
 
 		var tho = this.bw*0.5;		// y offset of horizonal arrows' head
@@ -341,41 +306,33 @@ FileIO:{
 
 	decodeCellEXCellQnum : function(){
 		this.decodeCellExcell(function(excell, ca){
-			if(ca==="."){ return;}
-			else if(excell.group==='excell'){
-				excell.qnum = +ca;
-			}
+			if(excell.group!=='excell' || ca==="."){ return;}
+			excell.qnum = +ca;
 		});
 	},
 	encodeCellEXCellQnum : function(){
 		this.encodeCellExcell(function(excell){
-			if(excell.group==='excell'){
-				var qn=excell.qnum;
-				if(qn!==-1){ return (qn+" ");}
-			}
-			return ". ";
+			if(excell.group!=='excell'){ return ". ";}
+			var ca = ".";
+			if(excell.qnum!==-1){ ca = ""+excell.qnum;}
+			return ca+" ";
 		});
 	},
 
 	decodeCellEXCellAnumsub : function(){
 		this.decodeCellExcell(function(cell, ca){
-			if(ca==="."){ return;}
-			else if(cell.group==='cell'){
-				if(cell.enableSubNumberArray && ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
-				else if(ca!=="."){ cell.anum = +ca;}
-			}
+			if(cell.group!=='cell' || ca==="."){ return;}
+			if(ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
+			if(ca!=="."){ cell.anum = +ca;}
 		});
 	},
 	encodeCellEXCellAnumsub : function(){
 		this.encodeCellExcell(function(cell){
-			if(cell.group==='cell'){
-				var ca = ".";
-				if     (cell.anum!==-1){ ca = ""+cell.anum;}
-				else                  { ca = ".";}
-				if(cell.enableSubNumberArray && cell.anum===-1){ ca += this.getCellSnum(cell);}
-				return ca+" ";
-			}
-			return ". ";
+			if(cell.group!=='cell'){ return ". ";}
+			var ca = ".", num = cell.anum;
+			if(num!==-1){ ca = ""+num;}
+			else{ ca += this.getCellSnum(cell);}
+			return ca+" ";
 		});
 	}
 },

@@ -22,6 +22,9 @@ Board:{
 		// エラー表示中かどうか
 		this.haserror = false;
 
+		// kinkonkan/skyscraper/easeasabc等で情報表示中かどうか
+		this.haslight = false;
+
 		// 盤面上にあるセル・境界線等のオブジェクト
 		this.cell   = new classes.CellList();
 		this.cross  = new classes.CrossList();
@@ -312,6 +315,9 @@ Board:{
 	},
 
 	errclear : function(){
+		if(this.haslight){
+			this.lightclear();
+		}
 		if(this.haserror){
 			this.cell.errclear();
 			this.cross.errclear();
@@ -332,6 +338,25 @@ Board:{
 			this.trialstage = 0;
 		}
 	},
+
+	//---------------------------------------------------------------------------
+	// bd.flashlight()  EXCellを基準にした情報を表示する
+	// bd.lightclear()  情報を表示して返す
+	// bd.searchLight() EXCellを基準にした情報をサーチする
+	//---------------------------------------------------------------------------
+	flashlight : function(excell){
+		this.lightclear();
+		this.searchLight(excell, true);
+		this.puzzle.redraw();
+	},
+	lightclear : function(){
+		if(!this.haslight){ return;}
+		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
+		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
+		this.haslight = false;
+		this.puzzle.redraw();
+	},
+	searchLight : function(startexcell, setlight){ return {};},
 
 	//---------------------------------------------------------------------------
 	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを計算して返す
@@ -465,6 +490,7 @@ Board:{
 	excellinside : function(x1,y1,x2,y2){
 		var exlist = new this.klass.EXCellList();
 		if(!!this.hasexcell){
+			if(y1<-1){ y1 = -1;}
 			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 				var excell = this.getex(bx,by);
 				if(!excell.isnull){ exlist.add(excell);}

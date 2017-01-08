@@ -56,6 +56,7 @@ KeyEvent:{
 			var val = this.getNewNumber(cell,ca,cell.getNum());
 			if(val===null){ return;}
 			cell.setNum(val);
+			if(cell.numberWithMB && cell.enableSubNumberArray && ca===' '){ cell.clrSnum();}
 		}
 
 		if(puzzle.execConfig('dispmove') && cell.noNum()){
@@ -74,13 +75,14 @@ KeyEvent:{
 			val = cur*10+num;
 			if(val>max || (min>0 && val===0)){ val = null;}
 		}
-		else if('a'<=ca && ca<='z' && cell.numberAsLetter){
+		else if('a'<=ca && ca<='z' && ca.length===1 && cell.numberAsLetter){
 			if(ca.length>1 && ca!=='BS'){ return null;}
 			var num = parseInt(ca,36)-10;
 			if(cur>0 && (cur-1)%26===num){ // Same alphabet
 				val = ((cur<=26) ? cur+26 : -1);
 			}
 			else{ val = num+1;}
+			if(val>max || (min>0 && val===0)){ val = null;}
 		}
 		else if(ca==='BS'){
 			if(cur<10 || cell.numberAsLetter){ val = -1;}

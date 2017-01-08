@@ -146,8 +146,6 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qlight : 0,
-	
 	// Qans/Qsubを統合して扱うkanpen的な関数
 	// ここでは なし=0, 斜線=1/2, 補助記号=-1
 	getState : function(){
@@ -161,7 +159,6 @@ Cell:{
 },
 
 EXCell:{
-	qlight : 0,
 	minnum : 0
 },
 
@@ -171,25 +168,6 @@ Board:{
 
 	hasborder : 1,
 	hasexcell : 2,
-
-	haslight : false,
-	lightclear : function(){
-		if(!this.haslight){ return;}
-		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
-		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
-		this.haslight = false;
-		this.puzzle.redraw();
-	},
-	flashlight : function(excell){
-		this.lightclear();
-		this.searchLight(excell, true);
-		this.puzzle.redraw();
-	},
-
-	errclear : function(){
-		if(this.haslight){ this.lightclear();}
-		this.common.errclear.call(this);
-	},
 
 	searchLight : function(startexcell, setlight){
 		var ccnt=0, ldata = [];
@@ -274,7 +252,7 @@ Graphic:{
 		this.drawSlashes();
 
 		this.drawBGEXcells();
-		this.drawNumbers_kinkonkan();
+		this.drawNumbersEXcell();
 		this.drawChassis();
 
 		this.drawTarget();
@@ -296,33 +274,13 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-
-	getBGEXcellColor : function(excell){
-		if(excell.qlight===1){ return this.lightcolor;}
-		return null;
-	},
-	drawNumbers_kinkonkan : function(){
-		var g = this.vinc('excell_number', 'auto');
-
-		var exlist = this.range.excells;
-		for(var i=0;i<exlist.length;i++){
-			var excell = exlist[i], num=excell.qnum, canum=excell.qchar;
-			var text="";
-			if     (canum===0)           { text = "";}
-			else if(canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-			else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-			else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-			else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-			if(num>=0){ text+=num.toString(10);}
-
-			g.vid = "excell_text_"+excell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(excell);
-				var option = {ratio:((canum===0||num<10) ? [0.66] : [0.55])};
-				this.disptext(text, excell.bx*this.bw, excell.by*this.bh, option);
-			}
-			else{ g.vhide();}
-		}
+	textoption : {ratio:[0.65, 0.6, 0.5]},
+	getNumberText : function(excell){
+		var text="", canum = excell.qchar, num = excell.qnum;
+		if(canum===0){ text = "";}
+		else{ text = this.getNumberTextCore_letter(canum<=52 ? canum : canum-52);}
+		if(num>=0){ text+=num.toString(10);}
+		return text;
 	},
 	getNumberColor : function(excell){
 		if     (excell.error===1){ return "rgb(192, 0, 0)";}

@@ -200,7 +200,7 @@ FileIO:{
 			else if(ca!=="."){ cell.qnum = +ca;}
 		});
 		this.decodeCell( function(cell,ca){
-			if(cell.enableSubNumberArray && ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
+			if(ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
 			if(ca!=="." && ca!=="0"){ cell.anum = +ca;}
 		});
 	},

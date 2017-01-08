@@ -39,12 +39,13 @@ pzpr.classmgr.makeCommon({
 	error : 0,
 	qinfo : 0,
 	trial : 0,	// TrialModeのstateを保持する変数
+	qlight : 0,	// EXCell基準に表示している情報を保持する変数
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
 	propans  : ['qans', 'anum', 'line', 'trial'],
 	propsub  : ['qsub', 'qcmp', 'snum'],
-	propinfo : ['error', 'qinfo'],
-	propnorec : { color:1, error:1, qinfo:1 },
+	propinfo : ['error', 'qinfo', 'qlight'],
+	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,
@@ -272,7 +273,7 @@ pzpr.classmgr.makeCommon({
 			this.setQsub(vals);
 			this.setQdir(0);
 			this.setQcmp(0);
-			this.clrSnum();
+			if(!(this.numberWithMB && vala===-1)){ this.clrSnum();}
 		}
 	},
 	
@@ -590,6 +591,15 @@ pzpr.classmgr.makeCommon({
 	group : 'excell',
 
 	adjacent  : {},	// 四方向に隣接するセルを保持する
+
+	//-----------------------------------------------------------------------
+	// excell.getNum()     該当するCellの数字を返す
+	// excell.setNum()     該当するCellに数字を設定する
+	// excell.noNum()      該当するCellに数字がないか返す
+	//-----------------------------------------------------------------------
+	getNum : function(){ return this.qnum;},
+	setNum : function(val){ this.setQnum(val);},
+	noNum : function(){ return !this.isnull && this.qnum===-1;},
 
 	//---------------------------------------------------------------------------
 	// excell.is51cell()   [＼]のセルかチェックする

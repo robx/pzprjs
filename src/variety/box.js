@@ -169,7 +169,7 @@ Graphic:{
 		this.drawGrid();
 
 		this.drawBGEXcells();
-		this.drawNumbers_box();
+		this.drawNumbersEXcell();
 
 		this.drawCircledNumbers_box();
 
@@ -186,23 +186,6 @@ Graphic:{
 	},
 	getOffsetCols : function(){ return 0.5;},
 	getOffsetRows : function(){ return 0.5;},
-
-	drawNumbers_box : function(){
-		var g = this.vinc('excell_number', 'auto');
-
-		var exlist = this.range.excells;
-		for(var i=0;i<exlist.length;i++){
-			var excell = exlist[i];
-			if(excell.id>=this.board.cols+this.board.rows){ continue;}
-
-			g.vid = "excell_text_"+excell.id;
-			if(excell.bx>=0 || excell.by>=0){
-				g.fillStyle = this.getNumberColor(excell);
-				this.disptext(""+excell.qnum, excell.bx*this.bw, excell.by*this.bh);
-			}
-			else{ g.vhide();}
-		}
-	},
 
 	drawCircledNumbers_box : function(){
 		var list = [], bd = this.board;

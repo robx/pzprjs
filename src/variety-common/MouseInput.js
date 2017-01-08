@@ -94,12 +94,13 @@ MouseEvent:{
 
 		cell0.draw();
 	},
-	getNewNumber : function(cell, num){
+	getNewNumber : function(cell, num, isSnum){
 		var puzzle=this.puzzle, ishatena=(puzzle.editmode && !cell.disInputHatena);
 		var max=cell.getmaxnum(), min=cell.getminnum(), val = -1, qs = cell.qsub;
 
 		var subtype=0; // qsubを0～いくつまで入力可能かの設定
 		if     (puzzle.editmode)    { subtype =-1;}
+		else if(puzzle.pid==="easyasabc" && this.cursor.targetdir>=2){ subtype=0; qs = 0;}
 		else if(cell.numberWithMB)  { subtype = 2; qs = cell.qsub;}
 		else if(puzzle.pid==="roma" || puzzle.pid==="yinyang"){ subtype=0;} // 全マス埋めるタイプのパズルは補助記号なし
 		else if(cell.numberAsObject || puzzle.pid==="hebi"){ subtype = 1;}
