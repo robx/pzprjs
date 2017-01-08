@@ -397,13 +397,11 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeIndicator();
-		this.decodeCellEXCellQnum();
-		this.decodeCellEXCellAnumsub();
+		this.decodeCellEXCellQnumAnumsub();
 	},
 	encodeData : function(){
 		this.encodeIndicator();
-		this.encodeCellEXCellQnum();
-		this.encodeCellEXCellAnumsub();
+		this.encodeCellEXCellQnumAnumsub();
 	},
 
 	decodeIndicator : function(){
@@ -413,39 +411,34 @@ FileIO:{
 		this.writeLine(this.board.indicator.count);
 	},
 
-	decodeCellEXCellQnum : function(){
-		this.decodeCellExcell(function(excell, ca){
-			if(excell.group!=='excell' || ca==="."){ return;}
-			excell.qnum = +ca;
+	decodeCellEXCellQnumAnumsub : function(){
+		this.decodeCellExcell(function(obj, ca){
+			if(ca==="."){ return;}
+			else if(obj.group==='excell'){
+				obj.qnum = +ca;
+			}
+			else if(obj.group==='cell'){
+				if(ca.indexOf('[')>=0){ ca = this.setCellSnum(obj,ca);}
+				if     (ca==="+"){ obj.qsub = 1;}
+				else if(ca==="-"){ obj.qsub = 2;}
+				else if(ca!=="."){ obj.anum = +ca;}
+			}
 		});
 	},
-	encodeCellEXCellQnum : function(){
-		this.encodeCellExcell(function(excell){
-			if(excell.group!=='excell'){ return ". ";}
-			var ca = ".";
-			if(excell.qnum!==-1){ ca = ""+excell.qnum;}
-			return ca+" ";
-		});
-	},
-
-	decodeCellEXCellAnumsub : function(){
-		this.decodeCellExcell(function(cell, ca){
-			if(cell.group!=='cell' || ca==="."){ return;}
-			if(ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
-			if     (ca==="+"){ cell.qsub = 1;}
-			else if(ca==="-"){ cell.qsub = 2;}
-			else if(ca!=="."){ cell.anum = +ca;}
-		});
-	},
-	encodeCellEXCellAnumsub : function(){
-		this.encodeCellExcell(function(cell){
-			if(cell.group!=='cell'){ return ". ";}
-			var ca = ".";
-			if     (cell.anum!==-1){ ca = ""+cell.anum;}
-			else if(cell.qsub===1) { ca = "+";}
-			else if(cell.qsub===2) { ca = "-";}
-			if(cell.anum===-1){ ca += this.getCellSnum(cell);}
-			return ca+" ";
+	encodeCellEXCellQnumAnumsub : function(){
+		this.encodeCellExcell(function(obj){
+			if(obj.group==='excell'){
+				if(obj.qnum!==-1){ return ""+obj.qnum+" ";}
+			}
+			else if(obj.group==='cell'){
+				var ca = ".";
+				if     (obj.anum!==-1){ ca = ""+obj.anum;}
+				else if(obj.qsub===1) { ca = "+";}
+				else if(obj.qsub===2) { ca = "-";}
+				if(obj.anum===-1){ ca += this.getCellSnum(obj);}
+				return ca+" ";
+			}
+			return ". ";
 		});
 	}
 },

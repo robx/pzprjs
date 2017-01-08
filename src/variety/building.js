@@ -296,43 +296,36 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCellEXCellQnum();
-		this.decodeCellEXCellAnumsub();
+		this.decodeCellEXCellQnumAnumsub();
 	},
 	encodeData : function(){
-		this.encodeCellEXCellQnum();
-		this.encodeCellEXCellAnumsub();
+		this.encodeCellEXCellQnumAnumsub();
 	},
 
-	decodeCellEXCellQnum : function(){
-		this.decodeCellExcell(function(excell, ca){
-			if(excell.group!=='excell' || ca==="."){ return;}
-			excell.qnum = +ca;
+	decodeCellEXCellQnumAnumsub : function(){
+		this.decodeCellExcell(function(obj, ca){
+			if(ca==="."){ return;}
+			else if(obj.group==='excell'){
+				obj.qnum = +ca;
+			}
+			else if(obj.group==='cell'){
+				if(ca.indexOf('[')>=0){ ca = this.setCellSnum(obj,ca);}
+				if(ca!=="."){ obj.anum = +ca;}
+			}
 		});
 	},
-	encodeCellEXCellQnum : function(){
-		this.encodeCellExcell(function(excell){
-			if(excell.group!=='excell'){ return ". ";}
-			var ca = ".";
-			if(excell.qnum!==-1){ ca = ""+excell.qnum;}
-			return ca+" ";
-		});
-	},
-
-	decodeCellEXCellAnumsub : function(){
-		this.decodeCellExcell(function(cell, ca){
-			if(cell.group!=='cell' || ca==="."){ return;}
-			if(ca.indexOf('[')>=0){ ca = this.setCellSnum(cell,ca);}
-			if(ca!=="."){ cell.anum = +ca;}
-		});
-	},
-	encodeCellEXCellAnumsub : function(){
-		this.encodeCellExcell(function(cell){
-			if(cell.group!=='cell'){ return ". ";}
-			var ca = ".", num = cell.anum;
-			if(num!==-1){ ca = ""+num;}
-			else{ ca += this.getCellSnum(cell);}
-			return ca+" ";
+	encodeCellEXCellQnumAnumsub : function(){
+		this.encodeCellExcell(function(obj){
+			if(obj.group==='excell'){
+				if(obj.qnum!==-1){ return ""+obj.qnum+" ";}
+			}
+			else if(obj.group==='cell'){
+				var ca = ".", num = obj.anum;
+				if(num!==-1){ ca = ""+num;}
+				else{ ca += this.getCellSnum(obj);}
+				return ca+" ";
+			}
+			return ". ";
 		});
 	}
 },
