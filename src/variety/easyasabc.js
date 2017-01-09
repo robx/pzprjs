@@ -58,12 +58,13 @@ KeyEvent:{
 	},
 	keyinput : function(ca){
 		if(this.puzzle.playmode){
-			if(this.cursor.targetdir!==0){}
+			var isSnum = (this.cursor.targetdir!==0);
+			if(isSnum){}
 			else if(ca==='1'){ ca='s1';}
 			else if(ca==='2'){ ca='s2';}
 			else if(ca==='3'){ ca='BS';}
 			this.key_inputqnum(ca);
-			if(ca===' '){ this.cursor.getc().clrSnum();}
+			if(!isSnum && ca===' '){ this.cursor.getc().clrSnum();}
 		}
 		else{
 			if(this.cursor.by >= this.board.minby){
