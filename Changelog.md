@@ -1,4 +1,24 @@
 
+## Version 0.8.0-beta2 (beta)
+
+Release date: 2017/1/9
+
+#### New puzzle
+
+* easyasabc: Introduce new puzzle: Easy as ABC
+* starbattle: Introduce new puzzle: Star Battle
+* kropki: Introduce new puzzle: Kropki
+* building: Introduce new puzzle: Skyscrapers
+
+#### BugFix
+
+* kinkonkan: Suppress painting background without sight error
+* Piece: Enable to clear sub numbers by ansclear or so
+
+#### Minor Changes
+
+* Board: Remove corner EXCells
+
 ## Version 0.8.0-beta1 (beta)
 
 Release date: 2016/12/31
