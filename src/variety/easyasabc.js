@@ -97,39 +97,24 @@ TargetCursor:{
 		}
 	},
 
-	setminmax : function(){
-		var bd = this.board, bm = (this.puzzle.playmode?3:1);
-		this.minx = bd.minbx + bm;
-		this.miny = bd.minby + bm;
-		this.maxx = bd.maxbx - bm;
-		this.maxy = bd.maxby - bm;
-		this.adjust_init();
-	},
 	initCursor : function(){
 		this.init(-1,-1);
 		this.adjust_init();
 	},
-
+	setminmax_customize : function(){
+		if(this.puzzle.editmode){ return;}
+		this.minx += 2;
+		this.miny += 2;
+		this.maxx -= 2;
+		this.maxy -= 2;
+	},
 	adjust_init : function(){
 		if(this.puzzle.playmode){
-			if(this.bx<this.minx){ this.bx=this.minx;}
-			if(this.by<this.miny){ this.by=this.miny;}
-			if(this.bx>this.maxx){ this.bx=this.maxx;}
-			if(this.by>this.maxy){ this.by=this.maxy;}
+			this.common.adjust_init.call(this);
 		}
 		else if(this.puzzle.editmode){
-			var bd = this.board;
-			var shortest = Math.min(this.bx, (bd.cols*2-this.bx), this.by, (bd.rows*2-this.by));
-			if(shortest<=0){ return;}
-			else if(this.by          ===shortest){ this.by=this.miny;}
-			else if(bd.rows*2-this.by===shortest){ this.by=this.maxy;}
-			else if(this.bx          ===shortest){ this.bx=this.minx;}
-			else if(bd.cols*2-this.bx===shortest){ this.bx=this.maxx;}
+			this.adjust_cell_to_excell();
 		}
-	},
-	adjust_modechange : function(){
-		this.setminmax();
-		if(this.modesnum){ this.targetdir = 0;}
 	}
 },
 

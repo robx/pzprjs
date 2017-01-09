@@ -120,6 +120,7 @@ KeyEvent:{
 },
 
 TargetCursor:{
+	// 盤面の中央にカーソルを設置する
 	initCursor : function(){
 		var bd = this.board;
 		this.bx = ((bd.cols-1)&~1)+1;

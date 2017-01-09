@@ -32,12 +32,10 @@ KeyEvent:{
 },
 
 TargetCursor:{
-	adjust_modechange : function(){
-		this.common.adjust_modechange.call(this);
-		if(this.puzzle.playmode){
-			if(this.bx<1){ this.bx = 1;}
-			if(this.by<1){ this.by = 1;}
-		}
+	setminmax_customize : function(){
+		if(this.puzzle.editmode){ return;}
+		this.minx += 2;
+		this.miny += 2;
 	}
 },
 

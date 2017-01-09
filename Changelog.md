@@ -18,6 +18,7 @@ Release date: 2017/1/9
 #### Minor Changes
 
 * Board: Remove corner EXCells
+* Cursor: Commonize some methods with Skyscrapers and Easy as ABC
 
 ## Version 0.8.0-beta1 (beta)
 

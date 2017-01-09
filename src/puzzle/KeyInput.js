@@ -283,11 +283,18 @@ KeyEvent:{
 	crosstype : false,
 
 	//---------------------------------------------------------------------------
-	// tc.setminmax()  初期化時・モード変更時にプロパティを設定する
-	// tc.initCursor() 初期化時にカーソルの位置を設定する
-	// 
-	// tc.adjust_init()       初期化時にカーソルの位置がおかしい場合に調整する
-	// tc.adjust_modechange() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
+	// tc.initCursor()           初期化時にカーソルの位置を設定する
+	//---------------------------------------------------------------------------
+	initCursor : function(){
+		if(this.crosstype){ this.init(0,0);}
+		else              { this.init(1,1);}
+
+		this.adjust_init();
+	},
+
+	//---------------------------------------------------------------------------
+	// tc.setminmax()            初期化時・モード変更時にプロパティを設定する
+	// tc.setminmax_customize()  初期化時・モード変更時のプロパティをパズルごとに調節する
 	//---------------------------------------------------------------------------
 	setminmax : function(){
 		var bd = this.board, bm = (!this.crosstype?1:0);
@@ -296,15 +303,17 @@ KeyEvent:{
 		this.maxx = bd.maxbx - bm;
 		this.maxy = bd.maxby - bm;
 
-		this.adjust_init();
-	},
-	initCursor : function(){
-		if(this.crosstype){ this.init(0,0);}
-		else              { this.init(1,1);}
+		this.setminmax_customize();
 
 		this.adjust_init();
 	},
+	setminmax_customize : function(){},
 
+	//---------------------------------------------------------------------------
+	// tc.adjust_init()       初期化時にカーソルの位置がおかしい場合に調整する
+	// tc.adjust_modechange() モード変更時にカーソルの位置を調節する
+	// tc.adjust_cell_to_excell() モード変更時にカーソルの位置をCellからEXCellへ移動する
+	//---------------------------------------------------------------------------
 	adjust_init : function(){
 		if(this.bx<this.minx){ this.bx=this.minx;}
 		if(this.by<this.miny){ this.by=this.miny;}
@@ -312,8 +321,18 @@ KeyEvent:{
 		if(this.by>this.maxy){ this.by=this.maxy;}
 	},
 	adjust_modechange : function(){
+		if(this.setminmax_customize!==this.common.setminmax_customize){ this.setminmax();} // editmode, playmodeでminmaxが異なるパズル
 		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
 		else if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
+	},
+	adjust_cell_to_excell : function(){
+		var bd = this.board;
+		var shortest = Math.min(this.bx, (bd.cols*2-this.bx), this.by, (bd.rows*2-this.by));
+		if(shortest<=0){ return;}
+		else if(this.by          ===shortest){ this.by=this.miny;}
+		else if(bd.rows*2-this.by===shortest){ this.by=this.maxy;}
+		else if(this.bx          ===shortest){ this.bx=this.minx;}
+		else if(bd.cols*2-this.bx===shortest){ this.bx=this.maxx;}
 	},
 
 	//---------------------------------------------------------------------------
