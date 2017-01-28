@@ -201,6 +201,10 @@ Cell:{
 	maxnum : function(){
 		return Math.min(255, this.board.gatemgr.components.length);
 	},
+	posthook : {
+		qnum : function(num){ this.board.gatemgr.generateGateNumberAll();},
+		qdir : function(num){ this.board.gatemgr.generateGateNumberAll();}
+	},
 
 	gate : null,
 	// 黒マスの周りに繋がっている旗門IDをリストにして返す
