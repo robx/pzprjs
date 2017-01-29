@@ -1,0 +1,10 @@
+{
+  "presets":[
+    "latest"
+  ],
+  "plugins":[
+    "transform-class-properties",
+    "transform-do-expressions",
+    "add-module-exports",
+  ]
+}

@@ -1,42 +1,39 @@
 //
 // パズル固有スクリプト部 数独版 sudoku.js
 //
-(function(pidlist, classbase){
-	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
-	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
-}(
-['sudoku'], {
+import common from '../pzpr/classmgr.js';
+
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
-	mouseinput : function(){
+class MouseEvent extends common.MouseEvent{
+	mouseinput(){
 		if(this.mousestart){ this.inputqnum();}
 	}
-},
+};
 
 //---------------------------------------------------------
 // キーボード入力系
-KeyEvent:{
-	enablemake : true,
-	enableplay : true
-},
+class KeyEvent extends common.KeyEvent {
+	enablemake = true
+	enableplay = true
+};
 
 //---------------------------------------------------------
 // 盤面管理系
-Cell:{
-	enableSubNumberArray : true,
+class Cell extends common.Cell {
+	enableSubNumberArray = true
 
-	maxnum : function(){
+	maxnum(){
 		return Math.max(this.board.cols,this.board.rows);
 	}
-},
-Board:{
-	cols : 9,
-	rows : 9,
+};
+class Board extends common.Board {
+	cols = 9
+	rows = 9
 
-	hasborder : 1,
+	hasborder = 1
 
-	initBoardSize : function(col,row){
+	initBoardSize(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
 		var roomsizex, roomsizey;
@@ -48,16 +45,16 @@ Board:{
 		}
 		this.rebuildInfo();
 	}
-},
+};
 
-AreaRoomGraph:{
-	enabled : true
-},
+class AreaRoomGraph extends common.AreaRoomGraph {
+	enabled = true
+};
 
 //---------------------------------------------------------
 // 画像表示系
-Graphic:{
-	paint : function(){
+class Graphic extends common.Graphic {
+	paint(){
 		this.drawBGCells();
 		this.drawTargetSubNumber();
 		this.drawGrid();
@@ -70,64 +67,65 @@ Graphic:{
 
 		this.drawCursor();
 	}
-},
+};
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
-	decodePzpr : function(type){
+class Encode extends common.Encode {
+	decodePzpr(type){
 		this.decodeNumber16();
-	},
-	encodePzpr : function(type){
+	}
+	encodePzpr(type){
 		this.encodeNumber16();
-	},
+	}
 
-	decodeKanpen : function(){
+	decodeKanpen(){
 		this.fio.decodeCellQnum_kanpen();
-	},
-	encodeKanpen : function(){
+	}
+	encodeKanpen(){
 		this.fio.encodeCellQnum_kanpen();
 	}
-},
+};
 //---------------------------------------------------------
-FileIO:{
-	decodeData : function(){
+class FileIO extends common.FileIO {
+	decodeData(){
 		this.decodeCellQnum();
 		this.decodeCellAnumsub();
-	},
-	encodeData : function(){
+	}
+	encodeData(){
 		this.encodeCellQnum();
 		this.encodeCellAnumsub();
-	},
+	}
 
-	kanpenOpen : function(){
+	kanpenOpen(){
 		this.decodeCellQnum_kanpen();
 		this.decodeCellAnum_kanpen();
-	},
-	kanpenSave : function(){
+	}
+	kanpenSave(){
 		this.encodeCellQnum_kanpen();
 		this.encodeCellAnum_kanpen();
-	},
+	}
 
-	kanpenOpenXML : function(){
+	kanpenOpenXML(){
 		this.decodeCellQnum_XMLBoard();
 		this.decodeCellAnum_XMLAnswer();
-	},
-	kanpenSaveXML : function(){
+	}
+	kanpenSaveXML(){
 		this.encodeCellQnum_XMLBoard();
 		this.encodeCellAnum_XMLAnswer();
-	},
+	}
 
-	UNDECIDED_NUM_XML : 0
-},
+	UNDECIDED_NUM_XML = 0
+};
 
 //---------------------------------------------------------
 // 正解判定処理実行部
-AnsCheck:{
-	checklist : [
+class AnsCheck extends common.AndCheck {
+	checklist = [
 		"checkDifferentNumberInRoom",
 		"checkDifferentNumberInLine",
 		"checkNoNumCell+"
 	]
-}
-}));
+};
+
+export default {sudoku:{MouseEvent, KeyEvent ,Cell, Board, AreaRoomGraph, Graphic, Encode, FileIO, AnsCheck}};

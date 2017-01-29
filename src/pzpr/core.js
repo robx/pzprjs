@@ -7,8 +7,7 @@
 //---------------------------------------------------------------------------
 /* extern */
 var pzpr = { // jshint ignore:line
-	version : '<%= pkg.version %>'
+	version : pkg.version
 };
 
-if(typeof module==='object' && module.exports){ module.exports = pzpr;}
-else{ this.pzpr = pzpr;}
+export default pzpr

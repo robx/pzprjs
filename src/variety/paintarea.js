@@ -1,18 +1,15 @@
 //
 // パズル固有スクリプト部 ペイントエリア版 paintarea.js
 //
-(function(pidlist, classbase){
-	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
-	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
-}(
-['paintarea'], {
+import common from '../pzpr/classmgr.js';
+
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
-	use    : true,
-	redblk : true,
+class MouseEvent extends common.MouseEvent {
+	use    = true;
+	redblk = true;
 	
-	mouseinput : function(){
+	mouseinput(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
@@ -21,34 +18,34 @@ MouseEvent:{
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
 	}
-},
+};
 
 //---------------------------------------------------------
 // キーボード入力系
-KeyEvent:{
-	enablemake : true
-},
+class KeyEvent extends common.KeyEvent {
+	enablemake = true;
+};
 
 //---------------------------------------------------------
 // 盤面管理系
-Cell:{
+let Cell = {
 	maxnum : 4,
 	minnum : 0
-},
-Board:{
+};
+let Board = {
 	hasborder : 1
-},
+};
 
-AreaShadeGraph:{
+let AreaShadeGraph = {
 	enabled : true
-},
-AreaRoomGraph:{
+};
+let AreaRoomGraph = {
 	enabled : true
-},
+};
 
 //---------------------------------------------------------
 // 画像表示系
-Graphic:{
+let Graphic = {
 	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
 
@@ -69,11 +66,11 @@ Graphic:{
 
 		this.drawTarget();
 	}
-},
+};
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+let Encode = {
 	decodePzpr : function(type){
 		this.decodeBorder();
 		this.decodeNumber10();
@@ -82,9 +79,9 @@ Encode:{
 		this.encodeBorder();
 		this.encodeNumber10();
 	}
-},
+};
 //---------------------------------------------------------
-FileIO:{
+let FileIO = {
 	decodeData : function(){
 		this.decodeAreaRoom();
 		this.decodeCellQnum();
@@ -95,11 +92,11 @@ FileIO:{
 		this.encodeCellQnum();
 		this.encodeCellAns();
 	}
-},
+};
 
 //---------------------------------------------------------
 // 正解判定処理実行部
-AnsCheck:{
+let AnsCheck = {
 	checklist : [
 		"checkSameColorTile",					// 問題チェック用
 		"checkConnectShade",
@@ -114,10 +111,12 @@ AnsCheck:{
 	check2x2UnshadeCell : function(){
 		this.check2x2Block( function(cell){ return cell.isUnshade();}, "cu2x2" );
 	}
-},
+};
 
-FailCode:{
+let FailCode = {
 	cu2x2     : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of unshaded cells."],
 	nmShadeNe : ["数字の上下左右にある黒マスの数が間違っています。","The number is not equal to the number of shaded cells in four adjacent cells."]
-}
-}));
+};
+
+export default {paintarea:{MouseEvent, KeyEvent ,Cell, AreaShadeGraph, AreaRoomGraph, Board, Graphic, Encode, FileIO, AnsCheck, FailCode}};
+

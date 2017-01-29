@@ -35,12 +35,20 @@
     "in-publish": "^2.0.0"
   },
   "devDependencies": {
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-transform-class-properties": "^6.22.0",
+    "babel-plugin-transform-do-expressions": "^6.22.0",
+    "babel-preset-latest": "^6.22.0",
+    "babel-register": "^6.22.0",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
-    "grunt-newer": "^1.1.1"
+    "grunt-newer": "^1.1.1",
+    "webpack": "^1.14.0"
   }
 }
