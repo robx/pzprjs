@@ -242,10 +242,11 @@ MouseEvent:{
 			throw "Invalid input mode :"+mode;
 		}
 	},
-	getInputModeList : function(){
+	getInputModeList : function(type){
 		if(this.puzzle.instancetype==='viewer'){ return [];}
+		type = (!!type ? type : (this.puzzle.editmode?'edit':'play'));
 		var list = ['auto'];
-		return list.concat(this.inputModes[this.puzzle.editmode?'edit':'play']);
+		return list.concat(this.inputModes[type]);
 	},
 
 	//---------------------------------------------------------------------------
