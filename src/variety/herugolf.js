@@ -9,20 +9,22 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	inputModes : {edit:['water']},
+
 	mouseinput : function(){
-		if(this.puzzle.playmode){
+		if(this.inputMode==='water'){ this.inputWater();}
+		else if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputMoveLine();}
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 		}
 		else if(this.puzzle.editmode){
-			var cell = this.getcell();
 			if(this.mousestart || this.mousemove){
-				if(this.btn==='right' && cell.ques!==31 && cell.qnum===-1){ this.inputWater();}
+				if(this.btn==='right'){ this.inputWater();}
 			}
 			else if(this.mouseend && this.notInputted()){
-				if(!cell.ice()){ this.inputqnum_herugolf();}
+				this.inputqnum();
 			}
 		}
 	},
@@ -88,7 +90,7 @@ MouseEvent:{
 
 	inputWater : function(){
 		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell){ return;}
+		if(cell.isnull || cell===this.mouseCell || cell.ques===31 || cell.qnum!==-1){ return;}
 
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
@@ -97,21 +99,12 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 
-	inputqnum_herugolf : function(){
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
+	inputqnum_main : function(cell){	// オーバーライド
+		if(cell.ice()){ return;}
+		if(this.inputcell_herugolf(cell)){ return;}
+		if(cell.ques!==0){ return;}
 
-		if(cell!==this.cursor.getc()){
-			this.setcursor(cell);
-		}
-		else{
-			if(this.inputcell_herugolf(cell)){ return;}
-			
-			if(cell.ques===0){
-				this.inputqnum_main(cell);
-			}
-		}
-		this.mouseCell = cell;
+		this.common.inputqnum_main.call(this,cell);
 	},
 	inputcell_herugolf : function(cell){
 		var val = null;
@@ -301,8 +294,7 @@ Graphic:{
 			return ""+k;
 		}
 		else{
-			var num = cell.getNum();
-			return (num>=0 ? ""+num : "");
+			return this.getNumberTextCore(cell.getNum());
 		}
 	},
 

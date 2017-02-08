@@ -327,7 +327,7 @@ pzpr.Puzzle.prototype =
 		if(!!this.klass){
 			this.cursor.adjust_modechange();
 			this.key.keyreset();
-			this.mouse.mousereset();
+			this.mouse.modechange();
 			if(this.board.haserror){
 				this.board.errclear();
 			}

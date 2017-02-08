@@ -169,7 +169,7 @@ Graphic:{
 		this.drawGrid();
 
 		this.drawBGEXcells();
-		this.drawNumbers_box();
+		this.drawNumbersEXcell();
 
 		this.drawCircledNumbers_box();
 
@@ -186,23 +186,6 @@ Graphic:{
 	},
 	getOffsetCols : function(){ return 0.5;},
 	getOffsetRows : function(){ return 0.5;},
-
-	drawNumbers_box : function(){
-		var g = this.vinc('excell_number', 'auto');
-
-		var exlist = this.range.excells;
-		for(var i=0;i<exlist.length;i++){
-			var excell = exlist[i];
-			if(excell.id>=this.board.cols+this.board.rows){ continue;}
-
-			g.vid = "excell_text_"+excell.id;
-			if(excell.bx>=0 || excell.by>=0){
-				g.fillStyle = this.getNumberColor(excell);
-				this.disptext(""+excell.qnum, excell.bx*this.bw, excell.by*this.bh);
-			}
-			else{ g.vhide();}
-		}
-	},
 
 	drawCircledNumbers_box : function(){
 		var list = [], bd = this.board;
@@ -275,7 +258,7 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCellExcell(function(obj,ca){
 			if(ca==="."){ return;}
-			else if(obj.group==='excell'){
+			else if(obj.group==='excell' && !obj.isnull){
 				obj.qnum = +ca;
 			}
 			else if(obj.group==='cell'){
@@ -285,12 +268,9 @@ FileIO:{
 		});
 	},
 	encodeData : function(){
-		var bd = this.board;
 		this.encodeCellExcell(function(obj){
-			if(obj.group==='excell'){
-				if(obj.id<bd.cols+bd.rows){
-					return (obj.qnum+" ");
-				}
+			if(obj.group==='excell' && !obj.isnull){
+				return (obj.qnum+" ");
 			}
 			else if(obj.group==='cell'){
 				if     (obj.qans===1){ return "# ";}
@@ -315,7 +295,7 @@ AnsCheck:{
 			var excell = bd.excell[ec];
 			var qn=excell.qnum, pos=excell.getaddr(), val=0, cell;
 			var clist=new this.klass.CellList();
-			if(pos.by===-1 && pos.bx>0 && pos.bx<2*bd.cols){
+			if(pos.by===-1){
 				cell = pos.move(0,2).getc();
 				while(!cell.isnull){
 					if(cell.qans===1){ val+=((pos.by+1)>>1);}
@@ -323,7 +303,7 @@ AnsCheck:{
 					cell = pos.move(0,2).getc();
 				}
 			}
-			else if(pos.bx===-1 && pos.by>0 && pos.by<2*bd.rows){
+			else if(pos.bx===-1){
 				cell = pos.move(2,0).getc();
 				while(!cell.isnull){
 					if(cell.qans===1){ val+=((pos.bx+1)>>1);}

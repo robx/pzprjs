@@ -483,6 +483,9 @@ AnsCheck:{
 			this.failcode.add(code);
 		}
 	},
+	checkDifferentNumberInLine : function(){
+		this.checkRowsCols(this.isDifferentNumberInClist, "nmDupRow");
+	},
 
 	//---------------------------------------------------------------------------
 	// ans.checkRowsColsPartly()      黒マスや[＼]等で分かれるタテ列・ヨコ列の数字の判定を行う

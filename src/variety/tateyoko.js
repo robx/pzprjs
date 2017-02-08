@@ -9,8 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	inputModes : {edit:['shade']},
+
 	mouseinput : function(){
-		if(this.puzzle.playmode){
+		if(this.inputMode==='shade'){ this.inputBlock();}
+		else if(this.puzzle.playmode){
 			if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
 			else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
 		}
@@ -25,6 +28,14 @@ MouseEvent:{
 
 		cell.setQans((this.btn==='left'?{0:12,12:13,13:0}:{0:13,12:0,13:12})[cell.qans]);
 		cell.draw();
+	},
+	inputBlock : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		cell.setQues(cell.ques===1?0:1);
+		cell.draw();
+		this.mouseCell = cell;
 	}
 },
 

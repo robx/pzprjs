@@ -112,11 +112,22 @@ PieceList:{
 		for(var i=0;i<this.length;i++){
 			var piece = this[i];
 			for(var j=0;j<props.length;j++){
-				var pp = props[j];
-				var def = piece.constructor.prototype[pp];
-				if(piece[pp]!==def){
-					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
-					piece[pp] = def;
+				var pp = props[j], pos = '';
+				if(pp.length>4 && pp.substr(0,4)==='snum'){
+					pos = pp.charAt(4);
+					pp  = pp.substr(0,4);
+					var def = piece.constructor.prototype[pp];
+					if(piece[pp][pos]!==def){
+						if(isrec && !norec[pp]){ piece.addOpe(pp+pos, piece[pp][pos], def);}
+						piece[pp][pos] = def;
+					}
+				}
+				else{
+					var def = piece.constructor.prototype[pp];
+					if(piece[pp]!==def){
+						if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
+						piece[pp] = def;
+					}
 				}
 			}
 		}

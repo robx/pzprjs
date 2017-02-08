@@ -1,4 +1,45 @@
 
+## Version 0.8.0-beta2 (beta)
+
+Release date: 2017/1/9
+
+#### New puzzle
+
+* easyasabc: Introduce new puzzle: Easy as ABC
+* starbattle: Introduce new puzzle: Star Battle
+* kropki: Introduce new puzzle: Kropki
+* building: Introduce new puzzle: Skyscrapers
+
+#### BugFix
+
+* kinkonkan: Suppress painting background without sight error
+* Piece: Enable to clear sub numbers by ansclear or so
+
+#### Minor Changes
+
+* Board: Remove corner EXCells
+* Cursor: Commonize some methods with Skyscrapers and Easy as ABC
+
+## Version 0.8.0-beta1 (beta)
+
+Release date: 2016/12/31
+
+#### Notable change
+
+* Board: Enable to input sub numbers
+
+#### Improvement
+
+* bosanowa: Enable to erase circles by BS or space key
+* gokigen: Enable to input diagonal lines by mouse drag
+* norinori: Stop inputting shaded cells if a mouse drag sequence puts two cells
+* Mouse: Introduce setInputMode and getInputModeList method for smart devices to input icebarn etc.
+
+#### Breaking changes
+
+* Config: Separate autocmp_area from autocmp config for painting background genres (Currently autocmp can be still used)
+* Config: Get rid of lrcheck config
+
 ## Version 0.7.1
 
 Release date: 2016/12/3

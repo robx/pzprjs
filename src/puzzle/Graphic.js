@@ -22,6 +22,7 @@ Graphic:{
 		var pc = this;
 		[['getQuesCellColor',    this.fgcellcolor_func],
 		 ['getBGCellColor',      this.bgcellcolor_func],
+		 ['getBGEXcellColor',    this.bgexcellcolor_func],
 		 ['getBorderColor',      this.bordercolor_func],
 		 ['getNumberColor',      this.numbercolor_func],
 		 ['getCircleFillColor',  this.circlefillcolor_func],
@@ -42,6 +43,7 @@ Graphic:{
 
 	fgcellcolor_func : "ques",		// getQuesCellColor()の種類
 	bgcellcolor_func : "error1",	// getBGCellColor()の種類
+	bgexcellcolor_func : "error1",	// getBGEXcellColor()の種類
 	bordercolor_func : "ques",		// getBorderColor()の種類
 	numbercolor_func : "mixed",		// getNumberColor()の種類
 
@@ -54,6 +56,7 @@ Graphic:{
 	qcmpcolor : "silver",
 	qcmpbgcolor : "rgb(224, 224, 255)",
 	trialcolor: "rgb(160, 160, 160)",
+	subcolor  : "rgb(127, 127, 255)",
 
 	// 黒マスの色
 	shadecolor: "black",
@@ -399,7 +402,7 @@ Graphic:{
 		var bd = this.board, bm=2*this.margin,
 			x1 = this.range.x1, y1 = this.range.y1,
 			x2 = this.range.x2, y2 = this.range.y2;
-		if(x1>x2 || y1>y2 || x1>=bd.maxbx+bm || y1>=bd.maxby+bm || x2<=bd.minbx-bm || y2<=bd.minby-bm){
+		if(x1>x2 || y1>y2 || x1>=bd.maxbx+bm || y1>=bd.maxby+bm || x2<=bd.minbx-bm || y2<=bd.minby-(bm+(this.pid==='starbattle'?2:0))){
 			/* 入力が範囲外ならば何もしない */
 		}
 		else if(!this.useBuffer){
@@ -571,17 +574,19 @@ Graphic:{
 		ratio *= (option.globalratio || this.globalfontsizeratio);
 		var realsize = ((this.cw * ratio)|0);
 		g.font = style + realsize + "px " + this.fontfamily;
+		var hoffset = this.bw*(option.hoffset || 0.9);
+		var voffset = this.bh*(option.voffset || 0.82);
 
 		var position = option.position || CENTER;
 		switch(position){
-			case CENTER:                     g.textAlign='center';                 break;
-			case BOTTOMLEFT:  case TOPLEFT:  g.textAlign='left';  px-=(this.bw-2); break;
-			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=(this.bw-2); break;
+			case CENTER:                     g.textAlign='center';             break;
+			case BOTTOMLEFT:  case TOPLEFT:  g.textAlign='left';  px-=hoffset; break;
+			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=hoffset; break;
 		}
 		switch(position){
-			case CENTER:                       g.textBaseline='middle';                         break;
-			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=(this.bh*0.82); break;
-			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=(this.bh*0.82); break;
+			case CENTER:                       g.textBaseline='middle';                  break;
+			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=voffset; break;
+			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=voffset; break;
 		}
 
 		g.fillText(text, px, py);

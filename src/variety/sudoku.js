@@ -24,6 +24,8 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
+
 	maxnum : function(){
 		return Math.max(this.board.cols,this.board.rows);
 	}
@@ -57,9 +59,11 @@ AreaRoomGraph:{
 Graphic:{
 	paint : function(){
 		this.drawBGCells();
+		this.drawTargetSubNumber();
 		this.drawGrid();
 		this.drawBorders();
 
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawChassis();
@@ -124,10 +128,6 @@ AnsCheck:{
 		"checkDifferentNumberInRoom",
 		"checkDifferentNumberInLine",
 		"checkNoNumCell+"
-	],
-
-	checkDifferentNumberInLine : function(){
-		this.checkRowsCols(this.isDifferentNumberInClist, "nmDupRow");
-	}
+	]
 }
 }));

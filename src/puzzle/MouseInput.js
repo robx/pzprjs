@@ -29,6 +29,9 @@ MouseEvent:{
 		this.mousemove = false;		// mousemove/touchmoveイベントかどうか
 		this.mouseend = false;		// mouseup/touchendイベントかどうか
 
+		this.inputMode = 'auto';
+		this.savedInputMode = {edit:'auto', play:'auto'};
+
 		this.mousereset();
 	},
 
@@ -39,8 +42,13 @@ MouseEvent:{
 	redline  : false,	// 線の繋がりチェックを可能にする
 	redblk   : false,	// 黒マスつながりチェックを可能にする (連黒分断禁も)
 
+	inputMode : 'auto',	// 現在のinputMode
+	savedInputMode: {},	// モード変更時の保存値
+	inputModes : {edit:[],play:[]},	// 現在のパズル種類にてauto以外で有効なinputModeの配列
+
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
+	// mv.modechange() モード変更時に設定を初期化する
 	//---------------------------------------------------------------------------
 	mousereset : function(){
 		var cell0 = this.mouseCell;
@@ -61,6 +69,10 @@ MouseEvent:{
 		this.mouseend   = false;
 		
 		if(this.puzzle.execConfig('dispmove') && !!cell0 && !cell0.isnull){ cell0.draw();}
+	},
+	modechange : function(){
+		this.mousereset();
+		this.inputMode = this.savedInputMode[this.puzzle.editmode?'edit':'play'];
 	},
 
 	//---------------------------------------------------------------------------
@@ -111,7 +123,7 @@ MouseEvent:{
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.puzzle.key;
 		kc.checkmodifiers(e);
-		if((kc.isSHIFT || kc.isMETA)!==this.puzzle.getConfig('lrcheck')){
+		if(kc.isSHIFT || kc.isMETA){
 			if     (this.btn==='left'){ this.btn = 'right';}
 			else if(this.btn==='right'){ this.btn = 'left';}
 		}
@@ -218,6 +230,26 @@ MouseEvent:{
 	notInputted : function(){ return !this.puzzle.opemgr.changeflag;},
 
 	//---------------------------------------------------------------------------
+	// mv.setInputMode()     入力されるinputModeを固定する (falsyな値でresetする)
+	// mv.getInputModeList() 有効なinputModeを配列にして返す (通常はauto)
+	//---------------------------------------------------------------------------
+	setInputMode : function(mode){
+		if(this.getInputModeList().indexOf(mode)>=0){
+			this.inputMode = mode;
+			this.savedInputMode[this.puzzle.editmode?'edit':'play'] = mode;
+		}
+		else{
+			throw "Invalid input mode :"+mode;
+		}
+	},
+	getInputModeList : function(type){
+		if(this.puzzle.instancetype==='viewer'){ return [];}
+		type = (!!type ? type : (this.puzzle.editmode?'edit':'play'));
+		var list = ['auto'];
+		return list.concat(this.inputModes[type]);
+	},
+
+	//---------------------------------------------------------------------------
 	// mv.getcell()    入力された位置がどのセルに該当するかを返す
 	// mv.getcell_excell()  入力された位置がどのセル/EXCELLに該当するかを返す
 	// mv.getcross()   入力された位置がどの交差点に該当するかを返す
@@ -284,10 +316,30 @@ MouseEvent:{
 
 	//---------------------------------------------------------------------------
 	// mv.setcursor() TargetCursorの場所を移動する
+	// mv.setcursorsnum() TargetCursorの補助記号に対する場所を移動する
 	//---------------------------------------------------------------------------
 	setcursor : function(pos){
 		var pos0 = this.cursor.getaddr();
 		this.cursor.setaddr(pos);
+		pos0.draw();
+		pos.draw();
+	},
+	setcursorsnum : function(pos){
+		var pos0 = this.cursor.getaddr();
+		this.cursor.setaddr(pos);
+		var bx = this.inputPoint.bx, by = this.inputPoint.by;
+		bx = (((bx + 12) % 2)*1.5)|0;
+		by = (((by + 12) % 2)*1.5)|0;
+		var target;
+		if(this.pid!=='factors'){
+			target = [5,0,4,0,0,0,2,0,3][by*3+bx];
+		}
+		else{
+			target = [0,0,4,0,0,0,2,0,3][by*3+bx];
+		}
+		if(this.cursor.targetdir !== target){
+			this.cursor.targetdir = target;
+		}
 		pos0.draw();
 		pos.draw();
 	}

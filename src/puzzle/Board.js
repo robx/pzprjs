@@ -22,6 +22,9 @@ Board:{
 		// エラー表示中かどうか
 		this.haserror = false;
 
+		// kinkonkan/skyscraper/easeasabc等で情報表示中かどうか
+		this.haslight = false;
+
 		// 盤面上にあるセル・境界線等のオブジェクト
 		this.cell   = new classes.CellList();
 		this.cross  = new classes.CrossList();
@@ -149,8 +152,8 @@ Board:{
 			else if(this.hasborder===2){ return 2*col*row+(col+row);}
 		}
 		else if(group==='excell'){
-			if     (this.hasexcell===1){ return col+row+1;}
-			else if(this.hasexcell===2){ return 2*col+2*row+4;}
+			if     (this.hasexcell===1){ return col+row+(this.emptyexcell.ques===51?1:0);} /* 左上角のEXCellを追加 */
+			else if(this.hasexcell===2){ return 2*(col+row);}
 		}
 		return 0;
 	},
@@ -247,17 +250,13 @@ Board:{
 			if(this.hasexcell===1){
 				if(i>=0 && i<qc){ excell.bx=i*2+1; excell.by=-1;   } i-=qc;
 				if(i>=0 && i<qr){ excell.bx=-1;    excell.by=i*2+1;} i-=qr;
-				if(i===0)       { excell.bx=-1;    excell.by=-1;   } i--;
+				if(i===0 && excell.ques===51){ excell.bx=-1;    excell.by=-1;   } i--;	/* 左上角のEXCellを追加 */
 			}
 			else if(this.hasexcell===2){
 				if(i>=0 && i<qc){ excell.bx=i*2+1;  excell.by=-1;    } i-=qc;
 				if(i>=0 && i<qc){ excell.bx=i*2+1;  excell.by=2*qr+1;} i-=qc;
 				if(i>=0 && i<qr){ excell.bx=-1;     excell.by=i*2+1; } i-=qr;
 				if(i>=0 && i<qr){ excell.bx=2*qc+1; excell.by=i*2+1; } i-=qr;
-				if(i===0)       { excell.bx=-1;     excell.by=-1;    } i--;
-				if(i===0)       { excell.bx=2*qc+1; excell.by=-1;    } i--;
-				if(i===0)       { excell.bx=-1;     excell.by=2*qr+1;} i--;
-				if(i===0)       { excell.bx=2*qc+1; excell.by=2*qr+1;} i--;
 			}
 
 			excell.initAdjacent();
@@ -316,6 +315,9 @@ Board:{
 	},
 
 	errclear : function(){
+		if(this.haslight){
+			this.lightclear();
+		}
 		if(this.haserror){
 			this.cell.errclear();
 			this.cross.errclear();
@@ -336,6 +338,25 @@ Board:{
 			this.trialstage = 0;
 		}
 	},
+
+	//---------------------------------------------------------------------------
+	// bd.flashlight()  EXCellを基準にした情報を表示する
+	// bd.lightclear()  情報を表示して返す
+	// bd.searchLight() EXCellを基準にした情報をサーチする
+	//---------------------------------------------------------------------------
+	flashlight : function(excell){
+		this.lightclear();
+		this.searchLight(excell, true);
+		this.puzzle.redraw();
+	},
+	lightclear : function(){
+		if(!this.haslight){ return;}
+		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
+		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
+		this.haslight = false;
+		this.puzzle.redraw();
+	},
+	searchLight : function(startexcell, setlight){ return {};},
 
 	//---------------------------------------------------------------------------
 	// bd.getObjectPos()  (X,Y)の位置にあるオブジェクトを計算して返す
@@ -392,7 +413,7 @@ Board:{
 	getex : function(bx,by){
 		var id = null, qc=this.cols, qr=this.rows;
 		if(this.hasexcell===1){
-			if(bx===-1&&by===-1){ id = qc+qr;}
+			if(this.emptyexcell.ques===51 && bx===-1&&by===-1){ id = qc+qr;}	/* 左上角のEXCellを追加 */
 			else if(by===-1&&bx>0&&bx<2*qc){ id = (bx>>1);}
 			else if(bx===-1&&by>0&&by<2*qr){ id = qc+(by>>1);}
 		}
@@ -401,10 +422,6 @@ Board:{
 			else if(by===2*qr+1&&bx>0&&bx<2*qc){ id = qc+(bx>>1);}
 			else if(bx===-1    &&by>0&&by<2*qr){ id = 2*qc+(by>>1);}
 			else if(bx===2*qc+1&&by>0&&by<2*qr){ id = 2*qc+qr+(by>>1);}
-			else if(bx===-1    &&by===-1    ){ id = 2*qc+2*qr;}
-			else if(bx===2*qc+1&&by===-1    ){ id = 2*qc+2*qr+1;}
-			else if(bx===-1    &&by===2*qr+1){ id = 2*qc+2*qr+2;}
-			else if(bx===2*qc+1&&by===2*qr+1){ id = 2*qc+2*qr+3;}
 		}
 
 		return (id!==null ? this.excell[id] : this.emptyexcell);
@@ -473,6 +490,7 @@ Board:{
 	excellinside : function(x1,y1,x2,y2){
 		var exlist = new this.klass.EXCellList();
 		if(!!this.hasexcell){
+			if(y1<-1){ y1 = -1;}
 			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){
 				var excell = this.getex(bx,by);
 				if(!excell.isnull){ exlist.add(excell);}

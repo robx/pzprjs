@@ -50,7 +50,7 @@ MouseEvent:{
 		if(excell.isnull || this.mouseCell===excell){ return;}
 
 		if(this.inputData!==11 && this.inputData!==null){ }
-		else if(excell.id>=board.excell.length-4){
+		else if(!excell.isnull){
 			board.lightclear();
 		}
 		else if(this.inputData===null && excell.qlight===1){
@@ -90,35 +90,8 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
-	moveTarget : function(ca){
-		var cursor = this.cursor;
-		var excell0 = cursor.getex(), flag = true, dir = excell0.NDIR;
-
-		if     (ca==='up'){
-			if(cursor.by===cursor.maxy && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.miny;}
-			else if(cursor.by>cursor.miny){ dir=excell0.UP;}else{ flag=false;}
-		}
-		else if(ca==='down'){
-			if(cursor.by===cursor.miny && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.maxy;}
-			else if(cursor.by<cursor.maxy){ dir=excell0.DN;}else{ flag=false;}
-		}
-		else if(ca==='left'){
-			if(cursor.bx===cursor.maxx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.minx;}
-			else if(cursor.bx>cursor.minx){ dir=excell0.LT;}else{ flag=false;}
-		}
-		else if(ca==='right'){
-			if(cursor.bx===cursor.minx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.maxx;}
-			else if(cursor.bx<cursor.maxx){ dir=excell0.RT;}else{ flag=false;}
-		}
-		else{ flag=false;}
-
-		if(flag){
-			if(dir!==excell0.NDIR){ cursor.movedir(dir,2);}
-
-			excell0.draw();
-			cursor.draw();
-		}
-		return flag;
+	moveTarget  : function(ca){
+		return this.moveEXCell(ca);
 	},
 
 	keyinput : function(ca){
@@ -173,10 +146,6 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qlight : 0,
-	propinfo : ['error', 'qinfo', 'qlight'],
-	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
-	
 	// Qans/Qsubを統合して扱うkanpen的な関数
 	// ここでは なし=0, 斜線=1/2, 補助記号=-1
 	getState : function(){
@@ -190,10 +159,6 @@ Cell:{
 },
 
 EXCell:{
-	qlight : 0,
-	propinfo : ['error', 'qinfo', 'qlight'],
-	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
-
 	minnum : 0
 },
 
@@ -203,20 +168,6 @@ Board:{
 
 	hasborder : 1,
 	hasexcell : 2,
-
-	haslight : false,
-	lightclear : function(){
-		if(!this.haslight){ return;}
-		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
-		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
-		this.haslight = false;
-		this.puzzle.redraw();
-	},
-	flashlight : function(excell){
-		this.lightclear();
-		this.searchLight(excell, true);
-		this.puzzle.redraw();
-	},
 
 	searchLight : function(startexcell, setlight){
 		var ccnt=0, ldata = [];
@@ -301,7 +252,7 @@ Graphic:{
 		this.drawSlashes();
 
 		this.drawBGEXcells();
-		this.drawNumbers_kinkonkan();
+		this.drawNumbersEXcell();
 		this.drawChassis();
 
 		this.drawTarget();
@@ -323,36 +274,16 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-
-	getBGEXcellColor : function(excell){
-		if(excell.qlight===1){ return this.lightcolor;}
-		return null;
-	},
-	drawNumbers_kinkonkan : function(){
-		var g = this.vinc('excell_number', 'auto');
-
-		var exlist = this.range.excells;
-		for(var i=0;i<exlist.length;i++){
-			var excell = exlist[i], num=excell.qnum, canum=excell.qchar;
-			var text="";
-			if     (canum===0)           { text = "";}
-			else if(canum> 0&&canum<= 26){ text+=(canum+ 9).toString(36).toUpperCase();}
-			else if(canum>26&&canum<= 52){ text+=(canum-17).toString(36).toLowerCase();}
-			else if(canum>52&&canum<= 78){ text+=(canum-43).toString(36).toUpperCase();}
-			else if(canum>78&&canum<=104){ text+=(canum-69).toString(36).toLowerCase();}
-			if(num>=0){ text+=num.toString(10);}
-
-			g.vid = "excell_text_"+excell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(excell);
-				var option = {ratio:((canum===0||num<10) ? [0.66] : [0.55])};
-				this.disptext(text, excell.bx*this.bw, excell.by*this.bh, option);
-			}
-			else{ g.vhide();}
-		}
+	textoption : {ratio:[0.65, 0.6, 0.5]},
+	getNumberText : function(excell){
+		var text="", canum = excell.qchar, num = excell.qnum;
+		if(canum===0){ text = "";}
+		else{ text = this.getNumberTextCore_letter(canum<=52 ? canum : canum-52);}
+		if(num>=0){ text+=num.toString(10);}
+		return text;
 	},
 	getNumberColor : function(excell){
-		if     (excell.error===1){ return this.errcolor1;}
+		if     (excell.error===1){ return "rgb(192, 0, 0)";}
 		else if(excell.qchar>52) { return "blue";} // 2色目
 		return this.quescolor;
 	}
@@ -382,7 +313,7 @@ Encode:{
 			else if(this.include(ca,'a','z')){ ec+=(parseInt(ca,36)-10);}
 
 			ec++;
-			if(ec>=bd.excell.length-4){ a=i+1; break;}
+			if(ec>=bd.excell.length){ a=i+1; break;}
 		}
 		ec=0;
 		for(var i=a;i<bstr.length;i++){
@@ -402,7 +333,7 @@ Encode:{
 
 		// 盤面外部分のエンコード
 		var count=0;
-		for(var ec=0;ec<bd.excell.length-4;ec++){
+		for(var ec=0;ec<bd.excell.length;ec++){
 			var pstr = "", val = bd.excell[ec].qchar, qnum = bd.excell[ec].qnum;
 
 			if(val> 0 && val<=104){
@@ -500,18 +431,26 @@ AnsCheck:{
 	checkPairMirror      : function(){ this.checkMirrors(1, "pairedLetterNe");},
 	checkReflectionCount : function(){ this.checkMirrors(2, "pairedNumberNe");},
 	checkMirrors : function(type, code){
-		var d = [], bd = this.board;
-		for(var ec=0;ec<bd.excell.length-4;ec++){
+		var d = [], bd = this.board, result = true, errorExcell = null;
+		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}
-			var ret = bd.searchLight(excell, (!this.checkOnly)), excell2 = bd.excell[ret.dest];
+			var ret = bd.searchLight(excell, false), excell2 = bd.excell[ret.dest];
 			if( (type===1&& (excell.qchar!==excell2.qchar) )||
 				(type===2&&((excell.qnum !==excell2.qnum) || excell.qnum!==ret.cnt))
 			){
-				this.failcode.add(code);
-				break;
+				result = false;
+				if(this.checkOnly){ break;}
+				
+				excell.seterr(1);
+				excell2.seterr(1);
+				if(!errorExcell){ errorExcell = excell;}
 			}
 			d[ec]=1; d[ret.dest]=1;
+		}
+		if(!result){
+			this.failcode.add(code);
+			if(errorExcell){ bd.searchLight(errorExcell, true);}
 		}
 	}
 },

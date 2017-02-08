@@ -265,7 +265,7 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 		}
-		if(this.puzzle.painter.autocmp==='room'){
+		if(this.puzzle.validConfig('autocmp_area')){
 			component.checkAutoCmp();
 		}
 	},

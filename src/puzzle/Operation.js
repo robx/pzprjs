@@ -46,6 +46,7 @@ Operation:{
 'ObjectOperation:Operation':{
 	group    : '',
 	property : '',
+	pos      : null,
 
 	/* 変換テーブル */
 	STRGROUP : {
@@ -64,6 +65,7 @@ Operation:{
 		A: 'qans',
 		S: 'qsub',
 		K: 'qcmp',
+		B: 'snum',
 		L: 'line'
 	},
 
@@ -79,11 +81,16 @@ Operation:{
 		this.by  = piece.by;
 		this.old = old;
 		this.num = num;
+		if(property.length>4 && property.substr(0,4)==='snum'){
+			this.property = 'snum';
+			this.pos      = property.substr(4);
+		}
 	},
 	decode : function(strs){
 		this.group    = this.STRGROUP[strs[0].charAt(0)];
 		this.property = this.STRPROP[strs[0].charAt(1)];
 		if(!this.group || !this.property){ return false;}
+		this.pos = ((strs[0].substr(0,2)==='CB' && strs[0].length>2) ? +strs[0].charAt(2) : null);
 		this.bx  = +strs[1];
 		this.by  = +strs[2];
 		this.old = +strs[3];
@@ -94,6 +101,7 @@ Operation:{
 		var prefix = '';
 		for(var i in this.STRGROUP){ if(this.group   ===this.STRGROUP[i]){ prefix+=i; break;}}
 		for(var i in this.STRPROP) { if(this.property===this.STRPROP[i]) { prefix+=i; break;}}
+		if(prefix==='CB' && this.pos!==null){ prefix+=this.pos;}
 		return [prefix, this.bx, this.by, this.old, this.num].join(',');
 	},
 
@@ -111,7 +119,8 @@ Operation:{
 			(property === 'qnum'  || 
 			 property === 'qnum2' ||
 			 property === 'qchar' ||
-			 property === 'anum' )
+			 property === 'anum'  ||
+			(property === 'snum' && lastope.pos === this.pos))
 		)
 		{
 			lastope.num = this.num;
@@ -127,7 +136,12 @@ Operation:{
 		var bd = this.board, piece = bd.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==piece.group){ return true;}
 		
-		piece.setdata(this.property, num);
+		if(this.pos===null){
+			piece.setdata(this.property, num);
+		}
+		else{
+			piece.setdata2(this.property, this.pos, num);
+		}
 		piece.draw();
 		
 		switch(this.property){
@@ -437,7 +451,7 @@ OperationManager:{
 			/* 前の履歴を更新したときは何もしない */
 		}
 		
-		if(newope.property!=='qsub' && newope.property!=='qcmp'){
+		if(newope.property!=='qsub' && newope.property!=='qcmp' && newope.property!=='snum'){
 			puzzle.checker.resetCache();
 		}
 		this.changeflag = true;

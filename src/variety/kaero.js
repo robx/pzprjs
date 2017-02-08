@@ -39,16 +39,13 @@ MouseEvent:{
 //---------------------------------------------------------
 // キーボード入力系
 KeyEvent:{
-	enablemake : true,
-
-	key_inputqnum_main : function(cell,ca){
-		return this.key_inputletter_main(cell,ca);
-	}
+	enablemake : true
 },
 
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	numberAsLetter : true,
 	maxnum : 52
 },
 CellList:{
@@ -121,10 +118,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	textoption : {ratio:[0.85]},
-	getNumberText : function(cell){
-		return this.getNumberText_letter(cell);
-	}
+	textoption : {ratio:[0.85]}
 },
 
 //---------------------------------------------------------

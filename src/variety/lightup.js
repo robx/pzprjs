@@ -30,7 +30,6 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qlight : 0,
 	akariinfo : 0, /* 0:なし 1:あかり 2:黒マス */
 
 	numberRemainsUnshaded : true,
@@ -130,6 +129,7 @@ Graphic:{
 
 	fontShadecolor : "white",
 	numbercolor_func : "fixed_shaded",
+	bgcellcolor_func : "light",
 
 	lightcolor : "rgb(192, 255, 127)",
 
@@ -145,15 +145,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	// オーバーライド drawBGCells用
-	getBGCellColor : function(cell){
-		if(cell.qnum===-1){
-			if     (cell.error ===1){ return this.errbcolor1;}
-			else if(cell.qlight===1){ return this.lightcolor;}
-		}
-		return null;
 	},
 
 	drawAkari : function(){

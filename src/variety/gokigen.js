@@ -13,8 +13,9 @@ MouseEvent:{
 
 	mouseinput : function(){
 		var puzzle = this.puzzle;
-		if(puzzle.playmode && this.mousestart){
-			this.inputslash();
+		if(puzzle.playmode){
+			if     (this.mousestart || this.mousemove)  { this.inputslash();}
+			else if(this.mouseend && this.notInputted()){ this.clickslash();}
 		}
 		else if(puzzle.editmode && this.mousestart){
 			if     (puzzle.pid==='gokigen'){ this.inputcross();}
@@ -23,6 +24,41 @@ MouseEvent:{
 	},
 
 	inputslash : function(){
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
+
+		// 初回 or 入力し続けていて別のマスに移動した場合
+		if(this.mouseCell!==cell){
+			this.firstPoint.set(this.inputPoint);
+		}
+		// まだ入力していないセルの場合
+		else if(this.firstPoint.bx!==null){
+			var val=null,
+				dx = this.inputPoint.bx-this.firstPoint.bx,
+				dy = this.inputPoint.by-this.firstPoint.by;
+			if     (dx*dy>0 && Math.abs(dx)>=0.50 && Math.abs(dy)>=0.50){ val=31;}
+			else if(dx*dy<0 && Math.abs(dx)>=0.50 && Math.abs(dy)>=0.50){ val=32;}
+			
+			if(val!==null){
+				if(this.inputData===null){
+					if(val===cell.qans){ val = 0;}
+					this.inputData = +(val>0);
+				}
+				else if(this.inputData===0){
+					if(val===cell.qans){ val = 0;}
+					else{ val = null;}
+				}
+				if(val!==null){
+					cell.setQans(val);
+					cell.draw();
+				}
+				this.firstPoint.reset();
+			}
+		}
+
+		this.mouseCell = cell;
+	},
+	clickslash : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
@@ -295,8 +331,8 @@ Graphic:{
 },
 "Graphic@wagiri":{
 	textoption : {ratio:[0.70]},
-	getNumberText : function(cell){
-		return {'-2':"?",1:"輪",2:"切"}[cell.qnum] || "";
+	getNumberTextCore : function(num){
+		return {'-2':"?",1:"輪",2:"切"}[num] || "";
 	},
 
 	drawTarget : function(){

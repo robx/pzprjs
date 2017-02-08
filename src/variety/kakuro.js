@@ -32,11 +32,10 @@ KeyEvent:{
 },
 
 TargetCursor:{
-	adjust_modechange : function(){
-		if(this.puzzle.playmode){
-			if(this.bx<1){ this.bx = 1;}
-			if(this.by<1){ this.by = 1;}
-		}
+	setminmax_customize : function(){
+		if(this.puzzle.editmode){ return;}
+		this.minx += 2;
+		this.miny += 2;
 	}
 },
 
@@ -50,12 +49,13 @@ Cell:{
 
 	/* 問題の0入力は↓の特別処理で可能にしてます */
 	disInputHatena : true,
+	enableSubNumberArray : true,
 
 	maxnum : 9,
 
 	// この関数は回答モードでしか呼ばれないはず、
 	getNum : function(){ return this.anum;},
-	setNum : function(val){ this.setAnum(val>0 ? val : -1);},
+	setNum : function(val){ this.setAnum(val>0 ? val : -1); this.clrSnum();},
 
 	// 問題入力モードは0でも入力できるようにする
 	prehook : {
@@ -96,6 +96,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawBGEXcells();
+		this.drawTargetSubNumber();
 		this.drawQues51();
 
 		this.drawGrid();
@@ -103,6 +104,7 @@ Graphic:{
 
 		this.drawChassis_ex1(false);
 
+		this.drawSubNumbers();
 		this.drawNumbersOn51();
 		this.drawNumbers();
 

@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 マイナリズム版 minarism.js
+// パズル固有スクリプト部 マイナリズム・Kropki版 minarism.js
 //
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['minarism'], {
+['minarism','kropki'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -14,7 +14,10 @@ MouseEvent:{
 			if(this.mousestart){ this.inputqnum();}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart || this.mousemove){
+			if(this.pid==='kropki'){
+				if(this.mousestart){ this.inputmark_kropki();}
+			}
+			else if(this.mousestart || this.mousemove){
 				if(this.btn==='left'){ this.inputmark_mousemove();}
 			}
 			else if(this.mouseend && this.notInputted()){
@@ -22,7 +25,8 @@ MouseEvent:{
 			}
 		}
 	},
-
+},
+"MouseEvent@minarism":{
 	inputmark_mousemove : function(){
 		var pos = this.getpos(0);
 		if(pos.getc().isnull){ return;}
@@ -71,6 +75,34 @@ MouseEvent:{
 		}
 	}
 },
+"MouseEvent@kropki":{
+	inputmark_kropki : function(){
+		var pos = this.getpos(0.33);
+		if(!pos.isinside()){ return;}
+
+		if(!this.cursor.equals(pos)){
+			this.setcursor(pos);
+			pos.draw();
+		}
+		else{
+			var border = pos.getb();
+			if(border.isnull){ return;}
+
+			var qn=border.qnum;
+			if(this.btn==='left'){
+				if     (qn===-1){ border.setQnum(1);}
+				else if(qn=== 1){ border.setQnum(2);}
+				else{ border.setQnum(-1);}
+			}
+			else if(this.btn==='right'){
+				if     (qn===-1){ border.setQnum(2);}
+				else if(qn=== 2){ border.setQnum(1);}
+				else{ border.setQnum(-1);}
+			}
+			border.draw();
+		}
+	}
+},
 
 //---------------------------------------------------------
 // キーボード入力系
@@ -91,7 +123,16 @@ KeyEvent:{
 		var border = this.cursor.getb();
 		if(border.isnull){ return;}
 
-		if(ca==='q'||ca==='w'||ca==='e'||ca===' '||ca==='-'){
+		if(this.pid==='kropki'){
+			if(ca==='1'||ca==='2'){
+				border.setQnum(+ca);
+			}
+			else if(ca===' '||ca==='-'){
+				border.setQnum(-1);
+			}
+			else{ return;}
+		}
+		else if(ca==='q'||ca==='w'||ca==='e'||ca===' '||ca==='-'){
 			var tmp=border.NDIR;
 			if(ca==='q'){ tmp=(border.isHorz()?border.UP:border.LT);}
 			if(ca==='w'){ tmp=(border.isHorz()?border.DN:border.RT);}
@@ -127,6 +168,7 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	enableSubNumberArray : true,
 	maxnum : function(){
 		return Math.max(this.board.cols,this.board.rows);
 	}
@@ -137,7 +179,7 @@ Board:{
 
 	hasborder : 1
 },
-BoardExec:{
+"BoardExec@minarism":{
 	adjustBoardData : function(key,d){
 		this.adjustBorderArrow(key,d);
 	}
@@ -148,23 +190,32 @@ BoardExec:{
 Graphic:{
 	hideHatena : true,
 
-	gridcolor_type : "LIGHT",
-
 	numbercolor_func : "anum",
 
 	paint : function(){
-		this.drawBDBase();
+		if(this.pid==='minarism'){ this.drawBDBase();}
 
 		this.drawBGCells();
-		this.drawDashedGrid();
+		this.drawTargetSubNumber();
+		if(this.pid==='minarism'){ this.drawDashedGrid();}
+		if(this.pid==='kropki'){ this.drawGrid();}
 
-		this.drawBDNumbers_and_IneqSigns();
+		if(this.pid==='minarism'){ this.drawBDNumbers_and_IneqSigns();}
+		if(this.pid==='kropki'){ this.drawStars();}
+		this.drawSubNumbers();
 		this.drawNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget_minarism();
 	},
+
+	drawTarget_minarism : function(){
+		this.drawCursor(this.puzzle.playmode);
+	}
+},
+"Graphic@minarism":{
+	gridcolor_type : "LIGHT",
 
 	drawBDBase : function(){
 		var g = this.vinc('border_base', 'auto');
@@ -235,16 +286,39 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
-	},
+	}
+},
+"Graphic@kropki":{
+	// tentaishoとほぼ同じもの
+	drawStars : function(){
+		var g = this.vinc('star', 'auto', true);
 
-	drawTarget_minarism : function(){
-		this.drawCursor(this.puzzle.playmode);
+		g.lineWidth = Math.max(this.cw*0.03, 1);
+		var blist = this.range.borders;
+		for(var i=0;i<blist.length;i++){
+			var border = blist[i], bx=border.bx, by=border.by;
+
+			g.vid = "s_star1_"+border.id;
+			if(border.qnum===1){
+				g.strokeStyle = (border.error===1 ? this.errcolor1 : this.quescolor);
+				g.fillStyle   = "white";
+				g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.12);
+			}
+			else{ g.vhide();}
+
+			g.vid = "s_star2_"+border.id;
+			if(border.qnum===2){
+				g.fillStyle = (border.error===1 ? this.errcolor1 : this.quescolor);
+				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.135);
+			}
+			else{ g.vhide();}
+		}
 	}
 },
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@minarism":{
 	decodePzpr : function(type){
 		this.decodeMinarism(type);
 	},
@@ -309,6 +383,43 @@ Encode:{
 		this.outbstr += cm;
 	}
 },
+"Encode@kropki":{
+	decodePzpr : function(type){
+		this.decodeCircle_kropki(type);
+	},
+	encodePzpr : function(type){
+		this.encodeCircle_kropki(type);
+	},
+
+	decodeCircle_kropki : function(type){
+		var bd = this.board;
+		var bstr = this.outbstr, c=0, tri=[9,3,1];
+		var pos = (bstr ? Math.min(((bd.border.length+2)/3)|0, bstr.length) : 0);
+		for(var i=0;i<pos;i++){
+			var ca = parseInt(bstr.charAt(i),27);
+			for(var w=0;w<3;w++){
+				if(!!bd.border[c]){
+					var val = ((ca/tri[w])|0)%3;
+					if(val>0){ bd.border[c].qnum=val;}
+					c++;
+				}
+			}
+		}
+		this.outbstr = bstr.substr(pos);
+	},
+	encodeCircle_kropki : function(type){
+		var bd = this.board;
+		var cm="", num=0, pass=0, tri=[9,3,1];
+		for(var c=0;c<bd.border.length;c++){
+			if(bd.border[c].qnum>0){ pass+=(bd.border[c].qnum*tri[num]);}
+			num++;
+			if(num===3){ cm += pass.toString(27); num=0; pass=0;}
+		}
+		if(num>0){ cm += pass.toString(27);}
+
+		this.outbstr += cm;
+	}
+},
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
@@ -338,25 +449,15 @@ FileIO:{
 AnsCheck:{
 	checklist : [
 		"checkDifferentNumberInLine",
-		"checkSubOfNumber",
-		"checkIneqMark",
+		"checkSubOfNumber@minarism",
+		"checkIneqMark@minarism",
+		"checkSubOfNumberIs1@kropki",
+		"checkSubOfNumberIsNot1@kropki",
+		"checkDivOfNumberIs2@kropki",
+		"checkDivOfNumberIsNot2@kropki",
 		"checkNoNumCell+"
 	],
 
-	checkDifferentNumberInLine : function(){
-		this.checkRowsCols(this.isDifferentNumberInClist, "nmDupRow");
-	},
-	checkSubOfNumber : function(){
-		this.checkHintSideCell(function(border,a1,a2){
-			return (border.qnum>0 && border.qnum!==Math.abs(a1-a2));
-		}, "nmSubNe");
-	},
-	checkIneqMark : function(){
-		this.checkHintSideCell(function(border,a1,a2){
-			var mark = border.qdir;
-			return !(mark===0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
-		}, "nmIneqNe");
-	},
 	checkHintSideCell : function(func, code){
 		var boardborder = this.board.border;
 		for(var id=0;id<boardborder.length;id++){
@@ -371,9 +472,54 @@ AnsCheck:{
 		}
 	}
 },
+"AnsCheck@minarism":{
+	checkSubOfNumber : function(){
+		this.checkHintSideCell(function(border,a1,a2){
+			return (border.qnum>0 && border.qnum!==Math.abs(a1-a2));
+		}, "nmSubNe");
+	},
+	checkIneqMark : function(){
+		this.checkHintSideCell(function(border,a1,a2){
+			var mark = border.qdir;
+			return !(mark===0 || ((mark===1||mark===3) && a1<a2) || ((mark===2||mark===4) && a1>a2));
+		}, "nmIneqNe");
+	}
+},
+"AnsCheck@kropki":{
+	checkSubOfNumberIs1 : function(){
+		// 白丸で差が1でない時はNG
+		this.checkHintSideCell(function(border,a1,a2){
+			return (border.qnum===1 && Math.abs(a1-a2)!==1);
+		}, "nmSubNe1");
+	},
+	checkSubOfNumberIsNot1 : function(){
+		// 白丸でないのに差が1の時はNG (ただし黒丸で1,2の場合はOKとする)
+		this.checkHintSideCell(function(border,a1,a2){
+			return (border.qnum!==1 && Math.abs(a1-a2)===1 && !(border.qnum===2 && a1*a2===2));
+		}, "nmSubEq1");
+	},
+	checkDivOfNumberIs2 : function(){
+		// 黒丸で2倍でない時はNG
+		this.checkHintSideCell(function(border,a1,a2){
+			return (border.qnum===2 && !(a1*2===a2 || a1===a2*2));
+		}, "nmDivNe2");
+	},
+	checkDivOfNumberIsNot2 : function(){
+		// 黒丸でないのに2倍の時はNG (ただし白丸で1,2の場合はOKとする)
+		this.checkHintSideCell(function(border,a1,a2){
+			return (border.qnum!==2 && (a1*2===a2 || a1===a2*2) && !(border.qnum===1 && a1*a2===2));
+		}, "nmDivEq2");
+	},
+},
 
-FailCode:{
-	nmSubNe : ["丸付き数字とその両側の数字の差が一致していません。", "The Difference between two Adjacent cells is not equal to the number on circle."],
+"FailCode@minarism":{
+	nmSubNe : ["丸付き数字とその両側の数字の差が一致していません。", "The difference between two adjacent cells is not equal to the number on circle."],
 	nmIneqNe : ["不等号と数字が矛盾しています。", "A inequality sign is not correct."]
+},
+"FailCode@kropki":{
+	nmSubNe1 : ["白まるの両側の数字の差が1ではありません。", "The difference is not one between two adjacent cells with white circle."],
+	nmSubEq1 : ["白まるのない両側の数字の差が1になっています。", "The difference is one between two adjacent cells without white circle."],
+	nmDivNe2 : ["黒まるの両側の数字が2倍ではありません。", "The number is not double the other between two adjacent cells with shaded circle."],
+	nmDivEq2 : ["黒まるのない両側の数字が2倍になっています。", "The number is double the other between two adjacent cells without shaded circle."]
 }
 }));

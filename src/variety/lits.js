@@ -23,12 +23,35 @@ MouseEvent:{
 "MouseEvent@lits":{
 	redblk : true
 },
+"MouseEvent@norinori":{
+	shadeCount : 0,
+	mousereset : function(){
+		this.shadeCount = 0;
+		this.common.mousereset.call(this);
+	},
+	inputcell : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		this.common.inputcell.call(this);
+
+		if(this.inputData===1){
+			++this.shadeCount;
+			if(this.shadeCount>=2){ this.mousereset();}
+		}
+	}
+},
 
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
 	shape : null,	// getTetrominoInfo用
 	shapeblk : null	// getTetrominoInfo用
+},
+"Cell@norinori":{
+	posthook : {
+		qans : function(num){ this.room.checkAutoCmp();}
+	}
 },
 Board:{
 	hasborder : 1
@@ -38,9 +61,18 @@ Board:{
 		this.tetrograph = this.addInfoList(this.klass.AreaTetrominoGraph);
 	}
 },
-CellList:{
+"CellList@lits":{
 	sort : function(cond){
 		return Array.prototype.sort.call(this, (cond || function(a,b){ return a.id - b.id;}));
+	}
+},
+"CellList@norinori":{
+	checkCmp : function(){
+		var scnt=0;
+		for(var i=0;i<this.length;i++){
+			if(this[i].qans===1){ scnt++;}
+		}
+		return (scnt===2);
 	}
 },
 
@@ -104,11 +136,14 @@ Graphic:{
 	shadecolor : "rgb(96, 96, 96)"
 },
 "Graphic@norinori":{
+	autocmp : 'room',
+
 	gridcolor_type : "LIGHT",
-	bgcellcolor_func : "qsub1",
 
 	enablebcolor : true,
-	bcolor : "rgb(96, 224, 160)"
+	bcolor : "rgb(96, 224, 160)",
+	qcmpbgcolor : "rgb(96, 255, 160)",
+	bgcellcolor_func : "qcmp1"
 },
 
 //---------------------------------------------------------

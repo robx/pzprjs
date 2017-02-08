@@ -9,8 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	inputModes : {edit:['nabe']},
+
 	mouseinput : function(){
-		if(this.puzzle.playmode){
+		if(this.inputMode==='nabe'){ this.inputNabe();}
+		else if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputMoveLine();}
 				else if(this.btn==='right'){ this.inputpeke();}
@@ -43,8 +46,10 @@ MouseEvent:{
 	inputNabe : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(cell.isNum()){ this.inputqnum(); return;}
-		else if(cell.qnum2!==-1){ this.inputqnum_yosenabe(); return;}
+		if(this.inputMode!=='nabe'){
+			if(cell.isNum()){ this.inputqnum(); return;}
+			else if(cell.qnum2!==-1){ this.inputqnum_yosenabe(); return;}
+		}
 
 		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
 
@@ -98,42 +103,32 @@ KeyEvent:{
 	enablemake : true,
 
 	key_inputqnum_main : function(cell,ca){
-		return this.key_inputqnum_main_yosenabe(cell,ca);
+		this.key_inputqnum_main_yosenabe(cell,ca);
 	},
 	key_inputqnum_main_yosenabe : function(cell,ca){
 		if(ca==='q'||ca==='q1'||ca==='q2'){
 			if(ca==='q') { ca = (cell.qnum!==-1?'q1':'q2');}
-			if     (ca==='q1' && cell.qnum !==-1){ cell.setQnum2(cell.qnum); cell.setQnum(-1);}
-			else if(ca==='q2' && cell.qnum2!==-1){ cell.setQnum(cell.qnum2); cell.setQnum2(-1);}
+			if     (ca==='q1' && cell.qnum !==-1){ cell.setQnum2(cell.qnum); cell.setQnum(-1);  cell.draw();}
+			else if(ca==='q2' && cell.qnum2!==-1){ cell.setQnum(cell.qnum2); cell.setQnum2(-1); cell.draw();}
 		}
 		else if(ca==='w'){
 			cell.setQues(cell.ice()?0:6);
+			cell.draw();
 		}
 		else{
-			var max = cell.getmaxnum(), val=-1, cur=-1, type;
-
+			var cur = -1, type = 1;
 			if     (cell.qnum !==-1){ cur=cell.qnum;  type=1;} /* ○数字 */
 			else if(cell.qnum2!==-1){ cur=cell.qnum2; type=2;} /* なべの数字 */
-			else{ cur=-1; type=(cell.ice()?2:1);}
+			else{ type=(cell.ice()?2:1);}
 
-			if('0'<=ca && ca<='9'){
-				var num = +ca;
-				if(cur<=0 || cur*10+num>max || this.prev!==cell){ cur=0;}
-				val = cur*10+num;
-				if(val>max){ return false;}
-			}
-			else if(ca==='BS'){
-				if(cur<10){ val = -1;}
-				else{ val = (cur/10)|0;}
-			}
-			else if(ca==='-') { val = (cur!==-2?-2:-1);}
-			else if(ca===' ') { val = -1;}
-			else{ return;}
+			var val = this.getNewNumber(cell,ca,cur);
+			if(val===null){ return;}
 
 			if     (type===1){ cell.setQnum(val);}
 			else if(type===2){ cell.setQnum2(val);}
+			cell.draw();
+			this.prev = cell;
 		}
-		return true;
 	}
 },
 

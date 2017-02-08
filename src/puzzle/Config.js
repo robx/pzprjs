@@ -44,23 +44,21 @@ Config.prototype =
 		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
 
 		this.add('bgcolor', false);			/* slither 背景色入力 */
-		this.add('dirauxmark', true);		/* nagare: 方向の補助記号を入力 */
 		this.add('singlenum', (!pzpr.env.API.touchevent));	/* hanare: 部屋に回答数字を一つだけ入力 */
 		this.add('enline', true);			/* kouchoku: 線は点の間のみ引ける */
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 補助入力設定 */
-		this.add('lrcheck', false);			/* マウス左右反転 */
 		this.add('redline', false);			/* 線の繋がりチェック */
 		this.add('redblk', false);			/* 黒マスつながりチェック (連黒分断禁も) */
 		this.add('redroad', false);			/* roma: ローマの通り道チェック */
-		this.list.lrcheck.volatile = true;
 		this.list.redline.volatile = true;
 		this.list.redblk.volatile = true;
 		this.list.redroad.volatile = true;
 
 		/* 回答お助け機能 */
 		this.add('autocmp', false);			/* 数字 or kouchokuの正解の点をグレーにする */
+		this.add('autocmp_area', false);	/* 正解条件を満たした領域に背景色をつける */
 		this.add('autoerr', false);			/* hitori:ひとくれの重複した数字を表示, gokigen,wagiri:斜線の色分け */
 
 		/* 正解判定 */
@@ -84,23 +82,34 @@ Config.prototype =
 	},
 
 	//---------------------------------------------------------------------------
+	// config.getCurrnetName() 以前のconfig名から現在使用している名称を取得する
+	//---------------------------------------------------------------------------
+	getCurrnetName : function(name){
+		switch(name){
+			case 'color_qanscolor': name = 'color_shadecolor'; break;
+			case 'autocmp': if(this.getexec('autocmp_area')){ name = 'autocmp_area';} break;
+		}
+		return name;
+	},
+
+	//---------------------------------------------------------------------------
 	// config.get()  各フラグの設定値を返す
 	// config.set()  各フラグの設定値を設定する
 	// config.reset()各フラグの設定値を初期値に戻す
 	//---------------------------------------------------------------------------
 	get : function(name){
-		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
+		name = this.getCurrnetName(name);
 		return this.list[name]?this.list[name].val:null;
 	},
 	set : function(name, newval){
-		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
+		name = this.getCurrnetName(name);
 		if(!this.list[name]){ return;}
 		newval = this.setproper(name, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
 	},
 	reset : function(name){
-		if(name==='color_qanscolor'){ name = 'color_shadecolor';}
+		name = this.getCurrnetName(name);
 		if(!this.list[name]){ return;}
 		this.set(name, this.list[name].defval);
 	},
@@ -167,9 +176,9 @@ Config.prototype =
 			case 'redline':  exec = puzzle.mouse.redline; break;
 			case 'redblk':   exec = puzzle.mouse.redblk;  break;
 			case 'redroad':  exec = (pid==="roma"); break;
-			case 'autocmp':  exec = (puzzle.painter.autocmp!==''); break;
+			case 'autocmp':  exec = (puzzle.painter.autocmp==='number'||puzzle.painter.autocmp==='kouchoku'); break;
+			case 'autocmp_area':  exec = (puzzle.painter.autocmp==='room'); break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
-			case 'dirauxmark': exec = (pid==="nagare"); break;
 			case 'singlenum':exec = (pid==="hanare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
 			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
@@ -189,8 +198,9 @@ Config.prototype =
 		var puzzle = this.puzzle;
 		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
-		case 'irowake': case 'irowakeblk': case 'cursor': case 'autocmp': case 'autoerr': case 'undefcell':
-		case 'snakebd': case 'dispmove': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
+		case 'irowake': case 'irowakeblk': case 'dispmove': case 'cursor': case 'undefcell':
+		case 'autocmp': case 'autocmp_area': case 'autoerr':
+		case 'snakebd': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;
 		

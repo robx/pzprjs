@@ -201,22 +201,58 @@ KeyEvent:{
 	moveTCross  : function(ca){ return this.moveTC(ca,2);},
 	moveTBorder : function(ca){ return this.moveTC(ca,1);},
 	moveTC : function(ca,mv){
-		var cursor = this.cursor, pos0 = cursor.getaddr(), dir = cursor.NDIR;
+		var cursor = this.cursor, pos0 = cursor.getaddr(), flag = true, dir = cursor.NDIR;
 		switch(ca){
 			case 'up':    if(cursor.by-mv>=cursor.miny){ dir = cursor.UP;} break;
 			case 'down':  if(cursor.by+mv<=cursor.maxy){ dir = cursor.DN;} break;
 			case 'left':  if(cursor.bx-mv>=cursor.minx){ dir = cursor.LT;} break;
 			case 'right': if(cursor.bx+mv<=cursor.maxx){ dir = cursor.RT;} break;
-			default: return false;
+			default: flag = false; break;
 		}
 
-		if(dir!==cursor.NDIR){
+		if(flag){
 			cursor.movedir(dir,mv);
 
 			pos0.draw();
 			cursor.draw();
 		}
-		return (dir!==cursor.NDIR);
+		return flag;
+	},
+
+	//---------------------------------------------------------------------------
+	// kc.moveEXCell()  EXCellのキーボードからの入力対象を矢印キーで動かす
+	//---------------------------------------------------------------------------
+	moveEXCell : function(ca){
+		var cursor = this.cursor, addr0 = cursor.getaddr(), flag = true, dir = addr0.NDIR;
+		switch(ca){
+		case 'up':
+			if(cursor.by===cursor.maxy && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.miny;}
+			else if(cursor.by>cursor.miny){ dir=addr0.UP;}
+			else if(this.pid==="easyasabc" && cursor.by===-1){ dir=addr0.UP;}else{ flag=false;}
+			break;
+		case 'down':
+			if(cursor.by===cursor.miny && cursor.minx<cursor.bx && cursor.bx<cursor.maxx){ cursor.by=cursor.maxy;}
+			else if(cursor.by<cursor.maxy){ dir=addr0.DN;}
+			else if(this.pid==="easyasabc" && cursor.by===-3){ dir=addr0.DN;}else{ flag=false;}
+			break;
+		case 'left':
+			if(cursor.bx===cursor.maxx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.minx;}
+			else if(cursor.bx>cursor.minx){ dir=addr0.LT;}else{ flag=false;}
+			break;
+		case 'right':
+			if(cursor.bx===cursor.minx && cursor.miny<cursor.by && cursor.by<cursor.maxy){ cursor.bx=cursor.maxx;}
+			else if(cursor.bx<cursor.maxx){ dir=addr0.RT;}else{ flag=false;}
+			break;
+		default: flag = false; break;
+		}
+
+		if(flag){
+			if(dir!==addr0.NDIR){ cursor.movedir(dir,2);}
+
+			addr0.draw();
+			cursor.draw();
+		}
+		return flag;
 	}
 },
 
@@ -227,6 +263,15 @@ KeyEvent:{
 	initialize : function(){
 		this.bx = 1;
 		this.by = 1;
+		this.mode51 = (this.puzzle.klass.EXCell.prototype.ques===51);
+		this.modesnum = (this.puzzle.klass.Cell.prototype.enableSubNumberArray);
+		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
+	},
+	init : function(bx,by){
+		this.bx  = bx;
+		this.by  = by;
+		if(!this.mode51){ this.targetdir = 0;}
+		return this;
 	},
 
 	// 有効な範囲(minx,miny)-(maxx,maxy)
@@ -238,11 +283,18 @@ KeyEvent:{
 	crosstype : false,
 
 	//---------------------------------------------------------------------------
-	// tc.setminmax()  初期化時・モード変更時にプロパティを設定する
-	// tc.initCursor() 初期化時にカーソルの位置を設定する
-	// 
-	// tc.adjust_init()       初期化時にカーソルの位置がおかしい場合に調整する
-	// tc.adjust_modechange() モード変更時に位置がおかしい場合に調節する(オーバーライド用)
+	// tc.initCursor()           初期化時にカーソルの位置を設定する
+	//---------------------------------------------------------------------------
+	initCursor : function(){
+		if(this.crosstype){ this.init(0,0);}
+		else              { this.init(1,1);}
+
+		this.adjust_init();
+	},
+
+	//---------------------------------------------------------------------------
+	// tc.setminmax()            初期化時・モード変更時にプロパティを設定する
+	// tc.setminmax_customize()  初期化時・モード変更時のプロパティをパズルごとに調節する
 	//---------------------------------------------------------------------------
 	setminmax : function(){
 		var bd = this.board, bm = (!this.crosstype?1:0);
@@ -251,46 +303,103 @@ KeyEvent:{
 		this.maxx = bd.maxbx - bm;
 		this.maxy = bd.maxby - bm;
 
-		this.adjust_init();
-	},
-	initCursor : function(){
-		if(this.crosstype){ this.init(0,0);}
-		else              { this.init(1,1);}
+		this.setminmax_customize();
 
 		this.adjust_init();
 	},
+	setminmax_customize : function(){},
 
+	//---------------------------------------------------------------------------
+	// tc.adjust_init()       初期化時にカーソルの位置がおかしい場合に調整する
+	// tc.adjust_modechange() モード変更時にカーソルの位置を調節する
+	// tc.adjust_cell_to_excell() モード変更時にカーソルの位置をCellからEXCellへ移動する
+	//---------------------------------------------------------------------------
 	adjust_init : function(){
 		if(this.bx<this.minx){ this.bx=this.minx;}
 		if(this.by<this.miny){ this.by=this.miny;}
 		if(this.bx>this.maxx){ this.bx=this.maxx;}
 		if(this.by>this.maxy){ this.by=this.maxy;}
 	},
-	adjust_modechange : function(){ },
+	adjust_modechange : function(){
+		if(this.setminmax_customize!==this.common.setminmax_customize){ this.setminmax();} // editmode, playmodeでminmaxが異なるパズル
+		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
+		else if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
+	},
+	adjust_cell_to_excell : function(){
+		var bd = this.board;
+		var shortest = Math.min(this.bx, (bd.cols*2-this.bx), this.by, (bd.rows*2-this.by));
+		if(shortest<=0){ return;}
+		else if(this.by          ===shortest){ this.by=this.miny;}
+		else if(bd.rows*2-this.by===shortest){ this.by=this.maxy;}
+		else if(this.bx          ===shortest){ this.bx=this.minx;}
+		else if(bd.cols*2-this.bx===shortest){ this.bx=this.maxx;}
+	},
+
+	//---------------------------------------------------------------------------
+	// tc.checksnum()  ターゲットの位置かどうか判定する (Cellのみ)
+	//---------------------------------------------------------------------------
+	checksnum : function(pos){
+		var bx = ((((pos.bx+12)/2)|0)-6)*2+1;
+		var by = ((((pos.by+12)/2)|0)-6)*2+1;
+		var result = (this.bx===bx && this.by===by);
+		if(result && this.modesnum && this.puzzle.playmode){
+			var tmpx = (((pos.bx+12)%2)*1.5)|0;
+			var tmpy = (((pos.by+12)%2)*1.5)|0;
+			if(this.pid!=='factors'){
+				result = ([5,0,4,0,0,0,2,0,3][tmpy*3+tmpx] === this.targetdir);
+			}
+			else{
+				result = ([0,0,4,0,0,0,2,0,3][tmpy*3+tmpx] === this.targetdir);
+			}
+		}
+		return result;
+	},
+
+	//---------------------------------------------------------------------------
+	// tc.getaddr() ターゲットの位置を移動する
+	//---------------------------------------------------------------------------
+	movedir : function(dir,mv){
+		this.puzzle.klass.Address.prototype.movedir.call(this,dir,mv);
+		if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
+		return this;
+	},
 
 	//---------------------------------------------------------------------------
 	// tc.getaddr() ターゲットの位置をAddressクラスのオブジェクトで取得する
 	// tc.setaddr() ターゲットの位置をAddressクラス等のオブジェクトで設定する
 	//---------------------------------------------------------------------------
 	setaddr : function(pos){ /* Address, Cellなどのオブジェクトいずれを入力しても良い */
-		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny || this.maxy<pos.by){ return;}
+		if(pos.bx<this.minx || this.maxx<pos.bx || pos.by<this.miny-(this.pid==='easyasabc'?2:0) || this.maxy<pos.by){ return;}
 		this.set(pos);
+		if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
 	},
 
 	//---------------------------------------------------------------------------
 	// tc.moveTo() ターゲットの位置を指定した(bx,by)に設定する
 	//---------------------------------------------------------------------------
-	moveTo : function(bx,by){ this.init(bx,by);},
+	moveTo : function(bx,by){
+		this.init(bx,by);
+		if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
+	},
 
 	//---------------------------------------------------------------------------
 	// tc.chtarget()     SHIFTを押した時に[＼]の入力するところを選択する
 	// tc.detectTarget() [＼]の右・下どちらに数字を入力するか判断する
 	//---------------------------------------------------------------------------
-	targetdir : 2,
+	targetdir : 0,
 	chtarget : function(){
-		this.targetdir = (this.targetdir===2?4:2);
+		if(this.oncell() && this.modesnum && this.puzzle.playmode){
+			if(this.pid!=='factors'){
+				this.targetdir = [5,1,3,0,2,4][this.targetdir];
+			}
+			else{
+				this.targetdir = [4,1,3,0,2,0][this.targetdir];
+			}
+		}
+		else{
+			this.targetdir = (this.targetdir===2?4:2);
+		}
 		this.draw();
-		return true;
 	},
 	detectTarget : function(piece){
 		var bd = this.board, adc=piece.adjacent;

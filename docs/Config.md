@@ -26,14 +26,12 @@
 |`use`|`number`|`1`|Input method for shaded cells from mouse <br> Possible value: `1 or 2`|
 |`use_tri`|`number`|`1`|Input method for triangles from mouse for `'Shakashaka'` <br> Possible value: `1, 2 or 3`|
 |`bgcolor`|`boolean`|`false`|Enable to input background color for `'Slitherlink'`|
-|`dirauxmark`|`boolean`|`true`|Enable to input direction auxiliary marks for `'Nagareru-loop'`|
 |`singlenum`|`boolean`|`true`|Disable to input plural answer numbers in a room for `'Hanare-gumi'`|
 |`enline`|`boolean`|`true`|Limit to input segments only between points for `'Kouchoku'`|
 |`lattice`|`boolean`|`true`|Restrict not to input segments if other points are on the lattice for `'Kouchoku'`|
 
 |Name|Type|Default value|Description|
 |---|---|---|---|
-|`lrcheck`|`boolean`|`false`|Invert mouse button's left and right|
 |`redline`|`boolean`|`false`|Display continuous lines if the player clicks|
 |`redblk`|`boolean`|`false`|Display continuous shaded cells if the player clicks|
 |`redroad`|`boolean`|`false`|Display continuous road if the player clicks for `'Roma'`|
@@ -42,7 +40,8 @@
 
 |Name|Type|Default value|Description|
 |---|---|---|---|
-|`autocmp`|`boolean`|`false`|Show complete blocks/numbers apart from incompleted one automatically.|
+|`autocmp`|`boolean`|`false`|Show complete numbers apart from incompleted one automatically.|
+|`autocmp_area`|`boolean`|`false`|Paint background of completed blocks/areas automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
 |`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|

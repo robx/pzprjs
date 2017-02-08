@@ -33,17 +33,19 @@ pzpr.classmgr.makeCommon({
 	qsub  : 0,	// cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
 				// border:(1:補助線 2:× 11-14:方向記号)
 	qcmp : 0,	// cell  :(1:cmpマス 1-2:○×)
+	snum : -1,	// cell  :補助数字を保持する
 
 	/* 履歴保存しないプロパティ */
 	error : 0,
 	qinfo : 0,
 	trial : 0,	// TrialModeのstateを保持する変数
+	qlight : 0,	// EXCell基準に表示している情報を保持する変数
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
 	propans  : ['qans', 'anum', 'line', 'trial'],
-	propsub  : ['qsub', 'qcmp'],
-	propinfo : ['error', 'qinfo'],
-	propnorec : { color:1, error:1, qinfo:1 },
+	propsub  : ['qsub', 'qcmp', 'snum'],
+	propinfo : ['error', 'qinfo', 'qlight'],
+	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,
@@ -83,6 +85,7 @@ pzpr.classmgr.makeCommon({
 	setLineVal : function(val){ this.setdata('line', val);},
 	setQsub :    function(val){ this.setdata('qsub', val);},
 	setQcmp :    function(val){ this.setdata('qcmp', val);},
+	setSnum :    function(val){ this.setdata('snum', val);},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
@@ -105,6 +108,22 @@ pzpr.classmgr.makeCommon({
 	addOpe : function(property, old, num){
 		if(old===num){ return;}
 		this.puzzle.opemgr.add(new this.klass.ObjectOperation(this, property, old, num));
+	},
+
+	//---------------------------------------------------------------------------
+	// setdata2() Cell,Cross,Border,EXCellのpos付きの値を設定する
+	//---------------------------------------------------------------------------
+	setdata2 : function(prop, pos, num){
+		if(this[prop][pos]===num){ return;}
+		if(!!this.prehook[prop]){ if(this.prehook[prop].call(this,pos,num)){ return;}}
+
+		this.addOpe(prop+pos, this[prop][pos], num);
+		this[prop][pos] = num;
+
+		var trialstage = this.board.trialstage;
+		if(trialstage>0){ this.trial = trialstage;}
+
+		if(!!this.posthook[prop]){ this.posthook[prop].call(this,pos,num);}
 	},
 
 	//---------------------------------------------------------------------------
@@ -145,6 +164,9 @@ pzpr.classmgr.makeCommon({
 				case 'trial': array1 = ['trial']; break;
 			}
 			array = array.concat(array1);
+		}
+		if(array.indexOf('snum')>=0 && this.enableSubNumberArray){
+			array.splice(array.indexOf('snum'), 1, 'snum0', 'snum1', 'snum2', 'snum3');
 		}
 		return array;
 	},
@@ -188,11 +210,21 @@ pzpr.classmgr.makeCommon({
 	
 	numberWithMB   : false,	// 回答の数字と○×が入るパズル(○は数字が入っている扱いされる)
 	numberAsObject : false,	// 数字以外でqnum/anumを使用する(同じ値を入力で消去できたり、回答で・が入力できる)
-	
+	numberAsLetter : false,	// 数字の代わりにアルファベットを入力する
+
 	numberRemainsUnshaded  : false,	// 数字のあるマスが黒マスにならないパズル
-	
+	enableSubNumberArray   : false,	// 補助数字の配列を作るパズル
+
 	adjacent  : {},	// 四方向に隣接するセルを保持する
 	adjborder : {},	// 四方向に隣接する境界線を保持する
+
+	initialize : function(){
+		this.temp = this.constructor.prototype;
+		if(this.enableSubNumberArray){
+			var anum0 = this.temp.anum;
+			this.snum = [anum0,anum0,anum0,anum0];
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// prehook  値の設定前にやっておく処理や、設定禁止処理を行う
@@ -231,6 +263,7 @@ pzpr.classmgr.makeCommon({
 			if(this.numberRemainsUnshaded) { this.setQans(0);}
 			if(!this.puzzle.painter.enablebcolor){ this.setQsub(0);}
 			this.setQcmp(0);
+			this.clrSnum();
 		}
 		// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3
 		else if(this.qnum===-1){
@@ -240,6 +273,7 @@ pzpr.classmgr.makeCommon({
 			this.setQsub(vals);
 			this.setQdir(0);
 			this.setQcmp(0);
+			if(!(this.numberWithMB && vala===-1)){ this.clrSnum();}
 		}
 	},
 	
@@ -250,11 +284,36 @@ pzpr.classmgr.makeCommon({
 	// cell.isNumberObj() 該当するCellに数字or○があるか返す
 	// cell.sameNumber()  ２つのCellに同じ有効な数字があるか返す
 	//-----------------------------------------------------------------------
-	isNum : function(){ return !this.isnull && (this.qnum!==-1 || this.anum!==-1);},
-	noNum : function(){ return !this.isnull && (this.qnum===-1 && this.anum===-1);},
-	isValidNum  : function(){ return !this.isnull && (this.qnum>=0||(this.anum>=0 && this.qnum===-1));},
-	isNumberObj : function(){ return (this.qnum!==-1 || this.anum!==-1 || (this.numberWithMB && this.qsub===1));},
+	isNum : function(){ return !this.isnull && (this.qnum!==this.temp.qnum || this.anum!==this.temp.anum);},
+	noNum : function(){ return !this.isnull && (this.qnum===this.temp.qnum && this.anum===this.temp.anum);},
+	isValidNum  : function(){ return !this.isnull && (this.qnum>=0||(this.anum>=0 && this.qnum===this.temp.qnum));},
+	isNumberObj : function(){ return (this.qnum!==this.temp.qnum || this.anum!==this.temp.anum || (this.numberWithMB && this.qsub===1));},
 	sameNumber : function(cell){ return (this.isValidNum() && (this.getNum()===cell.getNum()));},
+
+	//---------------------------------------------------------------------------
+	// cell.setSnum() Cellの補助数字を設定する
+	// cell.clrSnum() Cellの補助数字を消去する
+	//---------------------------------------------------------------------------
+	setSnum : function(pos, num){
+		if(this.isNum() && num!==-1){ return;}
+		if(!this.enableSubNumberArray){
+			this.setdata('snum', num);	// 1つ目の数字のみ
+		}
+		else{
+			this.setdata2('snum', pos, num);
+		}
+	},
+	clrSnum : function(){
+		if(!this.enableSubNumberArray){
+			this.setSnum(-1);
+		}
+		else{
+			this.setSnum(0,-1);
+			this.setSnum(1,-1);
+			this.setSnum(2,-1);
+			this.setSnum(3,-1);
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// cell.is51cell()     [＼]のセルかチェックする(カックロ以外はオーバーライドされる)
@@ -532,6 +591,15 @@ pzpr.classmgr.makeCommon({
 	group : 'excell',
 
 	adjacent  : {},	// 四方向に隣接するセルを保持する
+
+	//-----------------------------------------------------------------------
+	// excell.getNum()     該当するCellの数字を返す
+	// excell.setNum()     該当するCellに数字を設定する
+	// excell.noNum()      該当するCellに数字がないか返す
+	//-----------------------------------------------------------------------
+	getNum : function(){ return this.qnum;},
+	setNum : function(val){ this.setQnum(val);},
+	noNum : function(){ return !this.isnull && this.qnum===-1;},
 
 	//---------------------------------------------------------------------------
 	// excell.is51cell()   [＼]のセルかチェックする
