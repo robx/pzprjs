@@ -1,4 +1,17 @@
 
+## Version 0.8.0
+
+Release date: 2017/2/8
+
+#### Improvement
+
+* Mouse: Add an augument for getInputModeList function
+
+#### BugFix
+
+* Mouse: Enable to input sub numbers on aux. marks by mouse for the genre View
+* slalom: Regenerate gate number when the numbers or arrows are changed
+
 ## Version 0.8.0-beta2 (beta)
 
 Release date: 2017/1/9
