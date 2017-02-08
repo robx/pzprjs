@@ -37,6 +37,13 @@ This sub-obejct handles mouse or touch event.
 * `puzzle.mouse.inputEnd()` Emulate mouseup/touchend event.
 * `puzzle.mouse.setInputMode()` Set current inputMode to input specific marks (e.g. icebarn, waterhazaad, etc.)
 * `puzzle.mouse.getInputModeList()` Return an array of valid inputModes.
+    * `inputMode==='auto'` Initial value
+    * `inputMode==='empty'` Toggle on board and out of board cells for `Five cells` and or so
+    * `inputMode==='shade'` Toggle shaded and unshaded cells for `Tatebo-Yokobo`
+    * `inputMode==='ice'` Input icebarns for `Icebarn`, `Barns` and or so
+    * `inputMode==='water'` Input water hazard cells for `Herugolf`
+    * `inputMode==='nabe'` Input crocks for `Yosenabe`
+    * `inputMode==='diraux'` Input dir. aux. marks for `Nagareru-loop`
 
 ### Properties
 
