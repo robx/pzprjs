@@ -1,4 +1,14 @@
 
+## Version 0.8.1
+
+Release date: 2017/2/13
+
+#### BugFix
+
+* akari: Prevent from erasing background color for Akari
+* kinkonkan: Fix outputted file data is wrong for Opera 12.17
+* kinkonkan: Fix slants sometimes get bolder with light
+
 ## Version 0.8.0
 
 Release date: 2017/2/8
