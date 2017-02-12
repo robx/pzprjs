@@ -25,11 +25,22 @@ MouseEvent:{
 		}
 	},
 
+	// board.haslightがerrclear関数で消えてしまうのでその前に値を保存しておく
+	mouseevent : function(step){
+		this.isclearflash = false;
+		if(step===0){
+			var excell = this.getpos(0).getex();
+			if(!excell.isnull && excell.qinfo===1){ this.isclearflash = true;}
+		}
+		
+		this.common.mouseevent.call(this, step);
+	},
+
 	inputflash : function(){
 		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
 		if(excell.isnull){ return;}
 
-		if(!excell.isnull || excell.qlight===1){
+		if(this.isclearflash){
 			board.lightclear();
 		}
 		else{
@@ -127,7 +138,19 @@ Board:{
 	hasborder : 1,
 	hasexcell : 2,
 
-	searchLight : function(startexcell, setlight){
+	flashlight : function(excell){
+		this.lightclear();
+		this.searchSight(excell, true);
+		this.puzzle.redraw();
+	},
+	lightclear : function(){
+		if(!this.haserror){ return;}
+		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qinfo=0;}
+		for(var i=0;i<this.excell.length;i++){ this.excell[i].qinfo=0;}
+		this.haslight = false;
+		this.puzzle.redraw();
+	},
+	searchSight : function(startexcell, seterror){
 		var ccnt=0, ldata = [];
 		for(var c=0;c<this.cell.length;c++){ ldata[c]=0;}
 
@@ -149,11 +172,12 @@ Board:{
 			ccnt++;
 		}
 
-		if(!!setlight){
-			for(var c=0;c<this.excell.length;c++){ this.excell[c].qlight=0;}
-			startexcell.qlight = 1;
-			for(var c=0;c<this.cell.length;c++){ this.cell[c].qlight=ldata[c];}
-			this.haslight = true;
+		if(!!seterror){
+			startexcell.qinfo = 1;
+			for(var c=0;c<this.cell.length;c++){
+				if(!!ldata[c]){ this.cell[c].qinfo=ldata[c];}
+			}
+			this.haserror = true;
 		}
 
 		return {cnt:ccnt};
@@ -164,9 +188,8 @@ Board:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
+
 	lightcolor : "rgb(255, 255, 127)",
-	bgcellcolor_func : "light",
-	bgexcellcolor_func : 'light',
 
 	paint : function(){
 		this.drawBGCells();
@@ -183,6 +206,17 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawCursor();
+	},
+
+	getBGCellColor : function(cell){
+		if(cell.error===1){ return this.errbcolor1;}
+		else if(cell.qinfo===1){ return this.lightcolor;}
+		return null;
+	},
+	getBGEXcellColor : function(excell){
+		if(excell.error===1){ return this.errbcolor1;}
+		else if(excell.qinfo===1){ return this.lightcolor;}
+		return null;
 	},
 
 	drawArrowNumbersEXCell_skyscrapers : function(){
@@ -325,22 +359,22 @@ AnsCheck:{
 	],
 
 	checkSight : function(type){
-		var bd = this.board, result = true, errorExcell = null;
+		var bd = this.board, result = true, errorExcell = new this.klass.EXCellList();
 		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			if(excell.qnum===-1){ continue;}
-			var count = bd.searchLight(excell, false).cnt;
+			var count = bd.searchSight(excell, false).cnt;
 			if(excell.qnum===count){ continue;}
 			
 			result = false;
 			if(this.checkOnly){ break;}
 			
 			excell.seterr(1);
-			if(!errorExcell){ errorExcell = excell;}
+			errorExcell.add(excell);
 		}
 		if(!result){
 			this.failcode.add("nmSightNe");
-			if(errorExcell){ bd.searchLight(errorExcell, true);}
+			errorExcell.each(function(excell){ bd.searchSight(excell, true);});
 		}
 	}
 },

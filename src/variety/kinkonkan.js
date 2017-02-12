@@ -25,6 +25,17 @@ MouseEvent:{
 		}
 	},
 
+	// board.haslightがerrclear関数で消えてしまうのでその前に値を保存しておく
+	mouseevent : function(step){
+		this.isclearflash = false;
+		if(step===0){
+			var excell = this.getpos(0).getex();
+			if(!excell.isnull && excell.qinfo===1){ this.isclearflash = true;}
+		}
+		
+		this.common.mouseevent.call(this, step);
+	},
+
 	inputslash : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ this.inputflash(); return;}
@@ -49,19 +60,15 @@ MouseEvent:{
 		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
 		if(excell.isnull || this.mouseCell===excell){ return;}
 
-		if(this.inputData!==11 && this.inputData!==null){ }
-		else if(!excell.isnull){
+		if(this.isclearflash){
 			board.lightclear();
-		}
-		else if(this.inputData===null && excell.qlight===1){
-			board.lightclear();
-			this.inputData=12;
+			this.mousereset();
 		}
 		else{
 			board.flashlight(excell);
 			this.inputData=11;
+			this.mouseCell = excell;
 		}
-		this.mouseCell = excell;
 	},
 
 	inputedit_onstart : function(){
@@ -78,7 +85,7 @@ MouseEvent:{
 		}
 		else{
 			var excell = piece;
-			if(excell.qlight!==1){ bd.flashlight(excell);}
+			if(excell.qinfo!==1){ bd.flashlight(excell);}
 			else{ bd.lightclear();}
 
 			this.mousereset();
@@ -126,7 +133,7 @@ KeyEvent:{
 			else       { excell.setQnum(-1); excell.setQchar(0);}
 		}
 		else if(ca==='F4'){
-			if(excell.qlight!==1){ bd.flashlight(excell);}
+			if(excell.qinfo!==1){ bd.flashlight(excell);}
 			else{ bd.lightclear();}
 		}
 		else if(ca===' '){ excell.setQnum(-1); excell.setQchar(0);}
@@ -169,6 +176,20 @@ Board:{
 	hasborder : 1,
 	hasexcell : 2,
 
+	haslight : false,
+
+	flashlight : function(excell){
+		this.lightclear();
+		this.searchLight(excell, true);
+		this.puzzle.redraw();
+	},
+	lightclear : function(){
+		if(!this.haslight){ return;}
+		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qinfo=0;}
+		for(var i=0;i<this.excell.length;i++){ this.excell[i].qinfo=0;}
+		this.haslight = false;
+		this.puzzle.redraw();
+	},
 	searchLight : function(startexcell, setlight){
 		var ccnt=0, ldata = [];
 		for(var c=0;c<this.cell.length;c++){ ldata[c]=0;}
@@ -206,11 +227,11 @@ Board:{
 
 		var destec = pos.getex().id;
 		if(!!setlight){
-			for(var c=0;c<this.excell.length;c++){ this.excell[c].qlight=0;}
-			startexcell.qlight = 1;
-			this.excell[destec].qlight  = 1;
-			for(var c=0;c<this.cell.length;c++){ this.cell[c].qlight=ldata[c];}
-			this.haslight = true;
+			for(var c=0;c<this.excell.length;c++){ this.excell[c].qinfo=0;}
+			startexcell.qinfo = 1;
+			this.excell[destec].qinfo  = 1;
+			for(var c=0;c<this.cell.length;c++){ this.cell[c].qinfo=ldata[c];}
+			this.haserror = true;
 		}
 
 		return {cnt:ccnt, dest:destec};
@@ -263,17 +284,22 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], info = cell.error || cell.qlight;
+			var cell = clist[i], info = cell.error || cell.qinfo;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			
 			g.fillStyle = (cell.error!==0 ? this.errbcolor1 : this.lightcolor);
 			
 			g.vid = "c_bglight_"+cell.id;
 			if     (info===1){ g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);}
-			else if(info!==0){ this.drawTriangle1(px, py, cell.qlight);}
+			else if(info!==0){ this.drawTriangle1(px, py, cell.qinfo);}
 			else{ g.vhide();}
 		}
 	},
+	getBGEXcellColor : function(excell){
+		if(excell.qinfo===1){ return this.lightcolor;}
+		return null;
+	},
+
 	textoption : {ratio:[0.65, 0.6, 0.5]},
 	getNumberText : function(excell){
 		var text="", canum = excell.qchar, num = excell.qnum;
@@ -387,7 +413,8 @@ FileIO:{
 	},
 	encodeKinkonkan : function(){
 		this.encodeCellExcell(function(obj){
-			if(obj.group==='excell'){
+			if(obj.isnull){}
+			else if(obj.group==='excell'){
 				var dir=obj.qchar, qn=obj.qnum;
 				var str1 = (dir!== 0 ? ""+dir : "");
 				var str2 = (qn !==-1 ? ""+qn  : "");

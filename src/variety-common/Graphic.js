@@ -102,13 +102,6 @@ Graphic:{
 		else if(cell.ques===6){ return this.icecolor;}
 		return null;
 	},
-	getBGCellColor_light : function(cell){
-		if(cell.qnum===-1){
-			if     (cell.error ===1){ return this.errbcolor1;}
-			else if(cell.qlight===1){ return this.lightcolor;}
-		}
-		return null;
-	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawCells_common()  drawShadedCells, drawQuesCells, drawBGCellsの共通ルーチン
@@ -147,16 +140,8 @@ Graphic:{
 		}
 	},
 
-	getBGEXcellColor : function(cell){ // initialize()で上書きされる
-		return null;
-	},
-	getBGEXcellColor_error1 : function(excell){
+	getBGEXcellColor : function(excell){
 		if(excell.error===1||excell.qinfo===1){ return this.errbcolor1;}
-		return null;
-	},
-	getBGEXcellColor_light : function(excell){
-		if(excell.qlight===1){ return this.lightcolor;}
-		return null;
 	},
 
 	//---------------------------------------------------------------------------
@@ -247,8 +232,10 @@ Graphic:{
 			g.vid = "c_slash_"+cell.id;
 			if(cell.qans!==0){
 				var info = cell.error || cell.qinfo, addwidth = 0, color;
-				if(cell.trial && this.puzzle.execConfig('irowake')){ addwidth = -basewidth/2;}
-				else if(info===1||info===3){ addwidth = basewidth/2;}
+				if(this.puzzle.execConfig('irowake')){
+					if(cell.trial){ addwidth = -basewidth/2;}
+					else if(info===1||info===3){ addwidth = basewidth/2;}
+				}
 				
 				if     (info===1){ color = this.errcolor1;}
 				else if(info===2){ color = this.errcolor2;}
