@@ -425,7 +425,8 @@ FileIO:{
 	},
 	encodeKinkonkan : function(){
 		this.encodeCellExcell(function(obj){
-			if(obj.group==='excell'){
+			if(obj.isnull){}
+			else if(obj.group==='excell'){
 				var dir=obj.qchar, qn=obj.qnum;
 				var str1 = (dir!== 0 ? ""+dir : "");
 				var str2 = (qn !==-1 ? ""+qn  : "");
