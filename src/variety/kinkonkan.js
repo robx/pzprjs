@@ -30,9 +30,8 @@ MouseEvent:{
 		this.isclearflash = false;
 		if(step===0){
 			var excell = this.getpos(0).getex();
-			if(!excell.isnull && excell.qlight===1){ this.isclearflash = true;}
+			if(!excell.isnull && excell.qinfo===1){ this.isclearflash = true;}
 		}
-		
 		
 		this.common.mouseevent.call(this, step);
 	},
@@ -86,7 +85,7 @@ MouseEvent:{
 		}
 		else{
 			var excell = piece;
-			if(excell.qlight!==1){ bd.flashlight(excell);}
+			if(excell.qinfo!==1){ bd.flashlight(excell);}
 			else{ bd.lightclear();}
 
 			this.mousereset();
@@ -134,7 +133,7 @@ KeyEvent:{
 			else       { excell.setQnum(-1); excell.setQchar(0);}
 		}
 		else if(ca==='F4'){
-			if(excell.qlight!==1){ bd.flashlight(excell);}
+			if(excell.qinfo!==1){ bd.flashlight(excell);}
 			else{ bd.lightclear();}
 		}
 		else if(ca===' '){ excell.setQnum(-1); excell.setQchar(0);}
@@ -154,11 +153,6 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qlight : 0,	// EXCell基準に表示している情報を保持する変数
-
-	propinfo : ['error', 'qinfo', 'qlight'],
-	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
-
 	// Qans/Qsubを統合して扱うkanpen的な関数
 	// ここでは なし=0, 斜線=1/2, 補助記号=-1
 	getState : function(){
@@ -184,12 +178,6 @@ Board:{
 
 	haslight : false,
 
-	errclear : function(){
-		if(this.haslight){
-			this.lightclear();
-		}
-		this.common.errclear.call(this);
-	},
 	flashlight : function(excell){
 		this.lightclear();
 		this.searchLight(excell, true);
@@ -197,8 +185,8 @@ Board:{
 	},
 	lightclear : function(){
 		if(!this.haslight){ return;}
-		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
-		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
+		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qinfo=0;}
+		for(var i=0;i<this.excell.length;i++){ this.excell[i].qinfo=0;}
 		this.haslight = false;
 		this.puzzle.redraw();
 	},
@@ -239,11 +227,11 @@ Board:{
 
 		var destec = pos.getex().id;
 		if(!!setlight){
-			for(var c=0;c<this.excell.length;c++){ this.excell[c].qlight=0;}
-			startexcell.qlight = 1;
-			this.excell[destec].qlight  = 1;
-			for(var c=0;c<this.cell.length;c++){ this.cell[c].qlight=ldata[c];}
-			this.haslight = true;
+			for(var c=0;c<this.excell.length;c++){ this.excell[c].qinfo=0;}
+			startexcell.qinfo = 1;
+			this.excell[destec].qinfo  = 1;
+			for(var c=0;c<this.cell.length;c++){ this.cell[c].qinfo=ldata[c];}
+			this.haserror = true;
 		}
 
 		return {cnt:ccnt, dest:destec};
@@ -296,19 +284,19 @@ Graphic:{
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], info = cell.error || cell.qlight;
+			var cell = clist[i], info = cell.error || cell.qinfo;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			
 			g.fillStyle = (cell.error!==0 ? this.errbcolor1 : this.lightcolor);
 			
 			g.vid = "c_bglight_"+cell.id;
 			if     (info===1){ g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);}
-			else if(info!==0){ this.drawTriangle1(px, py, cell.qlight);}
+			else if(info!==0){ this.drawTriangle1(px, py, cell.qinfo);}
 			else{ g.vhide();}
 		}
 	},
 	getBGEXcellColor : function(excell){
-		if(excell.qlight===1){ return this.lightcolor;}
+		if(excell.qinfo===1){ return this.lightcolor;}
 		return null;
 	},
 
