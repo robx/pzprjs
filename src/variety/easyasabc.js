@@ -158,7 +158,7 @@ Board:{
 		return this.emptyexcell;
 	},
 
-	searchLight : function(startexcell, setlight){
+	searchSight : function(startexcell, seterror){
 		var pos = startexcell.getaddr(), dir=0, cell = this.emptycell;
 		if     (pos.by===this.minby+1){ dir=2;}
 		else if(pos.by===this.maxby-1){ dir=1;}
@@ -175,10 +175,9 @@ Board:{
 			break;
 		}
 
-		if(!!setlight){
-			startexcell.qlight = 1;
-			cell.qlight = 1;
-			this.haslight = true;
+		if(!!seterror){
+			startexcell.error = 1;
+			cell.error = 1;
 		}
 
 		return {dest:cell};
@@ -251,9 +250,6 @@ OperationManager:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	lightcolor : "rgb(255, 255, 127)",
-	bgcellcolor_func : "light",
-	bgexcellcolor_func : 'light',
 
 	paint : function(){
 		this.drawBGCells();
@@ -458,14 +454,14 @@ AnsCheck:{
 		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			if(excell.qnum===-1){ continue;}
-			var cell = bd.searchLight(excell, false).dest;
+			var cell = bd.searchSight(excell, false).dest;
 			if(cell.isnull || excell.qnum===cell.anum || cell.qsub===1){ continue;}
 			
 			result = false;
 			if(this.checkOnly){ break;}
 			
 			excell.seterr(1);
-			bd.searchLight(excell, true);
+			bd.searchSight(excell, true);
 		}
 		if(!result){
 			this.failcode.add("nmSightNe");

@@ -25,6 +25,18 @@ MouseEvent:{
 		}
 	},
 
+	// board.haslightがerrclear関数で消えてしまうのでその前に値を保存しておく
+	mouseevent : function(step){
+		this.isclearflash = false;
+		if(step===0){
+			var excell = this.getpos(0).getex();
+			if(!excell.isnull && excell.qlight===1){ this.isclearflash = true;}
+		}
+		
+		
+		this.common.mouseevent.call(this, step);
+	},
+
 	inputslash : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ this.inputflash(); return;}
@@ -49,19 +61,15 @@ MouseEvent:{
 		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
 		if(excell.isnull || this.mouseCell===excell){ return;}
 
-		if(this.inputData!==11 && this.inputData!==null){ }
-		else if(!excell.isnull){
+		if(this.isclearflash){
 			board.lightclear();
-		}
-		else if(this.inputData===null && excell.qlight===1){
-			board.lightclear();
-			this.inputData=12;
+			this.mousereset();
 		}
 		else{
 			board.flashlight(excell);
 			this.inputData=11;
+			this.mouseCell = excell;
 		}
-		this.mouseCell = excell;
 	},
 
 	inputedit_onstart : function(){
@@ -146,6 +154,11 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	qlight : 0,	// EXCell基準に表示している情報を保持する変数
+
+	propinfo : ['error', 'qinfo', 'qlight'],
+	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
+
 	// Qans/Qsubを統合して扱うkanpen的な関数
 	// ここでは なし=0, 斜線=1/2, 補助記号=-1
 	getState : function(){
@@ -169,6 +182,26 @@ Board:{
 	hasborder : 1,
 	hasexcell : 2,
 
+	haslight : false,
+
+	errclear : function(){
+		if(this.haslight){
+			this.lightclear();
+		}
+		this.common.errclear.call(this);
+	},
+	flashlight : function(excell){
+		this.lightclear();
+		this.searchLight(excell, true);
+		this.puzzle.redraw();
+	},
+	lightclear : function(){
+		if(!this.haslight){ return;}
+		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qlight=0;}
+		for(var i=0;i<this.excell.length;i++){ this.excell[i].qlight=0;}
+		this.haslight = false;
+		this.puzzle.redraw();
+	},
 	searchLight : function(startexcell, setlight){
 		var ccnt=0, ldata = [];
 		for(var c=0;c<this.cell.length;c++){ ldata[c]=0;}
@@ -274,6 +307,11 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
+	getBGEXcellColor : function(excell){
+		if(excell.qlight===1){ return this.lightcolor;}
+		return null;
+	},
+
 	textoption : {ratio:[0.65, 0.6, 0.5]},
 	getNumberText : function(excell){
 		var text="", canum = excell.qchar, num = excell.qnum;

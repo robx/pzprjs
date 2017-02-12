@@ -22,7 +22,6 @@ Graphic:{
 		var pc = this;
 		[['getQuesCellColor',    this.fgcellcolor_func],
 		 ['getBGCellColor',      this.bgcellcolor_func],
-		 ['getBGEXcellColor',    this.bgexcellcolor_func],
 		 ['getBorderColor',      this.bordercolor_func],
 		 ['getNumberColor',      this.numbercolor_func],
 		 ['getCircleFillColor',  this.circlefillcolor_func],
@@ -43,7 +42,6 @@ Graphic:{
 
 	fgcellcolor_func : "ques",		// getQuesCellColor()の種類
 	bgcellcolor_func : "error1",	// getBGCellColor()の種類
-	bgexcellcolor_func : "error1",	// getBGEXcellColor()の種類
 	bordercolor_func : "ques",		// getBorderColor()の種類
 	numbercolor_func : "mixed",		// getNumberColor()の種類
 

@@ -39,13 +39,12 @@ pzpr.classmgr.makeCommon({
 	error : 0,
 	qinfo : 0,
 	trial : 0,	// TrialModeのstateを保持する変数
-	qlight : 0,	// EXCell基準に表示している情報を保持する変数
 
 	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qchar'],
 	propans  : ['qans', 'anum', 'line', 'trial'],
 	propsub  : ['qsub', 'qcmp', 'snum'],
-	propinfo : ['error', 'qinfo', 'qlight'],
-	propnorec : { color:1, error:1, qinfo:1, qlight:1 },
+	propinfo : ['error', 'qinfo'],
+	propnorec : { color:1, error:1, qinfo:1 },
 
 	// 入力できる最大・最小の数字
 	maxnum : 255,

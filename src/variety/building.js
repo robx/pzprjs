@@ -29,7 +29,7 @@ MouseEvent:{
 		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
 		if(excell.isnull){ return;}
 
-		if(!excell.isnull || excell.qlight===1){
+		if(!excell.isnull || excell.qinfo===1){
 			board.lightclear();
 		}
 		else{
@@ -127,7 +127,7 @@ Board:{
 	hasborder : 1,
 	hasexcell : 2,
 
-	searchLight : function(startexcell, setlight){
+	searchSight : function(startexcell, seterror){
 		var ccnt=0, ldata = [];
 		for(var c=0;c<this.cell.length;c++){ ldata[c]=0;}
 
@@ -149,11 +149,11 @@ Board:{
 			ccnt++;
 		}
 
-		if(!!setlight){
-			for(var c=0;c<this.excell.length;c++){ this.excell[c].qlight=0;}
-			startexcell.qlight = 1;
-			for(var c=0;c<this.cell.length;c++){ this.cell[c].qlight=ldata[c];}
-			this.haslight = true;
+		if(!!seterror){
+			for(var c=0;c<this.excell.length;c++){ this.excell[c].error=0;}
+			startexcell.error = 1;
+			for(var c=0;c<this.cell.length;c++){ this.cell[c].error=ldata[c];}
+			this.haserror = true;
 		}
 
 		return {cnt:ccnt};
@@ -164,9 +164,6 @@ Board:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	lightcolor : "rgb(255, 255, 127)",
-	bgcellcolor_func : "light",
-	bgexcellcolor_func : 'light',
 
 	paint : function(){
 		this.drawBGCells();
@@ -329,7 +326,7 @@ AnsCheck:{
 		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			if(excell.qnum===-1){ continue;}
-			var count = bd.searchLight(excell, false).cnt;
+			var count = bd.searchSight(excell, false).cnt;
 			if(excell.qnum===count){ continue;}
 			
 			result = false;
@@ -340,7 +337,7 @@ AnsCheck:{
 		}
 		if(!result){
 			this.failcode.add("nmSightNe");
-			if(errorExcell){ bd.searchLight(errorExcell, true);}
+			if(errorExcell){ bd.searchSight(errorExcell, true);}
 		}
 	}
 },
