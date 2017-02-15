@@ -158,6 +158,8 @@ These methods have arguments below.
     * Callback: `function(puzzle)`
 * `'trial'` Emitted after trial mode stage is changed.
     * Callback: `function(puzzle, trialstage)`
+* `'mode'` Emitted after `ready` and mode (playmode or editmode) is changed.
+    * Callback: `function(puzzle)`
 
 ## Properties
 

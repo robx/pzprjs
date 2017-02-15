@@ -337,6 +337,7 @@ pzpr.Puzzle.prototype =
 		}
 
 		this.emit('config', 'mode', newval);
+		this.emit('mode');
 	},
 
 	//------------------------------------------------------------------------------
@@ -392,6 +393,7 @@ function openExecute(puzzle, data, variety, callback){
 			
 			puzzle.ready = true;
 			puzzle.emit('ready');
+			puzzle.emit('mode');
 			
 			if(!!puzzle.canvas){ postCanvasReady(puzzle);}
 			
