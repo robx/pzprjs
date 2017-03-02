@@ -31,9 +31,6 @@
     "test": "grunt lint && mocha -R progress --recursive test",
     "prepublish": "in-publish && npm run release || not-in-publish"
   },
-  "dependencies": {
-    "in-publish": "^2.0.0"
-  },
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.0.0",
@@ -41,6 +38,7 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
-    "grunt-newer": "^1.1.1"
+    "grunt-newer": "^1.1.1",
+    "in-publish": "^2.0.0"
   }
 }
