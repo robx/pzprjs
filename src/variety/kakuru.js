@@ -111,25 +111,52 @@ Board:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
+	circleratio : [0.45, 0.45],
+
 	paint : function(){
-		this.drawBGCells();
 		this.drawTargetSubNumber();
 		this.drawGrid();
 		this.drawQuesCells();
+		this.drawCircledNumbers();
 
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 
 		this.drawChassis();
 
 		this.drawCursor();
 	},
 
-	// オーバーライド drawBGCells用
-	getBGCellColor : function(cell){
-		if     (cell.qnum !==-1){ return "rgb(208, 208, 208)";}
-		else if(cell.error=== 1){ return this.errbcolor1;}
+	// オーバーライド drawQuesCells用
+	getQuesCellColor : function(cell){
+		if(cell.ques!==1 && cell.qnum===-1){ return null;}
+		if((cell.error || cell.qinfo)===1){ return this.errcolor1;}
+		return this.quescolor;
+	},
+
+	/* 白丸を描画する */
+	circlestrokecolor_func : "null",
+	getCircleFillColor : function(cell){
+		if(cell.qnum!==-1){
+			return (cell.error===1 ? this.errbcolor1 : "white");
+		}
 		return null;
+	},
+
+	drawAnsNumbers : function(){
+		var g = this.vinc('cell_number', 'auto');
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], num = cell.anum, px = cell.bx*this.bw, py = cell.by*this.bh;
+			var text = (num>0 ? ""+num : "");
+			g.vid = 'cell_text_'+cell.id;
+			if(!!text){
+				g.fillStyle = this.getNumberColor(cell);
+				this.disptext(text, px, py);
+			}
+			else if(cell.qnum!==-1){}
+			else{ g.vhide();}
+		}
 	}
 },
 
