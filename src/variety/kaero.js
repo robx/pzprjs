@@ -89,7 +89,7 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCellSquare();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

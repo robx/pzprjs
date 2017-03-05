@@ -358,7 +358,7 @@ Graphic:{
 		this.drawLines();
 		this.drawPekes();
 
-		if(this.pid!=='icebarn'){ this.drawNumbers();}
+		if(this.pid!=='icebarn'){ this.drawQuesNumbers();}
 
 		this.drawBorderArrows();
 

@@ -270,7 +270,7 @@ Graphic:{
 		this.drawDotCells(false);
 		this.drawDashedGrid();
 		this.drawQuesCells();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawTriangle();
 

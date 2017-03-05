@@ -230,7 +230,7 @@ Graphic:{
 		this.drawQuesCells();
 		this.drawMBs();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 
@@ -247,7 +247,7 @@ Graphic:{
 		else if(info===1){ return this.errcolor1;}
 		return null;
 	},
-	getNumberColor : function(cell){
+	getQuesNumberColor : function(cell){
 		return (this.puzzle.execConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
 	}
 },

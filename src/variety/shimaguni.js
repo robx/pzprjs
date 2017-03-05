@@ -182,7 +182,7 @@ Graphic:{
 		if(this.pid==='stostone'){ this.drawDotCells();}
 		this.drawShadedCells();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 		if(this.pid==='stostone'){ this.drawNarrowBorders();}
@@ -246,13 +246,13 @@ Graphic:{
 		if(sblk1!==sblk2){ return "white";}
 		return null;
 	},
-	getNumberText : function(cell){
+	getQuesNumberText : function(cell){
 		if(this.board.falling && !!cell.base.stone){ return '';}
-		return this.common.getNumberText.call(this,cell);
+		return this.common.getQuesNumberText.call(this,cell);
 	},
-	getNumberColor : function(cell){
+	getQuesNumberColor : function(cell){
 		if(this.board.falling){ cell = cell.base;}
-		return this.common.getNumberColor_mixed.call(this,cell);
+		return this.common.getQuesNumberColor_mixed.call(this,cell);
 	}
 },
 

@@ -190,7 +190,8 @@ Graphic:{
 
 		this.drawCellArrows();
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

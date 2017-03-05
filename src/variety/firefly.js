@@ -85,32 +85,13 @@ Graphic:{
 
 		this.drawPekes();
 
-		this.drawFireflies1();
-		this.drawFireflies2();
-		this.drawNumbers();
+		this.drawCircledNumbers();
+		this.drawFireflyDots();
 
 		this.drawTarget();
 	},
 
-	drawFireflies1 : function(){
-		var g = this.vinc('cell_firefly', 'auto', true);
-
-		g.lineWidth = 1.5;
-		g.strokeStyle = this.quescolor;
-		var rsize  = this.cw*0.40;
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-
-			g.vid = "c_cira_"+cell.id;
-			if(cell.qnum!==-1){
-				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
-				g.shapeCircle(cell.bx*this.bw, cell.by*this.bh, rsize);
-			}
-			else{ g.vhide();}
-		}
-	},
-	drawFireflies2 : function(){
+	drawFireflyDots : function(){
 		var g = this.vinc('cell_firefly', 'auto');
 
 		g.fillStyle = this.quescolor;
@@ -120,7 +101,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 
-			g.vid = "c_cirb_"+cell.id;
+			g.vid = "c_cirdot_"+cell.id;
 			if(cell.qnum!==-1 && cell.qdir!==cell.NDIR){
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				switch(cell.qdir){
@@ -138,9 +119,8 @@ Graphic:{
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawFireflies1();
-		this.drawFireflies2();
-		this.drawNumbers();
+		this.drawCircledNumbers();
+		this.drawFireflyDots();
 	}
 },
 

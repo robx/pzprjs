@@ -282,7 +282,7 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	getNumberText : function(cell){
+	getQuesNumberText : function(cell){
 		if(this.puzzle.execConfig('dispmove')){
 			if(!cell.isDestination() || cell.base.qnum<0){ return "";}
 			/* cell.isViaPointに似ている関数 */

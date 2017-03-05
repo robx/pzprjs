@@ -156,16 +156,16 @@ Graphic:{
 		this.drawGrid();
 		this.drawBorders();
 
-		this.drawBDNumbers();
+		this.drawQuesNumbersBD();
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget_minarism();
 	},
 
-	drawBDNumbers : function(){
+	drawQuesNumbersBD : function(){
 		var g = this.vinc('border_nums', 'auto', true);
 
 		var csize = this.cw*0.27;

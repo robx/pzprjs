@@ -105,8 +105,9 @@ Graphic:{
 		this.drawChassis_ex1(false);
 
 		this.drawSubNumbers();
-		this.drawNumbersOn51();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbersOn51();
+		this.drawQuesNumbers();
 
 		this.drawCursor();
 	},
@@ -130,7 +131,7 @@ Graphic:{
 		return null;
 	},
 
-	getNumberText : function(cell){
+	getAnsNumberText : function(cell){
 		return ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
 	}
 },

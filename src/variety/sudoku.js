@@ -64,7 +64,8 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

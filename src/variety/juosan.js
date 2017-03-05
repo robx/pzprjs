@@ -80,7 +80,7 @@ Graphic:{
 
 		this.drawTateyokos();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		this.drawBorders();
 
 		this.drawChassis();

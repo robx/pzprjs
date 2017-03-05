@@ -137,7 +137,7 @@ Graphic:{
 			this.drawQuesBorders();
 		}
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		this.drawBorderQsubs();
 
 		if(this.pid==='nawabari'){ this.drawChassis();}

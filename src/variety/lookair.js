@@ -58,7 +58,7 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawShadedCells();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

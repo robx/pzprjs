@@ -138,7 +138,8 @@ Graphic:{
 		this.drawGrid();
 
 		this.drawMBs();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

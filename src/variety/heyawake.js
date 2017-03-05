@@ -77,7 +77,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

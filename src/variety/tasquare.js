@@ -58,7 +58,7 @@ Graphic:{
 
 		this.drawCellSquare();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

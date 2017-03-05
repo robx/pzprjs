@@ -80,14 +80,14 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget();
 	},
 
-	getNumberColor : function(cell){
+	getQuesNumberColor : function(cell){
 		if(cell.qcmp===1){
 			return this.qcmpcolor;
 		}

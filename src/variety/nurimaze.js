@@ -350,7 +350,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], num=cell.ques;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			g.strokeStyle = this.getNumberColor(cell);
+			g.strokeStyle = this.getQuesNumberColor(cell);
 			
 			g.vid = "c_mk1_"+cell.id;
 			if(num===41){

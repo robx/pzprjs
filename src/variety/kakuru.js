@@ -141,22 +141,6 @@ Graphic:{
 			return (cell.error===1 ? this.errbcolor1 : "white");
 		}
 		return null;
-	},
-
-	drawAnsNumbers : function(){
-		var g = this.vinc('cell_number', 'auto');
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i], num = cell.anum, px = cell.bx*this.bw, py = cell.by*this.bh;
-			var text = (num>0 ? ""+num : "");
-			g.vid = 'cell_text_'+cell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, px, py);
-			}
-			else if(cell.qnum!==-1){}
-			else{ g.vhide();}
-		}
 	}
 },
 

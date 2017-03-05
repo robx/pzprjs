@@ -138,7 +138,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 		this.drawQuesCells();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawAkari();
 		this.drawDotCells();

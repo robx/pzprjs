@@ -177,7 +177,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		if     (this.pid==='country'){ this.drawNumbers();}
+		if     (this.pid==='country'){ this.drawQuesNumbers();}
 		else if(this.pid==='moonsun'){ this.drawMarks();}
 		else if(this.pid==='onsen'){ this.drawCircledNumbers();}
 

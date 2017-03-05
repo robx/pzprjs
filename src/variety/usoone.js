@@ -94,7 +94,7 @@ Graphic:{
 		this.drawShadedCells();
 
 		this.drawMBs_usoone();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

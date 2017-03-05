@@ -131,7 +131,7 @@ Graphic:{
 			var cell = clist[i];
 
 			g.vid = "c_mk_"+cell.id;
-			g.strokeStyle = this.getNumberColor(cell);
+			g.strokeStyle = (cell.qnum!==-1 ? this.getQuesNumberColor(cell) : this.getAnsNumberColor(cell));
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			switch(cell.getNum()){
 			case 1:

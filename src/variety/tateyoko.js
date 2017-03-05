@@ -125,7 +125,7 @@ Graphic:{
 		this.drawTateyokos();
 
 		this.drawShadeAtNumber();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 
@@ -146,7 +146,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	getNumberColor : function(cell){
+	getQuesNumberColor : function(cell){
 		return (cell.ques!==1 ? this.quescolor : this.fontShadecolor);
 	}
 },

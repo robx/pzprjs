@@ -261,7 +261,7 @@ Graphic:{
 
 		this.drawMBs();
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 		this.drawNumbersEXcell();
 
 		this.drawChassis();

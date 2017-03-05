@@ -55,7 +55,7 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		this.drawCrossMarks();
 
 		this.drawBorderQsubs();

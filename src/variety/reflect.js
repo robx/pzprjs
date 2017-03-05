@@ -177,7 +177,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var text = this.getNumberText(cell);
+			var text = this.getQuesNumberText(cell);
 			g.vid = "cell_text_"+cell.id;
 			if(!!text){
 				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:0.45});
@@ -185,7 +185,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	getNumberText : function(cell){
+	getQuesNumberText : function(cell){
 		return ((cell.ques>=2 && cell.ques<=5) ? this.getNumberTextCore(cell.qnum) : "");
 	},
 

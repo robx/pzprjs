@@ -323,7 +323,7 @@ Graphic:{
 			var cell = clist[i], bx = cell.bx, by = cell.by;
 			var nums = cell.qnums, n = nums.length;
 
-			g.fillStyle = this.getNumberColor(cell);
+			g.fillStyle = this.getQuesNumberColor(cell);
 			for(var k=0;k<4;k++){
 				g.vid = "cell_text_"+cell.id+"_"+k;
 				if(k<n && nums[k]!==-1){

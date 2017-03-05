@@ -302,14 +302,14 @@ Graphic:{
 
 	fontsizeratio : 0.6,
 	fontwidth : [null,0.5,0.4],
-	getNumberText : function(excell){
+	getQuesNumberText : function(excell){
 		var text="", canum = excell.qchar, num = excell.qnum;
 		if(canum===0){ text = "";}
 		else{ text = this.getNumberTextCore_letter(canum<=52 ? canum : canum-52);}
 		if(num>=0){ text+=num.toString(10);}
 		return text;
 	},
-	getNumberColor : function(excell){
+	getQuesNumberColor : function(excell){
 		if     (excell.error===1){ return "rgb(192, 0, 0)";}
 		else if(excell.qchar>52) { return "blue";} // 2色目
 		return this.quescolor;

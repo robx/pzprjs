@@ -67,7 +67,6 @@ Graphic:{
 
 	enablebcolor : true,
 	bgcellcolor_func : "qsub1",
-	numbercolor_func : "mixed",
 
 	errcolor1 : "red",
 	fontShadecolor : "rgb(96,96,96)",
@@ -77,14 +76,14 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawNumbers_hitori();
+		this.drawQuesNumbers_hitori();
 
 		this.drawChassis();
 
 		this.drawTarget();
 	},
 
-	drawNumbers_hitori : function(){
+	drawQuesNumbers_hitori : function(){
 		var puzzle=this.puzzle, bd=puzzle.board, chk=puzzle.checker;
 		if(!bd.haserror && puzzle.getConfig('autoerr')){
 			var pt = puzzle.klass.CellList.prototype, seterr = pt.seterr, fcd = chk.failcode;
@@ -99,13 +98,13 @@ Graphic:{
 
 			var clist = this.range.cells;
 			this.range.cells = bd.cell;
-			this.drawNumbers();
+			this.drawQuesNumbers();
 			this.range.cells = clist;
 
 			bd.cell.setinfo(0);
 		}
 		else{
-			this.drawNumbers();
+			this.drawQuesNumbers();
 		}
 	}
 },

@@ -97,7 +97,8 @@ Graphic:{
 		this.drawGrid();
 
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

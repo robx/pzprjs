@@ -250,7 +250,7 @@ Graphic:{
 				else{
 					option.ratio = 0.6;
 				}
-				g.fillStyle = this.getNumberColor(cell);
+				g.fillStyle = this.getQuesNumberColor(cell);
 				this.disptext(text, px, py, option);
 			}
 			else{ g.vhide();}

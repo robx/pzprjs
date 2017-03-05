@@ -113,7 +113,7 @@ Graphic:{
 
 		this.drawCircles();
 		this.drawCellSquare();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 
 		this.drawTarget();
 	},

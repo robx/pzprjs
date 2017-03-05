@@ -200,10 +200,10 @@ Graphic:{
 		if(this.pid==='minarism'){ this.drawDashedGrid();}
 		if(this.pid==='kropki'){ this.drawGrid();}
 
-		if(this.pid==='minarism'){ this.drawBDNumbers_and_IneqSigns();}
+		if(this.pid==='minarism'){ this.drawQuesNumbers_and_IneqSigns();}
 		if(this.pid==='kropki'){ this.drawStars();}
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 
 		this.drawChassis();
 
@@ -233,7 +233,7 @@ Graphic:{
 			}
 		}
 	},
-	drawBDNumbers_and_IneqSigns : function(){
+	drawQuesNumbers_and_IneqSigns : function(){
 		var g = this.vinc('border_marks', 'auto', true);
 
 		var csize = this.cw*0.27;

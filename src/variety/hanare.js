@@ -116,7 +116,8 @@ Graphic:{
 		this.drawGrid();
 
 		this.drawDotCells();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

@@ -209,7 +209,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawCircles();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

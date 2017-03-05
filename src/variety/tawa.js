@@ -221,7 +221,7 @@ Graphic:{
 		this.drawDotCells(false);
 		this.drawGrid_tawa();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawTarget();
 	},

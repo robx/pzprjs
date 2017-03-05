@@ -138,7 +138,7 @@ Graphic:{
 
 		this.drawChassis_ex1(false);
 
-		this.drawNumbersOn51();
+		this.drawQuesNumbersOn51();
 
 		this.drawTarget();
 	}

@@ -23,7 +23,7 @@ Graphic:{
 		[['getQuesCellColor',    this.fgcellcolor_func],
 		 ['getBGCellColor',      this.bgcellcolor_func],
 		 ['getBorderColor',      this.bordercolor_func],
-		 ['getNumberColor',      this.numbercolor_func],
+		 ['getQuesNumberColor',  this.numbercolor_func],
 		 ['getCircleFillColor',  this.circlefillcolor_func],
 		 ['getCircleStrokeColor',this.circlestrokecolor_func],
 		].forEach(function(item){
@@ -43,7 +43,7 @@ Graphic:{
 	fgcellcolor_func : "ques",		// getQuesCellColor()の種類
 	bgcellcolor_func : "error1",	// getBGCellColor()の種類
 	bordercolor_func : "ques",		// getBorderColor()の種類
-	numbercolor_func : "mixed",		// getNumberColor()の種類
+	numbercolor_func : "mixed",		// getQuesNumberColor()の種類
 
 	circlefillcolor_func   : "qnum",	// getCircleFillColor()の種類
 	circlestrokecolor_func : "qnum",	// getCircleStrokeColor()の種類

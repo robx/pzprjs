@@ -59,7 +59,7 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		this.drawBorderQsubs();
 
 		this.drawChassis();

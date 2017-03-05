@@ -200,7 +200,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 		this.drawArrowNumbersEXCell_skyscrapers();
 
 		this.drawChassis();
@@ -238,7 +238,7 @@ Graphic:{
 			var text=(num>=0 ? ""+num : "");
 
 			if(!!text){
-				g.fillStyle = this.getNumberColor(excell);
+				g.fillStyle = this.getQuesNumberColor(excell);
 			}
 
 			// 矢印の描画

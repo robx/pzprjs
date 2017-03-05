@@ -111,7 +111,8 @@ Graphic:{
 
 		this.drawMBs();
 		if(this.pid==='view'){ this.drawSubNumbers();}
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

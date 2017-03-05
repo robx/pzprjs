@@ -295,7 +295,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid(false);
 
-		if(this.pid==='wagiri'){ this.drawNumbers();}
+		if(this.pid==='wagiri'){ this.drawQuesNumbers();}
 		this.drawSlashes();
 
 		this.drawCrosses();

@@ -91,7 +91,7 @@ Graphic:{
 		if(this.pid==='nurikabe'){ this.drawDotCells(false);}
 		this.drawGrid();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

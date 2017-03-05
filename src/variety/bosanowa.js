@@ -181,8 +181,9 @@ Graphic:{
 			this.drawGrid_waritai();
 		}
 
-		this.drawNumbers();
-		this.drawNumbersBD();
+		this.drawQuesNumbers();
+		this.drawAnsNumbers();
+		this.drawSubNumbersBD();
 
 		if(!this.puzzle.playeronly && !this.outputImage){
 			this.drawChassis();
@@ -289,7 +290,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	drawNumbersBD : function(){
+	drawSubNumbersBD : function(){
 		var g = this.vinc('border_number', 'auto');
 
 		var option = {ratio:0.35};

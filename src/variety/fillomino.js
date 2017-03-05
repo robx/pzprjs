@@ -156,7 +156,8 @@ Graphic:{
 		this.drawDashedGrid();
 
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 		this.drawBorderQsubs();

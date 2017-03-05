@@ -98,7 +98,7 @@ Graphic:{
 		this.drawDashedGrid();
 
 		if(pid==='nagenawa'){
-			this.drawNumbers();
+			this.drawQuesNumbers();
 			this.drawMBs();
 			this.drawBorders();
 		}

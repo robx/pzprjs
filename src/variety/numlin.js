@@ -65,7 +65,7 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCellSquare();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		if(this.pid==='arukone'){ this.drawCrossSquares();}
 
 		this.drawChassis();

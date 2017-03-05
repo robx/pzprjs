@@ -135,7 +135,7 @@ Graphic:{
 
 		if(this.pid==='slither'){ this.drawBaseMarks();}
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		if(this.pid==='slither'){ this.drawPekes();}
 

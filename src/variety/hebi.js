@@ -181,7 +181,7 @@ Graphic:{
 
 		this.drawQuesCells();
 		this.drawArrowNumbers();
-		this.drawAnswerNumbers();
+		this.drawAnsNumbers();
 
 		this.drawChassis();
 
@@ -200,22 +200,6 @@ Graphic:{
 			return (((!cell1.trial&&cell1.anum!==-1)||(!cell2.trial&&cell2.anum!==-1)) ? this.qanscolor : this.trialcolor);
 		}
 		return null;
-	},
-
-	drawAnswerNumbers : function(){
-		var g = this.vinc('cell_anumber', 'auto');
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = ((cell.qnum===-1 && cell.anum>0) ? ""+cell.anum : "");
-			g.vid = "cell_ansnum_"+cell.id;
-			if(!!text){
-				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
-			}
-			else{ g.vhide();}
-		}
 	},
 
 	drawDotCells_hebiichigo : function(){
