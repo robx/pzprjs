@@ -11,6 +11,28 @@ pzpr.env = (function(){
 	var bz = {
 		Presto: (typeof window==='object' && !!window.opera)
 	};
+	var FireFoxVersion = (function(){
+		if(UA.match(/Firefox\/(\w+(\.\w+)?)/)){
+			var ver = RegExp.$1;
+			if(UA.match(/rv\:(\d+(\.\d+)?)/)){
+				if(RegExp.$1+0.0<=2.1){ return RegExp.$1+0.0;}
+			}
+			return ver;
+		}
+		return null;
+	})();
+	var ChromeVersion = (function(){
+		if(UA.match(/Safari\/([\w\.]+)/) && UA.match(/Chrome\/(\w+(\.\w+)?)/)){
+			return RegExp.$1;
+		}
+		return null;
+	})();
+	var SafariVersion = (function(){
+		if(ChromeVersion===null && UA.match(/Safari\/([\w\.]+)/) && UA.match(/Version\/(\w+(\.\w+)?)/)){
+			return RegExp.$1;
+		}
+		return null;
+	})();
 	
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
 	var android = (UA.indexOf('Android') > -1);
@@ -24,6 +46,8 @@ pzpr.env = (function(){
 		touchevent      : isbrowser && ((!!window.ontouchstart) || (!!document.createTouch)),
 		pointerevent    : isbrowser && (!!navigator.pointerEnabled),
 		mspointerevent  : isbrowser && (!!navigator.msPointerEnabled),
+		maxWidth        : isbrowser && ((ChromeVersion||1000) >= 18) && ((SafariVersion||1000) >= 6),
+		svgTextLength   : !isbrowser || ((FireFoxVersion||1000) >= 25),
 		anchor_download : isbrowser && (document.createElement("a").download!==(void 0))
 	};
 	

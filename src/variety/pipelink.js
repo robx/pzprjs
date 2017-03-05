@@ -204,8 +204,7 @@ Graphic:{
 		this.drawLines();
 
 		if(this.pid==='loopsp'){
-			this.drawCircles();
-			this.drawNumbers();
+			this.drawCircledNumbers();
 		}
 
 		this.drawPekes();
@@ -221,8 +220,7 @@ Graphic:{
 		this.range.cells = blist.cellinside();
 
 		if(this.pid==='loopsp'){
-			this.drawCircles();
-			this.drawNumbers();
+			this.drawCircledNumbers();
 		}
 		this.drawLineParts();
 	}
@@ -252,7 +250,6 @@ Graphic:{
 	circlefillcolor_func : "null"
 },
 "Graphic@loopsp":{
-	globalfontsizeratio : 0.85,
 	circleratio : [0.40, 0.35],
 
 	numbercolor_func : "qnum",

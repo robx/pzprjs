@@ -643,7 +643,7 @@ Graphic:{
 		var csize1 = this.cw*0.30+1, csize2 = this.cw*0.20;
 		g.lineWidth = 1;
 
-		var option = {ratio:[0.55]};
+		var option = {ratio:0.55};
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];

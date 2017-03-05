@@ -229,6 +229,8 @@ Graphic:{
 		var thw = this.bh*0.25;		// width of horizonal arrows' head
 		var tvw = this.bw*0.25;		// width of vertical arrows' head
 
+		var option = {ratio : 0.7};
+
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], num=excell.qnum;
@@ -258,7 +260,6 @@ Graphic:{
 				else if(excell.bx===bd.minbx+1){ px-=this.cw*0.1;}
 				else if(excell.bx===bd.maxbx-1){ px+=this.cw*0.1;}
 
-				var option = {globalratio : 0.85 * this.globalfontsizeratio};
 				this.disptext(text, px, py, option);
 			}
 			else{ g.vhide();}

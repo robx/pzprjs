@@ -71,6 +71,9 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	numbercolor_func : "fixed",
 
+	fontsizeratio : 0.45,
+	textoption : {position:5}, /* this.TOPLEFT */
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
@@ -83,8 +86,7 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-	textoption : {ratio:[0.45], position:5} /* this.TOPLEFT */
+	}
 },
 
 //---------------------------------------------------------

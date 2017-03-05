@@ -292,7 +292,7 @@ Graphic:{
 	drawNumbersBD : function(){
 		var g = this.vinc('border_number', 'auto');
 
-		var option = {ratio:[0.35]};
+		var option = {ratio:0.35};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i];

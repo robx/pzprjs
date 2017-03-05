@@ -180,8 +180,6 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
-	globalfontsizeratio : 0.85,
-
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
 	numbercolor_func : "move",
@@ -196,8 +194,7 @@ Graphic:{
 		this.drawDepartures();
 		this.drawLines();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 		this.drawFillingNumBase();
 		this.drawFillingNumbers();
 
@@ -247,10 +244,11 @@ Graphic:{
 				var option = {style:"bold"};
 				if(isdrawmove && cell.isDestination()){
 					option.position = this.TOPLEFT;
-					option.globalratio = 0.5;
+					option.ratio = 0.4;
+					option.width = [0.5, 0.33];
 				}
 				else{
-					option.globalratio = 0.8;
+					option.ratio = 0.6;
 				}
 				g.fillStyle = this.getNumberColor(cell);
 				this.disptext(text, px, py, option);

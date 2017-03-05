@@ -256,8 +256,6 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
-	globalfontsizeratio : 0.85,
-
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
 	circlefillcolor_func : "qcmp",
@@ -274,8 +272,7 @@ Graphic:{
 		this.drawViaPoints();
 		this.drawLines();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 		this.drawHoles();
 
 		this.drawPekes();
@@ -366,14 +363,13 @@ Graphic:{
 		var g = this.vinc('cell_hole', 'auto');
 
 		g.fillStyle = this.quescolor;
-		var option = {globalratio:1};
 		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			g.vid = "cell_hole_text_"+cell.id;
 			if(cell.ques===31 && !(isdrawmove && cell.isDestination())){
-				this.disptext("H", cell.bx*this.bw, cell.by*this.bh, option);
+				this.disptext("H", cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}

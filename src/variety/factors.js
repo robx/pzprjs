@@ -116,10 +116,7 @@ Graphic:{
 		var g = this.vinc('cell_qnumber', 'auto');
 
 		g.fillStyle = this.quescolor;
-		var qnumoption = {
-			ratio : [0.45, 0.45, 0.45, 0.45, 0.36, 0.30],
-			position : this.TOPLEFT
-		};
+		var qnumoption = {ratio:0.45, position:this.TOPLEFT};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];

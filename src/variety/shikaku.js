@@ -50,7 +50,6 @@ Graphic:{
 	fontShadecolor : "white",
 	numbercolor_func : "fixed_shaded",
 
-	globalfontsizeratio : 0.85,
 	circleratio : [0.40, 0.40],
 
 	paint : function(){
@@ -58,8 +57,7 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 		this.drawBorderQsubs();
 
 		this.drawChassis();

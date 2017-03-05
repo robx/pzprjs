@@ -472,7 +472,7 @@ Graphic:{
 			else if(bx===bd.minbx+2){ px-=this.bw; py-=0.6*this.bh;}
 			else if(bx===bd.maxbx-2){ px+=this.bw; py-=0.6*this.bh;}
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
-			this.disptext("IN", px, py, {ratio:[0.55]});
+			this.disptext("IN", px, py, {ratio:0.55,width:[]});
 		}
 		else{ g.vhide();}
 
@@ -485,7 +485,7 @@ Graphic:{
 			else if(bx===bd.minbx+2){ px-=1.4*this.bw; py-=0.6*this.bh;}
 			else if(bx===bd.maxbx-2){ px+=1.4*this.bw; py-=0.6*this.bh;}
 			g.fillStyle = (border.error===4 ? this.errcolor1 : this.quescolor);
-			this.disptext("OUT", px, py, {ratio:[0.55]});
+			this.disptext("OUT", px, py, {ratio:0.55,width:[]});
 		}
 		else{ g.vhide();}
 	},

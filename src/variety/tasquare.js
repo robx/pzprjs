@@ -45,7 +45,7 @@ AreaUnshadeGraph:{
 Graphic:{
 	hideHatena : true,
 
-	globalfontsizeratio : 0.85,
+	fontsizeratio : 0.65,			/* 丸数字 */
 
 	qanscolor : "black",
 	numbercolor_func : "qnum",

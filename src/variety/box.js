@@ -206,7 +206,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 
-		var option = {globalratio:0.95};
+		var option = {ratio:0.65};
 		g = this.vinc('excell_number2', 'auto');
 		g.fillStyle = this.quescolor;
 		for(var i=0;i<list.length;i++){

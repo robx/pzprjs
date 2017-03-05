@@ -391,7 +391,7 @@ Graphic:{
 				g.vid = "cell_subtext_"+cell.id+"_"+n;
 				if(!!text){
 					g.fillStyle = (!cell.trial ? this.subcolor : this.trialcolor);
-					this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:posarray[n], ratio:[0.33], hoffset:0.8});
+					this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:posarray[n], ratio:0.33, hoffset:0.8});
 				}
 				else{ g.vhide();}
 			}
@@ -439,8 +439,8 @@ Graphic:{
 			// 数字の描画
 			g.vid = "cell_arnum_"+cell.id;
 			if(!!text){
-				var option = {};
-				if(dir!==cell.NDIR){ option.globalratio = 0.85 * this.globalfontsizeratio;}
+				var option = {ratio:0.8};
+				if(dir!==cell.NDIR){ option.ratio = 0.7;}
 
 				if     (dir===cell.UP||dir===cell.DN){ px-=this.cw*0.1;}
 				else if(dir===cell.LT||dir===cell.RT){ py+=this.ch*0.1;}
@@ -449,6 +449,17 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawCircledNumbers() Cell上の丸数字をCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawCircledNumbers : function(){
+		var originalRatio = this.fontsizeratio;
+		this.fontsizeratio = 0.65;	// 丸数字用のfontsize
+		this.drawCircles();
+		this.drawNumbers();
+		this.fontsizeratio = originalRatio;
 	},
 
 	//---------------------------------------------------------------------------
@@ -461,7 +472,7 @@ Graphic:{
 		var csize = this.cw*this.crosssize+1;
 		g.lineWidth = 1;
 
-		var option = {ratio:[0.6]};
+		var option = {ratio:0.6};
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i], px = cross.bx*this.bw, py = cross.by*this.bh;
@@ -1116,7 +1127,7 @@ Graphic:{
 	},
 	drawNumbersOn51_1 : function(piece){ /* cell or excell */
 		var g = this.context, val, adj, px = piece.bx*this.bw, py = piece.by*this.bh;
-		var option = {ratio:[0.45]};
+		var option = {ratio:0.45};
 		g.fillStyle = (piece.error===1||piece.qinfo===1 ? this.errcolor1 : this.quescolor);
 
 		adj = piece.relcell(2,0);

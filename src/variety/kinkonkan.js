@@ -300,7 +300,8 @@ Graphic:{
 		return null;
 	},
 
-	textoption : {ratio:[0.65, 0.6, 0.5]},
+	fontsizeratio : 0.6,
+	fontwidth : [null,0.5,0.4],
 	getNumberText : function(excell){
 		var text="", canum = excell.qchar, num = excell.qnum;
 		if(canum===0){ text = "";}

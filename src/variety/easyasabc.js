@@ -282,8 +282,6 @@ Graphic:{
 		}
 	},
 
-	textoption : {ratio:[0.85]},
-
 	drawIndicator : function(){
 		var g = this.vinc('indicator', 'auto', true), bd = this.board;
 		if(!this.range.indicator){ return;}

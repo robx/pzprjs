@@ -310,12 +310,12 @@ Graphic:{
 	
 	drawTapaNumbers : function(){
 		var g = this.vinc('cell_tapanum', 'auto');
-		var bw = this.bw, bh = this.bh, basesize = this.fontsizeratio[0];
+		var bw = this.bw, bh = this.bh;
 		var opts = [
-			{ option:{ratio:[basesize]},     pos:[{x:0,y:0}] },
-			{ option:{ratio:[basesize*0.7]}, pos:[{x:-0.4,y:-0.4},{x:0.4,y:0.4}] },
-			{ option:{ratio:[basesize*0.6]}, pos:[{x:-0.5,y:-0.4},{x:0,y:0.4},{x:0.5,y:-0.4}] },
-			{ option:{ratio:[basesize*0.5]}, pos:[{x:0,y:-0.5},{x:0.55,y:0},{x:0,y:0.5},{x:-0.55,y:0}] }
+			{ option:{},           pos:[{x:0,y:0}] },
+			{ option:{ratio:0.56}, pos:[{x:-0.4,y:-0.4},{x:0.4,y:0.4}] },
+			{ option:{ratio:0.48}, pos:[{x:-0.5,y:-0.4},{x:0,y:0.4},{x:0.5,y:-0.4}] },
+			{ option:{ratio:0.4},  pos:[{x:0,y:-0.5},{x:0.55,y:0},{x:0,y:0.5},{x:-0.55,y:0}] }
 		];
 
 		var clist = this.range.cells;

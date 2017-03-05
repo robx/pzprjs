@@ -64,15 +64,13 @@ Graphic:{
 		this.drawPekes();
 		this.drawLines();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget();
 	},
 
-	textoption : {ratio:[0.65]},
 	getNumberTextCore : function(num){
 		return {1:"同",2:"短",3:"長"}[num] || "";
 	}

@@ -60,8 +60,6 @@ Graphic:{
 
 	numbercolor_func : "fixed",
 
-	globalfontsizeratio : 0.85,
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedCenterLines();
@@ -69,8 +67,7 @@ Graphic:{
 
 		this.drawPekes();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawTarget();
 	},
@@ -78,8 +75,7 @@ Graphic:{
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 	}
 },
 

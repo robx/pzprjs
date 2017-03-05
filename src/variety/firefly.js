@@ -76,7 +76,7 @@ Graphic:{
 
 	numbercolor_func : "fixed",
 
-	globalfontsizeratio : 0.85,
+	fontsizeratio : 0.65,			/* 丸数字 */
 
 	paint : function(){
 		this.drawBGCells();

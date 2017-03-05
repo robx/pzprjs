@@ -176,7 +176,6 @@ Graphic:{
 
 	gridcolor_type : "THIN",
 
-	globalfontsizeratio : 0.85,
 	circleratio : [0.47, 0.42],
 
 	circlefillcolor_func : "qcmp",
@@ -191,8 +190,7 @@ Graphic:{
 		this.drawPekes();
 		this.drawLines_hashikake();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawTarget();
 	},
@@ -245,8 +243,7 @@ Graphic:{
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 	}
 },
 

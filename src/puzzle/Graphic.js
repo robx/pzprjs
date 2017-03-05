@@ -117,12 +117,13 @@ Graphic:{
 	bgcolor : "white",
 
 	// その他サイズ指定
-	globalfontsizeratio : 1,			// Fontサイズの倍率
-	fontsizeratio : [0.8, 0.7, 0.55],	// 文字の長さ別Fontサイズの倍率
+	textoption    : null,
+	fontsizeratio : 0.8,				// Fontサイズのcellsizeとの比率
+	fontwidth     : [0.5, 0.4, 0.33],	// 2文字以上のTextの横幅 (2文字〜の文字単位横幅を指定する)
 	fontfamily    : '',
+	isSupportMaxWidth : true,			// maxWidthサポートブラウザ
 	crosssize     : 0.4,
 	circleratio   : [0.40, 0.35],
-	textoption    : null,
 
 	// 枠外の一辺のmargin(セル数換算)
 	margin : 0.15,
@@ -397,6 +398,9 @@ Graphic:{
 	prepaint : function(){
 		if(this.suspended || !this.context){ return;}
 
+		this.isSupportMaxWidth = ((this.context.use.svg && pzpr.env.API.svgTextLength) ||
+								  (this.context.use.canvas && pzpr.env.API.maxWidth));
+
 		var bd = this.board, bm=2*this.margin,
 			x1 = this.range.x1, y1 = this.range.y1,
 			x2 = this.range.x2, y2 = this.range.y2;
@@ -566,15 +570,23 @@ Graphic:{
 		option = option || {};
 		var g = this.context;
 
+		var realsize = ((this.cw * (option.ratio || this.fontsizeratio))|0);
+		var maxLength = void 0;
+		var widtharray = option.width || this.fontwidth;
+		var widthratiopos = (text.length<=widtharray.length+1 ? text.length-2 : widtharray.length-1);
+		var widthratio = (widthratiopos>=0 ? widtharray[widthratiopos]*text.length : null);
+		if(this.isSupportMaxWidth){	// maxLengthサポートブラウザ
+			maxLength = (!!widthratio ? (realsize * widthratio) : void 0);
+		}
+		else{						// maxLength非サポートブラウザ
+			if(!!widthratio){ realsize = (realsize*widthratio*1.5/text.length)|0;}
+		}
+
 		var style = (option.style ? option.style+" " : "");
-		var ratioarray = option.ratio || this.fontsizeratio;
-		var ratio = ratioarray[text.length-1] || ratioarray[ratioarray.length-1];
-		ratio *= (option.globalratio || this.globalfontsizeratio);
-		var realsize = ((this.cw * ratio)|0);
 		g.font = style + realsize + "px " + this.fontfamily;
+
 		var hoffset = this.bw*(option.hoffset || 0.9);
 		var voffset = this.bh*(option.voffset || 0.82);
-
 		var position = option.position || CENTER;
 		switch(position){
 			case CENTER:                     g.textAlign='center';             break;
@@ -587,7 +599,7 @@ Graphic:{
 			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=voffset; break;
 		}
 
-		g.fillText(text, px, py);
+		g.fillText(text, px, py, maxLength);
 	}
 }
 });

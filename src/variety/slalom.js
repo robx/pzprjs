@@ -590,7 +590,7 @@ Graphic:{
 
 		g.vid = "text_stpos";
 		g.fillStyle = this.quescolor;
-		this.disptext(""+bd.gatemgr.components.length, px, py, {ratio:[0.75, 0.66]});
+		this.disptext(""+bd.gatemgr.components.length, px, py, {ratio:0.75});
 	},
 
 	repaintParts : function(blist){

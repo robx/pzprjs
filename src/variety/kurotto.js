@@ -72,7 +72,6 @@ Graphic:{
 	qanscolor : "black",
 	numbercolor_func : "qnum",
 
-	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],
 
 	// オーバーライド
@@ -94,8 +93,7 @@ Graphic:{
 		this.drawDotCells(false);
 		this.drawGrid();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawChassis();
 

@@ -179,10 +179,7 @@ Graphic:{
 		this.drawBGCells();
 		if     (this.pid==='country'){ this.drawNumbers();}
 		else if(this.pid==='moonsun'){ this.drawMarks();}
-		else if(this.pid==='onsen'){
-			this.drawCircles();
-			this.drawNumbers();
-		}
+		else if(this.pid==='onsen'){ this.drawCircledNumbers();}
 
 		if     (this.pid==='country'){ this.drawGrid();}
 		else if(this.pid!=='country'){ this.drawDashedGrid();}
@@ -200,14 +197,12 @@ Graphic:{
 "Graphic@onsen":{
 	hideHatena : true,
 	circleratio : [0.40, 0.37],
-	globalfontsizeratio : 0.75,
 	gridcolor_type : "LIGHT",
 
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 	}
 },
 "Graphic@moonsun":{

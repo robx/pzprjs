@@ -173,7 +173,7 @@ Graphic:{
 		g.lineWidth = 1;
 		g.strokeStyle = this.quescolor;
 
-		var textoption = {ratio:[0.45,0.35]};
+		var option = {ratio:0.45};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
@@ -190,7 +190,7 @@ Graphic:{
 			g.vid = "border_text_"+border.id;
 			if(border.qnum>0){
 				g.fillStyle = this.quescolor;
-				this.disptext(""+border.qnum, px, py, textoption);
+				this.disptext(""+border.qnum, px, py, option);
 			}
 			else{ g.vhide();}
 		}

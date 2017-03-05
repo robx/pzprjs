@@ -330,7 +330,7 @@ Graphic:{
 	}
 },
 "Graphic@wagiri":{
-	textoption : {ratio:[0.70]},
+	fontsizeratio : 0.70,
 	getNumberTextCore : function(num){
 		return {'-2':"?",1:"輪",2:"切"}[num] || "";
 	},

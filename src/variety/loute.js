@@ -237,7 +237,6 @@ Graphic:{
 	bordercolor_func : "qans",
 	numbercolor_func : "qnum",
 
-	globalfontsizeratio : 0.85,		/* sashigane用 */
 	circleratio : [0.40, 0.40],		/* 線幅を1pxにする */
 
 	paint : function(){
@@ -246,9 +245,9 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawCellArrows();
-		this.drawCircles();
 		this.drawHatenas_loute();
-		if(this.pid==='sashigane'){ this.drawNumbers();}
+		if(this.pid==='sashigane'){  this.drawCircledNumbers();}
+		else if(this.pid==='loute'){ this.drawCircles();}
 
 		this.drawBorderQsubs();
 
@@ -265,14 +264,13 @@ Graphic:{
 
 	drawHatenas_loute : function(){
 		var g = this.vinc('cell_hatena', 'auto');
-		var option = {ratio:(this.pid==='sashigane' ? [0.8] : [0.94])};
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 			g.vid = "cell_text_h_"+cell.id;
 			if(cell.qdir===-2){
 				g.fillStyle = (cell.error===1 ? this.errcolor1 : this.quescolor);
-				this.disptext("?", cell.bx*this.bw, cell.by*this.bh, option);
+				this.disptext("?", cell.bx*this.bw, cell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}

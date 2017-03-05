@@ -200,8 +200,6 @@ Graphic:{
 
 	circlefillcolor_func : "qcmp",
 
-	globalfontsizeratio : 0.9,	// 数字の倍率
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -211,8 +209,7 @@ Graphic:{
 		this.drawDepartures();
 		this.drawLines();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawChassis();
 
@@ -220,8 +217,6 @@ Graphic:{
 	}
 },
 "Graphic@rectslider":{
-	globalfontsizeratio : 1.0,	// 数字の倍率
-
 	fontShadecolor : "white",
 	qcmpcolor : "gray",
 

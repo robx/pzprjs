@@ -242,7 +242,7 @@ Graphic:{
 		g.lineWidth = 1;
 		g.strokeStyle = this.quescolor;
 
-		var option = {ratio:[0.45]};
+		var option = {ratio:0.45};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
