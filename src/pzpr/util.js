@@ -80,10 +80,7 @@ pzpr.util = {
 	getMouseButton : function(e){
 		if(e.touches!==void 0){
 			/* touchイベントだった場合 */
-			if(e.touches.length>=1){
-				return (e.touches.length===1 ? 'left' : 'right');
-			}
-			return '';
+			return (e.touches.length>=1 ? 'left' : '');
 		}
 		return ['left','middle','right'][(e.button!==void 0 ? e.button : e.which-1)] || '';
 	},
