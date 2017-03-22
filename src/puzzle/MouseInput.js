@@ -86,6 +86,7 @@ MouseEvent:{
 		if(!this.enableMouse){ return true;}
 		
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
+		if(!this.btn){ return;}
 		var addrtarget = this.getBoardAddress(e);
 		this.moveTo(addrtarget.bx, addrtarget.by);
 		
@@ -93,7 +94,7 @@ MouseEvent:{
 		e.preventDefault();
 	},
 	e_mouseup   : function(e){
-		if(!this.enableMouse){ return true;}
+		if(!this.enableMouse || !this.btn){ return true;}
 		
 		this.inputEnd();
 		
@@ -101,7 +102,7 @@ MouseEvent:{
 		e.preventDefault();
 	},
 	e_mousemove : function(e){
-		if(!this.enableMouse){ return true;}
+		if(!this.enableMouse || !this.btn){ return true;}
 		
 		if(e.touches!==void 0 || e.which===void 0 || e.which!==0 || (e.type.match(/pointermove/i) && e.buttons>0)){
 			var addrtarget = this.getBoardAddress(e);
