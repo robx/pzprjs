@@ -76,7 +76,7 @@ Cell:{
 "Cell@view":{
 	enableSubNumberArray : true,
 	maxnum : function(){
-		return Math.min(255, this.board.cols+this.board.rows-2);
+		return Math.min(999, this.board.cols+this.board.rows-2);
 	},
 	minnum : 0
 },

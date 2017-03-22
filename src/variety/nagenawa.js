@@ -55,7 +55,7 @@ MouseEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.room.clist.length);
+		return Math.min(999, this.room.clist.length);
 	},
 	minnum : 0
 },

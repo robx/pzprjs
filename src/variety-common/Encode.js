@@ -237,6 +237,11 @@ Encode:{
 				cell.qnum = parseInt(bstr.substr(i+1,2),16);
 				i+=2;
 			}
+			else if(ca==="-"){
+				cell.qdir = parseInt(bstr.substr(i+1,1),16);
+				cell.qnum = parseInt(bstr.substr(i+2,3),16);
+				i+=4;
+			}
 			else if(ca>='a' && ca<='z'){ c+=(parseInt(ca,36)-10);}
 
 			c++;
@@ -248,9 +253,10 @@ Encode:{
 		var cm = "", count = 0, bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
-			if     (qn===-2)        { pstr=(dir  )+".";}
-			else if(qn>= 0&&qn<  16){ pstr=(dir  )+qn.toString(16);}
-			else if(qn>=16&&qn< 256){ pstr=(dir+5)+qn.toString(16);}
+			if     (qn===-2)         { pstr=(dir  )+".";}
+			else if(qn>=  0&&qn<  16){ pstr=(dir  )+qn.toString(16);}
+			else if(qn>= 16&&qn< 256){ pstr=(dir+5)+qn.toString(16);}
+			else if(qn>=256&&qn<4096){ pstr="-"+(dir)+qn.toString(16);}
 			else{ count++;}
 
 			if     (count=== 0){ cm += pstr;}

@@ -34,7 +34,7 @@ Cell:{
 
 	maxnum : function(){
 		var max=this.board.cell.length-1;
-		return (max<=255?max:255);
+		return (max<=999?max:999);
 	},
 	minnum : 0,
 

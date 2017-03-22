@@ -47,7 +47,7 @@ pzpr.classmgr.makeCommon({
 	propnorec : { color:1, error:1, qinfo:1 },
 
 	// 入力できる最大・最小の数字
-	maxnum : 255,
+	maxnum : 999,
 	minnum : 1,
 
 	//---------------------------------------------------------------------------

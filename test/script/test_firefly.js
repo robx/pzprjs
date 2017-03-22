@@ -36,6 +36,6 @@ ui.debug.addDebugData('firefly', {
 				 "mouse,leftx4, 5,1", "mouse,left, 5,1, 3,1",
 				 "mouse,leftx5, 7,1", "mouse,left, 7,1, 9,1",
 				 "mouse,leftx6, 9,1", "mouse,rightx2, 11,1"],
-		  result:"pzprv3/firefly/1/6/1,- 2,0 3,1 4,2 0,3 0,255 /0 0 0 0 0 /" }
+		  result:"pzprv3/firefly/1/6/1,- 2,0 3,1 4,2 0,3 0,999 /0 0 0 0 0 /" }
 	]
 });

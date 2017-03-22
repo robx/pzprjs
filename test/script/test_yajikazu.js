@@ -24,6 +24,6 @@ ui.debug.addDebugData('yajikazu', {
 				 "mouse,leftx4, 5,1", "mouse,left, 5,1, 3,1",
 				 "mouse,leftx5, 7,1", "mouse,left, 7,1, 9,1",
 				 "mouse,leftx6, 9,1", "mouse,rightx2, 11,1"],
-		  result:"pzprv3/yajikazu/1/6/1,- 2,0 3,1 4,2 0,3 0,255 /. . . . . . /" }
+		  result:"pzprv3/yajikazu/1/6/1,- 2,0 3,1 4,2 0,3 0,999 /. . . . . . /" }
 	]
 });

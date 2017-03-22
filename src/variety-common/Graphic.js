@@ -412,7 +412,7 @@ Graphic:{
 		var tl = this.cw*0.16;		// 矢じりの長さの座標(中心-長さ)
 		var tw = this.cw*0.12;		// 矢じりの幅
 		var dy = -this.bh*0.6;
-		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8];
+		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8, this.bw*0.85];
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){

@@ -89,7 +89,7 @@ KeyEvent:{
 },
 "Cell@bag":{
 	maxnum : function(){
-		return Math.min(255, this.board.cols+this.board.rows-1);
+		return Math.min(999, this.board.cols+this.board.rows-1);
 	},
 	minnum : 2,
 
