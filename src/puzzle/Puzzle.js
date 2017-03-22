@@ -499,7 +499,7 @@ function setCanvasEvents(puzzle){
 	ae("mousedown", execMouseDown);
 	ae("mousemove", execMouseMove);
 	ae("mouseup",   execMouseUp);
-	ae("pointercancel", execMouseCancel);
+	ae("mousecancel", execMouseCancel);
 	puzzle.canvas.oncontextmenu = function(){ return false;};
 	puzzle.canvas.style.touchAction = 'pinch-zoom';
 	
