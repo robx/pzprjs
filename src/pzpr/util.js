@@ -4,24 +4,24 @@
 (function(){
 
 var api = pzpr.env.API,
-	eventMouseDown = "mousedown",
-	eventMouseMove = "mousemove",
-	eventMouseUp   = "mouseup";
+	eventMouseDown = ["mousedown"],
+	eventMouseMove = ["mousemove"],
+	eventMouseUp   = ["mouseup"];
 
 if(api.pointerevent){
-	eventMouseDown = "pointerdown";
-	eventMouseMove = "pointermove";
-	eventMouseUp   = "pointerup";
+	eventMouseDown = ["pointerdown"];
+	eventMouseMove = ["pointermove"];
+	eventMouseUp   = ["pointerup"];
 }
 else if(api.mspointerevent){
-	eventMouseDown = "MSPointerDown";
-	eventMouseMove = "MSPointerMove";
-	eventMouseUp   = "MSPointerUp";
+	eventMouseDown = ["MSPointerDown"];
+	eventMouseMove = ["MSPointerMove"];
+	eventMouseUp   = ["MSPointerUp"];
 }
 else if(api.touchevent){
-	eventMouseDown = "touchstart";
-	eventMouseMove = "touchmove";
-	eventMouseUp   = "touchend";
+	eventMouseDown.push("touchstart");
+	eventMouseMove.push("touchmove");
+	eventMouseUp.push(  "touchend");
 }
 
 //----------------------------------------------------------------------
@@ -65,13 +65,17 @@ pzpr.util = {
 	// pzpr.util.addEvent()          addEventListener()を呼び出す
 	//----------------------------------------------------------------------
 	addEvent : function(el, type, self, callback, capt){
-		if     (type==="mousedown"){ type = eventMouseDown;}
-		else if(type==="mousemove"){ type = eventMouseMove;}
-		else if(type==="mouseup")  { type = eventMouseUp;}
+		var types = [type];
+		if     (type==="mousedown"){ types = eventMouseDown;}
+		else if(type==="mousemove"){ types = eventMouseMove;}
+		else if(type==="mouseup")  { types = eventMouseUp;}
 		
 		function executer(e){ callback.call(self, e);}
-		el.addEventListener(type, executer, !!capt);
-		return executer;
+		types.forEach(function(type){ el.addEventListener(type, executer, !!capt);});
+		
+		return function remover(){
+			types.forEach(function(type){ el.removeEventListener(type, executer, !!capt);});
+		};
 	},
 
 	//---------------------------------------------------------------------------
