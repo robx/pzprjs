@@ -499,7 +499,9 @@ function setCanvasEvents(puzzle){
 	ae("mousedown", execMouseDown);
 	ae("mousemove", execMouseMove);
 	ae("mouseup",   execMouseUp);
+	ae("pointercancel", execMouseCancel);
 	puzzle.canvas.oncontextmenu = function(){ return false;};
+	puzzle.canvas.style.touchAction = 'pinch-zoom';
 	
 	// キー入力イベントの設定
 	ae("keydown", execKeyDown);
@@ -513,6 +515,9 @@ function execMouseMove(e){
 }
 function execMouseUp(e){
 	if(!!this.mouse){ this.mouse.e_mouseup(e);}
+}
+function execMouseCancel(e){
+	if(!!this.mouse){ this.mouse.e_mousecancel(e);}
 }
 function execKeyDown(e){
 	if(!!this.key){ this.key.e_keydown(e);}

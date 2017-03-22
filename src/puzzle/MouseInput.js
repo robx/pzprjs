@@ -79,6 +79,7 @@ MouseEvent:{
 	// mv.e_mousedown() Canvas上でマウスのボタンを押した際のイベント共通処理
 	// mv.e_mouseup()   Canvas上でマウスのボタンを放した際のイベント共通処理
 	// mv.e_mousemove() Canvas上でマウスを動かした際のイベント共通処理
+	// mv.e_mousecancel() Canvas上でマウス操作がキャンセルされた場合のイベント共通処理
 	//---------------------------------------------------------------------------
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
@@ -86,7 +87,7 @@ MouseEvent:{
 		if(!this.enableMouse){ return true;}
 		
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
-		if(!this.btn){ return;}
+		if(!this.btn){ this.mousereset(); return;}
 		var addrtarget = this.getBoardAddress(e);
 		this.moveTo(addrtarget.bx, addrtarget.by);
 		
@@ -113,6 +114,9 @@ MouseEvent:{
 		e.stopPropagation();
 		e.preventDefault();
 	},
+	e_mousecancel : function(e){
+		this.mousereset();
+	},
 
 	//---------------------------------------------------------------------------
 	// mv.setMouseButton()  イベントが起こったボタンを設定する
@@ -134,7 +138,7 @@ MouseEvent:{
 		var pix = {px:NaN,py:NaN};
 		var g = pc.context;
 		if(!g){ return pix;}
-		if(!pzpr.env.API.touchevent || pzpr.env.OS.iOS){
+		if(!pzpr.env.API.touchevent || pzpr.env.API.pointerevent || pzpr.env.OS.iOS){
 			if(!isNaN(e.offsetX)){ pix = {px:e.offsetX, py:e.offsetY};}
 			else                 { pix = {px:e.layerX, py:e.layerY};}  // Firefox 39以前, iOSはこちら
 		}

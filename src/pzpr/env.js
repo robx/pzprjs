@@ -44,8 +44,8 @@ pzpr.env = (function(){
 	
 	var api = {
 		touchevent      : isbrowser && ((!!window.ontouchstart) || (!!document.createTouch)),
-		pointerevent    : isbrowser && (!!navigator.pointerEnabled),
-		mspointerevent  : isbrowser && (!!navigator.msPointerEnabled),
+		pointerevent    : isbrowser && (!!window.PointerEvent),
+		mspointerevent  : isbrowser && (!!window.MSPointerEvent),
 		maxWidth        : isbrowser && ((ChromeVersion||1000) >= 18) && ((SafariVersion||1000) >= 6),
 		svgTextLength   : !isbrowser || ((FireFoxVersion||1000) >= 25),
 		anchor_download : isbrowser && (document.createElement("a").download!==(void 0))
