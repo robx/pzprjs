@@ -46,6 +46,8 @@ MouseEvent:{
 	savedInputMode: {},	// モード変更時の保存値
 	inputModes : {edit:[],play:[]},	// 現在のパズル種類にてauto以外で有効なinputModeの配列
 
+	inversion : false,	// マウスのボタンを左右反転する
+
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
 	// mv.modechange() モード変更時に設定を初期化する
@@ -128,7 +130,7 @@ MouseEvent:{
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.puzzle.key;
 		kc.checkmodifiers(e);
-		if(kc.isSHIFT || kc.isMETA){
+		if((kc.isSHIFT || kc.isMETA) !== this.inversion){
 			if     (this.btn==='left'){ this.btn = 'right';}
 			else if(this.btn==='right'){ this.btn = 'left';}
 		}
@@ -252,6 +254,13 @@ MouseEvent:{
 		type = (!!type ? type : (this.puzzle.editmode?'edit':'play'));
 		var list = ['auto'];
 		return list.concat(this.inputModes[type]);
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.setInversion()     マウスの左右反転設定を行う
+	//---------------------------------------------------------------------------
+	setInversion : function(input){
+		this.inversion = !!input;
 	},
 
 	//---------------------------------------------------------------------------
