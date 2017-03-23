@@ -97,7 +97,7 @@ pzpr.util = {
 			/* touchイベントだった場合 */
 			return (e.touches.length===1 ? 'left' : '');
 		}
-		else if(e.pointerType!==void 0){
+		else if(!!e.pointerType && e.pointerType!=='mouse'){
 			/* pointerイベントだった場合 */
 			return (e.isPrimary ? 'left' : '');
 		}
