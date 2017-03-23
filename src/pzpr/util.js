@@ -9,6 +9,12 @@ var api = pzpr.env.API,
 	eventMouseUp   = ["mouseup"],
 	eventMouseCancel = [""];
 
+if(pzpr.env.bz.AndroidBrowser){
+	eventMouseDown = [""];
+	eventMouseMove = [""];
+	eventMouseUp   = [""];
+}
+
 if(api.pointerevent){
 	eventMouseDown = ["pointerdown"];
 	eventMouseMove = ["pointermove"];

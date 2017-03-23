@@ -8,9 +8,14 @@ pzpr.env = (function(){
 	var isbrowser = pzpr.Candle.env.browser;
 	var UA  = (isbrowser ? navigator.userAgent : '');
 	
-	var bz = {
-		Presto: (typeof window==='object' && !!window.opera)
+	var ios     = (UA.indexOf('like Mac OS X') > -1);
+	var android = (UA.indexOf('Android') > -1);
+	var os = {
+		iOS    : (ios),
+		Android: (android),
+		mobile : (ios || android)
 	};
+	
 	var FireFoxVersion = (function(){
 		if(UA.match(/Firefox\/(\w+(\.\w+)?)/)){
 			var ver = RegExp.$1;
@@ -33,13 +38,9 @@ pzpr.env = (function(){
 		}
 		return null;
 	})();
-	
-	var ios     = (UA.indexOf('like Mac OS X') > -1);
-	var android = (UA.indexOf('Android') > -1);
-	var os = {
-		iOS    : (ios),
-		Android: (android),
-		mobile : (ios || android)
+	var bz = {
+		AndroidBrowser: (os.Android && SafariVersion),
+		Presto: (typeof window==='object' && !!window.opera)
 	};
 	
 	var api = {
