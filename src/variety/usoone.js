@@ -80,6 +80,27 @@ Cell:{
 		return (this.qnum !== this.countDir4Cell(function(cell){ return cell.isShade();}));
 	}
 },
+CellList:{
+	// 一部qsubで消したくないものがあるため上書き
+	subclear : function(){
+		var isrec = true;
+		var props = [], norec = {};
+		if(this.length>0){
+			props = this[0].getproplist(['sub','info']);
+			norec = this[0].propnorec;
+		}
+		for(var i=0;i<this.length;i++){
+			var piece = this[i];
+			for(var j=0;j<props.length;j++){
+				var pp = props[j], def = piece.constructor.prototype[pp];
+				if(piece[pp]!==def && !(pp==='qcmp' && piece.qcmp===2)){
+					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
+					piece[pp] = def;
+				}
+			}
+		}
+	}
+},
 Board:{
 	hasborder : 1
 },

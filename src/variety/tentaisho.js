@@ -114,16 +114,7 @@ Cell:{
 	qnum : 0,
 	minnum : 0,
 
-	disInputHatena : true,
-
-	// 一部qsubで消したくないものがあるため上書き
-	subclear : function(){
-		if(this.qsub===1){
-			this.addOpe('qsub', 1, 0);
-			this.qsub = 0;
-		}
-		this.error = 0;
-	}
+	disInputHatena : true
 },
 Cross:{
 	qnum : 0,
@@ -208,6 +199,25 @@ CellList:{
 			}
 		}
 		return ret;
+	},
+	// 一部qsubで消したくないものがあるため上書き
+	subclear : function(){
+		var isrec = true;
+		var props = [], norec = {};
+		if(this.length>0){
+			props = this[0].getproplist(['sub','info']);
+			norec = this[0].propnorec;
+		}
+		for(var i=0;i<this.length;i++){
+			var piece = this[i];
+			for(var j=0;j<props.length;j++){
+				var pp = props[j], def = piece.constructor.prototype[pp];
+				if(piece[pp]!==def && !(pp==='qsub' && piece.qsub===3)){
+					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
+					piece[pp] = def;
+				}
+			}
+		}
 	}
 },
 
