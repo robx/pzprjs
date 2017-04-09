@@ -12,12 +12,20 @@ MouseEvent:{
 	RBShadeCell : true,
 	use    : true,
 	redblk : true,
-
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['shade','unshade','submark','subcircle','subcross']},
+	mouseinput : function(){ // オーバーライド
+		if     (this.inputMode==='subcircle'){ this.inputqcmp(1);}
+		else if(this.inputMode==='subcross') { this.inputqcmp(2);}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='submark'){ this.inputqcmp();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputcell_usoone();}
 			else if(this.mousemove){ this.inputcell();}
-			else if(this.mouseend && this.notInputted()){ this.inputqcmp_usoone();}
+			else if(this.mouseend && this.notInputted()){ this.inputqcmp();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
@@ -29,18 +37,24 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){}
 		else if(cell.isNum() && this.btn==='left'){
-			this.inputqcmp_usoone();
+			this.inputqcmp();
 		}
 		else{
 			this.inputcell();
 		}
 	},
-	inputqcmp_usoone : function(){
+	inputqcmp : function(val){
 		var cell = this.getcell();
 		if(cell.isnull || !cell.isNum()){ return;}
 
-		cell.setQcmp((this.btn==='left'?[2,0,1]:[1,2,0])[cell.qcmp]);
-		if(this.puzzle.getConfig('use')===2 && cell.qcmp===0){
+		if(val===void 0){
+			cell.setQcmp((this.btn==='left'?[2,0,1]:[1,2,0])[cell.qcmp]);
+		}
+		else{
+			cell.setQcmp(cell.qcmp!==val ? val : 0);
+		}
+
+		if(this.inputMode!=='submark' && this.puzzle.getConfig('use')===2 && cell.qcmp===0){
 			this.inputcell();
 		}
 		else{

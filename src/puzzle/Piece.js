@@ -452,6 +452,18 @@ pzpr.classmgr.makeCommon({
 
 	adjborder : {},	// 四方向に隣接する境界線を保持する
 
+	//-----------------------------------------------------------------------
+	// cross.getNum()     該当するCrossの数字を返す
+	// cross.setNum()     該当するCrossに数字を設定する
+	// cross.noNum()      該当するCrossに数字がないか返す
+	//-----------------------------------------------------------------------
+	getNum : function(){ return this.qnum;},
+	setNum : function(val){
+		val = ((val===-2 && this.qnum===val)?-1:val);
+		this.setQnum(val);
+	},
+	noNum : function(){ return !this.isnull && this.qnum===-1;},
+
 	//---------------------------------------------------------------------------
 	// cross.setCrossBorderError() 交点とその周り四方向のBorderにエラーフラグを設定する
 	//---------------------------------------------------------------------------

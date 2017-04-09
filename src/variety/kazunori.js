@@ -9,7 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','number'],play:['number','clear']},
+	mouseinput_number: function(){
+		if(this.mousestart){
+			if(this.puzzle.editmode){ this.inputmark_mouseup();}
+			else                    { this.inputqnum();}
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}

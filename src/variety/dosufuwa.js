@@ -9,7 +9,13 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border'],play:['balloon','ironball','objblank']},
+	mouseinput_other : function(){
+		if(this.puzzle.playmode){
+			this.inputcell_dosufuwa();
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell_dosufuwa();}
 		}
@@ -24,7 +30,16 @@ MouseEvent:{
 		if(cell.isnull || cell===this.mouseCell || cell.ques===1){ return;}
 
 		if(this.inputData===null){
-			if(this.btn==='left'){
+			if(this.inputMode==='balloon'){
+				this.inputData = (cell.qans!==1?1:0);
+			}
+			else if(this.inputMode==='ironball'){
+				this.inputData = (cell.qans!==2?1:0);
+			}
+			else if(this.inputMode==='objblank'){
+				this.inputData = (cell.qsub!==1?-2:0);
+			}
+			else if(this.btn==='left'){
 				if     (cell.qans===1){ this.inputData=2;}
 				else if(cell.qans===2){ this.inputData=-2;}
 				else if(cell.qsub===1){ this.inputData=0;}

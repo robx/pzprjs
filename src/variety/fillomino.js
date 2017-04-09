@@ -9,7 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['copynum','number','clear','border','subline']},
+	mouseinput_other : function(){
+		if(this.inputMode==='copynum'){ this.dragnumber_fillomino();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode && (this.mousestart || this.mousemove)){
 			if(this.btn==='left'){
 				if(this.isBorderMode()){ this.inputborder();}

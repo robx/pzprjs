@@ -9,7 +9,19 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes:{edit:['circle-unshade','circle-shade','bgpaint'],play:['border','subline']},
+	mouseinput : function(){ // オーバーライド
+		if(this.puzzle.editmode && this.inputMode!=='auto'){
+			if(this.mousestart){ this.inputstar();}
+		}
+		else{
+			this.common.mouseinput.call(this);
+		}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='bgpaint'){ this.inputBGcolor1();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left' && this.isBorderMode()){ this.inputborder_tentaisho();}
@@ -66,7 +78,9 @@ MouseEvent:{
 
 		var star = pos.gets();
 		if(star!==null){
-			if     (this.btn==='left') { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
+			if   (this.inputMode==='circle-unshade'){ star.setStar(star.getStar()!==1?1:0);}
+			else if(this.inputMode==='circle-shade'){ star.setStar(star.getStar()!==2?2:0);}
+			else if(this.btn==='left') { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
 			else if(this.btn==='right'){ star.setStar({0:2,1:0,2:1}[star.getStar()]);}
 			star.draw();
 		}

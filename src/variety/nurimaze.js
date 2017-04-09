@@ -10,8 +10,19 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['border', 'circle', 'triangle'], play:['shade','unshade']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='shade'||this.inputMode==='unshade'){
+			this.inputtile_nurimaze();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='circle'||this.inputMode==='triangle'){
+			this.inputmarks();
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile_nurimaze();}
 		}
@@ -102,9 +113,19 @@ MouseEvent:{
 		}
 	},
 
+	inputmarks : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+		
+		this.inputQuesMark(cell);
+		
+		this.mouseCell = cell;
+	},
 	inputQuesMark :function(cell){
 		var bd = this.board, newques=-1;
-		if     (this.btn==='left' ){ newques={0:41,41:42,42:0}[cell.ques];}
+		if     (this.inputMode==='circle')  { newques = (cell.ques!==41?41:0);}
+		else if(this.inputMode==='triangle'){ newques = (cell.ques!==42?42:0);}
+		else if(this.btn==='left' ){ newques={0:41,41:42,42:0}[cell.ques];}
 		else if(this.btn==='right'){ newques={0:42,42:41,41:0}[cell.ques];}
 
 		if(newques===0 || (!bd.startpos.equals(cell) && !bd.goalpos.equals(cell))){

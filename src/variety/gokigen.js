@@ -10,15 +10,21 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-
-	mouseinput : function(){
+	inputModes:{edit:['number','clear']},
+	mouseinput_clear : function(){
+		this.inputclean_cross();
+	},
+	mouseinput_number: function(){
+		if(this.mousestart){ this.inputqnum_cross();}
+	},
+	mouseinput_auto : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode){
 			if     (this.mousestart || this.mousemove)  { this.inputslash();}
 			else if(this.mouseend && this.notInputted()){ this.clickslash();}
 		}
 		else if(puzzle.editmode && this.mousestart){
-			if     (puzzle.pid==='gokigen'){ this.inputcross();}
+			if     (puzzle.pid==='gokigen'){ this.inputqnum_cross();}
 			else if(puzzle.pid==='wagiri') { this.inputquestion();}
 		}
 	},
@@ -94,7 +100,7 @@ MouseEvent:{
 			this.setcursor(pos);
 		}
 		else if(pos.oncross()){
-			this.inputcross();
+			this.inputqnum_cross();
 		}
 		else if(pos.oncell()){
 			this.inputwagiri(pos);

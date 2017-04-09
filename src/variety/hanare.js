@@ -9,7 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','number'],play:['dot']},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_hanare();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart){ this.inputqnum_hanare();}

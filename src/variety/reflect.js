@@ -10,8 +10,13 @@
 // マウス入力系
 MouseEvent:{
 	redline : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['quesmark','quesmark-','number'],play:['line','peke']},
+	mouseinput_other : function(){
+		if(this.inputMode.match(/quesmark/)){
+			if(this.mousestart){ this.inputQuesTriangle();}
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -22,8 +27,11 @@ MouseEvent:{
 			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.inputQues([0,2,3,4,5,11]);}
+			if(this.mousestart){ this.inputQuesTriangle();}
 		}
+	},
+	inputQuesTriangle :function(cell){
+		this.inputQues([0,2,3,4,5,11]);
 	}
 },
 
@@ -57,6 +65,14 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 
+	maxnum : function(){
+		var qu = this.ques, max = -1;
+		if     (qu===2||qu===3){ max += ((this.by>>1)+1);}
+		else if(qu===4||qu===5){ max += (this.board.rows-(this.by>>1));}
+		if     (qu===3||qu===4){ max += ((this.bx>>1)+1);}
+		else if(qu===2||qu===5){ max += (this.board.cols-(this.bx>>1));}
+		return max;
+	},
 	minnum : 3,
 
 	getTriLine : function(){

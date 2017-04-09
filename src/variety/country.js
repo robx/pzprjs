@@ -8,10 +8,21 @@
 ['country','moonsun','onsen'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@country,onsen":{
+	inputModes : {edit:['border','number','clear'],play:['line','peke','subcircle','subcross','clear']}
+},
+"MouseEvent@moonsun":{
+	inputModes : {edit:['border','moon','sun','clear'],play:['line','peke','lineblank','clear']},
+	mouseinput_other : function(){
+		switch(this.inputMode){
+			case 'moon': this.inputFixedNumber(1); break;
+			case 'sun':  this.inputFixedNumber(2); break;
+		}
+	}
+},
 MouseEvent:{
 	redline : true,
-	
-	mouseinput : function(){
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left'){ this.inputLine();}
@@ -41,7 +52,7 @@ MouseEvent:{
 		return false;
 	}
 },
-"MouseEvent@moonsun":{
+"MouseEvent@moonsun#2":{
 	// オーバーライド
 	inputMB : function(){
 		var cell = this.getcell();

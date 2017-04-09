@@ -11,8 +11,14 @@
 MouseEvent:{
 	use    : true,
 	redblk : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['shade','unshade']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='shade'||this.inputMode==='unshade'){
+			this.inputtile();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}

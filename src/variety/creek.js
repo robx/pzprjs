@@ -10,13 +10,19 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-
-	mouseinput : function(){
+	inputModes:{edit:['number','clear'],play:['shade','unshade']},
+	mouseinput_clear : function(){
+		this.inputclean_cross();
+	},
+	mouseinput_number: function(){
+		if(this.mousestart){ this.inputqnum_cross();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.inputcross();}
+			if(this.mousestart){ this.inputqnum_cross();}
 		}
 	}
 },

@@ -8,8 +8,37 @@
 ['minarism','kropki'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@minarism#1":{
+	inputModes : {edit:['ineq','number'],play:['number','clear']},
+	mouseinput : function(){ // オーバーライド
+		if(this.puzzle.editmode && this.inputMode.match(/number/)){
+			if(this.mousestart){ this.inputmark_mouseup();}
+		}
+		else{
+			this.common.mouseinput.call(this);
+		}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='ineq'){
+			if(this.mousestart || this.mousemove){
+				this.inputmark_mousemove();
+			}
+		}
+	}
+},
+"MouseEvent@kropki#1":{
+	inputModes : {edit:['circle-unshade','circle-shade'],play:['number','clear']},
+	mouseinput : function(){ // オーバーライド
+		if(this.puzzle.editmode && this.inputMode!=='auto'){
+			if(this.mousestart){ this.inputmark_kropki();}
+		}
+		else{
+			this.common.mouseinput.call(this);
+		}
+	}
+},
 MouseEvent:{
-	mouseinput : function(){
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
@@ -45,7 +74,7 @@ MouseEvent:{
 		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
 
-		if(!this.cursor.equals(pos)){
+		if(!this.cursor.equals(pos) && this.inputMode==='auto'){
 			this.setcursor(pos);
 			pos.draw();
 		}
@@ -53,24 +82,27 @@ MouseEvent:{
 			var border = pos.getb();
 			if(border.isnull){ return;}
 
-			var qn=border.qnum, qs=border.qdir, qm=(border.isHorz()?0:2);
-			var max=Math.max(this.board.cols,this.board.rows)-1;
+			var dir = border.qdir, num = border.qnum, val;
+			// -3,-2:IneqMark -1:何もなし 0:丸のみ 1以上:数字
+			if  (num!==-1){ val = (num>0 ? num : 0);}
+			else if(dir>0){ val = dir - (((border.bx%2)===1)?4:6);}
+			else          { val = -1;}
+
+			var max=Math.max(this.board.cols,this.board.rows)-1, min = -3;
+			if(this.inputMode.match(/number/)){ min = -1;}
+
 			if(this.btn==='left'){
-				if     (qn===-1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+1);}
-				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(qm+2);}
-				else if(qn===-1 && qs===qm+2){ border.setQnum(1);  border.setQdir(0);}
-				else if(qn===max)            { border.setQnum(-2); border.setQdir(0);}
-				else if(qn===-2)             { border.setQnum(-1); border.setQdir(0);}
-				else{ border.setQnum(qn+1);}
+				if(min<=val && val<max){ val++;  }
+				else                   { val=min;}
 			}
 			else if(this.btn==='right'){
-				if     (qn===-1 && qs===0)   { border.setQnum(-2); border.setQdir(0);}
-				else if(qn===-2)             { border.setQnum(max);border.setQdir(0);}
-				else if(qn=== 1 && qs===0)   { border.setQnum(-1); border.setQdir(qm+2);}
-				else if(qn===-1 && qs===qm+2){ border.setQnum(-1); border.setQdir(qm+1);}
-				else if(qn===-1 && qs===qm+1){ border.setQnum(-1); border.setQdir(0);}
-				else{ border.setQnum(qn-1);}
+				if(min<val && val<=max){ val--;  }
+				else                   { val=max;}
 			}
+
+			if     (val >= 0){ border.setQdir(0);     border.setQnum(val>=1 ? val : -2);}
+			else if(val===-1){ border.setQdir(0);     border.setQnum(-1);}
+			else             { border.setQdir(val+(((border.bx%2)===1)?4:6)); border.setQnum(-1);}
 			border.draw();
 		}
 	}
@@ -80,7 +112,7 @@ MouseEvent:{
 		var pos = this.getpos(0.33);
 		if(!pos.isinside()){ return;}
 
-		if(!this.cursor.equals(pos)){
+		if(!this.cursor.equals(pos) && this.inputMode==='auto'){
 			this.setcursor(pos);
 			pos.draw();
 		}
@@ -89,7 +121,9 @@ MouseEvent:{
 			if(border.isnull){ return;}
 
 			var qn=border.qnum;
-			if(this.btn==='left'){
+			if   (this.inputMode==='circle-unshade'){ border.setQnum(border.qnum!==1?1:0);}
+			else if(this.inputMode==='circle-shade'){ border.setQnum(border.qnum!==2?2:0);}
+			else if(this.btn==='left'){
 				if     (qn===-1){ border.setQnum(1);}
 				else if(qn=== 1){ border.setQnum(2);}
 				else{ border.setQnum(-1);}

@@ -10,8 +10,17 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-
-	mouseinput : function(){
+	inputModes:{edit:['border','circle'],play:['shade','unshade']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='shade'||this.inputMode==='unshade'){
+			this.inputcell_nondango();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='circle'){ this.inputcircle();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell_nondango();}
 		}
@@ -24,7 +33,7 @@ MouseEvent:{
 	inputcell_nondango : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(cell.ques===0){
+		if(cell.ques===0 || this.inputMode==='shade'){
 			this.inputcell();
 			if(this.inputData===1){ this.mousereset();}
 		}
@@ -37,12 +46,14 @@ MouseEvent:{
 	},
 	inputcircle : function(){
 		var cell = this.getcell();
-		if(cell.isnull){ return;}
+		if(cell.isnull || cell===this.mouseCell){ return;}
 
 		cell.setQues(cell.ques===8?0:8);
 		cell.setQans(0);
 		cell.setQsub(0);
 		cell.draw();
+
+		this.mouseCell = cell;
 	}
 },
 

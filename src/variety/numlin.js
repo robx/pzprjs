@@ -10,8 +10,8 @@
 // マウス入力系
 MouseEvent:{
 	redline : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['line','peke']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}

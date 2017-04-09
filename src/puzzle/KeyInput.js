@@ -265,7 +265,7 @@ KeyEvent:{
 		this.by = 1;
 		this.mode51 = (this.puzzle.klass.EXCell.prototype.ques===51);
 		this.modesnum = (this.puzzle.klass.Cell.prototype.enableSubNumberArray);
-		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
+		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 4;} // right
 	},
 	init : function(bx,by){
 		this.bx  = bx;
@@ -322,7 +322,7 @@ KeyEvent:{
 	},
 	adjust_modechange : function(){
 		if(this.setminmax_customize!==this.common.setminmax_customize){ this.setminmax();} // editmode, playmodeでminmaxが異なるパズル
-		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 2;}
+		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 4;} // right
 		else if(this.modesnum && this.puzzle.playmode){ this.targetdir = 0;}
 	},
 	adjust_cell_to_excell : function(){
@@ -385,6 +385,7 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	// tc.chtarget()     SHIFTを押した時に[＼]の入力するところを選択する
 	// tc.detectTarget() [＼]の右・下どちらに数字を入力するか判断する
+	// tc.getNumOfTarget() Cell上でtargetとして取りうる数を返す
 	//---------------------------------------------------------------------------
 	targetdir : 0,
 	chtarget : function(){
@@ -402,25 +403,44 @@ KeyEvent:{
 		this.draw();
 	},
 	detectTarget : function(piece){
+		piece = piece || this.getobj();
 		var bd = this.board, adc=piece.adjacent;
 		if(piece.isnull){ return 0;}
 		else if(piece.group==='cell'){
-			if     (piece.ques!==51 || piece.id===bd.cell.length-1){ return 0;}
-			else if((adc.right.isnull  || adc.right.ques ===51) &&
-				    (adc.bottom.isnull || adc.bottom.ques===51)){ return 0;}
-			else if (adc.right.isnull  || adc.right.ques ===51) { return 4;}
-			else if (adc.bottom.isnull || adc.bottom.ques===51) { return 2;}
+			if(piece.ques!==51 || piece.id===bd.cell.length-1){ return 0;}
+			else{
+				var invalidRight  = (adc.right.isnull  || adc.right.ques ===51);
+				var invalidBottom = (adc.bottom.isnull || adc.bottom.ques===51);
+				if(invalidRight && invalidBottom){ return 0;}
+				else if(invalidBottom){ return piece.RT;}
+				else if(invalidRight) { return piece.DN;}
+			}
 		}
 		else if(piece.group==='excell'){
 			if     (piece.id===bd.cols+bd.rows){ return 0;}
 			else if((piece.by===-1 && adc.bottom.ques===51) ||
 				    (piece.bx===-1 && adc.right.ques ===51)){ return 0;}
-			else if(piece.by===-1){ return 4;}
-			else if(piece.bx===-1){ return 2;}
+			else if(piece.by===-1){ return piece.DN;}
+			else if(piece.bx===-1){ return piece.RT;}
 		}
 		else{ return 0;}
 
 		return this.targetdir;
+	},
+	getNumOfTarget : function(piece){
+		var num = 1;
+		if(piece.isnull){ num = 0;}
+		else if(piece.group==='cell'){
+			if(this.modesnum && this.puzzle.playmode){
+				num = 4 - (this.pid==='factors' ? 1 : 0);
+			}
+			else if(piece.ques===51){
+				var adc = piece.adjacent;
+				num = ((!adc.right.isnull  && adc.right.ques !==51) ? 1 : 0) +
+					  ((!adc.bottom.isnull && adc.bottom.ques!==51) ? 1 : 0);
+			}
+		}
+		return num;
 	}
 }
 });

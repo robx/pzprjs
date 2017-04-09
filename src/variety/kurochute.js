@@ -11,8 +11,8 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use : true,
-
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['shade','unshade','completion']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputcell_kurochute();}
 			else if(this.mousemove){ this.inputcell();}

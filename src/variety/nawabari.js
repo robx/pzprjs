@@ -9,9 +9,9 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
-		if(this.inputMode==='empty'){ this.inputempty();}
-		else if(this.puzzle.playmode){
+	inputModes : {edit:['number','clear'],play:['border','subline']},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
 				else{ this.inputQsubLine();}
@@ -23,7 +23,10 @@ MouseEvent:{
 	}
 },
 "MouseEvent@fivecells":{
-	inputModes : {edit:['empty']},
+	inputModes : {edit:['empty','number','clear'],play:['border','subline']},
+	mouseinput_other : function(){
+		if(this.inputMode==='empty'){ this.inputempty();}
+	},
 	inputempty : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}

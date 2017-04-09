@@ -9,13 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['water']},
-
-	mouseinput : function(){
+	inputModes : {edit:['number','water','clear'],play:['line','peke']},
+	mouseinput_other : function(){
 		if(this.inputMode==='water'){ this.inputWater();}
-		else if(this.puzzle.playmode){
+	},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn==='left') { this.inputMoveLine();}
+				if     (this.btn==='left') { this.inputLine();}
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 		}
@@ -57,12 +58,6 @@ MouseEvent:{
 	},
 
 	inputMoveLine : function(){
-		/* "ものを動かしたように描画する"でなければinputLineと同じ */
-		if(!this.puzzle.execConfig('dispmove')){
-			this.inputLine();
-			return;
-		}
-		
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
@@ -182,8 +177,9 @@ Cell:{
 		while(n>0){ n-=++k;}
 		return (n===0);
 	},
-	isCmp : function(){
-		if(this.puzzle.execConfig('dispmove')){
+	isCmp : function(){ // 描画用
+		if(!this.puzzle.execConfig('autocmp')){ }
+		else if(this.puzzle.execConfig('dispmove')){
 			return (this.ques===31 && this.base.qnum!==-1 && this.isViaPoint());
 		}
 		else if(this.qnum!==-1 && this.path!==null){

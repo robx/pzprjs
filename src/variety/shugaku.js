@@ -9,7 +9,25 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number'],play:['futon','shade','unshade','clear']},
+	mouseinput : function(){ // オーバーライド
+		switch(this.inputMode){
+		case 'number': case 'number-':
+			this.mouseinput_number();
+			break;
+		case 'futon':
+			if(this.mousestart || this.mousemove){ this.inputFuton();}
+			else if(this.mouseend){ this.inputFuton2();}
+			break;
+		case 'shade': case 'unshade': case 'clear':
+			this.inputcell_shugaku();
+			break;
+		case 'auto':
+			this.mouseinput_auto();
+			break;
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputFuton();}
@@ -68,10 +86,16 @@ MouseEvent:{
 		if(this.inputData!==41 && this.inputData!==46){ cell.setQans(this.inputData); cell.setQsub(0);}
 		else if(this.inputData===46){ cell.setQans(41); cell.setQsub(0);}
 		else if(cell.qans===41){ cell.setQans(46); cell.setQsub(0);}
-		else if(cell.qans===46){ cell.setQans(1);  cell.setQsub(0);}
-		else if(cell.qans=== 1){ cell.setQans(0);  cell.setQsub(1);}
-		else if(cell.qsub=== 1){ cell.setQans(0);  cell.setQsub(0);}
-		else                   { cell.setQans(41); cell.setQsub(0);}
+		else if(this.inputMode==='futon'){
+			if     (cell.qans===46){ cell.setQans(0);  cell.setQsub(0);}
+			else                   { cell.setQans(41); cell.setQsub(0);}
+		}
+		else{
+			if     (cell.qans===46){ cell.setQans(1);  cell.setQsub(0);}
+			else if(cell.qans=== 1){ cell.setQans(0);  cell.setQsub(1);}
+			else if(cell.qsub=== 1){ cell.setQans(0);  cell.setQsub(0);}
+			else                   { cell.setQans(41); cell.setQsub(0);}
+		}
 
 		var adj = this.currentTargetADJ();
 		if(!adj.isnull){
@@ -88,11 +112,17 @@ MouseEvent:{
 	inputcell_shugaku : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell || cell.isNum()){ return;}
-		if(this.inputData===null){
-			if     (cell.qans===1){ this.inputData = 2;}
-			else if(cell.qsub===1){ this.inputData = 3;}
-			else{ this.inputData = 1;}
-		}
+		if(this.inputData===null){ switch(this.inputMode){
+			case 'shade':   this.inputData = (cell.qans!==1?1:3); break;
+			case 'unshade': this.inputData = (cell.qsub!==1?2:3); break;
+			case 'clear': case 'futon': this.inputData = 3; break;
+			default: // 'auto'
+				if     (cell.qans===1){ this.inputData = 2;}
+				else if(cell.qsub===1){ this.inputData = 3;}
+				else{ this.inputData = 1;}
+				break;
+		}}
+
 		this.changeHalf(cell);
 		this.mouseCell = cell;
 

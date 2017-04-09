@@ -9,7 +9,16 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['mark-circle','mark-triangle','mark-rect','clear','border'],play:['mark-circle','mark-triangle','mark-rect','dot','clear']},
+	mouseinput_other : function(){
+		if(!this.mousestart){ return;}
+		switch(this.inputMode){
+			case 'mark-circle':   this.inputFixedNumber(1); break;
+			case 'mark-triangle': this.inputFixedNumber(2); break;
+			case 'mark-rect':     this.inputFixedNumber(3); break;
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.dragDots();}

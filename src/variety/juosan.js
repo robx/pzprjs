@@ -9,10 +9,10 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['bar']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
-			if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
-			else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
+			this.inputTateyoko();
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}

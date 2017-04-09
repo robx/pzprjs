@@ -9,13 +9,20 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes:{edit:['number','clear']},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_cross();}
+	},
+	mouseinput_clear : function(){
+		this.inputclean_cross();
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputsegment();}
 			else if(this.mouseend){ this.inputsegment_up();}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.inputcross_kouchoku();}
+			if(this.mousestart){ this.inputqnum_cross();}
 		}
 	},
 
@@ -67,35 +74,6 @@ MouseEvent:{
 		var bd = this.board, seg = bd.getSegment(bx1,by1,bx2,by2);
 		if(seg===null){ bd.segment.addSegmentByAddr(bx1,by1,bx2,by2);}
 		else          { bd.segment.remove(seg);}
-	},
-
-	inputcross_kouchoku : function(){
-		var cross = this.getcross();
-		if(cross.isnull || cross===this.mouseCell){ return;}
-
-		if(cross!==this.cursor.getx()){
-			this.setcursor(cross);
-		}
-		else{
-			this.inputnumber(cross);
-		}
-		this.mouseCell = cross;
-	},
-	inputnumber : function(cross){
-		var qn = cross.qnum;
-		if(this.btn==='left'){
-			if     (qn===26){ cross.setQnum(-1);}
-			else if(qn===-1){ cross.setQnum(-2);}
-			else if(qn===-2){ cross.setQnum(1);}
-			else{ cross.setQnum(qn+1);}
-		}
-		else if(this.btn==='right'){
-			if     (qn===-2){ cross.setQnum(-1);}
-			else if(qn===-1){ cross.setQnum(26);}
-			else if(qn=== 1){ cross.setQnum(-2);}
-			else{ cross.setQnum(qn-1);}
-		}
-		cross.draw();
 	},
 
 	mousereset : function(e){

@@ -9,16 +9,17 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['nabe']},
-
-	mouseinput : function(){
+	inputModes : {edit:['nabe','number','clear'],play:['line','peke','completion']},
+	mouseinput_other : function(){
 		if(this.inputMode==='nabe'){ this.inputNabe();}
-		else if(this.puzzle.playmode){
+	},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn==='left') { this.inputMoveLine();}
+				if     (this.btn==='left') { this.inputLine();}
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
-			else if(this.mouseend && this.notInputted()){ this.inputdark();}
+			else if(this.mouseend && this.notInputted()){ this.inputqcmp();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
@@ -30,7 +31,7 @@ MouseEvent:{
 		}
 	},
 
-	inputdark : function(){
+	inputqcmp : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 		var targetcell = (!this.puzzle.execConfig('dispmove') ? cell : cell.base),
@@ -135,7 +136,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	isCmp : function(){
+	isCmp : function(){ // 描画用
 		return (!this.puzzle.execConfig('dispmove') ? this : this.base).qcmp===1;
 	}
 },
@@ -183,6 +184,7 @@ Graphic:{
 	bgcellcolor_func : "icebarn",
 	bordercolor_func : "ice",
 	numbercolor_func : "move",
+	circlefillcolor_func : "qcmp",
 	icecolor : "rgb(224,224,224)",
 
 	paint : function(){
@@ -203,18 +205,6 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-
-	getCircleFillColor : function(cell){
-		var puzzle = this.puzzle, error = cell.error || cell.qinfo;
-		var isdrawmove = puzzle.execConfig('dispmove');
-		var num = (!isdrawmove ? cell : cell.base).qnum;
-		if(num!==-1){
-			if     (error===1||error===4){ return this.errbcolor1;}
-			else if(cell.isCmp())        { return this.qcmpcolor;}
-			else{ return this.circlebasecolor;}
-		}
-		return null;
 	},
 
 	drawFillingNumBase : function(){

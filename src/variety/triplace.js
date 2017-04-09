@@ -9,7 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes:{edit:['cell51','clear','number'],play:['border','subline','bgcolor','bgcolor1','bgcolor2','clear']},
+	mouseinput_clear : function(){
+		this.input51_fixed();
+	},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_cell51();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(!this.puzzle.key.isZ){
@@ -25,26 +32,6 @@ MouseEvent:{
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.input51();}
 		}
-	},
-
-	inputBGcolor : function(){
-		var cell = this.getcell();
-		if(cell.isnull || cell.is51cell() || cell===this.mouseCell){ return;}
-		if(this.inputData===null){
-			if(this.btn==='left'){
-				if     (cell.qsub===0){ this.inputData=1;}
-				else if(cell.qsub===1){ this.inputData=2;}
-				else                  { this.inputData=0;}
-			}
-			else if(this.btn==='right'){
-				if     (cell.qsub===0){ this.inputData=2;}
-				else if(cell.qsub===1){ this.inputData=0;}
-				else                  { this.inputData=1;}
-			}
-		}
-		cell.setQsub(this.inputData);
-		this.mouseCell = cell;
-		cell.draw();
 	}
 },
 
@@ -54,9 +41,7 @@ KeyEvent:{
 	enablemake : true,
 
 	keyinput : function(ca){
-		this.inputnumber51(ca,
-			{2 : (this.board.cols-(this.cursor.bx>>1)-1),
-			 4 : (this.board.rows-(this.cursor.by>>1)-1)});
+		this.inputnumber51(ca);
 	}
 },
 
@@ -65,6 +50,10 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 
+	getmaxnum : function(){
+		var bd=this.board, target = this.puzzle.cursor.detectTarget(this);
+		return (target===this.RT ? (bd.cols-(this.bx>>1)-1) : (bd.rows-(this.by>>1)-1));
+	},
 	minnum : 0,
 
 	set51cell : function(){
@@ -90,7 +79,13 @@ Cell:{
 	}
 },
 EXCell:{
-	ques : 51
+	disInputHatena : true,
+	ques : 51,
+	getmaxnum : function(){
+		var bd = this.board;
+		return (this.by===-1 ? bd.rows : bd.cols);
+	},
+	minnum : 0
 },
 Board:{
 	hasborder : 1,

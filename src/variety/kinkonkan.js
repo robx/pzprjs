@@ -9,7 +9,17 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','letter','letter-','number','clear']},
+	mouseinput_clear : function(){
+		this.inputclean_excell();
+	},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_excell();}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode.indexOf('letter')===0 && this.mousestart){ this.inputqchar_excell();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || (this.mousemove && this.inputData!==null)){
 				this.inputslash();
@@ -90,6 +100,45 @@ MouseEvent:{
 
 			this.mousereset();
 		}
+	},
+
+	inputclean_excell : function(){
+		var excell = this.getcell_excell();
+		if(excell.isnull || excell.group!=='excell'){ return;}
+
+		this.mouseCell = excell;
+
+		var exlist = new this.klass.EXCellList([excell]);
+		if(this.puzzle.playmode){ exlist.ansclear();}
+		else                    { exlist.allclear();}
+
+		excell.draw();
+	},
+	inputqnum_excell : function(){
+		var excell = this.getcell_excell();
+		if(excell.isnull || excell.group!=='excell'){ return;}
+
+		if(excell!==this.cursor.getex()){
+			this.setcursor(excell);
+		}
+		else{
+			this.inputqnum_main(excell);
+		}
+	},
+	inputqchar_excell : function(){
+		var excell = this.getcell_excell();
+		if(excell.isnull || excell.group!=='excell'){ return;}
+
+		if(excell!==this.cursor.getex()){
+			this.setcursor(excell);
+		}
+		else{
+			var val = excell.qchar, isInc = ((this.inputMode==='letter')===(this.btn==='left'));
+			if(isInc){ val = (val<104 ? val+1 : 0);}
+			else     { val = (val>0 ? val-1 : 104);}
+			excell.setQchar(val);
+			excell.draw();
+		}
 	}
 },
 
@@ -166,6 +215,7 @@ Cell:{
 },
 
 EXCell:{
+	disInputHatena : true,
 	minnum : 0
 },
 

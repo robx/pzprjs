@@ -8,13 +8,20 @@
 ['icebarn','icelom','icelom2'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@icebarn":{
+	inputModes : {edit:['ice','arrow'],play:['line','peke']},
+},
+"MouseEvent@icelom,icelom2":{
+	inputModes : {edit:['ice','arrow','number','clear'],play:['line','peke']}
+},
 MouseEvent:{
 	redline : true,
-	inputModes : {edit:['ice']},
-	
-	mouseinput : function(){
-		if(this.inputMode==='ice'){ this.inputIcebarn();}
-		else if(this.puzzle.playmode){
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='arrow'){ this.inputarrow_line();}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
 				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
@@ -25,8 +32,16 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn==='left') { this.inputarrow();}
-				else if(this.btn==='right'){ this.inputIcebarn();}
+				if     (this.btn==='left') { this.inputarrow_line();}
+				else if(this.btn==='right'){
+					var cell = this.getcell();
+					if(this.pid==='icebarn' || !cell.isNum()){
+						this.inputIcebarn();
+					}
+					else{
+						this.inputqnum();
+					}
+				}
 			}
 			else if(this.pid!=='icebarn' && this.mouseend && this.notInputted()){
 				this.inputqnum();
@@ -34,18 +49,7 @@ MouseEvent:{
 		}
 	},
 
-	inputIcebarn : function(){
-		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.pid!=='icebarn' && cell.isNum() && this.inputMode!=='ice'){ this.inputqnum(); return;}
-
-		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
-
-		cell.setQues(this.inputData);
-		cell.drawaround();
-		this.mouseCell = cell;
-	},
-	inputarrow : function(){
+	inputarrow_line : function(){
 		var pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 
@@ -59,8 +63,8 @@ MouseEvent:{
 					border.setArrow((this.inputData===1)?dir:0);
 				}
 			}
-			else{
-				if(this.inputData===null){ this.inputarrow_inout(border,dir);}
+			else if(this.inputData===null){
+				this.inputarrow_inout(border,dir);
 			}
 			border.draw();
 		}
@@ -68,8 +72,11 @@ MouseEvent:{
 	},
 	inputarrow_inout : function(border,dir){
 		var val = this.checkinout(border,dir), bd = this.board;
-		if     (val===1){ bd.arrowin.input(border);  this.mousereset();}
-		else if(val===2){ bd.arrowout.input(border); this.mousereset();}
+		if(val>0){
+			if     (val===1){ bd.arrowin.input(border);}
+			else if(val===2){ bd.arrowout.input(border);}
+			this.mousereset();
+		}
 	},
 	/* 0:どちらでもない 1:IN 2:OUT */
 	checkinout : function(border,dir){

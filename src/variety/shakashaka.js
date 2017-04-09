@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['dot']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			var use = +this.puzzle.getConfig('use_tri');
 			if(use===1){

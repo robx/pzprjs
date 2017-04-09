@@ -12,7 +12,8 @@ MouseEvent:{
 	redline : true
 },
 "MouseEvent@nagenawa":{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['line','subcircle','subcross','clear']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ if(this.btn==='left'){ this.inputLine();}}
 			else if(this.mouseend && this.notInputted()){ this.inputMB();}
@@ -24,7 +25,8 @@ MouseEvent:{
 	}
 },
 "MouseEvent@ringring":{
-	mouseinput : function(){
+	inputModes : {play:['line','peke']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputLine();}

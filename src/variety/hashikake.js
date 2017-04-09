@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['line','peke']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -92,8 +93,8 @@ Cell:{
 		return cnt;
 	},
 
-	isCmp : function(){
-		return this.qnum === this.getCountOfBridges();
+	isCmp : function(){ // 描画用
+		return this.puzzle.execConfig('autocmp') && (this.qnum === this.getCountOfBridges());
 	},
 
 	// pencilbox互換関数 ここではファイル入出力用

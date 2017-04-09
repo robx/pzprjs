@@ -9,10 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['line','peke','bgcolor','bgcolor1','bgcolor2','clear']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if     (this.btn==='left') { this.inputMoveLine();}
+				if     (this.btn==='left') { this.inputLine();}
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){

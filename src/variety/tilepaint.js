@@ -10,8 +10,23 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes:{edit:['cell51','clear','number','border','bgpaint'],play:['shade','unshade']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='shade'||this.inputMode==='unshade'){
+			this.inputtile();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_clear : function(){
+		this.input51_fixed();
+	},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_cell51();}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='bgpaint'){ this.inputBGcolor1();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
@@ -43,9 +58,7 @@ KeyEvent:{
 	enablemake : true,
 
 	keyinput : function(ca){
-		this.inputnumber51(ca,
-			{2 : (this.board.cols-(this.cursor.bx>>1)-1),
-			 4 : (this.board.rows-(this.cursor.by>>1)-1)});
+		this.inputnumber51(ca);
 	}
 },
 
@@ -57,6 +70,10 @@ Cell:{
 
 	disInputHatena : true,
 
+	getmaxnum : function(){
+		var bd=this.board, target = this.puzzle.cursor.detectTarget(this);
+		return (target===this.RT ? (bd.cols-(this.bx>>1)-1) : (bd.rows-(this.by>>1)-1));
+	},
 	minnum : 0,
 
 	// 一部qsubで消したくないものがあるため上書き
@@ -99,6 +116,12 @@ EXCell:{
 	qnum: 0,
 	qnum2: 0,
 
+	disInputHatena : true,
+
+	getmaxnum : function(){
+		var bd = this.board;
+		return (this.by===-1 ? bd.rows : bd.cols);
+	},
 	minnum : 0
 },
 Board:{

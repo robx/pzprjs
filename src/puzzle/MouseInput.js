@@ -130,7 +130,7 @@ MouseEvent:{
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.puzzle.key;
 		kc.checkmodifiers(e);
-		if((kc.isSHIFT || kc.isMETA) !== this.inversion){
+		if(((kc.isSHIFT || kc.isMETA) !== this.inversion) || this.inputMode==='number-'){
 			if     (this.btn==='left'){ this.btn = 'right';}
 			else if(this.btn==='right'){ this.btn = 'left';}
 		}
@@ -207,7 +207,7 @@ MouseEvent:{
 			else{ puzzle.opemgr.newChain();}
 			
 			if(!this.mousestart || !this.dispRed()){
-				this.mouseinput();		/* 各パズルのルーチンへ */
+				this.mouseinput();
 			}
 		}
 	},
@@ -226,10 +226,50 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.mouseinput() マウスイベント処理。各パズルのファイルでオーバーライドされる。
+	// mv.mouseinput()       マウスイベント共通処理。
+	// mv.mouseinput_number()数字入力処理
+	// mv.mouseinput_clear() セル内容の消去処理
+	// mv.mouseinput_auto()  マウスイベント処理。各パズルのファイルでオーバーライドされる。
+	// mv.mouseinput_other() inputMode指定時のマウスイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
+	mouseinput : function(){
+		switch(this.inputMode){
+			case 'auto': this.mouseinput_auto(); break;	/* 各パズルのルーチンへ */
+			case 'number': case 'number-': this.mouseinput_number(); break;
+			case 'clear': this.mouseinput_clear(); break;
+			case 'cell51': this.input51_fixed(); break;
+			case 'circle-shade':   this.inputFixedNumber(1); break;
+			case 'circle-unshade': this.inputFixedNumber(2); break;
+			case 'undef': this.inputFixedNumber(-2); break;
+			case 'ice': this.inputIcebarn(); break;
+			case 'numexist': this.inputFixedNumber(-2); break;
+			case 'numblank': this.inputFixedNumber(-3); break;
+			case 'bgcolor': this.inputBGcolor(true); break;
+			case 'subcircle': case 'bgcolor1': this.inputFixedQsub(1); break;
+			case 'subcross':  case 'bgcolor2': this.inputFixedQsub(2); break;
+			case 'completion': if(this.mousestart){ this.inputqcmp();} break;
+			case 'dot': this.inputDot(); break;
+			case 'direc': this.inputdirec(); break;
+			case 'arrow': this.inputarrow_cell(); break;
+			case 'crossdot': if(this.mousestart){ this.inputcrossMark();} break;
+			case 'border':  this.inputborder(); break;
+			case 'subline': this.inputQsubLine(); break;
+			case 'shade': case 'unshade': this.inputcell(); break;
+			case 'line': this.inputLine(); break;
+			case 'peke': this.inputpeke(); break;
+			case 'bar':  this.inputTateyoko(); break;
+			default:    this.mouseinput_other(); break;	/* 各パズルのルーチンへ */
+		}
+	},
+	mouseinput_number: function(){
+		if(this.mousestart){ this.inputqnum();}
+	},
+	mouseinput_clear : function(){
+		this.inputclean_cell();
+	},
 	//オーバーライド用
-	mouseinput : function(){ },
+	mouseinput_auto  : function(){ },
+	mouseinput_other : function(){ },
 
 	//---------------------------------------------------------------------------
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
@@ -241,7 +281,8 @@ MouseEvent:{
 	// mv.getInputModeList() 有効なinputModeを配列にして返す (通常はauto)
 	//---------------------------------------------------------------------------
 	setInputMode : function(mode){
-		if(this.getInputModeList().indexOf(mode)>=0){
+		mode = mode || 'auto';
+		if(this.getInputModeList().indexOf(mode==='number-'?'number':mode)>=0){
 			this.inputMode = mode;
 			this.savedInputMode[this.puzzle.editmode?'edit':'play'] = mode;
 		}
@@ -253,7 +294,9 @@ MouseEvent:{
 		if(this.puzzle.instancetype==='viewer'){ return [];}
 		type = (!!type ? type : (this.puzzle.editmode?'edit':'play'));
 		var list = ['auto'];
-		return list.concat(this.inputModes[type]);
+		list = list.concat(this.inputModes[type]);
+		if(list.indexOf('number')>=0){ list.splice(list.indexOf('number')+1,0,'number-');}
+		return list;
 	},
 
 	//---------------------------------------------------------------------------

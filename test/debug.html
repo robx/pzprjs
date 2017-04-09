@@ -13,6 +13,7 @@
   <div id="divques" style="width:320px;height:320px;"></div>	<!-- Canvas用 -->
   <button type="button" onclick="alert(puzzle.check(true).text)">Check</button>
   <button type="button" onclick="puzzle.ansclear()">AnsClear</button>
+  <button type="button" onclick="puzzle.subclear()">SubClear</button>
   <button type="button" onclick="puzzle.undo()">Undo</button>
   <button type="button" onclick="puzzle.redo()">Redo</button>
   <br>
@@ -20,6 +21,8 @@
   <button type="button" onclick="puzzle.acceptTrial()">Accept</button>
   <button type="button" onclick="puzzle.rejectTrial()">Reject</button>
   <button type="button" onclick="puzzle.rejectCurrentTrial()">Reject1</button>
+  <br>
+  <select id="inputmode"></select>
 </div>
 
 </div> <!-- div#main close. -->

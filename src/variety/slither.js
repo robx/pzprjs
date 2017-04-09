@@ -9,14 +9,15 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@slither":{
-	redline : true,
+	redline : true
 },
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['line','peke','bgcolor','bgcolor1','bgcolor2','clear']},
+	mouseinput_auto : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode){
 			if(this.checkInputBGcolor()){
-				this.inputBGcolor(false);
+				this.inputBGcolor();
 			}
 			else if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -43,26 +44,6 @@ MouseEvent:{
 			else                    { inputbg = false;}
 		}
 		return inputbg;
-	},
-	inputBGcolor : function(isnormal){
-		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.inputData===null){
-			if(isnormal || this.btn==='left'){
-				if     (cell.qsub===0){ this.inputData=11;}
-				else if(cell.qsub===1){ this.inputData=12;}
-				else                  { this.inputData=10;}
-			}
-			else{
-				if     (cell.qsub===0){ this.inputData=12;}
-				else if(cell.qsub===1){ this.inputData=10;}
-				else                  { this.inputData=11;}
-			}
-		}
-		cell.setQsub(this.inputData-10);
-		cell.draw();
-
-		this.mouseCell = cell; 
 	}
 },
 

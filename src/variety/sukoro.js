@@ -9,12 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@sukoro,view":{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['number','numexist','numblank','clear']},
+	mouseinput_auto : function(){
 		if(this.mousestart){ this.inputqnum();}
 	}
 },
 "MouseEvent@sukororoom":{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['number','numexist','numblank','clear']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}

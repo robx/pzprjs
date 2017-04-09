@@ -35,6 +35,8 @@ pzpr.on('load', function(){
 		
 		puzzle.open((!!pzl.cols && !!pzl.rows && !!pzl.body) ? pzl : pid+"/"+debug.urls[pid]);
 		puzzle.on('key', debug.keydown);
+		puzzle.on('mode', debug.initinputmodelist);
+		document.getElementById('inputmode').addEventListener('change',debug.setinputmode,false);
 	});
 });
 
@@ -48,6 +50,20 @@ var debug = window.debug =
 			else if(ca==='shift+ctrl+F10'){ debug.all_test();}
 			else{ return;}
 		}
+	},
+	initinputmodelist : function(puzzle){
+		var el = document.getElementById('inputmode');
+		el.innerHTML = '';
+		puzzle.mouse.getInputModeList().forEach(function(mode){
+			var opt = document.createElement('option');
+			opt.text = opt.value = mode;
+			el.appendChild(opt);
+			if(puzzle.mouse.inputMode===mode){ opt.selected = true;}
+		});
+	},
+	setinputmode : function(e){
+		var el = document.getElementById('inputmode');
+		puzzle.mouse.setInputMode(el.options[el.selectedIndex].value);
 	},
 
 	filesave : function(){

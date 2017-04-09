@@ -949,7 +949,7 @@ Graphic:{
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if     (error===1||error===4)                        { return this.errbcolor1;}
-			else if(puzzle.execConfig('autocmp') && cell.isCmp()){ return this.qcmpcolor;}
+			else if(cell.isCmp()){ return this.qcmpcolor;}
 			else{ return this.circlebasecolor;}
 		}
 		return null;
@@ -1212,12 +1212,12 @@ Graphic:{
 		if(cursor.bx < d.x1 || d.x2 < cursor.bx){ return;}
 		if(cursor.by < d.y1 || d.y2 < cursor.by){ return;}
 
-		var target = cursor.detectTarget(cursor.getobj());
+		var target = cursor.detectTarget();
 
 		g.vid = "target_triangle";
 		g.fillStyle = this.ttcolor;
 		if(this.puzzle.editmode && target!==0){
-			this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===2?4:2));
+			this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===4?4:2));
 		}
 		else{ g.vhide();}
 	},

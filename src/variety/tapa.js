@@ -21,8 +21,8 @@
 MouseEvent:{
 	use    : true,
 	redblk : true,
-	
-	mouseinput : function(){
+	inputModes:{edit:['number','clear'],play:['shade','unshade']},
+	mouseinput : function(){ // オーバーライド
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell_tapa();}
 		}
@@ -52,7 +52,13 @@ MouseEvent:{
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.puzzle.getConfig('use')===1){
+		if(this.inputMode==='shade'){
+			this.inputData=((cell.qans!==1)? 1 : 0);
+		}
+		else if(this.inputMode==='unshade'){
+			this.inputData=((cell.qsub!==1)? 2 : 0);
+		}
+		else if(this.puzzle.getConfig('use')===1){
 			if     (this.btn==='left') { this.inputData=(cell.isUnshade()? 1 : 0); }
 			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
@@ -91,11 +97,12 @@ MouseEvent:{
 			if(sameArray(cell.qnums, states[i])){ state = i; break;}
 		}
 
-		if(this.btn==='left'){
+		var isinc = (this.inputMode==='number' || (this.inputMode==='auto' && this.btn==='left'));
+		if(isinc){
 			if(state<states.length-1){ state++;}
 			else{ state = 0;}
 		}
-		else if(this.btn==='right'){
+		else{
 			if(state>0){ state--;}
 			else{ state = states.length-1;}
 		}

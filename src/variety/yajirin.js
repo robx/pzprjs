@@ -9,10 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	RBShadeCell : true,
 	use     : true,
 	redline : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','direc','clear'],play:['line','peke','shade','unshade']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputLine();}

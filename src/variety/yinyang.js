@@ -9,7 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['circle-shade','circle-unshade','clear'],play:['copycircle','circle-shade','circle-unshade','clear']},
+	mouseinput_other : function(){
+		if(this.inputMode==='copycircle'){ this.dragmarks();}
+	},
+	mouseinput_auto : function(){
 		if(this.mousestart || this.mousemove){
 			this.dragmarks();
 		}

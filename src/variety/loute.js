@@ -8,8 +8,26 @@
 ['loute','sashigane'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@loute":{
+	inputModes:{edit:['arrow','circle','undef','clear'],play:['border','subline']},
+	mouseinput_other : function(){
+		if(this.inputMode==='circle' && this.mousestart){ this.inputqnum_loute();}
+	}
+},
+"MouseEvent@sashigane":{
+	inputModes:{edit:['arrow','number','undef','clear'],play:['border','subline']},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_loute();}
+	}
+},
 MouseEvent:{
-	mouseinput : function(){
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='undef'){
+			if(this.mousestart){ this.inputqnum_loute();}
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
@@ -31,7 +49,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==this.cursor.getc()){
+		if(cell!==this.cursor.getc() && this.inputMode==='auto'){
 			this.setcursor(cell);
 		}
 		else{
@@ -39,44 +57,31 @@ MouseEvent:{
 		}
 	},
 	inputcell_loute : function(cell){
-		var dir = cell.qdir, pid = this.pid;
-		if(dir!==5){
-			var array = [0,5,1,2,3,4,-2], len = array.length;
-			if(this.btn==='left'){
-				for(var i=0;i<=len-1;i++){
-					if(dir===array[i]){
-						cell.setQdir(array[((i<len-1)?i+1:0)]);
-						break;
-					}
-				}
-			}
-			else if(this.btn==='right'){
-				for(var i=len-1;i>=0;i--){
-					if(dir===array[i]){
-						cell.setQdir(array[((i>0)?i-1:len-1)]);
-						break;
-					}
-				}
-				if(cell.qdir===5 && pid==='sashigane'){ cell.setQnum(cell.getmaxnum());}
-			}
+		var dir = cell.qdir, num = cell.qnum, val;
+		// -4to-1:Arrow 0:? 1:何もなし 2:丸のみ 3以上:数字
+		if     (dir=== 5){ val = (num!==-1 ? num : 2);}
+		else if(dir=== 0){ val = 1;}
+		else if(dir===-2){ val = 0;}
+		else             { val = dir - 5;}
+
+		var min = -4, max = cell.getmaxnum();
+		if(this.pid==='loute'){ max = 2;}
+		if(this.inputMode==='circle' || this.inputMode.match(/number/)){ min = 1;}
+		if(this.inputMode==='undef'){ max = 1; min = 0;}
+
+		if(this.btn==='left'){
+			if(min<=val && val<max){ val++;  }
+			else                   { val=min;}
 		}
-		else{
-			var qn = cell.getNum(), min, max;
-			if(pid==='sashigane'){ max=cell.getmaxnum(); min=cell.getminnum();}
-			if(this.btn==='left'){
-				if(pid==='loute'){ cell.setQdir(1);}
-				else if(qn<min){ cell.setNum(min);}
-				else if(qn<max){ cell.setNum(qn+1);}
-				else           { cell.setNum(-1); cell.setQdir(1);}
-			}
-			else if(this.btn==='right'){
-				if(pid==='loute'){ cell.setQdir(0);}
-				else if(qn>max){ cell.setNum(max);}
-				else if(qn>min){ cell.setNum(qn-1);}
-				else if(qn!==-1){ cell.setNum(-1);}
-				else            { cell.setQdir(0);}
-			}
+		else if(this.btn==='right'){
+			if(min<val && val<=max){ val--;  }
+			else                   { val=max;}
 		}
+
+		if     (val >=2){ cell.setQdir(5);     cell.setNum(val>=3 ? val : -1);}
+		else if(val===1){ cell.setQdir(0);     cell.setNum(-1);}
+		else if(val===0){ cell.setQdir(-2);    cell.setNum(-1);}
+		else            { cell.setQdir(val+5); cell.setNum(-1);}
 		cell.draw();
 	}
 },
@@ -168,9 +173,7 @@ Cell:{
 		var row = (((by<(bd.maxby>>1))?(bd.maxby-by+2):by+2)>>1);
 		return (col+row-1);
 	},
-	minnum : function(){
-		return ((this.board.cols>=2?2:1)+(this.board.rows>=2?2:1)-1);
-	},
+	minnum : 3,
 
 	place : 0, // setLblockInfoでの設定用
 	getObjNum : function(){ return this.qdir;},

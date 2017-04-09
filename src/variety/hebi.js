@@ -10,8 +10,17 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','direc','clear'],play:['number','dragnum+','dragnum-','dot','clear']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='dot'){
+			this.inputDot_snakes();
+		}
+		else if(this.inputMode.indexOf('dragnum')===0){
+			this.dragnumber_snakes();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(!this.inputDot_snakes()){
@@ -50,8 +59,8 @@ MouseEvent:{
 		
 		if(cell.qnum!==-1){ return;}
 		else if(this.inputData>=1 && this.inputData<=5){
-			if     (this.btn==='left' ){ this.inputData++;}
-			else if(this.btn==='right'){ this.inputData--;}
+			if(this.inputMode==='dragnum+' || (this.inputMode==='auto' && this.btn==='left')){ this.inputData++;}
+			else{ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=5){
 				cell.setQdir(0);
 				cell.setAnum(this.inputData);
@@ -73,17 +82,18 @@ MouseEvent:{
 		cell.draw();
 	},
 	inputDot_snakes : function(){
-		if(this.btn!=='right' || (this.inputData!==null && this.inputData>=0)){ return false;}
+		if(this.inputMode==='auto' && (this.btn!=='right' || (this.inputData!==null && this.inputData>=0))){ return false;}
 
 		var cell = this.getcell();
 		if(cell.isnull||cell===this.mouseCell){ return (this.inputData<0);}
 
 		if(this.inputData===null){
+			var result = false;
 			if(cell.anum===-1){
 				this.inputData = (cell.qsub!==1?-2:-3);
-				return true;
+				result = true;
 			}
-			return false;
+			if(this.inputMode==='auto'){ return result;}
 		}
 
 		cell.setAnum(-1);

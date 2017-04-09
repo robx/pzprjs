@@ -8,8 +8,23 @@
 ['kramma','kramman','shwolf'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@kramma":{
+	inputModes : {edit:['circle-shade','circle-unshade','undef','clear'],play:['border','subline']}
+},
+"MouseEvent@kramman":{
+	inputModes : {edit:['circle-shade','circle-unshade','undef','clear','crossdot'],play:['border','subline']}
+},
+"MouseEvent@shwolf":{
+	inputModes : {edit:['goat','wolf','undef','clear','crossdot'],play:['border','subline']},
+	mouseinput_other : function(){
+		switch(this.inputMode){
+			case 'goat': this.inputFixedNumber(1); break;
+			case 'wolf': this.inputFixedNumber(2); break;
+		}
+	}
+},
 MouseEvent:{
-	mouseinput : function(){
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
