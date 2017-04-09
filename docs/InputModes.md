@@ -54,15 +54,15 @@
 
 |Name|Description|
 |---|---|
-|`peke`|Input auxiliary cross marks which means lines don't pass|
+|`dot`|Input auxiliary dots that means they should remain blank|
 |`bgcolor`<br>`bgcolor1`<br>`bgcolor2`|Input background color of cells|
-|`subline`|Input auxiliary lines between cells|
 |`numexist`|Input auxiliary circles which will be put some number|
 |`numblank`|Input auxiliary cross marks that means they should remain blank|
 |`subcircle`|Input auxiliary circles that indicates some line will pass or true number|
 |`subcross`|Input auxiliary cross marks that means they should remain blank or liar number|
-|`dot`|Input auxiliary dots that means they should remain blank|
-|`diraux`|Input dir. aux. marks for `Nagareru-loop`|
+|`subline`|Input auxiliary lines between cells|
+|`peke`|Input auxiliary cross marks which means lines don't pass|
+|`diraux`|Input dir. aux. marks for `Nagareru-loop`, `Icebarn`, `Icelom` and `Icelom2`|
 
 ## Values for checking answer
 

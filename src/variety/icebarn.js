@@ -9,15 +9,21 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@icebarn":{
-	inputModes : {edit:['ice','arrow','info-line'],play:['line','peke','info-line']},
+	inputModes : {edit:['ice','arrow','info-line'],play:['line','peke','diraux','info-line']},
 },
 "MouseEvent@icelom,icelom2":{
-	inputModes : {edit:['ice','arrow','number','clear','info-line'],play:['line','peke','info-line']}
+	inputModes : {edit:['ice','arrow','number','clear','info-line'],play:['line','peke','diraux','info-line']}
 },
 MouseEvent:{
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='arrow'){ this.inputarrow_line();}
 		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='diraux'){
+			if(this.mousestart || this.mousemove){ this.inputmark_mousemove();}
+			else if(this.mouseend && this.notInputted()){ this.clickmark();}
+		}
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
@@ -86,6 +92,40 @@ MouseEvent:{
 		else if((bx===bd.minbx+2 && dir===border.LT)||(bx===bd.maxbx-2 && dir===border.RT)||
 				(by===bd.minby+2 && dir===border.UP)||(by===bd.maxby-2 && dir===border.DN)){ return 2;}
 		return 0;
+	},
+
+	inputmark_mousemove : function(){
+		var pos = this.getpos(0);
+		if(pos.getc().isnull){ return;}
+
+		var border = this.prevPos.getnb(pos);
+		if(!border.isnull){
+			var newval = null, dir = this.prevPos.getdir(pos,2);
+			if(this.inputData===null){ this.inputData = (border.qsub!==(10+dir)?11:0);}
+			if(this.inputData===11){ newval = 10+dir;}
+			else if(this.inputData===0 && border.qsub===10+dir){ newval = 0;}
+			if(newval!==null){
+				border.setQsub(newval);
+				border.draw();
+			}
+		}
+		this.prevPos = pos;
+	},
+	clickmark : function(){
+		var pos = this.getpos(0.22);
+		if(this.prevPos.equals(pos)){ return;}
+
+		var border = pos.getb();
+		if(border.isnull){ return;}
+
+		var trans = {0:2,2:0}, qs = border.qsub;
+		if(!border.isvert){ trans = (this.btn==='left'?{0:2,2:11,11:12,12:0}:{0:12,12:11,11:2,2:0});}
+		else              { trans = (this.btn==='left'?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
+		qs = trans[qs] || 0;
+		if(this.inputMode==='diraux' && qs===2){ qs=trans[qs] || 0;}
+		
+		border.setQsub(qs);
+		border.draw();
 	}
 },
 
@@ -363,6 +403,7 @@ Graphic:{
 
 		this.drawLines();
 		this.drawPekes();
+		this.drawBorderAuxDir();
 
 		if(this.pid!=='icebarn'){ this.drawQuesNumbers();}
 
@@ -500,6 +541,33 @@ Graphic:{
 		this.range.borders = blist;
 
 		this.drawBorderArrows();
+	},
+
+	drawBorderAuxDir : function(){
+		var g = this.vinc('border_dirsub', 'crispEdges');
+		var ssize = this.cw*0.10;
+
+		g.lineWidth = this.cw*0.1;
+
+		var blist = this.range.borders;
+		for(var i=0;i<blist.length;i++){
+			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh, dir = border.qsub-10;
+
+			// 向き補助記号の描画
+			g.vid = "b_daux_"+border.id;
+			if(dir>=1 && dir<=8){
+				g.strokeStyle = (!border.trial ? "rgb(64,64,64)" : this.trialcolor);
+				g.beginPath();
+				switch(dir){
+					case border.UP: g.setOffsetLinePath(px,py ,-ssize*2,+ssize ,0,-ssize ,+ssize*2,+ssize, false); break;
+					case border.DN: g.setOffsetLinePath(px,py ,-ssize*2,-ssize ,0,+ssize ,+ssize*2,-ssize, false); break;
+					case border.LT: g.setOffsetLinePath(px,py ,+ssize,-ssize*2 ,-ssize,0 ,+ssize,+ssize*2, false); break;
+					case border.RT: g.setOffsetLinePath(px,py ,-ssize,-ssize*2 ,+ssize,0 ,-ssize,+ssize*2, false); break;
+				}
+				g.stroke();
+			}
+			else{ g.vhide();}
+		}
 	}
 },
 
@@ -730,7 +798,7 @@ Encode:{
 			if(ca==="1"){ cell.ques = 6;}
 		});
 		this.decodeBorderArrow();
-		this.decodeBorderLine();
+		this.decodeBorderLine_icebarn();
 	},
 	encodeData : function(){
 		var bd = this.board;
@@ -740,7 +808,7 @@ Encode:{
 			return (cell.ques===6?"1 ":"0 ");
 		});
 		this.encodeBorderArrow();
-		this.encodeBorderLine();
+		this.encodeBorderLine_icebarn();
 	},
 
 	decodeBorderArrow : function(){
@@ -780,7 +848,7 @@ Encode:{
 				cell.qnum = (ca!=='?' ? +ca : -2);
 			}
 		});
-		this.decodeBorderLine();
+		this.decodeBorderLine_icebarn();
 	},
 	encodeData : function(){
 		var bd = this.board;
@@ -795,7 +863,37 @@ Encode:{
 			else{ qstr = cell.qnum+" ";}
 			return istr+qstr;
 		});
-		this.encodeBorderLine();
+		this.encodeBorderLine_icebarn();
+	}
+},
+FileIO:{
+	decodeBorderLine_icebarn : function(){
+		this.decodeBorder( function(border,ca){
+			var lca = ca.charAt(ca.length-1);
+			if(lca>="a"&&lca<="z"){
+				if     (lca==="u"){ border.qsub = 11;}
+				else if(lca==="d"){ border.qsub = 12;}
+				else if(lca==="l"){ border.qsub = 13;}
+				else if(lca==="r"){ border.qsub = 14;}
+				ca = ca.substr(0,ca.length-1);
+			}
+			
+			if(ca!=="" && ca!=="0"){
+				if(ca.charAt(0)==="-"){ border.line = (-ca)-1; border.qsub = 2;}
+				else                  { border.line = +ca;}
+			}
+		});
+	},
+	encodeBorderLine_icebarn : function(){
+		this.encodeBorder( function(border){
+			var ca = "";
+			if     (border.qsub===2){ ca += ""+(-1-border.line);}
+			else if(border.line>  0){ ca += ""+border.line;}
+			
+			if(border.qsub>=11){ ca += ["u","d","l","r"][border.qsub-11];}
+			
+			return (ca!=="" ? ca+" " : "0 ");
+		});
 	}
 },
 
