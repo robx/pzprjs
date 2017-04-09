@@ -9,7 +9,13 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['border','arrow','clear'],play:['arrow','clear']},
+	inputModes : {edit:['border','arrow','clear','info-road'],play:['arrow','clear','info-road']},
+	mouseinput : function(){ // オーバーライド
+		if(this.puzzle.key.isZ || this.inputMode==='info-road'){
+			if(this.mousestart){ this.dispRoad();}
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
@@ -29,11 +35,6 @@ MouseEvent:{
 			}
 		}
 	},
-	dispRed : function(){
-		var puzzle = this.puzzle, flag = (puzzle.execConfig('redroad')^puzzle.key.isZ);
-		if(flag){ this.dispRoad();}
-		return flag;
-	},
 	dispRoad : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
@@ -43,10 +44,10 @@ MouseEvent:{
 		for(var c=0;c<bd.cell.length;c++){ ldata[c]=-1;}
 		bd.trackBall1(cell.id,ldata);
 		for(var c=0;c<bd.cell.length;c++){
-			if     (ldata[c]===1){ bd.cell[c].seterr(2);}
-			else if(ldata[c]===2){ bd.cell[c].seterr(3);}
+			if     (ldata[c]===1){ bd.cell[c].setinfo(2);}
+			else if(ldata[c]===2){ bd.cell[c].setinfo(3);}
 		}
-		bd.haserror = true;
+		bd.hasinfo = true;
 		puzzle.redraw();
 		this.mousereset();
 	}

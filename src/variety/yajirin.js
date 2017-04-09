@@ -11,8 +11,7 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use     : true,
-	redline : true,
-	inputModes : {edit:['number','direc','clear'],play:['line','peke','shade','unshade']},
+	inputModes : {edit:['number','direc','clear','info-line'],play:['line','peke','shade','unshade','info-line']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){

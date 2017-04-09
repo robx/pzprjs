@@ -8,11 +8,8 @@
 ['slither','bag'], {
 //---------------------------------------------------------
 // マウス入力系
-"MouseEvent@slither":{
-	redline : true
-},
 MouseEvent:{
-	inputModes : {edit:['number','clear'],play:['line','peke','bgcolor','bgcolor1','bgcolor2','clear']},
+	inputModes : {edit:['number','clear','info-line'],play:['line','peke','bgcolor','bgcolor1','bgcolor2','clear','info-line']},
 	mouseinput_auto : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode){

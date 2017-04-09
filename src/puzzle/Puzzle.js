@@ -299,7 +299,11 @@ pzpr.Puzzle.prototype =
 		this.redraw();
 	},
 	errclear : function(){
-		this.board.errclear();
+		var isclear = this.board.errclear();
+		if(isclear){
+			this.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
+		}
+		return isclear;
 	},
 	clear : function(){
 		if(this.playeronly){
@@ -328,12 +332,8 @@ pzpr.Puzzle.prototype =
 			this.cursor.adjust_modechange();
 			this.key.keyreset();
 			this.mouse.modechange();
-			if(this.board.haserror){
-				this.board.errclear();
-			}
-			else{
-				this.redraw();
-			}
+			this.board.errclear();
+			this.redraw();
 		}
 
 		this.emit('config', 'mode', newval);

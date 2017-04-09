@@ -281,7 +281,7 @@ Board:{
 			startexcell.qinfo = 1;
 			this.excell[destec].qinfo  = 1;
 			for(var c=0;c<this.cell.length;c++){ this.cell[c].qinfo=ldata[c];}
-			this.haserror = true;
+			this.hasinfo = true;
 		}
 
 		return {cnt:ccnt, dest:destec};

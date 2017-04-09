@@ -20,8 +20,7 @@
 // マウス入力系
 MouseEvent:{
 	use    : true,
-	redblk : true,
-	inputModes:{edit:['number','clear'],play:['shade','unshade']},
+	inputModes:{edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
 	mouseinput : function(){ // オーバーライド
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell_tapa();}

@@ -628,20 +628,20 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.dispRedBlk()  ひとつながりの黒マスを赤く表示する
-	// mv.dispRedBlk8() ななめつながりの黒マスを赤く表示する
-	// mv.dispRedLine()   ひとつながりの線を赤く表示する
+	// mv.dispInfoBlk()  ひとつながりの黒マスを赤く表示する
+	// mv.dispInfoBlk8() ななめつながりの黒マスを赤く表示する
+	// mv.dispInfoLine()   ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
-	dispRedBlk : function(){
+	dispInfoBlk : function(){
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isShade()){ return;}
 		if(!this.RBShadeCell){ cell.sblk.clist.setinfo(1);}
-		else{ this.dispRedBlk8(cell);}
-		this.board.haserror = true;
+		else{ this.dispInfoBlk8(cell);}
+		this.board.hasinfo = true;
 		this.puzzle.redraw();
 	},
-	dispRedBlk8 : function(cell0){
+	dispInfoBlk8 : function(cell0){
 		var stack=[cell0];
 		while(stack.length>0){
 			var cell = stack.pop();
@@ -656,7 +656,7 @@ MouseEvent:{
 		}
 	},
 
-	dispRedLine : function(){
+	dispInfoLine : function(){
 		var bd = this.board, border = this.getborder(0.15);
 		this.mousereset();
 		if(border.isnull){ return;}
@@ -675,7 +675,7 @@ MouseEvent:{
 
 		bd.border.setinfo(-1);
 		border.path.setedgeinfo(1);
-		bd.haserror = true;
+		bd.hasinfo = true;
 		this.puzzle.redraw();
 	}
 }

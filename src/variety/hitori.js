@@ -11,8 +11,7 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use    : true,
-	redblk : true,
-	inputModes : {edit:['number','clear'],play:['shade','unshade']},
+	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -85,7 +84,7 @@ Graphic:{
 
 	drawQuesNumbers_hitori : function(){
 		var puzzle=this.puzzle, bd=puzzle.board, chk=puzzle.checker;
-		if(!bd.haserror && puzzle.getConfig('autoerr')){
+		if(!bd.haserror && !bd.hasinfo && puzzle.getConfig('autoerr')){
 			var pt = puzzle.klass.CellList.prototype, seterr = pt.seterr, fcd = chk.failcode;
 			chk.inCheck = true;
 			chk.checkOnly = false;

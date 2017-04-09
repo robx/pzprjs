@@ -573,7 +573,7 @@ OperationManager:{
 		this.disableRecord();
 
 		puzzle.painter.suspend();
-		bd.errclear();
+		puzzle.errclear();
 		if(this.reqReset){
 			bd.disableInfo();
 		}

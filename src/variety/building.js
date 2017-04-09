@@ -24,6 +24,7 @@ MouseEvent:{
 				else if(piece.group==='cell'){ this.inputqnum();}
 				else{ this.inputflash();}
 			}
+			else{ this.inputflash();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){
@@ -45,13 +46,15 @@ MouseEvent:{
 
 	inputflash : function(){
 		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
-		if(excell.isnull){ return;}
+		if(excell.isnull || this.mouseCell===excell){ return;}
 
 		if(this.isclearflash){
 			board.lightclear();
+			this.mousereset();
 		}
 		else{
 			board.flashlight(excell);
+			this.mouseCell = excell;
 		}
 	},
 
@@ -151,7 +154,7 @@ Board:{
 		this.puzzle.redraw();
 	},
 	lightclear : function(){
-		if(!this.haserror){ return;}
+		if(!this.hasinfo){ return;}
 		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qinfo=0;}
 		for(var i=0;i<this.excell.length;i++){ this.excell[i].qinfo=0;}
 		this.haslight = false;
@@ -184,7 +187,7 @@ Board:{
 			for(var c=0;c<this.cell.length;c++){
 				if(!!ldata[c]){ this.cell[c].qinfo=ldata[c];}
 			}
-			this.haserror = true;
+			this.hasinfo = true;
 		}
 
 		return {cnt:ccnt};

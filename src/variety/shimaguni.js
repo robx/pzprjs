@@ -83,7 +83,7 @@ Board:{
 	},
 	errclear : function(){
 		this.falling = false;
-		this.common.errclear.call(this);
+		return this.common.errclear.call(this);
 	},
 	operate : function(type){
 		switch(type){
@@ -91,11 +91,11 @@ Board:{
 		case 'raise':
 			this.drop(type==='drop');
 			this.falling = true;
-			this.haserror = true;
+			this.hasinfo = true;
 			this.puzzle.redraw();
 			break;
 		case 'resetpos':
-			this.board.errclear();
+			this.puzzle.errclear();
 			break;
 		default:
 			this.common.operate.call(this,type);

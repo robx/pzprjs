@@ -9,8 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	inputModes : {edit:['circle-shade','circle-unshade','undef','clear'],play:['line','peke']},
+	inputModes : {edit:['circle-shade','circle-unshade','undef','clear','info-line'],play:['line','peke','info-line']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){

@@ -9,10 +9,10 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@country,onsen":{
-	inputModes : {edit:['border','number','clear'],play:['line','peke','subcircle','subcross','clear']}
+	inputModes : {edit:['border','number','clear','info-line'],play:['line','peke','subcircle','subcross','clear','info-line']}
 },
 "MouseEvent@moonsun":{
-	inputModes : {edit:['border','moon','sun','clear'],play:['line','peke','lineblank','clear']},
+	inputModes : {edit:['border','moon','sun','clear','info-line'],play:['line','peke','lineblank','clear','info-line']},
 	mouseinput_other : function(){
 		switch(this.inputMode){
 			case 'moon': this.inputFixedNumber(1); break;
@@ -21,7 +21,6 @@
 	}
 },
 MouseEvent:{
-	redline : true,
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){

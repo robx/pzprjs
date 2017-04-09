@@ -39,8 +39,6 @@ MouseEvent:{
 
 	use      : false,	// 黒マスの入力方法選択
 	bgcolor  : false,	// 背景色の入力を可能にする
-	redline  : false,	// 線の繋がりチェックを可能にする
-	redblk   : false,	// 黒マスつながりチェックを可能にする (連黒分断禁も)
 
 	inputMode : 'auto',	// 現在のinputMode
 	savedInputMode: {},	// モード変更時の保存値
@@ -202,27 +200,12 @@ MouseEvent:{
 		if(!this.cancelEvent && (this.btn==='left' || this.btn==='right')){
 			if(this.mousestart){
 				puzzle.opemgr.newOperation();
-				puzzle.board.errclear();
+				puzzle.errclear();
 			}
 			else{ puzzle.opemgr.newChain();}
 			
-			if(!this.mousestart || !this.dispRed()){
-				this.mouseinput();
-			}
+			this.mouseinput();
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// mv.dispRed()   赤く表示する際などのイベント処理
-	//---------------------------------------------------------------------------
-	dispRed : function(){
-		var puzzle = this.puzzle, isZ = puzzle.key.isZ;
-		var flagline = puzzle.validConfig('redline') && !!(puzzle.getConfig('redline') ^isZ);
-		var flagblk  = puzzle.validConfig('redblk') && !!(puzzle.getConfig('redblk') ^isZ);
-		
-		if     (flagline){ this.dispRedLine();}
-		else if(flagblk) { this.dispRedBlk();}
-		return (flagline || flagblk);
 	},
 
 	//---------------------------------------------------------------------------
@@ -233,7 +216,12 @@ MouseEvent:{
 	// mv.mouseinput_other() inputMode指定時のマウスイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
 	mouseinput : function(){
-		switch(this.inputMode){
+		var mode = this.inputMode;
+		if(this.puzzle.key.isZ && this.inputMode.indexOf(/info\-/)===-1){
+			if     (this.inputModes.play.indexOf('info-line')>=0){ mode = 'info-line';}
+			else if(this.inputModes.play.indexOf('info-blk') >=0){ mode = 'info-blk';}
+		}
+		switch(mode){
 			case 'auto': this.mouseinput_auto(); break;	/* 各パズルのルーチンへ */
 			case 'number': case 'number-': this.mouseinput_number(); break;
 			case 'clear': this.mouseinput_clear(); break;
@@ -258,6 +246,8 @@ MouseEvent:{
 			case 'line': this.inputLine(); break;
 			case 'peke': this.inputpeke(); break;
 			case 'bar':  this.inputTateyoko(); break;
+			case 'info-line': if(this.mousestart){ this.dispInfoLine();} break;
+			case 'info-blk':  if(this.mousestart){ this.dispInfoBlk();} break;
 			default:    this.mouseinput_other(); break;	/* 各パズルのルーチンへ */
 		}
 	},

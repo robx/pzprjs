@@ -9,8 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	inputModes : {edit:['shade','arrow'],play:['line','peke','diraux']},
+	inputModes : {edit:['shade','arrow','info-line'],play:['line','peke','diraux','info-line']},
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='shade'){ if(this.mousestart){ this.inputShadeCell();}}
 		else{ this.common.mouseinput.call(this);}

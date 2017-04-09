@@ -21,7 +21,7 @@ MouseEvent:{
 	}
 },
 "MouseEvent@nurikabe":{
-	redblk : true
+	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']}
 },
 
 //---------------------------------------------------------

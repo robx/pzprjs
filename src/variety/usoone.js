@@ -11,8 +11,7 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use    : true,
-	redblk : true,
-	inputModes : {edit:['border','number','clear'],play:['shade','unshade','submark','subcircle','subcross']},
+	inputModes : {edit:['border','number','clear','info-blk'],play:['shade','unshade','submark','subcircle','subcross','info-blk']},
 	mouseinput : function(){ // オーバーライド
 		if     (this.inputMode==='subcircle'){ this.inputqcmp(1);}
 		else if(this.inputMode==='subcross') { this.inputqcmp(2);}

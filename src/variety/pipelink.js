@@ -9,16 +9,15 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@pipelink":{
-	inputModes : {edit:['quesmark','quesmark-'],play:['line','peke']}
+	inputModes : {edit:['quesmark','quesmark-','info-line'],play:['line','peke','info-line']}
 },
 "MouseEvent@pipelinkr":{
-	inputModes : {edit:['quesmark','quesmark-','ice'],play:['line','peke']}
+	inputModes : {edit:['quesmark','quesmark-','ice','info-line'],play:['line','peke','info-line']}
 },
 "MouseEvent@loopsp":{
-	inputModes : {edit:['quesmark','quesmark-','number'],play:['line','peke']}
+	inputModes : {edit:['quesmark','quesmark-','number','info-line'],play:['line','peke','info-line']}
 },
 MouseEvent:{
-	redline : true,
 	mouseinput_other : function(){
 		if(this.inputMode.match(/quesmark/)){
 			if(this.mousestart){ this.inputQuesMark();}

@@ -9,13 +9,12 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@icebarn":{
-	inputModes : {edit:['ice','arrow'],play:['line','peke']},
+	inputModes : {edit:['ice','arrow','info-line'],play:['line','peke','info-line']},
 },
 "MouseEvent@icelom,icelom2":{
-	inputModes : {edit:['ice','arrow','number','clear'],play:['line','peke']}
+	inputModes : {edit:['ice','arrow','number','clear','info-line'],play:['line','peke','info-line']}
 },
 MouseEvent:{
-	redline : true,
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='arrow'){ this.inputarrow_line();}
 		else{ this.common.mouseinput.call(this);}

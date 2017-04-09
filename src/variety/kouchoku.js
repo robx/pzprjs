@@ -395,7 +395,7 @@ Board:{
 		if(this.haserror){
 			this.segment.errclear();
 		}
-		this.common.errclear.call(this);
+		return this.common.errclear.call(this);
 	},
 	trialclear : function(){
 		if(this.trialstage>0){

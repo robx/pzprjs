@@ -9,8 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	inputModes : {edit:['quesmark','quesmark-','number'],play:['line','peke']},
+	inputModes : {edit:['quesmark','quesmark-','number','info-line'],play:['line','peke','info-line']},
 	mouseinput_other : function(){
 		if(this.inputMode.match(/quesmark/)){
 			if(this.mousestart){ this.inputQuesTriangle();}

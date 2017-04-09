@@ -8,11 +8,8 @@
 ['nagenawa','ringring'], {
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
-	redline : true
-},
 "MouseEvent@nagenawa":{
-	inputModes : {edit:['border','number','clear'],play:['line','subcircle','subcross','clear']},
+	inputModes : {edit:['border','number','clear','info-line'],play:['line','subcircle','subcross','clear','info-line']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ if(this.btn==='left'){ this.inputLine();}}
@@ -25,7 +22,7 @@ MouseEvent:{
 	}
 },
 "MouseEvent@ringring":{
-	inputModes : {play:['line','peke']},
+	inputModes : {edit:['info-line'],play:['line','peke','info-line']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){

@@ -151,7 +151,7 @@ KeyEvent:{
 		else            { puzzle.opemgr.newChain();}
 
 		if(this.keydown && !this.isZ){
-			puzzle.board.errclear();
+			puzzle.errclear();
 		}
 
 		puzzle.emit('key',c);

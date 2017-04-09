@@ -10,8 +10,7 @@
 // マウス入力系
 MouseEvent:{
 	use    : true,
-	redblk : true,
-	inputModes : {edit:['border','number','clear'],play:['shade','unshade']},
+	inputModes : {edit:['border','number','clear','info-blk'],play:['shade','unshade','info-blk']},
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='shade'||this.inputMode==='unshade'){
 			this.inputtile();
