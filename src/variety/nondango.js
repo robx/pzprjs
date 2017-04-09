@@ -10,15 +10,15 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	inputModes:{edit:['border','circle'],play:['shade','unshade']},
+	inputModes:{edit:['border','circle-unshade'],play:['shade','unshade']},
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='shade'||this.inputMode==='unshade'){
 			this.inputcell_nondango();
 		}
+		else if(this.inputMode==='circle-unshade'){
+			this.inputcircle();
+		}
 		else{ this.common.mouseinput.call(this);}
-	},
-	mouseinput_other : function(){
-		if(this.inputMode==='circle'){ this.inputcircle();}
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){

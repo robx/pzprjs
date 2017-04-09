@@ -10,7 +10,8 @@
 |`border`|Input border lines|
 |`arrow`|Input arrows|
 |`clear`|Clear cells on edit mode, clear answers on play mode|
-|`mark-circle`<br>`mark-triangle`<br>`mark-rect`|Input marks for `'Hakoiri-masahi'`|
+|`mark-circle`<br>`mark-triangle`|Input marks for `'Hakoiri-masahi'` or `'Nurimaze'`|
+|`mark-rect`|Input marks for `'Hakoiri-masahi'`|
 
 ## Values for question mode
 
@@ -21,8 +22,6 @@
 |`circle-unshade`|Input unshaded circles|
 |`circle-shade`|Input shaded circles|
 |`crossdot`|Input dots on the corner of cells|
-|`circle`|Input circles for `Nurimaze`, `Loute` and `Nondango`|
-|`triangle`|Input triangles for `Nurimaze`|
 |`empty`|Toggle on board and out of board cells for `Five cells`|
 |`shade`|Toggle shaded and unshaded cells for `Tatebo-Yokobo` and `Nagareru-loop`|
 |`ice`|Input icebarns for `Icebarn`, `Barns` and or so|

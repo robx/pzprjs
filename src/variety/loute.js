@@ -9,10 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@loute":{
-	inputModes:{edit:['arrow','circle','undef','clear'],play:['border','subline']},
-	mouseinput_other : function(){
-		if(this.inputMode==='circle' && this.mousestart){ this.inputqnum_loute();}
-	}
+	inputModes:{edit:['arrow','circle-unshade','undef','clear'],play:['border','subline']},
 },
 "MouseEvent@sashigane":{
 	inputModes:{edit:['arrow','number','undef','clear'],play:['border','subline']},
@@ -22,7 +19,7 @@
 },
 MouseEvent:{
 	mouseinput : function(){ // オーバーライド
-		if(this.inputMode==='undef'){
+		if(this.inputMode==='undef' || this.inputMode==='circle-unshade'){
 			if(this.mousestart){ this.inputqnum_loute();}
 		}
 		else{ this.common.mouseinput.call(this);}
@@ -66,7 +63,7 @@ MouseEvent:{
 
 		var min = -4, max = cell.getmaxnum();
 		if(this.pid==='loute'){ max = 2;}
-		if(this.inputMode==='circle' || this.inputMode.match(/number/)){ min = 1;}
+		if(this.inputMode==='circle-unshade' || this.inputMode.match(/number/)){ min = 1;}
 		if(this.inputMode==='undef'){ max = 1; min = 0;}
 
 		if(this.btn==='left'){

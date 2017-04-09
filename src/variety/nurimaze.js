@@ -10,7 +10,7 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	inputModes : {edit:['border', 'circle', 'triangle'], play:['shade','unshade']},
+	inputModes : {edit:['border', 'mark-circle', 'mark-triangle'], play:['shade','unshade']},
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='shade'||this.inputMode==='unshade'){
 			this.inputtile_nurimaze();
@@ -18,7 +18,7 @@ MouseEvent:{
 		else{ this.common.mouseinput.call(this);}
 	},
 	mouseinput_other : function(){
-		if(this.inputMode==='circle'||this.inputMode==='triangle'){
+		if(this.inputMode.indexOf('mark-')===0){
 			this.inputmarks();
 		}
 	},
@@ -123,8 +123,8 @@ MouseEvent:{
 	},
 	inputQuesMark :function(cell){
 		var bd = this.board, newques=-1;
-		if     (this.inputMode==='circle')  { newques = (cell.ques!==41?41:0);}
-		else if(this.inputMode==='triangle'){ newques = (cell.ques!==42?42:0);}
+		if     (this.inputMode==='mark-circle')  { newques = (cell.ques!==41?41:0);}
+		else if(this.inputMode==='mark-triangle'){ newques = (cell.ques!==42?42:0);}
 		else if(this.btn==='left' ){ newques={0:41,41:42,42:0}[cell.ques];}
 		else if(this.btn==='right'){ newques={0:42,42:41,41:0}[cell.ques];}
 
