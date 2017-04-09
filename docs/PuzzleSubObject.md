@@ -38,56 +38,7 @@ This sub-obejct handles mouse or touch event.
 * `puzzle.mouse.setInversion(input)` Invert mouse button or enable right button for touch event
 * `puzzle.mouse.setInputMode(mode)` Set current inputMode to input specific marks (e.g. icebarn, waterhazard, etc.)
 * `puzzle.mouse.getInputModeList([type])` Return an array of valid inputModes. If type (edit or play) is given, it will return the list in the given mode.
-    * Values for both question mode and answer mode
-        * `inputMode==='auto'` Initial value
-        * `inputMode==='number'` Input numbers on the board
-        * `inputMode==='number-'` Input numbers on the board which is decremented by click or tap
-        * `inputMode==='border'` Input border lines
-        * `inputMode==='arrow'` Input arrows
-        * `inputMode==='mark-circle', 'mark-triangle', 'mark-rect'` Input marks for `'Hakoiri-masahi'`
-    * Values for question mode
-        * `inputMode==='direc'` Input direction or arrows of the number
-        * `inputMode==='circle-unshade'` Input unshaded circles
-        * `inputMode==='circle-shade'` Input shaded circles
-        * `inputMode==='undef'` Input undefined numbers which are usually drawn as question marks
-        * `inputMode==='crossdot'` Input dots on the corner of cells
-        * `inputMode==='circle'` Input circles for `Nurimaze`, `Loute` and `Nondango`
-        * `inputMode==='triangle'` Input triangles for `Nurimaze`
-        * `inputMode==='empty'` Toggle on board and out of board cells for `Five cells` and or so
-        * `inputMode==='shade'` Toggle shaded and unshaded cells for `Tatebo-Yokobo` and `Nagareru-loop`
-        * `inputMode==='ice'` Input icebarns for `Icebarn`, `Barns` and or so
-        * `inputMode==='water'` Input water hazard cells for `Herugolf`
-        * `inputMode==='nabe'` Input crocks for `Yosenabe`
-        * `inputMode==='bgpaint'` Input background for picture for `Tentaisho` or `Tile paint`
-        * `inputMode==='goat', 'wolf'` Input goats or wolves for `Goats and Wolves`
-        * `inputMode==='moon', 'sun'` Input moon marks or sun marks for `Moon or Sun`
-        * `inputMode==='letter', 'letter-'` Input letters on the board for `'Kinkonkan'`
-        * `inputMode==='quesmark', 'quesmark-'` Input marks for question for `Reflect link` and `Pipelink`
-        * `inputMode==='ineq'` Input signs of inequality for `'Minarism'`
-    * Values for answer mode
-        * `inputMode==='shade'` Input shaded cells
-        * `inputMode==='unshade'` Input unshaded cells
-        * `inputMode==='line'` Input lines
-        * `inputMode==='peke'` Input cross marks which means lines don't pass
-        * `inputMode==='bar'` Input vertical or/and horizonal lines
-        * `inputMode==='subline'` Input auxiliary lines between cells
-        * `inputMode==='numexist'` Input auxiliary circles which will be put some number
-        * `inputMode==='numblank'` Input auxiliary cross marks that means they should remain blank
-        * `inputMode==='subcircle'` Input auxiliary circles that indicates some line will pass or true number
-        * `inputMode==='subcross'` Input auxiliary cross marks that means they should remain blank or liar number
-        * `inputMode==='dot'` Input auxiliary dots that means they should remain blank
-        * `inputMode==='bgcolor', 'bgcolor1' or 'bgcolor2'` Input background color of cells
-        * `inputMode==='completion'` Input completion gray color
-        * `inputMode==='clear'` Clear answer of cells
-        * `inputMode==='copynum'` Copy numbers by drag for `Fillomino` and `Nanro`
-        * `inputMode==='dragnum+'` Increment numbers by drag for `Hebi-Ichigo`
-        * `inputMode==='dragnum-'` Decrement numbers by drag for `Hebi-Ichigo`
-        * `inputMode==='akari'` Input bulbs for `Akari`
-        * `inputMode==='star'` Input stars for `Star Battle`
-        * `inputMode==='futon'` Input futons for `School Trip`
-        * `inputMode==='balloon', 'ironball', 'objblank'` Input baloons, iron balls or blank cells for `Dosun-Fuwari`
-        * `inputMode==='copycircle'` Copy circles by drag for `Yin-yang`
-        * `inputMode==='diraux'` Input dir. aux. marks for `Nagareru-loop`
+For details, see [list of mouse input modes document](InputModes.md).
 
 ### Properties
 
