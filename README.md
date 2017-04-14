@@ -43,9 +43,12 @@ console.log(puzzle.check().text);
 * [Public APIs for pzpr.js](https://github.com/sabo2/pzprjs/blob/master/docs/PublicAPI.md)
 * [pzpr object](https://github.com/sabo2/pzprjs/blob/master/docs/pzpr.md)
 * [Puzzle object](https://github.com/sabo2/pzprjs/blob/master/docs/Puzzle.md)
+* [Puzzle object - child objects](https://github.com/sabo2/pzprjs/blob/master/docs/PuzzleSubObject.md)
 * [List of puzzle config](https://github.com/sabo2/pzprjs/blob/master/docs/Config.md)
+* [List of mouse input modes](https://github.com/sabo2/pzprjs/blob/master/docs/InputModes.md)
 
 ## Releases
+* 2017/04/14 v0.9.0-beta1
 * 2017/02/13 v0.8.1
 * 2017/02/08 v0.8.0
 * 2017/01/09 v0.8.0-beta2
