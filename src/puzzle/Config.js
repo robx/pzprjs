@@ -49,8 +49,8 @@ Config.prototype =
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 回答お助け機能 */
-		this.add('autocmp', false);			/* 数字 or kouchokuの正解の点をグレーにする */
-		this.add('autocmp_area', false);	/* 正解条件を満たした領域に背景色をつける */
+		this.add('autocmp', true);			/* 数字 or kouchokuの正解の点をグレーにする */
+		this.add('autocmp_area', true);		/* 正解条件を満たした領域に背景色をつける */
 		this.add('autoerr', false);			/* hitori:ひとくれの重複した数字を表示, gokigen,wagiri:斜線の色分け */
 
 		/* 正解判定 */

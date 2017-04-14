@@ -34,13 +34,13 @@
 
 |Name|Type|Default value|Description|
 |---|---|---|---|
-|`autocmp`|`boolean`|`false`|Show complete numbers apart from incompleted one automatically.|
-|`autocmp_area`|`boolean`|`false`|Paint background of completed blocks/areas automatically.|
+|`autocmp`|`boolean`|`true`|Show complete numbers apart from incompleted one automatically.|
+|`autocmp_area`|`boolean`|`true`|Paint background of completed blocks/areas automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
 |`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|
 |`forceallcell`|`boolean`|`false`|Force all cells to have number to get completed for `'fillomino'`|
-|`passallcell`|`boolean`|`false`|Force all cells to be passed for `'arukone'`|
+|`passallcell`|`boolean`|`true`|Force all cells to be passed for `'arukone'`|
 
 ## List of miscellaneous config
 
