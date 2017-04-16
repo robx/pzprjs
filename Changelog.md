@@ -1,4 +1,16 @@
 
+## Version 0.9.0-beta2
+
+Release data: 2017/4/16
+
+#### Breaking Change
+
+* Config: autocmp_area is integrated with autocmp again. Please check `puzzle.painter.autocmp` for disambiguating autocmp type.
+
+#### Improvement
+
+* Config: Change default setting of autocmp to true
+
 ## Version 0.9.0-beta1
 
 Release data: 2017/4/14

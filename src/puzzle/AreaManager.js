@@ -265,7 +265,7 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 		}
-		if(this.puzzle.validConfig('autocmp_area')){
+		if(this.puzzle.validConfig('autocmp')){
 			component.checkAutoCmp();
 		}
 	},

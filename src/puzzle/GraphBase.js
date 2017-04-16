@@ -491,13 +491,13 @@ GraphComponent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// component.checkAutoCmp()  autocmp_area設定有効時に条件を満たしているかチェックして背景を描画する
+	// component.checkAutoCmp()  autocmp設定有効時に条件を満たしているかチェックして背景を描画する
 	//---------------------------------------------------------------------------
 	checkAutoCmp : function(){
-		var iscmp = this.clist.checkCmp();
+		var iscmp = (!!this.clist.checkCmp ? this.clist.checkCmp() : false);
 		if(this.cmp !== iscmp){
 			this.cmp = iscmp;
-			if(this.puzzle.execConfig('autocmp_area')){
+			if(this.puzzle.execConfig('autocmp')){
 				this.clist.draw();
 			}
 		}

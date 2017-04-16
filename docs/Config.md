@@ -35,7 +35,6 @@
 |Name|Type|Default value|Description|
 |---|---|---|---|
 |`autocmp`|`boolean`|`true`|Show complete numbers apart from incompleted one automatically.|
-|`autocmp_area`|`boolean`|`true`|Paint background of completed blocks/areas automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
 |`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|
