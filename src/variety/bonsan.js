@@ -10,8 +10,9 @@
 // マウス入力系
 "MouseEvent@bonsan,heyabon":{
 	inputModes : {edit:['number','clear'],play:['line','bgcolor','bgcolor1','bgcolor2','clear','completion']},
-	mouseinput_other : function(){
-		if(this.inputMode==='completion' && this.mousestart){ this.inputqcmp(1);}
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='completion'){ if(this.mousestart){ this.inputqcmp(1);}}
+		else{ this.common.mouseinput.call(this);}
 	}
 },
 "MouseEvent@rectslider":{
@@ -83,9 +84,9 @@ MouseEvent:{
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
-		if(this.inputMode.match(/qcmp/) || (targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance)){
+		if(targetcell.isNum() && (this.inputMode==='completion' || (targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance))){
 			targetcell.setQcmp(targetcell.qcmp!==val ? val : 0);
-			targetcell.draw();
+			cell.draw();
 			return true;
 		}
 		return false;

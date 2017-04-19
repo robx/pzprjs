@@ -38,9 +38,9 @@ MouseEvent:{
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
-		if(dx*dx+dy*dy<distance*distance){
+		if(targetcell.isNum() && (this.inputMode==='completion' || (dx*dx+dy*dy<distance*distance))){
 			targetcell.setQcmp(targetcell.qcmp===0 ? 1 : 0);
-			targetcell.draw();
+			cell.draw();
 		}
 	},
 
