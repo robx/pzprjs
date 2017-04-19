@@ -226,8 +226,8 @@ MouseEvent:{
 			case 'number': case 'number-': this.mouseinput_number(); break;
 			case 'clear': this.mouseinput_clear(); break;
 			case 'cell51': this.input51_fixed(); break;
-			case 'circle-shade':   this.inputFixedNumber(1); break;
-			case 'circle-unshade': this.inputFixedNumber(2); break;
+			case 'circle-unshade': this.inputFixedNumber(1); break;
+			case 'circle-shade':   this.inputFixedNumber(2); break;
 			case 'undef': this.inputFixedNumber(-2); break;
 			case 'ice': this.inputIcebarn(); break;
 			case 'numexist': this.inputFixedNumber(-2); break;
