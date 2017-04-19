@@ -9,11 +9,12 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['border'],play:['balloon','ironball','objblank']},
+	inputModes : {edit:['shade','border'],play:['balloon','ironball','objblank']},
 	mouseinput : function(){ // オーバーライド
 		if(this.puzzle.playmode && this.inputMode!=='auto'){
 			this.inputcell_dosufuwa();
 		}
+		else if(this.inputMode==='shade'){ if(this.mousestart){ this.inputblock();}}
 		else{ this.common.mouseinput.call(this);}
 	},
 	mouseinput_auto : function(){
