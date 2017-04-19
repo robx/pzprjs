@@ -50,11 +50,11 @@
 |`akari`|Input bulbs for `Akari`|
 |`star`|Input stars for `Star Battle`|
 |`futon`|Input futons for `School Trip`|
-|`balloon`<br>`ironball`<br>`objblank`|Input baloons, iron balls or blank cells for `Dosun-Fuwari`|
+|`balloon`<br>`ironball`|Input balloons or iron balls for `Dosun-Fuwari`|
 
 |Name|Description|
 |---|---|
-|`dot`|Input auxiliary dots that means they should remain blank|
+|`objblank`|Input auxiliary dots that means they should remain blank|
 |`bgcolor`<br>`bgcolor1`<br>`bgcolor2`|Input background color of cells|
 |`numexist`|Input auxiliary circles which will be put some number|
 |`numblank`|Input auxiliary cross marks that means they should remain blank|
@@ -68,6 +68,6 @@
 
 |Name|Description|
 |---|---|
-|`info-info`|Check connected line|
+|`info-line`|Check connected line|
 |`info-blk`|Check connected shaded cell|
 |`info-road`|Check continuous road for `Rome`|

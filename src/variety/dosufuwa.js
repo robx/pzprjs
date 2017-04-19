@@ -10,10 +10,11 @@
 // マウス入力系
 MouseEvent:{
 	inputModes : {edit:['border'],play:['balloon','ironball','objblank']},
-	mouseinput_other : function(){
-		if(this.puzzle.playmode){
+	mouseinput : function(){ // オーバーライド
+		if(this.puzzle.playmode && this.inputMode!=='auto'){
 			this.inputcell_dosufuwa();
 		}
+		else{ this.common.mouseinput.call(this);}
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){

@@ -236,7 +236,7 @@ MouseEvent:{
 			case 'subcircle': case 'bgcolor1': this.inputFixedQsub(1); break;
 			case 'subcross':  case 'bgcolor2': this.inputFixedQsub(2); break;
 			case 'completion': if(this.mousestart){ this.inputqcmp();} break;
-			case 'dot': this.inputDot(); break;
+			case 'objblank': this.inputDot(); break;
 			case 'direc': this.inputdirec(); break;
 			case 'arrow': this.inputarrow_cell(); break;
 			case 'crossdot': if(this.mousestart){ this.inputcrossMark();} break;

@@ -9,7 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['mark-circle','mark-triangle','mark-rect','clear','border'],play:['mark-circle','mark-triangle','mark-rect','dot','clear']},
+	inputModes : {edit:['mark-circle','mark-triangle','mark-rect','clear','border'],play:['mark-circle','mark-triangle','mark-rect','objblank','clear']},
 	mouseinput_other : function(){
 		if(!this.mousestart){ return;}
 		switch(this.inputMode){

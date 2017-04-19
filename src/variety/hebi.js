@@ -10,9 +10,9 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	inputModes : {edit:['number','direc','clear'],play:['number','dragnum+','dragnum-','dot','clear']},
+	inputModes : {edit:['number','direc','clear'],play:['number','dragnum+','dragnum-','objblank','clear']},
 	mouseinput : function(){ // オーバーライド
-		if(this.inputMode==='dot'){
+		if(this.inputMode==='objblank'){
 			this.inputDot_snakes();
 		}
 		else if(this.inputMode.indexOf('dragnum')===0){

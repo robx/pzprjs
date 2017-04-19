@@ -9,7 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['border','number'],play:['dot']},
+	inputModes : {edit:['border','number'],play:['objblank']},
 	mouseinput_number : function(){
 		if(this.mousestart){ this.inputqnum_hanare();}
 	},

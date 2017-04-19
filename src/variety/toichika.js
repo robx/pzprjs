@@ -9,9 +9,9 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['border','arrow','clear'],play:['arrow','dot','clear']},
+	inputModes : {edit:['border','arrow','clear'],play:['arrow','objblank','clear']},
 	mouseinput_other : function(){
-		if(this.inputMode==='dot'){ this.inputDot();}
+		if(this.inputMode==='objblank'){ this.inputDot();}
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
