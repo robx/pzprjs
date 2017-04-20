@@ -1,6 +1,6 @@
 {
   "name": "pzpr",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Scripts for handling puzzle objects",
   "main": "./index.js",
   "directories": {
@@ -42,6 +42,6 @@
     "in-publish": "^2.0.0"
   },
   "dependencies": {
-    "pzpr-canvas": "^0.8.0-beta"
+    "pzpr-canvas": "^0.8.0"
   }
 }

@@ -1,4 +1,12 @@
 
+## Version 0.9.1
+
+Release data: 2017/4/21
+
+#### BugFix
+
+* lib: Update pzpr-canvas to v0.8.1 to avoid error on Opera 12
+
 ## Version 0.9.0
 
 Release data: 2017/4/20
