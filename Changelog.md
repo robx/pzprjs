@@ -1,4 +1,19 @@
 
+## Version 0.9.0
+
+Release data: 2017/4/20
+
+#### Improvement
+
+* dosufuwa: Add shade input mode
+
+#### BugFix
+
+* variety: Fix "Goats and Wolves" name
+* Mouse: Fix circle-unshade and circle-shade input mode
+* Mouse: Merge dot input mode into objblank
+* bonsan, yosenabe: Fix completion inputting routine to ensure redraw circles
+
 ## Version 0.9.0-beta2
 
 Release data: 2017/4/16
