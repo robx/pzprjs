@@ -16,8 +16,11 @@ var starYOffset = [-1, -0.309, -0.309, 0.124, 0.809, 0.4, 0.809, 0.124, -0.309, 
 // マウス入力系
 MouseEvent:{
 	use : true,
-
-	mouseinput : function(){
+	inputModes : {play:['star','unshade']},
+	mouseinput_other : function(){
+		if(this.inputMode==='star' && this.mousestart){ this.inputcell_starbattle();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell_starbattle();}
 		}

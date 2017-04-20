@@ -47,7 +47,7 @@ pzpr.classmgr.makeCommon({
 	propnorec : { color:1, error:1, qinfo:1 },
 
 	// 入力できる最大・最小の数字
-	maxnum : 255,
+	maxnum : 999,
 	minnum : 1,
 
 	//---------------------------------------------------------------------------
@@ -451,6 +451,18 @@ pzpr.classmgr.makeCommon({
 	lcnt : 0,		// 交点に存在する線の本数
 
 	adjborder : {},	// 四方向に隣接する境界線を保持する
+
+	//-----------------------------------------------------------------------
+	// cross.getNum()     該当するCrossの数字を返す
+	// cross.setNum()     該当するCrossに数字を設定する
+	// cross.noNum()      該当するCrossに数字がないか返す
+	//-----------------------------------------------------------------------
+	getNum : function(){ return this.qnum;},
+	setNum : function(val){
+		val = ((val===-2 && this.qnum===val)?-1:val);
+		this.setQnum(val);
+	},
+	noNum : function(){ return !this.isnull && this.qnum===-1;},
 
 	//---------------------------------------------------------------------------
 	// cross.setCrossBorderError() 交点とその周り四方向のBorderにエラーフラグを設定する

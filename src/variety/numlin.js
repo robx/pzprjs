@@ -9,9 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','clear','info-line'],play:['line','peke','info-line']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -65,7 +64,7 @@ Graphic:{
 		this.drawLines();
 
 		this.drawCellSquare();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		if(this.pid==='arukone'){ this.drawCrossSquares();}
 
 		this.drawChassis();
@@ -92,7 +91,8 @@ Graphic:{
 	},
 },
 "Graphic@arukone":{
-	textoption : {ratio:[0.5],style:"900"},
+	fontsizeratio : 0.5,
+	textoption : {style:"900"},
 	drawCrossSquares : function(){
 		var g = this.vinc('cross_mark', 'auto', true), bd = this.board;
 		g.fillStyle = this.quescolor;

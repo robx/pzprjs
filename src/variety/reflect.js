@@ -9,9 +9,13 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['quesmark','quesmark-','number','info-line'],play:['line','peke','info-line']},
+	mouseinput_other : function(){
+		if(this.inputMode.match(/quesmark/)){
+			if(this.mousestart){ this.inputQuesTriangle();}
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -22,8 +26,11 @@ MouseEvent:{
 			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.inputQues([0,2,3,4,5,11]);}
+			if(this.mousestart){ this.inputQuesTriangle();}
 		}
+	},
+	inputQuesTriangle :function(cell){
+		this.inputQues([0,2,3,4,5,11]);
 	}
 },
 
@@ -57,6 +64,14 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 
+	maxnum : function(){
+		var qu = this.ques, max = -1;
+		if     (qu===2||qu===3){ max += ((this.by>>1)+1);}
+		else if(qu===4||qu===5){ max += (this.board.rows-(this.by>>1));}
+		if     (qu===3||qu===4){ max += ((this.bx>>1)+1);}
+		else if(qu===2||qu===5){ max += (this.board.cols-(this.bx>>1));}
+		return max;
+	},
 	minnum : 3,
 
 	getTriLine : function(){
@@ -177,15 +192,15 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var text = this.getNumberText(cell);
+			var text = this.getQuesNumberText(cell);
 			g.vid = "cell_text_"+cell.id;
 			if(!!text){
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:[0.45]});
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:cell.ques, ratio:0.45});
 			}
 			else{ g.vhide();}
 		}
 	},
-	getNumberText : function(cell){
+	getQuesNumberText : function(cell){
 		return ((cell.ques>=2 && cell.ques<=5) ? this.getNumberTextCore(cell.qnum) : "");
 	},
 

@@ -9,7 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number'],play:['number','clear']},
+	mouseinput_number: function(){
+		if(this.mousestart){
+			if(this.puzzle.editmode){ this.inputqnum_excell();}
+			else                    { this.inputqnum();}
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){
 				var piece = this.getcell_excell();
@@ -17,6 +24,7 @@ MouseEvent:{
 				else if(piece.group==='cell'){ this.inputqnum();}
 				else{ this.inputflash();}
 			}
+			else{ this.inputflash();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){
@@ -38,13 +46,15 @@ MouseEvent:{
 
 	inputflash : function(){
 		var excell = this.getpos(0).getex(), puzzle = this.puzzle, board = puzzle.board;
-		if(excell.isnull){ return;}
+		if(excell.isnull || this.mouseCell===excell){ return;}
 
 		if(this.isclearflash){
 			board.lightclear();
+			this.mousereset();
 		}
 		else{
 			board.flashlight(excell);
+			this.mouseCell = excell;
 		}
 	},
 
@@ -144,7 +154,7 @@ Board:{
 		this.puzzle.redraw();
 	},
 	lightclear : function(){
-		if(!this.haserror){ return;}
+		if(!this.hasinfo){ return;}
 		for(var i=0;i<this.cell.length  ;i++){ this.cell[i].qinfo=0;}
 		for(var i=0;i<this.excell.length;i++){ this.excell[i].qinfo=0;}
 		this.haslight = false;
@@ -177,7 +187,7 @@ Board:{
 			for(var c=0;c<this.cell.length;c++){
 				if(!!ldata[c]){ this.cell[c].qinfo=ldata[c];}
 			}
-			this.haserror = true;
+			this.hasinfo = true;
 		}
 
 		return {cnt:ccnt};
@@ -200,7 +210,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 		this.drawArrowNumbersEXCell_skyscrapers();
 
 		this.drawChassis();
@@ -229,6 +239,8 @@ Graphic:{
 		var thw = this.bh*0.25;		// width of horizonal arrows' head
 		var tvw = this.bw*0.25;		// width of vertical arrows' head
 
+		var option = {ratio : 0.7};
+
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], num=excell.qnum;
@@ -236,7 +248,7 @@ Graphic:{
 			var text=(num>=0 ? ""+num : "");
 
 			if(!!text){
-				g.fillStyle = this.getNumberColor(excell);
+				g.fillStyle = this.getQuesNumberColor(excell);
 			}
 
 			// 矢印の描画
@@ -258,7 +270,6 @@ Graphic:{
 				else if(excell.bx===bd.minbx+1){ px-=this.cw*0.1;}
 				else if(excell.bx===bd.maxbx-1){ px+=this.cw*0.1;}
 
-				var option = {globalratio : 0.85 * this.globalfontsizeratio};
 				this.disptext(text, px, py, option);
 			}
 			else{ g.vhide();}

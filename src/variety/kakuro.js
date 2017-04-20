@@ -9,7 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['cell51','clear','number'],play:['number','clear']},
+	mouseinput_clear : function(){
+		this.input51_fixed();
+	},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_cell51();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
@@ -26,7 +33,7 @@ KeyEvent:{
 	enableplay : true,
 
 	keyinput : function(ca){
-		if     (this.puzzle.editmode){ this.inputnumber51(ca,{2:45,4:45});}
+		if     (this.puzzle.editmode){ this.inputnumber51(ca);}
 		else if(this.puzzle.playmode){ this.key_inputqnum(ca);}
 	}
 },
@@ -51,7 +58,9 @@ Cell:{
 	disInputHatena : true,
 	enableSubNumberArray : true,
 
-	maxnum : 9,
+	getmaxnum : function(){
+		return (this.puzzle.editmode ? 45 : 9);
+	},
 
 	// この関数は回答モードでしか呼ばれないはず、
 	getNum : function(){ return this.anum;},
@@ -67,7 +76,11 @@ Cell:{
 EXCell:{
 	ques : 51,
 	qnum : 0,
-	qnum2 : 0
+	qnum2 : 0,
+	maxnum : 45,
+	minnum : 1,
+
+	disInputHatena : true
 },
 
 Board:{
@@ -105,8 +118,9 @@ Graphic:{
 		this.drawChassis_ex1(false);
 
 		this.drawSubNumbers();
-		this.drawNumbersOn51();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbersOn51();
+		this.drawQuesNumbers();
 
 		this.drawCursor();
 	},
@@ -130,7 +144,7 @@ Graphic:{
 		return null;
 	},
 
-	getNumberText : function(cell){
+	getAnsNumberText : function(cell){
 		return ((!cell.is51cell() && cell.anum>0) ? ""+cell.anum : "");
 	}
 },

@@ -9,15 +9,19 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	inputModes : {play:['diraux']},
-	
-	mouseinput : function(){
+	inputModes : {edit:['shade','arrow','info-line'],play:['line','peke','diraux','info-line']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='shade'){ if(this.mousestart){ this.inputShadeCell();}}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_other : function(){
 		if(this.inputMode==='diraux'){
 			if(this.mousestart || this.mousemove){ this.inputmark_mousemove();}
 			else if(this.mouseend && this.notInputted()){ this.clickmark();}
 		}
-		else if(this.puzzle.playmode && this.btn==='right'){
+	},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode && this.btn==='right'){
 			if     (this.mousestart){ this.inputmark_mousedown();}
 			else if(this.inputData===2 || this.inputData===3){ this.inputpeke();}
 			else if(this.mousemove) { this.inputmark_mousemove();}
@@ -81,7 +85,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 
-		if(cell!==this.cursor.getc() && this.puzzle.getConfig('cursor')){
+		if(cell!==this.cursor.getc() && this.puzzle.getConfig('cursor') && this.inputMode==='auto'){
 			this.setcursor(cell);
 		}
 		else{

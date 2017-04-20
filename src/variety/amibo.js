@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['bar','peke']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputTateyoko();}
@@ -247,7 +248,6 @@ Graphic:{
 
 	numbercolor_func : "fixed",
 
-	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],
 
 	setRange : function(x1,y1,x2,y2){
@@ -260,8 +260,7 @@ Graphic:{
 		this.drawTateyokos();
 		this.drawTateyokos_sub();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawPekeBorder();
 

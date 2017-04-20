@@ -10,8 +10,23 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes:{edit:['cell51','clear','number','border','bgpaint'],play:['shade','unshade']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='shade'||this.inputMode==='unshade'){
+			this.inputtile();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_clear : function(){
+		this.input51_fixed();
+	},
+	mouseinput_number : function(){
+		if(this.mousestart){ this.inputqnum_cell51();}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='bgpaint'){ this.inputBGcolor1();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
@@ -43,9 +58,7 @@ KeyEvent:{
 	enablemake : true,
 
 	keyinput : function(ca){
-		this.inputnumber51(ca,
-			{2 : (this.board.cols-(this.cursor.bx>>1)-1),
-			 4 : (this.board.rows-(this.cursor.by>>1)-1)});
+		this.inputnumber51(ca);
 	}
 },
 
@@ -57,16 +70,11 @@ Cell:{
 
 	disInputHatena : true,
 
-	minnum : 0,
-
-	// 一部qsubで消したくないものがあるため上書き
-	subclear : function(){
-		if(this.qsub===1){
-			this.addOpe('qsub', 1, 0);
-			this.qsub = 0;
-		}
-		this.error = 0;
+	getmaxnum : function(){
+		var bd=this.board, target = this.puzzle.cursor.detectTarget(this);
+		return (target===this.RT ? (bd.cols-(this.bx>>1)-1) : (bd.rows-(this.by>>1)-1));
 	},
+	minnum : 0,
 
 	set51cell : function(){
 		this.setQues(51);
@@ -99,7 +107,34 @@ EXCell:{
 	qnum: 0,
 	qnum2: 0,
 
+	disInputHatena : true,
+
+	getmaxnum : function(){
+		var bd = this.board;
+		return (this.by===-1 ? bd.rows : bd.cols);
+	},
 	minnum : 0
+},
+CellList:{
+	// 一部qsubで消したくないものがあるため上書き
+	subclear : function(){
+		var isrec = true;
+		var props = [], norec = {};
+		if(this.length>0){
+			props = this[0].getproplist(['sub','info']);
+			norec = this[0].propnorec;
+		}
+		for(var i=0;i<this.length;i++){
+			var piece = this[i];
+			for(var j=0;j<props.length;j++){
+				var pp = props[j], def = piece.constructor.prototype[pp];
+				if(piece[pp]!==def && !(pp==='qsub' && piece.qsub===3)){
+					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
+					piece[pp] = def;
+				}
+			}
+		}
+	}
 },
 Board:{
 	hasborder : 1,
@@ -140,7 +175,7 @@ Graphic:{
 
 		this.drawChassis_ex1(true);
 
-		this.drawNumbersOn51();
+		this.drawQuesNumbersOn51();
 
 		this.drawTarget();
 	}

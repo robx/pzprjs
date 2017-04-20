@@ -9,9 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['border','ice','info-line'],play:['line','peke','info-line']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -27,16 +26,6 @@ MouseEvent:{
 				else if(this.btn==='right'){ this.inputIcebarn();}
 			}
 		}
-	},
-
-	inputIcebarn : function(){
-		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
-
-		cell.setQues(this.inputData);
-		cell.draw();
-		this.mouseCell = cell;
 	}
 },
 

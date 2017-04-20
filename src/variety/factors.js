@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['number','clear']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
@@ -81,56 +82,22 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "DLIGHT",
 
+	textoption : {ratio:0.45, position:5}, /* this.TOPLEFT */
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawTargetSubNumber();
 		this.drawGrid();
 
 		this.drawSubNumbers();
-		this.drawQuesNumbers_factors();
-		this.drawAnswerNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 
 		this.drawChassis();
 
 		this.drawCursor();
-	},
-
-	drawAnswerNumbers : function(){
-		var g = this.vinc('cell_anumber', 'auto');
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = (cell.anum>=0 ? ""+cell.anum : "");
-			g.vid = "cell_text_anum_"+cell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor_anum(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh);
-			}
-			else{ g.vhide();}
-		}
-	},
-	drawQuesNumbers_factors : function(){
-		var g = this.vinc('cell_qnumber', 'auto');
-
-		g.fillStyle = this.quescolor;
-		var qnumoption = {
-			ratio : [0.45, 0.45, 0.45, 0.45, 0.36, 0.30],
-			position : this.TOPLEFT
-		};
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = (cell.qnum>=0 ? ""+cell.qnum : "");
-
-			g.vid = "cell_text_qnum_"+cell.id;
-			if(!!text){
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, qnumoption);
-			}
-			else{ g.vhide();}
-		}
 	}
 },
 

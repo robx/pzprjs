@@ -66,13 +66,13 @@ Graphic:{
 	},
 	getBGCellColor_qcmp : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
-		else if(this.puzzle.execConfig('autocmp_area') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
+		else if(this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
 		return null;
 	},
 	getBGCellColor_qcmp1 : function(cell){
 		if(cell.error===1||cell.qinfo===1){ return this.errbcolor1;}
 		else if(cell.qsub===1){ return this.bcolor;}
-		else if(this.puzzle.execConfig('autocmp_area') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
+		else if(this.puzzle.execConfig('autocmp') && !!cell.room && cell.room.cmp){ return this.qcmpbgcolor;}
 		return null;
 	},
 	getBGCellColor_qsub1 : function(cell){
@@ -257,43 +257,47 @@ Graphic:{
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbers()  Cellの数字をCanvasに書き込む
-	// pc.drawHatenas()  ques===-2の時に？をCanvasに書き込む
-	// pc.getNumberText()    書き込む数のテキストを取得する
-	// pc.getNumberColor()   数字の設定・描画判定する
+	// pc.drawQuesNumbers()  Cellの問題数字をCanvasに書き込む
+	// pc.drawAnsNumbers()   Cellの回答数字をCanvasに書き込む
+	// pc.drawHatenas()      ques===-2の時に？をCanvasに書き込む
+	// pc.getQuesNumberText()  書き込む数のテキストを取得する
+	// pc.getQuesNumberColor() 問題数字の設定・描画判定する
 	//---------------------------------------------------------------------------
-	drawNumbers : function(){
-		var g = this.vinc('cell_number', 'auto');
-
-		var clist = this.range.cells;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			var text = this.getNumberText(cell);
-			g.vid = "cell_text_"+cell.id;
-			if(!!text){
-				g.fillStyle = this.getNumberColor(cell);
-				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, this.textoption);
-			}
-			else{ g.vhide();}
-		}
+	drawQuesNumbers : function(){
+		this.vinc('cell_number', 'auto');
+		this.drawNumbers_com(this.getQuesNumberText, this.getQuesNumberColor, 'cell_text_', this.textoption);
+	},
+	drawAnsNumbers : function(){
+		this.vinc('cell_ans_number', 'auto');
+		this.drawNumbers_com(this.getAnsNumberText, this.getAnsNumberColor, 'cell_ans_text_', {});
 	},
 	drawHatenas : function(){
-		var g = this.vinc('cell_hatena', 'auto');
-
+		function getQuesHatenaText(cell){ return ((cell.ques===-2||cell.qnum===-2) ? "?" : "");}
+		this.vinc('cell_number', 'auto');
+		this.drawNumbers_com(getQuesHatenaText, this.getQuesNumberColor_qnum, 'cell_text_', this.textoption);
+	},
+	drawNumbers_com : function(textfunc, colorfunc, header, textoption){
+		var g = this.context;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			g.vid = "cell_text_"+cell.id;
-			if(cell.ques===-2||cell.qnum===-2){
-				g.fillStyle = this.getNumberColor_qnum(cell);
-				this.disptext("?", cell.bx*this.bw, cell.by*this.bh, this.textoption);
+			var text = textfunc.call(this,cell);
+			g.vid = header+cell.id;
+			if(!!text){
+				g.fillStyle = colorfunc.call(this,cell);
+				this.disptext(text, cell.bx*this.bw, cell.by*this.bh, textoption);
 			}
 			else{ g.vhide();}
 		}
 	},
 
-	getNumberText : function(cell){
-		var num = (this.puzzle.execConfig('dispmove') ? cell.base : cell).getNum();
+	getQuesNumberText : function(cell){
+		return this.getNumberText(cell, (this.puzzle.execConfig('dispmove') ? cell.base : cell).qnum);
+	},
+	getAnsNumberText : function(cell){
+		return this.getNumberText(cell, cell.anum);
+	},
+	getNumberText : function(cell,num){
 		if(!cell.numberAsLetter){
 			return this.getNumberTextCore(num);
 		}
@@ -313,19 +317,20 @@ Graphic:{
 		else if(num>26&&num<= 52){ text = (num-17).toString(36).toLowerCase();}
 		return text;
 	},
-	getNumberColor : function(cell){ // initialize()で上書きされる
+
+	getQuesNumberColor : function(cell){ // initialize()で上書きされる
 		return null;
 	},
-	getNumberColor_fixed : function(cell){
+	getQuesNumberColor_fixed : function(cell){
 		return this.quescolor;
 	},
-	getNumberColor_fixed_shaded : function(cell){
+	getQuesNumberColor_fixed_shaded : function(cell){
 		return this.fontShadecolor;
 	},
-	getNumberColor_qnum : function(cell){
+	getQuesNumberColor_qnum : function(cell){
 		return ((cell.error || cell.qinfo)===1 ? this.errcolor1 : this.quescolor);
 	},
-	getNumberColor_move : function(cell){
+	getQuesNumberColor_move : function(cell){
 		var puzzle = this.puzzle;
 		var info = cell.error || cell.qinfo;
 		if(info===1 || info===4){
@@ -336,13 +341,7 @@ Graphic:{
 		}
 		return this.quescolor;
 	},
-	getNumberColor_anum : function(cell){
-		if((cell.error || cell.qinfo)===1){
-			return this.errcolor1;
-		}
-		return (!cell.trial ? this.qanscolor : this.trialcolor);
-	},
-	getNumberColor_mixed : function(cell){
+	getQuesNumberColor_mixed : function(cell){
 		var info = cell.error || cell.qinfo;
 		if((cell.ques>=1 && cell.ques<=5) || cell.qans===1){
 			return this.fontShadecolor;
@@ -350,10 +349,14 @@ Graphic:{
 		else if(info===1 || info===4){
 			return this.errcolor1;
 		}
-		else if(cell.qnum===-1 && cell.anum!==-1){
-			return (!cell.trial ? this.qanscolor : this.trialcolor);
-		}
 		return this.quescolor;
+	},
+
+	getAnsNumberColor : function(cell){
+		if((cell.error || cell.qinfo)===1){
+			return this.errcolor1;
+		}
+		return (!cell.trial ? this.qanscolor : this.trialcolor);
 	},
 
 	//---------------------------------------------------------------------------
@@ -365,12 +368,12 @@ Graphic:{
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i];
-			var text = this.getNumberText(excell);
+			var text = this.getQuesNumberText(excell);
 
 			g.vid = "excell_text_"+excell.id;
 			if(!!text){
-				g.fillStyle = this.getNumberColor(excell);
-				this.disptext(text, excell.bx*this.bw, excell.by*this.bh, this.textoption);
+				g.fillStyle = this.getQuesNumberColor(excell);
+				this.disptext(text, excell.bx*this.bw, excell.by*this.bh);
 			}
 			else{ g.vhide();}
 		}
@@ -391,7 +394,7 @@ Graphic:{
 				g.vid = "cell_subtext_"+cell.id+"_"+n;
 				if(!!text){
 					g.fillStyle = (!cell.trial ? this.subcolor : this.trialcolor);
-					this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:posarray[n], ratio:[0.33], hoffset:0.8});
+					this.disptext(text, cell.bx*this.bw, cell.by*this.bh, {position:posarray[n], ratio:0.33, hoffset:0.8});
 				}
 				else{ g.vhide();}
 			}
@@ -409,17 +412,17 @@ Graphic:{
 		var tl = this.cw*0.16;		// 矢じりの長さの座標(中心-長さ)
 		var tw = this.cw*0.12;		// 矢じりの幅
 		var dy = -this.bh*0.6;
-		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8];
+		var dx = [this.bw*0.6, this.bw*0.7, this.bw*0.8, this.bw*0.85];
 
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i], dir=cell.qdir;
-			var text = this.getNumberText(cell);
+			var text = this.getQuesNumberText(cell);
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			var digit = text.length - 1;
 
 			if(!!text){
-				g.fillStyle = this.getNumberColor(cell);
+				g.fillStyle = this.getQuesNumberColor(cell);
 			}
 
 			// 矢印の描画
@@ -439,8 +442,8 @@ Graphic:{
 			// 数字の描画
 			g.vid = "cell_arnum_"+cell.id;
 			if(!!text){
-				var option = {};
-				if(dir!==cell.NDIR){ option.globalratio = 0.85 * this.globalfontsizeratio;}
+				var option = {ratio:0.8};
+				if(dir!==cell.NDIR){ option.ratio = 0.7;}
 
 				if     (dir===cell.UP||dir===cell.DN){ px-=this.cw*0.1;}
 				else if(dir===cell.LT||dir===cell.RT){ py+=this.ch*0.1;}
@@ -449,6 +452,16 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.drawCircledNumbers() Cell上の丸数字をCanvasに書き込む
+	//---------------------------------------------------------------------------
+	drawCircledNumbers : function(){
+		this.drawCircles();
+
+		this.vinc('cell_number', 'auto');
+		this.drawNumbers_com(this.getQuesNumberText, this.getQuesNumberColor, 'cell_text_', {ratio:0.65});
 	},
 
 	//---------------------------------------------------------------------------
@@ -461,7 +474,7 @@ Graphic:{
 		var csize = this.cw*this.crosssize+1;
 		g.lineWidth = 1;
 
-		var option = {ratio:[0.6]};
+		var option = {ratio:0.6};
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i], px = cross.bx*this.bw, py = cross.by*this.bh;
@@ -936,7 +949,7 @@ Graphic:{
 		var num = (!isdrawmove ? cell : cell.base).qnum;
 		if(num!==-1){
 			if     (error===1||error===4)                        { return this.errbcolor1;}
-			else if(puzzle.execConfig('autocmp') && cell.isCmp()){ return this.qcmpcolor;}
+			else if(cell.isCmp()){ return this.qcmpcolor;}
 			else{ return this.circlebasecolor;}
 		}
 		return null;
@@ -1100,23 +1113,23 @@ Graphic:{
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbersOn51()   [＼]に数字を記入する
-	// pc.drawNumbersOn51_1() 1つの[＼]に数字を記入する
+	// pc.drawQuesNumbersOn51()   [＼]に数字を記入する
+	// pc.drawQuesNumbersOn51_1() 1つの[＼]に数字を記入する
 	//---------------------------------------------------------------------------
-	drawNumbersOn51 : function(){
+	drawQuesNumbersOn51 : function(){
 		this.vinc('cell_number51', 'auto');
 
 		var d = this.range;
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				var piece = this.board.getobj(bx,by); /* cell or excell */
-				if(!piece.isnull){ this.drawNumbersOn51_1(piece);}
+				if(!piece.isnull){ this.drawQuesNumbersOn51_1(piece);}
 			}
 		}
 	},
-	drawNumbersOn51_1 : function(piece){ /* cell or excell */
+	drawQuesNumbersOn51_1 : function(piece){ /* cell or excell */
 		var g = this.context, val, adj, px = piece.bx*this.bw, py = piece.by*this.bh;
-		var option = {ratio:[0.45]};
+		var option = {ratio:0.45};
 		g.fillStyle = (piece.error===1||piece.qinfo===1 ? this.errcolor1 : this.quescolor);
 
 		adj = piece.relcell(2,0);
@@ -1199,12 +1212,12 @@ Graphic:{
 		if(cursor.bx < d.x1 || d.x2 < cursor.bx){ return;}
 		if(cursor.by < d.y1 || d.y2 < cursor.by){ return;}
 
-		var target = cursor.detectTarget(cursor.getobj());
+		var target = cursor.detectTarget();
 
 		g.vid = "target_triangle";
 		g.fillStyle = this.ttcolor;
 		if(this.puzzle.editmode && target!==0){
-			this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===2?4:2));
+			this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===4?4:2));
 		}
 		else{ g.vhide();}
 	},

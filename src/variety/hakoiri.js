@@ -9,7 +9,16 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['mark-circle','mark-triangle','mark-rect','clear','border'],play:['mark-circle','mark-triangle','mark-rect','objblank','clear']},
+	mouseinput_other : function(){
+		if(!this.mousestart){ return;}
+		switch(this.inputMode){
+			case 'mark-circle':   this.inputFixedNumber(1); break;
+			case 'mark-triangle': this.inputFixedNumber(2); break;
+			case 'mark-rect':     this.inputFixedNumber(3); break;
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.dragDots();}
@@ -131,7 +140,7 @@ Graphic:{
 			var cell = clist[i];
 
 			g.vid = "c_mk_"+cell.id;
-			g.strokeStyle = this.getNumberColor(cell);
+			g.strokeStyle = (cell.qnum!==-1 ? this.getQuesNumberColor(cell) : this.getAnsNumberColor(cell));
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			switch(cell.getNum()){
 			case 1:

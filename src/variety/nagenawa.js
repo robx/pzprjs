@@ -8,11 +8,9 @@
 ['nagenawa','ringring'], {
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
-	redline : true
-},
 "MouseEvent@nagenawa":{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear','info-line'],play:['line','subcircle','subcross','clear','info-line']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ if(this.btn==='left'){ this.inputLine();}}
 			else if(this.mouseend && this.notInputted()){ this.inputMB();}
@@ -24,7 +22,8 @@ MouseEvent:{
 	}
 },
 "MouseEvent@ringring":{
-	mouseinput : function(){
+	inputModes : {edit:['info-line'],play:['line','peke','info-line']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputLine();}
@@ -55,7 +54,7 @@ MouseEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.room.clist.length);
+		return Math.min(999, this.room.clist.length);
 	},
 	minnum : 0
 },
@@ -88,6 +87,9 @@ Graphic:{
 
 	numbercolor_func : "fixed",
 
+	fontsizeratio : 0.45,
+	textoption : {position:5}, /* this.TOPLEFT */
+
 	paint : function(){
 		var pid = this.pid;
 		this.drawBGCells();
@@ -95,7 +97,7 @@ Graphic:{
 		this.drawDashedGrid();
 
 		if(pid==='nagenawa'){
-			this.drawNumbers();
+			this.drawQuesNumbers();
 			this.drawMBs();
 			this.drawBorders();
 		}
@@ -109,8 +111,7 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-	textoption : {ratio:[0.45], position:5} /* this.TOPLEFT */
+	}
 },
 "Graphic@ringring":{
 	drawTarget : function(){}

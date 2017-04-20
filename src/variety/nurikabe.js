@@ -10,8 +10,8 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['shade','unshade']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
@@ -21,7 +21,7 @@ MouseEvent:{
 	}
 },
 "MouseEvent@nurikabe":{
-	redblk : true
+	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']}
 },
 
 //---------------------------------------------------------
@@ -91,7 +91,7 @@ Graphic:{
 		if(this.pid==='nurikabe'){ this.drawDotCells(false);}
 		this.drawGrid();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

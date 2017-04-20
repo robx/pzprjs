@@ -10,8 +10,8 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['shade','unshade']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
@@ -42,7 +42,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.room.clist.length);
+		return Math.min(999, this.room.clist.length);
 	}
 },
 "Cell@chocona":{
@@ -83,7 +83,7 @@ Board:{
 	},
 	errclear : function(){
 		this.falling = false;
-		this.common.errclear.call(this);
+		return this.common.errclear.call(this);
 	},
 	operate : function(type){
 		switch(type){
@@ -91,11 +91,11 @@ Board:{
 		case 'raise':
 			this.drop(type==='drop');
 			this.falling = true;
-			this.haserror = true;
+			this.hasinfo = true;
 			this.puzzle.redraw();
 			break;
 		case 'resetpos':
-			this.board.errclear();
+			this.puzzle.errclear();
 			break;
 		default:
 			this.common.operate.call(this,type);
@@ -182,7 +182,7 @@ Graphic:{
 		if(this.pid==='stostone'){ this.drawDotCells();}
 		this.drawShadedCells();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 		if(this.pid==='stostone'){ this.drawNarrowBorders();}
@@ -246,13 +246,13 @@ Graphic:{
 		if(sblk1!==sblk2){ return "white";}
 		return null;
 	},
-	getNumberText : function(cell){
+	getQuesNumberText : function(cell){
 		if(this.board.falling && !!cell.base.stone){ return '';}
-		return this.common.getNumberText.call(this,cell);
+		return this.common.getQuesNumberText.call(this,cell);
 	},
-	getNumberColor : function(cell){
+	getQuesNumberColor : function(cell){
 		if(this.board.falling){ cell = cell.base;}
-		return this.common.getNumberColor_mixed.call(this,cell);
+		return this.common.getQuesNumberColor_mixed.call(this,cell);
 	}
 },
 

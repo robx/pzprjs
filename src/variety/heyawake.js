@@ -11,9 +11,9 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use    : true,
-	redblk : true,
+	inputModes : {edit:['border','number','clear','info-blk'],play:['shade','unshade','info-blk']},
 
-	mouseinput : function(){
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
@@ -77,7 +77,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

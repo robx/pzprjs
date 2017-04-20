@@ -10,8 +10,8 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['shade','unshade']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
@@ -45,7 +45,7 @@ AreaUnshadeGraph:{
 Graphic:{
 	hideHatena : true,
 
-	globalfontsizeratio : 0.85,
+	fontsizeratio : 0.65,			/* 丸数字 */
 
 	qanscolor : "black",
 	numbercolor_func : "qnum",
@@ -58,7 +58,7 @@ Graphic:{
 
 		this.drawCellSquare();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

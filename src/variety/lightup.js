@@ -10,8 +10,11 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['akari','unshade']},
+	mouseinput_other : function(){
+		if(this.inputMode==='akari' && this.mousestart){ this.inputcell();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || (this.mousemove && (this.inputData!==1))){ this.inputcell();}
 		}
@@ -138,7 +141,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawGrid();
 		this.drawQuesCells();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawAkari();
 		this.drawDotCells();

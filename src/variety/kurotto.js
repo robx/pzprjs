@@ -10,8 +10,8 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['shade','unshade']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
@@ -34,7 +34,7 @@ Cell:{
 
 	maxnum : function(){
 		var max=this.board.cell.length-1;
-		return (max<=255?max:255);
+		return (max<=999?max:999);
 	},
 	minnum : 0,
 
@@ -72,7 +72,6 @@ Graphic:{
 	qanscolor : "black",
 	numbercolor_func : "qnum",
 
-	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],
 
 	// オーバーライド
@@ -94,8 +93,7 @@ Graphic:{
 		this.drawDotCells(false);
 		this.drawGrid();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawChassis();
 

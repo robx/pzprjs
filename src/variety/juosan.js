@@ -9,10 +9,10 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['bar']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
-			if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
-			else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
+			this.inputTateyoko();
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
@@ -39,7 +39,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	maxnum : function(){
-		return Math.min(255, this.room.clist.length);
+		return Math.min(999, this.room.clist.length);
 	}
 },
 Board:{
@@ -71,20 +71,22 @@ Graphic:{
 	gridcolor_type : "LIGHT",
 	numbercolor_func : "fixed",
 
+	fontsizeratio : 0.45,
+	textoption : {position:5}, /* this.TOPLEFT */
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
 
 		this.drawTateyokos();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		this.drawBorders();
 
 		this.drawChassis();
 
 		this.drawTarget();
-	},
-	textoption : {ratio:[0.45], position:5} /* this.TOPLEFT */
+	}
 },
 
 //---------------------------------------------------------

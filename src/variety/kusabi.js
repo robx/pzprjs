@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['line','peke']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -64,15 +65,13 @@ Graphic:{
 		this.drawPekes();
 		this.drawLines();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget();
 	},
 
-	textoption : {ratio:[0.65]},
 	getNumberTextCore : function(num){
 		return {1:"同",2:"短",3:"長"}[num] || "";
 	}

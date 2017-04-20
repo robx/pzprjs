@@ -10,9 +10,14 @@
 // マウス入力系
 MouseEvent:{
 	use    : true,
-	redblk : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear','info-blk'],play:['shade','unshade','info-blk']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='shade'||this.inputMode==='unshade'){
+			this.inputtile();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputtile();}
 		}
@@ -59,7 +64,7 @@ Graphic:{
 		this.drawShadedCells();
 		this.drawGrid();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

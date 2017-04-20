@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['border','subline']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
@@ -59,7 +60,7 @@ Graphic:{
 		this.drawDashedGrid();
 		this.drawBorders();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 		this.drawBorderQsubs();
 
 		this.drawChassis();

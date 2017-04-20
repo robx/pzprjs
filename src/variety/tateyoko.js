@@ -9,13 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['shade']},
-
-	mouseinput : function(){
+	inputModes : {edit:['number','shade','clear']},
+	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='shade'){ this.inputBlock();}
-		else if(this.puzzle.playmode){
-			if     (this.mousestart || this.mousemove)  { this.inputTateyoko();}
-			else if(this.mouseend && this.notInputted()){ this.clickTateyoko();}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode){
+			this.inputTateyoko();
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
@@ -125,7 +126,7 @@ Graphic:{
 		this.drawTateyokos();
 
 		this.drawShadeAtNumber();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 
@@ -146,7 +147,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	getNumberColor : function(cell){
+	getQuesNumberColor : function(cell){
 		return (cell.ques!==1 ? this.quescolor : this.fontShadecolor);
 	}
 },

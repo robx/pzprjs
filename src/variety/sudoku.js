@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['number','clear']},
+	mouseinput_auto : function(){
 		if(this.mousestart){ this.inputqnum();}
 	}
 },
@@ -64,7 +65,8 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

@@ -9,12 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@sukoro,view":{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['number','numexist','numblank','clear']},
+	mouseinput_auto : function(){
 		if(this.mousestart){ this.inputqnum();}
 	}
 },
 "MouseEvent@sukororoom":{
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear'],play:['number','numexist','numblank','clear']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
@@ -76,7 +78,7 @@ Cell:{
 "Cell@view":{
 	enableSubNumberArray : true,
 	maxnum : function(){
-		return Math.min(255, this.board.cols+this.board.rows-2);
+		return Math.min(999, this.board.cols+this.board.rows-2);
 	},
 	minnum : 0
 },
@@ -111,7 +113,8 @@ Graphic:{
 
 		this.drawMBs();
 		if(this.pid==='view'){ this.drawSubNumbers();}
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 

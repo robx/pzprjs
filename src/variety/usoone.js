@@ -11,13 +11,20 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use    : true,
-	redblk : true,
-
-	mouseinput : function(){
+	inputModes : {edit:['border','number','clear','info-blk'],play:['shade','unshade','submark','subcircle','subcross','info-blk']},
+	mouseinput : function(){ // オーバーライド
+		if     (this.inputMode==='subcircle'){ this.inputqcmp(1);}
+		else if(this.inputMode==='subcross') { this.inputqcmp(2);}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='submark'){ this.inputqcmp();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputcell_usoone();}
 			else if(this.mousemove){ this.inputcell();}
-			else if(this.mouseend && this.notInputted()){ this.inputqcmp_usoone();}
+			else if(this.mouseend && this.notInputted()){ this.inputqcmp();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
@@ -29,18 +36,24 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){}
 		else if(cell.isNum() && this.btn==='left'){
-			this.inputqcmp_usoone();
+			this.inputqcmp();
 		}
 		else{
 			this.inputcell();
 		}
 	},
-	inputqcmp_usoone : function(){
+	inputqcmp : function(val){
 		var cell = this.getcell();
 		if(cell.isnull || !cell.isNum()){ return;}
 
-		cell.setQcmp((this.btn==='left'?[2,0,1]:[1,2,0])[cell.qcmp]);
-		if(this.puzzle.getConfig('use')===2 && cell.qcmp===0){
+		if(val===void 0){
+			cell.setQcmp((this.btn==='left'?[2,0,1]:[1,2,0])[cell.qcmp]);
+		}
+		else{
+			cell.setQcmp(cell.qcmp!==val ? val : 0);
+		}
+
+		if(this.inputMode!=='submark' && this.puzzle.getConfig('use')===2 && cell.qcmp===0){
 			this.inputcell();
 		}
 		else{
@@ -65,6 +78,27 @@ Cell:{
 	isLiar : function(){
 		if(this.qnum<0){ return false;}
 		return (this.qnum !== this.countDir4Cell(function(cell){ return cell.isShade();}));
+	}
+},
+CellList:{
+	// 一部qsubで消したくないものがあるため上書き
+	subclear : function(){
+		var isrec = true;
+		var props = [], norec = {};
+		if(this.length>0){
+			props = this[0].getproplist(['sub','info']);
+			norec = this[0].propnorec;
+		}
+		for(var i=0;i<this.length;i++){
+			var piece = this[i];
+			for(var j=0;j<props.length;j++){
+				var pp = props[j], def = piece.constructor.prototype[pp];
+				if(piece[pp]!==def && !(pp==='qcmp' && piece.qcmp===2)){
+					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
+					piece[pp] = def;
+				}
+			}
+		}
 	}
 },
 Board:{
@@ -94,7 +128,7 @@ Graphic:{
 		this.drawShadedCells();
 
 		this.drawMBs_usoone();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

@@ -35,6 +35,8 @@ pzpr.on('load', function(){
 		
 		puzzle.open((!!pzl.cols && !!pzl.rows && !!pzl.body) ? pzl : pid+"/"+debug.urls[pid]);
 		puzzle.on('key', debug.keydown);
+		puzzle.on('mode', debug.initinputmodelist);
+		document.getElementById('inputmode').addEventListener('change',debug.setinputmode,false);
 	});
 });
 
@@ -48,6 +50,20 @@ var debug = window.debug =
 			else if(ca==='shift+ctrl+F10'){ debug.all_test();}
 			else{ return;}
 		}
+	},
+	initinputmodelist : function(puzzle){
+		var el = document.getElementById('inputmode');
+		el.innerHTML = '';
+		puzzle.mouse.getInputModeList().forEach(function(mode){
+			var opt = document.createElement('option');
+			opt.text = opt.value = mode;
+			el.appendChild(opt);
+			if(puzzle.mouse.inputMode===mode){ opt.selected = true;}
+		});
+	},
+	setinputmode : function(e){
+		var el = document.getElementById('inputmode');
+		puzzle.mouse.setInputMode(el.options[el.selectedIndex].value);
 	},
 
 	filesave : function(){
@@ -236,10 +252,12 @@ var debug = window.debug =
 	pid  : '',
 	pnum : 0,
 	starttime : 0,
+	totalfails : 0,
 	all_test : function(){
 		if(this.alltimer!==false){ return;}
 		var self = this;
 		self.pnum = 0;
+		self.totalfails = 0;
 		self.idlist = pzpr.variety.getList().sort();
 		self.starttime = pzpr.util.currentTime();
 		self.alltimer = true;
@@ -250,8 +268,10 @@ var debug = window.debug =
 		if(self.idlist.length===0){
 			if(self.alltimer){
 				var ms = ((pzpr.util.currentTime() - self.starttime)/100)|0;
-				self.addTA("Total time: "+((ms/10)|0)+"."+(ms%10)+" sec.");
+				var timetext = ""+((ms/10)|0)+"."+(ms%10)+" sec.";
+				self.addTA("Total time: "+timetext);
 				self.alltimer = false;
+				alert(["All tests done.", "pzpr.js: v"+pzpr.version, "Total time: "+timetext, "Fail count="+self.totalfails].join('\n')); // jshint ignore:line
 			}
 			return;
 		}
@@ -316,7 +336,10 @@ var debug = window.debug =
 				self[testlist.shift()](self);
 			}
 			if(testlist.length>0){ setTimeout(tests,0);}
-			else{ self.each_test();}
+			else{
+				self.totalfails += self.fails;
+				self.each_test();
+			}
 		},0);
 	},
 	//Encode test--------------------------------------------------------------

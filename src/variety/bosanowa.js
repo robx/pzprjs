@@ -9,7 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['number','subnumber','subnumber-','clear']},
+	mouseinput_clear : function(){
+		this.inputclean_all();
+	},
+	mouseinput_other : function(){
+		if(this.inputMode.indexOf('subnumber')===0 && this.mousestart){ this.inputsubnumber_border();}
+	},
+	mouseinput_auto : function(){
 		if(this.mousestart){ this.inputqnum_bosanowa();}
 	},
 
@@ -56,6 +63,38 @@ MouseEvent:{
 			}
 		}
 		cell.drawaround();
+	},
+	inputsubnumber_border : function(){
+		var pos = this.getpos(0.31), border = pos.getb();
+		if(border.isnull || !border.isGrid()){ return;}
+
+		if(!this.cursor.equals(pos)){
+			this.setcursor(pos);
+		}
+		else{
+			var isInc = ((this.inputMode==='subnumber')===(this.btn==='left'));
+			var num = border.qsub;
+			if(isInc){ num = (num<99 ? num+1 : -1);}
+			else     { num = (num>-1 ? num-1 : 99);}
+			border.setQsub(num);
+			border.drawaround();
+		}
+	},
+	inputclean_all : function(){
+		var pos = this.getpos(0.31);
+		if(this.prevPos.equals(pos)){ return;}
+
+		if(pos.oncell()){
+			this.inputclean_cell();
+		}
+		else if(pos.onborder()){
+			var border = pos.getb();
+			var blist = new this.klass.BorderList([border]);
+			blist.ansclear();
+			border.drawaround();
+		}
+
+		this.prevPos = pos;
 	}
 },
 
@@ -181,8 +220,9 @@ Graphic:{
 			this.drawGrid_waritai();
 		}
 
-		this.drawNumbers();
-		this.drawNumbersBD();
+		this.drawQuesNumbers();
+		this.drawAnsNumbers();
+		this.drawSubNumbersBD();
 
 		if(!this.puzzle.playeronly && !this.outputImage){
 			this.drawChassis();
@@ -289,10 +329,10 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	drawNumbersBD : function(){
+	drawSubNumbersBD : function(){
 		var g = this.vinc('border_number', 'auto');
 
-		var option = {ratio:[0.35]};
+		var option = {ratio:0.35};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i];

@@ -10,17 +10,20 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-
-	mouseinput : function(){
+	inputModes:{edit:['number'],play:['shade','unshade']},
+	mouseinput_number: function(){
+		if(this.mousestart){ this.inputqnum_excell();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.input_onstart();}
+			if(this.mousestart){ this.inputqnum_excell();}
 		}
 	},
 
-	input_onstart : function(){
+	inputqnum_excell : function(){
 		var excell = this.getcell_excell();
 		if(excell.isnull || excell.group!=='excell'){ return;}
 
@@ -28,15 +31,8 @@ MouseEvent:{
 			this.setcursor(excell);
 		}
 		else{
-			this.inputnumber(excell);
+			this.inputqnum_main(excell);
 		}
-	},
-	inputnumber : function(excell){
-		var qn = excell.qnum, max=excell.getmaxnum();
-		if(this.btn==='left'){ excell.setQnum(qn!==max ? qn+1 : 0);}
-		else if(this.btn==='right'){ excell.setQnum(qn!==0 ? qn-1 : max);}
-
-		excell.draw();
 	}
 },
 
@@ -107,9 +103,8 @@ EXCell:{
 	maxnum : function(){
 		var bx=this.bx, by=this.by;
 		if(bx===-1 && by===-1){ return 0;}
-		var sum=0;
-		for(var n=(bx===-1?this.board.rows:this.board.cols);n>0;n--){ sum+=n;}
-		return sum;
+		var size=(bx===-1?this.board.rows:this.board.cols);
+		return (size*(size+1)/2)|0;
 	},
 	minnum : 0
 },
@@ -206,7 +201,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 
-		var option = {globalratio:0.95};
+		var option = {ratio:0.65};
 		g = this.vinc('excell_number2', 'auto');
 		g.fillStyle = this.quescolor;
 		for(var i=0;i<list.length;i++){

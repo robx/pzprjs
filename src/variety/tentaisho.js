@@ -9,7 +9,19 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes:{edit:['circle-unshade','circle-shade','bgpaint'],play:['border','subline']},
+	mouseinput : function(){ // オーバーライド
+		if(this.puzzle.editmode && this.inputMode!=='auto'){
+			if(this.mousestart){ this.inputstar();}
+		}
+		else{
+			this.common.mouseinput.call(this);
+		}
+	},
+	mouseinput_other : function(){
+		if(this.inputMode==='bgpaint'){ this.inputBGcolor1();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left' && this.isBorderMode()){ this.inputborder_tentaisho();}
@@ -66,7 +78,9 @@ MouseEvent:{
 
 		var star = pos.gets();
 		if(star!==null){
-			if     (this.btn==='left') { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
+			if   (this.inputMode==='circle-unshade'){ star.setStar(star.getStar()!==1?1:0);}
+			else if(this.inputMode==='circle-shade'){ star.setStar(star.getStar()!==2?2:0);}
+			else if(this.btn==='left') { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
 			else if(this.btn==='right'){ star.setStar({0:2,1:0,2:1}[star.getStar()]);}
 			star.draw();
 		}
@@ -100,16 +114,7 @@ Cell:{
 	qnum : 0,
 	minnum : 0,
 
-	disInputHatena : true,
-
-	// 一部qsubで消したくないものがあるため上書き
-	subclear : function(){
-		if(this.qsub===1){
-			this.addOpe('qsub', 1, 0);
-			this.qsub = 0;
-		}
-		this.error = 0;
-	}
+	disInputHatena : true
 },
 Cross:{
 	qnum : 0,
@@ -194,6 +199,25 @@ CellList:{
 			}
 		}
 		return ret;
+	},
+	// 一部qsubで消したくないものがあるため上書き
+	subclear : function(){
+		var isrec = true;
+		var props = [], norec = {};
+		if(this.length>0){
+			props = this[0].getproplist(['sub','info']);
+			norec = this[0].propnorec;
+		}
+		for(var i=0;i<this.length;i++){
+			var piece = this[i];
+			for(var j=0;j<props.length;j++){
+				var pp = props[j], def = piece.constructor.prototype[pp];
+				if(piece[pp]!==def && !(pp==='qsub' && piece.qsub===3)){
+					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
+					piece[pp] = def;
+				}
+			}
+		}
 	}
 },
 

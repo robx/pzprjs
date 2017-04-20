@@ -8,10 +8,20 @@
 ['country','moonsun','onsen'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@country,onsen":{
+	inputModes : {edit:['border','number','clear','info-line'],play:['line','peke','subcircle','subcross','clear','info-line']}
+},
+"MouseEvent@moonsun":{
+	inputModes : {edit:['border','moon','sun','clear','info-line'],play:['line','peke','lineblank','clear','info-line']},
+	mouseinput_other : function(){
+		switch(this.inputMode){
+			case 'moon': this.inputFixedNumber(1); break;
+			case 'sun':  this.inputFixedNumber(2); break;
+		}
+	}
+},
 MouseEvent:{
-	redline : true,
-	
-	mouseinput : function(){
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left'){ this.inputLine();}
@@ -41,7 +51,7 @@ MouseEvent:{
 		return false;
 	}
 },
-"MouseEvent@moonsun":{
+"MouseEvent@moonsun#2":{
 	// オーバーライド
 	inputMB : function(){
 		var cell = this.getcell();
@@ -65,7 +75,7 @@ KeyEvent:{
 // 盤面管理系
 "Cell@country,onsen":{
 	maxnum : function(){
-		return Math.min(255, this.room.clist.length);
+		return Math.min(999, this.room.clist.length);
 	}
 },
 "Cell@moonsun":{
@@ -177,12 +187,9 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		if     (this.pid==='country'){ this.drawNumbers();}
+		if     (this.pid==='country'){ this.drawQuesNumbers();}
 		else if(this.pid==='moonsun'){ this.drawMarks();}
-		else if(this.pid==='onsen'){
-			this.drawCircles();
-			this.drawNumbers();
-		}
+		else if(this.pid==='onsen'){ this.drawCircledNumbers();}
 
 		if     (this.pid==='country'){ this.drawGrid();}
 		else if(this.pid!=='country'){ this.drawDashedGrid();}
@@ -200,14 +207,12 @@ Graphic:{
 "Graphic@onsen":{
 	hideHatena : true,
 	circleratio : [0.40, 0.37],
-	globalfontsizeratio : 0.75,
 	gridcolor_type : "LIGHT",
 
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 	}
 },
 "Graphic@moonsun":{

@@ -10,15 +10,21 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-
-	mouseinput : function(){
+	inputModes:{edit:['number','clear'],play:['info-line']},
+	mouseinput_clear : function(){
+		this.inputclean_cross();
+	},
+	mouseinput_number: function(){
+		if(this.mousestart){ this.inputqnum_cross();}
+	},
+	mouseinput_auto : function(){
 		var puzzle = this.puzzle;
 		if(puzzle.playmode){
 			if     (this.mousestart || this.mousemove)  { this.inputslash();}
 			else if(this.mouseend && this.notInputted()){ this.clickslash();}
 		}
 		else if(puzzle.editmode && this.mousestart){
-			if     (puzzle.pid==='gokigen'){ this.inputcross();}
+			if     (puzzle.pid==='gokigen'){ this.inputqnum_cross();}
 			else if(puzzle.pid==='wagiri') { this.inputquestion();}
 		}
 	},
@@ -69,19 +75,14 @@ MouseEvent:{
 		cell.drawaround();
 	},
 
-	dispRed : function(){
-		var puzzle = this.puzzle, flag = (puzzle.playmode && puzzle.key.isZ);
-		if(flag){ this.dispBlue();}
-		return flag;
-	},
-	dispBlue : function(){
+	dispInfoLine : function(){
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || cell.qans===0 || cell.path===null){ return;}
 
 		this.board.cell.setinfo(-1);
 		cell.path.setedgeinfo(2);
-		this.board.haserror = true;
+		this.board.hasinfo = true;
 		this.puzzle.redraw();
 	}
 },
@@ -94,7 +95,7 @@ MouseEvent:{
 			this.setcursor(pos);
 		}
 		else if(pos.oncross()){
-			this.inputcross();
+			this.inputqnum_cross();
 		}
 		else if(pos.oncell()){
 			this.inputwagiri(pos);
@@ -283,7 +284,7 @@ Graphic:{
 	// オーバーライド
 	paintRange : function(x1,y1,x2,y2){
 		var bd = this.board;
-		if(!bd.haserror && this.puzzle.getConfig('autoerr')){
+		if(!bd.haserror && !bd.hasinfo && this.puzzle.getConfig('autoerr')){
 			this.setRange(bd.minbx-2, bd.minby-2, bd.maxbx+2, bd.maxby+2);
 		}
 		else{
@@ -295,7 +296,7 @@ Graphic:{
 		this.drawBGCells();
 		this.drawDashedGrid(false);
 
-		if(this.pid==='wagiri'){ this.drawNumbers();}
+		if(this.pid==='wagiri'){ this.drawQuesNumbers();}
 		this.drawSlashes();
 
 		this.drawCrosses();
@@ -310,7 +311,7 @@ Graphic:{
 
 	drawSlashes : function(){
 		var puzzle = this.puzzle, bd = puzzle.board;
-		if(!bd.haserror && puzzle.getConfig('autoerr')){
+		if(!bd.haserror && !bd.hasinfo && puzzle.getConfig('autoerr')){
 			var pid = this.pid;
 			bd.cell.each(function(cell){ cell.qinfo = (cell.isloop?(pid==='gokigen'?1:3):0);});
 
@@ -330,7 +331,7 @@ Graphic:{
 	}
 },
 "Graphic@wagiri":{
-	textoption : {ratio:[0.70]},
+	fontsizeratio : 0.70,
 	getNumberTextCore : function(num){
 		return {'-2':"?",1:"輪",2:"切"}[num] || "";
 	},

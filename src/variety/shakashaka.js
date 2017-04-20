@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['objblank']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			var use = +this.puzzle.getConfig('use_tri');
 			if(use===1){
@@ -270,7 +271,7 @@ Graphic:{
 		this.drawDotCells(false);
 		this.drawDashedGrid();
 		this.drawQuesCells();
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawTriangle();
 

@@ -9,9 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	redline : true,
-	
-	mouseinput : function(){
+	inputModes : {edit:['number','direc','clear','info-line'],play:['line','peke','info-line']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -199,7 +198,7 @@ KeyEvent:{
 Cell:{
 	disInputHatena : true,
 	maxnum : function(){
-		return Math.min(255, this.board.gatemgr.components.length);
+		return Math.min(999, this.board.gatemgr.components.length);
 	},
 	posthook : {
 		qnum : function(num){ this.board.gatemgr.generateGateNumberAll();},
@@ -590,7 +589,7 @@ Graphic:{
 
 		g.vid = "text_stpos";
 		g.fillStyle = this.quescolor;
-		this.disptext(""+bd.gatemgr.components.length, px, py, {ratio:[0.75, 0.66]});
+		this.disptext(""+bd.gatemgr.components.length, px, py, {ratio:0.75});
 	},
 
 	repaintParts : function(blist){
@@ -718,6 +717,11 @@ Encode:{
 						cell.qnum = parseInt(bstr.substr(i+1,2),16);
 						i+=2;
 					}
+					else if((ver===2) && ca==='-'){
+						cell.qdir = parseInt(bstr.substr(i+1,1),16);
+						cell.qnum = parseInt(bstr.substr(i+2,3),16);
+						i+=4;
+					}
 					else if(ca>='g' && ca<='z'){ spare = (parseInt(ca,36)-15)-1;}
 				}
 				c++;
@@ -764,8 +768,9 @@ Encode:{
 				if(cell.ques!==1){ continue;}
 
 				var pstr = "", val = cell.qnum, dir = cell.qdir;
-				if     (val>= 1 && val< 16){ pstr = (ver===1 ? ""  : ""+dir)     + val.toString(16);}
-				else if(val>=16 && val<256){ pstr = (ver===1 ? "-" : ""+(dir+5)) + val.toString(16);}
+				if     (val>=  1 && val<  16){ pstr = (ver===1 ? ""  : ""+dir)     + val.toString(16);}
+				else if(val>= 16 && val< 256){ pstr = (ver===1 ? "-" : ""+(dir+5)) + val.toString(16);}
+				else if(val>=256 && val<4096){ pstr = ("-"+dir)                    + val.toString(16);}
 				else{ count++;}
 
 				if(count===0){ cm += pstr;}

@@ -1,4 +1,66 @@
 
+## Version 0.9.0
+
+Release data: 2017/4/20
+
+#### Improvement
+
+* dosufuwa: Add shade input mode
+
+#### BugFix
+
+* variety: Fix "Goats and Wolves" name
+* Mouse: Fix circle-unshade and circle-shade input mode
+* Mouse: Merge dot input mode into objblank
+* bonsan, yosenabe: Fix completion inputting routine to ensure redraw circles
+
+## Version 0.9.0-beta2
+
+Release data: 2017/4/16
+
+#### Breaking Change
+
+* Config: autocmp_area is integrated with autocmp again. Please check `puzzle.painter.autocmp` for disambiguating autocmp type.
+
+#### Improvement
+
+* Config: Change default setting of autocmp to true
+
+## Version 0.9.0-beta1
+
+Release data: 2017/4/14
+
+#### Breaking Change
+
+* Configs: redline, redblk, redroad configs are removed. Use `puzzle.mouse.setInputMode()` instead.
+
+#### Improvement
+
+* Graphic: Use narrow font for two or more length text instead of small size font
+* Cell: Expand max number from 255 up to 999
+* Mouse: Enable pinch-zoom for Android Chrome
+* Mouse: Add various common input modes
+* Mouse: Integrate dispRed routine into common input mode
+* Mouse: Add mouse.setInversion method to invert mouse button
+* Puzzle: Introduce 'mode' event when entering edit or play mode or after puzzle getting ready
+* CellList: Prevent cross marks from erasing on subclear for usoone
+* icebarn: Enable to input dir. aux. marks
+* kakuru: Change display type to original Sapporo-nikolist style
+
+#### BugFix
+
+* util: Listen both touch and mouse event for user agents supporting touch event
+* util: Surpress prural finger tap from inputting the board
+* util: Fix mouse button detection when Pointer Event is triggered
+* Operation: Add ansclear history to ensure regenerate graph info
+
+#### Minor Changes
+
+* Graphic: Separate number drawing method into for question and answer
+* docs: Add InputModes.md
+* package: Use pzpr-canvas on npmjs.org instead of local file
+* package: Move in-publish on to devDependencies
+
 ## Version 0.8.1
 
 Release date: 2017/2/13
@@ -7,7 +69,6 @@ Release date: 2017/2/13
 
 * akari: Prevent from erasing background color for Akari
 * kinkonkan: Fix outputted file data is wrong for Opera 12.17
-* kinkonkan: Fix slants sometimes get bolder with light
 
 ## Version 0.8.0
 

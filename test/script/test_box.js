@@ -15,7 +15,7 @@ ui.debug.addDebugData('box', {
 		{ input:["cursor,1,-1", "key,-", "key,right", "key,-", "key,right", "key,-", "key,-" ],
 		  result:"pzprv3/box/1/5/. 0 0 0 2 10 /0 . . . . . /" },
 		{ input:["newboard,6,1"] },
-		{ input:["cursor,0,0", "mouse,leftx2, -1,-1", "mouse,leftx2, 1,-1", "mouse,leftx3, 3,-1", "mouse,leftx4, 5,-1", "mouse,leftx5, 7,-1", "mouse,leftx6, 9,-1", "mouse,rightx2, 11,-1"],
+		{ input:["cursor,0,0", "mouse,leftx2, -1,-1", "mouse,leftx2, 1,-1", "mouse,leftx3, 3,-1", "mouse,leftx4, 5,-1", "mouse,leftx5, 7,-1", "mouse,leftx6, 9,-1", "mouse,rightx3, 11,-1"],
 		  result:"pzprv3/box/1/6/. 1 2 3 4 5 21 /0 . . . . . . /" }
 	]
 });

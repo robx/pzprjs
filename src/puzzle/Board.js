@@ -22,6 +22,9 @@ Board:{
 		// エラー表示中かどうか
 		this.haserror = false;
 
+		// Info表示中かどうか
+		this.hasinfo = false;
+
 		// 盤面上にあるセル・境界線等のオブジェクト
 		this.cell   = new classes.CellList();
 		this.cross  = new classes.CrossList();
@@ -291,13 +294,19 @@ Board:{
 	},
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
-		this.puzzle.opemgr.newOperation();
+		var opemgr = this.puzzle.opemgr;
+		opemgr.newOperation();
+		opemgr.add(new this.puzzle.klass.BoardClearOperation());
 		
 		this.cell.ansclear();
 		this.cross.ansclear();
 		this.border.ansclear();
 		this.excell.ansclear();
-		this.puzzle.opemgr.rejectTrial(true);
+		opemgr.rejectTrial(true);
+		if(opemgr.ope[opemgr.ope.length-1].length===1){
+			opemgr.puzzle.undo();
+			opemgr.removeDescendant();
+		}
 		
 		this.rebuildInfo();
 	},
@@ -312,14 +321,16 @@ Board:{
 	},
 
 	errclear : function(){
-		if(this.haserror){
+		var isclear = this.haserror || this.hasinfo;
+		if(isclear){
 			this.cell.errclear();
 			this.cross.errclear();
 			this.border.errclear();
 			this.excell.errclear();
 			this.haserror = false;
-			this.puzzle.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
+			this.hasinfo = false;
 		}
+		return isclear;
 	},
 
 	trialclear : function(forcemode){

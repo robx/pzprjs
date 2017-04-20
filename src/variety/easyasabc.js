@@ -9,7 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number'],play:['number','numexist','numblank','clear']},
+	mouseinput_number: function(){
+		if(this.mousestart){
+			if(this.puzzle.editmode){ this.inputqnum_excell();}
+			else                    { this.inputqnum();}
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){
 				var piece = this.getcell_excell();
@@ -261,7 +268,7 @@ Graphic:{
 
 		this.drawMBs();
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 		this.drawNumbersEXcell();
 
 		this.drawChassis();
@@ -281,8 +288,6 @@ Graphic:{
 			this.range.indicator = true;
 		}
 	},
-
-	textoption : {ratio:[0.85]},
 
 	drawIndicator : function(){
 		var g = this.vinc('indicator', 'auto', true), bd = this.board;

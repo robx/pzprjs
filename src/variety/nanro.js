@@ -9,7 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['copynum','number','numexist','numblank','clear']},
+	mouseinput_other : function(){
+		if(this.inputMode==='copynum'){ this.dragnumber_nanro();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.dragnumber_nanro();}
@@ -138,7 +142,8 @@ Graphic:{
 		this.drawGrid();
 
 		this.drawMBs();
-		this.drawNumbers();
+		this.drawAnsNumbers();
+		this.drawQuesNumbers();
 
 		this.drawBorders();
 

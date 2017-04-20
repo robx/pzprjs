@@ -8,10 +8,22 @@
 ['pipelink','pipelinkr','loopsp'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@pipelink":{
+	inputModes : {edit:['quesmark','quesmark-','info-line'],play:['line','peke','info-line']}
+},
+"MouseEvent@pipelinkr":{
+	inputModes : {edit:['quesmark','quesmark-','ice','info-line'],play:['line','peke','info-line']}
+},
+"MouseEvent@loopsp":{
+	inputModes : {edit:['quesmark','quesmark-','number','info-line'],play:['line','peke','info-line']}
+},
 MouseEvent:{
-	redline : true,
-	
-	mouseinput : function(){
+	mouseinput_other : function(){
+		if(this.inputMode.match(/quesmark/)){
+			if(this.mousestart){ this.inputQuesMark();}
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -22,14 +34,17 @@ MouseEvent:{
 			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){
-				if(this.pid!=='loopsp'){ this.inputQues([0,11,12,13,14,15,16,17,-2]);}
-				else{ this.inputLoopsp();}
-			}
+			if(this.mousestart){ this.inputQuesMark();}
 		}
+	},
+	inputQuesMark :function(cell){
+		if(this.pid!=='loopsp'){
+			this.inputQues([0,11,12,13,14,15,16,17,-2]);
+		}
+		else{ this.inputLoopsp();}
 	}
 },
-"MouseEvent@loopsp":{
+"MouseEvent@loopsp#1":{
 	inputLoopsp : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
@@ -43,27 +58,28 @@ MouseEvent:{
 		this.mouseCell = cell;
 	},
 	inputcell_loopsp : function(cell){
-		var qu = cell.ques, qn = cell.qnum;
+		var qu = cell.ques, qn = cell.qnum, val;
+		// -8to-2:IneqMark -1:何もなし 0:丸のみ 1以上:数字
+		if  (qn!==-1){ val = (qn>0 ? qn : 0);}
+		else if(qu>0){ val = qu - 19;}
+		else         { val = -1;}
+
+		var max = cell.getmaxnum(), min = -8;
+		if(this.inputMode.match(/number/)){ min = -1;}
+		if(this.inputMode.match(/quesmark/)){ max = -1;}
+
 		if(this.btn==='left'){
-			if(qn===-1){
-				if     (qu===0)        { cell.setQues(11);}
-				else if(qu>=11&&qu<=16){ cell.setQues(qu+1);}
-				else if(qu===17)       { cell.setQues(0); cell.setQnum(-2);}
-			}
-			else if(qn===-2){ cell.setQnum(1);}
-			else if(qn<cell.getmaxnum()){ cell.setQnum(qn+1);}
-			else{ cell.setQues(0); cell.setQnum(-1);}
+			if(min<=val && val<max){ val++;  }
+			else                   { val=min;}
 		}
 		else if(this.btn==='right'){
-			if(qn===-1){
-				if     (qu===0)        { cell.setQues(0); cell.setQnum(-2);}
-				else if(qu===11)       { cell.setQues(0); cell.setQnum(-1);}
-				else if(qu>=12&&qu<=17){ cell.setQues(qu-1);}
-			}
-			else if(qn===-2){ cell.setQues(17); cell.setQnum(-1);}
-			else if(qn>1) { cell.setQnum(qn-1);}
-			else{ cell.setQues(0); cell.setQnum(-2);}
+			if(min<val && val<=max){ val--;  }
+			else                   { val=max;}
 		}
+
+		if     (val >= 0){ cell.setQues(0);      cell.setQnum(val>=1 ? val : -2);}
+		else if(val===-1){ cell.setQues(0);      cell.setQnum(-1);}
+		else             { cell.setQues(val+19); cell.setQnum(-1);}
 		cell.draw();
 	}
 },
@@ -111,6 +127,9 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	maxnum : function(){
+		return (this.board.cell.length/4)|0;
+	},
 	prehook : {
 		ques  : function(num){ this.setCombinedLine(num); return false;}
 	},
@@ -204,8 +223,7 @@ Graphic:{
 		this.drawLines();
 
 		if(this.pid==='loopsp'){
-			this.drawCircles();
-			this.drawNumbers();
+			this.drawCircledNumbers();
 		}
 
 		this.drawPekes();
@@ -221,8 +239,7 @@ Graphic:{
 		this.range.cells = blist.cellinside();
 
 		if(this.pid==='loopsp'){
-			this.drawCircles();
-			this.drawNumbers();
+			this.drawCircledNumbers();
 		}
 		this.drawLineParts();
 	}
@@ -252,7 +269,6 @@ Graphic:{
 	circlefillcolor_func : "null"
 },
 "Graphic@loopsp":{
-	globalfontsizeratio : 0.85,
 	circleratio : [0.40, 0.35],
 
 	numbercolor_func : "qnum",
@@ -338,9 +354,10 @@ Graphic:{
 			var ca = bstr.charAt(i), cell = bd.cell[c];
 
 			if     (ca ==='.'){ cell.qnum = -2;}
+			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+							  { cell.qnum = parseInt(ca,16);}
 			else if(ca ==='-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca >= '0' && ca <= '9'){ cell.qnum = parseInt(ca,16);}
-			else if(ca >= 'a' && ca <= 'f'){ cell.qnum = parseInt(ca,16);}
+			else if(ca ==='+'){ cell.qnum = parseInt(bstr.substr(i+1,3),16); i+=3;}
 			else if(ca >= 'g' && ca <= 'm'){ cell.ques = parseInt(ca,36)-5;}
 			else if(ca >= 'n' && ca <= 'z'){ c += (parseInt(ca,36)-23);}
 
@@ -357,6 +374,7 @@ Graphic:{
 			if     (qn===-2)       { pstr = ".";}
 			else if(qn>= 0&&qn< 16){ pstr =     qn.toString(16);}
 			else if(qn>=16&&qn<256){ pstr = "-"+qn.toString(16);}
+			else if(qn>=256&&qn<4096){pstr= "+"+qn.toString(16);}
 			else if(qu>=11&&qu<=17){ pstr = (qu+5).toString(36);}
 			else{ pstr = ""; count++;}
 

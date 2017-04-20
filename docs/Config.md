@@ -30,23 +30,16 @@
 |`enline`|`boolean`|`true`|Limit to input segments only between points for `'Kouchoku'`|
 |`lattice`|`boolean`|`true`|Restrict not to input segments if other points are on the lattice for `'Kouchoku'`|
 
-|Name|Type|Default value|Description|
-|---|---|---|---|
-|`redline`|`boolean`|`false`|Display continuous lines if the player clicks|
-|`redblk`|`boolean`|`false`|Display continuous shaded cells if the player clicks|
-|`redroad`|`boolean`|`false`|Display continuous road if the player clicks for `'Roma'`|
-
 ## List of config for answer check
 
 |Name|Type|Default value|Description|
 |---|---|---|---|
-|`autocmp`|`boolean`|`false`|Show complete numbers apart from incompleted one automatically.|
-|`autocmp_area`|`boolean`|`false`|Paint background of completed blocks/areas automatically.|
+|`autocmp`|`boolean`|`true`|Show complete numbers apart from incompleted one automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
 |`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|
 |`forceallcell`|`boolean`|`false`|Force all cells to have number to get completed for `'fillomino'`|
-|`passallcell`|`boolean`|`false`|Force all cells to be passed for `'arukone'`|
+|`passallcell`|`boolean`|`true`|Force all cells to be passed for `'arukone'`|
 
 ## List of miscellaneous config
 

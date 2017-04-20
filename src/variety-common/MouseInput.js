@@ -28,7 +28,13 @@ MouseEvent:{
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.puzzle.getConfig('use')===1){
+		if(this.inputMode==='shade'){
+			this.inputData=((cell.qans!==1)? 1 : 0);
+		}
+		else if(this.inputMode==='unshade'){
+			this.inputData=((cell.qsub!==1)? 2 : 0);
+		}
+		else if(this.puzzle.getConfig('use')===1){
 			if     (this.btn==='left') { this.inputData=(cell.isUnshade() ? 1 : 0); }
 			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1)  ? 2 : 0); }
 		}
@@ -48,6 +54,23 @@ MouseEvent:{
 			}
 		}
 	},
+
+	//---------------------------------------------------------------------------
+	// mv.inputclean_cell() Cellのqans(回答データ)を消去する
+	//---------------------------------------------------------------------------
+	inputclean_cell : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		this.mouseCell = cell;
+
+		var clist = new this.klass.CellList([cell]);
+		if(this.puzzle.playmode){ clist.ansclear();}
+		else                    { clist.allclear();}
+
+		cell.draw();
+	},
+
 	//---------------------------------------------------------------------------
 	// mv.inputqnum()      Cellのqnum(数字データ)に数字を入力する
 	// mv.inputqnum_main() Cellのqnum(数字データ)に数字を入力する(メイン処理)
@@ -84,6 +107,10 @@ MouseEvent:{
 			if(snumpos===-1){ return;}
 			cell.setSnum(snumpos, this.getNewNumber(cell, cell.snum[snumpos]));
 		}
+		else if(puzzle.editmode && cell.ques===51){
+			var target = puzzle.cursor.detectTarget(cell);
+			puzzle.key.setnum51(cell, target,this.getNewNumber(cell, puzzle.key.getnum51(cell,target)));
+		}
 		else{
 			cell.setNum(this.getNewNumber(cell, cell.getNum()));
 		}
@@ -94,7 +121,7 @@ MouseEvent:{
 
 		cell0.draw();
 	},
-	getNewNumber : function(cell, num, isSnum){
+	getNewNumber : function(cell, num){
 		var puzzle=this.puzzle, ishatena=(puzzle.editmode && !cell.disInputHatena);
 		var max=cell.getmaxnum(), min=cell.getminnum(), val = -1, qs = cell.qsub;
 
@@ -132,9 +159,21 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.inputQues() Cellの黒マスを入力する
+	// mv.inputFixedNumber() Cellに固定のqnum/anum値を入力する
 	//---------------------------------------------------------------------------
-	inputshade : function(cell){},
+	inputFixedNumber : function(num){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		var val = cell.getNum();
+		if(val===-1 && cell.qsub>0){ val = -1-cell.qsub;}
+		if(this.inputData===null){ this.inputData = (val===num ? -1 : num);}
+		if(val!==num || this.inputData===-1){
+			cell.setNum(this.inputData);
+			cell.draw();
+		}
+		this.mouseCell = cell;
+	},
 
 	//---------------------------------------------------------------------------
 	// mv.inputQues() Cellのquesデータをarrayのとおりに入力する
@@ -143,7 +182,7 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
-		if(cell!==this.cursor.getc()){
+		if(cell!==this.cursor.getc() && this.inputMode==='auto'){
 			this.setcursor(cell);
 		}
 		else{
@@ -152,7 +191,8 @@ MouseEvent:{
 	},
 	inputQues_main : function(array,cell){
 		var qu = cell.ques, len = array.length;
-		if(this.btn==='left'){
+		var isInc = ((this.inputMode==='quesmark'||this.inputMode==='auto')===(this.btn==='left'));
+		if(isInc){
 			for(var i=0;i<=len-1;i++){
 				if(qu===array[i]){
 					cell.setQues(array[((i<len-1)?i+1:0)]);
@@ -160,7 +200,7 @@ MouseEvent:{
 				}
 			}
 		}
-		else if(this.btn==='right'){
+		else{
 			for(var i=len-1;i>=0;i--){
 				if(qu===array[i]){
 					cell.setQues(array[((i>0)?i-1:len-1)]);
@@ -172,7 +212,9 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.inputMB()   Cellのqsub(補助記号)の○, ×データを入力する
+	// mv.inputMB()        Cellのqsub(補助記号)の○, ×データを入力する
+	// mv.inputFixedQsub() Cellのqsub(補助記号)の○, ×データを固定で入力する
+	// mv.inputBGcolor()   Cellの背景色を入力する
 	//---------------------------------------------------------------------------
 	inputMB : function(){
 		var cell = this.getcell();
@@ -180,6 +222,40 @@ MouseEvent:{
 
 		cell.setQsub((this.btn==='left'?[1,2,0]:[2,0,1])[cell.qsub]);
 		cell.draw();
+	},
+	inputFixedQsub : function(val){
+		var cell = this.getcell();
+		if(cell.isnull || cell.is51cell() || cell===this.mouseCell){ return;}
+
+		if(this.inputData===null){ this.inputData = (cell.qsub!==val?val:0);}
+		cell.setQsub(this.inputData);
+		cell.draw();
+		this.mouseCell = cell;
+	},
+	inputBGcolor : function(isforceforward){
+		var cell = this.getcell();
+		if(cell.isnull || cell.is51cell() || cell===this.mouseCell){ return;}
+		if(this.inputData!==null){}
+		else if(this.inputMode==='bgcolor1'){
+			this.inputMode = (cell.qsub!==1 ? 11 : 10);
+		}
+		else if(this.inputMode==='bgcolor2'){
+			this.inputMode = (cell.qsub!==2 ? 12 : 10);
+		}
+		else if(isforceforward || this.btn==='left'){
+			if     (cell.qsub===0){ this.inputData=11;}
+			else if(cell.qsub===1){ this.inputData=12;}
+			else                  { this.inputData=10;}
+		}
+		else{
+			if     (cell.qsub===0){ this.inputData=12;}
+			else if(cell.qsub===1){ this.inputData=10;}
+			else                  { this.inputData=11;}
+		}
+		cell.setQsub(this.inputData-10);
+		cell.draw();
+
+		this.mouseCell = cell; 
 	},
 
 	//---------------------------------------------------------------------------
@@ -243,7 +319,20 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.input51()   [＼]を作ったり消したりする
+	// mv.inputIcebarn()  アイスバーンを入力する
+	//---------------------------------------------------------------------------
+	inputIcebarn : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+		if(this.inputData===null){ this.inputData = (cell.ice()?0:6);}
+
+		cell.setQues(this.inputData);
+		cell.drawaround();
+		this.mouseCell = cell;
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.input51()            inputMode=='auto'時に[＼]を作ったり消したりする
 	//---------------------------------------------------------------------------
 	input51 : function(){
 		var piece = this.getcell_excell(); /* piece : cell or excell */
@@ -258,20 +347,75 @@ MouseEvent:{
 		}
 	},
 	input51_main : function(cell){
-		if(this.btn==='left'){
+		if(this.btn==='right'){ cell.remove51cell();}
+		else if(this.btn==='left'){
 			if(!cell.is51cell()){ cell.set51cell();}
 			else{ this.cursor.chtarget();}
 		}
-		else if(this.btn==='right'){ cell.remove51cell();}
 
 		cell.drawaround();
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.inputcross()     Crossのques(問題データ)に0～4を入力する。
-	// mv.inputcrossMark() Crossの黒点を入力する。
+	// mv.input51_fixed()      inputMode固定時に[＼]を作ったり消したりする
 	//---------------------------------------------------------------------------
-	inputcross : function(){
+	input51_fixed : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		if(this.inputMode==='clear'){
+			cell.remove51cell();
+			this.inputData = 0;
+		}
+		else if(this.inputMode==='cell51' && !cell.is51cell()){
+			cell.set51cell();
+			this.inputData = 51;
+		}
+
+		cell.drawaround();
+
+		this.mouseCell = cell;
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.inputqnum_cell51()   [＼]のCellに数字を入力する
+	//---------------------------------------------------------------------------
+	inputqnum_cell51 : function(){
+		var piece = this.getcell_excell(); /* piece : cell or excell */
+		if(piece.isnull || (this.mouseCell===piece && !this.mouseend)){ return;}
+
+		if(this.mousestart && (piece!==this.cursor.getobj() || piece.ques!==51)){
+			this.setcursor(piece);
+			this.mousereset();
+		}
+		else if((this.mousestart && this.cursor.getNumOfTarget(piece)<2) || this.mouseend){
+			this.inputqnum_main(piece);
+			this.mousereset();
+		}
+		else{
+			this.mouseCell = piece;
+			this.inputselect_cell51(piece);
+		}
+	},
+	inputselect_cell51 : function(cell){
+		if(this.mousestart){
+			this.prevPos = this.getpos(0);
+		}
+		else if(this.mousemove){
+			var dir = this.prevPos.getdir(this.getpos(0),2);
+			if((dir===cell.RT||dir===cell.DN)&&(dir!==this.cursor.targetdir)){
+				this.cursor.targetdir = dir;
+				this.cursor.draw();
+			}
+			if(dir!==cell.NDIR){ this.mousereset();}
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.inputqnum_cross() Crossのques(問題データ)に0～4を入力する。
+	// mv.inputcrossMark()  Crossの黒点を入力する。
+	//---------------------------------------------------------------------------
+	inputqnum_cross : function(){
 		var cross = this.getcross();
 		if(cross.isnull || cross===this.mouseCell){ return;}
 
@@ -279,7 +423,7 @@ MouseEvent:{
 			this.setcursor(cross);
 		}
 		else{
-			this.inputcross_main(cross);
+			this.inputqnum_main(cross);
 		}
 		this.mouseCell = cross;
 	},
@@ -307,6 +451,23 @@ MouseEvent:{
 
 		cross.draw();
 	},
+
+	//---------------------------------------------------------------------------
+	// mv.inputclean_cross() Crossのqans(回答データ)を消去する
+	//---------------------------------------------------------------------------
+	inputclean_cross : function(){
+		var cross = this.getcross();
+		if(cross.isnull || cross===this.mouseCell){ return;}
+
+		this.mouseCell = cross;
+
+		var xlist = new this.klass.CrossList([cross]);
+		if(this.puzzle.playmode){ xlist.ansclear();}
+		else                    { xlist.allclear();}
+
+		cross.draw();
+	},
+
 	//---------------------------------------------------------------------------
 	// mv.inputborder()     盤面境界線のデータを入力する
 	// mv.inputQsubLine()   盤面の境界線用補助記号を入力する
@@ -343,6 +504,12 @@ MouseEvent:{
 	// mv.inputMoveLine() 移動系パズル向けに盤面の線を入力する
 	//---------------------------------------------------------------------------
 	inputLine : function(){
+		/* "ものを動かしたように描画する"でなければinputLineと同じ */
+		if(this.puzzle.execConfig('dispmove')){
+			this.inputMoveLine();
+			return;
+		}
+		
 		var pos, border;
 		if(!this.board.borderAsLine){
 			pos = this.getpos(0);
@@ -364,12 +531,6 @@ MouseEvent:{
 		this.prevPos = pos;
 	},
 	inputMoveLine : function(){
-		/* "ものを動かしたように描画する"でなければinputLineと同じ */
-		if(!this.puzzle.execConfig('dispmove')){
-			this.inputLine();
-			return;
-		}
-		
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
@@ -414,6 +575,11 @@ MouseEvent:{
 	// mv.inputTateyoko() 縦棒・横棒をドラッグで入力する
 	//---------------------------------------------------------------------------
 	inputTateyoko : function(){
+		if(this.mouseend && this.notInputted() && !!this.clickTateyoko){
+			this.clickTateyoko();
+			return;
+		}
+
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
@@ -462,20 +628,20 @@ MouseEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.dispRedBlk()  ひとつながりの黒マスを赤く表示する
-	// mv.dispRedBlk8() ななめつながりの黒マスを赤く表示する
-	// mv.dispRedLine()   ひとつながりの線を赤く表示する
+	// mv.dispInfoBlk()  ひとつながりの黒マスを赤く表示する
+	// mv.dispInfoBlk8() ななめつながりの黒マスを赤く表示する
+	// mv.dispInfoLine()   ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
-	dispRedBlk : function(){
+	dispInfoBlk : function(){
 		var cell = this.getcell();
 		this.mousereset();
 		if(cell.isnull || !cell.isShade()){ return;}
 		if(!this.RBShadeCell){ cell.sblk.clist.setinfo(1);}
-		else{ this.dispRedBlk8(cell);}
-		this.board.haserror = true;
+		else{ this.dispInfoBlk8(cell);}
+		this.board.hasinfo = true;
 		this.puzzle.redraw();
 	},
-	dispRedBlk8 : function(cell0){
+	dispInfoBlk8 : function(cell0){
 		var stack=[cell0];
 		while(stack.length>0){
 			var cell = stack.pop();
@@ -490,7 +656,7 @@ MouseEvent:{
 		}
 	},
 
-	dispRedLine : function(){
+	dispInfoLine : function(){
 		var bd = this.board, border = this.getborder(0.15);
 		this.mousereset();
 		if(border.isnull){ return;}
@@ -509,7 +675,7 @@ MouseEvent:{
 
 		bd.border.setinfo(-1);
 		border.path.setedgeinfo(1);
-		bd.haserror = true;
+		bd.hasinfo = true;
 		this.puzzle.redraw();
 	}
 }

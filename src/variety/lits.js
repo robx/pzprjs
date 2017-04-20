@@ -10,8 +10,7 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	
-	mouseinput : function(){
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
@@ -21,9 +20,10 @@ MouseEvent:{
 	}
 },
 "MouseEvent@lits":{
-	redblk : true
+	inputModes:{edit:['border','info-blk'],play:['shade','unshade','info-blk']}
 },
 "MouseEvent@norinori":{
+	inputModes:{edit:['border'],play:['shade','unshade']},
 	shadeCount : 0,
 	mousereset : function(){
 		this.shadeCount = 0;

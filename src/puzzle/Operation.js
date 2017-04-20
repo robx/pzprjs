@@ -152,6 +152,24 @@ Operation:{
 	}
 },
 
+// BoardClearOperationクラス
+'BoardClearOperation:Operation':{
+	prefix : 'AC',
+	reqReset : true,
+
+	//---------------------------------------------------------------------------
+	// ope.decode()   ファイル出力された履歴の入力用ルーチン
+	// ope.toString() ファイル出力する履歴の出力用ルーチン
+	//---------------------------------------------------------------------------
+	decode : function(strs){
+		if(strs[0]!==this.prefix){ return false;}
+		return true;
+	},
+	toString : function(){
+		return this.prefix;
+	},
+},
+
 // BoardAdjustOperationクラス
 'BoardAdjustOperation:Operation':{
 	prefix : 'AJ',
@@ -339,6 +357,7 @@ OperationManager:{
 		var classes = this.klass;
 		this.operationlist = [
 			classes.ObjectOperation,
+			classes.BoardClearOperation,
 			classes.BoardAdjustOperation,
 			classes.BoardFlipOperation,
 			classes.TrialEnterOperation,
@@ -573,7 +592,7 @@ OperationManager:{
 		this.disableRecord();
 
 		puzzle.painter.suspend();
-		bd.errclear();
+		puzzle.errclear();
 		if(this.reqReset){
 			bd.disableInfo();
 		}

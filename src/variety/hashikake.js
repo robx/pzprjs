@@ -9,7 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['number','clear'],play:['line','peke']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
@@ -92,8 +93,8 @@ Cell:{
 		return cnt;
 	},
 
-	isCmp : function(){
-		return this.qnum === this.getCountOfBridges();
+	isCmp : function(){ // 描画用
+		return this.puzzle.execConfig('autocmp') && (this.qnum === this.getCountOfBridges());
 	},
 
 	// pencilbox互換関数 ここではファイル入出力用
@@ -176,7 +177,6 @@ Graphic:{
 
 	gridcolor_type : "THIN",
 
-	globalfontsizeratio : 0.85,
 	circleratio : [0.47, 0.42],
 
 	circlefillcolor_func : "qcmp",
@@ -191,8 +191,7 @@ Graphic:{
 		this.drawPekes();
 		this.drawLines_hashikake();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawTarget();
 	},
@@ -245,8 +244,7 @@ Graphic:{
 	repaintParts : function(blist){
 		this.range.cells = blist.cellinside();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 	}
 },
 

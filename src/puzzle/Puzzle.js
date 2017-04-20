@@ -299,7 +299,11 @@ pzpr.Puzzle.prototype =
 		this.redraw();
 	},
 	errclear : function(){
-		this.board.errclear();
+		var isclear = this.board.errclear();
+		if(isclear){
+			this.redraw(true);	/* 描画キャッシュを破棄して描画し直す */
+		}
+		return isclear;
 	},
 	clear : function(){
 		if(this.playeronly){
@@ -328,15 +332,12 @@ pzpr.Puzzle.prototype =
 			this.cursor.adjust_modechange();
 			this.key.keyreset();
 			this.mouse.modechange();
-			if(this.board.haserror){
-				this.board.errclear();
-			}
-			else{
-				this.redraw();
-			}
+			this.board.errclear();
+			this.redraw();
 		}
 
 		this.emit('config', 'mode', newval);
+		this.emit('mode');
 	},
 
 	//------------------------------------------------------------------------------
@@ -392,6 +393,7 @@ function openExecute(puzzle, data, variety, callback){
 			
 			puzzle.ready = true;
 			puzzle.emit('ready');
+			puzzle.emit('mode');
 			
 			if(!!puzzle.canvas){ postCanvasReady(puzzle);}
 			
@@ -497,7 +499,9 @@ function setCanvasEvents(puzzle){
 	ae("mousedown", execMouseDown);
 	ae("mousemove", execMouseMove);
 	ae("mouseup",   execMouseUp);
+	ae("mousecancel", execMouseCancel);
 	puzzle.canvas.oncontextmenu = function(){ return false;};
+	puzzle.canvas.style.touchAction = 'pinch-zoom';
 	
 	// キー入力イベントの設定
 	ae("keydown", execKeyDown);
@@ -511,6 +515,9 @@ function execMouseMove(e){
 }
 function execMouseUp(e){
 	if(!!this.mouse){ this.mouse.e_mouseup(e);}
+}
+function execMouseCancel(e){
+	if(!!this.mouse){ this.mouse.e_mousecancel(e);}
 }
 function execKeyDown(e){
 	if(!!this.key){ this.key.e_keydown(e);}

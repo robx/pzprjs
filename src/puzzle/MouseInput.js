@@ -39,12 +39,12 @@ MouseEvent:{
 
 	use      : false,	// 黒マスの入力方法選択
 	bgcolor  : false,	// 背景色の入力を可能にする
-	redline  : false,	// 線の繋がりチェックを可能にする
-	redblk   : false,	// 黒マスつながりチェックを可能にする (連黒分断禁も)
 
 	inputMode : 'auto',	// 現在のinputMode
 	savedInputMode: {},	// モード変更時の保存値
 	inputModes : {edit:[],play:[]},	// 現在のパズル種類にてauto以外で有効なinputModeの配列
+
+	inversion : false,	// マウスのボタンを左右反転する
 
 	//---------------------------------------------------------------------------
 	// mv.mousereset() マウス入力に関する情報を初期化する
@@ -79,6 +79,7 @@ MouseEvent:{
 	// mv.e_mousedown() Canvas上でマウスのボタンを押した際のイベント共通処理
 	// mv.e_mouseup()   Canvas上でマウスのボタンを放した際のイベント共通処理
 	// mv.e_mousemove() Canvas上でマウスを動かした際のイベント共通処理
+	// mv.e_mousecancel() Canvas上でマウス操作がキャンセルされた場合のイベント共通処理
 	//---------------------------------------------------------------------------
 	//イベントハンドラから呼び出される
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
@@ -86,6 +87,7 @@ MouseEvent:{
 		if(!this.enableMouse){ return true;}
 		
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
+		if(!this.btn){ this.mousereset(); return;}
 		var addrtarget = this.getBoardAddress(e);
 		this.moveTo(addrtarget.bx, addrtarget.by);
 		
@@ -93,7 +95,7 @@ MouseEvent:{
 		e.preventDefault();
 	},
 	e_mouseup   : function(e){
-		if(!this.enableMouse){ return true;}
+		if(!this.enableMouse || !this.btn){ return true;}
 		
 		this.inputEnd();
 		
@@ -101,7 +103,7 @@ MouseEvent:{
 		e.preventDefault();
 	},
 	e_mousemove : function(e){
-		if(!this.enableMouse){ return true;}
+		if(!this.enableMouse || !this.btn){ return true;}
 		
 		if(e.touches!==void 0 || e.which===void 0 || e.which!==0 || (e.type.match(/pointermove/i) && e.buttons>0)){
 			var addrtarget = this.getBoardAddress(e);
@@ -111,6 +113,9 @@ MouseEvent:{
 		
 		e.stopPropagation();
 		e.preventDefault();
+	},
+	e_mousecancel : function(e){
+		this.mousereset();
 	},
 
 	//---------------------------------------------------------------------------
@@ -123,7 +128,7 @@ MouseEvent:{
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.puzzle.key;
 		kc.checkmodifiers(e);
-		if(kc.isSHIFT || kc.isMETA){
+		if(((kc.isSHIFT || kc.isMETA) !== this.inversion) || this.inputMode==='number-'){
 			if     (this.btn==='left'){ this.btn = 'right';}
 			else if(this.btn==='right'){ this.btn = 'left';}
 		}
@@ -133,7 +138,7 @@ MouseEvent:{
 		var pix = {px:NaN,py:NaN};
 		var g = pc.context;
 		if(!g){ return pix;}
-		if(!pzpr.env.API.touchevent || pzpr.env.OS.iOS){
+		if(!pzpr.env.API.touchevent || pzpr.env.API.pointerevent || pzpr.env.OS.iOS){
 			if(!isNaN(e.offsetX)){ pix = {px:e.offsetX, py:e.offsetY};}
 			else                 { pix = {px:e.layerX, py:e.layerY};}  // Firefox 39以前, iOSはこちら
 		}
@@ -195,34 +200,66 @@ MouseEvent:{
 		if(!this.cancelEvent && (this.btn==='left' || this.btn==='right')){
 			if(this.mousestart){
 				puzzle.opemgr.newOperation();
-				puzzle.board.errclear();
+				puzzle.errclear();
 			}
 			else{ puzzle.opemgr.newChain();}
 			
-			if(!this.mousestart || !this.dispRed()){
-				this.mouseinput();		/* 各パズルのルーチンへ */
-			}
+			this.mouseinput();
 		}
 	},
 
 	//---------------------------------------------------------------------------
-	// mv.dispRed()   赤く表示する際などのイベント処理
+	// mv.mouseinput()       マウスイベント共通処理。
+	// mv.mouseinput_number()数字入力処理
+	// mv.mouseinput_clear() セル内容の消去処理
+	// mv.mouseinput_auto()  マウスイベント処理。各パズルのファイルでオーバーライドされる。
+	// mv.mouseinput_other() inputMode指定時のマウスイベント処理。各パズルのファイルでオーバーライドされる。
 	//---------------------------------------------------------------------------
-	dispRed : function(){
-		var puzzle = this.puzzle, isZ = puzzle.key.isZ;
-		var flagline = puzzle.validConfig('redline') && !!(puzzle.getConfig('redline') ^isZ);
-		var flagblk  = puzzle.validConfig('redblk') && !!(puzzle.getConfig('redblk') ^isZ);
-		
-		if     (flagline){ this.dispRedLine();}
-		else if(flagblk) { this.dispRedBlk();}
-		return (flagline || flagblk);
+	mouseinput : function(){
+		var mode = this.inputMode;
+		if(this.puzzle.key.isZ && this.inputMode.indexOf(/info\-/)===-1){
+			if     (this.inputModes.play.indexOf('info-line')>=0){ mode = 'info-line';}
+			else if(this.inputModes.play.indexOf('info-blk') >=0){ mode = 'info-blk';}
+		}
+		switch(mode){
+			case 'auto': this.mouseinput_auto(); break;	/* 各パズルのルーチンへ */
+			case 'number': case 'number-': this.mouseinput_number(); break;
+			case 'clear': this.mouseinput_clear(); break;
+			case 'cell51': this.input51_fixed(); break;
+			case 'circle-unshade': this.inputFixedNumber(1); break;
+			case 'circle-shade':   this.inputFixedNumber(2); break;
+			case 'undef': this.inputFixedNumber(-2); break;
+			case 'ice': this.inputIcebarn(); break;
+			case 'numexist': this.inputFixedNumber(-2); break;
+			case 'numblank': this.inputFixedNumber(-3); break;
+			case 'bgcolor': this.inputBGcolor(true); break;
+			case 'subcircle': case 'bgcolor1': this.inputFixedQsub(1); break;
+			case 'subcross':  case 'bgcolor2': this.inputFixedQsub(2); break;
+			case 'completion': if(this.mousestart){ this.inputqcmp();} break;
+			case 'objblank': this.inputDot(); break;
+			case 'direc': this.inputdirec(); break;
+			case 'arrow': this.inputarrow_cell(); break;
+			case 'crossdot': if(this.mousestart){ this.inputcrossMark();} break;
+			case 'border':  this.inputborder(); break;
+			case 'subline': this.inputQsubLine(); break;
+			case 'shade': case 'unshade': this.inputcell(); break;
+			case 'line': this.inputLine(); break;
+			case 'peke': this.inputpeke(); break;
+			case 'bar':  this.inputTateyoko(); break;
+			case 'info-line': if(this.mousestart){ this.dispInfoLine();} break;
+			case 'info-blk':  if(this.mousestart){ this.dispInfoBlk();} break;
+			default:    this.mouseinput_other(); break;	/* 各パズルのルーチンへ */
+		}
 	},
-
-	//---------------------------------------------------------------------------
-	// mv.mouseinput() マウスイベント処理。各パズルのファイルでオーバーライドされる。
-	//---------------------------------------------------------------------------
+	mouseinput_number: function(){
+		if(this.mousestart){ this.inputqnum();}
+	},
+	mouseinput_clear : function(){
+		this.inputclean_cell();
+	},
 	//オーバーライド用
-	mouseinput : function(){ },
+	mouseinput_auto  : function(){ },
+	mouseinput_other : function(){ },
 
 	//---------------------------------------------------------------------------
 	// mv.notInputted()   盤面への入力が行われたかどうか判定する
@@ -234,7 +271,8 @@ MouseEvent:{
 	// mv.getInputModeList() 有効なinputModeを配列にして返す (通常はauto)
 	//---------------------------------------------------------------------------
 	setInputMode : function(mode){
-		if(this.getInputModeList().indexOf(mode)>=0){
+		mode = mode || 'auto';
+		if(this.getInputModeList().indexOf(mode==='number-'?'number':mode)>=0){
 			this.inputMode = mode;
 			this.savedInputMode[this.puzzle.editmode?'edit':'play'] = mode;
 		}
@@ -246,7 +284,16 @@ MouseEvent:{
 		if(this.puzzle.instancetype==='viewer'){ return [];}
 		type = (!!type ? type : (this.puzzle.editmode?'edit':'play'));
 		var list = ['auto'];
-		return list.concat(this.inputModes[type]);
+		list = list.concat(this.inputModes[type]);
+		if(list.indexOf('number')>=0){ list.splice(list.indexOf('number')+1,0,'number-');}
+		return list;
+	},
+
+	//---------------------------------------------------------------------------
+	// mv.setInversion()     マウスの左右反転設定を行う
+	//---------------------------------------------------------------------------
+	setInversion : function(input){
+		this.inversion = !!input;
 	},
 
 	//---------------------------------------------------------------------------

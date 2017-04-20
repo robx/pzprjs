@@ -9,7 +9,11 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','arrow','clear'],play:['arrow','objblank','clear']},
+	mouseinput_other : function(){
+		if(this.inputMode==='objblank'){ this.inputDot();}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputarrow_cell();}

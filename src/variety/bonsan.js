@@ -8,11 +8,21 @@
 ['bonsan','heyabon','rectslider'], {
 //---------------------------------------------------------
 // マウス入力系
+"MouseEvent@bonsan,heyabon":{
+	inputModes : {edit:['number','clear'],play:['line','bgcolor','bgcolor1','bgcolor2','clear','completion']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='completion'){ if(this.mousestart){ this.inputqcmp(1);}}
+		else{ this.common.mouseinput.call(this);}
+	}
+},
+"MouseEvent@rectslider":{
+	inputModes : {edit:['number','clear'],play:['line','bgcolor','subcircle','subcross','clear']}
+},
 MouseEvent:{
-	mouseinput : function(){
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn==='left'){ this.inputMoveLine();}
+				if(this.btn==='left'){ this.inputLine();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputlight();}
 		}
@@ -55,21 +65,28 @@ MouseEvent:{
 		if(cell.isnull){ return;}
 
 		var puzzle = this.puzzle;
-		if(puzzle.pid!=='rectslider' && puzzle.execConfig('autocmp') && this.inputdark(cell)){ return;}
+		if(puzzle.pid!=='rectslider' && this.inputdark(cell,1)){ return;}
 
-		if     (cell.qsub===0){ cell.setQsub(this.btn==='left'?1:2);}
-		else if(cell.qsub===1){ cell.setQsub(this.btn==='left'?2:0);}
-		else if(cell.qsub===2){ cell.setQsub(this.btn==='left'?0:1);}
-		cell.draw();
+		if(this.mouseend && this.notInputted()){ this.mouseCell = this.board.emptycell;}
+		this.inputBGcolor();
 	},
-	inputdark : function(cell){
+	inputqcmp : function(val){
+		var cell = this.getcell();
+		if(cell.isnull){ return;}
+		
+		this.inputdark(cell,val);
+	},
+	inputdark : function(cell,val){
+		var cell = this.getcell();
+		if(cell.isnull){ return false;}
+		
 		var targetcell = (!this.puzzle.execConfig('dispmove') ? cell : cell.base),
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
 			dy = this.inputPoint.by-cell.by;
-		if(targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance){
-			targetcell.setQcmp(targetcell.qcmp===0 ? 1 : 0);
-			targetcell.draw();
+		if(targetcell.isNum() && (this.inputMode==='completion' || (targetcell.qnum===-2 && dx*dx+dy*dy<distance*distance))){
+			targetcell.setQcmp(targetcell.qcmp!==val ? val : 0);
+			cell.draw();
 			return true;
 		}
 		return false;
@@ -84,9 +101,11 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	isCmp : function(){
+	isCmp : function(){ // 描画用
 		var targetcell = (!this.puzzle.execConfig('dispmove') ? this : this.base);
 		if(targetcell.qcmp===1){ return true;}
+		
+		if(!this.puzzle.execConfig('autocmp')){ return false;}
 		
 		var	num = targetcell.getNum();
 		if(this.path===null){ return (num===0);}
@@ -200,8 +219,6 @@ Graphic:{
 
 	circlefillcolor_func : "qcmp",
 
-	globalfontsizeratio : 0.9,	// 数字の倍率
-
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
@@ -211,8 +228,7 @@ Graphic:{
 		this.drawDepartures();
 		this.drawLines();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawChassis();
 
@@ -220,8 +236,6 @@ Graphic:{
 	}
 },
 "Graphic@rectslider":{
-	globalfontsizeratio : 1.0,	// 数字の倍率
-
 	fontShadecolor : "white",
 	qcmpcolor : "gray",
 
@@ -235,7 +249,7 @@ Graphic:{
 		this.drawQuesCells();
 		this.drawMBs();
 
-		this.drawNumbers();
+		this.drawQuesNumbers();
 
 		this.drawChassis();
 
@@ -252,8 +266,8 @@ Graphic:{
 		else if(info===1){ return this.errcolor1;}
 		return null;
 	},
-	getNumberColor : function(cell){
-		return (this.puzzle.execConfig('autocmp') && cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
+	getQuesNumberColor : function(cell){
+		return (cell.isCmp() ? this.qcmpcolor : this.fontShadecolor);
 	}
 },
 

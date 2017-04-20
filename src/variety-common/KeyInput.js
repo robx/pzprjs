@@ -149,8 +149,8 @@ KeyEvent:{
 		}
 		if(target===0){ return;}
 
-		var def = this.klass.Cell.prototype[(target===2?'qnum':'qnum2')];
-		var max = max_obj[target], val=def;
+		var def = this.klass.Cell.prototype[(target===piece.RT?'qnum':'qnum2')];
+		var max = piece.getmaxnum(), val=def;
 
 		if('0'<=ca && ca<='9'){
 			var num=+ca, cur=this.getnum51(piece,target);
@@ -166,11 +166,11 @@ KeyEvent:{
 		cursor.draw();
 	},
 	setnum51 : function(piece,target,val){ /* piece : cell or excell */
-		if(target===2){ piece.setQnum(val);}
-		else          { piece.setQnum2(val);}
+		if(target===piece.RT){ piece.setQnum(val);}
+		else                 { piece.setQnum2(val);}
 	},
 	getnum51 : function(piece,target){ /* piece : cell or excell */
-		return (target===2 ? piece.qnum : piece.qnum2);
+		return (target===piece.RT ? piece.qnum : piece.qnum2);
 	}
 }
 });

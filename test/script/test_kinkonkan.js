@@ -24,7 +24,7 @@ ui.debug.addDebugData('kinkonkan', {
 		{ input:["newboard,4,1", "editmode"] },
 		{ input:["cursor,1,-1", "key,a,0", "key,right,b,1", "key,right,3,c"],
 		  result:"pzprv3.1/kinkonkan/1/4/1/0 0 0 0 /. 1,0 2,1 3,3 . . /. . . . . . /. . . . . . /" },
-		{ input:["cursor,1,3", "key,a,2,0", "key,right,b,2,5,5", "key,right,c,2,5,6"],
+		{ input:["cursor,1,3", "key,a,2,0", "key,right,b,2,5,5", "key,right,c,1,2,5,6"],
 		  result:"pzprv3.1/kinkonkan/1/4/1/0 0 0 0 /. 1,0 2,1 3,3 . . /. . . . . . /. 1,20 2,255 3,6 . . /" },
 		/* 回答入力テスト */
 		{ input:["newboard,4,2", "playmode"] },

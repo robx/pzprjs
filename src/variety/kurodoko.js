@@ -11,9 +11,8 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use    : true,
-	redblk : true,
-
-	mouseinput : function(){
+	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
@@ -59,7 +58,6 @@ Graphic:{
 	bgcellcolor_func : "qsub1",
 	numbercolor_func : "qnum",
 
-	globalfontsizeratio : 0.85,
 	circleratio : [0.45, 0.40],
 
 	paint : function(){
@@ -67,8 +65,7 @@ Graphic:{
 		this.drawGrid();
 		this.drawShadedCells();
 
-		this.drawCircles();
-		this.drawNumbers();
+		this.drawCircledNumbers();
 
 		this.drawChassis();
 

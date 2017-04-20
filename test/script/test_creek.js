@@ -19,6 +19,6 @@ ui.debug.addDebugData('creek', {
 		{ input:["newboard,6,1"] },
 		{ input:["cursor,0,2", "mouse,leftx2, 0,0",  "mouse,leftx3, 2,0",  "mouse,leftx4, 4,0",  "mouse,leftx5, 6,0",  "mouse,leftx6, 8,0",  "mouse,leftx7, 10,0",  "mouse,leftx8, 12,0",
 				 "cursor,0,0", "mouse,rightx2, 0,2", "mouse,rightx3, 2,2", "mouse,rightx4, 4,2", "mouse,rightx5, 6,2", "mouse,rightx6, 8,2", "mouse,rightx7, 10,2", "mouse,rightx8, 12,2"],
-		  result:"pzprv3/creek/1/6/0 1 2 3 4 - . /- 4 3 2 1 0 . /. . . . . . /" }
+		  result:"pzprv3/creek/1/6/- 0 1 2 3 4 . /4 3 2 1 0 - . /. . . . . . /" }
 	]
 });

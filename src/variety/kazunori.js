@@ -9,7 +9,14 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	mouseinput : function(){
+	inputModes : {edit:['border','number'],play:['number','clear']},
+	mouseinput_number: function(){
+		if(this.mousestart){
+			if(this.puzzle.editmode){ this.inputmark_mouseup();}
+			else                    { this.inputqnum();}
+		}
+	},
+	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
@@ -156,16 +163,16 @@ Graphic:{
 		this.drawGrid();
 		this.drawBorders();
 
-		this.drawBDNumbers();
+		this.drawQuesNumbersBD();
 		this.drawSubNumbers();
-		this.drawNumbers();
+		this.drawAnsNumbers();
 
 		this.drawChassis();
 
 		this.drawTarget_minarism();
 	},
 
-	drawBDNumbers : function(){
+	drawQuesNumbersBD : function(){
 		var g = this.vinc('border_nums', 'auto', true);
 
 		var csize = this.cw*0.27;
@@ -173,7 +180,7 @@ Graphic:{
 		g.lineWidth = 1;
 		g.strokeStyle = this.quescolor;
 
-		var textoption = {ratio:[0.45,0.35]};
+		var option = {ratio:0.45};
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border=blist[i], px = border.bx*this.bw, py = border.by*this.bh;
@@ -190,7 +197,7 @@ Graphic:{
 			g.vid = "border_text_"+border.id;
 			if(border.qnum>0){
 				g.fillStyle = this.quescolor;
-				this.disptext(""+border.qnum, px, py, textoption);
+				this.disptext(""+border.qnum, px, py, option);
 			}
 			else{ g.vhide();}
 		}
