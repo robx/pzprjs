@@ -105,6 +105,7 @@ LineGraph:{
 Graphic:{
 	bgcellcolor_func : "qsub2",
 	numbercolor_func : "qnum",
+	flushmargin : 0.35,
 
 	paint : function(){
 		this.drawBGCells();
