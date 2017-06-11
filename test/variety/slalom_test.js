@@ -79,4 +79,9 @@ describe('Variety:slalom',function(){
 		
 		assert.equal(puzzle.check(false)[0], 'lrOrder');
 	});
+	it('StartGoal line Route 3', function(){
+		puzzle.open('pzprv3.2/slalom/6/6/o . . i . . /- # . 0,4 . # /. # . # - # /. . . . . . /. # # . 0,2 . /. . . . i . /1 1 1 1 0 /0 0 0 0 0 /0 0 0 0 0 /1 1 1 0 1 /0 0 0 0 0 /0 0 0 1 1 /1 0 0 0 1 -1 /1 0 0 0 1 0 /1 0 0 0 1 0 /0 0 0 1 -1 1 /0 0 0 1 0 1 /');
+		
+		assert.equal(puzzle.check(false).complete, true);
+	});
 });
