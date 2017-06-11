@@ -420,13 +420,7 @@ Graphic:{
 			this.flushCanvas();
 			this.paint();
 			this.context = g;
-			
-			// source側はtaranslateのぶん足されていないので、加算しておきます
-			var sx1 = this.x0+x1*this.bw-1, sy1 = this.y0+y1*this.bh-1,
-				sx2 = this.x0+x2*this.bw+2, sy2 = this.y0+y2*this.bh+2;
-			if(sx1<0){ sx1=0;} if(sx2>g2.child.width) { sx2=g2.child.width;}
-			if(sy1<0){ sy1=0;} if(sy2>g2.child.height){ sy2=g2.child.height;}
-			g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
+			this.copyBufferData(g,g2,x1,y1,x2,y2);
 		}
 
 		this.resetRange();
@@ -458,6 +452,18 @@ Graphic:{
 			borders : (new classes.BorderList()),
 			excells : (new classes.EXCellList())
 		};
+	},
+
+	//---------------------------------------------------------------------------
+	// pc.copyBufferData()    Bufferに描画したデータを盤面へコピーする
+	//---------------------------------------------------------------------------
+	copyBufferData : function(g,g2,x1,y1,x2,y2){
+		// source側はtaranslateのぶん足されていないので、加算しておきます
+		var sx1 = this.x0+x1*this.bw-1, sy1 = this.y0+y1*this.bh-1,
+			sx2 = this.x0+x2*this.bw+2, sy2 = this.y0+y2*this.bh+2;
+		if(sx1<0){ sx1=0;} if(sx2>g2.child.width) { sx2=g2.child.width;}
+		if(sy1<0){ sy1=0;} if(sy2>g2.child.height){ sy2=g2.child.height;}
+		g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
 	},
 
 	//---------------------------------------------------------------------------

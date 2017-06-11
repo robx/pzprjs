@@ -1262,6 +1262,7 @@ Graphic:{
 		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
 		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
 		x1-=(x1&1); y1-=(y1&1); /* (x1,y1)を外側の偶数位置に移動する */
+		if(x1>=x2 || y1>=y2){ return;}
 
 		var bs = ((bd.hasborder!==2&&haschassis!==false)?2:0), bw = this.bw, bh = this.bh;
 		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.cols-bs);

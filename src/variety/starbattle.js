@@ -196,8 +196,15 @@ Graphic:{
 	getOffsetRows : function(){ return 0.4;},
 	setRangeObject : function(x1,y1,x2,y2){
 		this.common.setRangeObject.call(this,x1,y1,x2,y2);
-		if(y1<0){
-			this.range.starCount = true;
+		this.range.starCount = (y1<0);
+	},
+	copyBufferData : function(g,g2,x1,y1,x2,y2){
+		this.common.copyBufferData.call(this,g,g2,x1,y1,x2,y2);
+		if(g.use.canvas && this.range.starCount){
+			var bd = this.board;
+			var sx1 = 0, sy1 = 0, sx2 = g2.child.width, sy2 = (bd.minby-0.1)*this.bh+this.y0;
+			g.context.clearRect(sx1, sy1-this.y0, sx2, sy2);
+			g.drawImage(g2.child, sx1, sy1, (sx2-sx1), (sy2-sy1), sx1-this.x0, sy1-this.y0, (sx2-sx1), (sy2-sy1));
 		}
 	},
 
@@ -234,6 +241,10 @@ Graphic:{
 	drawStarCount : function(){
 		var g = this.vinc('starcount', 'auto', true), bd = this.board;
 		if(!this.range.starCount){ return;}
+
+		if(g.use.canvas){
+			g.context.clearRect(0, -this.y0, g.child.width, (bd.minby-0.1)*this.bh+this.y0);
+		}
 
 		g.fillStyle = this.quescolor;
 
