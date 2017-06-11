@@ -42,6 +42,6 @@
     "in-publish": "^2.0.0"
   },
   "dependencies": {
-    "pzpr-canvas": "^0.8.0"
+    "pzpr-canvas": "^0.8.2"
   }
 }
