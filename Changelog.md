@@ -1,4 +1,15 @@
 
+## Version 0.9.2
+
+Release data: 2017/6/12
+
+#### BugFix
+
+* Graphic: Avoid SVG textLength and textAlign rendering bug of IE and Edge
+* Graphic: Fix illegal rendering of indicator when graphic is canvas mode
+* Graphic: Erase border on the edge when graphic is canvas mode
+* slalom: Fix gate number trace routine occasionally misses proper order
+
 ## Version 0.9.1
 
 Release data: 2017/4/21
