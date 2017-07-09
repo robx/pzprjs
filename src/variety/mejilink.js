@@ -95,7 +95,8 @@ LineGraph:{
 // 画像表示系
 Graphic:{
 	gridcolor_type : "LIGHT",
-	flushmargin : 0,
+	margin : 0.5,
+	flushmargin : 0.35,
 
 	paint : function(){
 		this.drawBGCells();
