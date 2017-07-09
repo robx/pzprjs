@@ -264,13 +264,6 @@ AnsCheck:{
 		"checkSnakesView"
 	],
 
-	checkNumberExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			if(this.board.cell.some(function(cell){ return cell.isValidNum();})){ return;}
-			this.failcode.add("brNoValidNum");
-		}
-	},
-
 	checkSnakeSize : function(){
 		this.checkAllArea(this.board.snakemgr, function(w,h,a,n){ return (a===5);}, "bkSizeNe5");
 	},
@@ -280,24 +273,16 @@ AnsCheck:{
 
 	checkSideCell_snakes : function(){
 		var result = true, bd = this.board;
-		function func(cell1,cell2){
-			var r1 = cell1.snake, r2 = cell2.snake;
-			return (r1!==null && r2!==null && r1!==r2);
-		}
 		for(var c=0;c<bd.cell.length;c++){
-			var cell = bd.cell[c], cell2 = cell.adjacent.right;
-			if(!cell2.isnull && func(cell,cell2)){
+			var cell = bd.cell[c], errcell = null, cell2 = cell.adjacent.right, cell3 = cell.adjacent.bottom;
+			if(!cell.snake){ continue;}
+			if     (!cell2.isnull && !!cell2.snake && cell.snake!==cell2.snake){ errcell = cell2;}
+			else if(!cell3.isnull && !!cell3.snake && cell.snake!==cell3.snake){ errcell = cell3;}
+			if(!!errcell){
 				result = false;
 				if(this.checkOnly){ break;}
 				cell.snake.clist.seterr(1);
-				cell2.snake.clist.seterr(1);
-			}
-			cell2 = cell.adjacent.bottom;
-			if(!cell2.isnull && func(cell,cell2)){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.snake.clist.seterr(1);
-				cell2.snake.clist.seterr(1);
+				errcell.snake.clist.seterr(1);
 			}
 		}
 		if(!result){ this.failcode.add("bsSnake");}
@@ -377,7 +362,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	brNoValidNum : ["盤面に数字がありません。","There are no numbers on the board."],
 	bkDupNum   : ["同じ数字が入っています。","A Snake has same plural marks."],
 	bkSizeNe5  : ["大きさが５ではない蛇がいます。","The size of a snake is not five."],
 	bsSnake    : ["別々の蛇が接しています。","Other snakes are adjacent."],
