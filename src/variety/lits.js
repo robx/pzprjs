@@ -45,13 +45,12 @@ MouseEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	shape : null,	// getTetrominoInfo用
-	shapeblk : null	// getTetrominoInfo用
-},
-"Cell@norinori":{
 	posthook : {
 		qans : function(num){ this.room.checkAutoCmp();}
 	}
+},
+"Cell@lits":{
+	shape : null // AreaTetrominoGraph用
 },
 Board:{
 	hasborder : 1
@@ -64,6 +63,17 @@ Board:{
 "CellList@lits":{
 	sort : function(cond){
 		return Array.prototype.sort.call(this, (cond || function(a,b){ return a.id - b.id;}));
+	},
+	checkCmp : function(){
+		var scnt=0, sblk = null;
+		for(var i=0;i<this.length;i++){
+			if(this[i].qans===1){
+				scnt++;
+				if(!sblk){ sblk = this[i].sblk;}
+				else if(sblk!==this[i].sblk){ return false;}
+			}
+		}
+		return (scnt===4);
 	}
 },
 "CellList@norinori":{
@@ -115,6 +125,8 @@ AreaRoomGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	autocmp : 'room',
+
 	paint : function(){
 		this.drawBGCells();
 		if(this.pid==='lits'){ this.drawShadedCells();}
@@ -133,11 +145,11 @@ Graphic:{
 	gridcolor_type : "DARK",
 
 	qanscolor : "black",
-	shadecolor : "rgb(96, 96, 96)"
+	shadecolor : "rgb(96, 96, 96)",
+	qcmpbgcolor : "rgb(96, 255, 160)",
+	bgcellcolor_func : "qcmp"
 },
 "Graphic@norinori":{
-	autocmp : 'room',
-
 	gridcolor_type : "LIGHT",
 
 	enablebcolor : true,
