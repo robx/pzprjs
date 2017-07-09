@@ -159,8 +159,15 @@ pzpr.classmgr.makeCommon({
 	// linegraph.setOtherInformation() 移動系パズルで数字などが入力された時に線の情報を生成しなおす
 	//---------------------------------------------------------------------------
 	modifyOtherInfo : function(cell, relation){
-		if(!!cell.path){ this.setComponentInfo(cell.path);}
-		else           { this.resetExtraData(cell);}
+		var haspath = !!cell.path;
+		if(haspath!==this.isnodevalid(cell)){
+			if(haspath){ this.deleteNodeIfEmpty(cell);}
+			else       { this.createNodeIfEmpty(cell);}
+		}
+		else{
+			if(haspath){ this.setComponentInfo(cell.path);}
+			else       { this.resetExtraData(cell);}
+		}
 	},
 
 	//---------------------------------------------------------------------------
