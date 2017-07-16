@@ -20,15 +20,15 @@ Config.prototype =
 		this.list = {};
 
 		/* 盤面表示設定 */
-		this.add('font', 1, [1,2]);								/* 文字の描画 1:ゴシック 2:明朝 */
+		this.add('font', 1, {option:[1,2]});					/* 文字の描画 1:ゴシック 2:明朝 */
 		this.add('cursor', true);								/* カーソルの表示 */
 		this.add('irowake', false);								/* 線の色分け */
 		this.add('irowakeblk', false);							/* 黒マスの色分け */
 
 		this.add('dispmove', true);								/* 線で動かすパズルで実際に動いたように描画 */
-		this.add('disptype_yajilin', 1, [1,2]);					/* yajilin: 表示形式 */
-		this.add('disptype_pipelinkr', 1, [1,2]);				/* pipelinkr: 表示形式 */
-		this.add('disptype_bosanowa', 1, [1,2,3]);				/* bosanowa: 表示形式 */
+		this.add('disptype_yajilin',   1, {option:[1,2]});		/* yajilin: 表示形式 */
+		this.add('disptype_pipelinkr', 1, {option:[1,2]});		/* pipelinkr: 表示形式 */
+		this.add('disptype_bosanowa',  1, {option:[1,2,3]});	/* bosanowa: 表示形式 */
 		this.add('snakebd', false);								/* hebi: へびの境界線を表示する */
 		this.add('dispqnumbg', false);							/* yinyang: 問題のまるに背景色をつける */
 		this.add('undefcell', true);							/* shugaku: 未確定マスはグレー表示にする */
@@ -40,8 +40,8 @@ Config.prototype =
 		this.add('color_bgcolor', "white");						/* 背景色の設定 */
 
 		/* 入力方法設定 */
-		this.add('use', (!pzpr.env.API.touchevent?1:2), [1,2]);	/* 黒マスの入力方法 */
-		this.add('use_tri', 1, [1,2,3]);						/* shakashaka: 三角形の入力方法 */
+		this.add('use', (!pzpr.env.API.touchevent?1:2), {option:[1,2]});	/* 黒マスの入力方法 */
+		this.add('use_tri', 1, {option:[1,2,3]});				/* shakashaka: 三角形の入力方法 */
 
 		this.add('bgcolor', false);			/* slither 背景色入力 */
 		this.add('singlenum', (!pzpr.env.API.touchevent));	/* hanare: 部屋に回答数字を一つだけ入力 */
@@ -49,8 +49,8 @@ Config.prototype =
 		this.add('lattice', true);			/* kouchoku: 格子点チェック */
 
 		/* 回答お助け機能 */
-		this.add('autocmp', true);			/* 数字 or kouchokuの正解の点をグレーにする */
-		this.add('autoerr', false);			/* hitori:ひとくれの重複した数字を表示, gokigen,wagiri:斜線の色分け */
+		this.add('autocmp', true,  {variety:true});	/* 数字 or kouchokuの正解の点をグレーにする */
+		this.add('autoerr', false, {variety:true});	/* hitori:ひとくれの重複した数字を表示, gokigen,wagiri:斜線の色分け */
 
 		/* 正解判定 */
 		this.add('multierr', false);		/* エラー判定で複数エラーを出力する */
@@ -63,24 +63,38 @@ Config.prototype =
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
 
 		/* その他の特殊項目(保存なし) */
-		this.add('uramashu', false);		/* 裏ましゅにする */
-		this.list.uramashu.volatile = true;
+		this.add('uramashu', false, {volatile:true});		/* 裏ましゅにする */
 	},
-	add : function(name, defvalue, option){
-		var item = {val:defvalue, defval:defvalue, volatile:false};
-		if(!!option){ item.option = option;}
+	add : function(name, defvalue, extoption){
+		if(!extoption){ extoption = {};}
+		var item = {val:defvalue, defval:defvalue, volatile:!!extoption.volatile};
+		if(!!extoption.option){ item.option = extoption.option;}
+		if(!!extoption.variety){ item.variety = {};}
 		this.list[name] = item;
 	},
 
 	//---------------------------------------------------------------------------
-	// config.getCurrnetName() 以前のconfig名から現在使用している名称を取得する
+	// config.getCurrentName() 以前のconfig名から現在使用している名称を取得する
+	// config.getNormalizedName() Config名が@付きだった場合varietyのpidを返す
 	//---------------------------------------------------------------------------
-	getCurrnetName : function(name){
+	getCurrentName : function(name){
 		switch(name){
 			case 'color_qanscolor': name = 'color_shadecolor'; break;
 			case 'autocmp_area': if(this.getexec('autocmp')){ name = 'autocmp';} break;
 		}
 		return name;
+	},
+	getCurrnetName : function(name){ return this.getgetCurrentName(name);},
+	getNormalizedName : function(argname){
+		var info = {name:argname};
+		if(argname.match(/\@/)){
+			var splitted = argname.split(/\@/);
+			info.name = splitted[0];
+			var pid = pzpr.variety.toPID(splitted[1]);
+			if(!!pid){ info.pid = pid;}
+		}
+		info.name = this.getCurrentName(info.name);
+		return info;
 	},
 
 	//---------------------------------------------------------------------------
@@ -88,21 +102,34 @@ Config.prototype =
 	// config.set()  各フラグの設定値を設定する
 	// config.reset()各フラグの設定値を初期値に戻す
 	//---------------------------------------------------------------------------
-	get : function(name){
-		name = this.getCurrnetName(name);
-		return this.list[name]?this.list[name].val:null;
+	get : function(argname){
+		var names = this.getNormalizedName(argname), name = names.name;
+		var item = this.list[name];
+		if(!item){ return null;}
+		if(!!item.variety){
+			var pid = (names.pid!==void 0 ? names.pid : this.puzzle.pid);
+			if(item.variety[pid]!==void 0){ return item.variety[pid];}
+		}
+		return item.val;
 	},
-	set : function(name, newval){
-		name = this.getCurrnetName(name);
+	set : function(argname, newval){
+		var names = this.getNormalizedName(argname), name = names.name;
 		if(!this.list[name]){ return;}
-		newval = this.setproper(name, newval);
+		newval = this.setproper(names, newval);
 		this.configevent(name, newval);
 		this.puzzle.emit('config', name, newval);
 	},
-	reset : function(name){
-		name = this.getCurrnetName(name);
-		if(!this.list[name]){ return;}
-		this.set(name, this.list[name].defval);
+	reset : function(argname){
+		var names = this.getNormalizedName(argname);
+		var item = this.list[names.name];
+		if(!item){ return;}
+		if(!!item.variety && !names.pid){
+			item.variety = {};
+			this.set(names.name, item.defval);
+		}
+		else{
+			this.set(argname, item.defval);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -124,7 +151,12 @@ Config.prototype =
 		var object = {};
 		for(var key in this.list){
 			var item = this.list[key];
-			if(item.val!==item.defval && !item.volatile){ object[key] = item.val;}
+			if(item.volatile){ continue;}
+			if(item.val!==item.defval){ object[key] = item.val;}
+			if(!item.variety){ continue;}
+			for(var pid in item.variety){
+				if(item.variety[pid]!==item.defval){ object[key+'@'+pid] = item.variety[pid];}
+			}
 		}
 		return object;
 	},
@@ -136,12 +168,19 @@ Config.prototype =
 	//---------------------------------------------------------------------------
 	// config.setproper()    設定値の型を正しいものに変換して設定変更する
 	//---------------------------------------------------------------------------
-	setproper : function(name, newval){
+	setproper : function(names, newval){
+		var name = names.name;
 		var item = this.list[name];
 		switch(typeof item.defval){
-			case "boolean": item.val = !!newval;  break;
-			case "number":  item.val = +newval;   break;
-			case "string":  item.val = ""+newval; break;
+			case "boolean": newval = !!newval;  break;
+			case "number":  newval = +newval;   break;
+			case "string":  newval = ""+newval; break;
+		}
+		if(!item.option || (item.option.indexOf(newval)>=0)){
+			if(!!item.variety){
+				item.variety[names.pid!==void 0 ? names.pid : this.puzzle.pid] = newval;
+			}
+			else{ item.val = newval;}
 		}
 		return item.val;
 	},
