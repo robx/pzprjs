@@ -185,8 +185,8 @@ Encode:{
 			else if(ca === '+'){ top.qnum = parseInt(bstr.substr(i+1,3),16);       i+=3;}
 			else if(ca === '='){ top.qnum = parseInt(bstr.substr(i+1,3),16)+4096;  i+=3;}
 			else if(ca === '%'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+8192;  i+=3;}
-			else if(ca === '*'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+12240; i+=4;}
-			else if(ca === '$'){ top.qnum = parseInt(bstr.substr(i+1,3),16)+77776; i+=5;}
+			else if(ca === '*'){ top.qnum = parseInt(bstr.substr(i+1,4),16)+12240; i+=4;}
+			else if(ca === '$'){ top.qnum = parseInt(bstr.substr(i+1,5),16)+77776; i+=5;}
 			else if(ca >= 'g' && ca <= 'z'){ r += (parseInt(ca,36)-16);}
 
 			r++;
