@@ -124,11 +124,12 @@ pzpr.classmgr.makeCommon({
 		this.addEdge(sidenodes[0], sidenodes[1]);
 
 		// 周囲のComponentにくっついただけの場合は情報を更新して終了
-		if(this.rebuildmode){ return;}
-		var lcnt1 = sidenodes[0].obj.lcnt, lcnt2 = sidenodes[1].obj.lcnt;
-		if(((lcnt1===1 && (lcnt2===2 || (!this.isLineCross && lcnt2>2))) ||
-		    (lcnt2===1 && (lcnt1===2 || (!this.isLineCross && lcnt1>2)))) && enattach ) {
-			this.attachNode(sidenodes[lcnt1===1 ? 0 : 1], sidenodes[lcnt1===1 ? 1 : 0].component);
+		if(this.rebuildmode || !enattach){ return;}
+		var attachnodes = null, node1 = sidenodes[0], node2 = sidenodes[1];
+		if     (node1.obj.lcnt===1 && node1.component===null && node2.component!==null){ attachnodes = [sidenodes[0], sidenodes[1]];}
+		else if(node2.obj.lcnt===1 && node2.component===null && node1.component!==null){ attachnodes = [sidenodes[1], sidenodes[0]];}
+		if(!!attachnodes){
+			this.attachNode(attachnodes[0], attachnodes[1].component);
 			this.modifyNodes = [];
 		}
 	},
@@ -147,10 +148,13 @@ pzpr.classmgr.makeCommon({
 		this.setComponentRefs(linkobj, null);
 
 		// 周囲のComponent末端から切り離されただけの場合は情報を更新して終了
-		var lcnt1 = sidenodes[0].obj.lcnt, lcnt2 = sidenodes[1].obj.lcnt;
-		if(((lcnt1===0 && (lcnt2===1 || (!this.isLineCross && lcnt2>1))) ||
-		    (lcnt2===0 && (lcnt1===1 || (!this.isLineCross && lcnt1>1)))) && endetach ) {
-			this.setComponentInfo(sidenodes[lcnt1===0 ? 1 : 0].component);
+		if(!endetach){ return;}
+		var detachnodes = null, node1 = sidenodes[0], node2 = sidenodes[1];
+		var lcnt1 = node1.obj.lcnt, lcnt2 = node2.obj.lcnt;
+		if     (lcnt1===0 && ((lcnt2===1 || (!this.isLineCross && lcnt2>1)) && node2.component!==null)){ detachnodes = [sidenodes[0], sidenodes[1]];}
+		else if(lcnt2===0 && ((lcnt1===1 || (!this.isLineCross && lcnt1>1)) && node1.component!==null)){ detachnodes = [sidenodes[1], sidenodes[0]];}
+		if(!!detachnodes){
+			this.setComponentInfo(detachnodes[1].component);
 			this.modifyNodes = [];
 		}
 	},
@@ -270,6 +274,10 @@ pzpr.classmgr.makeCommon({
 		
 		var clist = component.clist;
 		if(clist.length<1){ return;}
+		for(var i=0;i<clist.length;i++){
+			var cell=clist[i];
+			cell.base = (cell.isNum() ? cell : emptycell);
+		}
 		
 		var before=null, after=null, point=0;
 		if(clist.length===1){
@@ -279,7 +287,6 @@ pzpr.classmgr.makeCommon({
 		else{
 			for(var i=0;i<clist.length;i++){
 				var cell=clist[i];
-				cell.base = emptycell;
 				if(cell.lcnt===1){
 					point++;
 					if(cell.isNum()){ before=cell;}else{ after=cell;}
@@ -287,6 +294,7 @@ pzpr.classmgr.makeCommon({
 			}
 		}
 		if(before!==null && after!==null && point===2){
+			before.base = emptycell;
 			component.departure   = after.base = before;
 			component.destination = after;
 			component.movevalid = true;

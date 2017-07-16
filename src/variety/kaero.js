@@ -130,7 +130,7 @@ LineGraph:{
 	enabled : true
 },
 
-'AreaAntGraph:AreaGraphBase':{
+'AreaAntGraph:AreaGraphBase@armyants':{
 	enabled : true,
 	relation : {'cell.qnum':'node','border.line':'move'},
 	setComponentRefs : function(obj, component){ obj.ant = component;},
