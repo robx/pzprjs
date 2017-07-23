@@ -341,12 +341,12 @@ Encode:{
 		for(i=0;i<bstr.length;i++){
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
-			if(ca === 'g'){ cell.ques = 1;}
+			if(ca === '+'){ cell.ques = 1;}
 			else if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 							   { cell.qnum = parseInt(ca,16);}
 			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca === '.'){ cell.qnum = -2;}
-			else if(ca >= 'h' && ca <= 'z'){ c += (parseInt(ca,36)-17);}
+			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
 
 			c++;
 			if(!bd.cell[c]){ break;}
@@ -357,7 +357,7 @@ Encode:{
 		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", qu=bd.cell[c].ques, qn=bd.cell[c].qnum;
-			if     (qu=== 1){ pstr="g";}
+			if     (qu=== 1){ pstr="+";}
 			else if(qn===-1){ count++;}
 			else if(qn===-2){ pstr=".";}
 			else if(qn<  16){ pstr="" +qn.toString(16);}
@@ -365,9 +365,9 @@ Encode:{
 			else{ pstr=""; count++;}
 
 			if(count===0){ cm += pstr;}
-			else if(pstr || count===19){ cm+=((16+count).toString(36)+pstr); count=0;}
+			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
 		}
-		if(count>0){ cm+=(16+count).toString(36);}
+		if(count>0){ cm+=(15+count).toString(36);}
 
 		this.outbstr += cm;
 	}

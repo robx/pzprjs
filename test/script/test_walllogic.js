@@ -1,7 +1,7 @@
 /* test_walllogic.js */
 
 ui.debug.addDebugData('walllogic', {
-	url : '5/5/i1l2h2j5h5l4i',
+	url : '5/5/h1k2g2i5g5k4h',
 	failcheck : [
 		['brNoLine',    "pzprv3/walllogic/5/5/. . 1 . . /. . . 2 . /2 . . . 5 /. 5 . . . /. . 4 . . /. . . . . /. . . . . /. . . . . /. . . . . /. . . . . /"],
 		['nmConnWallGt',"pzprv3/walllogic/5/5/. . 1 . . /. . . 2 . /2 . . . 5 /. 5 . . . /. . 4 . . /. . . . . /3 3 3 . . /. . . . . /. . . . . /. . . . . /"],
