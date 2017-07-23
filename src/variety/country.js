@@ -25,10 +25,10 @@ MouseEvent:{
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left'){ this.inputLine();}
-				else if(this.btn==='right' && this.pid!=='country'){ this.inputpeke();}
+				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){
-				if(this.pid!=='country' && this.inputpeke_onend()){ return;}
+				if(this.inputpeke_onend()){ return;}
 				this.inputMB();
 			}
 		}
@@ -40,15 +40,6 @@ MouseEvent:{
 				this.inputqnum();
 			}
 		}
-	},
-
-	inputpeke_onend : function(){
-		var border = this.getpos(0.22).getb();
-		if(border.group==='border' && !border.isnull){
-			this.inputpeke();
-			return true;
-		}
-		return false;
 	}
 },
 "MouseEvent@moonsun#2":{

@@ -26,14 +26,6 @@ MouseEvent:{
 		}
 	},
 
-	inputpeke_onend : function(){
-		var border = this.getpos(0.22).getb();
-		if(border.group==='border' && !border.isnull){
-			this.inputpeke();
-			return true;
-		}
-		return false;
-	},
 	clickTateyoko : function(){
 		var cell  = this.getcell();
 		if(cell.isnull || cell.isNum()){ return;}

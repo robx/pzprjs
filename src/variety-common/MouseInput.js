@@ -572,6 +572,14 @@ MouseEvent:{
 		}
 		this.prevPos = pos;
 	},
+	inputpeke_onend : function(){
+		var border = this.getpos(0.22).getb();
+		if(border.group==='border' && !border.isnull){
+			this.inputpeke();
+			return true;
+		}
+		return false;
+	},
 
 	//---------------------------------------------------------------------------
 	// mv.inputTateyoko() 縦棒・横棒をドラッグで入力する
