@@ -239,7 +239,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawDashedGrid();
+		this.drawGrid();
 		this.drawQuesCells();
 
 		this.drawWalls();
