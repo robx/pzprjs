@@ -180,6 +180,7 @@ delete variety.extend;
 	usoone    :[0,0,"ウソワン","Uso-one"],
 	view      :[1,0,"ヴィウ","View",'sukoro'],
 	wagiri    :[0,0,"ごきげんななめ・輪切","Gokigen-naname:wagiri",'gokigen'],
+	walllogic :[0,0,"ウォールロジック","Wall Logic"],
 	wblink    :[0,0,"シロクロリンク","Shirokuro-link"],
 	yajikazu  :[1,0,"やじさんかずさん","Yajisan-Kazusan"],
 	yajirin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin'}],
