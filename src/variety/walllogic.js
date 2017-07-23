@@ -202,13 +202,14 @@ Board:{
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		if(key & this.TURN){ // 回転だけ
-			var tans = {0:0,12:13,13:12};
-			var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				cell.setQans(tans[cell.qans]);
-			}
+		this.adjustCellAnumArrow(key,d);
+	},
+	adjustCellAnumArrow : function(key,d){
+		var trans = this.getTranslateDir(key);
+		var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var val = trans[cell.anum]; if(!!val){ cell.setAnum(val);}
 		}
 	}
 },
