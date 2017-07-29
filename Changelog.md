@@ -1,7 +1,7 @@
 
 ## Version 0.10.0
 
-Release date: 2017/7/25
+Release date: 2017/7/29
 
 #### New puzzle
 
@@ -12,16 +12,16 @@ Release date: 2017/7/25
 
 * Config: Enable set autocmp and autoerr config indivisually by puzzle genre
 * akari: Add autocmp config to toggle painting light
+* lits: Enable autocmp config to indicate four consective shaded cells in the room
 * country, nagenawa: Enable to input cross marks
 * slither, bag, mejilink: Set canvas margin wider
-* lits: Enable autocmp config to indicate four consective shaded cells in the room
 * stostone: Change the shape of unshaded cell dots
 
 #### BugFix
 
 * Encode: Fix misdecoding large number more than five digits
 * LineManager: Fix regenerating line information when paths are separated
-* linegraph: Fix adding or eraseing number misses regenerating components
+* LineManager: Fix adding or eraseing number misses regenerating line information
 * fillomino: Prevent copying answer number onto question number
 * slalom: Fix gate number trace routine occasionally misses proper order
 * Update pzpr-canvas.js to v0.8.2 to avoid rendering bug of IE and Edge
