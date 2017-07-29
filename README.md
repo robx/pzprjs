@@ -48,7 +48,7 @@ console.log(puzzle.check().text);
 * [List of mouse input modes](https://github.com/sabo2/pzprjs/blob/master/docs/InputModes.md)
 
 ## Releases
-* 2017/07/25 v0.10.0
+* 2017/07/29 v0.10.0
 * 2017/04/21 v0.9.1
 * 2017/04/20 v0.9.0
 * 2017/04/16 v0.9.0-beta2
