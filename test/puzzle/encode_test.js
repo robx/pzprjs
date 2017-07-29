@@ -61,3 +61,17 @@ pzpr.variety.each(function(pid){
 		})(pid);});
 	});
 });
+describe('Decoding routine', function(){ (function(){
+	it('Large room number', function(){
+		var puzzle = new pzpr.Puzzle();
+		puzzle.open('factors/3/3');
+
+		puzzle.board.getc(1,1).setQnum(16000);
+		puzzle.open(puzzle.getURL());
+		assert.equal(puzzle.board.getc(1,1).qnum, 16000);
+
+		puzzle.board.getc(1,1).setQnum(372880);
+		puzzle.open(puzzle.getURL());
+		assert.equal(puzzle.board.getc(1,1).qnum, 372880);
+	});
+})();});

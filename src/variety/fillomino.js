@@ -42,7 +42,7 @@ MouseEvent:{
 			this.inputData=(cell.getNum()===-1?-3:-1);
 		}
 
-		if(this.inputData>=-1){
+		if((this.inputData>=-1) && (cell.qnum===-1)){
 			cell.setAnum(this.inputData);
 			cell.draw();
 		}

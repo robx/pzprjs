@@ -9,32 +9,33 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@nagenawa":{
-	inputModes : {edit:['border','number','clear','info-line'],play:['line','subcircle','subcross','clear','info-line']},
-	mouseinput_auto : function(){
-		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ if(this.btn==='left'){ this.inputLine();}}
-			else if(this.mouseend && this.notInputted()){ this.inputMB();}
-		}
-		else if(this.puzzle.editmode){
-			if(this.mousestart || this.mousemove){ this.inputborder();}
-			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
-		}
-	}
+	inputModes : {edit:['border','number','clear','info-line'],play:['line','subcircle','subcross','clear','info-line']}
 },
 "MouseEvent@ringring":{
 	inputModes : {edit:['info-line'],play:['line','peke','info-line']},
+},
+MouseEvent:{
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputLine();}
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
+			else if(this.mouseend && this.notInputted()){
+				if(this.inputpeke_onend()){ return;}
+				this.inputMB();
+			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.inputblock();}
+			if(this.pid==='nagenawa'){
+				if(this.mousestart || this.mousemove){ this.inputborder();}
+				else if(this.mouseend && this.notInputted()){ this.inputqnum();}
+			}
+			else if(this.pid==='ringring'){
+				if(this.mousestart){ this.inputblock();}
+			}
 		}
 	},
-
 	inputblock : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
@@ -106,7 +107,7 @@ Graphic:{
 		}
 
 		this.drawLines();
-		if(pid==='ringring'){ this.drawPekes();}
+		this.drawPekes();
 
 		this.drawChassis();
 

@@ -534,6 +534,7 @@ function getLocalCanvas(puzzle, imageopt){
 	
 	var pc2 = new puzzle.klass.Graphic();
 	pc2.context = imgcanvas.getContext("2d");
+	pc2.context.enableTextLengthWA = false;
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 	if('bgcolor' in imageopt){ pc2.bgcolor = imageopt.bgcolor;}
 	if(puzzle.pid==='kramma'){ pc2.imgtile = puzzle.painter.imgtile;}

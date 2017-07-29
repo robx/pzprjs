@@ -69,6 +69,7 @@ delete variety.extend;
 {
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
+	armyants  :[0,0,"ぐんたいあり","Army Ants",'kaero'],
 	arukone   :[0,0,"アルコネ","Arukone",'numlin'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
 	bag       :[1,0,"バッグ","BAG (Corral)",'slither',{alias:'correl',alias2:'cave'}],
@@ -179,6 +180,7 @@ delete variety.extend;
 	usoone    :[0,0,"ウソワン","Uso-one"],
 	view      :[1,0,"ヴィウ","View",'sukoro'],
 	wagiri    :[0,0,"ごきげんななめ・輪切","Gokigen-naname:wagiri",'gokigen'],
+	walllogic :[0,0,"ウォールロジック","Wall Logic"],
 	wblink    :[0,0,"シロクロリンク","Shirokuro-link"],
 	yajikazu  :[1,0,"やじさんかずさん","Yajisan-Kazusan"],
 	yajirin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin'}],

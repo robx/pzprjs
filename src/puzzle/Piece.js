@@ -350,7 +350,7 @@ pzpr.classmgr.makeCommon({
 	// cell.isDestination() オブジェクトを動かすパズルで移動先セルかどうか判定する
 	// ※動いていない場合は、isDestinationのみtrueを返します
 	//---------------------------------------------------------------------------
-	isDeparture   : function(){ return (!this.isnull && !!this.base &&  this.base.isnull && this.isNum());},
+	isDeparture   : function(){ return (!this.isnull && !!this.base && this.isNum());},
 	isDestination : function(){ return (!this.isnull && !!this.base && !this.base.isnull);},
 
 	//---------------------------------------------------------------------------

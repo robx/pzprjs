@@ -185,6 +185,16 @@ AnsCheck:{
 	},
 
 	//---------------------------------------------------------------------------
+	// ans.checkNumberExist()  盤面に少なくとも一つは数字があることを判定する
+	//---------------------------------------------------------------------------
+	checkNumberExist : function(){
+		if(!this.puzzle.execConfig('allowempty')){
+			if(this.board.cell.some(function(cell){ return cell.isValidNum();})){ return;}
+			this.failcode.add("brNoValidNum");
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// ans.checkConnectAllNumber() 盤面に引かれている線が一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------
 	checkConnectAllNumber : function(){
@@ -676,6 +686,8 @@ FailCode:{
 	bkMixed       : ["白マスと黒マスの混在したタイルがあります。","A tile includes both shaded and unshaded cells."],
 	
 	bkWidthGt1 : ["幅が１マスではないタタミがあります。","The width of the tatami is not one."],
+	
+	brNoValidNum : ["盤面に数字がありません。","There are no numbers on the board."],
 	
 	/* ** 領域＋線を引く ** */
 	brNoLine : ["線が引かれていません。","There is no line on the board."],

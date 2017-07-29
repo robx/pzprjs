@@ -1018,6 +1018,7 @@ AnsCheck:{
 							pos = cell1.getaddr();
 							passed = 0;
 							ordertype = 1;
+							continue;
 						}
 						else                                         { errgate = gate; break;} // 通過順間違い
 					}

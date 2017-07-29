@@ -126,6 +126,7 @@ Board:{
 // 画像表示系
 Graphic:{
 	hideHatena : true,
+	autocmp : 'akari',
 
 	gridcolor_type : "LIGHT",
 
@@ -154,7 +155,7 @@ Graphic:{
 	getBGCellColor : function(cell){
 		if(cell.qnum===-1){
 			if     (cell.error ===1){ return this.errbcolor1;}
-			else if(cell.qlight===1){ return this.lightcolor;}
+			else if(cell.qlight===1 && this.puzzle.execConfig('autocmp')){ return this.lightcolor;}
 		}
 		return null;
 	},

@@ -547,7 +547,9 @@ MouseEvent:{
 			if(!border.isnull && ((!border.isLine() && cell.lcnt===0) || (border.isLine() && cell0.lcnt===1))){
 				this.mouseCell = cell;
 				this.prevPos = pos;
-				if(!border.isLine()){ border.setLine();}else{ border.removeLine();}
+				var old = border.isLine();
+				if(!old){ border.setLine();}else{ border.removeLine();}
+				if(old===border.isLine()){ this.mousereset(); cell0.draw(); return;}
 				border.draw();
 			}
 		}
@@ -569,6 +571,14 @@ MouseEvent:{
 			border.draw();
 		}
 		this.prevPos = pos;
+	},
+	inputpeke_onend : function(){
+		var border = this.getpos(0.22).getb();
+		if(border.group==='border' && !border.isnull){
+			this.inputpeke();
+			return true;
+		}
+		return false;
 	},
 
 	//---------------------------------------------------------------------------
