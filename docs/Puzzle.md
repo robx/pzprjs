@@ -34,8 +34,9 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * `urltype:URLType` Specify URL type.
 * `puzzle.getFileData([filetype[, option]])` Return File Data of the board.
     * Return value: Generated File data.
-    * `filetype:FileType` Specify URL type.
+    * `filetype:FileType` Specify URL type. Default is `pzpr.parser.FILE_PZPR`.
     * `option.history:boolean` If filetype is FILE_PZPR and it is true, operation history will be outputted.
+    * `option.time:boolean` If filetype is FILE_PZPR, option.history and it is true, operation history and operation time (millisecond) will be outputted.
     * `option.trial:boolean` If filetype is FILE_PZPR, option.history is false and it is true in trial mode, trial mode data will be outputted.
 * `puzzle.clone([option])` Return cloned puzzle object from the puzzle.
     * Return value: cloned puzzle object.

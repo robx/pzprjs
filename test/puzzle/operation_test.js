@@ -187,6 +187,6 @@ describe('Trial mode test', function(){
 		assert.equal(puzzle.board.trialstage, 0);
 		assert.deepEqual(puzzle.opemgr.trialpos, []);
 		assert.equal(puzzle.opemgr.position, 1);
-		assert.equal(puzzle.opemgr.ope.length, 1);
+		assert.equal(puzzle.opemgr.history.length, 1);
 	});
 });

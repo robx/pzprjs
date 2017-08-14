@@ -326,13 +326,32 @@ Operation:{
 },
 
 //---------------------------------------------------------------------------
+// ★OperationListクラス OperationのListと時刻を保持する
+//---------------------------------------------------------------------------
+OperationList:{
+	initialize : function(){
+		this.time = this.puzzle.getTime();
+		this.length = 0;
+	},
+	push : function(ope){
+		this[this.length++] = ope;
+	},
+	some : function(func){
+		return Array.prototype.slice.call(this).some(func);
+	}
+		//	toString : function(){
+//		return Array.prototype.toString.call(this);
+//	}
+},
+
+//---------------------------------------------------------------------------
 // ★OperationManagerクラス 操作情報を扱い、Undo/Redoの動作を実装する
 //---------------------------------------------------------------------------
 // OperationManagerクラス
 OperationManager:{
 	initialize : function(){
 		this.lastope = null;	// this.opeの最後に追加されたOperationへのポインタ
-		this.ope = [];			// Operationクラスを保持する二次元配列
+		this.history = [];		// OperationListのオブジェクトを保持する配列
 		this.position = 0;		// 現在の表示操作番号を保持する
 		this.trialpos = [];		// TrialModeの位置を保持する配列
 		this.disEmitTrial = 0;	// Trial eventの呼び出し有効無効フラグ
@@ -383,7 +402,7 @@ OperationManager:{
 	enableRecord  : function(){ if(this.disrec>0){ this.disrec--;} },
 
 	checkexec : function(){
-		if(this.ope===(void 0)){ return;}
+		if(this.history===(void 0)){ return;}
 
 		this.checkenable();
 
@@ -396,13 +415,13 @@ OperationManager:{
 		else{
 			this.enableUndo = (this.position>0);
 		}
-		this.enableRedo = (this.position<this.ope.length);
+		this.enableRedo = (this.position<this.history.length);
 
 		this.board.trialstage = this.trialpos.length;
 	},
 	allerase : function(){
 		this.lastope  = null;
-		this.ope      = [];
+		this.history  = [];
 		this.position = 0;
 		this.broken   = false;
 		this.initpos  = 0;
@@ -438,8 +457,8 @@ OperationManager:{
 	//---------------------------------------------------------------------------
 	removeDescendant : function(){
 		if(this.position<this.initpos){ this.broken = true;}
-		for(var i=this.ope.length-1;i>=this.position;i--){ this.ope.pop();}
-		this.position = this.ope.length;
+		for(var i=this.history.length-1;i>=this.position;i--){ this.history.pop();}
+		this.position = this.history.length;
 		this.chainflag = false;
 	},
 
@@ -459,11 +478,11 @@ OperationManager:{
 		{
 			/* 履歴を追加する */
 			if(!this.chainflag){
-				this.ope.push([]);
+				this.history.push(new this.klass.OperationList());
 				this.position++;
 				this.chainflag = true;
 			}
-			this.ope[this.ope.length-1].push(newope);
+			this.history[this.history.length-1].push(newope);
 			this.lastope = newope;
 		}
 		else{
@@ -481,23 +500,29 @@ OperationManager:{
 	// um.decodeHistory() オブジェクトを履歴情報に変換する
 	// um.encodeHistory() 履歴情報をオブジェクトに変換する
 	//---------------------------------------------------------------------------
-	decodeHistory :function(history){
+	decodeHistory :function(historyinfo){
 		this.allerase();
 		
-		this.initpos = this.position = history.current || 0;
-		this.ope = [];
-		var datas = history.datas || [];
+		this.initpos = this.position = historyinfo.current || 0;
+		this.history = [];
+		var datas = historyinfo.datas || [];
 		for(var i=0,len=datas.length;i <len;i++){
-			this.ope.push([]);
-			for(var j=0,len2=datas[i].length;j <len2;j++){
-				var strs = datas[i][j].split(/,/);
+			var opelist = new this.klass.OperationList();
+			this.history.push(opelist);
+			var array = datas[i];
+			if(array.time!==void 0){
+				opelist.time = array.time;
+				array = array.ope;
+			}
+			for(var j=0,len2=array.length;j <len2;j++){
+				var strs = array[j].split(/,/);
 				var ope = null, List = this.operationlist;
 				for(var k=0;k <List.length;k++){
 					var ope1 = new List[k]();
 					if(ope1.decode(strs)){ ope = ope1; break;}
 				}
 				if(!!ope){
-					this.ope[this.ope.length-1].push(ope);
+					opelist.push(ope);
 					this.lastope = ope;
 				}
 			}
@@ -505,26 +530,40 @@ OperationManager:{
 		
 		this.checkexec();
 		
-		this.trialpos = history.trialpos || [];
+		this.trialpos = historyinfo.trialpos || [];
 		if(this.trialpos.length>0){
 			this.resumeTrial();
 			this.limitTrialUndo = true;
 		}
 	},
-	encodeHistory : function(){
+	encodeHistory : function(extoption){
+		extoption = extoption || {};
 		this.initpos = this.position;
-		var header = {
+		var historyinfo = {
 			type    : 'pzpr',
 			version : 0.4
 		};
-		if(this.ope.length>0){
-			header.current = this.position;
-			if(this.trialpos.length>0){
-				header.trialpos = this.trialpos;
-			}
-			header.datas = this.ope;
+		if(extoption.time){
+			historyinfo.time = this.puzzle.getTime();
 		}
-		return header;
+		if(this.history.length>0){
+			historyinfo.current = this.position;
+			if(this.trialpos.length>0){
+				historyinfo.trialpos = this.trialpos;
+			}
+			var history = [];
+			for(var i=0;i<this.history.length;++i){
+				var array = Array.prototype.slice.call(this.history[i]);
+				if(!extoption.time){
+					history.push(array);
+				}
+				else{
+					history.push({ope:array, time:this.history[i].time});
+				}
+			}
+			historyinfo.datas = history;
+		}
+		return historyinfo;
 	},
 
 	//---------------------------------------------------------------------------
@@ -533,7 +572,7 @@ OperationManager:{
 	//---------------------------------------------------------------------------
 	undo : function(){
 		if(!this.enableUndo){ return false;}
-		var opes = this.ope[this.position-1];
+		var opes = this.history[this.position-1];
 		this.reqReset = this.checkReqReset(opes);
 		this.preproc();
 		this.undoCore();
@@ -542,7 +581,7 @@ OperationManager:{
 	},
 	redo : function(){
 		if(!this.enableRedo){ return false;}
-		var opes = this.ope[this.position];
+		var opes = this.history[this.position];
 		this.reqReset = this.checkReqReset(opes);
 		this.preproc();
 		this.redoCore();
@@ -557,7 +596,7 @@ OperationManager:{
 	//---------------------------------------------------------------------------
 	undoCore : function(){
 		this.undoExec = true;
-		var opes = this.ope[this.position-1];
+		var opes = this.history[this.position-1];
 		for(var i=opes.length-1;i>=0;i--){
 			if(!!opes[i]){ opes[i].undo();}
 		}
@@ -566,7 +605,7 @@ OperationManager:{
 	},
 	redoCore : function(){
 		this.redoExec = true;
-		var opes = this.ope[this.position];
+		var opes = this.history[this.position];
 		for(var i=0;i<opes.length;++i){
 			if(!!opes[i]){ opes[i].redo();}
 		}
