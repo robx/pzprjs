@@ -9,7 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['number','clear'],play:['objblank']},
+	inputModes : {edit:['number','clear'],play:['objblank','completion']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			var use = +this.puzzle.getConfig('use_tri');
@@ -46,6 +46,7 @@ MouseEvent:{
 			else if(use===3){
 				if(this.mousestart){ this.inputTriangle_onebtn();}
 			}
+			if(this.mouseend && this.notInputted()){ this.inputqcmp();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
@@ -181,6 +182,16 @@ MouseEvent:{
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
 		cell.draw();
+	},
+
+	inputqcmp : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell.noNum()){ return;}
+
+		cell.setQcmp(+!cell.qcmp);
+		cell.draw();
+
+		this.mousereset();
 	}
 },
 
@@ -264,7 +275,7 @@ Graphic:{
 	qanscolor : "black",
 	fgcellcolor_func : "qnum",
 	fontShadecolor : "white",
-	numbercolor_func : "fixed_shaded",
+	qcmpcolor : "rgb(127,127,127)",
 
 	paint : function(){
 		this.drawBGCells();
@@ -281,6 +292,9 @@ Graphic:{
 	},
 	getTriangleColor : function(cell){
 		return (!cell.trial ? this.shadecolor : this.trialcolor);
+	},
+	getQuesNumberColor : function(cell){
+		return (cell.qcmp===1 ? this.qcmpcolor : this.fontShadecolor);
 	}
 },
 
@@ -305,11 +319,27 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCellQnumb();
-		this.decodeCellQanssub();
+		this.decodeCellQanssubcmp();
 	},
 	encodeData : function(){
 		this.encodeCellQnumb();
-		this.encodeCellQanssub();
+		this.encodeCellQanssubcmp();
+	},
+
+	decodeCellQanssubcmp : function(){
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qcmp = 1;}
+			else if(ca!=="."){ cell.qans = +ca;}
+		});
+	},
+	encodeCellQanssubcmp : function(){
+		this.encodeCell( function(cell){
+			if     (cell.qans!==0){ return cell.qans+" ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else if(cell.qcmp===1){ return "- ";}
+			else                  { return ". ";}
+		});
 	},
 
 	kanpenOpen : function(){

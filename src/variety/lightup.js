@@ -10,17 +10,27 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	inputModes : {edit:['number','clear'],play:['akari','unshade']},
+	inputModes : {edit:['number','clear'],play:['akari','unshade','completion']},
 	mouseinput_other : function(){
 		if(this.inputMode==='akari' && this.mousestart){ this.inputcell();}
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || (this.mousemove && (this.inputData!==1))){ this.inputcell();}
+			else if(this.mouseend && this.notInputted()){ this.inputqcmp();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
 		}
+	},
+	inputqcmp : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell.noNum()){ return;}
+
+		cell.setQcmp(+!cell.qcmp);
+		cell.draw();
+
+		this.mousereset();
 	}
 },
 
@@ -133,7 +143,7 @@ Graphic:{
 	fgcellcolor_func : "qnum",
 
 	fontShadecolor : "white",
-	numbercolor_func : "fixed_shaded",
+	qcmpcolor : "rgb(127,127,127)",
 	bgcellcolor_func : "light",
 
 	lightcolor : "rgb(192, 255, 127)",
@@ -174,6 +184,9 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
+	},
+	getQuesNumberColor : function(cell){
+		return (cell.qcmp===1 ? this.qcmpcolor : this.fontShadecolor);
 	}
 },
 
@@ -198,9 +211,24 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCellQnumAns();
+		this.decodeCellQcmp();
 	},
 	encodeData : function(){
 		this.encodeCellQnumAns();
+		this.encodeCellQcmp();
+	},
+
+	decodeCellQcmp : function(){
+		this.decodeCell( function(cell,ca){
+			if(ca==="-"){ cell.qcmp = 1;}
+		});
+	},
+	encodeCellQcmp : function(){
+		if(!this.puzzle.board.cell.some(function(cell){ return cell.qcmp===1;})){ return;}
+		this.encodeCell( function(cell){
+			if(cell.qcmp===1){ return "- ";}
+			else             { return ". ";}
+		});
 	},
 
 	kanpenOpen : function(){

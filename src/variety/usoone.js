@@ -185,15 +185,15 @@ FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
 		this.decodeCellQnum();
-		this.decodeCellQanssubcmp();
+		this.decodeCellQanssubcmp2();
 	},
 	encodeData : function(){
 		this.encodeAreaRoom();
 		this.encodeCellQnum();
-		this.encodeCellQanssubcmp();
+		this.encodeCellQanssubcmp2();
 	},
 
-	decodeCellQanssubcmp : function(){
+	decodeCellQanssubcmp2 : function(){
 		this.decodeCell( function(cell,ca){
 			if(ca==="1"){ cell.qans = 1;}
 			else if(ca!=="."){
@@ -203,7 +203,7 @@ FileIO:{
 			}
 		});
 	},
-	encodeCellQanssubcmp : function(){
+	encodeCellQanssubcmp2 : function(){
 		this.encodeCell( function(cell){
 			if(cell.qans===1){ return "1 ";}
 			var ca = (cell.qsub===1 ? "+" : "");
