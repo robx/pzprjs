@@ -15,7 +15,7 @@ MouseEvent:{
 			var use = +this.puzzle.getConfig('use_tri');
 			if(use===1){
 				if(this.btn==='left'){
-					if(this.mousestart){ this.inputTriangle_corner();}
+					if(this.mousestart){ this.inputTriangle_corner_start();}
 					else if(this.mousemove && this.inputData!==null){
 						this.inputMove();
 					}
@@ -62,22 +62,48 @@ MouseEvent:{
 		}
 	},
 
-	inputTriangle_corner : function(){
+	inputTriangle_corner_start : function(){
 		var cell = this.getcell();
-		if(cell.isnull || cell.isNum()){ return;}
+		if(cell.isnull){ return;}
 
 		this.inputData = this.checkCornerData(cell);
-		if(this.inputData===cell.qans){ this.inputData = 0;}
 
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
 		cell.draw();
 	},
 	checkCornerData : function(cell){
-		var dx = this.inputPoint.bx - cell.bx;
-		var dy = this.inputPoint.by - cell.by;
-		if(dx<=0){ return ((dy<=0)?5:2);}
-		else     { return ((dy<=0)?4:3);}
+		if(cell.isNum()){ return -1;}
+
+		// Input support mode
+		var adc = cell.adjacent, wall = {count:0};
+		var data = {top:[2,3],bottom:[4,5],left:[3,4],right:[2,5]};
+		for(var key in adc){
+			var cell2 = adc[key];
+			wall[key] = (cell2.isWall() || cell2.qans===data[key][0] || cell2.qans===data[key][1]);
+			if(wall[key]){ ++wall.count;}
+		}
+
+		if(wall.count>2 || (wall.count===2 && ((wall.top && wall.bottom) || (wall.left && wall.right)))){
+			return (cell.qsub===0 ? -1 : 0);
+		}
+
+		var val = 0;
+		if(wall.count===2){
+			if     (wall.bottom && wall.left) { val = 2;}
+			else if(wall.bottom && wall.right){ val = 3;}
+			else if(wall.top    && wall.right){ val = 4;}
+			else if(wall.top    && wall.left) { val = 5;}
+		}
+		else{
+			var dx = this.inputPoint.bx - cell.bx;
+			var dy = this.inputPoint.by - cell.by;
+			if(dx<=0){ val = ((dy<=0)?5:2);}
+			else     { val = ((dy<=0)?4:3);}
+		}
+		if(val===cell.qans){ val = -1;}
+		else if(cell.qsub===1){ val = 0;}
+		return val;
 	},
 
 	inputTriangle_pull_start : function(){
@@ -221,7 +247,8 @@ Cell:{
 		this.setQsub((val===-1)?1:0);
 	},
 
-	isTri : function(){ return this.qans!==0;}
+	isTri : function(){ return this.qans!==0;},
+	isWall : function(){ return (this.qsub===1 || this.isnull || this.isNum());}
 },
 Board:{
 	addExtraInfo : function(){
