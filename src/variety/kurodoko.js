@@ -5,11 +5,10 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['kurodoko'], {
+['kurodoko','nurimisaki'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	RBShadeCell : true,
 	use    : true,
 	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
 	mouseinput_auto : function(){
@@ -20,6 +19,10 @@ MouseEvent:{
 			if(this.mousestart){ this.inputqnum();}
 		}
 	}
+},
+
+"MouseEvent@kurodoko":{
+	RBShadeCell : true,
 },
 
 //---------------------------------------------------------
@@ -135,9 +138,13 @@ FileIO:{
 AnsCheck:{
 	checklist : [
 		"checkShadeCellExist",
-		"checkAdjacentShadeCell",
+		"checkAdjacentShadeCell@kurodoko",
 		"checkConnectUnshadeRB",
-		"checkViewOfNumber"
+		"checkViewOfNumber",
+		"check2x2UnshadeCell@nurimisaki",
+		"check2x2ShadeCell@nurimisaki",
+		"checkCirclePromontory@nurimisaki",
+		"checkNonCircleNotPromontory@nurimisaki"
 	],
 
 	checkViewOfNumber : function(){
@@ -161,7 +168,35 @@ AnsCheck:{
 	}
 },
 
+"AnsCheck@nurimisaki":{
+	check2x2UnshadeCell : function(){
+		this.check2x2Block(function(cell){ return cell.isUnshade();}, "unshade2x2");
+	},
+
+	checkCirclePromontory : function(){
+		var self = this;
+		this.checkAllCell(function(cell){ return (cell.isNum() && !self.isPromontory(cell));}, "circleNotPromontory");
+	},
+
+	checkNonCircleNotPromontory : function(){
+		var self = this;
+		this.checkAllCell(function(cell){ return (cell.noNum() && cell.isUnshade() && self.isPromontory(cell));}, "nonCirclePromontory");
+	},
+
+	isPromontory : function(cell){
+		var countUnshade = 0;
+		if(cell.adjacent.left.isUnshade()){countUnshade++;}
+		if(cell.adjacent.right.isUnshade()){countUnshade++;}
+		if(cell.adjacent.top.isUnshade()){countUnshade++;}
+		if(cell.adjacent.bottom.isUnshade()){countUnshade++;}
+		return countUnshade===1;
+	}
+},
+
 FailCode:{
-	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the coutinuous unshaded cells of four direction is different."]
+	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the coutinuous unshaded cells of four direction is different."],
+	unshade2x2 : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of unshaded cells."],
+	circleNotPromontory : ["<circle not promontory>","A circle has more than one unshaded neighbor."],
+	nonCirclePromontory : ["<empty cell promontory>","An unshaded uncircled cells has only one unshaded neighbor."]
 }
 }));
