@@ -160,10 +160,10 @@ pzpr.parser.URLData.prototype = {
 	outputURLType : function(){
 		/* URLの種類からURLを取得する */
 		var domain = (!pzpr.env.node ? document.domain : ''), url = "", pid = this.pid;
-		if(!!domain){ domain += location.pathname;}
-		else{ domain = "pzv.jp/p.html";}
+		if(!!domain){ domain = location.protocol + '//' + domain + location.pathname;}
+		else{ domain = "http://pzv.jp/p.html";}
 		switch(this.type){
-			case URL_PZPRV3:  url="http://"+domain+"?%PID%/"; break;
+			case URL_PZPRV3:  url=domain+"?%PID%/"; break;
 			case URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
 			case URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
 			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
