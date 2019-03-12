@@ -5,7 +5,7 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['heyawake','ayeheya'], {
+['heyawake','heyawacky','ayeheya'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -235,7 +235,7 @@ AnsCheck:{
 		"checkFractal@ayeheya",
 		"checkShadeCellCount",
 		"checkCountinuousUnshadeCell",
-		"checkRoomRect"
+		"checkRoomRect@heyawake"
 	],
 
 	checkFractal : function(){

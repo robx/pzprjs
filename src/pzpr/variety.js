@@ -99,6 +99,7 @@ delete variety.extend;
 	hashikake :[0,1,"橋をかけろ","Hashiwokakero (Bridges)",'',{pzprurl:'hashi',kanpen:'hashi',alias:'bridges'}],
 	hebi      :[1,0,"へびいちご","Hebi-Ichigo",'',{old:'snakes'}],
 	herugolf  :[0,0,"ヘルゴルフ","Herugolf"],
+	heyawacky :[0,0,"へやわけ","Heyawacky",'heyawake'],
 	heyawake  :[0,1,"へやわけ","Heyawake",'heyawake'],
 	heyabon   :[1,1,"へやぼん","Heya-Bon",'bonsan',{kanpen:'satogaeri'}],
 	hitori    :[0,1,"ひとりにしてくれ","Hitori"],
