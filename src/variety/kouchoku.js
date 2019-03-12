@@ -5,7 +5,7 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['kouchoku'], {
+['kouchoku', 'angleloop'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -92,11 +92,10 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){ return this.moveTCross(ca);},
+},
 
+"KeyEvent@kouchoku":{
 	keyinput : function(ca){
-		this.key_inputqnum_kouchoku(ca);
-	},
-	key_inputqnum_kouchoku : function(ca){
 		var cross = this.cursor.getx();
 
 		if(ca.length>1 && ca!=='BS'){ return;}
@@ -106,6 +105,24 @@ KeyEvent:{
 			else{ cross.setQnum(num);}
 		}
 		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2?-2:-1);}
+		else if(ca===' '||ca==='BS'){ cross.setQnum(-1);}
+		else{ return;}
+
+		this.prev = cross;
+		cross.draw();
+	}
+},
+
+"KeyEvent@angleloop":{
+	keyinput : function(ca){
+		var cross = this.cursor.getx();
+
+		if(ca.length>1 && ca!=='BS'){ return;}
+		else if('a'<=ca && ca<='c'){
+			var num = parseInt(ca,36)-9;
+			if(cross.qnum===num){ cross.setQnum(-1);}
+			else{ cross.setQnum(num);}
+		}
 		else if(ca===' '||ca==='BS'){ cross.setQnum(-1);}
 		else{ return;}
 
@@ -551,19 +568,7 @@ Graphic:{
 
 	irowake : true,
 
-	autocmp : "kouchoku",
-
 	gridcolor_type : "DLIGHT",
-
-	paint : function(){
-		this.drawDashedGrid(false);
-
-		this.drawSegments();
-
-		this.drawCrosses_kouchoku();
-		this.drawSegmentTarget();
-		this.drawTarget();
-	},
 
 	repaintLines : function(segs){
 		if(!this.context.use.canvas){
@@ -614,6 +619,39 @@ Graphic:{
 		else{ g.vhide();}
 	},
 
+	drawSegmentTarget : function(){
+		var g = this.vinc('cross_target_', 'auto', true);
+
+		var csize = this.cw*0.32;
+		g.strokeStyle = "rgb(64,127,255)";
+		g.lineWidth = this.lw*1.5;
+
+		var clist = this.range.crosses;
+		for(var i=0;i<clist.length;i++){
+			var cross = clist[i];
+			g.vid = "x_point_"+cross.id;
+			if(this.puzzle.mouse.targetPoint[0]===cross ||
+			   this.puzzle.mouse.targetPoint[1]===cross){
+				g.strokeCircle(cross.bx*this.bw, cross.by*this.bh, csize);
+			}
+			else{ g.vhide();}
+		}
+	}
+},
+
+"Graphic@kouchoku":{
+	autocmp: "kouchoku",
+
+	paint : function(){
+		this.drawDashedGrid(false);
+
+		this.drawSegments();
+
+		this.drawCrosses_kouchoku();
+		this.drawSegmentTarget();
+		this.drawTarget();
+	},
+
 	drawCrosses_kouchoku : function(){
 		var g = this.vinc('cross_base', 'auto', true);
 
@@ -653,24 +691,61 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
+	}
+},
+
+"Graphic@angleloop":{
+	paint : function(){
+		this.drawDashedGrid(false);
+
+		this.drawSegments();
+
+		this.drawCrosses_angleloop();
+		this.drawSegmentTarget();
+		this.drawTarget();
 	},
 
-	drawSegmentTarget : function(){
-		var g = this.vinc('cross_target_', 'auto', true);
+	drawCrosses_angleloop : function(){
+		var g = this.vinc('cross_base', 'auto', true);
+		g.lineWidth = 1;
 
-		var csize = this.cw*0.32;
-		g.strokeStyle = "rgb(64,127,255)";
-		g.lineWidth = this.lw*1.5;
-
+		var r=this.cw*0.25;
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
-			g.vid = "x_point_"+cross.id;
-			if(this.puzzle.mouse.targetPoint[0]===cross ||
-			   this.puzzle.mouse.targetPoint[1]===cross){
-				g.strokeCircle(cross.bx*this.bw, cross.by*this.bh, csize);
+			var px = cross.bx*this.bw, py = cross.by*this.bh;
+			for(var d=1;d<=3;d++){
+				g.vid = "x_cp_"+d+"_"+cross.id;
+				if(cross.qnum!==d){
+					g.vhide();
+					continue;
+				}
+				g.strokeStyle = "black";
+				if(cross.error===1){
+					g.fillStyle = this.errbcolor1;
+				}else{
+					switch(d){
+						case 1: g.fillStyle = "black"; break;
+						case 2: g.fillStyle = "gray"; break;
+						case 3: g.fillStyle = "white"; break;
+					}
+				}
+				switch(d){
+					case 1:
+						var a=0.85*r, b=0.5*r;
+						g.setOffsetLinePath(px, py, 0,-r, -a,b, a,b, true);
+						break;
+					case 2:
+						var a=0.7*r;
+						g.setOffsetLinePath(px, py, -a,-a, -a,a, a,a, a,-a, true);
+						break;
+					case 3:
+						var a=0.31*r, b=0.95*r, c=0.81*r, d=0.59*r;
+						g.setOffsetLinePath(px, py, 0,-r, -b,-a, -d,c, d,c, b,-a, true);
+						break;
+				}
+				g.shape();
 			}
-			else{ g.vhide();}
 		}
 	}
 },
@@ -745,20 +820,6 @@ FileIO:{
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
-	checklist : [
-		"checkSegmentExist",
-		"checkSegmentPoint",
-		"checkSegmentBranch",
-		"checkSegmentOverPoint",
-		"checkDuplicateSegment",
-		"checkDifferentLetter",
-		"checkRightAngle",
-		"checkOneSegmentLoop",
-		"checkSegmentDeadend",
-		"checkAlonePoint",
-		"checkConsequentLetter"
-	],
-
 	checkSegmentExist : function(){
 		if(this.board.segment.length===0){ this.failcode.add("brNoLine");}
 	},
@@ -783,9 +844,7 @@ AnsCheck:{
 			
 			result = false;
 			if(this.checkOnly){ break;}
-			if(cross.pathnodes.length>0){
-				cross.pathnodes[0].nodes.forEach(function(node){ node.obj.seterr(1);});
-			}
+			cross.seterr(1);
 		}
 		if(!result){
 			this.failcode.add(code);
@@ -807,7 +866,7 @@ AnsCheck:{
 		}
 	},
 
-	checkSegmentOverPoint : function(){
+	checkSegmentOverClue : function(){
 		var result = true, bd = this.board, segs = bd.segment;
 		segs.each(function(seg){
 			var lattice = bd.getLatticePoint(seg.bx1,seg.by1,seg.bx2,seg.by2);
@@ -908,20 +967,114 @@ AnsCheck:{
 			this.failcode.add("lnRightAngle");
 			segs.setnoerr();
 		}
+	},
+
+	checkNoCrossing : function(){
+		var result = true, segs = this.board.segment, len = segs.length;
+		allloop:
+		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
+			var seg1=segs[i], seg2=segs[j];
+			if(seg1===null || seg2===null || !seg1.isCrossing(seg2)){ continue;}
+
+			result = false;
+			if(this.checkOnly){ break allloop;}
+			seg1.seterr(1);
+			seg2.seterr(1);
+		}}
+		if(!result){
+			this.failcode.add("lnCrossing");
+			segs.setnoerr();
+		}
+	},
+
+	checkAngle : function(){
+		var result = true, bd=this.board;
+		for(var c=0;c<bd.cross.length;c++){
+			var cross = bd.cross[c];
+			if(cross.qnum<1||cross.lcnt!==2){
+				continue;
+			}
+			var seg1=cross.seglist[0], seg2=cross.seglist[1];
+			if(seg1.isParallel(seg2)){
+				result = false;
+				if(this.checkOnly){ break;}
+				cross.seterr(1);
+				continue;
+			}
+			if(seg1.isRightAngle(seg2)){
+				if(cross.qnum===2){
+					continue;
+				}
+				result = false;
+				if(this.checkOnly){ break;}
+				cross.seterr(1);
+				continue;
+			}
+			var dir=function(seg){
+				if(cross.bx===seg.bx1&&cross.by===seg.by1){
+					return [seg.dx,seg.dy];
+				}else{
+					return [-seg.dx,-seg.dy];
+				}
+			};
+			var dir1=dir(seg1), dir2=dir(seg2);
+			var p=dir1[0]*dir2[0]+dir1[1]*dir2[1];
+			if(p>0&&cross.qnum!==1 || p<0&&cross.qnum!==3){
+				result = false;
+				if(this.checkOnly){ break;}
+				cross.seterr(1);
+			}
+		}
+		if(!result){
+			this.failcode.add("lnWrongAngle");
+		}
 	}
+},
+
+"AnsCheck@kouchoku":{
+	checklist : [
+		"checkSegmentExist",
+		"checkSegmentPoint",
+		"checkSegmentBranch",
+		"checkSegmentOverClue",
+		"checkDuplicateSegment",
+		"checkDifferentLetter",
+		"checkRightAngle",
+		"checkOneSegmentLoop",
+		"checkSegmentDeadend",
+		"checkAlonePoint",
+		"checkConsequentLetter"
+	]
+},
+
+"AnsCheck@angleloop":{
+	checklist : [
+		"checkSegmentExist",
+		"checkSegmentPoint",
+		"checkSegmentBranch",
+		"checkSegmentOverClue",
+		"checkDuplicateSegment",
+		"checkOneSegmentLoop",
+		"checkSegmentDeadend",
+		"checkAlonePoint",
+		"checkNoCrossing",
+		"checkAngle"
+	]
 },
 
 FailCode:{
 	lnDeadEnd    : ["途中で途切れている線があります。","There is a dead-end segment."],
 	lnBranch     : ["分岐している線があります。","There is a branched segment."],
-	lnPlLoop     : ["輪っかが一つではありません。","There are plural loops."],
-	lnIsolate    : ["線が丸のないところから出ています。","A segment comes from out of circle."],
-	lnPassOver   : ["線が丸を通過しています。","A segment passes over a circle."],
-	lnOverlap    : ["線が同一直線上で重なっています。","Plural segments are overlapped."],
+	lnPlLoop     : ["輪っかが一つではありません。","There are multiple loops."],
+	lnIsolate    : ["線が丸のないところから出ています。","A segment starts outside a clue."],
+	lnPassOver   : ["線が丸を通過しています。","A segment passes over a clue."],
+	lnOverlap    : ["線が同一直線上で重なっています。","Some segments overlap."],
 	lnRightAngle : ["線が直角に交差していません。","Segments don't intersect at a right angle."],
-	nmConnDiff   : ["異なる文字が直接繋がっています。","Different Letters are connected directly."],
-	nmNotConseq  : ["同じ文字がひとつながりになっていません。","Same Letters are not consequent."],
-	nmLineLt2    : ["線が2本出ていない丸があります。","A circle doesn't have two segments."],
+	lnWrongAngle : ["<wrong angle>","Some segments meet at the wrong angle."],
+	lnCrossing   : ["<intersect>","Some segments intersect."],
+	nmConnDiff   : ["異なる文字が直接繋がっています。","Different letters are connected directly."],
+	nmNotConseq  : ["同じ文字がひとつながりになっていません。","Equal letters are not connected directly."],
+	nmLineLt2    : ["線が2本出ていない丸があります。","A clue doesn't have two segments."],
 	brNoLine     : ["線が存在していません。","There is no segment."]
 }
 }));

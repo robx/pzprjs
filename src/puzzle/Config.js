@@ -206,7 +206,7 @@ Config.prototype =
 			case 'autocmp':  exec = !!puzzle.painter.autocmp; break;
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
 			case 'singlenum':exec = (pid==="hanare"); break;
-			case 'enline': case'lattice': exec = (pid==="kouchoku"); break;
+			case 'enline': case'lattice': exec = (pid==="kouchoku"||pid==="angleloop"); break;
 			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
 			case 'uramashu': exec = (pid==="mashu"); break;

@@ -69,6 +69,7 @@ delete variety.extend;
 {
 	aho       :[0,0,"アホになり切れ","Aho-ni-Narikire",'shikaku'],
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
+	angleloop :[0,0,"<angleloop>","Angle Loop",'kouchoku'],
 	armyants  :[0,0,"ぐんたいあり","Army Ants",'kaero'],
 	arukone   :[0,0,"アルコネ","Arukone",'numlin'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
