@@ -137,8 +137,13 @@ TargetCursor:{
 
 //---------------------------------------------------------
 // 盤面管理系
-Cross:{
+"Cross@kouchoku":{
 	maxnum : 26
+},
+"Cross@angleloop":{
+	disInputHatena : true,
+	maxnum : 3,
+	minnum : 1
 },
 Segment:{
 	group : "segment",
