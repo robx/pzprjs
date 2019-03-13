@@ -39,7 +39,8 @@
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-newer": "^1.1.1",
-    "in-publish": "^2.0.0"
+    "in-publish": "^2.0.0",
+    "mocha": "^6.0.2"
   },
   "dependencies": {
     "pzpr-canvas": "^0.8.2"
