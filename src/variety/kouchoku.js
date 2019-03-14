@@ -974,7 +974,7 @@ AnsCheck:{
 		}
 	},
 
-	checkNoCrossing : function(){
+	checkCrossLine : function(){
 		var result = true, segs = this.board.segment, len = segs.length;
 		allloop:
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
@@ -987,7 +987,7 @@ AnsCheck:{
 			seg2.seterr(1);
 		}}
 		if(!result){
-			this.failcode.add("lnCrossing");
+			this.failcode.add("lnCross");
 			segs.setnoerr();
 		}
 	},
@@ -1062,21 +1062,17 @@ AnsCheck:{
 		"checkOneSegmentLoop",
 		"checkSegmentDeadend",
 		"checkAlonePoint",
-		"checkNoCrossing",
+		"checkCrossLine",
 		"checkAngle"
 	]
 },
 
 FailCode:{
-	lnDeadEnd    : ["途中で途切れている線があります。","There is a dead-end segment."],
-	lnBranch     : ["分岐している線があります。","There is a branched segment."],
-	lnPlLoop     : ["輪っかが一つではありません。","There are multiple loops."],
 	lnIsolate    : ["線が丸のないところから出ています。","A segment starts outside a clue."],
 	lnPassOver   : ["線が丸を通過しています。","A segment passes over a clue."],
 	lnOverlap    : ["線が同一直線上で重なっています。","Some segments overlap."],
 	lnRightAngle : ["線が直角に交差していません。","Segments don't intersect at a right angle."],
 	lnWrongAngle : ["直線のなす角度がマークと違います。","Some segments meet at the wrong angle."],
-	lnCrossing   : ["線が交差しています。","Some segments intersect."],
 	nmConnDiff   : ["異なる文字が直接繋がっています。","Different letters are connected directly."],
 	nmNotConseq  : ["同じ文字がひとつながりになっていません。","Equal letters are not connected directly."],
 	nmLineLt2    : ["線が2本出ていない丸があります。","A clue doesn't have two segments."],
