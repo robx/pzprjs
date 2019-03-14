@@ -63,8 +63,6 @@ describe('Variety:amibo',function(){
 		assert.equal(puzzle.board.bargraph.components.length, 8);
 		assert.equal(puzzle.board.netgraph.components.length, 3);
 		
-		require('fs').writeFile('./amibo.svg', puzzle.toBuffer());
-		
 		puzzle.mouse.inputPath(2,9, 9,9);
 		
 		assert.equal(puzzle.board.bargraph.components.length, 9);
