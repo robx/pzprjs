@@ -196,7 +196,7 @@ AnsCheck:{
 FailCode:{
 	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the coutinuous unshaded cells of four direction is different."],
 	unshade2x2 : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of unshaded cells."],
-	circleNotPromontory : ["<circle not promontory>","A circle has more than one unshaded neighbor."],
-	nonCirclePromontory : ["<empty cell promontory>","An unshaded uncircled cells has only one unshaded neighbor."]
+	circleNotPromontory : ["丸のマスが岬になっていません。","A circle has more than one unshaded neighbor."],
+	nonCirclePromontory : ["丸のないマスが岬になっています。","An unshaded uncircled cells has only one unshaded neighbor."]
 }
 }));
