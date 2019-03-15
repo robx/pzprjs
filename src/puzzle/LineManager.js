@@ -188,19 +188,26 @@ pzpr.classmgr.makeCommon({
 		// 交差あり盤面の処理
 		else if(!nodes[1] && nodes[0].nodes.length===2 && this.iscrossing(cell)){
 			// 2本->3本になる時はNodeを追加して分離します
-			this.createNode(cell);
-			
 			// 上下/左右の線が1本ずつだった場合は左右の線をnodes[1]に付加し直します
 			var nbnodes = nodes[0].nodes;
 			var isvert = [cell.getvert(nbnodes[0].obj, 2), cell.getvert(nbnodes[1].obj, 2)];
 			if(isvert[0]!==isvert[1]){
-				var lrnode = nbnodes[!isvert[0]?0:1];
-				this.removeEdge(nodes[0], lrnode);
-				this.addEdge(nodes[1], lrnode);
+				// breaking up a corner; we create two new nodes to ensure
+				// that the graph gets rebuilt correctly
+				var vertnode = nbnodes[isvert[0]?0:1];
+				var horiznode = nbnodes[isvert[0]?1:0];
+				this.deleteNode(nodes[0]);
+				this.createNode(cell);
+				this.createNode(cell);
+				this.addEdge(nodes[0], vertnode);
+				this.addEdge(nodes[1], horiznode);
 			}
 			// 両方左右線の場合はnodes[0], nodes[1]を交換してnodes[0]に0本、nodes[1]に2本付加する
-			else if(!isvert[0] && !isvert[1]){
-				nodes.push(nodes.shift());
+			else{
+				this.createNode(cell);
+				if(!isvert[0] && !isvert[1]){
+					nodes.push(nodes.shift());
+				}
 			}
 		}
 	},
