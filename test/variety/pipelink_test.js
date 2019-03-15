@@ -26,4 +26,17 @@ describe('Variety:pipelink',function(){
 		assert.equal(puzzle.board.linegraph.components.length, 1);
 		assert.equal(puzzle.check().complete, true);
 	});
+
+	it('Check components are split up, I', function(){
+		puzzle.open('pipelink/3/2');
+
+		puzzle.setMode('play');
+		puzzle.mouse.inputPath(1,1, 3,1, 5,1, 5,3, 3,3, 1,3);
+
+		assert.equal(puzzle.board.linegraph.components.length, 1);
+
+		puzzle.mouse.inputPath(3,1, 3,3);
+
+		assert.equal(puzzle.board.linegraph.components.length, 2);
+	});
 });
