@@ -82,6 +82,7 @@ MouseEvent:{
 			else if(this.inputMode==='circle-shade'){ star.setStar(star.getStar()!==2?2:0);}
 			else if(this.btn==='left') { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
 			else if(this.btn==='right'){ star.setStar({0:2,1:0,2:1}[star.getStar()]);}
+			else { return;}
 			star.draw();
 		}
 		this.prevPos = pos;
@@ -103,6 +104,7 @@ KeyEvent:{
 			if     (ca==='1'){ star.setStar(1);}
 			else if(ca==='2'){ star.setStar(2);}
 			else if(ca===' '||ca==='-'||ca==='0'||ca==='3'){ star.setStar(0);}
+			else { return;}
 			star.draw();
 		}
 	}
