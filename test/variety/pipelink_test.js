@@ -27,10 +27,39 @@ describe('Variety:pipelink',function(){
 		assert.equal(puzzle.check().complete, true);
 	});
 
-	var runTest = function(ox, oy, dx, dy, dir, shape){
+	it('Check horizontal T is split', function(){
+		puzzle.open('pipelink/3/2');
+		puzzle.setMode('play');
+		var lg = puzzle.board.linegraph;
+
+		puzzle.mouse.inputPath(1,1, 3,1, 3,3);
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 3);
+
+		puzzle.mouse.inputPath(3,1, 5,1);
+		assert.equal(lg.components.length, 2);
+		assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 5);
+	});
+
+	it('Check vertical T is split', function(){
+		puzzle.open('pipelink/2/3');
+		puzzle.setMode('play');
+		var lg = puzzle.board.linegraph;
+
+		puzzle.mouse.inputPath(1,1, 1,3, 3,3);
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 3);
+
+		puzzle.mouse.inputPath(1,3, 1,5);
+		assert.equal(lg.components.length, 2);
+		assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 5);
+	});
+
+	var runPUTest = function(ox, oy, dx, dy, dir, shape){
 		puzzle.open('pipelink/3/3');
 		puzzle.setMode('play');
 		var lg = puzzle.board.linegraph;
+
 		// 1,1 3,1 5,1 5,3 3,3
 		switch(dir){
 		case 'horiz':
@@ -40,8 +69,8 @@ describe('Variety:pipelink',function(){
 			puzzle.mouse.inputPath(ox,oy, ox,oy+dy, ox,oy+2*dy, ox+dx,oy+2*dy, ox+dx,oy+dy);
 			break;
 		}
-		assert.equal(puzzle.board.linegraph.components.length, 1);
-		assert.equal(puzzle.board.linegraph.components[0].nodes.length, 5);
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 5);
 		switch(shape){
 		case 'U':
 			// 3,3 1,3
@@ -49,14 +78,14 @@ describe('Variety:pipelink',function(){
 			case 'horiz': puzzle.mouse.inputPath(ox+dx,oy+dy, ox,oy+dy); break;
 			case 'vert':  puzzle.mouse.inputPath(ox+dx,oy+dy, ox+dx,oy); break;
 			}
-			assert.equal(puzzle.board.linegraph.components.length, 1);
-			assert.equal(puzzle.board.linegraph.components[0].nodes.length, 6);
+			assert.equal(lg.components.length, 1);
+			assert.equal(lg.components[0].nodes.length, 6);
 			// 3,3 3,1
 			switch(dir){
 			case 'horiz': puzzle.mouse.inputPath(ox+dx,oy+dy, ox+dx,oy); break;
 			case 'vert':  puzzle.mouse.inputPath(ox+dx,oy+dy, ox,oy+dy); break;
 			}
-			assert.equal(puzzle.board.linegraph.components.length, 2);
+			assert.equal(lg.components.length, 2);
 			assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 8);
 			break;
 		case 'P':
@@ -65,14 +94,14 @@ describe('Variety:pipelink',function(){
 			case 'horiz': puzzle.mouse.inputPath(ox+dx,oy+dy, ox+dx,oy); break;
 			case 'vert':  puzzle.mouse.inputPath(ox+dx,oy+dy, ox,oy+dy); break;
 			}
-			assert.equal(puzzle.board.linegraph.components.length, 1);
-			assert.equal(puzzle.board.linegraph.components[0].nodes.length, 6);
+			assert.equal(lg.components.length, 1);
+			assert.equal(lg.components[0].nodes.length, 6);
 			// 3,3 1,3
 			switch(dir){
 			case 'horiz': puzzle.mouse.inputPath(ox+dx,oy+dy, ox,oy+dy); break;
 			case 'vert':  puzzle.mouse.inputPath(ox+dx,oy+dy, ox+dx,oy); break;
 			}
-			assert.equal(puzzle.board.linegraph.components.length, 2);
+			assert.equal(lg.components.length, 2);
 			assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 8);
 			break;
 		}
@@ -85,22 +114,22 @@ describe('Variety:pipelink',function(){
 	];
 	it('Check components are split up, U horizontal', function(){
 		orientations.forEach(o => {
-			runTest(o.ox, o.oy, o.dx, o.dy, 'horiz', 'U');
+			runPUTest(o.ox, o.oy, o.dx, o.dy, 'horiz', 'U');
 		});
 	});
 	it('Check components are split up, U vertical', function(){
 		orientations.forEach(o => {
-			runTest(o.ox, o.oy, o.dx, o.dy, 'vert', 'U');
+			runPUTest(o.ox, o.oy, o.dx, o.dy, 'vert', 'U');
 		});
 	});
 	it('Check components are split up, P horizontal', function(){
 		orientations.forEach(o => {
-			runTest(o.ox, o.oy, o.dx, o.dy, 'horiz', 'P');
+			runPUTest(o.ox, o.oy, o.dx, o.dy, 'horiz', 'P');
 		});
 	});
 	it('Check components are split up, P vertical', function(){
 		orientations.forEach(o => {
-			runTest(o.ox, o.oy, o.dx, o.dy, 'vert', 'P');
+			runPUTest(o.ox, o.oy, o.dx, o.dy, 'vert', 'P');
 		});
 	});
 });
