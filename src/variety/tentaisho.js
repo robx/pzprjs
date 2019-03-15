@@ -143,6 +143,7 @@ Star:{
 		this.puzzle.opemgr.disCombine = true;
 		this.piece.setQnum(val);
 		this.puzzle.opemgr.disCombine = false;
+		this.puzzle.board.roommgr.setExtraData(this.validcell().room);
 	},
 	iserror : function(){
 		return (this.piece.error>0);
