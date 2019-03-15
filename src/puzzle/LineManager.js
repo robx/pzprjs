@@ -196,6 +196,8 @@ pzpr.classmgr.makeCommon({
 				// that the graph gets rebuilt correctly
 				var vertnode = nbnodes[isvert[0]?0:1];
 				var horiznode = nbnodes[isvert[0]?1:0];
+				this.removeEdge(nodes[0], vertnode);
+				this.removeEdge(nodes[0], horiznode);
 				this.deleteNode(nodes[0]);
 				this.createNode(cell);
 				this.createNode(cell);

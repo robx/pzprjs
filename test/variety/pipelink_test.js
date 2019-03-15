@@ -132,4 +132,56 @@ describe('Variety:pipelink',function(){
 			runPUTest(o.ox, o.oy, o.dx, o.dy, 'vert', 'P');
 		});
 	});
+
+	it('Check we can attach to split components', function(){
+		puzzle.open('pipelink/2/3');
+		puzzle.setMode('play');
+		var lg = puzzle.board.linegraph;
+
+		puzzle.mouse.inputPath(1,1, 1,3, 3,3);
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 3);
+
+		puzzle.mouse.inputPath(1,3, 1,5);
+		assert.equal(lg.components.length, 2);
+		assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 5);
+
+		puzzle.mouse.inputPath(3,3, 3,5);
+		assert.equal(lg.components.length, 2);
+		assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 6);
+	});
+
+	it('Check undo works through splitting', function(){
+		puzzle.open('pipelink/2/3');
+		puzzle.setMode('play');
+		var lg = puzzle.board.linegraph;
+
+		puzzle.mouse.inputPath(1,1, 1,3, 3,3);
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 3);
+
+		puzzle.mouse.inputPath(1,3, 1,5);
+		assert.equal(lg.components.length, 2);
+		assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 5);
+
+		puzzle.undo();
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 3);
+
+		puzzle.mouse.inputPath(1,3, 1,5);
+		assert.equal(lg.components.length, 2);
+		assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 5);
+
+		puzzle.mouse.inputPath(1,3, 3,3);
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 3);
+
+		puzzle.mouse.inputPath(3,5, 3,3, 1,3);
+		assert.equal(lg.components.length, 2);
+		assert.equal(lg.components[0].nodes.length+lg.components[1].nodes.length, 6);
+
+		puzzle.mouse.inputPath(3,5, 1,5);
+		assert.equal(lg.components.length, 1);
+		assert.equal(lg.components[0].nodes.length, 6);
+	});
 });
