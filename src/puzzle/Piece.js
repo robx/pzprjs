@@ -524,7 +524,17 @@ pzpr.classmgr.makeCommon({
 		qans : function(num){ return (this.ques!==0);},
 		line : function(num){ return (this.checkStableLine(num));}
 	},
-	posthook : {},
+	posthook : {
+		line : function(num){
+			var lg = this.board.linegraph;
+			if(!!lg && lg.isLineCross){
+				lg.rebuild();
+				if(!!this.puzzle.painter.context){
+					lg.repaintNodes(lg.components);
+				}
+			}
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// border.draw() 盤面に自分の周囲を描画する (Borderはちょっと範囲が広い)
