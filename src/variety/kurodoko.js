@@ -139,7 +139,8 @@ AnsCheck:{
 	checklist : [
 		"checkShadeCellExist",
 		"checkAdjacentShadeCell@kurodoko",
-		"checkConnectUnshadeRB",
+		"checkConnectUnshadeRB@kurodoko",
+		"checkConnectUnshade@nurimisaki",
 		"checkViewOfNumber",
 		"check2x2UnshadeCell@nurimisaki",
 		"check2x2ShadeCell@nurimisaki",
