@@ -154,6 +154,7 @@ KeyEvent:{
 		else if(ca==='3'||ca==='e'||ca===' '||ca==='BS'){ newques=0;}
 		else if(ca==='s'){ bd.startpos.input(cell);}
 		else if(ca==='g'){ bd.goalpos.input(cell);}
+		else { return;}
 
 		if(newques!==old && (newques===0 || (!bd.startpos.equals(cell) && !bd.goalpos.equals(cell)))){
 			cell.setQues(newques);
