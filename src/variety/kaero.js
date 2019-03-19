@@ -409,8 +409,8 @@ FileIO:{
 	bkSepNum : ["同じアルファベットが異なるブロックに入っています。","Same kinds of letters are placed different blocks."]
 },
 "FailCode@armyants":{
-	laOnNum    :["数字の上を線が通過しています。","There is a line across the number."],
-	laOnBorder :["線が境界線をまたいでいます。","There is a line across the border."],
+	laOnNum    :["数字の上を線が通過しています。","There is a line across a number."],
+	laOnBorder :["線が境界線をまたいでいます。","There is a line across a border."],
 	bsAnt      :["別々のアリが接しています。","Other ants are adjacent."],
 	bkWrongNum :["アリの数字がおかしいです。","Numbers on the ant is wrong."],
 	ceNumGtSize:["数字がアリの大きさよりも大きいです。","A number is greater than the size of the ant."],
