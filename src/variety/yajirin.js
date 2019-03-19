@@ -11,19 +11,32 @@
 MouseEvent:{
 	RBShadeCell : true,
 	use     : true,
-	inputModes : {edit:['number','direc','clear','info-line'],play:['line','peke','shade','unshade','info-line']},
+	inputModes : {edit:['number','direc','clear','info-line'],play:['line','peke','shade','unshade','info-line','completion']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputLine();}
 				else if(this.btn==='right'){ this.inputcell();}
 			}
-			else if(this.mouseend && this.notInputted()){ this.inputcell();}
+			else if(this.mouseend && this.notInputted()){
+				var cell = this.getcell();
+				if(!cell.isnull && cell.isNum()){ this.inputqcmp();}
+				else                            { this.inputcell();}
+			}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputdirec();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
+	},
+	inputqcmp : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell.noNum()){ return;}
+
+		cell.setQcmp(+!cell.qcmp);
+		cell.draw();
+
+		this.mousereset();
 	}
 },
 
@@ -77,7 +90,7 @@ LineGraph:{
 Graphic:{
 	irowake : true,
 
-	numbercolor_func : "qnum",
+	qcmpcolor  : "rgb(127,127,127)",
 
 	paint : function(){
 		this.drawBGCells();
@@ -110,6 +123,11 @@ Graphic:{
 	getBorderColor : function(border){
 		if(this.puzzle.getConfig('disptype_yajilin')===2 && border.isBorder()){ return this.quescolor;}
 		return null;
+	},
+	getQuesNumberColor : function(cell){
+		var qnum_color = this.getQuesNumberColor_qnum(cell);
+		if ((cell.error || cell.qinfo)===1){ return qnum_color;}
+		return (cell.qcmp===1 ?  this.qcmpcolor : qnum_color);
 	}
 },
 
