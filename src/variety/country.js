@@ -5,7 +5,7 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['country','moonsun','onsen'], {
+['country','moonsun','onsen','doubleback'], {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@country,onsen":{
@@ -19,6 +19,9 @@
 			case 'sun':  this.inputFixedNumber(2); break;
 		}
 	}
+},
+"MouseEvent@doubleback":{
+	inputModes : {edit:['border','clear','info-line'],play:['line','peke','clear','info-line']}
 },
 MouseEvent:{
 	mouseinput_auto : function(){
@@ -299,6 +302,16 @@ FileIO:{
 		"checkOneLoop"
 	]
 },
+"AnsCheck@doubleback#1":{
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+		"checkDeadendLine+",
+		"checkOneLoop",
+		"checkNoLine",
+		"checkRoomPassTwice"
+	]
+},
 "AnsCheck@moonsun#1":{
 	checklist : [
 		"checkBranchLine",
@@ -356,6 +369,24 @@ AnsCheck:{
 			if(cnt<=2){ continue;}
 			
 			this.failcode.add("bkPassTwice");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
+		}
+	},
+	checkRoomPassTwice : function(){
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var cnt=0, clist=rooms[r].clist;
+			for(var i=0;i<clist.length;i++){
+				var cell=clist[i], adb=cell.adjborder, border;
+				border=adb.top;    if(border.ques===1 && border.line===1){ cnt++;}
+				border=adb.bottom; if(border.ques===1 && border.line===1){ cnt++;}
+				border=adb.left;   if(border.ques===1 && border.line===1){ cnt++;}
+				border=adb.right;  if(border.ques===1 && border.line===1){ cnt++;}
+			}
+			if(cnt===4){ continue;}
+
+			this.failcode.add("bkNotPassTwice");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
 		}
@@ -517,6 +548,9 @@ AnsCheck:{
 	bkNoLine : ["線の通っていない国があります。","A line doesn't pass a country."],
 	bkLineNe : ["数字のある国と線が通過するマスの数が違います。","The number of the cells that is passed any line in the country and the number written in the country is diffrerent."],
 	cbNoLine : ["線が通らないマスが、太線をはさんでタテヨコにとなりあっています。","The cells that is not passed any line are adjacent over border line."]
+},
+"FailCode@doubleback":{
+	bkNotPassTwice : ["A room isn't passed exactly twice.","A room isn't passed exactly twice."]
 },
 "FailCode@moonsun":{
 	bkPassTwice : ["線が１つの部屋を２回以上通っています。","A line passes a room twice or more."],

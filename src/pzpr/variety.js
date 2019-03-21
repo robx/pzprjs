@@ -86,6 +86,7 @@ delete variety.extend;
 	country   :[1,0,"カントリーロード","Country Road"],
 	creek     :[1,0,"クリーク","Creek"],
 	dosufuwa  :[0,0,"ドッスンフワリ","Dosun-Fuwari"],
+	doubleback:[0,0,"Double Back","Double Back",'country'],
 	easyasabc :[0,0,"ABCプレース","Easy as ABC"],
 	factors   :[0,0,"因子の部屋","Rooms of Factors"],
 	fillmat   :[1,0,"フィルマット","Fillmat",'fillmat'],
