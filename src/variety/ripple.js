@@ -24,6 +24,64 @@ MouseEvent:{
 		}
 	}
 },
+"MouseEvent@meander":{
+	inputModes : {edit:['border','number','clear'],play:['number','dragnum+','dragnum-','clear']},
+	mouseinput : function(){
+		if(this.inputMode.indexOf('dragnum')===0){
+			this.dragnumber_meander();
+		}
+		else{ this.common.mouseinput.call(this);}
+	},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode){
+			if(this.mousestart || this.mousemove){
+				this.dragnumber_meander();
+			}
+		}
+		else if(this.puzzle.editmode){
+			if(this.mousestart || (this.mousemove && this.btn==='left')){
+				this.inputborder();
+			}
+			else if(this.mouseend && this.notInputted()){
+				this.inputqnum();
+			}
+		}
+	},
+
+	dragnumber_meander : function(){
+		var cell = this.getcell();
+		if(cell.isnull||cell===this.mouseCell){ return;}
+		if(this.mouseCell.isnull){
+			if(cell.isNum()){ this.inputData = cell.getNum();}
+			this.mouseCell = cell;
+			return;
+		}
+		else if(cell.room!==this.mouseCell.room){
+			this.inputData = 0;
+			this.mouseCell = cell;
+			return;
+		}
+		else if(cell.qnum!==-1){
+			this.inputData = cell.qnum;
+			this.mouseCell = cell;
+			return;
+		}
+		if(this.inputData>=1 && this.inputData<=cell.room.nodes.length){
+			if(this.inputMode==='dragnum+' || (this.inputMode==='auto' && this.btn==='left')){ this.inputData++;}
+			else{ this.inputData--;}
+			if(this.inputData>=1 && this.inputData<=cell.room.nodes.length){
+				cell.setQdir(0);
+				cell.setAnum(this.inputData);
+				cell.setQsub(0);
+			}
+			else if(this.inputData>cell.room.nodes.length){ this.inputData=0; return;}
+		}
+		else{ return;}
+
+		this.mouseCell = cell;
+		cell.draw();
+	}
+},
 
 //---------------------------------------------------------
 // キーボード入力系
