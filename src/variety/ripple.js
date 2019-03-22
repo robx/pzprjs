@@ -5,7 +5,7 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['ripple','cojun'], {
+['ripple','cojun','meander'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -141,6 +141,8 @@ AnsCheck:{
 		"checkRippleNumber@ripple",
 		"checkAdjacentDiffNumber@cojun",
 		"checkUpperNumber@cojun",
+		"checkAdjacentNumbers@meander",
+		"checkConsecutiveNeighbors@meander",
 		"checkNoNumCell+"
 	],
 
@@ -184,12 +186,51 @@ AnsCheck:{
 			cell.seterr(1);
 			cell2.seterr(1);
 		}
+	},
+
+	checkAdjacentNumbers : function(){
+		var bd = this.board;
+		for(var c=0;c<bd.cell.length;c++){
+			var cell = bd.cell[c];
+			if(!cell.isNum()){ continue;}
+			var bx = cell.bx, by = cell.by;
+			var clist=new this.klass.CellList(), clist0 = bd.cellinside(bx,by,bx+2,by+2);
+			clist.add(cell);
+			clist0.add(bd.getc(bx-2,by+2));
+			for(var i=0;i<clist0.length;i++){
+				var cell2 = clist0[i];
+				if(cell!==cell2 && cell2.isNum() && cell.getNum()===cell2.getNum()){ clist.add(cell2);}
+			}
+			if(clist.length<=1){ continue;}
+
+			this.failcode.add("nmAround");
+			if(this.checkOnly){ break;}
+			clist.seterr(1);
+		}
+	},
+
+	checkConsecutiveNeighbors : function(){
+		var bd = this.board;
+		for(var c=0;c<bd.cell.length;c++){
+			var cell=bd.cell[c];
+			if(!cell.isNum()){ continue;}
+			var num=cell.getNum();
+			var size=cell.room.nodes.length;
+			if(num>1&&cell.countDir4Cell(function(cell2){ return cell2.isNum()&&cell2.getNum()===num-1;})<=0 ||
+				num<size&&cell.countDir4Cell(function(cell2){ return cell2.isNum()&&cell2.getNum()===num+1;})<=0){
+				this.failcode.add("nmNotConsecNeighbors");
+				if(this.checkOnly){ break;}
+				cell.seterr(1);
+			}
+		}
 	}
 },
 
 FailCode:{
 	bkDupNum   : ["1つの部屋に同じ数字が複数入っています。","A room has two or more same numbers."],
-	bkSmallOnBig : ["同じ部屋で上に小さい数字が乗っています。","There is an small number on big number in a room."],
-	nmSmallGap : ["数字よりもその間隔が短いところがあります。","The gap of the same kind of number is smaller than the number."]
+	bkSmallOnBig : ["同じ部屋で上に小さい数字が乗っています。","There is a smaller number on top of a bigger number in a room."],
+	nmSmallGap : ["数字よりもその間隔が短いところがあります。","The distance between two equal numbers is smaller than the number."],
+	nmAround : ["同じ数字がタテヨコナナメに隣接しています。","Equal numbers are adjacent."],
+	nmNotConsecNeighbors : ["A number is not the neighbor of its consecutive numbers.","A number is not the neighbor of its consecutive numbers."]
 }
 }));
