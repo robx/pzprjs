@@ -37,6 +37,9 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){
 				this.dragnumber_meander();
 			}
+			if(this.mouseend && this.notInputted()){
+				this.inputqnum_meander();
+			}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || (this.mousemove && this.btn==='left')){
@@ -80,7 +83,16 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 		cell.draw();
+	},
+
+	inputqnum_meander : function(){
+		var cell = this.getcell();
+		if(!cell.isnull){
+			this.mouseCell = this.board.emptycell;
+			this.inputqnum();
+		}
 	}
+
 },
 
 //---------------------------------------------------------
