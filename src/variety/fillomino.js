@@ -104,6 +104,14 @@ KeyEvent:{
 Cell:{
 	enableSubNumberArray : true
 },
+Border:{
+	isCmp : function(){
+		if(!this.puzzle.execConfig('autocmp')){ return false;}
+		var cell1 = this.sidecell[0], cell2 = this.sidecell[1];
+		var num1 = cell1.getNum(), num2 = cell2.getNum();
+		return (num1>0 && num2>0 && num1!==num2);
+	}
+},
 Board:{
 	hasborder : 1,
 
@@ -153,6 +161,8 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	bordercolor_func : "qans",
+
+	autocmp : 'border',
 
 	paint : function(){
 		this.drawBGCells();

@@ -81,6 +81,7 @@ Config.prototype =
 		switch(name){
 			case 'color_qanscolor': name = 'color_shadecolor'; break;
 			case 'autocmp_area': if(this.getexec('autocmp')){ name = 'autocmp';} break;
+			case 'autocmp_border': if(this.getexec('autocmp')){ name = 'autocmp';} break;
 		}
 		return name;
 	},

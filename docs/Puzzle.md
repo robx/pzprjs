@@ -189,5 +189,6 @@ For details, see [list of puzzle config document](Config.md).
 |`irowake`|`boolean`|`false`|Set individual color to lines|
 |`autocmp`|`boolean`|`false`|Show complete numbers apart from incompleted one automatically.|
 |`autocmp_area`|`boolean`|`false`|Paint background of completed blocks/areas automatically.|
+|`autocmp_border`|`boolean`|`false`|Paint borders between different blocks/areas automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
