@@ -202,6 +202,8 @@ Encode:{
 
 	// decode/encodeNumber10関数の改造版にします
 	decodeFivecells : function(){
+		for(var c=0;c<this.board.cell.length;c++){ this.board.cell[c].setQues(0);}
+
 		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
