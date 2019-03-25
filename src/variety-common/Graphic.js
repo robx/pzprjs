@@ -557,7 +557,7 @@ Graphic:{
 			else if(border.trial){ return this.trialcolor;  }
 			else             { return this.qanscolor;       }
 		}
-		else if(border.isCmp()){ return this.qcmpcolor; }
+		else if(!!border.isCmp&&border.isCmp()){ return this.qcmpcolor; }
 		return null;
 	},
 	getBorderColor_ice : function(border){
@@ -591,7 +591,7 @@ Graphic:{
 	},
 	getQansBorderColor : function(border){
 		if(border.qans===1){ return (!border.trial ? this.qanscolor : this.trialcolor);}
-		if(border.isCmp()){ return this.qcmpcolor;}
+		if(!!border.isCmp&&border.isCmp()){ return this.qcmpcolor;}
 		return null;
 	},
 
