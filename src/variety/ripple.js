@@ -286,8 +286,8 @@ AnsCheck:{
 			if(!cell.isNum()){ continue;}
 			var num=cell.getNum();
 			var size=cell.room.nodes.length;
-			if(num>1&&cell.countDir4Cell(function(cell2){ return cell2.isNum()&&cell2.getNum()===num-1;})<=0 ||
-				num<size&&cell.countDir4Cell(function(cell2){ return cell2.isNum()&&cell2.getNum()===num+1;})<=0){
+			if(num>1&&cell.countDir4Cell(function(cell2){ return cell2.isNum()&&cell.room===cell2.room&&cell2.getNum()===num-1;})<=0 ||
+				num<size&&cell.countDir4Cell(function(cell2){ return cell2.isNum()&&cell.room===cell2.room&&cell2.getNum()===num+1;})<=0){
 				this.failcode.add("nmNotConsecNeighbors");
 				if(this.checkOnly){ break;}
 				cell.seterr(1);
