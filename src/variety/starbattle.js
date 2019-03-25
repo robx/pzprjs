@@ -308,7 +308,7 @@ Graphic:{
 			g.vid = "s_dot_"+dot.id;
 			if(dot.getDot()===1){
 				g.fillStyle = dot.getTrial()?this.trialcolor:this.pekecolor;
-				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.10);
+				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.15);
 			}
 			else{ g.vhide();}
 		}
