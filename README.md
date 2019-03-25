@@ -4,7 +4,12 @@
 
 pzpr.js enables to create or edit "pencil puzzles" which we solve with specific rules on boards.
 
-This script is developed against HTML5 features and JavaScript.
+This project is a fork of the original [sabo2/pzprjs](https://github.com/sabo2/pzprjs).
+
+It is developed against HTML5 features and JavaScript.
+
+At the time of writing, the rest of the README below applies to `sabo2/pzprjs`
+and may not be up to date for this fork.
 
 ## Working environment
 
@@ -12,7 +17,7 @@ This script is developed against HTML5 features and JavaScript.
 * Firefox (latest stable version)
 * Google Chrome (latest stable version)
 * Safari 9.0+
-* Microsft Edge
+* Microsoft Edge
 
 ### Browser support (Possible)
 * Internet Explorer 11
