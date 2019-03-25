@@ -176,7 +176,7 @@ For `editmode` or `playmode` property, one is `true` and the other is `false`.
 
 ## Puzzle object sub-objects
 
-Puzzle object has `puzzle.board`, `puzzle.metadata`, `puzzle.moouse`, `puzzle.key` and so on.
+Puzzle object has `puzzle.board`, `puzzle.metadata`, `puzzle.mouse`, `puzzle.key` and so on.
 For detail, see [sub-objects of puzzle object document](PuzzleSubObject.md)
 
 ## class pzpr.Puzzle.Config
