@@ -73,6 +73,7 @@ MouseEvent:{
 			if(this.inputMode==='dragnum+' || (this.inputMode==='auto' && this.btn==='left')){ this.inputData++;}
 			else{ this.inputData--;}
 			if(this.inputData>=1 && this.inputData<=cell.room.nodes.length){
+				cell.clrSnum();
 				cell.setQdir(0);
 				cell.setAnum(this.inputData);
 				cell.setQsub(0);

@@ -43,6 +43,7 @@ MouseEvent:{
 		}
 
 		if((this.inputData>=-1) && (cell.qnum===-1)){
+			cell.clrSnum();
 			cell.setAnum(this.inputData);
 			cell.draw();
 		}
