@@ -15,6 +15,7 @@ AnsCheck:{
 	checkAllCell : function(func, code){
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
+			if(cell.ques===7){ continue;}
 			if(!func(cell)){ continue;}
 			
 			this.failcode.add(code);

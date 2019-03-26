@@ -21,7 +21,19 @@
 	}
 },
 "MouseEvent@doubleback":{
-	inputModes : {edit:['border','clear','info-line'],play:['line','peke','clear','info-line']}
+	inputModes : {edit:['border','clear','info-line','empty'],play:['line','peke','clear','info-line']},
+	mouseinput_other : function(){
+		if(this.inputMode==='empty'){  this.inputempty();}
+	},
+	inputempty : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+		if(this.inputData===null){ this.inputData = (cell.isEmpty()?0:7);}
+
+		cell.setQues(this.inputData);
+		cell.drawaround();
+		this.mouseCell = cell;
+	}
 },
 MouseEvent:{
 	mouseinput_auto : function(){
@@ -252,6 +264,19 @@ Graphic:{
 		}
 	}
 },
+"Graphic@doubleback":{
+	getBGCellColor : function(cell){
+		return (cell.ques===7)?"black":this.getBGCellColor_error1(cell);
+	},
+	getBorderColor : function(border){
+		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+		if(border.inside && !cell1.isnull && !cell2.isnull && (cell1.isEmpty()||cell2.isEmpty())){
+			return "black";
+		}
+		return  this.getBorderColor_ques(border);
+	}
+},
+
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
@@ -261,12 +286,14 @@ Encode:{
 		if     (this.pid==='country') { this.decodeRoomNumber16();}
 		else if(this.pid==='moonsun') { this.decodeCircle();}
 		else if(this.pid==='onsen'){ this.decodeNumber16();}
+		else if(this.pid==='doubleback'){ this.decodeEmpty();}
 	},
 	encodePzpr : function(type){
 		this.encodeBorder();
 		if     (this.pid==='country') { this.encodeRoomNumber16();}
 		else if(this.pid==='moonsun') { this.encodeCircle();}
 		else if(this.pid==='onsen'){ this.encodeNumber16();}
+		else if(this.pid==='doubleback'){ this.encodeEmpty();}
 	}
 },
 //---------------------------------------------------------

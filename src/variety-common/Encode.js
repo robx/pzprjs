@@ -410,7 +410,7 @@ Encode:{
 	// enc.decodeIce() cell.ques===6をデコードする
 	// enc.encodeIce() cell.ques===6をエンコードする
 	//---------------------------------------------------------------------------
-	decodeIce : function(){
+	decodeQues : function(val){
 		var bstr = this.outbstr, bd = this.board;
 
 		var c=0, twi=[16,8,4,2,1];
@@ -418,7 +418,7 @@ Encode:{
 			var num = parseInt(bstr.charAt(i),32);
 			for(var w=0;w<5;w++){
 				if(!!bd.cell[c]){
-					bd.cell[c].ques = (num&twi[w]?6:0);
+					bd.cell[c].ques = (num&twi[w]?val:0);
 					c++;
 				}
 			}
@@ -426,15 +426,27 @@ Encode:{
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
-	encodeIce : function(){
+	encodeQues : function(val){
 		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
-			if(bd.cell[c].ques===6){ pass+=twi[num];} num++;
+			if(bd.cell[c].ques===val){ pass+=twi[num];} num++;
 			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
 		}
 		if(num>0){ cm += pass.toString(32);}
 
 		this.outbstr += cm;
+	},
+	decodeIce : function(){
+		this.decodeQues(6);
+	},
+	encodeIce : function(){
+		this.encodeQues(6);
+	},
+	decodeEmpty : function(){
+		this.decodeQues(7);
+	},
+	encodeEmpty : function(){
+		this.encodeQues(7);
 	},
 
 	//---------------------------------------------------------------------------
