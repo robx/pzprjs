@@ -132,7 +132,7 @@ delete variety.extend;
 	loute     :[0,0,"エルート","L-route"],
 	makaro    :[0,0,"マカロ","Makaro"],
 	mashu     :[0,1,"ましゅ","Masyu (Pearl Puzzle)",'',{kanpen:'masyu',alias:'pearl'}],
-	meander   :[0,0,"Meandering Numbers","Meandering Numbers",'ripple'],
+	meander   :[0,0,"にょろにょろナンバー","Meandering Numbers",'ripple'],
 	mejilink  :[0,0,"メジリンク","Mejilink"],
 	minarism  :[1,0,"マイナリズム","Minarism"],
 	mochikoro :[1,0,"モチコロ","Mochikoro",'nurikabe'],
