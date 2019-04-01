@@ -5,11 +5,18 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['bonsan','heyabon','rectslider'], {
+['bonsan','heyabon','rectslider','satogaeri'], {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@bonsan,heyabon":{
 	inputModes : {edit:['number','clear'],play:['line','bgcolor','bgcolor1','bgcolor2','clear','completion']},
+	mouseinput : function(){ // オーバーライド
+		if(this.inputMode==='completion'){ if(this.mousestart){ this.inputqcmp(1);}}
+		else{ this.common.mouseinput.call(this);}
+	}
+},
+"MouseEvent@satogaeri":{
+	inputModes : {edit:['number','clear'],play:['line','clear','completion']},
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='completion'){ if(this.mousestart){ this.inputqcmp(1);}}
 		else{ this.common.mouseinput.call(this);}
@@ -28,7 +35,7 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){
-				if(this.pid==='heyabon'){ this.inputborder();}
+				if(this.pid==='heyabon'||this.pid==='satogaeri'){ this.inputborder();}
 			}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
@@ -66,6 +73,7 @@ MouseEvent:{
 
 		var puzzle = this.puzzle;
 		if(puzzle.pid!=='rectslider' && this.inputdark(cell,1)){ return;}
+		if(puzzle.pid==='satogaeri'){ return;}
 
 		if(this.mouseend && this.notInputted()){ this.mouseCell = this.board.emptycell;}
 		this.inputBGcolor();
@@ -124,7 +132,7 @@ Cell:{
 	},
 	minnum : 0
 },
-"Cell@heyabon":{
+"Cell@heyabon,satogaeri":{
 	distance : null,
 
 	// pencilbox互換関数 ここではファイル入出力用
@@ -189,7 +197,7 @@ LineGraph:{
 	}
 },
 
-"AreaRoomGraph@bonsan,heyabon":{
+"AreaRoomGraph@bonsan,heyabon,satogaeri":{
 	enabled : true
 },
 "AreaShadeGraph@rectslider":{
@@ -222,7 +230,7 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
-		if(this.pid==='heyabon'){ this.drawBorders();}
+		if(this.pid==='heyabon'||this.pid==='satogaeri'){ this.drawBorders();}
 
 		this.drawTip();
 		this.drawDepartures();
@@ -291,9 +299,18 @@ Graphic:{
 	encodePzpr : function(type){
 		this.encodeBorder();
 		this.encodeNumber16();
+	}
+},
+"Encode@satogaeri":{
+	decodePzpr : function(type){
+		this.decodeBorder();
+		this.decodeNumber16();
+	},
+	encodePzpr : function(type){
+		this.encodeBorder();
+		this.encodeNumber16();
 	},
 
-	// heyabonのみ(さとがえり出力)
 	decodeKanpen : function(){
 		this.fio.decodeAreaRoom();
 		this.fio.decodeQnum_PBox_Sato();
@@ -420,8 +437,8 @@ AnsCheck:{
 
 		"checkLineLength",
 
-		"checkFractal@!rectslider",
-		"checkNoObjectBlock@heyabon",
+		"checkFractal@bonsan,heyabon",
+		"checkNoObjectBlock@satogaeri,heyabon",
 
 		"checkNoMoveCircle",
 		"checkDisconnectLine"
