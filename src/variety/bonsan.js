@@ -110,10 +110,14 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	isCmp : function(){ // 描画用
+		return this.bonsan_isCmp(this.puzzle.execConfig('autocmp'));
+	},
+	
+	bonsan_isCmp : function(is_autocmp) {
 		var targetcell = (!this.puzzle.execConfig('dispmove') ? this : this.base);
 		if(targetcell.qcmp===1){ return true;}
 		
-		if(!this.puzzle.execConfig('autocmp')){ return false;}
+		if(!is_autocmp){ return false;}
 		
 		var	num = targetcell.getNum();
 		if(this.path===null){ return (num===0);}
@@ -132,6 +136,34 @@ Cell:{
 	},
 	minnum : 0
 },
+"Cell@satogaeri":{
+	posthook : {
+		qcmp : function(num){ this.path.destination.room.checkAutoCmp(); }
+	}
+},
+
+"Border@satogaeri":{
+	posthook : {
+		line : function(num){
+			if(num) {
+				this.sidecell[0].room.checkAutoCmp();
+				this.sidecell[1].room.checkAutoCmp();
+				this.sidecell[0].path.departure.room.checkAutoCmp();
+				this.sidecell[0].path.destination.room.checkAutoCmp();
+			} else {
+				for(var id = 0; id <= 1; id++) {
+					if(this.sidecell[id].path) {
+						this.sidecell[id].path.departure.room.checkAutoCmp();
+						this.sidecell[id].path.destination.room.checkAutoCmp();
+					} else {
+						this.sidecell[id].room.checkAutoCmp();
+					}
+				}
+			}
+		}
+	}
+},
+
 "Cell@heyabon,satogaeri":{
 	distance : null,
 
@@ -213,6 +245,21 @@ LineGraph:{
 
 //---------------------------------------------------------
 // 画像表示系
+"Graphic@bonsan,heyabon,rectslider":{
+	bgcellcolor_func : "qsub2",
+},
+"Graphic@satogaeri":{
+	bgcellcolor_func : "qcmp",
+},
+"CellList@satogaeri":{
+	checkCmp : function(){
+		return this.filter(function(cell){ 
+			return this.puzzle && this.puzzle.execConfig('dispmove') && 
+				cell.isDestination() && cell.bonsan_isCmp(true);
+		}).length===1;
+	}
+},
+
 Graphic:{
 	hideHatena : true,
 
@@ -220,7 +267,6 @@ Graphic:{
 
 	gridcolor_type : "LIGHT",
 
-	bgcellcolor_func : "qsub2",
 	numbercolor_func : "move",
 	qsubcolor1 : "rgb(224, 224, 255)",
 	qsubcolor2 : "rgb(255, 255, 144)",
