@@ -110,11 +110,11 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	isCmp : function(){ // 描画用
-		return this.bonsan_isCmp(this.puzzle.execConfig('autocmp'));
+		return this.isCmp_bonsan(this.puzzle.execConfig('autocmp'), this.puzzle.execConfig('dispmove'));
 	},
 	
-	bonsan_isCmp : function(is_autocmp) {
-		var targetcell = (!this.puzzle.execConfig('dispmove') ? this : this.base);
+	isCmp_bonsan : function(is_autocmp, is_dispmove) {
+		var targetcell = (!is_dispmove ? this : this.base);
 		if(targetcell.qcmp===1){ return true;}
 		
 		if(!is_autocmp){ return false;}
@@ -247,23 +247,22 @@ LineGraph:{
 // 画像表示系
 "Graphic@bonsan,heyabon,rectslider":{
 	bgcellcolor_func : "qsub2",
+	autocmp : "number"
 },
 "Graphic@satogaeri":{
 	bgcellcolor_func : "qcmp",
+	autocmp : "room"
 },
 "CellList@satogaeri":{
 	checkCmp : function(){
 		return this.filter(function(cell){ 
-			return this.puzzle && this.puzzle.execConfig('dispmove') && 
-				cell.isDestination() && cell.bonsan_isCmp(true);
+			return cell.isDestination() && cell.isCmp_bonsan(true, true);
 		}).length===1;
 	}
 },
 
 Graphic:{
 	hideHatena : true,
-
-	autocmp : "number",
 
 	gridcolor_type : "LIGHT",
 
