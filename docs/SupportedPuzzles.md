@@ -91,8 +91,6 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is indic
 * Rectangle Slider `rectslider`
 * Army Ants `armyants`
 
-Kanpen/Pencillbox's Sato/Satogaeri URL/file is opened as Heyabon.
-
 ### Non-nikoli puzzle
 * Arukone `arukone`
 
