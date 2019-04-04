@@ -140,6 +140,8 @@ Board:{
 	hasborder : 1,
 
 	starCount : null,
+	dotmax : 0,
+	dots : [],
 
 	createExtraObject : function(){
 		this.starCount = new this.klass.StarCount(1);
@@ -150,8 +152,6 @@ Board:{
 		this.initDots(this.cols,this.rows);
 	},
 
-	dotmax : 0,
-	dots : [],
 	initDots : function(col,row){
 		this.dotsmax = (2*col-1)*(2*row-1);
 		this.dots = [];
@@ -182,7 +182,7 @@ Board:{
 			if(!!dot){ dlist.add(dot);}
 		}}
 		return dlist;
-	},
+	}
 },
 BoardExec:{
 	adjustBoardData2 : function(key,d){
