@@ -138,12 +138,12 @@ FileIO:{
 AnsCheck:{
 	checklist : [
 		"checkShadeCellExist",
+		"check2x2ShadeCell@nurimisaki",
 		"checkAdjacentShadeCell@kurodoko",
 		"checkConnectUnshadeRB@kurodoko",
 		"checkConnectUnshade@nurimisaki",
 		"checkViewOfNumber",
 		"check2x2UnshadeCell@nurimisaki",
-		"check2x2ShadeCell@nurimisaki",
 		"checkCirclePromontory@nurimisaki",
 		"checkNonCircleNotPromontory@nurimisaki"
 	],
