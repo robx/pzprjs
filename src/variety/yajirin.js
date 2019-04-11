@@ -63,7 +63,25 @@ Cell:{
 	numberRemainsUnshaded : true,
 
 	// 線を引かせたくないので上書き
-	noLP : function(dir){ return (this.isShade() || this.isNum());}
+	noLP : function(dir){ return (this.isShade() || this.isNum());},
+
+	getClist : function(){
+		if(!this.isValidNum() || this.qdir===0){ return null;}
+		var pos = this.getaddr(), dir = this.qdir;
+		var clist = new this.klass.CellList();
+		while(1){
+			pos.movedir(dir,2);
+			var cell = pos.getc();
+			if(cell.isnull){ break;}
+			clist.add(cell);
+		}
+		return clist;
+	},
+
+	countShade : function(clist){
+		if(!clist){ return -1;}
+		return (clist.filter(function(cell){ return cell.isShade();}).length);
+	}
 },
 Border:{
 	enableLineNG : true,
@@ -272,16 +290,9 @@ AnsCheck:{
 		var bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
-			if(!cell.isValidNum() || cell.qdir===0 || cell.isShade()){ continue;}
-			var pos = cell.getaddr(), dir = cell.qdir;
-			var clist = new this.klass.CellList();
-			while(1){
-				pos.movedir(dir,2);
-				var cell2 = pos.getc();
-				if(cell2.isnull){ break;}
-				clist.add(cell2);
-			}
-			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
+			var clist = cell.getClist();
+			var count = cell.countShade(clist);
+			if(count<0||cell.qnum===count){ continue;}
 			
 			this.failcode.add("anShadeNe");
 			if(this.checkOnly){ break;}
