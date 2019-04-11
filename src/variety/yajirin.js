@@ -93,13 +93,20 @@ Cell:{
 		if(!clist){ return -1;}
 		return (clist.filter(function(cell){ return cell.isShade();}).length);
 	},
+	knowEmpty : function(){
+		if(this.qsub!==0){ return true;}
+		if(this.lcnt>0){ return true;}
+		var shadedNbrs = this.countDir4Cell(function(cell){
+			return (cell.isShade() > 0);
+		});
+		return (shadedNbrs>0);
+	},
 	countUndecided : function(clist){
 		if(!clist){ return -1;}
 		return (clist.filter(function(cell){
 			if(cell.qnum!==-1){ return false;}
-			if(cell.qsub!==0){ return false;}
 			if(cell.qans!==0){ return false;}
-			if(cell.lcnt>0){ return false;}
+			if(cell.knowEmpty()){ return false;}
 			return true;
 		}).length);
 	},
