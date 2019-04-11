@@ -65,6 +65,17 @@ Cell:{
 	// 線を引かせたくないので上書き
 	noLP : function(dir){ return (this.isShade() || this.isNum());},
 
+	isCmp : function(){
+		if(this.qcmp===1){ return true;}
+		if(!this.puzzle.execConfig('autocmp')){ return false;}
+
+		var clist=this.getClist();
+		if(!clist){ return false;}
+
+		if(this.countUndecided(clist)!==0){ return false;}
+		return this.qnum===this.countShade(clist);
+        },
+
 	getClist : function(){
 		if(!this.isValidNum() || this.qdir===0){ return null;}
 		var pos = this.getaddr(), dir = this.qdir;
@@ -81,6 +92,32 @@ Cell:{
 	countShade : function(clist){
 		if(!clist){ return -1;}
 		return (clist.filter(function(cell){ return cell.isShade();}).length);
+	},
+	countUndecided : function(clist){
+		if(!clist){ return -1;}
+		return (clist.filter(function(cell){
+			if(cell.qnum!==-1){ return false;}
+			if(cell.qsub!==0){ return false;}
+			if(cell.qans!==0){ return false;}
+			if(cell.lcnt>0){ return false;}
+			return true;
+		}).length);
+	},
+
+	redrawAffected : function(){
+		for(var x=1; x<2*this.board.cols; x+=2){
+			var c=this.board.getc(x,this.by);
+			if(c.qnum!==-1){ c.draw();}
+		}
+		for(var y=1; y<2*this.board.rows; y+=2){
+			var c=this.board.getc(this.bx,y);
+			if(c.qnum!==-1){ c.draw();}
+		}
+	},
+
+	posthook : {
+		qsub : function(){ this.redrawAffected();},
+		qans : function(){ this.redrawAffected();}
 	}
 },
 Border:{
@@ -88,6 +125,14 @@ Border:{
 	
 	isBorder : function(){
 		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
+	},
+
+	posthook : {
+		line : function(){
+			for(var i=0;i<this.sidecell.length;i++){
+				this.sidecell[i].redrawAffected();
+			}
+		}
 	}
 },
 Board:{
@@ -109,6 +154,7 @@ Graphic:{
 	irowake : true,
 
 	qcmpcolor  : "rgb(127,127,127)",
+	autocmp : 'number',
 
 	paint : function(){
 		this.drawBGCells();
@@ -145,7 +191,7 @@ Graphic:{
 	getQuesNumberColor : function(cell){
 		var qnum_color = this.getQuesNumberColor_qnum(cell);
 		if ((cell.error || cell.qinfo)===1){ return qnum_color;}
-		return (cell.qcmp===1 ?  this.qcmpcolor : qnum_color);
+		return (cell.isCmp() ?  this.qcmpcolor : qnum_color);
 	}
 },
 
