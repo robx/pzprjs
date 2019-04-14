@@ -35,8 +35,8 @@ MouseEvent:{
 			this.inputData=((cell.qsub!==1)? 2 : 0);
 		}
 		else if(this.puzzle.getConfig('use')===1){
-			if     (this.btn==='left') { this.inputData=(cell.isUnshade() ? 1 : 0); }
-			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1)  ? 2 : 0); }
+			if     (this.btn==='left') { this.inputData=((cell.qans!==1) ? 1 : 0); }
+			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){

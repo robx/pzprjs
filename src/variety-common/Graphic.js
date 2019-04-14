@@ -34,7 +34,7 @@ Graphic:{
 		this.drawCells_common("c_fulls_", this.getShadedCellColor);
 	},
 	getShadedCellColor : function(cell){
-		if(cell.qans!==1){ return null;}
+		if(!cell.isShade()){ return null;}
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
