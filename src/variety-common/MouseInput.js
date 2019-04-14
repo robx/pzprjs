@@ -3,6 +3,9 @@
 pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 MouseEvent:{
+	left : 'left',
+	right : 'right',
+
 	// 共通関数
 	//---------------------------------------------------------------------------
 	// mv.inputcell() Cellのqans(回答データ)に0/1/2のいずれかを入力する。
@@ -35,19 +38,19 @@ MouseEvent:{
 			this.inputData=((cell.qsub!==1)? 2 : 0);
 		}
 		else if(this.puzzle.getConfig('use')===1){
-			if     (this.btn==='left') { this.inputData=((cell.qans!==1) ? 1 : 0); }
-			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
+			if     (this.btn===this.left) { this.inputData=((cell.qans!==1) ? 1 : 0); }
+			else if(this.btn===this.right){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
 				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
-			else if(this.btn==='left'){
+			else if(this.btn===this.left){
 				if     (cell.qans===1){ this.inputData=2;}
 				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
-			else if(this.btn==='right'){
+			else if(this.btn===this.right){
 				if     (cell.qans===1){ this.inputData=0;}
 				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
