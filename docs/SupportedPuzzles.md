@@ -50,7 +50,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is indic
 * Moon or Sun `moonsun`
 
 ### Nigun (Legacy)
-* BAG (Correl) `bag` `correl` `cave`
+* Bag (Corral, Cave) `bag` `corral` `cave`
 * Country-road `country`
 * Reflect-link `reflect`
 * Icebarn `icebarn`

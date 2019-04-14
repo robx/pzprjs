@@ -144,6 +144,7 @@ Graphic:{
 	bh : 18,			// セルの縦幅/2
 
 	lw : 1,		// LineWidth 境界線・Lineの太さ
+	lwmin : 3,
 	lm : 1,		// LineMargin
 	lwratio : 10,	// onresize_processでlwの値の算出に用いる
 	addlw   : 0,	// エラー時に線の太さを広げる
@@ -298,7 +299,7 @@ Graphic:{
 		this.bw = this.cw/2;
 		this.bh = this.ch/2;
 
-		this.lw = Math.max(this.cw/this.lwratio, 3);
+		this.lw = Math.max(this.cw/this.lwratio, this.lwmin);
 		this.lm = this.lw/2;
 	},
 	setOffset : function(){

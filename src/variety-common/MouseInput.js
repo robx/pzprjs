@@ -25,33 +25,35 @@ MouseEvent:{
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
 
-		(this.inputData===1?cell.setShade:cell.clrShade).call(cell);
+		cell.setQans(this.inputData===1?1:0);
 		cell.setQsub(this.inputData===2?1:0);
 
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.inputMode==='shade'){
+		var ans = cell.qansUnshade?'unshade':'shade';
+		var sub = cell.qansUnshade?'shade':'unshade';
+		if(this.inputMode===ans){
 			this.inputData=((cell.qans!==1)? 1 : 0);
 		}
-		else if(this.inputMode==='unshade'){
+		else if(this.inputMode===sub){
 			this.inputData=((cell.qsub!==1)? 2 : 0);
 		}
 		else if(this.puzzle.getConfig('use')===1){
-			if     (this.btn==='left') { this.inputData=(cell.isUnshade() ? 1 : 0); }
-			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1)  ? 2 : 0); }
+			if     (this.btn==='left') { this.inputData=((cell.qans!==1) ? 1 : 0); }
+			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
 				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
 			else if(this.btn==='left'){
-				if     (cell.isShade()){ this.inputData=2;}
+				if     (cell.qans===1){ this.inputData=2;}
 				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
 			else if(this.btn==='right'){
-				if     (cell.isShade()){ this.inputData=0;}
+				if     (cell.qans===1){ this.inputData=0;}
 				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
 			}
