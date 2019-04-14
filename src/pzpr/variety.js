@@ -73,7 +73,7 @@ delete variety.extend;
 	armyants  :[0,0,"ぐんたいあり","Army Ants",'kaero'],
 	arukone   :[0,0,"アルコネ","Arukone",'numlin'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
-	bag       :[1,0,"バッグ","BAG (Corral)",'slither',{alias:'correl',alias2:'cave'}],
+	bag       :[1,0,"バッグ","BAG (Corral)",'bag',{alias:'correl',alias2:'cave',alias3:'corral'}],
 	barns     :[1,0,"バーンズ","Barns"],
 	bdblock   :[1,0,"ボーダーブロック","Border Block"],
 	bonsan    :[1,0,"ぼんさん","Bonsan",'bonsan'],
