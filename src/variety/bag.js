@@ -9,8 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	left : 'right',
-	right: 'left',
+	invertshade : true,
 
 	inputModes : {edit:['number','clear'],play:['shade','unshade','peke','clear']},
 	mouseinput_auto : function(){

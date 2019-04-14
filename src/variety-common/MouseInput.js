@@ -3,8 +3,7 @@
 pzpr.classmgr.makeCommon({
 //---------------------------------------------------------
 MouseEvent:{
-	left : 'left',
-	right : 'right',
+	invertshade : false,
 
 	// 共通関数
 	//---------------------------------------------------------------------------
@@ -31,6 +30,11 @@ MouseEvent:{
 		cell.draw();
 	},
 	decIC : function(cell){
+		var left='left', right='right';
+		if(this.invertshade){
+			left = 'right';
+			right = 'left';
+		}
 		if(this.inputMode==='shade'){
 			this.inputData=((cell.qans!==1)? 1 : 0);
 		}
@@ -38,19 +42,19 @@ MouseEvent:{
 			this.inputData=((cell.qsub!==1)? 2 : 0);
 		}
 		else if(this.puzzle.getConfig('use')===1){
-			if     (this.btn===this.left) { this.inputData=((cell.qans!==1) ? 1 : 0); }
-			else if(this.btn===this.right){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
+			if     (this.btn===left) { this.inputData=((cell.qans!==1) ? 1 : 0); }
+			else if(this.btn===right){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
 				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
-			else if(this.btn===this.left){
+			else if(this.btn===left){
 				if     (cell.qans===1){ this.inputData=2;}
 				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
-			else if(this.btn===this.right){
+			else if(this.btn===right){
 				if     (cell.qans===1){ this.inputData=0;}
 				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
