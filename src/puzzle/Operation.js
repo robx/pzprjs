@@ -488,7 +488,7 @@ OperationManager:{
 			/* 前の履歴を更新したときは何もしない */
 		}
 		
-		if(newope.property!=='qsub' && newope.property!=='qcmp' && newope.property!=='snum'){
+		if(newope.property!=='qcmp' && newope.property!=='snum'){
 			puzzle.checker.resetCache();
 		}
 		this.changeflag = true;
