@@ -43,12 +43,12 @@ MouseEvent:{
 				this.inputData=((cell.qsub!==1)? 2 : 0);
 			}
 			else if(this.btn==='left'){
-				if     (cell.isShade()){ this.inputData=2;}
+				if     (cell.qans===1){ this.inputData=2;}
 				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
 			else if(this.btn==='right'){
-				if     (cell.isShade()){ this.inputData=0;}
+				if     (cell.qans===1){ this.inputData=0;}
 				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
 			}
