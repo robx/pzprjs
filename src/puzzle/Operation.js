@@ -146,7 +146,6 @@ Operation:{
 		
 		switch(this.property){
 			case 'qcmp': bd.cell.each(function(cell){ if(piece===cell.base){ cell.draw();}}); break;
-			case 'qsub': break;
 			default:     this.puzzle.checker.resetCache(); break;
 		}
 	}
