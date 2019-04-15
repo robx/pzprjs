@@ -152,6 +152,7 @@ delete variety.extend;
 	nurimisaki:[0,0,"ぬりみさき","Nurimisaki",'kurodoko'],
 	onsen     :[0,0,"温泉めぐり","Onsen-meguri",'country'],
 	paintarea :[1,0,"ペイントエリア","Paintarea"],
+	pencils   :[0,0,"ペンシルズ","Pencils"],
 	pipelink  :[1,0,"パイプリンク","Pipelink",'pipelink'],
 	pipelinkr :[1,0,"帰ってきたパイプリンク","Pipelink Returns",'pipelink'],
 	rectslider:[0,0,"四角スライダー","Rectangle-Slider",'bonsan'],
