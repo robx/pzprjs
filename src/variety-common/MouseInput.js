@@ -15,7 +15,10 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 
-		if(cell.numberRemainsUnshaded && cell.qnum!==-1 && (this.inputData===1||(this.inputData===2 && !this.puzzle.painter.enablebcolor))){ return;}
+		if(cell.qnum!==-1){
+			if(cell.numberRemainsUnshaded && this.inputData===1){ return;}
+			if(cell.numberRemainsUnshaded && this.inputData===2 && !this.puzzle.painter.enablebcolor){ return;}
+		}
 		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
