@@ -259,11 +259,10 @@ Graphic:{
 
 	getBorderColor : function(border){
 		if(border.ques===1){
-			var cell2=border.sidecell[1];
-			return ((cell2.isnull || cell2.error===0) ? this.quescolor : this.errbcolor1);
+			return this.quescolor;
 		}
 		else if(border.qans===1){
-			return (!border.trial ? this.qanscolor : this.trialcolor);
+			return border.error ? "red" : (!border.trial ? this.qanscolor : this.trialcolor);
 		}
 		return null;
 	},
@@ -415,15 +414,13 @@ AnsCheck:{
 		"pencilZeroLength",
 		"pencilSmallLength",
 		"pencilTipsOverlap",
+		"pencilNumberTooSmall",
 
 		"pencilTipNoLine",
 		"lineNoTip",
-		// TODO check for number in area too large
-		// TODO check for pencil areas that is not a 1xN rectangle
-		// TODO check for cell that doesn't have a line and isn't part of a pencil celllist
-		// TODO check for deadend borders
-
-		"notImplemented"
+		"unusedCells",
+		"pencilExactAreas",
+		"unusedBorders"
 	],
 
 	checkSmallArea : function(){ 
@@ -497,9 +494,9 @@ AnsCheck:{
 			var cell = this.board.cell[c];
 			var dir = cell.qdir || cell.anum;
 			if(!(dir >= 1 && dir <= 4)) {continue;}
-			if(cell.lcnt !== 1) {continue;}
+			if(cell.lcnt > 1) {continue;}
 			
-			var cells = cell.getPencilCells(cell.path.nodes.length - 1);
+			var cells = cell.getPencilCells(cell.path ? cell.path.nodes.length - 1 : 1);
 			
 			var dx = 0, dy = 0, dir1 = 0, dir2 = 0;
 			if(dir===cell.UP||dir===cell.DN) {
@@ -570,13 +567,94 @@ AnsCheck:{
 		}
 	},
 
-	notImplemented: function() {
-		this.failcode.add("notImplemented");
+	pencilNumberTooSmall: function() {
+		for(var c=0;c<this.board.cell.length;c++){
+			var cell = this.board.cell[c];
+			var dir = cell.qdir || cell.anum;
+			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(cell.lcnt !== 1) {continue;}
+			
+			var cells = cell.getPencilCells(cell.path.nodes.length - 1);
+			
+			if(cells.some(function(cellb){return cellb.qnum > 0 && cellb.qnum < cell.path.nodes.length - 1;})) {
+				this.failcode.add("bkSizeGt");
+				if(this.checkOnly){ return;}
+				cells.seterr(1);
+			}
+		}
+	},
+
+	unusedCells: function() {
+		var empty = this.board.cell.filter(function(c) { return c.lcnt === 0; });
+
+		for(var c=0;c<this.board.cell.length;c++){
+			var cell = this.board.cell[c];
+			var dir = cell.qdir || cell.anum;
+			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(cell.lcnt !== 1) {continue;}
+
+			var cells = cell.getPencilCells(cell.path.nodes.length - 1);
+			cells.each(function(c) {empty.remove(c);});
+		}
+
+		if(empty.length > 0) {
+			this.failcode.add("unusedCell");
+			if(this.checkOnly){ return;}
+			empty.seterr(1);
+		}
+	},
+
+	pencilExactAreas : function() {
+		for(var c=0;c<this.board.cell.length;c++){
+			var cell = this.board.cell[c];
+			var dir = cell.qdir || cell.anum;
+			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(cell.lcnt !== 1) {continue;}
+
+			var cellb = this.board.emptycell;
+			if(dir === cell.UP) { cellb = cell.adjacent.bottom; }
+			if(dir === cell.DN) { cellb = cell.adjacent.top; }
+			if(dir === cell.LT) { cellb = cell.adjacent.right; }
+			if(dir === cell.RT) { cellb = cell.adjacent.left; }
+
+			var area = cellb.room.clist.getRectSize();
+			if(area.cols * area.rows !== cell.path.nodes.length - 1 || (area.cols !== 1 && area.rows !== 1)) {
+				this.failcode.add("pencilExactArea");
+				if(this.checkOnly){ return;}
+				cell.seterr(1);
+			}
+		}
+	},
+
+	unusedBorders: function() {
+		var list = new this.klass.CellList();
+
+		for(var c=0;c<this.board.cell.length;c++){
+			var cell = this.board.cell[c];
+			var dir = cell.qdir || cell.anum;
+			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(cell.lcnt !== 1) {continue;}
+
+			var cells = cell.getPencilCells(cell.path.nodes.length - 1);
+			list.extend(cells);
+		}
+
+		var bds = this.board.border;
+		
+		for(var b=0; b<bds.length; b++) {
+			var border = bds[b];
+			if(border.qans === 1 && !list.include(border.sidecell[0]) && !list.include(border.sidecell[1])) {
+				this.failcode.add("unusedBorder");
+				if(this.checkOnly){ return; }
+				border.seterr(1);
+			}
+		}
 	}
 },
 
 FailCode:{
 	bkSizeLt : ["<number too large>","A number is bigger than the size of the pencil."],
+	bkSizeGt : ["<number too small>","A number is smaller than the size of the pencil."],
 	lnCrossBorder: ["<line crosses pencil>","A line crosses a pencil."],
 	lnCrossNumber: ["<line crosses pencil>","A line crosses a pencil."],
 	lnNoTip: ["<line has no pencil>","A line is not connected to a pencil."],
@@ -586,6 +664,8 @@ FailCode:{
 	ptNoLine : ["<pencil has no line>","A pencil tip doesn't have a line."],
 	pencilNoLength : ["<pencil no length>","A pencil has no length."],
 	pencilSmallLength : ["<pencil wrong length>","A line has a different length from its pencil."],
-	notImplemented : ["<implement rules>","TODO: Implement all rules"]
+	unusedCell : ["<unused cell>","A cell is unused."],
+	pencilExactArea: ["<pencil wrong area>","A pencil is not a 1xN rectangle."],
+	unusedBorder : ["<unused border>","A border is unused."]
 }
 }));
