@@ -9,9 +9,8 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	// TODO allow peke
 	// TODO allow background coloring
-	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow']},
+	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke']},
 	mouseinput_number : function(){
 		if(this.mousestart){ this.inputqnum_loute();}
 	},
@@ -28,6 +27,7 @@ MouseEvent:{
 				else{ this.inputLine();}
 			}
 			// TODO draw arrows from auto
+			// TODO draw peke from auto
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
@@ -36,35 +36,7 @@ MouseEvent:{
 	},
 
 	inputarrow_cell_main : function(cell, dir){
-		if(cell.anum === cell.UP && cell.adjacent.bottom.anum !== cell.DN) { cell.adjborder.bottom.setQans(0); }
-		if(cell.anum === cell.DN && cell.adjacent.top.anum !== cell.DN) { cell.adjborder.top.setQans(0); }
-		if(cell.anum === cell.LT && cell.adjacent.right.anum !== cell.RT) { cell.adjborder.right.setQans(0); }
-		if(cell.anum === cell.RT && cell.adjacent.left.anum !== cell.LT) { cell.adjborder.left.setQans(0); }
-
-		if(this.puzzle.editmode) {
-			if(cell.qdir === cell.UP && cell.adjacent.bottom.qdir !== cell.DN) { cell.adjborder.bottom.setQues(0); }
-			if(cell.qdir === cell.DN && cell.adjacent.top.qdir !== cell.DN) { cell.adjborder.top.setQues(0); }
-			if(cell.qdir === cell.LT && cell.adjacent.right.qdir !== cell.RT) { cell.adjborder.right.setQues(0); }
-			if(cell.qdir === cell.RT && cell.adjacent.left.qdir !== cell.LT) { cell.adjborder.left.setQues(0); }
-
-			if(cell.qdir === dir) {dir = 0;}
-			cell.setQdir(dir);
-			cell.setQnum(-1);
-
-			if(dir === cell.UP) { cell.adjborder.bottom.setQues(1); }
-			if(dir === cell.DN) { cell.adjborder.top.setQues(1); }
-			if(dir === cell.LT) { cell.adjborder.right.setQues(1); }
-			if(dir === cell.RT) { cell.adjborder.left.setQues(1); }
-
-		} else if(!(cell.qdir >= 1 && cell.qdir <= 4) && cell.qnum === -1) {
-			if(cell.anum === dir) {dir = 0;}
-			cell.setAnum(dir);
-
-			if(dir === cell.UP) { cell.adjborder.bottom.setQans(1); }
-			if(dir === cell.DN) { cell.adjborder.top.setQans(1); }
-			if(dir === cell.LT) { cell.adjborder.right.setQans(1); }
-			if(dir === cell.RT) { cell.adjborder.left.setQans(1); }
-		}
+		cell.setPencilArrow(dir, this.puzzle.editmode);
 	},
 
 	// TODO rewrite
@@ -169,6 +141,40 @@ Cell:{
 	},
 	minnum : 1,
 
+	setPencilArrow: function(dir, question) {
+		if(!(dir>=0 && dir <=4)) {return;}
+
+		if(this.anum === this.UP && this.adjacent.bottom.anum !== this.DN) { this.adjborder.bottom.setQans(0); }
+		if(this.anum === this.DN && this.adjacent.top.anum !== this.DN) { this.adjborder.top.setQans(0); }
+		if(this.anum === this.LT && this.adjacent.right.anum !== this.RT) { this.adjborder.right.setQans(0); }
+		if(this.anum === this.RT && this.adjacent.left.anum !== this.LT) { this.adjborder.left.setQans(0); }
+
+		if(question) {
+			if(this.qdir === this.UP && this.adjacent.bottom.qdir !== this.DN) { this.adjborder.bottom.setQues(0); }
+			if(this.qdir === this.DN && this.adjacent.top.qdir !== this.DN) { this.adjborder.top.setQues(0); }
+			if(this.qdir === this.LT && this.adjacent.right.qdir !== this.RT) { this.adjborder.right.setQues(0); }
+			if(this.qdir === this.RT && this.adjacent.left.qdir !== this.LT) { this.adjborder.left.setQues(0); }
+
+			if(this.qdir === dir) {dir = 0;}
+			this.setQdir(dir);
+			this.setQnum(-1);
+
+			if(dir === this.UP) { this.adjborder.bottom.setQues(1); }
+			if(dir === this.DN) { this.adjborder.top.setQues(1); }
+			if(dir === this.LT) { this.adjborder.right.setQues(1); }
+			if(dir === this.RT) { this.adjborder.left.setQues(1); }
+
+		} else if(!(this.qdir >= 1 && this.qdir <= 4) && this.qnum === -1) {
+			if(this.anum === dir || dir===0) {dir = -1;}
+			this.setAnum(dir);
+
+			if(dir === this.UP) { this.adjborder.bottom.setQans(1); }
+			if(dir === this.DN) { this.adjborder.top.setQans(1); }
+			if(dir === this.LT) { this.adjborder.right.setQans(1); }
+			if(dir === this.RT) { this.adjborder.left.setQans(1); }
+		}
+	},
+
 	// TODO clean up console.log calls
 	getPencilCells: function(limit) {
 		var bd = this.board;
@@ -250,7 +256,7 @@ Graphic:{
 		this.drawCellArrows();
 		this.drawQuesNumbers();
 
-		this.drawBorderQsubs();
+		this.drawPekes();
 
 		this.drawChassis();
 
@@ -330,11 +336,7 @@ Encode:{
 			else if(ca === '.'){ cell.qdir = 5;}
 			else if(ca === '%'){ cell.qdir = -2;}
 			else if(ca>='g' && ca<='j'){
-				cell.qdir = (parseInt(ca,20)-15);
-				if(cell.qdir===cell.RT) { cell.adjborder.left.ques = 1; }
-				if(cell.qdir===cell.LT) { cell.adjborder.right.ques = 1; }
-				if(cell.qdir===cell.UP) { cell.adjborder.bottom.ques = 1; }
-				if(cell.qdir===cell.DN) { cell.adjborder.top.ques = 1; }
+				cell.setPencilArrow(parseInt(ca,20)-15, true);
 			}
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
@@ -366,7 +368,6 @@ Encode:{
 },
 //---------------------------------------------------------
 FileIO:{
-	// TODO reduce size by not encoding/decoding border.ques
 	decodeData : function(){
 		this.decodeCell( function(cell,ca){
 			if(ca.charAt(0)==="o"){
@@ -374,10 +375,9 @@ FileIO:{
 				if(ca.length>1){ cell.qnum = +ca.substr(1);}
 			}
 			else if(ca==="-"){ cell.qdir = -2;}
-			else if(ca!=="."){ cell.qdir = +ca;}
+			else if(ca!=="."){ cell.setPencilArrow(+ca, true);}
 		});
 
-		this.decodeBorderQues();
 		this.decodeBorderAns();
 		this.decodeBorderLine();
 		this.decodeCellAnumsub();
@@ -392,7 +392,6 @@ FileIO:{
 			else{ return ". ";}
 		});
 
-		this.encodeBorderQues();
 		this.encodeBorderAns();
 		this.encodeBorderLine();
 		this.encodeCellAnumsub();
