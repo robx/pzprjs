@@ -74,6 +74,7 @@ Graphic:{
 		this.drawShadedCells();
 
 		this.drawCircledNumbers();
+		if(this.pid==='nurimisaki'){ this.drawDotCells();}
 
 		this.drawChassis();
 
@@ -93,8 +94,26 @@ Graphic:{
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
-		else if(cell.qsub===1){ return this.shadecolor;}
+		else if(cell.qsub===1){
+			return cell.trial?this.trialcolor:this.shadecolor;
+		}
 		return null;
+	},
+	drawDotCells : function(){
+		var g = this.vinc('cell_dot', 'auto', true);
+
+		var dsize = Math.max(this.cw*0.06, 2);
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+
+			g.vid = "c_dot_"+cell.id;
+			if(cell.isUnshade()&&cell.qnum===-1){
+				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
+				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
+			}
+			else{ g.vhide();}
+		}
 	}
 },
 
