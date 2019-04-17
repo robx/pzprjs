@@ -141,21 +141,25 @@ Cell:{
 	},
 	minnum : 1,
 
+	// TODO fix ques border not being removed when using Erase Data to remove clue arrow
 	setPencilArrow: function(dir, question) {
 		if(!(dir>=0 && dir <=4)) {return;}
+		var anum = this.anum, qdir = this.qdir;
 
-		if(this.anum === this.UP && this.adjacent.bottom.anum !== this.DN) { this.adjborder.bottom.setQans(0); }
-		if(this.anum === this.DN && this.adjacent.top.anum !== this.DN) { this.adjborder.top.setQans(0); }
-		if(this.anum === this.LT && this.adjacent.right.anum !== this.RT) { this.adjborder.right.setQans(0); }
-		if(this.anum === this.RT && this.adjacent.left.anum !== this.LT) { this.adjborder.left.setQans(0); }
+		if(!question) { this.setAnum(-1); }
+
+		if(anum === this.UP && this.adjacent.bottom.anum !== this.DN) { this.adjborder.bottom.setQans(0); }
+		if(anum === this.DN && this.adjacent.top.anum !== this.DN) { this.adjborder.top.setQans(0); }
+		if(anum === this.LT && this.adjacent.right.anum !== this.RT) { this.adjborder.right.setQans(0); }
+		if(anum === this.RT && this.adjacent.left.anum !== this.LT) { this.adjborder.left.setQans(0); }
 
 		if(question) {
-			if(this.qdir === this.UP && this.adjacent.bottom.qdir !== this.DN) { this.adjborder.bottom.setQues(0); }
-			if(this.qdir === this.DN && this.adjacent.top.qdir !== this.DN) { this.adjborder.top.setQues(0); }
-			if(this.qdir === this.LT && this.adjacent.right.qdir !== this.RT) { this.adjborder.right.setQues(0); }
-			if(this.qdir === this.RT && this.adjacent.left.qdir !== this.LT) { this.adjborder.left.setQues(0); }
+			if(qdir === this.UP && this.adjacent.bottom.qdir !== this.DN) { this.adjborder.bottom.setQues(0); }
+			if(qdir === this.DN && this.adjacent.top.qdir !== this.DN) { this.adjborder.top.setQues(0); }
+			if(qdir === this.LT && this.adjacent.right.qdir !== this.RT) { this.adjborder.right.setQues(0); }
+			if(qdir === this.RT && this.adjacent.left.qdir !== this.LT) { this.adjborder.left.setQues(0); }
 
-			if(this.qdir === dir) {dir = 0;}
+			if(qdir === dir) {dir = 0;}
 			this.setQdir(dir);
 			this.setQnum(-1);
 
@@ -164,8 +168,8 @@ Cell:{
 			if(dir === this.LT) { this.adjborder.right.setQues(1); }
 			if(dir === this.RT) { this.adjborder.left.setQues(1); }
 
-		} else if(!(this.qdir >= 1 && this.qdir <= 4) && this.qnum === -1) {
-			if(this.anum === dir || dir===0) {dir = -1;}
+		} else if(!(qdir >= 1 && qdir <= 4) && this.qnum === -1) {
+			if(anum === dir || dir===0) {dir = -1;}
 			this.setAnum(dir);
 
 			if(dir === this.UP) { this.adjborder.bottom.setQans(1); }
@@ -221,8 +225,24 @@ Board:{
 	rows : 8,
 
 	hasborder : 1
+},
 
-	// TODO block removing lines when arrow or question border is present
+Border: {
+	prehook : {
+		qans : function(num){ 
+			if (this.ques!==0) {return true;}
+			if(num) {return false;}
+
+			var cell0 = this.sidecell[0], cell1 = this.sidecell[1];
+
+			if(this.isvert) {
+				return cell0.anum === cell0.LT || cell1.anum === cell1.RT;
+			}
+
+			return cell0.anum === cell0.UP || cell1.anum === cell1.DN;
+		}
+	},
+
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
