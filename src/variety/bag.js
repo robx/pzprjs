@@ -201,7 +201,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmShade : ["(please translate) A number is not unshaded.", "A number is not unshaded."],
+	nmShade : ["(please translate) A clue is not unshaded.", "A clue is not unshaded."],
 	csConnOut : ["(please translate) Some shaded cells are not connected to the outside.", "Some shaded cells are not connected to the outside."],
 	nmSumViewNe : ["数字と輪の内側になる4方向のマスの合計が違います。","The number and the sum of the inside cells of four direction is different."]
 }

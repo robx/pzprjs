@@ -304,8 +304,8 @@ FailCode:{
 	bkSizeNe : ["数字と領域の大きさが違います。","The size of the area is not equal to the number."],
 	bkNotRect : ["四角形ではない領域があります。","An area is not rectangle."],
 	csdDivide : ["(please translate) The shaded cells are not connected.","The shaded cells are not connected."],
-	rmBranch : ["(please translate) There is a branch of areas.", "There is a branch of areas."],
-	rmDeadend : ["(please translate) There is a dead-end area.", "There is a dead-end area."],
-	rmIsolated : ["(please translate) There is an isolated area.", "There is an isolated area."]
+	rmBranch : ["(please translate) There is a branch of areas.","There is a branch of areas."],
+	rmDeadend : ["(please translate) There is a dead-end area.","There is a dead-end area."],
+	rmIsolated : ["(please translate) There is an isolated area.","There is an isolated area."]
 }
 }));
