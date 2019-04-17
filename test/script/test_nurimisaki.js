@@ -1,9 +1,9 @@
 /* test_nurimisaki.js */
 
 ui.debug.addDebugData('nurimisaki', {
-	url : '4/4/s4h',
+	url : '5/5/g.i.m2l.j',
 	failcheck : [
-		[null, "pzprv3/nurimisaki/4/4/. . . . /. . . . /. . . . /. 4 . . /# + + + /# + # + /# + + + /# + # # "]
+		[null, "pzprv3/nurimisaki/5/5/. - . . . /- . . . . /. . . 2 . /. . . . . /- . . . . /. # # # # /# . . . # /# # . # # /. # . . # /# # # # # /"]
 	],
 	inputs : [
 	]

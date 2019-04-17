@@ -179,6 +179,7 @@ FileIO:{
 AnsCheck:{
 	checklist : [
 		"checkShadeCellExist",
+		"checkNumUnshade@nurimisaki",
 		"check2x2ShadeCell@nurimisaki",
 		"checkAdjacentShadeCell@kurodoko",
 		"checkConnectUnshadeRB@kurodoko",
@@ -211,6 +212,10 @@ AnsCheck:{
 },
 
 "AnsCheck@nurimisaki":{
+	checkNumUnshade : function(){
+		this.checkAllCell(function(cell){ return cell.isNum()&&!cell.isUnshade();}, "nmShade");
+	},
+
 	check2x2UnshadeCell : function(){
 		this.check2x2Block(function(cell){ return cell.isUnshade();}, "unshade2x2");
 	},
@@ -236,6 +241,7 @@ AnsCheck:{
 },
 
 FailCode:{
+	nmShade : ["(please translate) A number is not unshaded.", "A number is not unshaded."],
 	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the continuous unshaded cells of four direction is different."],
 	unshade2x2 : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of unshaded cells."],
 	circleNotPromontory : ["丸のマスが岬になっていません。","A circle has more than one unshaded neighbor."],
