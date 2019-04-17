@@ -299,7 +299,7 @@ AnsCheck:{
 	}
 },
 FailCode:{
-	bkNumUnshade : ["(please translate) A clues is not shaded.","A clue is not shaded."],
+	bkNumUnshade : ["(please translate) A clue is not shaded.","A clue is not shaded."],
 	bkNumGe2 : ["1つの領域に2つ以上の数字が入っています。","An area has multiple clues."],
 	bkSizeNe : ["数字と領域の大きさが違います。","The size of the area is not equal to the number."],
 	bkNotRect : ["四角形ではない領域があります。","An area is not rectangle."],
