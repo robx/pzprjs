@@ -171,8 +171,6 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	enablebcolor : true,
-	//numbercolor_func : "qnum",
-	//bordercolor_func : "qans",
 	shadecolor : "rgb(160,255,160)",
 	trialcolor : "rgb(210,210,210)",
 	triallinecolor : "gray",
@@ -235,11 +233,11 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCellQnum();
-		this.decodeBorderAns();
+		this.decodeCellAns();
 	},
 	encodeData : function(){
 		this.encodeCellQnum();
-		this.encodeBorderAns();
+		this.encodeCellAns();
 	}
 },
 AnsCheck:{
