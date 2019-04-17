@@ -1,3 +1,9 @@
+## Version 0.11.1
+
+#### Improvement
+
+* bag, meander: Complete Japanese translation.
+
 ## Version 0.11.0
 
 Release date: 2019/4/17
