@@ -70,4 +70,5 @@
 |---|---|
 |`info-line`|Check connected line|
 |`info-blk`|Check connected shaded cell|
+|`info-ublk`|Check connected unshaded cell|
 |`info-road`|Check continuous road for `Rome`|

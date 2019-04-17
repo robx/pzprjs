@@ -220,6 +220,7 @@ MouseEvent:{
 		if(this.puzzle.key.isZ && this.inputMode.indexOf(/info\-/)===-1){
 			if     (this.inputModes.play.indexOf('info-line')>=0){ mode = 'info-line';}
 			else if(this.inputModes.play.indexOf('info-blk') >=0){ mode = 'info-blk';}
+			else if(this.inputModes.play.indexOf('info-ublk') >=0){ mode = 'info-ublk';}
 		}
 		switch(mode){
 			case 'auto': this.mouseinput_auto(); break;	/* 各パズルのルーチンへ */
@@ -248,6 +249,7 @@ MouseEvent:{
 			case 'bar':  this.inputTateyoko(); break;
 			case 'info-line': if(this.mousestart){ this.dispInfoLine();} break;
 			case 'info-blk':  if(this.mousestart){ this.dispInfoBlk();} break;
+			case 'info-ublk': if(this.mousestart){ this.dispInfoUblk();} break;
 			default:    this.mouseinput_other(); break;	/* 各パズルのルーチンへ */
 		}
 	},

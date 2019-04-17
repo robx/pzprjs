@@ -10,7 +10,6 @@
 // マウス入力系
 MouseEvent:{
 	use    : true,
-	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){ this.inputcell();}
@@ -20,9 +19,12 @@ MouseEvent:{
 		}
 	}
 },
-
 "MouseEvent@kurodoko":{
+	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
 	RBShadeCell : true,
+},
+"MouseEvent@nurimisaki":{
+	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-ublk']},
 },
 
 //---------------------------------------------------------
@@ -40,6 +42,9 @@ Cell:{
 		return this.board.cols+this.board.rows-1;
 	},
 	minnum : 2
+},
+"Cell@nurimisaki":{
+	qansUnshade : true
 },
 Board:{
 	cols : 9,
@@ -73,6 +78,23 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawTarget();
+	}
+},
+"Graphic@nurimisaki":{
+	getBGCellColor : function(cell){
+		if(!cell.isUnshade()){ return null;}
+		var info = cell.error || cell.qinfo;
+		if     (info===1){ return this.errbcolor1;}
+		else if(info===2){ return this.errbcolor2;}
+		return this.qsubcolor1;
+	},
+	getShadedCellColor : function(cell){
+		if(!cell.isShade()){ return null;}
+		var info = cell.error || cell.qinfo;
+		if     (info===1){ return this.errcolor1;}
+		else if(info===2){ return this.errcolor2;}
+		else if(cell.qsub===1){ return this.shadecolor;}
+		return null;
 	}
 },
 

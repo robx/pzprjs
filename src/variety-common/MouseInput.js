@@ -16,8 +16,9 @@ MouseEvent:{
 		this.mouseCell = cell;
 
 		if(cell.qnum!==-1){
-			if(cell.numberRemainsUnshaded && this.inputData===1){ return;}
-			if(cell.numberRemainsUnshaded && this.inputData===2 && !this.puzzle.painter.enablebcolor){ return;}
+			var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
+			if(cell.numberRemainsUnshaded && this.inputData===shade){ return;}
+			if(cell.numberRemainsUnshaded && this.inputData===unshade && !this.puzzle.painter.enablebcolor){ return;}
 		}
 		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
@@ -644,6 +645,7 @@ MouseEvent:{
 
 	//---------------------------------------------------------------------------
 	// mv.dispInfoBlk()  ひとつながりの黒マスを赤く表示する
+	// mv.dispInfoUblk()
 	// mv.dispInfoBlk8() ななめつながりの黒マスを赤く表示する
 	// mv.dispInfoLine()   ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
@@ -653,6 +655,14 @@ MouseEvent:{
 		if(cell.isnull || !cell.isShade()){ return;}
 		if(!this.RBShadeCell){ cell.sblk.clist.setinfo(1);}
 		else{ this.dispInfoBlk8(cell);}
+		this.board.hasinfo = true;
+		this.puzzle.redraw();
+	},
+	dispInfoUblk : function(){
+		var cell = this.getcell();
+		this.mousereset();
+		if(cell.isnull || !cell.isUnshade()){ return;}
+		cell.ublk.clist.setinfo(1);
 		this.board.hasinfo = true;
 		this.puzzle.redraw();
 	},
