@@ -155,7 +155,6 @@ Board:{
 			miny = Math.min(miny,c.by);
 			maxy = Math.max(maxy,c.by);
 		}
-		console.log("redrawing for", minx, maxx, miny, maxy);
 		for(var x=minx; x<=maxx; x+=2){
 			for(var y=1; y<2*this.board.rows; y+=2){
 				var c=this.board.getc(x,y);
