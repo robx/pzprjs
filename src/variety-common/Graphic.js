@@ -872,9 +872,6 @@ Graphic:{
 		var ra = this.circleratio;
 		var rsize_stroke = this.cw*(ra[0]+ra[1])/2, rsize_fill = this.cw*ra[0];
 		
-		/* fillとstrokeの間に線を描画するスキマを与える */
-		if(this.pid==='loopsp'){ rsize_fill -= this.cw*0.10;}
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
