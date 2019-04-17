@@ -111,20 +111,21 @@ Cell:{
 		}).length);
 	},
 
-	redrawAffected : function(){
-		for(var x=1; x<2*this.board.cols; x+=2){
-			var c=this.board.getc(x,this.by);
-			if(c.qnum!==-1){ c.draw();}
-		}
-		for(var y=1; y<2*this.board.rows; y+=2){
-			var c=this.board.getc(this.bx,y);
-			if(c.qnum!==-1){ c.draw();}
-		}
-	},
-
 	posthook : {
-		qsub : function(){ this.redrawAffected();},
-		qans : function(){ this.redrawAffected();}
+		qsub : function(){
+			var cells=[this];
+			this.board.redrawAffected(cells);
+		},
+		qans : function(){
+			var cells=[this];
+			var adc=this.adjacent;
+			var cs=[adc.top, adc.bottom, adc.left, adc.right];
+			for(var i=0; i<cs.length; i++){
+				var c=cs[i];
+				if(!c.isnull&&c.qnum===-1&&c.qans===0&&c.qsub===0){ cells.push(c);}
+			}
+			this.board.redrawAffected(cells);
+		}
 	}
 },
 Border:{
@@ -136,14 +137,39 @@ Border:{
 
 	posthook : {
 		line : function(){
-			for(var i=0;i<this.sidecell.length;i++){
-				this.sidecell[i].redrawAffected();
-			}
+			var cells=[];
+			for(var i=0;i<this.sidecell.length;i++){ cells.push(this.sidecell[i]);}
+			this.board.redrawAffected(cells);
 		}
 	}
 },
 Board:{
-	hasborder : 1
+	hasborder : 1,
+
+	redrawAffected : function(cells){
+		var minx=this.maxbx, maxx=this.minbx, miny=this.maxby, maxy=this.minby;
+		for(var i=0;i<cells.length;i++){
+			var c=cells[i];
+			minx = Math.min(minx,c.bx);
+			maxx = Math.max(maxx,c.bx);
+			miny = Math.min(miny,c.by);
+			maxy = Math.max(maxy,c.by);
+		}
+		console.log("redrawing for", minx, maxx, miny, maxy);
+		for(var x=minx; x<=maxx; x+=2){
+			for(var y=1; y<2*this.board.rows; y+=2){
+				var c=this.board.getc(x,y);
+				if(c.qnum!==-1){ c.draw();}
+			}
+		}
+		for(var x=1; x<2*this.cols; x+=2){
+			if(x>=minx&&x<=maxx){ continue;}
+			for(var y=miny; y<=maxy; y+=2){
+				var c=this.board.getc(x,y);
+				if(c.qnum!==-1){ c.draw();}
+			}
+		}
+	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
