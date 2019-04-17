@@ -70,8 +70,8 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawGrid();
 		this.drawShadedCells();
+		this.drawGrid();
 
 		this.drawCircledNumbers();
 		if(this.pid==='nurimisaki'){ this.drawDotCells();}
@@ -82,6 +82,9 @@ Graphic:{
 	}
 },
 "Graphic@nurimisaki":{
+	undefcolor : "silver",
+	trialcolor: "rgb(120, 120, 120)",
+
 	getBGCellColor : function(cell){
 		if(!cell.isUnshade()){ return null;}
 		var info = cell.error || cell.qinfo;
@@ -97,6 +100,7 @@ Graphic:{
 		else if(cell.qsub===1){
 			return cell.trial?this.trialcolor:this.shadecolor;
 		}
+		else if(this.puzzle.execConfig('undefcell')){ return this.undefcolor; }
 		return null;
 	},
 	drawDotCells : function(){
