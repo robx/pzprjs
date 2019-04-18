@@ -4,6 +4,7 @@
 
 * bag, meander: Complete Japanese translation.
 * scrin: Complete Japanese translation.
+* yajilin: Limit clue value based on grid size.
 
 #### BugFix
 

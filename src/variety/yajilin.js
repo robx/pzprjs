@@ -59,6 +59,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	minnum : 0,
+	maxnum : function(){ return Math.max((this.board.cols+1)>>1,(this.board.rows+1)>>1);},
 
 	numberRemainsUnshaded : true,
 
