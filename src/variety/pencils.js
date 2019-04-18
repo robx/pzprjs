@@ -10,6 +10,7 @@
 // マウス入力系
 MouseEvent:{
 	// TODO allow background coloring
+	// TODO fix inputting hatena
 	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke']},
 	mouseinput_number : function(){
 		if(this.mousestart){ this.inputqnum_loute();}
@@ -32,6 +33,17 @@ MouseEvent:{
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum_loute();}
+		}
+	},
+
+	mouseinput_clear : function(){
+		var cell = this.getcell();
+		var dir = cell.qdir || cell.anum;
+
+		if(dir>= 1 && dir <= 4) {
+			cell.setPencilArrow(0, true);
+		} else {
+			this.inputclean_cell();
 		}
 	},
 
@@ -141,7 +153,7 @@ Cell:{
 	},
 	minnum : 1,
 
-	// TODO fix ques border not being removed when using Erase Data to remove clue arrow
+	// TODO fix qans border not being removed when undoing
 	setPencilArrow: function(dir, question) {
 		if(!(dir>=0 && dir <=4)) {return;}
 		var anum = this.anum, qdir = this.qdir;
@@ -163,19 +175,19 @@ Cell:{
 			this.setQdir(dir);
 			this.setQnum(-1);
 
-			if(dir === this.UP) { this.adjborder.bottom.setQues(1); }
-			if(dir === this.DN) { this.adjborder.top.setQues(1); }
-			if(dir === this.LT) { this.adjborder.right.setQues(1); }
-			if(dir === this.RT) { this.adjborder.left.setQues(1); }
+			if(dir === this.UP && !this.adjborder.bottom.isnull) { this.adjborder.bottom.setQues(1); }
+			if(dir === this.DN && !this.adjborder.top.isnull) { this.adjborder.top.setQues(1); }
+			if(dir === this.LT && !this.adjborder.right.isnull) { this.adjborder.right.setQues(1); }
+			if(dir === this.RT && !this.adjborder.left.isnull) { this.adjborder.left.setQues(1); }
 
 		} else if(!(qdir >= 1 && qdir <= 4) && this.qnum === -1) {
 			if(anum === dir || dir===0) {dir = -1;}
 			this.setAnum(dir);
 
-			if(dir === this.UP) { this.adjborder.bottom.setQans(1); }
-			if(dir === this.DN) { this.adjborder.top.setQans(1); }
-			if(dir === this.LT) { this.adjborder.right.setQans(1); }
-			if(dir === this.RT) { this.adjborder.left.setQans(1); }
+			if(dir === this.UP && !this.adjborder.bottom.isnull) { this.adjborder.bottom.setQans(1); }
+			if(dir === this.DN && !this.adjborder.top.isnull) { this.adjborder.top.setQans(1); }
+			if(dir === this.LT && !this.adjborder.right.isnull) { this.adjborder.right.setQans(1); }
+			if(dir === this.RT && !this.adjborder.left.isnull) { this.adjborder.left.setQans(1); }
 		}
 	},
 
@@ -193,7 +205,7 @@ Cell:{
 		if(dir === this.LT) { dx =  1; invdir = this.RT; }
 		if(dir === this.RT) { dx = -1; invdir = this.LT; }
 
-		var x = this.bx, y = this.by;
+		var x = this.bx, y = this.by, start = true;
 		while(x > bd.minbx && x < bd.maxbx && y > bd.minby && y < bd.maxby) {
 			x += dx*2; y += dy*2;
 			var cell = bd.getc(x, y);
@@ -209,11 +221,15 @@ Cell:{
 			if(newdir >= 1 && newdir <= 4) {console.log("Encountered other pencil tip");break;}
 			if(cell.lcnt > 0) {console.log("Encountered line");break;}
 
+			if(!start) {
+				var border = bd.getb(x-dx, y-dy);
+				if(border.qans === 1) {console.log("Encountered border");break;}
+			}
+
 			if(limit && limit === list.length) {break;}
 			list.add(cell);
-
-			var border = bd.getb(x+dx, y+dy);
-			if(border.qans === 1) {console.log("Encountered border");break;}
+			
+			start = false;
 		}
 
 		return list;
@@ -246,7 +262,13 @@ Border: {
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
-		this.adjustNumberArrow(key,d);
+		var trans = this.getTranslateDir(key);
+		var clist = this.board.cellinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var val = trans[cell.qdir]; if(!!val){ cell.setQdir(val);}
+			var val = trans[cell.anum]; if(!!val){ cell.setAnum(val);}
+		}
 	}
 },
 
@@ -293,7 +315,6 @@ Graphic:{
 		return null;
 	},
 
-	// TODO fix redrawing arrow when changing direction
 	drawCellArrows : function(){
 		var g = this.vinc('cell_arrow', 'crispEdges');
 		
@@ -307,27 +328,33 @@ Graphic:{
 			var color = ((dir>=1 && dir<=4) ? this.getCellArrowColor(cell) : null);
 			
 			g.lineWidth = (this.lw + this.addlw)/2;
-			g.vid = "c_arrow_"+cell.id;
 			if(!!color){
 				g.fillStyle = color;
 				g.strokeStyle = color;
-				g.beginPath();
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				var idx = [0,0,0,0];
-
+				
 				switch(dir){
 					case cell.UP: idx = [ 1,  1, -1,  1]; break;
 					case cell.DN: idx = [ 1, -1, -1, -1]; break;
 					case cell.LT: idx = [ 1, -1,  1,  1]; break;
 					case cell.RT: idx = [-1, -1, -1,  1]; break;
 				}
-
+				
+				g.vid = "c_arrow_"+cell.id;
 				g.setOffsetLinePath(px,py, 0,0, idx[0]*inner, idx[1]*inner, idx[2]*inner, idx[3]*inner, true);
 				g.fill();
+				
+				g.vid = "c_arrow_outer_"+cell.id;
 				g.setOffsetLinePath(px,py, 0,0, idx[0]*outer, idx[1]*outer, idx[2]*outer, idx[3]*outer, true);
 				g.stroke();
 			}
-			else{ g.vhide();}
+			else{ 
+				g.vid = "c_arrow_"+cell.id;
+				g.vhide();
+				g.vid = "c_arrow_outer_"+cell.id;
+				g.vhide();
+			}
 		}
 	},
 
@@ -344,7 +371,6 @@ Graphic:{
 //---------------------------------------------------------
 // URLエンコード/デコード処理
 Encode:{
-	// TODO fix loading in of hatena
 	decodePzpr : function(type){
 		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
@@ -353,8 +379,7 @@ Encode:{
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 							   { cell.qdir = 5; cell.qnum = parseInt(ca,16);}
 			else if(ca === '-'){ cell.qdir = 5; cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca === '.'){ cell.qdir = 5;}
-			else if(ca === '%'){ cell.qdir = -2;}
+			else if(ca === '%'){ cell.qdir = 5; cell.qnum = -2;}
 			else if(ca>='g' && ca<='j'){
 				cell.setPencilArrow(parseInt(ca,20)-15, true);
 			}
@@ -372,9 +397,8 @@ Encode:{
 			if(dir===5){
 				if     (qn>= 0&&qn<  16){ pstr=    qn.toString(16);}
 				else if(qn>=16&&qn< 256){ pstr="-"+qn.toString(16);}
-				else                    { pstr=".";}
+				else                    { pstr="%";}
 			}
-			else if(dir===-2){ pstr="%";}
 			else if(dir!==0) { pstr=(dir+15).toString(20);}
 			else{ count++;}
 
