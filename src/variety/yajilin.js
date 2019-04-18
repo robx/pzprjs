@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js
+// パズル固有スクリプト部 ヤジリン版 yajilin.js
 // 
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['yajirin'], {
+['yajilin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -357,10 +357,10 @@ AnsCheck:{
 		"checkDeadendLine+",
 		"checkArrowNumber",
 		"checkOneLoop",
-		"checkEmptyCell_yajirin+"
+		"checkEmptyCell_yajilin+"
 	],
 
-	checkEmptyCell_yajirin : function(){
+	checkEmptyCell_yajilin : function(){
 		this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());}, "ceEmpty");
 	},
 

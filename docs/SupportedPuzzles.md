@@ -42,7 +42,7 @@ As well as the name of the puzzle, acceptable pid for puzzle.open() API is indic
 ### Regular
 * Slitherlink `slither` `slitherlink`
 * Masyu (Pearl Puzzle) `mashu` `masyu` `pearl`
-* Yajirin `yajirin` `yajilin`
+* Yajilin `yajirin` `yajilin`
 * Slalom `slalom`
 
 ### Reserver

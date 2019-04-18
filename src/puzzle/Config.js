@@ -197,7 +197,7 @@ Config.prototype =
 			case 'dispmove': exec = puzzle.board.linegraph.moveline; break;
 			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
 			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
-			case 'disptype_yajilin':   exec = (pid==="yajirin"); break;
+			case 'disptype_yajilin':   exec = (pid==="yajilin"); break;
 			case 'bgcolor':  exec = (pid==='slither'); break;
 			case 'irowake':  exec = puzzle.painter.irowake; break;
 			case 'irowakeblk':exec= puzzle.painter.irowakeblk; break;

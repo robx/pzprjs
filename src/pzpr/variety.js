@@ -190,7 +190,7 @@ delete variety.extend;
 	walllogic :[0,0,"ウォールロジック","Wall Logic"],
 	wblink    :[0,0,"シロクロリンク","Shirokuro-link"],
 	yajikazu  :[1,0,"やじさんかずさん","Yajisan-Kazusan"],
-	yajirin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin'}],
+	yajilin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin',alias:'yajirin'}],
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
 	yinyang   :[0,0,"しろまるくろまる","Yin-Yang"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]
