@@ -145,7 +145,10 @@ BoardExec:{
 	}
 },
 AreaShadeGraph:{
-	enabled : true,
+	enabled : true
+},
+AreaUnshadeGraph:{
+	enabled : true
 },
 'AreaDiagShadeGraph:AreaGraphBase':{
 	enabled : true,
@@ -249,14 +252,19 @@ AnsCheck:{
 		"checkConnectShadeDiag",
 		"checkIsolatedRoom",
 		"checkDeadendRoom",
-		"checkBranchRoom"
+		"checkBranchRoom",
+		"checkInnerRect"
 	],
 
 	checkClueShade : function(){
 		this.checkAllCell(function(cell){ return cell.isNum()&&!cell.isShade();}, "bkNumUnshade");
 	},
 	checkDoubleNumberShade : function(){
-		this.checkAllBlock(this.board.sblkmgr, function(cell){ return cell.isNum();}, function(w,h,a,n){ return (a<2);}, "bkNumGe2");
+		this.checkAllBlock(this.board.sblkmgr, function(cell){
+			return cell.isNum();
+		}, function(w,h,a,n){
+			return (a<2);
+		}, "bkNumGe2");
 	},
 	checkNumberAndSize : function(){
 		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (n<=0 || n===a);}, "bkSizeNe");
@@ -285,6 +293,19 @@ AnsCheck:{
 			return room.countConn()>2;
 		}, "rmBranch");
 	},
+	checkInnerRect : function(){
+		var bd = this.board, areas = bd.ublkmgr.components;
+		for(var i=0;i<areas.length;i++){
+			var cells = areas[i].clist, d = cells.getRectSize();
+			// skip areas touching the border
+			if(d.x1-1<=bd.minbx||d.y1-1<=bd.minby||d.x2+1>=bd.maxbx||d.y2+1>=bd.maxby){ continue;}
+			if(d.cols*d.rows!==cells.length){ continue;}
+
+			this.failcode.add("rmRectUnshade");
+			if(this.checkOnly){ break;}
+			cells.seterr(1);
+		}
+	},
 
 	checkAllRoom : function(func, code){
 		for(var i=0;i<this.board.room.length;i++){
@@ -306,6 +327,7 @@ FailCode:{
 	csdDivide : ["(please translate) The shaded cells are not connected.","The shaded cells are not connected."],
 	rmBranch : ["(please translate) There is a branch of areas.","There is a branch of areas."],
 	rmDeadend : ["(please translate) There is a dead-end area.","There is a dead-end area."],
-	rmIsolated : ["(please translate) There is an isolated area.","There is an isolated area."]
+	rmIsolated : ["(please translate) There is an isolated area.","There is an isolated area."],
+	rmRectUnshade : ["(please translate) A rectangle is not part of the solution.","A rectangle is not part of the solution."]
 }
 }));
