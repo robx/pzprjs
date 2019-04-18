@@ -24,11 +24,17 @@ MouseEvent:{
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
-				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
-				else{ this.inputLine();}
+				if(this.btn==='left'){
+					if(this.isBorderMode()) {
+						this.inputborder();
+					} else{
+						this.inputLine();
+					}
+				} else {
+					this.inputpeke();
+				}
 			}
 			// TODO draw arrows from auto
-			// TODO draw peke from auto
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
