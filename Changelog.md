@@ -4,6 +4,10 @@
 
 * bag, meander: Complete Japanese translation.
 
+#### BugFix
+
+* scrin: Disallow inner rectangle
+
 ## Version 0.11.0
 
 Release date: 2019/4/17
