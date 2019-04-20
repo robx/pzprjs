@@ -3,6 +3,7 @@
 #### Improvement
 
 * bag, meander: Complete Japanese translation.
+* scrin: Complete Japanese translation.
 
 #### BugFix
 
