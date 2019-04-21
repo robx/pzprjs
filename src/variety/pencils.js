@@ -142,7 +142,6 @@ MouseEvent:{
 	}
 },
 
-// TODO check and rewrite all key events
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(ca){
@@ -151,20 +150,23 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
+		// TODO use setPencilArrow here
 		if(this.key_inputarrow(ca)){ return;}
 
-		this.key_inputqnum_sashigane(ca);
+		this.key_inputqnum_pencils(ca);
 	},
 
-	key_inputqnum_sashigane : function(ca){
+	key_inputqnum_pencils : function(ca){
 		var cell = this.cursor.getc();
-		if(ca==='q'){
-			cell.setQdir((cell.qdir!==5)?5:0);
-			cell.setQnum(-1);
-		}
-		else if(ca==='-'){
-			cell.setQdir((cell.qdir!==-2||cell.qnum!==-1)?-2:0);
-			cell.setQnum(-1);
+		if(ca==='q' || ca==='-'){
+			if(cell.qnum !== -2) {
+				cell.setPencilArrow(0, true);
+				cell.setQdir(5);
+				cell.setQnum(-2);
+			} else {
+				cell.setQdir(0);
+				cell.setQnum(-1);
+			}
 		}
 		else if(ca==='BS' && cell.qdir===5){
 			if(cell.qnum!==-1){
