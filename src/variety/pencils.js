@@ -28,18 +28,60 @@ MouseEvent:{
 					if(this.isBorderMode()) {
 						this.inputborder();
 					} else{
-						this.inputLine();
+						this.inputLineOrArrow();
 					}
 				} else {
 					this.inputpeke();
 				}
 			}
-			// TODO draw arrows from auto
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum_loute();}
 		}
+	},
+
+	inputLineOrArrow : function(){
+		var pos, border;
+		pos = this.getpos(0);
+		if(this.prevPos.equals(pos)){ return;}
+		border = this.prevPos.getnb(pos);
+		
+		if(!border.isnull){
+			// TODO set inputData correctly when removing arrow
+			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
+			if(this.inputData===1 && !border.ques){
+				if(border.qans === 1) {
+					var dir = this.getDrawArrowDirection(border);
+					if(dir > 0) {
+						border.sidecell[1].setPencilArrow(border.isvert ? border.RT : border.DN, false);
+					} else {
+						border.sidecell[0].setPencilArrow(border.isvert ? border.LT : border.UP, false);
+					}
+				} else {
+					border.setLine();
+				}
+			}
+			else if(this.inputData===0){ border.removeLine();}
+			border.draw();
+		}
+		this.prevPos = pos;
+	},
+
+	getDrawArrowDirection: function(border) {
+		if(border.sidecell[0].isnull) {return +1;}
+		if(border.sidecell[1].isnull) {return -1;}
+
+		if(border.sidecell[0].qnum > 0) {return +1;}
+		if(border.sidecell[1].qnum > 0) {return -1;}
+
+		if(border.sidecell[1].lcnt > 0 && border.sidecell[0].lcnt === 0) {return +1;}
+		if(border.sidecell[0].lcnt > 0 && border.sidecell[1].lcnt === 0) {return -1;}
+
+		var pos = this.getpos(0);
+		var dir = this.prevPos.getdir(pos,2);
+
+		return (dir === border.RT || dir === border.DN) ? +1 : -1;
 	},
 
 	mouseinput_clear : function(){
@@ -161,7 +203,7 @@ Cell:{
 
 	// TODO fix qans border not being removed when undoing
 	setPencilArrow: function(dir, question) {
-		if(!(dir>=0 && dir <=4)) {return;}
+		if(!(dir>=0 && dir <=4)) {return -1;}
 		var anum = this.anum, qdir = this.qdir;
 
 		if(!question) { this.setAnum(-1); }
@@ -195,6 +237,8 @@ Cell:{
 			if(dir === this.LT && !this.adjborder.right.isnull) { this.adjborder.right.setQans(1); }
 			if(dir === this.RT && !this.adjborder.left.isnull) { this.adjborder.left.setQans(1); }
 		}
+
+		return dir;
 	},
 
 	// TODO clean up console.log calls
@@ -264,7 +308,6 @@ Border: {
 			return cell0.anum === cell0.UP || cell1.anum === cell1.DN;
 		}
 	},
-
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
