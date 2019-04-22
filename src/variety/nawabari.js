@@ -356,6 +356,6 @@ FailCode:{
 	bkSizeGt3 : ["サイズが3マスより大きいブロックがあります。","The size of an area is larger than three."],
 	bkSizeGt4 : ["サイズが4マスより大きいブロックがあります。","The size of an area is larger than four."],
 	bkSizeGt5 : ["サイズが5マスより大きいブロックがあります。","The size of an area is larger than five."],
-	bkSameTouch : ["(please translate) Two areas of the same shape and orientation touch.","Two areas of the same shape and orientation touch."]
+	bkSameTouch : ["(please translate) Two areas of the same shape and orientation are adjacent.","Two areas of the same shape and orientation area adjacent."]
 }
 }));
