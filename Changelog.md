@@ -1,3 +1,12 @@
+#### New puzzle
+
+* heteromino: Introduce new puzzle: Heteromino
+
+#### BugFix
+
+* nawabari: Fix answer check for border clues
+* nawabari: Correct English translation
+
 ## Version 0.11.1
 
 Release date: 2019/04/22
