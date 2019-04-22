@@ -34,7 +34,7 @@ Graphic:{
 		this.drawCells_common("c_fulls_", this.getShadedCellColor);
 	},
 	getShadedCellColor : function(cell){
-		if(cell.qans!==1){ return null;}
+		if(!cell.isShade()){ return null;}
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
@@ -156,7 +156,7 @@ Graphic:{
 			var cell = clist[i];
 			
 			g.vid = "c_dot_"+cell.id;
-			if(cell.qsub===1){
+			if(cell.isDot()){
 				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
 				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}
@@ -306,7 +306,7 @@ Graphic:{
 		}
 	},
 	getNumberTextCore : function(num){
-		var hideHatena = (this.pid!=="yajirin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
+		var hideHatena = (this.pid!=="yajilin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
 		return (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
 	},
 	getNumberTextCore_letter : function(num){
@@ -872,9 +872,6 @@ Graphic:{
 		var ra = this.circleratio;
 		var rsize_stroke = this.cw*(ra[0]+ra[1])/2, rsize_fill = this.cw*ra[0];
 		
-		/* fillとstrokeの間に線を描画するスキマを与える */
-		if(this.pid==='loopsp'){ rsize_fill -= this.cw*0.10;}
-
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];

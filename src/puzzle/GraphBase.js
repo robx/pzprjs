@@ -287,7 +287,7 @@ GraphBase:{
 	// graph.remakeComponent() modifyNodesに含まれるsubgraph成分からremakeしたりします
 	// graph.getAffectedComponents() modifyNodesを含むcomponentsを取得します
 	// graph.checkDividedComponent() 指定されたComponentがひとつながりかどうか探索します
-	// graph.remakeMaximalComonents()指定されたcomponentsを探索し直します
+	// graph.remakeMaximalComponents()指定されたcomponentsを探索し直します
 	//---------------------------------------------------------------------------
 	remakeComponent : function(){
 		// subgraph中にcomponentが何種類あるか調べる
@@ -301,7 +301,7 @@ GraphBase:{
 		// Component数が0なら現在のmodifyNodesに新規IDを割り振り終了
 		// Component数が2以上ならmodifyNodesに極大部分グラフを取り込んで再探索
 		if(!!this.modifyNodes && this.modifyNodes.length>0){
-			this.remakeMaximalComonents(remakeComponents);
+			this.remakeMaximalComponents(remakeComponents);
 		}
 	},
 	getAffectedComponents : function(){
@@ -340,7 +340,7 @@ GraphBase:{
 		}
 		// subgraphがひとつながりでないなら再探索ルーチンを回す
 	},
-	remakeMaximalComonents : function(remakeComponents){
+	remakeMaximalComponents : function(remakeComponents){
 		var longColor = (this.coloring ? this.getLongColor(remakeComponents) : null);
 		for(var p=0;p<remakeComponents.length;p++){
 			this.deleteComponent(remakeComponents[p]);

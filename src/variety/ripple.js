@@ -302,6 +302,6 @@ FailCode:{
 	bkSmallOnBig : ["同じ部屋で上に小さい数字が乗っています。","There is a smaller number on top of a bigger number in a room."],
 	nmSmallGap : ["数字よりもその間隔が短いところがあります。","The distance between two equal numbers is smaller than the number."],
 	nmAround : ["同じ数字がタテヨコナナメに隣接しています。","Equal numbers are adjacent."],
-	nmNotConsecNeighbors : ["A number is not the neighbor of its consecutive numbers.","A number is not the neighbor of its consecutive numbers."]
+	nmNotConsecNeighbors : ["連続する数字がタテヨコに隣り合っていません。","A number is not the neighbor of its consecutive numbers."]
 }
 }));

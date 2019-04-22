@@ -273,6 +273,11 @@ Graphic:{
 
 	numbercolor_func : "qnum",
 
+	getCircleFillColor : function(cell){
+		if(cell.qnum!==-1){ return "rgba(255,255,255,0.5)";}
+		return null;
+	},
+
 	minYdeg : 0.36,
 	maxYdeg : 0.74
 },

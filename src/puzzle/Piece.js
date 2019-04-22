@@ -211,6 +211,7 @@ pzpr.classmgr.makeCommon({
 	numberAsObject : false,	// 数字以外でqnum/anumを使用する(同じ値を入力で消去できたり、回答で・が入力できる)
 	numberAsLetter : false,	// 数字の代わりにアルファベットを入力する
 
+	qansUnshade : false, // qans === 1 means shade
 	numberRemainsUnshaded  : false,	// 数字のあるマスが黒マスにならないパズル
 	enableSubNumberArray   : false,	// 補助数字の配列を作るパズル
 
@@ -242,10 +243,27 @@ pzpr.classmgr.makeCommon({
 	// cell.setShade()  該当するCellに黒マスをセットする
 	// cell.clrShade()  該当するCellに白マスをセットする
 	//---------------------------------------------------------------------------
-	isShade   : function(){ return (!this.isnull && this.qans===1);},
-	isUnshade : function(){ return (!this.isnull && this.qans!==1);},
-	setShade : function(){ this.setQans(1);},
-	clrShade : function(){ this.setQans(0);},
+	isShade : function(){
+		if(this.isnull){ return false;}
+		return (this.qansUnshade?this.qans!==1:this.qans===1);
+	},
+	isUnshade : function(){ return (!this.isnull && !this.isShade());},
+	setShade : function(){ this.setQans(this.qansUnshade?0:1);},
+	clrShade : function(){ this.setQans(this.qansUnshade?1:0);},
+
+	// disallow certain inputs
+	allowShade : function(){
+		if(this.numberRemainsUnshaded){
+			return this.qnum===-1;
+		}
+		return true;
+	},
+	allowUnshade : function(){
+		if(this.numberRemainsUnshaded){
+			return this.qnum===-1||this.puzzle.painter.enablebcolor;
+		}
+		return true;
+	},
 	
 	//-----------------------------------------------------------------------
 	// cell.getNum()     該当するCellの数字を返す
@@ -338,6 +356,8 @@ pzpr.classmgr.makeCommon({
 	// cell.ice() アイスのマスかどうか判定する
 	//---------------------------------------------------------------------------
 	ice : function(){ return (this.ques===6);},
+
+	isDot : function(){ return this.qsub===1;},
 
 	//---------------------------------------------------------------------------
 	// cell.isEmpty() / cell.isValid() 不定形盤面などで、入力できるマスか判定する

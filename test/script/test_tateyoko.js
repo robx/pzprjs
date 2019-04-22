@@ -26,7 +26,7 @@ ui.debug.addDebugData('tateyoko', {
 		  result:"pzprv3/tateyoko/2/5/f e c d f /d c e f f /. . . . . /. . . . . /" },
 		/* 回答入力テスト */
 		{ input:["newboard,5,2", "playmode"] },
-		{ input:["anslear", "mouse,left, 1,1, 3,1, 3,3, 5,3"],
+		{ input:["mouse,left, 1,1, 3,1, 3,3, 5,3"],
 		  result:"pzprv3/tateyoko/2/5/. . . . . /. . . . . /2 2 0 0 0 /0 1 2 0 0 /" },
 		{ input:["mouse,right, 2,1, 4,3"],
 		  result:"pzprv3/tateyoko/2/5/. . . . . /. . . . . /2 1 0 0 0 /0 1 2 0 0 /" },

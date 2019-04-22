@@ -19,9 +19,9 @@ ui.debug.addDebugData('numlin', {
 		/* 回答入力はmashuと同じなので省略 */
 		/* AreaLineManagerでエラーしないか確認 */
 		{ input:["newboard,5,2", "playmode"] },
-		{ input:["anslear", "mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
+		{ input:["mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
 		  result:"pzprv3/numlin/2/5/. . . . . /. . . . . /1 1 1 0 /0 1 -1 1 /0 0 -1 0 0 /"},
-		{ input:["anslear", "mouse,left, 5,1, 5,3, 7,3"],
+		{ input:["mouse,left, 5,1, 5,3, 7,3"],
 		  result:"pzprv3/numlin/2/5/. . . . . /. . . . . /1 1 1 0 /0 1 1 1 /0 0 1 0 0 /"}
 	]
 });

@@ -14,41 +14,51 @@ MouseEvent:{
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
+		if(this.firstCell.isnull){ this.firstCell = cell;}
 
-		if(cell.numberRemainsUnshaded && cell.qnum!==-1 && (this.inputData===1||(this.inputData===2 && !this.puzzle.painter.enablebcolor))){ return;}
+		var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
+		if(this.inputData===shade&&!cell.allowShade()){ return;}
+		if(this.inputData===unshade&&!cell.allowUnshade()){ return;}
+
 		if(this.RBShadeCell && this.inputData===1){
-			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
 
-		(this.inputData===1?cell.setShade:cell.clrShade).call(cell);
+		cell.setQans(this.inputData===1?1:0);
 		cell.setQsub(this.inputData===2?1:0);
 
 		cell.draw();
 	},
 	decIC : function(cell){
-		if(this.inputMode==='shade'){
+		var ans = cell.qansUnshade?'unshade':'shade';
+		var sub = cell.qansUnshade?'shade':'unshade';
+		if(this.inputMode===ans){
 			this.inputData=((cell.qans!==1)? 1 : 0);
 		}
-		else if(this.inputMode==='unshade'){
+		else if(this.inputMode===sub){
 			this.inputData=((cell.qsub!==1)? 2 : 0);
 		}
 		else if(this.puzzle.getConfig('use')===1){
-			if     (this.btn==='left') { this.inputData=(cell.isUnshade() ? 1 : 0); }
-			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1)  ? 2 : 0); }
+			if     (this.btn==='left') { this.inputData=((cell.qans!==1) ? 1 : 0); }
+			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
-				this.inputData=((cell.qsub!==1)? 2 : 0);
+				if(ans==='shade'){
+					this.inputData=((cell.qsub!==1)? 2 : 0);
+				}
+				else{
+					this.inputData=((cell.qans!==1)? 1 : 0);
+				}
 			}
 			else if(this.btn==='left'){
-				if     (cell.isShade()){ this.inputData=2;}
+				if     (cell.qans===1){ this.inputData=2;}
 				else if(cell.qsub===1) { this.inputData=0;}
 				else{ this.inputData=1;}
 			}
 			else if(this.btn==='right'){
-				if     (cell.isShade()){ this.inputData=0;}
+				if     (cell.qans===1){ this.inputData=0;}
 				else if(cell.qsub===1) { this.inputData=1;}
 				else{ this.inputData=2;}
 			}
@@ -510,6 +520,9 @@ MouseEvent:{
 			return;
 		}
 		
+		var cell = this.getcell();
+		if(this.firstCell.isnull){ this.firstCell = cell;}
+
 		var pos, border;
 		if(!this.board.borderAsLine){
 			pos = this.getpos(0);
@@ -639,6 +652,7 @@ MouseEvent:{
 
 	//---------------------------------------------------------------------------
 	// mv.dispInfoBlk()  ひとつながりの黒マスを赤く表示する
+	// mv.dispInfoUblk()
 	// mv.dispInfoBlk8() ななめつながりの黒マスを赤く表示する
 	// mv.dispInfoLine()   ひとつながりの線を赤く表示する
 	//---------------------------------------------------------------------------
@@ -648,6 +662,14 @@ MouseEvent:{
 		if(cell.isnull || !cell.isShade()){ return;}
 		if(!this.RBShadeCell){ cell.sblk.clist.setinfo(1);}
 		else{ this.dispInfoBlk8(cell);}
+		this.board.hasinfo = true;
+		this.puzzle.redraw();
+	},
+	dispInfoUblk : function(){
+		var cell = this.getcell();
+		this.mousereset();
+		if(cell.isnull || !cell.isUnshade()){ return;}
+		cell.ublk.clist.setinfo(1);
 		this.board.hasinfo = true;
 		this.puzzle.redraw();
 	},

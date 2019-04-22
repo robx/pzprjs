@@ -17,7 +17,7 @@ ui.debug.addDebugData('nurikabe', {
 		  result:"pzprv3/nurikabe/1/5/# # # # # /" },
 		{ input:["mouse,left, 1,1, 9,1"],
 		  result:"pzprv3/nurikabe/1/5/. . . . . /" },
-		{ input:["anslear", "mouse,right, 1,1, 9,1"],
+		{ input:["mouse,right, 1,1, 9,1"],
 		  result:"pzprv3/nurikabe/1/5/+ + + + + /" },
 		{ input:["mouse,right, 1,1, 9,1"],
 		  result:"pzprv3/nurikabe/1/5/. . . . . /" },

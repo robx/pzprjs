@@ -16,11 +16,11 @@ ui.debug.addDebugData('tawa', {
 		{ input:["newboard,5,5,1"] },
 		/* 回答入力テスト */
 		{ input:["newboard,5,5,0", "playmode", "setconfig,use,1"] },
-		{ input:["anslear", "mouse,left, 1.5,1, 1.5,9"],
+		{ input:["mouse,left, 1.5,1, 1.5,9"],
 		  result:"pzprv3/tawa/5/5/0/# . . . . /# . . . /# . . . . /# . . . /# . . . . /" },
 		{ input:["mouse,left, 1.5,1, 1.5,9"],
 		  result:"pzprv3/tawa/5/5/0/. . . . . /. . . . /. . . . . /. . . . /. . . . . /" },
-		{ input:["anslear", "mouse,right, 1.5,1, 1.5,9"],
+		{ input:["mouse,right, 1.5,1, 1.5,9"],
 		  result:"pzprv3/tawa/5/5/0/+ . . . . /+ . . . /+ . . . . /+ . . . /+ . . . . /" },
 		{ input:["mouse,right, 1.5,1, 1.5,9"],
 		  result:"pzprv3/tawa/5/5/0/. . . . . /. . . . /. . . . . /. . . . /. . . . . /" },

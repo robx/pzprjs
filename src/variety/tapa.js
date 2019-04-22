@@ -23,58 +23,10 @@ MouseEvent:{
 	inputModes:{edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
 	mouseinput : function(){ // オーバーライド
 		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ this.inputcell_tapa();}
+			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum_tapa();}
-		}
-	},
-
-	// 条件部分にあるqnumがqnumsに変わっているだけですが。。
-	inputcell_tapa : function(){
-		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.inputData===null){ this.decIC(cell);}
-
-		this.mouseCell = cell;
-
-		if(cell.numberRemainsUnshaded && cell.qnums.length!==0 && (this.inputData===1||(this.inputData===2 && !this.puzzle.painter.enablebcolor))){ return;}
-		if(this.RBShadeCell && this.inputData===1){
-			if(this.firstCell.isnull){ this.firstCell = cell;}
-			var cell0 = this.firstCell;
-			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
-		}
-
-		(this.inputData===1?cell.setShade:cell.clrShade).call(cell);
-		cell.setQsub(this.inputData===2?1:0);
-
-		cell.draw();
-	},
-	decIC : function(cell){
-		if(this.inputMode==='shade'){
-			this.inputData=((cell.qans!==1)? 1 : 0);
-		}
-		else if(this.inputMode==='unshade'){
-			this.inputData=((cell.qsub!==1)? 2 : 0);
-		}
-		else if(this.puzzle.getConfig('use')===1){
-			if     (this.btn==='left') { this.inputData=(cell.isUnshade()? 1 : 0); }
-			else if(this.btn==='right'){ this.inputData=((cell.qsub!==1) ? 2 : 0); }
-		}
-		else if(this.puzzle.getConfig('use')===2){
-			if(cell.numberRemainsUnshaded && cell.qnums.length!==0){
-				this.inputData=((cell.qsub!==1)? 2 : 0);
-			}
-			else if(this.btn==='left'){
-				if     (cell.isShade()){ this.inputData=2;}
-				else if(cell.qsub===1) { this.inputData=0;}
-				else{ this.inputData=1;}
-			}
-			else if(this.btn==='right'){
-				if     (cell.isShade()){ this.inputData=0;}
-				else if(cell.qsub===1) { this.inputData=1;}
-				else{ this.inputData=2;}
-			}
 		}
 	},
 
@@ -170,8 +122,13 @@ Cell:{
 		states.push([1,1,1,1]);
 		return states;
 	})(),
-	
-	numberRemainsUnshaded : true,
+
+	allowUnshade : function(){
+		return this.qnums.length===0;
+	},
+	allowShade : function(){
+		return this.qnums.length===0;
+	},
 	
 	initialize : function(){
 		this.common.initialize.call(this);

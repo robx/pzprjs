@@ -1,3 +1,48 @@
+## Version 0.11.1
+
+#### Improvement
+
+* bag, meander, scrin: Complete Japanese translation
+* loopsp: Less ugly loop ends at clue cells
+* nurimisaki: When undefined cells are grayed, leave the unshaded cells white
+* yajilin: Various input fixes
+* yajilin: Give an error when a number has no arrow
+* yajilin: Limit clue value based on grid size
+
+#### BugFix
+
+* nurimisaki: Fix one-button input mode to unshade
+* scrin: Disallow inner rectangle
+
+## Version 0.11.0
+
+Release date: 2019/4/17
+
+#### New puzzle
+
+* angleloop: Introduce new puzzle: Angle Loop
+* doubleback: Introduce new puzzle: Double Back
+* heyawacky: Introduce new puzzle: Heyawacky
+* meander: Introduce new puzzle: Meandering Numbers
+* nurimisaki: Introduce new puzzle: Nurimisaki
+* satogaeri: Introduce new puzzle: Satogaeri (due to Lennard Sprong)
+* scrin: Introduce new puzzle: Scrin
+
+#### Improvement
+
+* Export: Support https URLs
+* Language: Rework some English language messages
+* bag: Rework as shading puzzle
+* fillomino: Automatically draw borders between different numbers
+* yajilin: Allow clues to be marked complete
+* yajilin: Autocompletion for clues
+
+#### BugFix
+
+* LineManager: Fix connection logic and colouring for pipelink, ringring etc.
+* nurimaze: Fix broken cleared clue cells afer random key input
+* tentaisho: Fix false error when placing star after drawing border in edit mode
+* fivecells: Fix encoding/decoding of missing cells
 
 ## Version 0.10.0
 

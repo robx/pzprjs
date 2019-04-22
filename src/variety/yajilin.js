@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 ヤジリン版 yajirin.js
+// パズル固有スクリプト部 ヤジリン版 yajilin.js
 // 
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['yajirin'], {
+['yajilin'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -20,6 +20,7 @@ MouseEvent:{
 			}
 			else if(this.mouseend && this.notInputted()){
 				var cell = this.getcell();
+				if(!this.firstCell.isnull&&cell!==this.firstCell){ return;}
 				if(!cell.isnull && cell.isNum()){ this.inputqcmp();}
 				else                            { this.inputcell();}
 			}
@@ -59,11 +60,21 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	minnum : 0,
-
-	numberRemainsUnshaded : true,
+	maxnum : function(){ return Math.max((this.board.cols+1)>>1,(this.board.rows+1)>>1);},
 
 	// 線を引かせたくないので上書き
 	noLP : function(dir){ return (this.isShade() || this.isNum());},
+
+	isDot : function(){
+		return this.lcnt===0&&this.qsub===1;
+	},
+
+	allowShade : function(){
+		return this.qnum===-1&&this.lcnt===0;
+	},
+	allowUnshade : function(){
+		return this.qnum===-1&&this.lcnt===0;
+	},
 
 	isCmp : function(){
 		if(this.qcmp===1){ return true;}
@@ -111,20 +122,21 @@ Cell:{
 		}).length);
 	},
 
-	redrawAffected : function(){
-		for(var x=1; x<2*this.board.cols; x+=2){
-			var c=this.board.getc(x,this.by);
-			if(c.qnum!==-1){ c.draw();}
-		}
-		for(var y=1; y<2*this.board.rows; y+=2){
-			var c=this.board.getc(this.bx,y);
-			if(c.qnum!==-1){ c.draw();}
-		}
-	},
-
 	posthook : {
-		qsub : function(){ this.redrawAffected();},
-		qans : function(){ this.redrawAffected();}
+		qsub : function(){
+			var cells=[this];
+			this.board.redrawAffected(cells);
+		},
+		qans : function(){
+			var cells=[this];
+			var adc=this.adjacent;
+			var cs=[adc.top, adc.bottom, adc.left, adc.right];
+			for(var i=0; i<cs.length; i++){
+				var c=cs[i];
+				if(!c.isnull&&c.qnum===-1&&c.qans===0&&c.qsub===0){ cells.push(c);}
+			}
+			this.board.redrawAffected(cells);
+		}
 	}
 },
 Border:{
@@ -136,14 +148,38 @@ Border:{
 
 	posthook : {
 		line : function(){
-			for(var i=0;i<this.sidecell.length;i++){
-				this.sidecell[i].redrawAffected();
-			}
+			var cells=[];
+			for(var i=0;i<this.sidecell.length;i++){ cells.push(this.sidecell[i]);}
+			this.board.redrawAffected(cells);
 		}
 	}
 },
 Board:{
-	hasborder : 1
+	hasborder : 1,
+
+	redrawAffected : function(cells){
+		var minx=this.maxbx, maxx=this.minbx, miny=this.maxby, maxy=this.minby;
+		for(var i=0;i<cells.length;i++){
+			var c=cells[i];
+			minx = Math.min(minx,c.bx);
+			maxx = Math.max(maxx,c.bx);
+			miny = Math.min(miny,c.by);
+			maxy = Math.max(maxy,c.by);
+		}
+		for(var x=minx; x<=maxx; x+=2){
+			for(var y=1; y<2*this.board.rows; y+=2){
+				var c=this.board.getc(x,y);
+				if(c.qnum!==-1){ c.draw();}
+			}
+		}
+		for(var x=1; x<2*this.cols; x+=2){
+			if(x>=minx&&x<=maxx){ continue;}
+			for(var y=miny; y<=maxy; y+=2){
+				var c=this.board.getc(x,y);
+				if(c.qnum!==-1){ c.draw();}
+			}
+		}
+	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -332,10 +368,11 @@ AnsCheck:{
 		"checkDeadendLine+",
 		"checkArrowNumber",
 		"checkOneLoop",
-		"checkEmptyCell_yajirin+"
+		"checkEmptyCell_yajilin+",
+		"checkNumberHasArrow",
 	],
 
-	checkEmptyCell_yajirin : function(){
+	checkEmptyCell_yajilin : function(){
 		this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());}, "ceEmpty");
 	},
 
@@ -352,10 +389,15 @@ AnsCheck:{
 			cell.seterr(1);
 			clist.seterr(1);
 		}
+	},
+
+	checkNumberHasArrow : function(){
+		this.checkAllCell(function(cell){ return (cell.qnum>0&&cell.qdir===cell.NDIR);}, "anNoArrow");
 	}
 },
 
 FailCode:{
-	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."]
+	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."],
+	anNoArrow : ["(please translate) A number has no arrow.","A number has no arrow."]
 }
 }));
