@@ -4,6 +4,7 @@
 
 #### BugFix
 
+* fourcells, fivecells: No borders and connection lines between empty cells
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
 

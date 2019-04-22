@@ -122,6 +122,11 @@ Border:{
 	},
 	isQuesBorder : function(){
 		return !!(this.sidecell[0].isEmpty()^this.sidecell[1].isEmpty());
+	},
+
+	prehook : {
+		'qans' : function(){ return !this.isGrid();},
+		'qsub' : function(){ return !this.isGrid();}
 	}
 },
 
