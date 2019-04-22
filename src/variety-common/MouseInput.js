@@ -14,13 +14,13 @@ MouseEvent:{
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
+		if(this.firstCell.isnull){ this.firstCell = cell;}
 
 		var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
 		if(this.inputData===shade&&!cell.allowShade()){ return;}
 		if(this.inputData===unshade&&!cell.allowUnshade()){ return;}
 
 		if(this.RBShadeCell && this.inputData===1){
-			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
@@ -520,6 +520,9 @@ MouseEvent:{
 			return;
 		}
 		
+		var cell = this.getcell();
+		if(this.firstCell.isnull){ this.firstCell = cell;}
+
 		var pos, border;
 		if(!this.board.borderAsLine){
 			pos = this.getpos(0);
