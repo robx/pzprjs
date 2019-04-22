@@ -368,7 +368,8 @@ AnsCheck:{
 		"checkDeadendLine+",
 		"checkArrowNumber",
 		"checkOneLoop",
-		"checkEmptyCell_yajilin+"
+		"checkEmptyCell_yajilin+",
+		"checkNumberHasArrow",
 	],
 
 	checkEmptyCell_yajilin : function(){
@@ -388,10 +389,15 @@ AnsCheck:{
 			cell.seterr(1);
 			clist.seterr(1);
 		}
+	},
+
+	checkNumberHasArrow : function(){
+		this.checkAllCell(function(cell){ return (cell.qnum>0&&cell.qdir===cell.NDIR);}, "anNoArrow");
 	}
 },
 
 FailCode:{
-	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."]
+	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."],
+	anNoArrow : ["(please translate) A number has no arrow.","A number has no arrow."]
 }
 }));
