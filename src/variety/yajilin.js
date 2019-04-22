@@ -61,13 +61,18 @@ Cell:{
 	minnum : 0,
 	maxnum : function(){ return Math.max((this.board.cols+1)>>1,(this.board.rows+1)>>1);},
 
-	numberRemainsUnshaded : true,
-
 	// 線を引かせたくないので上書き
 	noLP : function(dir){ return (this.isShade() || this.isNum());},
 
 	isDot : function(){
 		return this.lcnt===0&&this.qsub===1;
+	},
+
+	allowShade : function(){
+		return this.qnum===-1&&this.lcnt===0;
+	},
+	allowUnshade : function(){
+		return this.qnum===-1&&this.lcnt===0;
 	},
 
 	isCmp : function(){
