@@ -20,6 +20,7 @@ MouseEvent:{
 			}
 			else if(this.mouseend && this.notInputted()){
 				var cell = this.getcell();
+				if(!this.firstCell.isnull&&cell!==this.firstCell){ return;}
 				if(!cell.isnull && cell.isNum()){ this.inputqcmp();}
 				else                            { this.inputcell();}
 			}
