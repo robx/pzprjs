@@ -150,10 +150,21 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		// TODO use setPencilArrow here
-		if(this.key_inputarrow(ca)){ return;}
+		var cell = this.cursor.getc();
+		var dir = 0;
+		switch(ca){
+			case 'shift+up':    dir = cell.UP; break;
+			case 'shift+down':  dir = cell.DN; break;
+			case 'shift+left':  dir = cell.LT; break;
+			case 'shift+right': dir = cell.RT; break;
+		}
 
-		this.key_inputqnum_pencils(ca);
+		if(dir !== 0 && !cell.isnull) {
+			cell.setPencilArrow(dir, true);
+			this.cursor.draw();
+		} else {
+			this.key_inputqnum_pencils(ca);
+		}
 	},
 
 	key_inputqnum_pencils : function(ca){
@@ -164,7 +175,7 @@ KeyEvent:{
 				cell.setQdir(5);
 				cell.setQnum(-2);
 			} else {
-				cell.setQdir(0);
+				cell.setPencilArrow(0, true);
 				cell.setQnum(-1);
 			}
 		}
@@ -175,18 +186,17 @@ KeyEvent:{
 					cell.setQnum(-1);
 				}
 			}
-			else{
-				cell.setQdir(0);
-				cell.setQnum(-2);
-			}
 		}
 		else if(ca===' ' || ca==='BS'){
-			cell.setQdir(0);
+			cell.setPencilArrow(0, true);
 			cell.setQnum(-1);
 		}
 		else{
 			this.key_inputqnum_main(cell,ca);
-			if(cell.isNum() && cell.qdir!==5){ cell.setQdir(5);}
+			if(cell.isNum() && cell.qdir!==5) {
+				cell.setPencilArrow(0, true);
+				cell.setQdir(5);
+			}
 		}
 
 		this.prev = cell;
@@ -211,19 +221,19 @@ Cell:{
 		if(!question) { this.setAnum(-1); }
 
 		if(anum === this.UP && this.adjacent.bottom.anum !== this.DN) { this.adjborder.bottom.setQans(0); }
-		if(anum === this.DN && this.adjacent.top.anum !== this.DN) { this.adjborder.top.setQans(0); }
+		if(anum === this.DN && this.adjacent.top.anum !== this.UP) { this.adjborder.top.setQans(0); }
 		if(anum === this.LT && this.adjacent.right.anum !== this.RT) { this.adjborder.right.setQans(0); }
 		if(anum === this.RT && this.adjacent.left.anum !== this.LT) { this.adjborder.left.setQans(0); }
 
 		if(question) {
 			if(qdir === this.UP && this.adjacent.bottom.qdir !== this.DN) { this.adjborder.bottom.setQues(0); }
-			if(qdir === this.DN && this.adjacent.top.qdir !== this.DN) { this.adjborder.top.setQues(0); }
+			if(qdir === this.DN && this.adjacent.top.qdir !== this.UP) { this.adjborder.top.setQues(0); }
 			if(qdir === this.LT && this.adjacent.right.qdir !== this.RT) { this.adjborder.right.setQues(0); }
 			if(qdir === this.RT && this.adjacent.left.qdir !== this.LT) { this.adjborder.left.setQues(0); }
 
 			if(qdir === dir) {dir = 0;}
 			this.setQdir(dir);
-			this.setQnum(-1);
+			if(dir) {this.setQnum(-1);}
 
 			if(dir === this.UP && !this.adjborder.bottom.isnull) { this.adjborder.bottom.setQues(1); }
 			if(dir === this.DN && !this.adjborder.top.isnull) { this.adjborder.top.setQues(1); }
