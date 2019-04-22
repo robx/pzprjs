@@ -3,7 +3,10 @@
 #### Improvement
 
 * bag, meander, scrin: Complete Japanese translation
+* loopsp: Less ugly loop ends at clue cells
 * nurimisaki: When undefined cells are grayed, leave the unshaded cells white
+* yajilin: Various input fixes
+* yajilin: Give an error when a number has no arrow
 * yajilin: Limit clue value based on grid size
 
 #### BugFix
