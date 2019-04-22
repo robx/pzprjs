@@ -5,11 +5,10 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['nawabari','fourcells','fivecells'], {
+['nawabari','fourcells','fivecells','heteromino'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['number','clear'],play:['border','subline']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
@@ -18,12 +17,12 @@ MouseEvent:{
 			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart){ this.inputqnum();}
+			if(this.mousestart){
+				if(this.pid==='heteromino'){ this.inputempty();}
+				else                       { this.inputqnum();}
+			}
 		}
-	}
-},
-"MouseEvent@fivecells":{
-	inputModes : {edit:['empty','number','clear'],play:['border','subline']},
+	},
 	mouseinput_other : function(){
 		if(this.inputMode==='empty'){ this.inputempty();}
 	},
@@ -39,6 +38,18 @@ MouseEvent:{
 		this.mouseCell = cell;
 	}
 },
+"MouseEvent@nawabari":{
+	inputModes : {edit:['number','clear'],play:['border','subline']}
+},
+"MouseEvent@fourcells,fivecells":{
+	inputModes : {edit:['empty','number','clear'],play:['border','subline']},
+},
+"MouseEvent@heteromino":{
+	inputModes : {edit:['empty','clear'],play:['border','subline']},
+},
+"MouseEvent@fourcells,fivecells,heteromino":{
+	inputModes : {edit:['empty','number','clear'],play:['border','subline']}
+},
 
 //---------------------------------------------------------
 // キーボード入力系
@@ -46,10 +57,11 @@ KeyEvent:{
 	enablemake : true
 },
 
-"KeyEvent@fourcells,fivecells":{
+"KeyEvent@fourcells,fivecells,heteromino":{
 	keyinput : function(ca){
+
 		if(ca==='w'){ this.key_inputvalid(ca);}
-		else{ this.key_inputqnum(ca);}
+		else if(this.pid!=='heteromino'){ this.key_inputqnum(ca);}
 	},
 	key_inputvalid : function(ca){
 		if(ca==='w'){
@@ -85,6 +97,20 @@ Cell:{
 "Cell@fivecells":{
 	maxnum : 3,
 	minnum : 0
+},
+"CellList@heteromino":{
+	triminoShape : function(){
+		if(this.length!==3){return -1;}
+		var rect = this.getRectSize();
+		var id=0;
+		for(var i=0;i<this.length;i++){
+			var cell = this[i];
+			var dx=(cell.bx-rect.x1)>>1, dy=(cell.by-rect.y1)>>1;
+			if(dx>=2||dy>=2){ continue;}
+			id += 1<<(dx+2*dy);
+		}
+		return id;
+	}
 },
 
 Border:{
@@ -135,6 +161,8 @@ Graphic:{
 		this.drawQuesNumbers();
 		this.drawBorderQsubs();
 
+		if(this.pid==='heteromino'){ this.drawChassis();}
+
 		this.drawTarget();
 	},
 
@@ -173,6 +201,13 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
+	}
+},
+
+"Graphic@heteromino":{
+	getBGCellColor : function(cell){
+		if(!cell.isValid()){ return "black";}
+		return this.getBGCellColor_error1(cell);
 	}
 },
 
@@ -253,14 +288,23 @@ AnsCheck:{
 		"checkRoomRect@nawabari",
 		"checkNoNumber@nawabari",
 		"checkDoubleNumber@nawabari",
+		"checkOverThreeCells@heteromino",
 		"checkOverFourCells@fourcells",
 		"checkOverFiveCells@fivecells",
-		"checkdir4BorderAns",
+		"checkdir4BorderAns@!heteromino",
 		"checkBorderDeadend+",
+		"checkLessThreeCells@heteromino",
 		"checkLessFourCells@fourcells",
-		"checkLessFiveCells@fivecells"
+		"checkLessFiveCells@fivecells",
+		"checkTouchDifferent@heteromino"
 	],
 
+	checkOverThreeCells : function(){
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a>=3);}, "bkSizeLt3");
+	},
+	checkLessThreeCells : function(){
+		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a<=3);}, "bkSizeGt3");
+	},
 	checkOverFourCells : function(){
 		this.checkAllArea(this.board.roommgr, function(w,h,a,n){ return (a>=4);}, "bkSizeLt4");
 	},
@@ -276,6 +320,24 @@ AnsCheck:{
 
 	checkdir4BorderAns : function(){
 		this.checkAllCell(function(cell){ return (cell.isValidNum() && cell.getdir4BorderCount()!==cell.qnum);}, "nmBorderNe");
+	},
+
+	checkTouchDifferent : function(){
+		var bd=this.board;
+		for(var i=0;i<bd.border.length;i++){
+			var b=bd.border[i];
+			if(!b.isBorder()){ continue;}
+			var cell1=b.sidecell[0], cell2=b.sidecell[1];
+			if(!cell1.isValid()||!cell2.isValid()){ continue;}
+
+			var l1=cell1.room.clist, l2=cell2.room.clist;
+			if(l1.triminoShape()!==l2.triminoShape()){ continue;}
+
+			this.failcode.add("bkSameTouch");
+			if(this.checkOnly){ return;}
+			l1.seterr(1);
+			l2.seterr(1);
+		}
 	}
 },
 
@@ -283,9 +345,12 @@ FailCode:{
 	nmBorderNe : ["数字の周りにある境界線の本数が違います。","The number is not equal to the number of border lines around it."],
 	bkNoNum   : ["数字の入っていない部屋があります。","A room has no numbers."],
 	bkNumGe2  : ["1つの部屋に2つ以上の数字が入っています。","A room has plural numbers."],
-	bkSizeLt4 : ["サイズが4マスより小さいブロックがあります。","The size of block is smaller than four."],
-	bkSizeLt5 : ["サイズが5マスより小さいブロックがあります。","The size of block is smaller than five."],
-	bkSizeGt4 : ["サイズが4マスより大きいブロックがあります。","The size of block is larger than four."],
-	bkSizeGt5 : ["サイズが5マスより大きいブロックがあります。","The size of block is larger than five."]
+	bkSizeLt3 : ["サイズが3マスより小さいブロックがあります。","The size of an area is smaller than three."],
+	bkSizeLt4 : ["サイズが4マスより小さいブロックがあります。","The size of an area is smaller than four."],
+	bkSizeLt5 : ["サイズが5マスより小さいブロックがあります。","The size of an area is smaller than five."],
+	bkSizeGt3 : ["サイズが3マスより大きいブロックがあります。","The size of an area is larger than three."],
+	bkSizeGt4 : ["サイズが4マスより大きいブロックがあります。","The size of an area is larger than four."],
+	bkSizeGt5 : ["サイズが5マスより大きいブロックがあります。","The size of an area is larger than five."],
+	bkSameTouch : ["(please translate) Two areas of the same shape and orientation touch.","Two areas of the same shape and orientation touch."]
 }
 }));

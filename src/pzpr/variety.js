@@ -101,6 +101,7 @@ delete variety.extend;
 	hashikake :[0,1,"橋をかけろ","Hashiwokakero (Bridges)",'',{pzprurl:'hashi',kanpen:'hashi',alias:'bridges'}],
 	hebi      :[1,0,"へびいちご","Hebi-Ichigo",'',{old:'snakes'}],
 	herugolf  :[0,0,"ヘルゴルフ","Herugolf"],
+	heteromino:[0,0,"ヘテロミノ","Heteromino",'nawabari'],
 	heyawacky :[0,0,"不定形へやわけ","Heyawacky",'heyawake'],
 	heyawake  :[0,1,"へやわけ","Heyawake",'heyawake'],
 	heyabon   :[1,0,"へやぼん","Heya-Bon",'bonsan'],
