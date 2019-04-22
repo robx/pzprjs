@@ -66,6 +66,10 @@ Cell:{
 	// 線を引かせたくないので上書き
 	noLP : function(dir){ return (this.isShade() || this.isNum());},
 
+	isDot : function(){
+		return this.lcnt===0&&this.qsub===1;
+	},
+
 	isCmp : function(){
 		if(this.qcmp===1){ return true;}
 		if(!this.puzzle.execConfig('autocmp')){ return false;}

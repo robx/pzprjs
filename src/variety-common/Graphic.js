@@ -156,7 +156,7 @@ Graphic:{
 			var cell = clist[i];
 			
 			g.vid = "c_dot_"+cell.id;
-			if(cell.qsub===1){
+			if(cell.isDot()){
 				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
 				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}
