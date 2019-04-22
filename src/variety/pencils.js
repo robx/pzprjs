@@ -10,6 +10,7 @@
 // マウス入力系
 MouseEvent:{
 	// TODO allow background coloring
+	// TODO fix inputting question arrow over answer arrow
 	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke']},
 	mouseinput_number : function(){
 		if(this.mousestart){ this.inputqnum_pencils();}
@@ -45,17 +46,31 @@ MouseEvent:{
 		pos = this.getpos(0);
 		if(this.prevPos.equals(pos)){ return;}
 		border = this.prevPos.getnb(pos);
+		var cell0 = border.sidecell[0], cell1 = border.sidecell[1];
 		
 		if(!border.isnull){
-			// TODO set inputData correctly when removing arrow
+			if(this.inputData===null) {
+				// Do not use setPencilArrow here, leave the border intact
+				if(border.isvert && (cell0.anum === border.LT || cell1.anum === border.RT)) {
+					if(cell0.anum === border.LT) {cell0.setAnum(-1);}
+					if(cell1.anum === border.RT) {cell1.setAnum(-1);}
+					this.inputData = 0;
+				}
+				if(!border.isvert && (cell0.anum === border.UP || cell1.anum === border.DN)) {
+					if(cell0.anum === border.UP) {cell0.setAnum(-1);}
+					if(cell1.anum === border.DN) {cell1.setAnum(-1);}
+					this.inputData = 0;
+				}
+			}
+
 			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
 			if(this.inputData===1 && !border.ques){
 				if(border.qans === 1) {
 					var dir = this.getDrawArrowDirection(border);
 					if(dir > 0) {
-						border.sidecell[1].setPencilArrow(border.isvert ? border.RT : border.DN, false);
+						cell1.setPencilArrow(border.isvert ? border.RT : border.DN, false);
 					} else {
-						border.sidecell[0].setPencilArrow(border.isvert ? border.LT : border.UP, false);
+						cell0.setPencilArrow(border.isvert ? border.LT : border.UP, false);
 					}
 				} else {
 					border.setLine();
