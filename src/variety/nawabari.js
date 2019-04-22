@@ -128,20 +128,12 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 
-		if(this.pid==='nawabari'){
-			this.drawDashedGrid();
-			this.drawBorders();
-		}
-		else{
-			this.drawValidDashedGrid();
-			this.drawQansBorders();
-			this.drawQuesBorders();
-		}
+		this.drawValidDashedGrid();
+		this.drawQansBorders();
+		this.drawQuesBorders();
 
 		this.drawQuesNumbers();
 		this.drawBorderQsubs();
-
-		if(this.pid==='nawabari'){ this.drawChassis();}
 
 		this.drawTarget();
 	},
