@@ -8,6 +8,7 @@
 
 #### BugFix
 
+* nurimisaki: Fix one-button input mode to unshade
 * scrin: Disallow inner rectangle
 
 ## Version 0.11.0

@@ -46,7 +46,12 @@ MouseEvent:{
 		}
 		else if(this.puzzle.getConfig('use')===2){
 			if(cell.numberRemainsUnshaded && cell.qnum!==-1){
-				this.inputData=((cell.qsub!==1)? 2 : 0);
+				if(ans==='shade'){
+					this.inputData=((cell.qsub!==1)? 2 : 0);
+				}
+				else{
+					this.inputData=((cell.qans!==1)? 1 : 0);
+				}
 			}
 			else if(this.btn==='left'){
 				if     (cell.qans===1){ this.inputData=2;}
