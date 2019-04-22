@@ -14,13 +14,13 @@ ui.debug.addDebugData('walllogic', {
 		/* 問題入力テスト */
 		/* 回答入力テスト */
 		{ input:["newboard,3,3", "playmode"] },
-		{ input:["anslear", "mouse,left, 1,1, 3,1, 3,3, 5,3"],
+		{ input:["mouse,left, 1,1, 3,1, 3,3, 5,3"],
 		  result:"pzprv3/walllogic/3/3/. . . /. . . /. . . /4 4 . /. 2 4 /. . . /"},
-		{ input:["anslear", "mouse,left, 5,3, 3,3, 3,1, 1,1"],
+		{ input:["mouse,left, 5,3, 3,3, 3,1, 1,1"],
 		  result:"pzprv3/walllogic/3/3/. . . /. . . /. . . /3 1 . /. 3 3 /. . . /"},
-		{ input:["anslear", "mouse,left, 2,3, 1,3, 1,1, 5,1"],
+		{ input:["mouse,left, 2,3, 1,3, 1,1, 5,1"],
 		  result:"pzprv3/walllogic/3/3/. . . /. . . /. . . /3 1 4 /3 3 3 /. . . /"},
-		{ input:["anslear", "mouse,left, 2,3, 1,3, 1,1, 5,1"],
+		{ input:["mouse,left, 2,3, 1,3, 1,1, 5,1"],
 		  result:"pzprv3/walllogic/3/3/. . . /. . . /. . . /. . . /. 3 3 /. . . /"}
 	]
 });

@@ -18,7 +18,7 @@ ui.debug.addDebugData('mashu', {
 	inputs : [
 		/* 回答入力テスト */
 		{ input:["newboard,5,2", "playmode"] },
-		{ input:["anslear", "mouse,left, 1,1, 3,1, 3,3, 5,3"],
+		{ input:["mouse,left, 1,1, 3,1, 3,3, 5,3"],
 		  result:"pzprv3/mashu/2/5/. . . . . /. . . . . /1 0 0 0 /0 1 0 0 /0 1 0 0 0 /" },
 		{ input:["mouse,right, 2,1, 4,3"],
 		  result:"pzprv3/mashu/2/5/. . . . . /. . . . . /-1 0 0 0 /0 -1 0 0 /0 -1 0 0 0 /" },
@@ -27,7 +27,7 @@ ui.debug.addDebugData('mashu', {
 		{ input:["mouse,left, 1,1, 3,1, 3,3, 5,3"],
 		  result:"pzprv3/mashu/2/5/. . . . . /. . . . . /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /" },
 		/* LineGraphでエラーしないか確認 */
-		{ input:["anslear", "mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
+		{ input:["mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
 		  result:"pzprv3/mashu/2/5/. . . . . /. . . . . /1 1 1 0 /0 1 -1 1 /0 0 -1 0 0 /"},
 		/* 問題入力テスト */
 		{ input:["newboard,5,1", "editmode"] },

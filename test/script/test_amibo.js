@@ -16,7 +16,7 @@ ui.debug.addDebugData('amibo', {
 	inputs : [
 		/* 回答入力テスト */
 		{ input:["newboard,5,2", "playmode"] },
-		{ input:["anslear", "mouse,left, 1,1, 3,1, 3,3, 5,3"],
+		{ input:["mouse,left, 1,1, 3,1, 3,3, 5,3"],
 		  result:"pzprv3/amibo/2/5/- - . . . /. l - . . /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /" },
 		{ input:["mouse,right, 2,1, 4,3"],
 		  result:"pzprv3/amibo/2/5/- - . . . /. l - . . /-1 0 0 0 /0 -1 0 0 /0 -1 0 0 0 /" },

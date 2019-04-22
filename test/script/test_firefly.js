@@ -19,9 +19,9 @@ ui.debug.addDebugData('firefly', {
 		/* 回答入力はnumlinと同じなので省略 */
 		/* AreaLineManager＋色付きでエラーしないか確認 */
 		{ input:["newboard,5,2", "playmode"] },
-		{ input:["anslear", "mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
+		{ input:["mouse,left, 1,1, 7,1", "mouse,left, 3,3, 9,3", "mouse,left, 5,1, 5,3", "mouse,right, 6,3, 5,2"],
 		  result:"pzprv3/firefly/2/5/. . . . . /. . . . . /1 1 1 0 /0 1 -1 1 /0 0 -1 0 0 /"},
-		{ input:["anslear", "mouse,left, 5,1, 5,3, 7,3"],
+		{ input:["mouse,left, 5,1, 5,3, 7,3"],
 		  result:"pzprv3/firefly/2/5/. . . . . /. . . . . /1 1 1 0 /0 1 1 1 /0 0 1 0 0 /"},
 		/* 問題入力テスト (yajilin, yajikazuと同じだが描画方法が違うのでテストする) */
 		{ input:["editmode", "newboard,5,1"] },

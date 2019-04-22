@@ -14,7 +14,7 @@ ui.debug.addDebugData('slither', {
 	inputs : [
 		/* 回答入力テスト */
 		{ input:["newboard,5,1", "playmode"] },
-		{ input:["anslear", "mouse,left, 0,0, 2,0, 2,2, 4,2"],
+		{ input:["mouse,left, 0,0, 2,0, 2,2, 4,2"],
 		  result:"pzprv3.1/slither/1/5/. . . . . /0 0 0 0 0 /0 1 0 0 0 0 /1 0 0 0 0 /0 1 0 0 0 /" },
 		{ input:["mouse,right, 1,0, 4,2"],
 		  result:"pzprv3.1/slither/1/5/. . . . . /0 0 0 0 0 /0 -1 0 0 0 0 /-1 0 0 0 0 /0 -1 0 0 0 /" },
@@ -23,7 +23,7 @@ ui.debug.addDebugData('slither', {
 		{ input:["mouse,left, 0,0, 2,0, 2,2, 4,2"],
 		  result:"pzprv3.1/slither/1/5/. . . . . /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /" },
 		/* LineGraphでエラーしないか確認 */
-		{ input:["anslear", "mouse,left, 0,0, 8,0", "mouse,left, 2,2, 10,2", "mouse,left, 4,0, 4,2", "mouse,right, 5,2, 4,1"],
+		{ input:["mouse,left, 0,0, 8,0", "mouse,left, 2,2, 10,2", "mouse,left, 4,0, 4,2", "mouse,right, 5,2, 4,1"],
 		  result:"pzprv3.1/slither/1/5/. . . . . /0 0 0 0 0 /0 0 -1 0 0 0 /1 1 1 1 0 /0 1 -1 1 1 /"},
 		/* 問題入力テスト */
 		{ input:["newboard,5,1", "editmode"] },
