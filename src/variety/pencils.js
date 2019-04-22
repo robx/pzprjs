@@ -212,7 +212,6 @@ Cell:{
 	},
 	minnum : 1,
 
-	// TODO fix qans border not being removed when undoing
 	setPencilArrow: function(dir, question) {
 		if(!(dir>=0 && dir <=4)) {return -1;}
 		var anum = this.anum, qdir = this.qdir;
@@ -231,22 +230,22 @@ Cell:{
 			if(qdir === this.RT && this.adjacent.left.qdir !== this.LT) { this.adjborder.left.setQues(0); }
 
 			if(qdir === dir) {dir = 0;}
-			this.setQdir(dir);
 			if(dir) {this.setQnum(-1);}
 
 			if(dir === this.UP && !this.adjborder.bottom.isnull) { this.adjborder.bottom.setQues(1); }
 			if(dir === this.DN && !this.adjborder.top.isnull) { this.adjborder.top.setQues(1); }
 			if(dir === this.LT && !this.adjborder.right.isnull) { this.adjborder.right.setQues(1); }
 			if(dir === this.RT && !this.adjborder.left.isnull) { this.adjborder.left.setQues(1); }
+			this.setQdir(dir);
 
 		} else if(!(qdir >= 1 && qdir <= 4) && this.qnum === -1) {
 			if(anum === dir || dir===0) {dir = -1;}
-			this.setAnum(dir);
 
 			if(dir === this.UP && !this.adjborder.bottom.isnull) { this.adjborder.bottom.setQans(1); }
 			if(dir === this.DN && !this.adjborder.top.isnull) { this.adjborder.top.setQans(1); }
 			if(dir === this.LT && !this.adjborder.right.isnull) { this.adjborder.right.setQans(1); }
 			if(dir === this.RT && !this.adjborder.left.isnull) { this.adjborder.left.setQans(1); }
+			this.setAnum(dir);
 		}
 
 		return dir;
