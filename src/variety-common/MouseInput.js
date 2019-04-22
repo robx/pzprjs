@@ -15,11 +15,10 @@ MouseEvent:{
 
 		this.mouseCell = cell;
 
-		if(cell.qnum!==-1){
-			var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
-			if(cell.numberRemainsUnshaded && this.inputData===shade){ return;}
-			if(cell.numberRemainsUnshaded && this.inputData===unshade && !this.puzzle.painter.enablebcolor){ return;}
-		}
+		var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
+		if(this.inputData===shade&&!cell.allowShade()){ return;}
+		if(this.inputData===unshade&&!cell.allowUnshade()){ return;}
+
 		if(this.RBShadeCell && this.inputData===1){
 			if(this.firstCell.isnull){ this.firstCell = cell;}
 			var cell0 = this.firstCell;

@@ -250,6 +250,20 @@ pzpr.classmgr.makeCommon({
 	isUnshade : function(){ return (!this.isnull && !this.isShade());},
 	setShade : function(){ this.setQans(this.qansUnshade?0:1);},
 	clrShade : function(){ this.setQans(this.qansUnshade?1:0);},
+
+	// disallow certain inputs
+	allowShade : function(){
+		if(this.numberRemainsUnshaded){
+			return this.qnum===-1;
+		}
+		return true;
+	},
+	allowUnshade : function(){
+		if(this.numberRemainsUnshaded){
+			return this.qnum===-1||this.puzzle.painter.enablebcolor;
+		}
+		return true;
+	},
 	
 	//-----------------------------------------------------------------------
 	// cell.getNum()     該当するCellの数字を返す
