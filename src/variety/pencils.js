@@ -10,14 +10,13 @@
 // マウス入力系
 MouseEvent:{
 	// TODO allow background coloring
-	// TODO fix inputting hatena
 	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke']},
 	mouseinput_number : function(){
-		if(this.mousestart){ this.inputqnum_loute();}
+		if(this.mousestart){ this.inputqnum_pencils();}
 	},
 	mouseinput : function(){ // オーバーライド
-		if(this.inputMode==='undef' || this.inputMode==='circle-unshade'){
-			if(this.mousestart){ this.inputqnum_loute();}
+		if(this.inputMode==='undef'){
+			if(this.mousestart){ this.inputqnum_pencils();}
 		}
 		else{ this.common.mouseinput.call(this);}
 	},
@@ -37,7 +36,7 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
-			else if(this.mouseend && this.notInputted()){ this.inputqnum_loute();}
+			else if(this.mouseend && this.notInputted()){ this.inputqnum_pencils();}
 		}
 	},
 
@@ -99,8 +98,7 @@ MouseEvent:{
 		cell.setPencilArrow(dir, this.puzzle.editmode);
 	},
 
-	// TODO rewrite
-	inputqnum_loute : function(){
+	inputqnum_pencils : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
 
@@ -108,21 +106,20 @@ MouseEvent:{
 			this.setcursor(cell);
 		}
 		else{
-			this.inputcell_loute(cell);
+			this.inputcell_pencils(cell);
 		}
 	},
-
-
-	inputcell_loute : function(cell){
+	
+	inputcell_pencils : function(cell){
 		var dir = cell.qdir, num = cell.qnum, val;
-		// -4to-1:Arrow 0:? 1:何もなし 2:丸のみ 3以上:数字
-		if     (dir=== 5){ val = (num!==-1 ? num : 2);}
+		// -4to-1:Arrow 0:? 1:何もなし 2以上:数字
+		if     (num===-2){ val = 0;}
+		else if(dir=== 5){ val = (num!==-1 ? num+1 : 2);}
 		else if(dir=== 0){ val = 1;}
-		else if(dir===-2){ val = 0;}
 		else             { val = dir - 5;}
 
-		var min = -4, max = cell.getmaxnum();
-		if(this.inputMode==='circle-unshade' || this.inputMode.match(/number/)){ min = 1;}
+		var min = -4, max = cell.getmaxnum()+1;
+		if(this.inputMode.match(/number/)){ min = 1;}
 		if(this.inputMode==='undef'){ max = 1; min = 0;}
 
 		if(this.btn==='left'){
@@ -134,10 +131,12 @@ MouseEvent:{
 			else                   { val=max;}
 		}
 
-		if     (val >=2){ cell.setQdir(5);     cell.setNum(val>=3 ? val : -1);}
+		if(val >= 0) { cell.setPencilArrow(0, true);}
+
+		if     (val >=2){ cell.setQdir(5);     cell.setNum(val-1);}
 		else if(val===1){ cell.setQdir(0);     cell.setNum(-1);}
-		else if(val===0){ cell.setQdir(-2);    cell.setNum(-1);}
-		else            { cell.setQdir(val+5); cell.setNum(-1);}
+		else if(val===0){ cell.setQdir(5);     cell.setNum(-2);}
+		else            { cell.setPencilArrow(val+5, true);}
 		cell.draw();
 	}
 },
