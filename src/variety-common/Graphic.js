@@ -306,7 +306,7 @@ Graphic:{
 		}
 	},
 	getNumberTextCore : function(num){
-		var hideHatena = (this.pid!=="yajirin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
+		var hideHatena = (this.pid!=="yajilin" ? this.hideHatena : this.puzzle.getConfig('disptype_yajilin')===2);
 		return (num>=0 ? ""+num : ((!hideHatena && num===-2) ? "?" : ""));
 	},
 	getNumberTextCore_letter : function(num){
