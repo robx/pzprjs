@@ -19,7 +19,16 @@ ui.debug.addDebugData('yajilin', {
 		{ input:["mouse,left, 5,1", "mouse,right, 7,1", "mouse,left, 1,1, 9,1, 9,3, 1,3, 1,1", "mouse,right, 9,1"],
 		  result:"pzprv3/yajilin/2/5/. . . . . /. . . . . /. . # + . /. . . . . /1 0 0 1 /1 1 1 1 /1 0 0 0 1 /"},
 		{ input:["mouse,left, 1,3", "mouse,right, 3,1, 7,1"],
-		  result:"pzprv3/yajilin/2/5/. . . . . /. . . . . /. . + + . /. . . . . /1 0 0 1 /1 1 1 1 /1 0 0 0 1 /"}
+		  result:"pzprv3/yajilin/2/5/. . . . . /. . . . . /. . + + . /. . . . . /1 0 0 1 /1 1 1 1 /1 0 0 0 1 /"},
 		/* 問題入力はyajikazuと同じなので省略 */
+		{ input:["newboard,4,1", "playmode"] },
+		{ input:["mouse,left, 3,1"],
+		  result:"pzprv3/yajilin/1/4/. . . . /. # . . /0 0 0 /"},
+		{ input:["mouse,left, 1,1, 7,1"],
+		  result:"pzprv3/yajilin/1/4/. . . . /. # . . /0 0 1 /"},
+		{ input:["ansclear", "mouse,left, 3,1"],
+		  result:"pzprv3/yajilin/1/4/. . . . /. # . . /0 0 0 /"},
+		{ input:["mouse,left, 1,1, 5,1"],
+		  result:"pzprv3/yajilin/1/4/. . . . /. # . . /0 0 0 /"}
 	]
 });
