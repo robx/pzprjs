@@ -2,6 +2,10 @@
 
 * heteromino: Introduce new puzzle: Heteromino
 
+#### Improvement
+
+* starbattle: reword English error messages
+
 #### BugFix
 
 * fourcells, fivecells: No borders and connection lines between empty cells
