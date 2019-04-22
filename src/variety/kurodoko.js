@@ -87,23 +87,26 @@ Graphic:{
 
 	getBGCellColor : function(cell){
 		if(!cell.isUnshade()){ return null;}
+		var undef = this.puzzle.execConfig('undefcell');
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errbcolor1;}
 		else if(info===2){ return this.errbcolor2;}
-		return this.qsubcolor1;
+		return undef?null:this.qsubcolor1;
 	},
 	getShadedCellColor : function(cell){
 		if(!cell.isShade()){ return null;}
+		var undef = this.puzzle.execConfig('undefcell');
 		var info = cell.error || cell.qinfo;
 		if     (info===1){ return this.errcolor1;}
 		else if(info===2){ return this.errcolor2;}
 		else if(cell.qsub===1){
 			return cell.trial?this.trialcolor:this.shadecolor;
 		}
-		else if(this.puzzle.execConfig('undefcell')){ return this.undefcolor; }
+		else if(undef){ return this.undefcolor; }
 		return null;
 	},
 	drawDotCells : function(){
+		var undef = this.puzzle.execConfig('undefcell');
 		var g = this.vinc('cell_dot', 'auto', true);
 
 		var dsize = Math.max(this.cw*0.06, 2);
@@ -112,7 +115,7 @@ Graphic:{
 			var cell = clist[i];
 
 			g.vid = "c_dot_"+cell.id;
-			if(cell.isUnshade()&&cell.qnum===-1){
+			if(cell.isUnshade()&&cell.qnum===-1&&!undef){
 				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
 				g.fillCircle(cell.bx*this.bw, cell.by*this.bh, dsize);
 			}

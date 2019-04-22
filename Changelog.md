@@ -2,9 +2,9 @@
 
 #### Improvement
 
-* bag, meander: Complete Japanese translation.
-* scrin: Complete Japanese translation.
-* yajilin: Limit clue value based on grid size.
+* bag, meander, scrin: Complete Japanese translation
+* nurimisaki: When undefined cells are grayed, leave the unshaded cells white
+* yajilin: Limit clue value based on grid size
 
 #### BugFix
 
