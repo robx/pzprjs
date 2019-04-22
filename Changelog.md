@@ -1,5 +1,7 @@
 ## Version 0.11.1
 
+Release date: 2019/04/22
+
 #### Improvement
 
 * bag, meander, scrin: Complete Japanese translation
