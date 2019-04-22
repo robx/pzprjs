@@ -87,7 +87,7 @@ Cell:{
 	minnum : 0
 },
 
-"Border@fourcells,fivecells":{
+Border:{
 	isGrid : function(){
 		return (this.sidecell[0].isValid() && this.sidecell[1].isValid());
 	},
@@ -99,12 +99,10 @@ Cell:{
 	}
 },
 
-"Board@nawabari":{
-	hasborder : 1
+Board:{
+	hasborder : 2,
 },
 "Board@fourcells,fivecells":{
-	hasborder : 2,
-
 	initBoardSize : function(col,row){
 		this.common.initBoardSize.call(this,col,row);
 
@@ -146,12 +144,8 @@ Graphic:{
 		if(this.pid==='nawabari'){ this.drawChassis();}
 
 		this.drawTarget();
-	}
-},
-"Graphic@nawabari":{
-	bordercolor_func : "qans"
-},
-"Graphic@fourcells,fivecells":{
+	},
+
 	getQansBorderColor : function(border){
 		if(border.qans===1){
 			var err = border.error;
