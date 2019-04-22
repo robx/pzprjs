@@ -252,7 +252,6 @@ Cell:{
 		return dir;
 	},
 
-	// TODO clean up console.log calls
 	getPencilCells: function(limit) {
 		var bd = this.board;
 		var list = new this.klass.CellList();
@@ -270,21 +269,20 @@ Cell:{
 		while(x > bd.minbx && x < bd.maxbx && y > bd.minby && y < bd.maxby) {
 			x += dx*2; y += dy*2;
 			var cell = bd.getc(x, y);
-			if(cell.isnull!==false) {console.log("Encountered grid edge");break;}
+			if(cell.isnull!==false) {break;} // Encountered grid edge
 
 			var newdir = cell.qdir || cell.anum;
 			if(newdir === invdir) {
 				if(list.length > 0) { list.pop(); }
-				console.log("Encountered inverse pencil tip");
-				break;
+				break; // Encountered inverse pencil tip, exclude last cell from list
 			}
 
-			if(newdir >= 1 && newdir <= 4) {console.log("Encountered other pencil tip");break;}
-			if(cell.lcnt > 0) {console.log("Encountered line");break;}
+			if(newdir >= 1 && newdir <= 4) {break;} // Encountered other pencil tip
+			if(cell.lcnt > 0) {break;} // Encountered line
 
 			if(!start) {
 				var border = bd.getb(x-dx, y-dy);
-				if(border.qans === 1) {console.log("Encountered border");break;}
+				if(border.qans === 1) {break;} // Encountered border
 			}
 
 			if(limit && limit === list.length) {break;}
