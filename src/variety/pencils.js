@@ -10,7 +10,6 @@
 // マウス入力系
 MouseEvent:{
 	// TODO allow background coloring
-	// TODO fix inputting question arrow over answer arrow
 	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke']},
 	mouseinput_number : function(){
 		if(this.mousestart){ this.inputqnum_pencils();}
@@ -231,7 +230,7 @@ Cell:{
 		if(!(dir>=0 && dir <=4)) {return -1;}
 		var anum = this.anum, qdir = this.qdir;
 
-		if(!question) { this.setAnum(-1); }
+		this.setAnum(-1);
 
 		if(anum === this.UP && this.adjacent.bottom.anum !== this.DN) { this.adjborder.bottom.setQans(0); }
 		if(anum === this.DN && this.adjacent.top.anum !== this.UP) { this.adjborder.top.setQans(0); }
