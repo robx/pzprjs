@@ -192,6 +192,7 @@ delete variety.extend;
 	wblink    :[0,0,"シロクロリンク","Shirokuro-link"],
 	yajikazu  :[1,0,"やじさんかずさん","Yajisan-Kazusan"],
 	yajilin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin',alias:'yajirin'}],
+	'yajilin-regions' :[0,0,"ヤジリン","Regional Yajilin",'yajilin',{alias:'yajirin-regions'}],
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
 	yinyang   :[0,0,"しろまるくろまる","Yin-Yang"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]

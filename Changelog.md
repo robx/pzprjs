@@ -1,6 +1,7 @@
 #### New puzzle
 
 * heteromino: Introduce new puzzle: Heteromino
+* yajilin-regions: Introduce new puzzle: Regional Yajilin
 
 #### Improvement
 
