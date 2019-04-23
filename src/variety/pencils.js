@@ -9,8 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	// TODO allow background coloring
-	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke']},
+	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke','bgcolor','bgcolor1','bgcolor2']},
 	mouseinput_number : function(){
 		if(this.mousestart){ this.inputqnum_pencils();}
 	},
@@ -32,6 +31,9 @@ MouseEvent:{
 				} else {
 					this.inputpeke();
 				}
+			}
+			else if(this.mouseend && this.notInputted() && !this.isBorderMode()) {
+				this.inputBGcolor();
 			}
 		}
 		else if(this.puzzle.editmode){
@@ -358,6 +360,7 @@ Graphic:{
 	gridcolor_type : "DLIGHT",
 
 	numbercolor_func : "qnum",
+	bgcellcolor_func : "qsub2",
 	linecolor : "rgb(80, 80, 80)",
 
 	paint : function(){
@@ -495,7 +498,13 @@ FileIO:{
 
 		this.decodeBorderAns();
 		this.decodeBorderLine();
-		this.decodeCellAnumsub();
+
+		this.decodeCell( function(cell,ca){
+			if(ca.charAt(0)==="+"){cell.qsub=1; ca = ca.substr(1);}
+			else if(ca.charAt(0)==="-"){cell.qsub=2; ca = ca.substr(1);}
+
+			if(ca!=="."){cell.anum = +ca;}
+		});
 	},
 	encodeData : function(){
 		this.encodeCell( function(cell){
@@ -509,7 +518,17 @@ FileIO:{
 
 		this.encodeBorderAns();
 		this.encodeBorderLine();
-		this.encodeCellAnumsub();
+		
+		this.encodeCell(function(cell){
+			var ca = "";
+			if(cell.qsub===1) { ca += "+";}
+			else if(cell.qsub===2) { ca += "-";}
+
+			if (cell.anum!==-1){ ca += cell.anum.toString();}
+
+			if(ca === "") { ca = "."; }
+			return ca+" ";
+		});
 	}
 },
 
