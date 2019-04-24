@@ -83,6 +83,38 @@ Cell:{
 			return (cell.isShade() > 0);
 		});
 		return (shadedNbrs>0);
+	},
+
+	countShade : function(clist){
+		if(!clist){ return -1;}
+		return (clist.filter(function(cell){ return cell.isShade();}).length);
+	},
+	countUndecided : function(clist){
+		if(!clist){ return -1;}
+		return (clist.filter(function(cell){
+			if(cell.qnum!==-1&&this.pid==='yajilin'){ return false;}
+			if(cell.qans!==0){ return false;}
+			if(cell.knowEmpty()){ return false;}
+			return true;
+		}).length);
+	},
+
+	// trigger redraw for autocompletion
+	posthook : {
+		qsub : function(){
+			var cells=[this];
+			this.board.redrawAffected(cells);
+		},
+		qans : function(){
+			var cells=[this];
+			var adc=this.adjacent;
+			var cs=[adc.top, adc.bottom, adc.left, adc.right];
+			for(var i=0; i<cs.length; i++){
+				var c=cs[i];
+				if(!c.isnull&&c.qans===0&&c.qsub===0){ cells.push(c);}
+			}
+			this.board.redrawAffected(cells);
+		}
 	}
 },
 "Cell@yajilin":{
@@ -121,38 +153,6 @@ Cell:{
 			clist.add(cell);
 		}
 		return clist;
-	},
-
-	countShade : function(clist){
-		if(!clist){ return -1;}
-		return (clist.filter(function(cell){ return cell.isShade();}).length);
-	},
-	countUndecided : function(clist){
-		if(!clist){ return -1;}
-		return (clist.filter(function(cell){
-			if(cell.qnum!==-1){ return false;}
-			if(cell.qans!==0){ return false;}
-			if(cell.knowEmpty()){ return false;}
-			return true;
-		}).length);
-	},
-
-	// trigger redraw for autocompletion
-	posthook : {
-		qsub : function(){
-			var cells=[this];
-			this.board.redrawAffected(cells);
-		},
-		qans : function(){
-			var cells=[this];
-			var adc=this.adjacent;
-			var cs=[adc.top, adc.bottom, adc.left, adc.right];
-			for(var i=0; i<cs.length; i++){
-				var c=cs[i];
-				if(!c.isnull&&c.qnum===-1&&c.qans===0&&c.qsub===0){ cells.push(c);}
-			}
-			this.board.redrawAffected(cells);
-		}
 	}
 },
 "Cell@yajilin-regions":{
@@ -166,22 +166,28 @@ Cell:{
 	},
 	allowUnshade : function(){
 		return this.lcnt===0;
-	}
-},
-Border:{
-	enableLineNG : true
-},
-"Border@yajilin":{
-	isBorder : function(){
-		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
 	},
 
+	isCmp : function(){
+		if(!this.puzzle.execConfig('autocmp')){ return false;}
+		var clist = this.room.clist;
+		if(this.countUndecided(clist)!==0){ return false;}
+		return this.qnum===this.countShade(clist);
+        }
+},
+Border:{
+	enableLineNG : true,
 	posthook : {
 		line : function(){
 			var cells=[];
 			for(var i=0;i<this.sidecell.length;i++){ cells.push(this.sidecell[i]);}
 			this.board.redrawAffected(cells);
 		}
+	}
+},
+"Border@yajilin":{
+	isBorder : function(){
+		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
 	}
 },
 Board:{
@@ -212,6 +218,17 @@ Board:{
 		}
 	}
 },
+"Board@yajilin-regions":{
+	redrawAffected : function(cells){
+		var done = [];
+		for(var i=0;i<cells.length;i++){
+			var top=cells[i].room.top;
+			if(done[top.id]){ continue;}
+			done[top.id] = true;
+			top.draw();
+		}
+	}
+},
 "BoardExec@yajilin":{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
@@ -228,7 +245,16 @@ LineGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	qcmpcolor  : "rgb(127,127,127)",
+	autocmp : 'number',
+
 	irowake : true,
+
+	getQuesNumberColor : function(cell){
+		var qnum_color = this.getQuesNumberColor_mixed(cell);
+		if ((cell.error || cell.qinfo)===1){ return qnum_color;}
+		return (cell.isCmp() ?  this.qcmpcolor : qnum_color);
+	},
 
 	paint : function(){
 		this.drawBGCells();
@@ -255,9 +281,6 @@ Graphic:{
 	}
 },
 "Graphic@yajilin":{
-	qcmpcolor  : "rgb(127,127,127)",
-	autocmp : 'number',
-
 	getBGCellColor : function(cell){
 		var info = cell.error || cell.qinfo;
 		if(this.puzzle.getConfig('disptype_yajilin')===2 && cell.qnum!==-1){ return 'rgb(224,224,224)';}
@@ -272,11 +295,6 @@ Graphic:{
 	getBorderColor : function(border){
 		if(this.puzzle.getConfig('disptype_yajilin')===2 && border.isBorder()){ return this.quescolor;}
 		return null;
-	},
-	getQuesNumberColor : function(cell){
-		var qnum_color = this.getQuesNumberColor_qnum(cell);
-		if ((cell.error || cell.qinfo)===1){ return qnum_color;}
-		return (cell.isCmp() ?  this.qcmpcolor : qnum_color);
 	}
 },
 "Graphic@yajilin-regions":{
