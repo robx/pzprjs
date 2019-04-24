@@ -4,7 +4,8 @@
 
 #### Improvement
 
-* mashu, starbattle: reword English error messages
+* mashu, starbattle: Reword English error messages
+* slither: Allow 4 as clue number
 
 #### BugFix
 

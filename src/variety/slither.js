@@ -52,7 +52,7 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	maxnum : 3,
+	maxnum : 4,
 	minnum : 0,
 
 	getdir4BorderLine1 : function(){
