@@ -249,6 +249,8 @@ Graphic:{
 
 		this.drawChassis();
 
+		if(this.pid==='yajilin-regions'){ this.drawBoxBorders(false);}
+
 		this.drawTarget();
 	}
 },
@@ -276,6 +278,9 @@ Graphic:{
 		if ((cell.error || cell.qinfo)===1){ return qnum_color;}
 		return (cell.isCmp() ?  this.qcmpcolor : qnum_color);
 	}
+},
+"Graphic@yajilin-regions":{
+	textoption : {ratio:0.4, position: 5, hoffset: 0.8, voffset: 0.75}
 },
 
 //---------------------------------------------------------
