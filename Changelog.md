@@ -4,13 +4,14 @@
 
 #### Improvement
 
-* starbattle: reword English error messages
+* mashu, starbattle: reword English error messages
 
 #### BugFix
 
 * fourcells, fivecells: No borders and connection lines between empty cells
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
+* nurimisaki: Switch to unshaded cell connection info for edit mode, too
 
 ## Version 0.11.1
 
