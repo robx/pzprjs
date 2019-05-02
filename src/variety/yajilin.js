@@ -76,15 +76,6 @@ Cell:{
 		return this.lcnt===0&&this.qsub===1;
 	},
 
-	knowEmpty : function(){
-		if(this.qsub!==0){ return true;}
-		if(this.lcnt>0){ return true;}
-		var shadedNbrs = this.countDir4Cell(function(cell){
-			return (cell.isShade() > 0);
-		});
-		return (shadedNbrs>0);
-	},
-
 	countShade : function(clist){
 		if(!clist){ return -1;}
 		return (clist.filter(function(cell){ return cell.isShade();}).length);
@@ -92,7 +83,6 @@ Cell:{
 	countUndecided : function(clist){
 		if(!clist){ return -1;}
 		return (clist.filter(function(cell){
-			if(cell.qnum!==-1&&this.pid==='yajilin'){ return false;}
 			if(cell.qans!==0){ return false;}
 			if(cell.knowEmpty()){ return false;}
 			return true;
@@ -131,6 +121,15 @@ Cell:{
 		return this.qnum===-1&&this.lcnt===0;
 	},
 
+	knowEmpty : function(){
+		if(this.qnum!==-1){ return true;}
+		if(this.qsub!==0){ return true;}
+		if(this.lcnt>0){ return true;}
+		var shadedNbrs = this.countDir4Cell(function(cell){
+			return (cell.isShade() > 0);
+		});
+		return (shadedNbrs>0);
+	},
 	isCmp : function(){
 		if(this.qcmp===1){ return true;}
 		if(!this.puzzle.execConfig('autocmp')){ return false;}
@@ -168,6 +167,14 @@ Cell:{
 		return this.lcnt===0;
 	},
 
+	knowEmpty : function(){
+		if(this.qsub!==0){ return true;}
+		if(this.lcnt>0){ return true;}
+		var shadedNbrs = this.countDir4Cell(function(cell){
+			return (cell.isShade() > 0);
+		});
+		return (shadedNbrs>0);
+	},
 	isCmp : function(){
 		if(!this.puzzle.execConfig('autocmp')){ return false;}
 		var clist = this.room.clist;
