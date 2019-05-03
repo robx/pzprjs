@@ -5,10 +5,10 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['cbblock'], {
+['cbblock', 'dbchoco'], {
 //---------------------------------------------------------
 // マウス入力系
-MouseEvent:{
+"MouseEvent@cbblock":{
 	inputModes : {edit:['border'],play:['border','subline']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
@@ -24,10 +24,57 @@ MouseEvent:{
 		}
 	}
 },
+"MouseEvent@dbchoco":{
+	inputModes : {edit:['ice','number','clear'],play:['border','subline']},
+	mouseinput_auto : function(){
+		if(this.puzzle.playmode){
+			if(this.mousestart || this.mousemove){
+				if(this.btn==='left' && this.isBorderMode()){ this.inputborder();}
+				else{ this.inputQsubLine();}
+			}
+		}
+		else if(this.puzzle.editmode){
+			var cell = this.getcell();
+			if(cell.isnull){ return;}
+
+			if(this.mousestart && (this.btn!=='right' || cell===this.cursor.getc())) {
+				this.inputData = -1;
+			}
+
+			if( (this.mousestart && cell!==this.cursor.getc() && this.btn==='right') ||
+				(this.mousemove && this.inputData>=0)) {
+				this.inputIcebarn();
+			}
+			else if(this.mouseend && this.notInputted()) { 
+				if(cell!==this.cursor.getc() && this.inputMode==='auto' && this.btn==='left') {
+					this.setcursor(cell);
+				}
+				else{
+					this.inputqnum(cell);
+				}
+			}
+		}
+	}
+},
+
+"KeyEvent@dbchoco":{
+	enablemake : true,
+
+	keyinput : function(ca){
+		if(ca==='q'){
+			var cell = this.cursor.getc();
+			cell.setQues(cell.ques!==6?6:0);
+			this.prev=cell;
+			cell.draw();
+		} else {
+			this.key_inputqnum(ca);
+		}
+	}
+},
 
 //---------------------------------------------------------
 // 盤面管理系
-Border:{
+"Border@cbblock":{
 	ques : 1,
 
 	enableLineNG : true,
@@ -48,6 +95,13 @@ Board:{
 	addExtraInfo : function(){
 		this.tilegraph  = this.addInfoList(this.klass.AreaTileGraph);
 		this.blockgraph = this.addInfoList(this.klass.AreaBlockGraph);
+	}
+},
+
+"Cell@dbchoco": {
+	maxnum: function() {
+		var bd=this.board;
+		return (bd.cols*bd.rows)>>1;
 	}
 },
 
@@ -159,8 +213,15 @@ Graphic:{
 		this.drawChassis();
 
 		this.drawPekes();
-	},
 
+		if(this.pid==="dbchoco") {
+			this.drawQuesNumbers();
+			this.drawTarget();
+		}
+	},
+},
+
+"Graphic@cbblock":{
 	// オーバーライド
 	getBorderColor : function(border){
 		if(border.ques===1){
@@ -174,9 +235,22 @@ Graphic:{
 	}
 },
 
+"Graphic@dbchoco":{
+	bgcellcolor_func : "icebarn",
+	icecolor : "rgb(204,204,204)",
+
+	// オーバーライド
+	getBorderColor : function(border){
+		if(border.qans===1){
+			return (!border.trial ? this.qanscolor : this.trialcolor);
+		}
+		return null;
+	}
+},
+
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@cbblock":{
 	decodePzpr : function(type){
 		this.decodeCBBlock();
 	},
@@ -208,8 +282,27 @@ Encode:{
 		this.outbstr += cm;
 	}
 },
+
+"Encode@dbchoco":{
+	decodePzpr : function(type){
+		this.decodeDBChoco();
+	},
+	encodePzpr : function(type){
+		this.encodeDBChoco();
+	},
+
+	decodeDBChoco : function(){
+		this.decodeIce();
+		this.decodeNumber16();
+	},
+	encodeDBChoco : function(){
+		this.encodeIce();
+		this.encodeNumber16();
+	}
+},
+
 //---------------------------------------------------------
-FileIO:{
+"FileIO@cbblock":{
 	decodeData : function(){
 		this.decodeBorder( function(border,ca){
 			if     (ca==="3" ){ border.ques = 0; border.qans = 1; border.qsub = 1;}
@@ -232,15 +325,43 @@ FileIO:{
 	}
 },
 
+"FileIO@dbchoco":{
+	decodeData : function(){
+		this.decodeCell( function(cell,ca){
+			if(ca.charAt(0)==="-"){cell.ques=6; ca = ca.substr(1);}
+
+			if(ca==="0") {cell.qnum = -2;}
+			else if(ca!=="." && (+ca)>0){cell.qnum = +ca;}
+		});
+		this.decodeBorderAns();
+	},
+	encodeData : function(){
+		this.encodeCell(function(cell){
+			var ca = "";
+			if(cell.ques===6) { ca += "-";}
+
+			if (cell.qnum===-2) { ca += "0";}
+			else if (cell.qnum!==-1){ ca += cell.qnum.toString();}
+
+			if(ca === "") { ca = "."; }
+			return ca+" ";
+		});
+		this.encodeBorderAns();
+	}
+},
+
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
 		"checkBorderDeadend",
 		"checkSingleBlock",
-		"checkBlockNotRect",
-		"checkDifferentShapeBlock",
-		"checkLargeBlock"
+		"checkSmallNumberArea@dbchoco",
+		"checkBlockNotRect@cbblock",
+		"checkDifferentShapeBlock@cbblock",
+		"checkLargeBlock",
+		"checkEqualShapes@dbchoco",
+		"checkLargeNumberArea@dbchoco",
 	],
 
 	checkBlockNotRect : function(){
@@ -265,6 +386,7 @@ AnsCheck:{
 		var sides = this.board.blockgraph.getSideAreaInfo();
 		for(var i=0;i<sides.length;i++){
 			var area1 = sides[i][0], area2 = sides[i][1];
+			if(area1.dotcnt!==2 || area2.dotcnt!==2) {continue;}
 			if(this.isDifferentShapeBlock(area1, area2)){ continue;}
 			
 			this.failcode.add("bsSameShape");
@@ -274,19 +396,82 @@ AnsCheck:{
 		}
 	},
 	isDifferentShapeBlock : function(area1, area2){
-		if(area1.dotcnt!==2 || area2.dotcnt!==2 || area1.size!==area2.size){ return true;}
+		if(area1.size!==area2.size){ return true;}
 		var s1 = area1.clist.getBlockShapes(), s2 = area2.clist.getBlockShapes();
 		var t1=((s1.cols===s2.cols && s1.rows===s2.rows)?0:4);
 		var t2=((s1.cols===s2.rows && s1.rows===s2.cols)?8:4);
 		for(var t=t1;t<t2;t++){ if(s2.data[0]===s1.data[t]){ return false;}}
 		return true;
+	},
+
+	checkSmallNumberArea: function() {
+		return this.checkNumberArea(-1, "bkSizeLt");
+	},
+	checkLargeNumberArea: function() {
+		return this.checkNumberArea(+1, "bkSizeGt");
+	},
+
+	checkNumberArea : function(factor, code){ 
+		var tiles = this.board.tilegraph.components;
+		for(var r=0;r<tiles.length;r++){
+			var clist = tiles[r].clist, d = clist.length;
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i];
+				var qnum = cell.qnum;
+				if(qnum <= 0) {continue;}
+				if((factor < 0 && d < qnum) || (factor > 0 && d > qnum)) {
+					this.failcode.add(code);
+					if(this.checkOnly){ return; }
+					clist.seterr(1);
+				}
+			}
+		}
+	},
+
+	checkEqualShapes: function() {
+		var blocks = this.board.blockgraph.components;
+		for(var r=0;r<blocks.length;r++){
+			var block = blocks[r];
+			if(block.dotcnt!==2){continue;}
+			if(this.isEqualShapes(block.clist)){continue;}
+			
+			this.failcode.add("bkDifferentShape");
+			if(this.checkOnly){ break;}
+			block.clist.seterr(1);
+		}
+	},
+
+	isEqualShapes: function(clist) {
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var borders = [cell.adjborder.right, cell.adjborder.bottom];
+
+			for(var b=0;b<borders.length;b++){
+				var bd = borders[b];
+				if(!bd || bd.isnull) {continue;}
+				var side0 = bd.sidecell[0]; var side1 = bd.sidecell[1];
+
+				if(bd.qans === 0 && !side0.isnull && !side1.isnull && side0.ques !== side1.ques) {
+					return !this.isDifferentShapeBlock(side0.tile, side1.tile);
+				}
+			}
+		}
+		return false;
 	}
 },
 
-FailCode:{
+"FailCode@cbblock":{
 	bkRect : ["ブロックが四角形になっています。","A block is rectangle."],
 	bsSameShape : ["同じ形のブロックが接しています。","The blocks that has the same shape are adjacent."],
 	bkSubLt2 : ["ブロックが1つの点線からなる領域で構成されています。","A block has one area framed by dotted line."],
 	bkSubGt2 : ["ブロックが3つ以上の点線からなる領域で構成されています。","A block has three or more areas framed by dotted line."]
+},
+
+"FailCode@dbchoco":{
+	bkSubLt2 : ["(please translate) A block contains a single color.","A block contains a single color."],
+	bkSubGt2 : ["(please translate) A block has three or more shapes.","A block has three or more shapes."],
+	bkSizeLt : ["(please translate) A number is bigger than the size of the shape.","A number is bigger than the size of the shape."],
+	bkSizeGt : ["(please translate) A number is smaller than the size of the shape.","A number is smaller than the size of the shape."],
+	bkDifferentShape: ["(please translate) The two shapes inside a block are different.","The two shapes inside a block are different."],
 }
 }));
