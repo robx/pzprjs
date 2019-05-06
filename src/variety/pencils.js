@@ -786,19 +786,19 @@ AnsCheck:{
 },
 
 FailCode:{
-	bkSizeLt : ["<number too large>","A number is bigger than the size of the pencil."],
-	bkSizeGt : ["<number too small>","A number is smaller than the size of the pencil."],
-	lnCrossBorder: ["<line crosses pencil>","A line crosses a pencil."],
-	lnCrossNumber: ["<line crosses pencil>","A line crosses a pencil."],
-	lnNoTip: ["<line has no pencil>","A line is not connected to a pencil."],
-	ptBranch : ["<pencil tip is not line end>","A line doesn't stop at a pencil tip."],
-	ptOverlap : ["<multiple tips>","A pencil has multiple tips."],
-	ptConnect : ["<line connects to multiple tips>","A line connects to two pencils."],
-	ptNoLine : ["<pencil has no line>","A pencil tip doesn't have a line."],
-	pencilNoLength : ["<pencil no length>","A pencil has no length."],
-	pencilSmallLength : ["<pencil wrong length>","A line has a different length from its pencil."],
-	unusedCell : ["<unused cell>","A cell is unused."],
-	pencilExactArea: ["<pencil wrong area>","A pencil is not a 1xN rectangle."],
-	unusedBorder : ["<unused border>","A border is unused."]
+	bkSizeLt : ["(please translate) A number is bigger than the size of the pencil.","A number is bigger than the size of the pencil."],
+	bkSizeGt : ["(please translate) A number is smaller than the size of the pencil.","A number is smaller than the size of the pencil."],
+	lnCrossBorder: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
+	lnCrossNumber: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
+	lnNoTip: ["(please translate) A line is not connected to a pencil.","A line is not connected to a pencil."],
+	ptBranch : ["(please translate) A line doesn't stop at a pencil tip.","A line doesn't stop at a pencil tip."],
+	ptOverlap : ["(please translate) A pencil has multiple tips.","A pencil has multiple tips."],
+	ptConnect : ["(please translate) A line connects to two pencils.","A line connects to two pencils."],
+	ptNoLine : ["(please translate) A pencil tip doesn't have a line.","A pencil tip doesn't have a line."],
+	pencilNoLength : ["(please translate) A pencil has no length.","A pencil has no length."],
+	pencilSmallLength : ["(please translate) A line has a different length from its pencil.","A line has a different length from its pencil."],
+	unusedCell : ["(please translate) A cell is unused.","A cell is unused."],
+	pencilExactArea: ["(please translate) A pencil is not a 1xN rectangle.","A pencil is not a 1xN rectangle."],
+	unusedBorder : ["(please translate) A border is unused.","A border is unused."]
 }
 }));
