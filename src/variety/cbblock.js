@@ -444,10 +444,10 @@ AnsCheck:{
 },
 
 "FailCode@dbchoco":{
-	bkSubLt2 : ["<single color>","A block contains a single color."],
-	bkSubGt2 : ["<multiple regions>","A block has three or more shapes."],
-	bkSizeLt : ["<number too large>","A number is bigger than the size of the shape."],
-	bkSizeGt : ["<number too small>","A number is smaller than the size of the shape."],
-	bkDifferentShape: ["<shapes are different>","The two shapes inside a block are different."],
+	bkSubLt2 : ["(please translate) A block contains a single color.","A block contains a single color."],
+	bkSubGt2 : ["(please translate) A block has three or more shapes.","A block has three or more shapes."],
+	bkSizeLt : ["(please translate) A number is bigger than the size of the shape.","A number is bigger than the size of the shape."],
+	bkSizeGt : ["(please translate) A number is smaller than the size of the shape.","A number is smaller than the size of the shape."],
+	bkDifferentShape: ["(please translate) The two shapes inside a block are different.","The two shapes inside a block are different."],
 }
 }));
