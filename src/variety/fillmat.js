@@ -71,12 +71,20 @@ Graphic:{
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@fillmat":{
 	decodePzpr : function(type){
 		this.decodeNumber10();
 	},
 	encodePzpr : function(type){
 		this.encodeNumber10();
+	}
+},
+"Encode@usotatami":{
+	decodePzpr : function(type){
+		this.decodeNumber10or16();
+	},
+	encodePzpr : function(type){
+		this.encodeNumber10or16();
 	}
 },
 //---------------------------------------------------------

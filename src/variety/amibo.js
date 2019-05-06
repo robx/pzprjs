@@ -348,10 +348,10 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		this.decodeNumber10();
+		this.decodeNumber10or16();
 	},
 	encodePzpr : function(type){
-		this.encodeNumber10();
+		this.encodeNumber10or16();
 	}
 },
 //---------------------------------------------------------
