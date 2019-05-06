@@ -398,8 +398,8 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var dir= cell.qdir || cell.anum;
-			var color = ((dir>=1 && dir<=4) ? this.getCellArrowColor(cell) : null);
+			var dir = cell.qdir || cell.anum;
+			var color = this.getCellArrowColor(cell);
 			
 			g.lineWidth = (this.lw + this.addlw)/2;
 			if(!!color){
