@@ -5,11 +5,12 @@
 
 #### Improvement
 
-* mashu, starbattle: Reword English error messages
+* amibo, mashu, starbattle: Reword English error messages
 * slither: Allow 4 as clue number
 
 #### BugFix
 
+* amibo, usotatami: Allow encoding multi-digit clues
 * fourcells, fivecells: No borders and connection lines between empty cells
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
