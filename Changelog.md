@@ -12,6 +12,7 @@
 
 * amibo, usotatami: Allow encoding multi-digit clues
 * fourcells, fivecells: No borders and connection lines between empty cells
+* kinkonkan: Fix answer check for large clues
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
 * nurimisaki: Switch to unshaded cell connection info for edit mode, too
