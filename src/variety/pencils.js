@@ -230,37 +230,32 @@ Cell:{
 
 	setPencilArrow: function(dir, question) {
 		if(!(dir>=0 && dir <=4)) {return -1;}
+
+		var dirs = {};
+		dirs[this.UP] = { inv: this.DN, border: this.adjborder.bottom, cell: this.adjacent.bottom };
+		dirs[this.DN] = { inv: this.UP, border: this.adjborder.top,    cell: this.adjacent.top    };
+		dirs[this.LT] = { inv: this.RT, border: this.adjborder.right,  cell: this.adjacent.right  };
+		dirs[this.RT] = { inv: this.LT, border: this.adjborder.left,   cell: this.adjacent.left   };
+
 		var anum = this.anum, qdir = this.qdir;
 
 		this.setAnum(-1);
 
-		if(anum === this.UP && this.adjacent.bottom.anum !== this.DN) { this.adjborder.bottom.setQans(0); }
-		if(anum === this.DN && this.adjacent.top.anum !== this.UP) { this.adjborder.top.setQans(0); }
-		if(anum === this.LT && this.adjacent.right.anum !== this.RT) { this.adjborder.right.setQans(0); }
-		if(anum === this.RT && this.adjacent.left.anum !== this.LT) { this.adjborder.left.setQans(0); }
+		if(anum > 0 && dirs[anum].cell.anum !== dirs[anum].inv) { dirs[anum].border.setQans(0); }
 
 		if(question) {
-			if(qdir === this.UP && this.adjacent.bottom.qdir !== this.DN) { this.adjborder.bottom.setQues(0); }
-			if(qdir === this.DN && this.adjacent.top.qdir !== this.UP) { this.adjborder.top.setQues(0); }
-			if(qdir === this.LT && this.adjacent.right.qdir !== this.RT) { this.adjborder.right.setQues(0); }
-			if(qdir === this.RT && this.adjacent.left.qdir !== this.LT) { this.adjborder.left.setQues(0); }
+			if(qdir >= 1 && qdir <= 4 && dirs[qdir].cell.qdir !== dirs[qdir].inv) { dirs[qdir].border.setQues(0); }
 
 			if(qdir === dir) {dir = 0;}
 			if(dir) {this.setQnum(-1);}
 
-			if(dir === this.UP && !this.adjborder.bottom.isnull) { this.adjborder.bottom.setQues(1); }
-			if(dir === this.DN && !this.adjborder.top.isnull) { this.adjborder.top.setQues(1); }
-			if(dir === this.LT && !this.adjborder.right.isnull) { this.adjborder.right.setQues(1); }
-			if(dir === this.RT && !this.adjborder.left.isnull) { this.adjborder.left.setQues(1); }
+			if(dir > 0 && !dirs[dir].border.isnull) { dirs[dir].border.setQues(1); }
 			this.setQdir(dir);
 
 		} else if(!(qdir >= 1 && qdir <= 4) && this.qnum === -1) {
 			if(anum === dir || dir===0) {dir = -1;}
 
-			if(dir === this.UP && !this.adjborder.bottom.isnull) { this.adjborder.bottom.setQans(1); }
-			if(dir === this.DN && !this.adjborder.top.isnull) { this.adjborder.top.setQans(1); }
-			if(dir === this.LT && !this.adjborder.right.isnull) { this.adjborder.right.setQans(1); }
-			if(dir === this.RT && !this.adjborder.left.isnull) { this.adjborder.left.setQans(1); }
+			if(dir > 0 && !dirs[dir].border.isnull) { dirs[dir].border.setQans(1); }
 			this.setAnum(dir);
 		}
 
@@ -503,7 +498,7 @@ FileIO:{
 			if(ca.charAt(0)==="+"){cell.qsub=1; ca = ca.substr(1);}
 			else if(ca.charAt(0)==="-"){cell.qsub=2; ca = ca.substr(1);}
 
-			if(ca!=="."){cell.anum = +ca;}
+			if(ca!=="." && (+ca) <= 4){cell.anum = +ca;}
 		});
 	},
 	encodeData : function(){
