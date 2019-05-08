@@ -85,17 +85,6 @@
 	isGround : function(){ return (this.ques>0);}
 },
 
-"Border@dbchoco":{
-	isGround : function(){
-		if(this.sidecell[0].isnull || this.sidecell[1].isnull) {return false;}
-		return this.qans === 0 && this.sidecell[0].ques === this.sidecell[1].ques;
-	},
-
-	posthook: {
-		qans: function(num) { this.board.tilegraph.rebuild(); }
-	}
-},
-
 Board:{
 	cols : 8,
 	rows : 8,
@@ -113,26 +102,42 @@ Board:{
 	maxnum: function() {
 		var bd=this.board;
 		return (bd.cols*bd.rows)>>1;
-	},
-
-	posthook: {
-		ques: function(num) {
-			 this.board.tilegraph.rebuild();
-			 this.board.blockgraph.rebuild();
-		}
 	}
 },
 
 "AreaTileGraph:AreaGraphBase":{
 	enabled : true,
-	relation : {'border.ques':'separator'},
 	setComponentRefs : function(obj, component){ obj.tile = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},
 	
 	isnodevalid : function(nodeobj){ return true;},
+
+	setExtraData : function(component){
+		// Call super class
+		this.klass.AreaGraphBase.prototype.setExtraData.call(this, component);
+		
+		if(this.rebuildmode || component.clist.length === 0) {return;}
+
+		// A tile is always contained within a single block.
+		var block = component.clist[0].block;
+		if(block) {
+			this.board.blockgraph.setComponentInfo(block);
+		}
+	}
+},
+"AreaTileGraph@cbblock":{
+	relation : {'border.ques':'separator'},
 	isedgevalidbylinkobj : function(border){ return border.isGround();}
 },
+"AreaTileGraph@dbchoco":{
+	relation : {'border.qans':'separator', 'cell.ques':'node'},
+	isedgevalidbylinkobj : function(border){ 
+		if(border.sidecell[0].isnull || border.sidecell[1].isnull) {return false;}
+		return border.qans === 0 && border.sidecell[0].ques === border.sidecell[1].ques;
+	}
+},
+
 "AreaBlockGraph:AreaRoomGraph":{
 	enabled : true,
 	getComponentRefs : function(obj){ return obj.block;}, // getSideAreaInfo用
@@ -149,7 +154,15 @@ Board:{
 
 		var tiles = this.board.tilegraph.components;
 		for(var i=0;i<tiles.length;i++){ tiles[i].count=0;}
-		for(var i=0;i<clist.length;i++){ clist[i].tile.count++;}
+		for(var i=0;i<clist.length;i++){
+			// It's possible that this function is called before all cells are connected to a tile.
+			if(!clist[i].tile) {
+				// Abort the count and wait until all cells in the grid are connected.
+				component.dotcnt = 0;
+				return;
+			}
+			clist[i].tile.count++;
+		}
 		for(var i=0;i<tiles.length;i++){ if(tiles[i].count>0){ cnt++;}}
 		component.dotcnt = cnt;
 	}
