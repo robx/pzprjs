@@ -58,7 +58,18 @@
 },
 
 "KeyEvent@dbchoco":{
-	enablemake : true
+	enablemake : true,
+
+	keyinput : function(ca){
+		if(ca==='q'){
+			var cell = this.cursor.getc();
+			cell.setQues(cell.ques!==6?6:0);
+			this.prev=cell;
+			cell.draw();
+		} else {
+			this.key_inputqnum(ca);
+		}
+	}
 },
 
 //---------------------------------------------------------
