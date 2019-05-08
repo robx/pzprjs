@@ -345,8 +345,8 @@ AnsCheck:{
 		"checkSmallNumberArea@dbchoco",
 		"checkBlockNotRect@cbblock",
 		"checkDifferentShapeBlock@cbblock",
-		"checkEqualShapes@dbchoco",
 		"checkLargeBlock",
+		"checkEqualShapes@dbchoco",
 		"checkLargeNumberArea@dbchoco",
 	],
 
