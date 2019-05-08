@@ -387,13 +387,12 @@ AnsCheck:{
 	},
 
 	checkNumberArea : function(factor, code){ 
-		var blocks = this.board.blockgraph.components;
-		for(var r=0;r<blocks.length;r++){
-			if(blocks[r].dotcnt!==2){continue;}
-			var clist = blocks[r].clist, d = clist.length;
+		var tiles = this.board.tilegraph.components;
+		for(var r=0;r<tiles.length;r++){
+			var clist = tiles[r].clist, d = clist.length;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				var qnum = cell.qnum * 2;
+				var qnum = cell.qnum;
 				if(qnum <= 0) {continue;}
 				if((factor < 0 && d < qnum) || (factor > 0 && d > qnum)) {
 					this.failcode.add(code);
