@@ -1,5 +1,6 @@
 #### New puzzle
 
+* dbchoco: Introduce new puzzle: Double Chocolate (due to Lennard Sprong)
 * heteromino: Introduce new puzzle: Heteromino
 * yajilin-regions: Introduce new puzzle: Regional Yajilin
 
