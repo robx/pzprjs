@@ -6,11 +6,13 @@
 #### Improvement
 
 * amibo, mashu, starbattle: Reword English error messages
+* cbblock: Add error for dead-end walls
 * slither: Allow 4 as clue number
 
 #### BugFix
 
 * amibo, usotatami: Allow encoding multi-digit clues
+* cbblock: Fix wrong error during edit
 * fourcells, fivecells: No borders and connection lines between empty cells
 * kinkonkan: Fix answer check for large clues
 * nawabari: Fix answer check for border clues
