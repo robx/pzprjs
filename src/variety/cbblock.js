@@ -25,7 +25,7 @@
 	}
 },
 "MouseEvent@dbchoco":{
-	inputModes : {edit:['ice','number','clear'],play:['border','subline']},
+	inputModes : {edit:['shade','number','clear'],play:['border','subline']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
@@ -43,7 +43,7 @@
 
 			if( (this.mousestart && cell!==this.cursor.getc() && this.btn==='right') ||
 				(this.mousemove && this.inputData>=0)) {
-				this.inputIcebarn();
+				this.inputShade();
 			}
 			else if(this.mouseend && this.notInputted()) { 
 				if(cell!==this.cursor.getc() && this.inputMode==='auto' && this.btn==='left') {
@@ -54,6 +54,9 @@
 				}
 			}
 		}
+	},
+	inputShade : function(){
+		this.inputIcebarn();
 	}
 },
 

@@ -8,6 +8,9 @@ MouseEvent:{
 	// mv.inputcell() Cellのqans(回答データ)に0/1/2のいずれかを入力する。
 	// mv.decIC()     0/1/2どれを入力すべきかを決定する。
 	//---------------------------------------------------------------------------
+	inputShade : function(){
+		this.inputcell();
+	},
 	inputcell : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
