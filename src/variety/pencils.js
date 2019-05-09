@@ -841,6 +841,7 @@ FailCode:{
 	lnCrossNumber: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
 	lnNoTip: ["(please translate) A line is not connected to a pencil.","A line is not connected to a pencil."],
 	ptBranch : ["(please translate) A line doesn't stop at a pencil tip.","A line doesn't stop at a pencil tip."],
+	pencilTwoEnds : ["(please translate) A pencil has multiple tips.","A pencil has multiple tips."],
 	ptOverlap : ["(please translate) A pencil has multiple tips.","A pencil has multiple tips."],
 	ptConnect : ["(please translate) A line connects to two pencils.","A line connects to two pencils."],
 	ptNoLine : ["(please translate) A pencil tip doesn't have a line.","A pencil tip doesn't have a line."],
