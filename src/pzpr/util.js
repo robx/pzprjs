@@ -162,7 +162,7 @@ pzpr.util = {
 	// pzpr.util.checkpid()  メニューなどが表示対象のパズルかどうか返す
 	//---------------------------------------------------------------------------
 	checkpid : function(str,pid){
-		var matches = str.match(/!?[a-z0-9]+/g), isdisp = true;
+		var matches = str.match(/!?[a-z0-9-]+/g), isdisp = true;
 		if(!!matches){
 			isdisp = false;
 			for(var i=0;i<matches.length;i++){

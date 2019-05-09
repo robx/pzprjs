@@ -271,9 +271,9 @@ AnsCheck:{
 
 FailCode:{
 	mashuOnLine : ["線が上を通っていない丸があります。","Lines don't pass some pearls."],
-	mashuWCurve : ["白丸の上で線が曲がっています。","Lines curve on white pearl."],
-	mashuWStNbr : ["白丸の隣で線が曲がっていません。","Lines go straight next to white pearl on each side."],
-	mashuBStrig : ["黒丸の上で線が直進しています。","Lines go straight on black pearl."],
-	mashuBCvNbr : ["黒丸の隣で線が曲がっています。","Lines curve next to black pearl."]
+	mashuWCurve : ["白丸の上で線が曲がっています。","Lines turn on a white pearl."],
+	mashuWStNbr : ["白丸の隣で線が曲がっていません。","Lines go straight next to a white pearl on both sides."],
+	mashuBStrig : ["黒丸の上で線が直進しています。","Lines go straight through a black pearl."],
+	mashuBCvNbr : ["黒丸の隣で線が曲がっています。","Lines turn next to a black pearl."]
 }
 }));

@@ -272,7 +272,7 @@ Board:{
 			else{ ldata[cc]=1; continue;}
 
 			ccnt++;
-			if(ccnt>this.cell.length){ break;} // 念のためガード条件(多分引っかからない)
+			if(ccnt>2*this.cell.length){ break;} // 念のためガード条件(多分引っかからない)
 		}
 
 		var destec = pos.getex().id;

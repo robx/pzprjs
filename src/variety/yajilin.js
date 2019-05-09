@@ -5,13 +5,12 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['yajilin'], {
+['yajilin', 'yajilin-regions'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
 	RBShadeCell : true,
 	use     : true,
-	inputModes : {edit:['number','direc','clear','info-line'],play:['line','peke','shade','unshade','info-line','completion']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
@@ -20,13 +19,20 @@ MouseEvent:{
 			}
 			else if(this.mouseend && this.notInputted()){
 				var cell = this.getcell();
-				if(!this.firstCell.isnull&&cell!==this.firstCell){ return;}
-				if(!cell.isnull && cell.isNum()){ this.inputqcmp();}
-				else                            { this.inputcell();}
+				if(!this.firstCell.isnull && cell!==this.firstCell){ return;}
+				if(!cell.isnull && cell.isNum() && this.pid==='yajilin'){
+					this.inputqcmp();
+				}
+				else{
+					this.inputcell();
+				}
 			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart || this.mousemove){ this.inputdirec();}
+			if(this.mousestart || this.mousemove){
+				if(this.pid==='yajilin')             { this.inputdirec();}
+				else if(this.pid==='yajilin-regions'){ this.inputborder();}
+			}
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
 	},
@@ -39,6 +45,12 @@ MouseEvent:{
 
 		this.mousereset();
 	}
+},
+"MouseEvent@yajilin":{
+	inputModes : {edit:['number','direc','clear','info-line'],play:['line','peke','shade','unshade','info-line','completion']}
+},
+"MouseEvent@yajilin-regions":{
+	inputModes : {edit:['number','border','clear','info-line'],play:['line','peke','shade','unshade','info-line']}
 },
 
 //---------------------------------------------------------
@@ -59,15 +71,48 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	// don't draw  dots under lines
+	isDot : function(){
+		return this.lcnt===0&&this.qsub===1;
+	},
+
+	countShade : function(clist){
+		if(!clist){ return -1;}
+		return (clist.filter(function(cell){ return cell.isShade();}).length);
+	},
+	countUndecided : function(clist){
+		if(!clist){ return -1;}
+		return (clist.filter(function(cell){
+			if(cell.qans!==0){ return false;}
+			if(cell.knowEmpty()){ return false;}
+			return true;
+		}).length);
+	},
+
+	// trigger redraw for autocompletion
+	posthook : {
+		qsub : function(){
+			var cells=[this];
+			this.board.redrawAffected(cells);
+		},
+		qans : function(){
+			var cells=[this];
+			var adc=this.adjacent;
+			var cs=[adc.top, adc.bottom, adc.left, adc.right];
+			for(var i=0; i<cs.length; i++){
+				var c=cs[i];
+				if(!c.isnull&&c.qans===0&&c.qsub===0){ cells.push(c);}
+			}
+			this.board.redrawAffected(cells);
+		}
+	}
+},
+"Cell@yajilin":{
 	minnum : 0,
 	maxnum : function(){ return Math.max((this.board.cols+1)>>1,(this.board.rows+1)>>1);},
 
 	// 線を引かせたくないので上書き
 	noLP : function(dir){ return (this.isShade() || this.isNum());},
-
-	isDot : function(){
-		return this.lcnt===0&&this.qsub===1;
-	},
 
 	allowShade : function(){
 		return this.qnum===-1&&this.lcnt===0;
@@ -76,6 +121,15 @@ Cell:{
 		return this.qnum===-1&&this.lcnt===0;
 	},
 
+	knowEmpty : function(){
+		if(this.qnum!==-1){ return true;}
+		if(this.qsub!==0){ return true;}
+		if(this.lcnt>0){ return true;}
+		var shadedNbrs = this.countDir4Cell(function(cell){
+			return (cell.isShade() > 0);
+		});
+		return (shadedNbrs>0);
+	},
 	isCmp : function(){
 		if(this.qcmp===1){ return true;}
 		if(!this.puzzle.execConfig('autocmp')){ return false;}
@@ -98,12 +152,21 @@ Cell:{
 			clist.add(cell);
 		}
 		return clist;
+	}
+},
+"Cell@yajilin-regions":{
+	minnum : 0,
+	maxnum : function(){ return this.room.clist.length;},
+
+	noLP : function(dir){ return this.isShade();},
+
+	allowShade : function(){
+		return this.lcnt===0;
+	},
+	allowUnshade : function(){
+		return this.lcnt===0;
 	},
 
-	countShade : function(clist){
-		if(!clist){ return -1;}
-		return (clist.filter(function(cell){ return cell.isShade();}).length);
-	},
 	knowEmpty : function(){
 		if(this.qsub!==0){ return true;}
 		if(this.lcnt>0){ return true;}
@@ -112,40 +175,15 @@ Cell:{
 		});
 		return (shadedNbrs>0);
 	},
-	countUndecided : function(clist){
-		if(!clist){ return -1;}
-		return (clist.filter(function(cell){
-			if(cell.qnum!==-1){ return false;}
-			if(cell.qans!==0){ return false;}
-			if(cell.knowEmpty()){ return false;}
-			return true;
-		}).length);
-	},
-
-	posthook : {
-		qsub : function(){
-			var cells=[this];
-			this.board.redrawAffected(cells);
-		},
-		qans : function(){
-			var cells=[this];
-			var adc=this.adjacent;
-			var cs=[adc.top, adc.bottom, adc.left, adc.right];
-			for(var i=0; i<cs.length; i++){
-				var c=cs[i];
-				if(!c.isnull&&c.qnum===-1&&c.qans===0&&c.qsub===0){ cells.push(c);}
-			}
-			this.board.redrawAffected(cells);
-		}
-	}
+	isCmp : function(){
+		if(!this.puzzle.execConfig('autocmp')){ return false;}
+		var clist = this.room.clist;
+		if(this.countUndecided(clist)!==0){ return false;}
+		return this.qnum===this.countShade(clist);
+        }
 },
 Border:{
 	enableLineNG : true,
-	
-	isBorder : function(){
-		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
-	},
-
 	posthook : {
 		line : function(){
 			var cells=[];
@@ -154,9 +192,15 @@ Border:{
 		}
 	}
 },
+"Border@yajilin":{
+	isBorder : function(){
+		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
+	}
+},
 Board:{
 	hasborder : 1,
-
+},
+"Board@yajilin":{
 	redrawAffected : function(cells){
 		var minx=this.maxbx, maxx=this.minbx, miny=this.maxby, maxy=this.minby;
 		for(var i=0;i<cells.length;i++){
@@ -181,12 +225,26 @@ Board:{
 		}
 	}
 },
-BoardExec:{
+"Board@yajilin-regions":{
+	redrawAffected : function(cells){
+		var done = [];
+		for(var i=0;i<cells.length;i++){
+			var top=cells[i].room.top;
+			if(done[top.id]){ continue;}
+			done[top.id] = true;
+			top.draw();
+		}
+	}
+},
+"BoardExec@yajilin":{
 	adjustBoardData : function(key,d){
 		this.adjustNumberArrow(key,d);
 	}
 },
-
+"AreaRoomGraph@yajilin-regions":{
+	enabled : true,
+	hastop : true
+},
 LineGraph:{
 	enabled : true
 },
@@ -194,28 +252,42 @@ LineGraph:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
-	irowake : true,
-
 	qcmpcolor  : "rgb(127,127,127)",
 	autocmp : 'number',
 
+	irowake : true,
+
+	getQuesNumberColor : function(cell){
+		var qnum_color = this.getQuesNumberColor_mixed(cell);
+		if ((cell.error || cell.qinfo)===1){ return qnum_color;}
+		return (cell.isCmp() ?  this.qcmpcolor : qnum_color);
+	},
+
 	paint : function(){
 		this.drawBGCells();
+		if(this.pid==='yajilin-regions'){ this.drawShadedCells();}
 		this.drawDotCells();
 		this.drawGrid();
 		
+
 		this.drawBorders();
 
-		this.drawArrowNumbers();
+		if(this.pid==='yajilin'){ this.drawArrowNumbers();}
 
 		this.drawLines();
+
+		if(this.pid==='yajilin-regions'){ this.drawQuesNumbers();}
+
 		this.drawPekes();
 
 		this.drawChassis();
 
-		this.drawTarget();
-	},
+		if(this.pid==='yajilin-regions'){ this.drawBoxBorders(false);}
 
+		this.drawTarget();
+	}
+},
+"Graphic@yajilin":{
 	getBGCellColor : function(cell){
 		var info = cell.error || cell.qinfo;
 		if(this.puzzle.getConfig('disptype_yajilin')===2 && cell.qnum!==-1){ return 'rgb(224,224,224)';}
@@ -230,17 +302,15 @@ Graphic:{
 	getBorderColor : function(border){
 		if(this.puzzle.getConfig('disptype_yajilin')===2 && border.isBorder()){ return this.quescolor;}
 		return null;
-	},
-	getQuesNumberColor : function(cell){
-		var qnum_color = this.getQuesNumberColor_qnum(cell);
-		if ((cell.error || cell.qinfo)===1){ return qnum_color;}
-		return (cell.isCmp() ?  this.qcmpcolor : qnum_color);
 	}
+},
+"Graphic@yajilin-regions":{
+	textoption : {ratio:0.4, position: 5, hoffset: 0.8, voffset: 0.75}
 },
 
 //---------------------------------------------------------
 // URLエンコード/デコード処理
-Encode:{
+"Encode@yajilin":{
 	decodePzpr : function(type){
 		this.decodeArrowNumber16();
 		
@@ -259,8 +329,18 @@ Encode:{
 		this.fio.encodeCellDirecQnum_kanpen(true);
 	}
 },
+"Encode@yajilin-regions":{
+	decodePzpr : function(type){
+		this.decodeBorder();
+		this.decodeRoomNumber16();
+	},
+	encodePzpr : function(type){
+		this.encodeBorder();
+		this.encodeRoomNumber16();
+	}
+},
 //---------------------------------------------------------
-FileIO:{
+"FileIO@yajilin":{
 	decodeData : function(){
 		this.decodeCellDirecQnum();
 		this.decodeCellAns();
@@ -356,7 +436,20 @@ FileIO:{
 		});
 	}
 },
-
+"FileIO@yajilin-regions":{
+	decodeData : function(){
+		this.decodeAreaRoom();
+		this.decodeCellQnum();
+		this.decodeCellAns();
+		this.decodeBorderLine();
+	},
+	encodeData : function(){
+		this.encodeAreaRoom();
+		this.encodeCellQnum();
+		this.encodeCellAns();
+		this.encodeBorderLine();
+	}
+},
 //---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
@@ -366,14 +459,19 @@ AnsCheck:{
 		"checkLineOnShadeCell",
 		"checkAdjacentShadeCell",
 		"checkDeadendLine+",
-		"checkArrowNumber",
+		"checkArrowNumber@yajilin",
+		"checkShadeCellCount@yajilin-regions",
 		"checkOneLoop",
-		"checkEmptyCell_yajilin+",
-		"checkNumberHasArrow",
+		"checkEmptyCell_yajilin+@yajilin",
+		"checkEmptyCell_regions+@yajilin-regions",
+		"checkNumberHasArrow@yajilin",
 	],
 
 	checkEmptyCell_yajilin : function(){
 		this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade() && cell.noNum());}, "ceEmpty");
+	},
+	checkEmptyCell_regions : function(){
+		this.checkAllCell(function(cell){ return (cell.lcnt===0 && !cell.isShade());}, "ceEmpty");
 	},
 
 	checkArrowNumber : function(){

@@ -85,6 +85,7 @@ delete variety.extend;
 	cojun     :[0,0,"コージュン","Cojun",'ripple'],
 	country   :[1,0,"カントリーロード","Country Road"],
 	creek     :[1,0,"クリーク","Creek"],
+	dbchoco   :[0,0,"ダブルチョコ","Double Chocolate",'cbblock'],
 	dosufuwa  :[0,0,"ドッスンフワリ","Dosun-Fuwari"],
 	doubleback:[0,0,"引き返す","Double Back",'country'],
 	easyasabc :[0,0,"ABCプレース","Easy as ABC"],
@@ -101,6 +102,7 @@ delete variety.extend;
 	hashikake :[0,1,"橋をかけろ","Hashiwokakero (Bridges)",'',{pzprurl:'hashi',kanpen:'hashi',alias:'bridges'}],
 	hebi      :[1,0,"へびいちご","Hebi-Ichigo",'',{old:'snakes'}],
 	herugolf  :[0,0,"ヘルゴルフ","Herugolf"],
+	heteromino:[0,0,"ヘテロミノ","Heteromino",'nawabari'],
 	heyawacky :[0,0,"不定形へやわけ","Heyawacky",'heyawake'],
 	heyawake  :[0,1,"へやわけ","Heyawake",'heyawake'],
 	heyabon   :[1,0,"へやぼん","Heya-Bon",'bonsan'],
@@ -192,6 +194,7 @@ delete variety.extend;
 	wblink    :[0,0,"シロクロリンク","Shirokuro-link"],
 	yajikazu  :[1,0,"やじさんかずさん","Yajisan-Kazusan"],
 	yajilin   :[0,1,"ヤジリン","Yajilin",'',{pzprurl:'yajilin',kanpen:'yajilin',alias:'yajirin'}],
+	'yajilin-regions' :[0,0,"ヤジリン","Regional Yajilin",'yajilin',{alias:'yajirin-regions'}],
 	yajitatami:[0,0,"ヤジタタミ","Yajitatami"],
 	yinyang   :[0,0,"しろまるくろまる","Yin-Yang"],
 	yosenabe  :[0,0,"よせなべ","Yosenabe"]

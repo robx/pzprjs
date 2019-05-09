@@ -74,4 +74,16 @@ describe('Variety:amibo',function(){
 		assert.equal(puzzle.board.netgraph.components.length, 1);
 		assert.equal(puzzle.check().complete, true);
 	});
+	it('Check multi-digit clue url encoding', function(){
+		puzzle.open('amibo/20/1');
+
+		puzzle.setMode('edit');
+		puzzle.cursor.init(1,1);
+		puzzle.key.inputKeys('10');
+
+		assert.equal(puzzle.board.getc(1,1).qnum, 10);
+		var puzzle2 = new pzpr.Puzzle();
+		puzzle2.open(puzzle.getURL());
+		assert.equal(puzzle2.board.getc(1,1).qnum, 10);
+	});
 });

@@ -694,7 +694,7 @@ FailCode:{
 	brNoLine : ["線が引かれていません。","There is no line on the board."],
 	
 	/* ** 盤面切り分け系 ** */
-	bkNotRect : ["四角形ではない部屋があります。","There is a room whose shape is not square."],
+	bkNotRect : ["四角形ではない部屋があります。","There is a room whose shape is not a rectangle."],
 	bdDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
 	bdCross   : ["十字の交差点があります。","There is a crossing border line."],
 

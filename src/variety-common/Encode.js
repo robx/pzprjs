@@ -108,21 +108,24 @@ Encode:{
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
-	encodeNumber10 : function(){
+	maybeEncodeNumber10 : function(){
 		var cm="", count=0, bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", qn=bd.cell[c].qnum;
 
 			if     (qn===-2)       { pstr = ".";}
 			else if(qn>=0 && qn<10){ pstr = qn.toString(10);}
+			else if(qn>=10)        { return "";}
 			else{ count++;}
 
 			if(count===0){ cm += pstr;}
 			else if(pstr || count===26){ cm+=((9+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(9+count).toString(36);}
-
-		this.outbstr += cm;
+		return cm;
+	},
+	encodeNumber10 : function(){
+		this.outbstr += this.maybeEncodeNumber10();
 	},
 
 	//---------------------------------------------------------------------------
@@ -167,6 +170,33 @@ Encode:{
 		if(count>0){ cm+=(15+count).toString(36);}
 
 		this.outbstr += cm;
+	},
+
+	//---------------------------------------------------------------------------
+	// enc.decodeNumber10or16()  full range, but falling back to {de,en}codeNumber10 for backwards compatibility
+	// enc.encodeNumber10or16()  full range, but falling back to {de,en}codeNumber10 for backwards compatibility
+	//---------------------------------------------------------------------------
+	decodeNumber10or16 : function(){
+		var bstr = this.outbstr;
+		if(bstr.length===0){ return;}
+		var ca = bstr.charAt(0);
+		if(ca === '-'){
+			this.outbstr = bstr.substr(1);
+			this.decodeNumber16();
+		}else{
+			this.decodeNumber10();
+		}
+	},
+	encodeNumber10or16 : function(){
+		var cm = this.maybeEncodeNumber10();
+		if(cm.length>0){
+			this.outbstr += cm;
+			return;
+		}
+		else{
+			this.outbstr += "-";
+			this.encodeNumber16();
+		}
 	},
 
 	//---------------------------------------------------------------------------

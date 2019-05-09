@@ -243,7 +243,7 @@ MouseEvent:{
 			case 'crossdot': if(this.mousestart){ this.inputcrossMark();} break;
 			case 'border':  this.inputborder(); break;
 			case 'subline': this.inputQsubLine(); break;
-			case 'shade': case 'unshade': this.inputcell(); break;
+			case 'shade': case 'unshade': this.inputShade(); break;
 			case 'line': this.inputLine(); break;
 			case 'peke': this.inputpeke(); break;
 			case 'bar':  this.inputTateyoko(); break;
