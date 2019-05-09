@@ -262,7 +262,24 @@ Cell:{
 		return dir;
 	},
 
+	getPencilStart: function() {
+		var dir = this.qdir || this.anum;
+		if(dir === this.UP) { return this.adjacent.bottom; }
+		if(dir === this.DN) { return this.adjacent.top; }
+		if(dir === this.LT) { return this.adjacent.right; }
+		if(dir === this.RT) { return this.adjacent.left; }
+
+		return this.board.emptycell;
+	},
+
+	getPencilLength: function() {
+		var cellb = this.getPencilStart();
+		return !cellb.isnull && cellb.room.pencil ? cellb.room.clist.length : this.lcnt === 1 ? this.path.nodes.length - 1 : 1;
+	},
+
 	getPencilCells: function(limit) {
+		if(!limit) { limit = this.getPencilLength(); }
+
 		var bd = this.board;
 		var list = new this.klass.CellList();
 		var dir = this.qdir || this.anum;
@@ -295,7 +312,7 @@ Cell:{
 				if(border.qans === 1) {break;} // Encountered border
 			}
 
-			if(limit && limit === list.length) {break;}
+			if(limit === list.length) {break;}
 			list.add(cell);
 			
 			start = false;
@@ -341,7 +358,28 @@ BoardExec:{
 },
 
 AreaRoomGraph:{
-	enabled : true
+	enabled : true,
+
+	setExtraData : function(component){
+		this.common.setExtraData.call(this, component);
+		var clist = component.clist; 
+
+		component.pencil = 0;
+
+		var rect = clist.getRectSize();
+
+		if(clist.length === 1 || (rect.rows > 1 && rect.cols > 1)) {return;}
+		
+		var maxnum = 0;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i];
+			var dir = cell.qdir || cell.anum;
+			if(dir >= 1 && dir <= 4) {return;}
+			if(cell.qnum > maxnum) {maxnum = cell.qnum;}
+		}
+		
+		if(maxnum >= clist.length) { component.pencil = (rect.rows > 1 ? 1 : 2); }
+	}
 },
 
 LineGraph:{
@@ -543,9 +581,10 @@ AnsCheck:{
 		"pencilSmallLength",
 		"pencilTipsOverlap",
 		"pencilNumberTooSmall",
-
+		
 		"pencilTipNoLine",
 		"lineNoTip",
+		"pencilLargeLength",
 		"unusedCells",
 		"pencilExactAreas",
 		"unusedBorders"
@@ -558,7 +597,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				var qnum = cell.qnum;
-				if(qnum > 0 && d.cnt < qnum) {
+				if(qnum > 0 && Math.max(d.rows, d.cols) < qnum) {
 					this.failcode.add("bkSizeLt");
 					if(this.checkOnly){ return; }
 					clist.seterr(1);
@@ -617,6 +656,8 @@ AnsCheck:{
 		}
 	},
 
+	// TODO use pencil size and direction to check for pencils with two opposing ends
+
 	pencilTipsOverlap: function() {
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
@@ -624,7 +665,7 @@ AnsCheck:{
 			if(!(dir >= 1 && dir <= 4)) {continue;}
 			if(cell.lcnt > 1) {continue;}
 			
-			var cells = cell.getPencilCells(cell.path ? cell.path.nodes.length - 1 : 1);
+			var cells = cell.getPencilCells();
 			
 			var dx = 0, dy = 0, dir1 = 0, dir2 = 0;
 			if(dir===cell.UP||dir===cell.DN) {
@@ -668,12 +709,9 @@ AnsCheck:{
 
 			this.failcode.add("pencilNoLength");
 			if(this.checkOnly){ return;}
-			cell.seterr(1);
 			
-			if(dir === cell.UP) { cell.adjacent.bottom.seterr(1); }
-			if(dir === cell.DN) { cell.adjacent.top.seterr(1); }
-			if(dir === cell.LT) { cell.adjacent.right.seterr(1); }
-			if(dir === cell.RT) { cell.adjacent.left.seterr(1); }
+			cell.seterr(1);
+			cell.getPencilStart().seterr(1);
 		}
 	},
 
@@ -695,16 +733,35 @@ AnsCheck:{
 		}
 	},
 
-	pencilNumberTooSmall: function() {
+	pencilLargeLength: function() {
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
 			var dir = cell.qdir || cell.anum;
 			if(!(dir >= 1 && dir <= 4)) {continue;}
 			if(cell.lcnt !== 1) {continue;}
+
+			var cellb = cell.getPencilStart();
+			if(!cellb || cellb.isnull || cellb.room.pencil===0){continue;}
+			if(cellb.room.clist.length <= cell.path.nodes.length - 1) {continue;}
+
+			this.failcode.add("pencilLargeLength");
+			if(this.checkOnly){ return;}
+			cell.seterr(1);
+			cell.getPencilCells().seterr(1);
+			cell.path.setedgeerr(1);
+		}
+	},
+
+	pencilNumberTooSmall: function() {
+		for(var c=0;c<this.board.cell.length;c++){
+			var cell = this.board.cell[c];
+			var dir = cell.qdir || cell.anum;
+			if(!(dir >= 1 && dir <= 4)) {continue;}
 			
-			var cells = cell.getPencilCells(cell.path.nodes.length - 1);
+			var size = cell.getPencilLength();
+			var cells = cell.getPencilCells(size);
 			
-			if(cells.some(function(cellb){return cellb.qnum > 0 && cellb.qnum < cell.path.nodes.length - 1;})) {
+			if(cells.some(function(cellb){return cellb.qnum > 0 && cellb.qnum < size;})) {
 				this.failcode.add("bkSizeGt");
 				if(this.checkOnly){ return;}
 				cells.seterr(1);
@@ -719,9 +776,8 @@ AnsCheck:{
 			var cell = this.board.cell[c];
 			var dir = cell.qdir || cell.anum;
 			if(!(dir >= 1 && dir <= 4)) {continue;}
-			if(cell.lcnt !== 1) {continue;}
 
-			var cells = cell.getPencilCells(cell.path.nodes.length - 1);
+			var cells = cell.getPencilCells();
 			cells.each(function(c) {empty.remove(c);});
 		}
 
@@ -739,11 +795,9 @@ AnsCheck:{
 			if(!(dir >= 1 && dir <= 4)) {continue;}
 			if(cell.lcnt !== 1) {continue;}
 
-			var cellb = this.board.emptycell;
-			if(dir === cell.UP) { cellb = cell.adjacent.bottom; }
-			if(dir === cell.DN) { cellb = cell.adjacent.top; }
-			if(dir === cell.LT) { cellb = cell.adjacent.right; }
-			if(dir === cell.RT) { cellb = cell.adjacent.left; }
+			var cellb = cell.getPencilStart();
+
+			if(!cellb || cellb.isnull) {continue;}
 
 			var area = cellb.room.clist.getRectSize();
 			if(area.cols * area.rows !== cell.path.nodes.length - 1 || (area.cols !== 1 && area.rows !== 1)) {
@@ -763,7 +817,7 @@ AnsCheck:{
 			if(!(dir >= 1 && dir <= 4)) {continue;}
 			if(cell.lcnt !== 1) {continue;}
 
-			var cells = cell.getPencilCells(cell.path.nodes.length - 1);
+			var cells = cell.getPencilCells();
 			list.extend(cells);
 		}
 
@@ -792,6 +846,7 @@ FailCode:{
 	ptNoLine : ["(please translate) A pencil tip doesn't have a line.","A pencil tip doesn't have a line."],
 	pencilNoLength : ["(please translate) A pencil has no length.","A pencil has no length."],
 	pencilSmallLength : ["(please translate) A line has a different length from its pencil.","A line has a different length from its pencil."],
+	pencilLargeLength : ["(please translate) A line has a different length from its pencil.","A line has a different length from its pencil."],
 	unusedCell : ["(please translate) A cell is unused.","A cell is unused."],
 	pencilExactArea: ["(please translate) A pencil is not a 1xN rectangle.","A pencil is not a 1xN rectangle."],
 	unusedBorder : ["(please translate) A border is unused.","A border is unused."]
