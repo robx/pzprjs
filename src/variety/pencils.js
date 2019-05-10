@@ -93,6 +93,9 @@ MouseEvent:{
 		if(border.sidecell[1].lcnt > 0 && border.sidecell[0].lcnt === 0) {return +1;}
 		if(border.sidecell[0].lcnt > 0 && border.sidecell[1].lcnt === 0) {return -1;}
 
+		if(border.sidecell[0].room.pencil) {return +1;}
+		if(border.sidecell[1].room.pencil) {return -1;}
+
 		var pos = this.getpos(0);
 		var dir = this.prevPos.getdir(pos,2);
 
