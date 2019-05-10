@@ -231,6 +231,11 @@ Cell:{
 	},
 	minnum : 1,
 
+	posthook : {
+		qdir : function(num){ this.board.roommgr.setComponentInfo(this.room); },
+		anum : function(num){ this.board.roommgr.setComponentInfo(this.room); }
+	},
+
 	setPencilArrow: function(dir, question) {
 		if(!(dir>=0 && dir <=4)) {return -1;}
 
