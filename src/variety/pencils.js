@@ -577,6 +577,7 @@ AnsCheck:{
 		"pencilTipConnect",
 		"checkSmallArea",
 		
+		"pencilTwoEnds",
 		"pencilZeroLength",
 		"pencilSmallLength",
 		"pencilTipsOverlap",
@@ -656,7 +657,39 @@ AnsCheck:{
 		}
 	},
 
-	// TODO use pencil size and direction to check for pencils with two opposing ends
+	pencilTwoEnds: function () {
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var room = rooms[r];
+			if(!room.pencil) {continue;}
+
+			var rect = room.clist.getRectSize();
+			var start = this.board.emptycell;
+			var end = this.board.emptycell;
+
+			if(room.pencil === 1) {
+				start = this.board.getc(rect.x1, rect.y1).adjacent.top;
+				end = this.board.getc(rect.x1, rect.y2).adjacent.bottom;
+				
+				var topDir = start.qdir || start.anum;
+				var bottomDir = end.qdir || end.anum;
+				if(topDir !== start.UP || bottomDir !== end.DN) {continue;}
+			} else {
+				start = this.board.getc(rect.x1, rect.y1).adjacent.left;
+				end = this.board.getc(rect.x2, rect.y1).adjacent.right;
+				var leftDir = start.qdir || start.anum;
+				var rightDir = end.qdir || end.anum;
+				
+				if(leftDir !== start.LT || rightDir !== end.RT) {continue;}
+			}
+				
+			this.failcode.add("pencilTwoEnds");
+			if(this.checkOnly){ return; }
+			room.clist.seterr(1);
+			start.seterr(1);
+			end.seterr(1);
+		}
+	},
 
 	pencilTipsOverlap: function() {
 		for(var c=0;c<this.board.cell.length;c++){
