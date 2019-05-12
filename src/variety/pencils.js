@@ -230,11 +230,6 @@ Cell:{
 	},
 	minnum : 1,
 
-	posthook : {
-		qdir : function(num){ this.board.roommgr.setComponentInfo(this.room); },
-		anum : function(num){ this.board.roommgr.setComponentInfo(this.room); }
-	},
-
 	setPencilArrow: function(dir, question) {
 		if(!(dir>=0 && dir <=4)) {return -1;}
 
@@ -277,7 +272,19 @@ Cell:{
 		return 0;
 	},
 
-	getPencilStart: function() {
+	isStart : function(dir){
+		var rect = this.room.clist.getRectSize();
+		if(rect.cols>1&&rect.rows>1){ return false;}
+		switch(dir){
+		case this.LT: return (rect.rows===1 && this.bx===rect.x1 && this.by===rect.y1);
+		case this.RT: return (rect.rows===1 && this.bx===rect.x2 && this.by===rect.y1);
+		case this.UP: return (rect.cols===1 && this.bx===rect.x1 && this.by===rect.y1);
+		case this.DN: return (rect.cols===1 && this.bx===rect.x1 && this.by===rect.y2);
+		}
+		return false;
+	},
+
+	getPencilStart : function() {
 		var dir = this.getPencilDir();
 		if(dir === this.UP) { return this.adjacent.bottom; }
 		if(dir === this.DN) { return this.adjacent.top; }
@@ -287,56 +294,71 @@ Cell:{
 		return this.board.emptycell;
 	},
 
-	getPencilLength: function() {
-		var cellb = this.getPencilStart();
-		return !cellb.isnull && cellb.room.pencil ? cellb.room.clist.length : this.lcnt === 1 ? this.path.nodes.length - 1 : 1;
+	isTip : function(){
+		return (this.getPencilDir()>0);
 	},
 
-	getPencilCells: function(limit) {
-		if(!limit) { limit = this.getPencilLength(); }
-
-		var bd = this.board;
-		var list = new this.klass.CellList();
+	isTipOfPencil : function(){
 		var dir = this.getPencilDir();
-		if(!dir) {return list;}
-		
-		var dx = 0, dy = 0, invdir = 0;
-		
-		if(dir === this.UP) { dy =  1; invdir = this.DN; }
-		if(dir === this.DN) { dy = -1; invdir = this.UP; }
-		if(dir === this.LT) { dx =  1; invdir = this.RT; }
-		if(dir === this.RT) { dx = -1; invdir = this.LT; }
+		var start = this.getPencilStart();
+		return (!start.isnull&&start.isStart(dir));
+	},
 
-		var x = this.bx, y = this.by, start = true;
-		while(x > bd.minbx && x < bd.maxbx && y > bd.minby && y < bd.maxby) {
-			x += dx*2; y += dy*2;
-			var cell = bd.getc(x, y);
-			if(cell.isnull!==false) {break;} // Encountered grid edge
-
-			var newdir = cell.getPencilDir();
-			if(newdir === invdir) {
-				if(list.length > 0) { list.pop(); }
-				break; // Encountered inverse pencil tip, exclude last cell from list
-			}
-
-			if(newdir) {break;} // Encountered other pencil tip
-			if(cell.lcnt > 0) {break;} // Encountered line
-
-			if(!start) {
-				var border = bd.getb(x-dx, y-dy);
-				if(border.qans === 1) {break;} // Encountered border
-			}
-
-			if(limit === list.length) {break;}
-			list.add(cell);
-			
-			start = false;
+	getPencilSize : function(){
+		if(this.isTipOfPencil()){
+			return this.getPencilStart().room.clist.length;
 		}
+		return 0;
+	},
 
-		return list;
+	insidePencil : function(){
+		return this.room.isPencil();
 	}
 },
 
+GraphComponent:{
+
+	getPotentialTips : function(){
+		var rect = this.clist.getRectSize();
+		if(rect.cols>1&&rect.rows>1){ return [];}
+		var tips = [];
+		if(rect.rows===1){
+			var left = this.board.getc(rect.x1, rect.y1);
+			tips.push({dir: left.LT, start: left, tip: left.adjacent.left});
+			var right = this.board.getc(rect.x2, rect.y1);
+			tips.push({dir: right.RT, start: right, tip: right.adjacent.right});
+		}
+		if(rect.cols===1){
+			var top = this.board.getc(rect.x1, rect.y1);
+			tips.push({dir: top.UP, start: top, tip: top.adjacent.top});
+			var bottom = this.board.getc(rect.x1, rect.y2);
+			tips.push({dir: bottom.DN, start: bottom, tip: bottom.adjacent.bottom});
+		}
+		return tips;
+	},
+
+	getTips : function(){
+		var tips = this.getPotentialTips();
+		var cells = [];
+		for(var i=0;i<tips.length;i++){
+			var tip = tips[i];
+			if(tip.tip.getPencilDir()===tip.dir){
+				cells.push(tip.tip);
+			}
+		}
+		return cells;
+	},
+
+	isPencil : function(){
+		return (this.getTips().length>0);
+	},
+
+	seterr : function(err){
+		this.clist.each(function(cell){
+			if(err>cell.error){ cell.error=err;}
+		});
+	}
+},
 Board:{
 	cols : 8,
 	rows : 8,
@@ -373,27 +395,7 @@ BoardExec:{
 },
 
 AreaRoomGraph:{
-	enabled : true,
-
-	setExtraData : function(component){
-		this.common.setExtraData.call(this, component);
-		var clist = component.clist; 
-
-		component.pencil = 0;
-
-		var rect = clist.getRectSize();
-
-		if(clist.length === 1 || (rect.rows > 1 && rect.cols > 1)) {return;}
-		
-		var maxnum = 0;
-		for(var i=0;i<clist.length;i++){
-			var cell = clist[i];
-			if(cell.getPencilDir()) {return;}
-			if(cell.qnum > maxnum) {maxnum = cell.qnum;}
-		}
-		
-		if(maxnum >= clist.length) { component.pencil = (rect.rows > 1 ? 1 : 2); }
-	}
+	enabled : true
 },
 
 LineGraph:{
@@ -406,8 +408,6 @@ LineGraph:{
 Graphic:{
 	gridcolor_type : "DLIGHT",
 
-	numbercolor_func : "qnum",
-	bgcellcolor_func : "qsub2",
 	linecolor : "rgb(80, 80, 80)",
 
 	paint : function(){
@@ -426,6 +426,17 @@ Graphic:{
 		this.drawTarget();
 	},
 
+	getQuesNumberColor : function(cell){
+		if(cell.error===2){ return this.errcolor1;}
+		if(cell.error===1){ return this.quescolor;}
+		return this.getQuesNumberColor_qnum(cell);
+	},
+
+	getBGCellColor : function(cell){
+		if(cell.error===2){ return this.errbcolor1;}
+		return this.getBGCellColor_qsub2(cell);
+	},
+
 	getBorderColor : function(border){
 		if(border.ques===1){
 			return this.quescolor;
@@ -438,6 +449,7 @@ Graphic:{
 
 	drawCellArrows : function(){
 		var g = this.vinc('cell_arrow', 'crispEdges');
+
 		
 		var outer = this.cw*0.5;
 		var inner = this.cw*0.25;
@@ -582,314 +594,129 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkTipHasPencil",
+		"checkTipNotInsidePencil",
+		"checkOneTip",
+		"checkPencilSize",
+
+		"checkNumberInPencil",
+
+		"checkLineOutsidePencil",
 		"checkBranchLine",
 		"checkCrossLine",
-		"pencilTipLineEnd",
-		"crossPencilNumber",
-		"crossPencilBorder",
-		"pencilTipConnect",
-		"checkSmallArea",
-		
-		"pencilTwoEnds",
-		"pencilZeroLength",
-		"pencilSmallLength",
-		"pencilTipsOverlap",
-		"pencilNumberTooSmall",
-		
-		"pencilTipNoLine",
-		"lineNoTip",
-		"pencilLargeLength",
-		"unusedCells",
-		"pencilExactAreas",
-		"unusedBorders"
+		"checkTipHasLine",
+		"checkLineHasTip", // does not start at a pencil tip
+		"checkLineSingleTip",
+
+		"checkLineLength",
+		"checkCellsUsed"
 	],
 
-	checkSmallArea : function(){ 
+	checkTipHasPencil : function(){
+		this.checkAllCell(function(cell){ return (cell.isTip() && !cell.isTipOfPencil());}, "ptNoPencil");
+	},
+
+	checkTipNotInsidePencil : function(){
+		this.checkAllCell(function(cell){ return (cell.isTip() && cell.insidePencil());}, "ptInPencil");
+	},
+
+	checkOneTip : function(){
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
-			var clist = rooms[r].clist, d = clist.getRectSize();
-			for(var i=0;i<clist.length;i++){
-				var cell = clist[i];
-				var qnum = cell.qnum;
-				if(qnum > 0 && Math.max(d.rows, d.cols) < qnum) {
-					this.failcode.add("bkSizeLt");
-					if(this.checkOnly){ return; }
-					clist.seterr(1);
+			var tips=rooms[r].getTips();
+			if(tips.length>1){
+				this.failcode.add("pcMultipleTips");
+				if(this.checkOnly){ return;}
+				tips.forEach(function(cell){ cell.seterr(1);});
+				rooms[r].clist.seterr(1);
+			}
+		}
+	},
+
+	checkPencilSize : function(){
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var room = rooms[r];
+			if(!room.isPencil()){ continue;}
+			var n=room.clist.length;
+			for(var i=0;i<room.clist.length;i++){
+				var cell=room.clist[i];
+				if(cell.qnum>0&&cell.qnum!==n){
+					this.failcode.add("nmWrongSize");
+					if(this.checkOnly){ return;}
+					cell.seterr(2);
+					room.seterr(1);
 				}
 			}
 		}
 	},
 
-	pencilTipLineEnd: function() {
-		this.checkAllCell(function(cell){ return cell.lcnt>1 && cell.getPencilDir();}, "ptBranch");
+	checkNumberInPencil : function(){
+		this.checkAllCell(function(cell){
+			return ((cell.qnum===-2||cell.qnum>0)&&!cell.insidePencil());
+		}, "nmOutsidePencil");
+	},
+	checkLineOutsidePencil : function(){
+		this.checkAllCell(function(cell){ return (cell.lcnt>0&&cell.insidePencil());}, "lnCrossPencil");
 	},
 
-	pencilTipNoLine: function() {
-		this.checkAllCell(function(cell){ return cell.lcnt===0 && cell.getPencilDir();}, "ptNoLine");
+	checkTipHasLine : function(){
+		this.checkAllCell(function(cell){ return (cell.isTip()&&cell.lcnt!==1);}, "ptNoLine");
 	},
 
-	crossPencilNumber: function() {
-		this.checkAllCell(function(cell){ return cell.lcnt>0 && (cell.qnum > 0 || cell.qnum === -2);}, "lnCrossNumber");
-	},
-
-	crossPencilBorder: function() {
-		var bds = this.board.border;
-		
-		for(var b=0; b<bds.length; b++) {
-			var border = bds[b];
-			if(border.line === 1 && (border.ques === 1 || border.qans === 1)) {
-				this.failcode.add("lnCrossBorder");
-				if(this.checkOnly){ return; }
-				border.seterr(1);
-			}
-		}
-	},
-
-	pencilTipConnect: function() {
-		this.pencils_checkLines(function(ends) {return ends.length > 1;}, "ptConnect"); 
-	},
-
-	lineNoTip: function() {
-		this.pencils_checkLines(function(ends) {return ends.length === 0;}, "lnNoTip"); 
-	},
-
-	pencils_checkLines: function(func, code) {
-		var comps = this.board.linegraph.components;
-		for(var c=0; c < comps.length; c++) {
-			var comp = comps[c];
-			var ends = comp.clist.filter(function(node){ return node.qdir > 0 || node.anum > 0; });
-
-			if(func(ends)) {
+	pencils_checkLines : function(func, code){
+		var comps=this.board.linegraph.components;
+		for(var c=0; c<comps.length; c++){
+			var comp=comps[c];
+			var ends=comp.clist.filter(function(cell){ return (cell.isTip()&&cell.lcnt===1);});
+			if(func(ends)){
 				this.failcode.add(code);
-				if(this.checkOnly){ return; }
-				for(var i=0; i < ends.length; i++) {
-					ends[i].seterr(1);
-				}
+				if(this.checkOnly){ return;}
+				ends.each(function(cell){ cell.seterr(1);});
 				comp.setedgeerr(1);
 			}
 		}
 	},
-
-	pencilTwoEnds: function () {
-		var rooms = this.board.roommgr.components;
-		for(var r=0;r<rooms.length;r++){
-			var room = rooms[r];
-			if(!room.pencil) {continue;}
-
-			var rect = room.clist.getRectSize();
-			var start = this.board.emptycell;
-			var end = this.board.emptycell;
-
-			if(room.pencil === 1) {
-				start = this.board.getc(rect.x1, rect.y1).adjacent.top;
-				end = this.board.getc(rect.x1, rect.y2).adjacent.bottom;
-				
-				var topDir = start.getPencilDir();
-				var bottomDir = end.getPencilDir();
-				if(topDir !== start.UP || bottomDir !== end.DN) {continue;}
-			} else {
-				start = this.board.getc(rect.x1, rect.y1).adjacent.left;
-				end = this.board.getc(rect.x2, rect.y1).adjacent.right;
-				var leftDir = start.getPencilDir();
-				var rightDir = end.getPencilDir();
-				
-				if(leftDir !== start.LT || rightDir !== end.RT) {continue;}
-			}
-				
-			this.failcode.add("pencilTwoEnds");
-			if(this.checkOnly){ return; }
-			room.clist.seterr(1);
-			start.seterr(1);
-			end.seterr(1);
-		}
+	checkLineHasTip : function(){
+		this.pencils_checkLines(function(ends){ return (ends.length<1);}, "lnNoTip");
 	},
 
-	pencilTipsOverlap: function() {
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			var dir = cell.getPencilDir();
-			if(!dir) {continue;}
-			if(cell.lcnt > 1) {continue;}
-			
-			var cells = cell.getPencilCells();
-			
-			var dx = 0, dy = 0, dir1 = 0, dir2 = 0;
-			if(dir===cell.UP||dir===cell.DN) {
-				dx = 2; dir1 = cell.LT; dir2 = cell.RT;
-			} else {
-				dy = 2; dir1 = cell.UP; dir2 = cell.DN;
-			}
-
-			for(var cc=0; cc<cells.length;cc++) {
-				var cellb = cells[cc];
-				var cell1 = this.board.getc(cellb.bx - dx, cellb.by - dy);
-				if(cell1.qdir === dir1 || cell1.anum === dir1) {
-					this.failcode.add("ptOverlap");
-					if(this.checkOnly){ return;}
-					cell.seterr(1);
-					cells.seterr(1);
-					cell1.seterr(1);
-				}
-
-				var cell2 = this.board.getc(cellb.bx + dx, cellb.by + dy);
-				if(cell2.qdir === dir2 || cell2.anum === dir2) {
-					this.failcode.add("ptOverlap");
-					if(this.checkOnly){ return;}
-					cell.seterr(1);
-					cells.seterr(1);
-					cell2.seterr(1);
-				}
-			}
-		}
+	checkLineSingleTip : function(){
+		this.pencils_checkLines(function(ends){ return (ends.length>1);}, "lnMultipleTips");
 	},
 
-	pencilZeroLength: function (){
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			if(!cell.getPencilDir()) {continue;}
-			
-			var cells = cell.getPencilCells(1);
-			
-			if(cells.length > 0) {continue;}
-
-			this.failcode.add("pencilNoLength");
-			if(this.checkOnly){ return;}
-			
-			cell.seterr(1);
-			cell.getPencilStart().seterr(1);
-		}
-	},
-
-	pencilSmallLength: function (){
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			if(!cell.getPencilDir()) {continue;}
-			if(cell.lcnt !== 1) {continue;}
-			
-			var cells = cell.getPencilCells();
-			
-			if(cells.length >= cell.path.nodes.length - 1) {continue;}
-
-			this.failcode.add("pencilSmallLength");
-			if(this.checkOnly){ return;}
-			cell.seterr(1);
-			cells.seterr(1);
-			cell.path.setedgeerr(1);
-		}
-	},
-
-	pencilLargeLength: function() {
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			if(!cell.getPencilDir()) {continue;}
-			if(cell.lcnt !== 1) {continue;}
-
-			var cellb = cell.getPencilStart();
-			if(!cellb || cellb.isnull || cellb.room.pencil===0){continue;}
-			if(cellb.room.clist.length <= cell.path.nodes.length - 1) {continue;}
-
-			this.failcode.add("pencilLargeLength");
-			if(this.checkOnly){ return;}
-			cell.seterr(1);
-			cell.getPencilCells().seterr(1);
-			cell.path.setedgeerr(1);
-		}
-	},
-
-	pencilNumberTooSmall: function() {
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			if(!cell.getPencilDir()) {continue;}
-			
-			var size = cell.getPencilLength();
-			var cells = cell.getPencilCells(size);
-			
-			if(cells.some(function(cellb){return cellb.qnum > 0 && cellb.qnum < size;})) {
-				this.failcode.add("bkSizeGt");
+	checkLineLength : function(){
+		var cells=this.board.cell;
+		for(var i=0;i<cells.length;i++){
+			var cell=cells[i];
+			if(!cell.isTip()||cell.lcnt!==1){ continue;}
+			var l=cell.path.nodes.length-1;
+			var s=cell.getPencilSize();
+			if(s>0&&s!==l){
+				this.failcode.add("lnWrongLength");
 				if(this.checkOnly){ return;}
-				cells.seterr(1);
+				cell.getPencilStart().room.seterr(1);
+				cell.path.setedgeerr(1);
 			}
 		}
 	},
 
-	unusedCells: function() {
-		var empty = this.board.cell.filter(function(c) { return c.lcnt === 0; });
-
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			if(!cell.getPencilDir()) {continue;}
-
-			var cells = cell.getPencilCells();
-			cells.each(function(c) {empty.remove(c);});
-		}
-
-		if(empty.length > 0) {
-			this.failcode.add("unusedCell");
-			if(this.checkOnly){ return;}
-			empty.seterr(1);
-		}
-	},
-
-	pencilExactAreas : function() {
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			if(!cell.getPencilDir()) {continue;}
-			if(cell.lcnt !== 1) {continue;}
-
-			var cellb = cell.getPencilStart();
-
-			if(!cellb || cellb.isnull) {continue;}
-
-			var area = cellb.room.clist.getRectSize();
-			if(area.cols * area.rows !== cell.path.nodes.length - 1 || (area.cols !== 1 && area.rows !== 1)) {
-				this.failcode.add("pencilExactArea");
-				if(this.checkOnly){ return;}
-				cell.seterr(1);
-			}
-		}
-	},
-
-	unusedBorders: function() {
-		var list = new this.klass.CellList();
-
-		for(var c=0;c<this.board.cell.length;c++){
-			var cell = this.board.cell[c];
-			if(!cell.getPencilDir()) {continue;}
-			if(cell.lcnt !== 1) {continue;}
-
-			var cells = cell.getPencilCells();
-			list.extend(cells);
-		}
-
-		var bds = this.board.border;
-		
-		for(var b=0; b<bds.length; b++) {
-			var border = bds[b];
-			if(border.qans === 1 && !list.include(border.sidecell[0]) && !list.include(border.sidecell[1])) {
-				this.failcode.add("unusedBorder");
-				if(this.checkOnly){ return; }
-				border.seterr(1);
-			}
-		}
+	checkCellsUsed : function(){
+		this.checkAllCell(function(cell){ return (cell.lcnt===0&&!cell.insidePencil());}, "unusedCell");
 	}
 },
 
 FailCode:{
-	bkSizeLt : ["(please translate) A number is bigger than the size of the pencil.","A number is bigger than the size of the pencil."],
-	bkSizeGt : ["(please translate) A number is smaller than the size of the pencil.","A number is smaller than the size of the pencil."],
-	lnCrossBorder: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
-	lnCrossNumber: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
-	lnNoTip: ["(please translate) A line is not connected to a pencil.","A line is not connected to a pencil."],
-	ptBranch : ["(please translate) A line doesn't stop at a pencil tip.","A line doesn't stop at a pencil tip."],
-	pencilTwoEnds : ["(please translate) A pencil has multiple tips.","A pencil has multiple tips."],
-	ptOverlap : ["(please translate) A pencil has multiple tips.","A pencil has multiple tips."],
-	ptConnect : ["(please translate) A line connects to two pencils.","A line connects to two pencils."],
-	ptNoLine : ["(please translate) A pencil tip doesn't have a line.","A pencil tip doesn't have a line."],
-	pencilNoLength : ["(please translate) A pencil has no length.","A pencil has no length."],
-	pencilSmallLength : ["(please translate) A line has a different length from its pencil.","A line has a different length from its pencil."],
-	pencilLargeLength : ["(please translate) A line has a different length from its pencil.","A line has a different length from its pencil."],
-	unusedCell : ["(please translate) A cell is unused.","A cell is unused."],
-	pencilExactArea: ["(please translate) A pencil is not a 1xN rectangle.","A pencil is not a 1xN rectangle."],
-	unusedBorder : ["(please translate) A border is unused.","A border is unused."]
+	ptNoPencil : ["(please translate) A tip is not at the short end of a 1xN rectangle.","A tip is not at the short end of a 1xN rectangle."],
+	ptInPencil : ["(please translate) A tip is inside a pencil.","A tip is inside a pencil."],
+	pcMultipleTips : ["(please translate) A pencil has more than one tip.","A pencil has more than one tip."],
+	nmWrongSize : ["(please translate) A number is different from the length of the pencil.","A number is different from the length of the pencil."],
+	nmOutsidePencil : ["(please translate) A number is not inside a pencil.","A number is not inside a pencil."],
+	lnCrossPencil: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
+	ptNoLine: ["(please translate) A pencil tip is not connected to a line.","A pencil tip is not connected to a line."],
+	lnNoTip: ["(please translate) A line is not connected to a pencil tip.","A line is not connected to a pencil tip."],
+	lnMultipleTips : ["(please translate) A line connects to more than one pencil tip.","A line connects to more than one pencil tip."],
+	lnWrongLength : ["(please translate) A line has a different length than a connected pencil.","A line has a different length than a connected pencil."],
+	unusedCell : ["(please translate) A cell is unused.","A cell is unused."]
 }
 }));
