@@ -104,9 +104,8 @@ MouseEvent:{
 
 	mouseinput_clear : function(){
 		var cell = this.getcell();
-		var dir = cell.qdir || cell.anum;
 
-		if(dir>= 1 && dir <= 4) {
+		if(cell.getPencilDir()) {
 			cell.setPencilArrow(0, true);
 		} else {
 			this.inputclean_cell();
@@ -270,8 +269,16 @@ Cell:{
 		return dir;
 	},
 
+	getPencilDir: function() {
+		var qdir = this.qdir;
+		if(qdir >= 1 && qdir <= 4) {return qdir;}
+		var anum = this.anum;
+		if(anum >= 1 && anum <= 4) {return anum;}
+		return 0;
+	},
+
 	getPencilStart: function() {
-		var dir = this.qdir || this.anum;
+		var dir = this.getPencilDir();
 		if(dir === this.UP) { return this.adjacent.bottom; }
 		if(dir === this.DN) { return this.adjacent.top; }
 		if(dir === this.LT) { return this.adjacent.right; }
@@ -290,8 +297,8 @@ Cell:{
 
 		var bd = this.board;
 		var list = new this.klass.CellList();
-		var dir = this.qdir || this.anum;
-		if(!(dir >= 1 && dir <= 4)) {return list;}
+		var dir = this.getPencilDir();
+		if(!dir) {return list;}
 		
 		var dx = 0, dy = 0, invdir = 0;
 		
@@ -306,13 +313,13 @@ Cell:{
 			var cell = bd.getc(x, y);
 			if(cell.isnull!==false) {break;} // Encountered grid edge
 
-			var newdir = cell.qdir || cell.anum;
+			var newdir = cell.getPencilDir();
 			if(newdir === invdir) {
 				if(list.length > 0) { list.pop(); }
 				break; // Encountered inverse pencil tip, exclude last cell from list
 			}
 
-			if(newdir >= 1 && newdir <= 4) {break;} // Encountered other pencil tip
+			if(newdir) {break;} // Encountered other pencil tip
 			if(cell.lcnt > 0) {break;} // Encountered line
 
 			if(!start) {
@@ -381,8 +388,7 @@ AreaRoomGraph:{
 		var maxnum = 0;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var dir = cell.qdir || cell.anum;
-			if(dir >= 1 && dir <= 4) {return;}
+			if(cell.getPencilDir()) {return;}
 			if(cell.qnum > maxnum) {maxnum = cell.qnum;}
 		}
 		
@@ -439,7 +445,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			var dir = cell.qdir || cell.anum;
+			var dir = cell.getPencilDir();
 			var color = this.getCellArrowColor(cell);
 			
 			g.lineWidth = (this.lw + this.addlw)/2;
@@ -474,8 +480,7 @@ Graphic:{
 	},
 
 	getCellArrowColor : function(cell){
-		var dir = cell.qdir || cell.anum;
-		if(dir>=1 && dir<=4){
+		if(cell.getPencilDir()){
 			if(cell.qdir){ return this.quescolor;}
 			else{ return (!cell.trial ? this.qanscolor : this.trialcolor);}
 		}
@@ -616,11 +621,11 @@ AnsCheck:{
 	},
 
 	pencilTipLineEnd: function() {
-		this.checkAllCell(function(cell){ return cell.lcnt>1 && ((cell.qdir >= 1 && cell.qdir <= 4) || cell.anum > 0);}, "ptBranch");
+		this.checkAllCell(function(cell){ return cell.lcnt>1 && cell.getPencilDir();}, "ptBranch");
 	},
 
 	pencilTipNoLine: function() {
-		this.checkAllCell(function(cell){ return cell.lcnt===0 && ((cell.qdir >= 1 && cell.qdir <= 4) || cell.anum > 0);}, "ptNoLine");
+		this.checkAllCell(function(cell){ return cell.lcnt===0 && cell.getPencilDir();}, "ptNoLine");
 	},
 
 	crossPencilNumber: function() {
@@ -679,14 +684,14 @@ AnsCheck:{
 				start = this.board.getc(rect.x1, rect.y1).adjacent.top;
 				end = this.board.getc(rect.x1, rect.y2).adjacent.bottom;
 				
-				var topDir = start.qdir || start.anum;
-				var bottomDir = end.qdir || end.anum;
+				var topDir = start.getPencilDir();
+				var bottomDir = end.getPencilDir();
 				if(topDir !== start.UP || bottomDir !== end.DN) {continue;}
 			} else {
 				start = this.board.getc(rect.x1, rect.y1).adjacent.left;
 				end = this.board.getc(rect.x2, rect.y1).adjacent.right;
-				var leftDir = start.qdir || start.anum;
-				var rightDir = end.qdir || end.anum;
+				var leftDir = start.getPencilDir();
+				var rightDir = end.getPencilDir();
 				
 				if(leftDir !== start.LT || rightDir !== end.RT) {continue;}
 			}
@@ -702,8 +707,8 @@ AnsCheck:{
 	pencilTipsOverlap: function() {
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			var dir = cell.qdir || cell.anum;
-			if(!(dir >= 1 && dir <= 4)) {continue;}
+			var dir = cell.getPencilDir();
+			if(!dir) {continue;}
 			if(cell.lcnt > 1) {continue;}
 			
 			var cells = cell.getPencilCells();
@@ -741,8 +746,7 @@ AnsCheck:{
 	pencilZeroLength: function (){
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			var dir = cell.qdir || cell.anum;
-			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(!cell.getPencilDir()) {continue;}
 			
 			var cells = cell.getPencilCells(1);
 			
@@ -759,7 +763,7 @@ AnsCheck:{
 	pencilSmallLength: function (){
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			if(!((cell.qdir >= 1 && cell.qdir <= 4) || cell.anum > 0)) {continue;}
+			if(!cell.getPencilDir()) {continue;}
 			if(cell.lcnt !== 1) {continue;}
 			
 			var cells = cell.getPencilCells();
@@ -777,8 +781,7 @@ AnsCheck:{
 	pencilLargeLength: function() {
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			var dir = cell.qdir || cell.anum;
-			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(!cell.getPencilDir()) {continue;}
 			if(cell.lcnt !== 1) {continue;}
 
 			var cellb = cell.getPencilStart();
@@ -796,8 +799,7 @@ AnsCheck:{
 	pencilNumberTooSmall: function() {
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			var dir = cell.qdir || cell.anum;
-			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(!cell.getPencilDir()) {continue;}
 			
 			var size = cell.getPencilLength();
 			var cells = cell.getPencilCells(size);
@@ -815,8 +817,7 @@ AnsCheck:{
 
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			var dir = cell.qdir || cell.anum;
-			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(!cell.getPencilDir()) {continue;}
 
 			var cells = cell.getPencilCells();
 			cells.each(function(c) {empty.remove(c);});
@@ -832,8 +833,7 @@ AnsCheck:{
 	pencilExactAreas : function() {
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			var dir = cell.qdir || cell.anum;
-			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(!cell.getPencilDir()) {continue;}
 			if(cell.lcnt !== 1) {continue;}
 
 			var cellb = cell.getPencilStart();
@@ -854,8 +854,7 @@ AnsCheck:{
 
 		for(var c=0;c<this.board.cell.length;c++){
 			var cell = this.board.cell[c];
-			var dir = cell.qdir || cell.anum;
-			if(!(dir >= 1 && dir <= 4)) {continue;}
+			if(!cell.getPencilDir()) {continue;}
 			if(cell.lcnt !== 1) {continue;}
 
 			var cells = cell.getPencilCells();
