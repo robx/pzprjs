@@ -232,7 +232,9 @@ Graphic:{
 			return ((cell2.isnull || cell2.error===0) ? "white" : this.errbcolor1);
 		}
 		else if(border.qans===1){
-			return (!border.trial ? this.qanscolor : this.trialcolor);
+			if(border.error===1){ return this.errcolor1;}
+			if(border.trial){ return this.trialcolor;}
+			return this.qanscolor;
 		}
 		return null;
 	}
@@ -242,13 +244,7 @@ Graphic:{
 	bgcellcolor_func : "icebarn",
 	icecolor : "rgb(204,204,204)",
 
-	// オーバーライド
-	getBorderColor : function(border){
-		if(border.qans===1){
-			return (!border.trial ? this.qanscolor : this.trialcolor);
-		}
-		return null;
-	}
+	bordercolor_func : 'qans'
 },
 
 //---------------------------------------------------------
