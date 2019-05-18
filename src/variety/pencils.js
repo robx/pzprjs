@@ -132,8 +132,7 @@ MouseEvent:{
 		var dir = cell.qdir, num = cell.qnum, val;
 		// -4to-1:Arrow 0:? 1:何もなし 2以上:数字
 		if     (num===-2){ val = 0;}
-		else if(dir=== 5){ val = (num!==-1 ? num+1 : 2);}
-		else if(dir=== 0){ val = 1;}
+		else if(dir=== 0){ val = (num===-1?1:num+1);}
 		else             { val = dir - 5;}
 
 		var min = -4, max = cell.getmaxnum()+1;
@@ -151,9 +150,9 @@ MouseEvent:{
 
 		if(val >= 0) { cell.setPencilArrow(0, true);}
 
-		if     (val >=2){ cell.setQdir(5);     cell.setNum(val-1);}
-		else if(val===1){ cell.setQdir(0);     cell.setNum(-1);}
-		else if(val===0){ cell.setQdir(5);     cell.setNum(-2);}
+		if     (val >=2){ cell.setQdir(0); cell.setNum(val-1);}
+		else if(val===1){ cell.setQdir(0); cell.setNum(-1);}
+		else if(val===0){ cell.setQdir(0); cell.setNum(-2);}
 		else            { cell.setPencilArrow(val+5, true);}
 		cell.draw();
 	}
@@ -189,19 +188,11 @@ KeyEvent:{
 		if(ca==='q' || ca==='-'){
 			if(cell.qnum !== -2) {
 				cell.setPencilArrow(0, true);
-				cell.setQdir(5);
+				cell.setQdir(0);
 				cell.setQnum(-2);
 			} else {
 				cell.setPencilArrow(0, true);
 				cell.setQnum(-1);
-			}
-		}
-		else if(ca==='BS' && cell.qdir===5){
-			if(cell.qnum!==-1){
-				this.key_inputqnum_main(cell,ca);
-				if(cell.qnum===-2){
-					cell.setQnum(-1);
-				}
 			}
 		}
 		else if(ca===' ' || ca==='BS'){
@@ -210,9 +201,9 @@ KeyEvent:{
 		}
 		else{
 			this.key_inputqnum_main(cell,ca);
-			if(cell.isNum() && cell.qdir!==5) {
+			if(cell.isNum()) {
 				cell.setPencilArrow(0, true);
-				cell.setQdir(5);
+				cell.setQdir(0);
 			}
 		}
 
@@ -509,9 +500,9 @@ Encode:{
 			var ca = bstr.charAt(i), cell=bd.cell[c];
 
 			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							   { cell.qdir = 5; cell.qnum = parseInt(ca,16);}
-			else if(ca === '-'){ cell.qdir = 5; cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
-			else if(ca === '%'){ cell.qdir = 5; cell.qnum = -2;}
+			   { cell.qnum = parseInt(ca,16);}
+			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca === '.'){ cell.qnum = -2;}
 			else if(ca>='g' && ca<='j'){
 				cell.setPencilArrow(parseInt(ca,20)-15, true);
 			}
@@ -526,10 +517,10 @@ Encode:{
 		var cm = "", count = 0, bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var pstr="", dir=bd.cell[c].qdir, qn=bd.cell[c].qnum;
-			if(dir===5){
+			if(qn!==-1){
 				if     (qn>= 0&&qn<  16){ pstr=    qn.toString(16);}
 				else if(qn>=16&&qn< 256){ pstr="-"+qn.toString(16);}
-				else                    { pstr="%";}
+				else                    { pstr=".";}
 			}
 			else if(dir!==0) { pstr=(dir+15).toString(20);}
 			else{ count++;}
@@ -550,7 +541,6 @@ FileIO:{
 				cell.qdir = 5;
 				if(ca.length>1){ cell.qnum = +ca.substr(1);}
 			}
-			else if(ca==="-"){ cell.qdir = -2;}
 			else if(ca!=="."){ cell.setPencilArrow(+ca, true);}
 		});
 
@@ -566,10 +556,9 @@ FileIO:{
 	},
 	encodeData : function(){
 		this.encodeCell( function(cell){
-			if(cell.qdir===5){
+			if(cell.qnum!==-1){
 				return "o"+(cell.qnum!==-1?cell.qnum:'')+" ";
 			}
-			else if(cell.qdir===-2){ return "- ";}
 			else if(cell.qdir!== 0){ return cell.qdir+" ";}
 			else{ return ". ";}
 		});
