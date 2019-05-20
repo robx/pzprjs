@@ -1,4 +1,4 @@
-// for_test.js v3.6.0
+// debug.js v3.6.0
 /* jshint evil:true, devel:true, latedef:false */
 /* global pzpr:false */
 (function(){
