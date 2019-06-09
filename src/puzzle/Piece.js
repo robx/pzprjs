@@ -126,6 +126,17 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
+	// propclear() 指定されたプロパティの値をクリアする
+	//---------------------------------------------------------------------------
+	propclear : function(prop, isrec){
+		var def = this.constructor.prototype[prop];
+		if(this[prop]!==def){
+			if(isrec && !this.propnorec[prop]){ this.addOpe(prop, this[prop], def);}
+			this[prop] = def;
+		}
+	},
+
+	//---------------------------------------------------------------------------
 	// getprops() プロパティの値のみを取得する
 	// compare()  プロパティの値を比較し違っていたらcallback関数を呼びだす
 	//---------------------------------------------------------------------------
@@ -133,18 +144,18 @@ pzpr.classmgr.makeCommon({
 		var props = {};
 		var proplist = this.getproplist(['ques','ans','sub']);
 		for(var i=0;i<proplist.length;i++){
-			var a = proplist[i];
-			props[a] = this[a];
+			var a = proplist[i], isArray = (this[a] instanceof Array);
+			props[a] = (!isArray ? this[a] : Array.prototype.slice.call(this[a]));
 		}
 		return props;
 	},
 	compare : function(props, callback){
 		var proplist = this.getproplist(['ques','ans','sub']);
 		for(var i=0;i<proplist.length;i++){
-			var a = proplist[i];
-			if(props[a]!==this[a]){
-				callback(this.group, this.id, a);
-			}
+			var a = proplist[i], isArray = (this[a] instanceof Array);
+			var source = (!isArray ? props[a] : props[a].join(','));
+			var target = (!isArray ? this[a] : this[a].join(','));
+			if(source!==target){ callback(this.group, this.id, a);}
 		}
 	},
 
@@ -163,9 +174,6 @@ pzpr.classmgr.makeCommon({
 				case 'trial': array1 = ['trial']; break;
 			}
 			array = array.concat(array1);
-		}
-		if(array.indexOf('snum')>=0 && this.enableSubNumberArray){
-			array.splice(array.indexOf('snum'), 1, 'snum0', 'snum1', 'snum2', 'snum3');
 		}
 		return array;
 	},
@@ -222,6 +230,24 @@ pzpr.classmgr.makeCommon({
 		if(this.enableSubNumberArray){
 			var anum0 = this.temp.anum;
 			this.snum = [anum0,anum0,anum0,anum0];
+		}
+	},
+
+	//---------------------------------------------------------------------------
+	// propclear() 指定されたプロパティの値をクリアする
+	//---------------------------------------------------------------------------
+	propclear : function(prop, isrec){
+		if(prop==='snum' && this.enableSubNumberArray){
+			for(var pos=0;pos<4;++pos){
+				var def = this.constructor.prototype[prop];
+				if(this[prop][pos]!==def){
+					if(isrec){ this.addOpe(prop+pos, this[prop][pos], def);}
+					this[prop][pos] = def;
+				}
+			}
+		}
+		else{
+			pzpr.common.BoardPiece.prototype.propclear.call(this, prop, isrec);
 		}
 	},
 

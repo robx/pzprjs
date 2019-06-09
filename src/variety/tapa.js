@@ -157,6 +157,7 @@ KeyEvent:{
 Cell:{
 	minnum : 0,
 	qnums  : null, // Array型
+	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qnums', 'qchar'],
 	qnum_states : (function(){
 		var states = [ [],[-2],[0],[1],[2],[3],[4],[5],[6],[7],[8] ], sum=0;
 		for(var n1=0;n1<=5;n1++){ for(var n2=0;n2<=5;n2++){
@@ -192,6 +193,18 @@ Cell:{
 		this.puzzle.opemgr.add(new this.klass.ObjectOperation2(this, old, val));
 	},
 
+	propclear : function(prop, isrec){
+		if(prop==='qnums'){
+			if(this.qnums.length>0){
+				if(isrec){ this.addOpeQnums(this.qnums, []);}
+				this.qnums = [];
+			}
+		}
+		else{
+			this.common.propclear.call(this,prop,isrec);
+		}
+	},
+
 	getShadedLength : function(){
 		var addrs = [], result = [], shaded = "";
 		var bx = this.bx, by = this.by, bd = this.board;
@@ -217,19 +230,6 @@ Cell:{
 		}
 		if(result.length===0){ result = [0];}
 		return result;
-	}
-},
-CellList:{
-	allclear : function(isrec){
-		this.common.allclear.call(this,isrec);
-		
-		for(var i=0;i<this.length;i++){
-			var cell = this[i];
-			if(cell.qnums.length>0){
-				if(isrec){ cell.addOpeQnums(cell.qnums, []);}
-				cell.qnums = [];
-			}
-		}
 	}
 },
 "ObjectOperation2:Operation":{
