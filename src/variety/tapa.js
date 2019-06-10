@@ -206,24 +206,17 @@ Cell:{
 	},
 
 	getShadedLength : function(){
-		var addrs = [], result = [], shaded = "";
-		var bx = this.bx, by = this.by, bd = this.board;
-		if(bx>bd.minbx+1 && bx<bd.maxbx-1 && by>bd.minby+1 && by<bd.maxby-1){
-			addrs = [-2,-2, 0,-2, 2,-2, 2,0, 2,2, 0,2, -2,2, -2,0];
-		}
-		else if(bx===bd.minbx+1){ addrs = [0,-2,  2,-2,  2, 0,  2, 2,  0,2];}
-		else if(by===bd.minby+1){ addrs = [2, 0,  2, 2,  0, 2, -2, 2, -2,0];}
-		else if(bx===bd.maxbx-1){ addrs = [0,-2, -2,-2, -2, 0, -2, 2,  0,2];}
-		else if(by===bd.maxby-1){ addrs = [2, 0,  2,-2,  0,-2, -2,-2, -2,0];}
-		for(var k=0;k<addrs.length;k+=2){
-			var cell = this.relcell(addrs[k],addrs[k+1]);
-			if(!cell.isnull){ shaded += ""+(cell.isShade()?1:0);}
+		var result = [], shaded = "";
+		var addrs = [[-2,-2], [0,-2], [2,-2], [2,0], [2,2], [0,2], [-2,2], [-2,0]];
+		for(var k=0;k<addrs.length;k++){
+			var cell = this.relcell(addrs[k][0],addrs[k][1]);
+			shaded += ""+((!cell.isnull&&cell.isShade())?1:0);
 		}
 		var shades = shaded.split(/0+/);
 		if(shades.length>0){
 			if(shades[0].length===0){ shades.shift();}
 			if(shades[shades.length-1].length===0){ shades.pop();}
-			if(shaded.length===8 && shades.length>1 && shaded.charAt(0)==='1' && shaded.charAt(7)==='1'){
+			if(shades.length>1 && shaded.charAt(0)==='1' && shaded.charAt(7)==='1'){
 				shades[0] += shades.pop();
 			}
 			for(var i=0;i<shades.length;i++){ result.push(shades[i].length);}
@@ -479,14 +472,9 @@ AnsCheck:{
 			if(cell.qnums.length===0){ return false;}
 			var shades = cell.getShadedLength(); // 順番の考慮は不要
 			if(cell.qnums.length!==shades.length){ return true;}
-			var result = true;
-			for(var i=0,imax=cell.qnums.length;i<imax;i++){
-				for(var k=i,kmax=i+shades.length;k<kmax;k++){
-					if(cell.qnums[k%imax]>=0 && cell.qnums[k%imax]!==shades[k-i]){ break;}
-				}
-				if(k===kmax){ result = false; break;}
-			}
-			return result;
+			var shade = shades.sort().join('');
+			var qnums = cell.qnums.slice().sort().join('');
+			return (shade!==qnums);
 		}, "ceTapaNe");
 	}
 },
