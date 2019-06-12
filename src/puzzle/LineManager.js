@@ -126,8 +126,9 @@ pzpr.classmgr.makeCommon({
 		// 周囲のComponentにくっついただけの場合は情報を更新して終了
 		if(this.rebuildmode || !enattach){ return;}
 		var attachnodes = null, node1 = sidenodes[0], node2 = sidenodes[1];
-		if     (node1.obj.lcnt===1 && node1.component===null && node2.component!==null){ attachnodes = [sidenodes[0], sidenodes[1]];}
-		else if(node2.obj.lcnt===1 && node2.component===null && node1.component!==null){ attachnodes = [sidenodes[1], sidenodes[0]];}
+		var lcnt1 = node1.obj.lcnt, lcnt2 = node2.obj.lcnt;
+		if     (lcnt1===1 && (lcnt2===2 || (!this.isLineCross && lcnt2>2)) && node1.component===null && node2.component!==null){ attachnodes = [sidenodes[0], sidenodes[1]];}
+		else if(lcnt2===1 && (lcnt1===2 || (!this.isLineCross && lcnt1>2)) && node2.component===null && node1.component!==null){ attachnodes = [sidenodes[1], sidenodes[0]];}
 		if(!!attachnodes){
 			this.attachNode(attachnodes[0], attachnodes[1].component);
 			this.modifyNodes = [];
