@@ -127,7 +127,6 @@ Graphic:{
 
 	// 枠外の一辺のmargin(セル数換算)
 	margin : 0.15,
-	flushmargin : 0,
 
 	// canvasの大きさを保持する
 	canvasWidth  : null,
@@ -543,7 +542,7 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	flushCanvas : function(){
 		var g = this.vinc('background', 'crispEdges', true);
-		var bw = this.bw, bh = this.bh, fm = this.flushmargin;
+		var bw = this.bw, bh = this.bh, fm = (this.margin>0.15 ? this.margin : 0);
 		var bd = this.board;
 		var minbx   = bd.minbx - fm;
 		var minby   = bd.minby - fm;

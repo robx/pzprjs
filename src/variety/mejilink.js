@@ -96,7 +96,6 @@ LineGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 	margin : 0.5,
-	flushmargin : 0.35,
 
 	paint : function(){
 		this.drawBGCells();
