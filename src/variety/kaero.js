@@ -191,7 +191,7 @@ Graphic:{
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
-				else                   { g.fillStyle = "white";}
+				else                   { g.fillStyle = this.bgcolor;}
 
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}

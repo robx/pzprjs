@@ -83,7 +83,7 @@ Graphic:{
 			var cell = clist[i];
 			g.vid = "c_sq_"+cell.id;
 			if(cell.qnum!==-1){
-				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");
+				g.fillStyle = (cell.error===1 ? this.errbcolor1 : this.bgcolor);
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
 			else{ g.vhide();}
