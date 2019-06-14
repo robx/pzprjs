@@ -12,7 +12,7 @@
 	inputModes : {edit:['border','number','clear','info-line'],play:['line','subcircle','subcross','clear','info-line']}
 },
 "MouseEvent@ringring":{
-	inputModes : {edit:['info-line'],play:['line','peke','info-line']},
+	inputModes : {edit:['info-line'],play:['line','peke','info-line']}
 },
 MouseEvent:{
 	mouseinput_auto : function(){

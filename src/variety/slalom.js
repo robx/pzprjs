@@ -249,7 +249,7 @@ Board:{
 			this.common.operate.call(this,type);
 			break;
 		}
-	},
+	}
 },
 BoardExec:{
 	posinfo : {},

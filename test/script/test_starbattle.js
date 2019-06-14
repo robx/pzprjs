@@ -40,6 +40,6 @@ ui.debug.addDebugData('starbattle', {
 		{ input:["mouse,right, 1,3, 7,3"],
 		  result:"pzprv3/starbattle/4/4/1/1/0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /. . . . /# + + + /. . . . /. . . . /"},
 		{ input:["mouse,right, 1,3, 7,3"],
-		  result:"pzprv3/starbattle/4/4/1/1/0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /. . . . /. . . . /. . . . /. . . . /"},
+		  result:"pzprv3/starbattle/4/4/1/1/0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /. . . . /. . . . /. . . . /. . . . /"}
 	]
 });

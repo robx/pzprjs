@@ -25,7 +25,7 @@ Graphic:{
 		 ['getBorderColor',      this.bordercolor_func],
 		 ['getQuesNumberColor',  this.numbercolor_func],
 		 ['getCircleFillColor',  this.circlefillcolor_func],
-		 ['getCircleStrokeColor',this.circlestrokecolor_func],
+		 ['getCircleStrokeColor',this.circlestrokecolor_func]
 		].forEach(function(item){
 			if(pc[item[0]]!==pzpr.common.Graphic.prototype[item[0]]){ return;} // パズル個別の関数が定義されている場合はそのまま使用
 			pc[item[0]] = pc[item[0]+'_'+item[1]] || pc[item[0]];

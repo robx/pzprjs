@@ -351,7 +351,7 @@ MouseEvent:{
 			if(dx>dy){ return bd.getb(bx+1,by  );}	//右下＆右上 -> 右
 			else     { return bd.getb(bx,  by+1);}	//右下＆左下 -> 下
 		}
-		return bd.emptyborder;
+		// unreachable
 	},
 
 	isBorderMode : function(){
