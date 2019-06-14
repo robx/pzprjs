@@ -13,7 +13,7 @@
   "author": "sabo2",
   "license": "MIT",
   "repository": {
-    "type": "hg",
+    "type": "git",
     "url": "https://github.com/sabo2/pzprjs"
   },
   "homepage": "https://github.com/sabo2/pzprjs",
@@ -24,7 +24,7 @@
     "build": "eslint --cache --quiet src && grunt default",
     "release": "npm run clean && eslint --cache --quiet src && grunt release",
     "clean": "del dist/* pzpr-*.{zip,tar.gz,tar.bz2,tgz}",
-    "lint": "eslint --quiet src test sample",
+    "lint": "eslint src test sample",
     "test": "eslint --quiet src test && mocha -R progress --recursive test",
     "prepublishOnly": "npm test"
   },
