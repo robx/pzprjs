@@ -279,7 +279,7 @@ FileIO:{
 		"checkNoObjectBlock",
 
 		"checkDisconnectLine"
-	],
+	]
 },
 "AnsCheck@armyants#1":{
 	checklist : [
@@ -296,7 +296,7 @@ FileIO:{
 
 		"checkDisconnectLine",
 		"checkNumberExist"
-	],
+	]
 },
 "AnsCheck@kaero":{
 	// checkSameObjectInRoom()にbaseを付加した関数
@@ -373,7 +373,6 @@ FileIO:{
 
 	checkAntNumber : function(){
 		var areas = this.board.antmgr.components;
-		allloop:
 		for(var id=0;id<areas.length;id++){
 			var ant = areas[id];
 			if(ant.clist.isCmp()){ continue;}

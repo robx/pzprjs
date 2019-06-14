@@ -88,7 +88,7 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
-	},
+	}
 },
 "Graphic@arukone":{
 	fontsizeratio : 0.5,
@@ -176,7 +176,7 @@ Graphic:{
 		this.encodeNumber16();
 		
 		this.outpflag = (this.puzzle.getConfig('passallcell')?null:'e');
-	},
+	}
 },
 //---------------------------------------------------------
 "FileIO@numlin":{
@@ -262,7 +262,7 @@ AnsCheck:{
 		"checkDeadendConnectLine+",
 		"checkDisconnectLine",
 		"checkNoLineObject+",
-		"checkNoLine_arukone+@arukone",
+		"checkNoLine_arukone+@arukone"
 	],
 
 	checkLinkSameNumber : function(){
