@@ -12,18 +12,6 @@ module.exports = function(grunt){
   grunt.initConfig({
     pkg: pkg,
 
-    clean: {
-      all: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}']
-    },
-
-    copy: {
-      license: {
-        files : [
-          { src: 'LICENSE.txt', dest: 'dist/LICENSE.txt'}
-        ]
-      }
-    },
-
     concat: {
       options: {
         banner: banner_full,
@@ -92,8 +80,8 @@ module.exports = function(grunt){
     }
   });
   
-  grunt.registerTask('default', ['lint:source',                              'build']);
-  grunt.registerTask('release', ['lint:source', 'clean:all', 'copy:license', 'build']);
+  grunt.registerTask('default', ['build']);
+  grunt.registerTask('release', ['build']);
   grunt.registerTask('lint',        ['newer:jshint:all']);
   grunt.registerTask('lint:source', ['newer:jshint:source']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety']);

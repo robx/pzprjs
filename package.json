@@ -21,21 +21,17 @@
     "node": ">= 5.6.0"
   },
   "scripts": {
-    "build": "grunt default",
-    "release": "grunt release",
-    "release:gzip": "sh -c 'cd dist; tar czf $0 --exclude *.concat.js --exclude \"*.map\" --exclude .DS_Store *; mv $0 ..' pzpr-$npm_package_version.tar.gz",
-    "release:bz2": "sh -c 'cd dist; tar cjf $0 --exclude *.concat.js --exclude \"*.map\" --exclude .DS_Store *; mv $0 ..' pzpr-$npm_package_version.tar.bz2",
-    "release:zip": "sh -c 'cd dist; zip -9qr $0 * -x *.concat.js -x *.map -x pzpr-variety/*.map -x .DS_Store; mv $0 ..' pzpr-$npm_package_version.zip",
-    "clean": "grunt clean",
+    "build": "grunt lint:source && grunt default",
+    "release": "npm run clean && grunt lint:source && grunt release",
+    "clean": "del dist/* pzpr-*.{zip,tar.gz,tar.bz2,tgz}",
     "lint": "grunt lint",
     "test": "grunt lint && mocha -R progress --recursive test",
     "prepublishOnly": "npm test"
   },
   "devDependencies": {
+    "del-cli": "^2.0.0",
     "grunt": "^1.0.1",
-    "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-newer": "^1.1.1",
