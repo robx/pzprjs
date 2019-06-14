@@ -1,6 +1,4 @@
 // Puzzle.js v3.6.0
-/* jshint latedef:false */
-/* global pzpr:false */
 
 (function(){
 
