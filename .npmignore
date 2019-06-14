@@ -9,6 +9,9 @@
 *.concat.js
 
 .jshintrc
+.eslintrc.json
+.eslintignore
+.eslintcache
 /sample
 /test
 yarn.lock

@@ -1,6 +1,4 @@
 // Variety.js v3.4.1
-/* jshint latedef: false */
-/* global pzpr:false */
 
 (function(){
 
@@ -44,7 +42,7 @@ delete variety.extend;
 			Object.freeze(_info[pzprid].alias);
 		}catch(e){}
 	}
-})
+}) // eslint-disable-next-line no-unexpected-multiline
 (function Genre(pzprid, datalist){
 	this.valid  = true;
 	this.pid    = pzprid;		/* パズルID */

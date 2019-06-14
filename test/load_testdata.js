@@ -1,5 +1,4 @@
 // test/load_testdata.js
-// jshint node:true, browser:false, esnext:true
 
 var pzpr = require('../dist/pzpr.js');
 

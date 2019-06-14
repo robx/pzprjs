@@ -212,7 +212,7 @@ AnsCheck:{
 		this.checkAllCell(function(cell){ return (cell.qsub===1);}, "ceSuspend");
 	},
 
-	checkNotMultiNum  : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
+	checkNotMultiNum  : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},
 	checkNumCountLack : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.numcnt);}, "nmCountLt");},
 	checkNumCountOver : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.numcnt);}, "nmCountGt");},
 	checkNoEmptyArea  : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},

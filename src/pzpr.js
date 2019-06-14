@@ -1,4 +1,3 @@
-/* jshint node: true */
 
 exports.files = [
 	"common/intro",

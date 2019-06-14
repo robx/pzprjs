@@ -1,6 +1,4 @@
 // test/puzzle/operation_test.js
-// jshint node:true, browser:false, esnext:true
-/* global describe:false, it:false */
 
 var assert = require('assert');
 
