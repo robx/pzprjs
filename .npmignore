@@ -1,13 +1,15 @@
 .git*
 .hg*
+.DS_Store
 
 /.vscode
 /Gruntfile.js
 /docs
-/Changelog.md
 /src
 *.concat.js
 
 .jshintrc
 /sample
 /test
+yarn.lock
+paclage-lock.json
