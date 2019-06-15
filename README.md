@@ -9,23 +9,20 @@ This script is developed against HTML5 features and JavaScript.
 ## Working environment
 
 ### Browser support (Recommended)
-* Firefox (latest stable version)
-* Google Chrome (latest stable version)
-* Safari 9.0+
+* Firefox (latest stable version; desktop/android)
+* Google Chrome (latest stable version; desktop/android)
+* Safari 10.1+ (desktop/iOS)
 * Microsft Edge
 
 ### Browser support (Possible)
 * Internet Explorer 11
-* Safari 5.1+
-* Opera 12.17
-* iOS 9+
-* Android 4.4+
-* WiiU
+* Safari 9+
+* iOS 9.3+
 
 ### Node.js support
 
-If you want to use, simply install this module. Node.js v4.0 or later is required.
-pzpr.js is likely to work under v0.12 or older but unchecked.
+If you want to use, simply install this module. Node.js latest LTS or later is required.
+pzpr.js is likely to work with older but unchecked.
 
 #### usage for node.js
 
@@ -48,6 +45,7 @@ console.log(puzzle.check().text);
 * [List of mouse input modes](https://github.com/sabo2/pzprjs/blob/master/docs/InputModes.md)
 
 ## Releases
+* 2019/06/15 v0.10.1-beta1
 * 2017/07/29 v0.10.0
 * 2017/04/21 v0.9.1
 * 2017/04/20 v0.9.0
@@ -74,6 +72,11 @@ console.log(puzzle.check().text);
 * 2016/01/31 v0.0.1
 * 2015/12/29 pzprv3-v3.5.2
 * 2015/08/16 pzprv3-v3.5.1
+
+## ChangeLog
+* [ChangeLog](https://github.com/sabo2/pzprjs/blob/master/Changelog.md)
+* [ChangeLog (Github)](https://github.com/sabo2/pzprjs/releases)
+* [ChangeLog (ja)](https://github.com/sabo2/pzprjs/blob/master/docs/ja/Changelog.md)
 
 ## Links
 * [PUZ-PRE v3](http://pzv.jp/index_en.html)

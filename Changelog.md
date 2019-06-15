@@ -1,4 +1,36 @@
 
+## Version 0.10.1-beta1
+
+Release date: 2019/6/15
+
+#### Improvement
+
+* Graphic: Expand bgcolor margin for some genres
+* Operation: Add ability to save/restore operation time
+* akari, shakashaka: Enable to toggle number color for completion
+* heyawake: Allow non-rectangle room for heyawake and ayeheya
+* shakashaka: Limit inputtable triangle if the cell is next to shaded object
+* tawa: Show only shaded cells as red on answer check fail
+
+#### BugFix
+
+* BoardPiece: Make it enable to handle cell's array-type properties
+* LineManager: Fix wrong linegraph attach for line-crossing genres
+* gokigen: Fix ensureing drawing bold slashes without irowake mode
+* kouchoku: Show error points as red instead of adjacent ones (#2)
+* numlin, kaero: Paint configured bgcolor for numlin and kaero
+* walllogic: Draw around of the cell when executing undo or redo
+
+#### Minor Changes
+
+* tapa: Modify checking the length of shades around numbers
+* test: Ensure to delete temporary svg file
+* project: Fix lint rules etc. in package.json
+* project: Modify some lines violating eslint rules
+* project: Use eslint for linting instead of jshint
+* project: Dissolve some grunt tasks into npm-run-scripts
+* project: Install mocha as a devDependencies
+
 ## Version 0.10.0
 
 Release date: 2017/7/29
