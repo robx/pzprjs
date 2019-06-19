@@ -783,9 +783,7 @@ AnsCheck:{
 			
 			result = false;
 			if(this.checkOnly){ break;}
-			if(cross.pathnodes.length>0){
-				cross.pathnodes[0].nodes.forEach(function(node){ node.obj.seterr(1);});
-			}
+			cross.seterr(1);
 		}
 		if(!result){
 			this.failcode.add(code);

@@ -303,7 +303,7 @@ Board:{
 		this.border.ansclear();
 		this.excell.ansclear();
 		opemgr.rejectTrial(true);
-		if(opemgr.ope[opemgr.ope.length-1].length===1){
+		if(opemgr.history[opemgr.history.length-1].length===1){
 			opemgr.puzzle.undo();
 			opemgr.removeDescendant();
 		}

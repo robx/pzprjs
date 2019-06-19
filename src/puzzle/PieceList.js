@@ -95,40 +95,20 @@ PieceList:{
 	// list.subclear() qsub,error情報をクリアする
 	// list.errclear() error情報をクリアする
 	// list.trialclear() Trial情報をクリアする
-	// list.propclear() 4つの共通処理
+	// list.propsclear() 4つの共通処理
 	//---------------------------------------------------------------------------
 	/* undo,redo以外で盤面縮小やったときは, isrec===true */
-	allclear : function(isrec){ this.propclear(['ques','ans','sub','info'], isrec);},
-	ansclear : function()     { this.propclear(['ans','sub','info'], true);},
-	subclear : function()     { this.propclear(['sub','info'], true);},
-	errclear : function()     { this.propclear(['info'], false);},
-	trialclear : function()   { this.propclear(['trial'], false);},
-	propclear : function(target, isrec){
-		var props = [], norec = {};
-		if(this.length>0){
-			props = this[0].getproplist(target);
-			norec = this[0].propnorec;
-		}
+	allclear : function(isrec){ this.propsclear(['ques','ans','sub','info'], isrec);},
+	ansclear : function()     { this.propsclear(['ans','sub','info'], true);},
+	subclear : function()     { this.propsclear(['sub','info'], true);},
+	errclear : function()     { this.propsclear(['info'], false);},
+	trialclear : function()   { this.propsclear(['trial'], false);},
+	propsclear : function(target, isrec){
+		var props = (this.length>0 ? this[0].getproplist(target) : []);
 		for(var i=0;i<this.length;i++){
 			var piece = this[i];
 			for(var j=0;j<props.length;j++){
-				var pp = props[j], pos = '';
-				if(pp.length>4 && pp.substr(0,4)==='snum'){
-					pos = pp.charAt(4);
-					pp  = pp.substr(0,4);
-					var def = piece.constructor.prototype[pp];
-					if(piece[pp][pos]!==def){
-						if(isrec && !norec[pp]){ piece.addOpe(pp+pos, piece[pp][pos], def);}
-						piece[pp][pos] = def;
-					}
-				}
-				else{
-					var def = piece.constructor.prototype[pp];
-					if(piece[pp]!==def){
-						if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
-						piece[pp] = def;
-					}
-				}
+				piece.propclear(props[j], isrec);
 			}
 		}
 	}

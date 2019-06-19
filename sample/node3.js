@@ -1,5 +1,3 @@
-/* jshint esnext:true */
-
 var pzpr = require('../dist/pzpr.js');
 
 var puzzle = new pzpr.Puzzle({height:200,width:200,config:{cursor:false}});

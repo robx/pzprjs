@@ -78,27 +78,23 @@ Cell:{
 	isLiar : function(){
 		if(this.qnum<0){ return false;}
 		return (this.qnum !== this.countDir4Cell(function(cell){ return cell.isShade();}));
+	},
+
+	// 一部qcmpで消したくないものがあるため上書き
+	propclear : function(prop, isrec){
+		var def = this.constructor.prototype[prop];
+		if(this[prop]!==def && !(!!this.board.subclearmode && prop==='qcmp' && this.qcmp===2)){
+			if(isrec && !this.propnorec[prop]){ this.addOpe(prop, this[prop], def);}
+			this[prop] = def;
+		}
 	}
 },
 CellList:{
 	// 一部qsubで消したくないものがあるため上書き
-	subclear : function(){
-		var isrec = true;
-		var props = [], norec = {};
-		if(this.length>0){
-			props = this[0].getproplist(['sub','info']);
-			norec = this[0].propnorec;
-		}
-		for(var i=0;i<this.length;i++){
-			var piece = this[i];
-			for(var j=0;j<props.length;j++){
-				var pp = props[j], def = piece.constructor.prototype[pp];
-				if(piece[pp]!==def && !(pp==='qcmp' && piece.qcmp===2)){
-					if(isrec && !norec[pp]){ piece.addOpe(pp, piece[pp], def);}
-					piece[pp] = def;
-				}
-			}
-		}
+	subclear : function(prop, isrec){
+		this.board.subclearmode = true;
+		this.common.subclear.call(this);
+		this.board.subclearmode = false;
 	}
 },
 Board:{
@@ -185,15 +181,15 @@ FileIO:{
 	decodeData : function(){
 		this.decodeAreaRoom();
 		this.decodeCellQnum();
-		this.decodeCellQanssubcmp();
+		this.decodeCellQanssubcmp2();
 	},
 	encodeData : function(){
 		this.encodeAreaRoom();
 		this.encodeCellQnum();
-		this.encodeCellQanssubcmp();
+		this.encodeCellQanssubcmp2();
 	},
 
-	decodeCellQanssubcmp : function(){
+	decodeCellQanssubcmp2 : function(){
 		this.decodeCell( function(cell,ca){
 			if(ca==="1"){ cell.qans = 1;}
 			else if(ca!=="."){
@@ -203,7 +199,7 @@ FileIO:{
 			}
 		});
 	},
-	encodeCellQanssubcmp : function(){
+	encodeCellQanssubcmp2 : function(){
 		this.encodeCell( function(cell){
 			if(cell.qans===1){ return "1 ";}
 			var ca = (cell.qsub===1 ? "+" : "");

@@ -9,13 +9,13 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['number','clear'],play:['objblank']},
+	inputModes : {edit:['number','clear'],play:['objblank','completion']},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			var use = +this.puzzle.getConfig('use_tri');
 			if(use===1){
 				if(this.btn==='left'){
-					if(this.mousestart){ this.inputTriangle_corner();}
+					if(this.mousestart){ this.inputTriangle_corner_start();}
 					else if(this.mousemove && this.inputData!==null){
 						this.inputMove();
 					}
@@ -46,6 +46,7 @@ MouseEvent:{
 			else if(use===3){
 				if(this.mousestart){ this.inputTriangle_onebtn();}
 			}
+			if(this.mouseend && this.notInputted()){ this.inputqcmp();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart){ this.inputqnum();}
@@ -61,22 +62,52 @@ MouseEvent:{
 		}
 	},
 
-	inputTriangle_corner : function(){
+	inputTriangle_corner_start : function(){
 		var cell = this.getcell();
-		if(cell.isnull || cell.isNum()){ return;}
+		if(cell.isnull){ return;}
 
 		this.inputData = this.checkCornerData(cell);
-		if(this.inputData===cell.qans){ this.inputData = 0;}
 
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
 		cell.draw();
 	},
 	checkCornerData : function(cell){
-		var dx = this.inputPoint.bx - cell.bx;
-		var dy = this.inputPoint.by - cell.by;
-		if(dx<=0){ return ((dy<=0)?5:2);}
-		else     { return ((dy<=0)?4:3);}
+		if(cell.isNum()){ return -1;}
+
+		var val = null;
+		if(this.puzzle.getConfig('support_tri')){
+			// Input support mode
+			var adc = cell.adjacent, wall = {count:0};
+			var data = {top:[2,3],bottom:[4,5],left:[3,4],right:[2,5]};
+			for(var key in adc){
+				var cell2 = adc[key];
+				wall[key] = (cell2.isWall() || cell2.qans===data[key][0] || cell2.qans===data[key][1]);
+				if(wall[key]){ ++wall.count;}
+			}
+
+			if(wall.count>2 || (wall.count===2 && ((wall.top && wall.bottom) || (wall.left && wall.right)))){
+				return (cell.qsub===0 ? -1 : 0);
+			}
+
+			if(wall.count===2){
+				if     (wall.bottom && wall.left) { val = 2;}
+				else if(wall.bottom && wall.right){ val = 3;}
+				else if(wall.top    && wall.right){ val = 4;}
+				else if(wall.top    && wall.left) { val = 5;}
+				else                              { val = 0;}
+			}
+		}
+
+		if(val===null){
+			var dx = this.inputPoint.bx - cell.bx;
+			var dy = this.inputPoint.by - cell.by;
+			if(dx<=0){ val = ((dy<=0)?5:2);}
+			else     { val = ((dy<=0)?4:3);}
+		}
+		if(val===cell.qans){ val = -1;}
+		else if(cell.qsub===1){ val = 0;}
+		return val;
 	},
 
 	inputTriangle_pull_start : function(){
@@ -181,6 +212,16 @@ MouseEvent:{
 		cell.setAnswer(this.inputData);
 		this.mouseCell = cell;
 		cell.draw();
+	},
+
+	inputqcmp : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell.noNum()){ return;}
+
+		cell.setQcmp(+!cell.qcmp);
+		cell.draw();
+
+		this.mousereset();
 	}
 },
 
@@ -210,7 +251,8 @@ Cell:{
 		this.setQsub((val===-1)?1:0);
 	},
 
-	isTri : function(){ return this.qans!==0;}
+	isTri : function(){ return this.qans!==0;},
+	isWall : function(){ return (this.qsub===1 || this.isnull || this.isNum());}
 },
 Board:{
 	addExtraInfo : function(){
@@ -264,7 +306,7 @@ Graphic:{
 	qanscolor : "black",
 	fgcellcolor_func : "qnum",
 	fontShadecolor : "white",
-	numbercolor_func : "fixed_shaded",
+	qcmpcolor : "rgb(127,127,127)",
 
 	paint : function(){
 		this.drawBGCells();
@@ -281,6 +323,9 @@ Graphic:{
 	},
 	getTriangleColor : function(cell){
 		return (!cell.trial ? this.shadecolor : this.trialcolor);
+	},
+	getQuesNumberColor : function(cell){
+		return (cell.qcmp===1 ? this.qcmpcolor : this.fontShadecolor);
 	}
 },
 
@@ -305,11 +350,27 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeCellQnumb();
-		this.decodeCellQanssub();
+		this.decodeCellQanssubcmp();
 	},
 	encodeData : function(){
 		this.encodeCellQnumb();
-		this.encodeCellQanssub();
+		this.encodeCellQanssubcmp();
+	},
+
+	decodeCellQanssubcmp : function(){
+		this.decodeCell( function(cell,ca){
+			if     (ca==="+"){ cell.qsub = 1;}
+			else if(ca==="-"){ cell.qcmp = 1;}
+			else if(ca!=="."){ cell.qans = +ca;}
+		});
+	},
+	encodeCellQanssubcmp : function(){
+		this.encodeCell( function(cell){
+			if     (cell.qans!==0){ return cell.qans+" ";}
+			else if(cell.qsub===1){ return "+ ";}
+			else if(cell.qcmp===1){ return "- ";}
+			else                  { return ". ";}
+		});
 	},
 
 	kanpenOpen : function(){

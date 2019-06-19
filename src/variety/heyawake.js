@@ -234,8 +234,7 @@ AnsCheck:{
 		"checkConnectUnshadeRB",
 		"checkFractal@ayeheya",
 		"checkShadeCellCount",
-		"checkCountinuousUnshadeCell",
-		"checkRoomRect"
+		"checkCountinuousUnshadeCell"
 	],
 
 	checkFractal : function(){

@@ -1,5 +1,4 @@
 // Parser.js v3.4.1
-/* global JSON:false */
 
 (function(){
 
@@ -53,7 +52,7 @@ Parser.extend({
 	parseFile : function(fstr, variety){
 		if(fstr instanceof FileData){ return fstr;}
 		
-		if(!fstr.match(/^\<\?xml/)){ // jshint ignore:line
+		if(!fstr.match(/^\<\?xml/)){
 			fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
 		}
 		return (new FileData(fstr, variety)).parse();
@@ -360,7 +359,7 @@ pzpr.parser.FileData.prototype = {
 			this.pid = lines.shift();
 			this.qdata = lines.join("\n");
 		}
-		else if(firstline.match(/^\<\?xml/)){ // jshint ignore:line
+		else if(firstline.match(/^\<\?xml/)){
 			this.type = FILE_PBOX_XML;
 			lines.unshift(firstline);
 			this.qdata = lines.join("\n");
@@ -552,7 +551,7 @@ pzpr.parser.FileData.prototype = {
 		}
 		else{
 			outputdata = new XMLSerializer().serializeToString(this.body);
-			if(!outputdata.match(/^\<\?xml/)){ // jshint ignore:line
+			if(!outputdata.match(/^\<\?xml/)){
 				outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;
 			}
 		}

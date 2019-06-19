@@ -409,8 +409,6 @@ AnsCheck:{
 			this.failcode.add("csNotOnShade");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
-			cell.relcell(-1,2).seterr(1);
-			cell.relcell(1,2).seterr(1);
 		}
 	}
 },

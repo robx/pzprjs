@@ -9,7 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@loute":{
-	inputModes:{edit:['arrow','circle-unshade','undef','clear'],play:['border','subline']},
+	inputModes:{edit:['arrow','circle-unshade','undef','clear'],play:['border','subline']}
 },
 "MouseEvent@sashigane":{
 	inputModes:{edit:['arrow','number','undef','clear'],play:['border','subline']},

@@ -157,6 +157,7 @@ KeyEvent:{
 Cell:{
 	minnum : 0,
 	qnums  : null, // Array型
+	propques : ['ques', 'qdir', 'qnum', 'qnum2', 'qnums', 'qchar'],
 	qnum_states : (function(){
 		var states = [ [],[-2],[0],[1],[2],[3],[4],[5],[6],[7],[8] ], sum=0;
 		for(var n1=0;n1<=5;n1++){ for(var n2=0;n2<=5;n2++){
@@ -192,44 +193,36 @@ Cell:{
 		this.puzzle.opemgr.add(new this.klass.ObjectOperation2(this, old, val));
 	},
 
-	getShadedLength : function(){
-		var addrs = [], result = [], shaded = "";
-		var bx = this.bx, by = this.by, bd = this.board;
-		if(bx>bd.minbx+1 && bx<bd.maxbx-1 && by>bd.minby+1 && by<bd.maxby-1){
-			addrs = [-2,-2, 0,-2, 2,-2, 2,0, 2,2, 0,2, -2,2, -2,0];
+	propclear : function(prop, isrec){
+		if(prop==='qnums'){
+			if(this.qnums.length>0){
+				if(isrec){ this.addOpeQnums(this.qnums, []);}
+				this.qnums = [];
+			}
 		}
-		else if(bx===bd.minbx+1){ addrs = [0,-2,  2,-2,  2, 0,  2, 2,  0,2];}
-		else if(by===bd.minby+1){ addrs = [2, 0,  2, 2,  0, 2, -2, 2, -2,0];}
-		else if(bx===bd.maxbx-1){ addrs = [0,-2, -2,-2, -2, 0, -2, 2,  0,2];}
-		else if(by===bd.maxby-1){ addrs = [2, 0,  2,-2,  0,-2, -2,-2, -2,0];}
-		for(var k=0;k<addrs.length;k+=2){
-			var cell = this.relcell(addrs[k],addrs[k+1]);
-			if(!cell.isnull){ shaded += ""+(cell.isShade()?1:0);}
+		else{
+			this.common.propclear.call(this,prop,isrec);
+		}
+	},
+
+	getShadedLength : function(){
+		var result = [], shaded = "";
+		var addrs = [[-2,-2], [0,-2], [2,-2], [2,0], [2,2], [0,2], [-2,2], [-2,0]];
+		for(var k=0;k<addrs.length;k++){
+			var cell = this.relcell(addrs[k][0],addrs[k][1]);
+			shaded += ""+((!cell.isnull&&cell.isShade())?1:0);
 		}
 		var shades = shaded.split(/0+/);
 		if(shades.length>0){
 			if(shades[0].length===0){ shades.shift();}
 			if(shades[shades.length-1].length===0){ shades.pop();}
-			if(shaded.length===8 && shades.length>1 && shaded.charAt(0)==='1' && shaded.charAt(7)==='1'){
+			if(shades.length>1 && shaded.charAt(0)==='1' && shaded.charAt(7)==='1'){
 				shades[0] += shades.pop();
 			}
 			for(var i=0;i<shades.length;i++){ result.push(shades[i].length);}
 		}
 		if(result.length===0){ result = [0];}
 		return result;
-	}
-},
-CellList:{
-	allclear : function(isrec){
-		this.common.allclear.call(this,isrec);
-		
-		for(var i=0;i<this.length;i++){
-			var cell = this[i];
-			if(cell.qnums.length>0){
-				if(isrec){ cell.addOpeQnums(cell.qnums, []);}
-				cell.qnums = [];
-			}
-		}
 	}
 },
 "ObjectOperation2:Operation":{
@@ -479,14 +472,9 @@ AnsCheck:{
 			if(cell.qnums.length===0){ return false;}
 			var shades = cell.getShadedLength(); // 順番の考慮は不要
 			if(cell.qnums.length!==shades.length){ return true;}
-			var result = true;
-			for(var i=0,imax=cell.qnums.length;i<imax;i++){
-				for(var k=i,kmax=i+shades.length;k<kmax;k++){
-					if(cell.qnums[k%imax]>=0 && cell.qnums[k%imax]!==shades[k-i]){ break;}
-				}
-				if(k===kmax){ result = false; break;}
-			}
-			return result;
+			var shade = shades.sort().join('');
+			var qnums = cell.qnums.slice().sort().join('');
+			return (shade!==qnums);
 		}, "ceTapaNe");
 	}
 },

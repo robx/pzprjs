@@ -325,7 +325,7 @@ AnsCheck:{
 		"checkAroundStars",
 		"checkOverSaturatedStars",
 		"checkInsufficientStars",
-		"checkStarCountInLine",
+		"checkStarCountInLine"
 	],
 
 	checkAroundStars : function(){

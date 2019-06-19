@@ -180,6 +180,15 @@ Cell:{
 		if(this.qcmp===1){ return true;}
 		if(!this.puzzle.execConfig('autocmp')){ return false;}
 		return (this.qnum===this.getWallClist().length);
+	},
+	draw : function(){
+		var opemgr = this.puzzle.opemgr;
+		if(opemgr.undoExec || opemgr.redoExec){
+			this.drawaround();
+		}
+		else{
+			this.common.draw.call(this);
+		}
 	}
 },
 CellList : {

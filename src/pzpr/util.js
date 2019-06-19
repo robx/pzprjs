@@ -1,5 +1,4 @@
 // util.js v3.4.0
-// jshint node:true
 
 (function(){
 

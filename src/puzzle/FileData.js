@@ -110,7 +110,7 @@ FileIO:{
 		}
 		pzl.metadata.update(puzzle.metadata);
 		if(option.history && (filetype===pzl.FILE_PZPR)){
-			pzl.history = puzzle.opemgr.encodeHistory();
+			pzl.history = puzzle.opemgr.encodeHistory({time:!!option.time});
 		}
 
 		this.datastr = "";
@@ -145,12 +145,12 @@ FileIO:{
 				var num = bd1[group][c][a];
 				opes.push(new this.puzzle.klass.ObjectOperation(obj, a, old, num));
 			});
-			opemgr.ope.unshift(opes);
-			opemgr.ope.unshift([new this.puzzle.klass.TrialEnterOperation(i, i+1)]);
+			opemgr.history.unshift(opes);
+			opemgr.history.unshift([new this.puzzle.klass.TrialEnterOperation(i, i+1)]);
 			opemgr.trialpos.unshift(i*2);
 			this.readLine();	// 次の"TrialData"文字列は読み捨て
 		}
-		opemgr.position = opemgr.ope.length;
+		opemgr.position = opemgr.history.length;
 		opemgr.resumeTrial();
 	},
 	encodeTrial : function(){
