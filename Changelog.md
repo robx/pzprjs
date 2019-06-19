@@ -1,4 +1,8 @@
 
+## Version 0.10.1
+
+Release date: 2019/6/19
+
 ## Version 0.10.1-beta1
 
 Release date: 2019/6/15
