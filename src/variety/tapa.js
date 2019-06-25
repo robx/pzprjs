@@ -429,9 +429,14 @@ AnsCheck:{
 			if(cell.qnums.length===0){ return false;}
 			var shades = cell.getShadedLength(); // 順番の考慮は不要
 			if(cell.qnums.length!==shades.length){ return true;}
-			var shade = shades.sort().join('');
-			var qnums = cell.qnums.slice().sort().join('');
-			return (shade!==qnums);
+			for(var i=0;i<cell.qnums.length;i++){
+				var num = cell.qnums[i];
+				if(num===-2){ continue;}
+				var idx = shades.indexOf(num);
+				if(idx<0){ return true;}
+				shades.splice(idx,1);
+			}
+			return false;
 		}, "ceTapaNe");
 	}
 },
