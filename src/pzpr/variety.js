@@ -162,7 +162,7 @@ delete variety.extend;
 	ripple    :[0,1,"波及効果","Ripple Effect",'ripple',{kanpen:'hakyukoka'}],
 	roma      :[0,0,"ろーま","Roma",'',{alias:'rome'}],
 	sashigane :[0,0,"さしがね","Sashigane",'loute'],
-	satogaeri :[0,1,"さとがえり","Satogaeri",'bonsan',{kanpen:'satogaeri'}],
+	satogaeri :[0,1,"さとがえり","Satogaeri",'bonsan',{alias:'sato',kanpen:'satogaeri'}],
 	scrin     :[0,0,"スクリン","Scrin"],
 	shakashaka:[0,1,"シャカシャカ","ShakaShaka"],
 	shikaku   :[0,1,"四角に切れ","Shikaku (Divide by Box)",'shikaku'],
