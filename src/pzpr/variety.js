@@ -95,6 +95,7 @@ delete variety.extend;
 	firefly   :[1,0,"ホタルビーム","Hotaru Beam (Glow of Fireflies)"],
 	fivecells :[0,0,"ファイブセルズ","FiveCells",'nawabari'],
 	fourcells :[0,0,"フォーセルズ","FourCells",'nawabari'],
+	geradeweg :[0,0,"(please translate) Geradeweg","Geradeweg"],
 	goishi    :[0,1,"碁石ひろい","Goishi"],
 	gokigen   :[1,0,"ごきげんななめ","Gokigen-naname (Slalom, Slant)",'gokigen'],
 	hakoiri   :[1,0,"はこいり○△□","Hokoiri-masashi"],
