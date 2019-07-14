@@ -57,6 +57,8 @@ function startPuzzle(){
 	puzzle.once('fail-open', failOpen);
 	puzzle.open(pzl);
 
+	puzzle.on('request-aux-editor', ui.auxeditor.open);
+
 	return true;
 }
 

@@ -151,7 +151,7 @@ var debug = window.debug =
 		if(!!this.includedScript[pid]){ return;}
 		var _script = document.createElement('script');
 		_script.type = 'text/javascript';
-		_script.src = './script/test_'+pid+'.js';
+		_script.src = './script/'+pid+'.js';
 		if(!!callback){ _script.onload = callback;}
 		document.getElementsByTagName('head')[0].appendChild(_script);
 		this.includedScript[pid] = true;
@@ -203,6 +203,7 @@ var debug = window.debug =
 			case 'playmode':
 			case 'editmode':
 				puzzle.setMode(strs[0]);
+				if(strs.length > 1) { puzzle.mouse.setInputMode(strs[1]); }
 				break;
 			case 'setconfig':
 				if     (strs[2]==="true") { puzzle.setConfig(strs[1], true);}

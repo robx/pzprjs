@@ -83,6 +83,8 @@ delete variety.extend;
 	cojun     :[0,0,"コージュン","Cojun",'ripple'],
 	country   :[1,0,"カントリーロード","Country Road"],
 	creek     :[1,0,"クリーク","Creek"],
+	curvedata :[0,0,"カーブデータ","Curve Data"],
+	"curvedata-aux" :[0,0,"(please translate) Edit shape","Edit shape"],
 	dbchoco   :[0,0,"ダブルチョコ","Double Chocolate",'cbblock'],
 	dosufuwa  :[0,0,"ドッスンフワリ","Dosun-Fuwari"],
 	doubleback:[0,0,"引き返す","Double Back",'country'],
