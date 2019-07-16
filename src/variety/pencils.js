@@ -583,21 +583,22 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		"checkTipHasPencil",
-		"checkTipNotInsidePencil",
-		"checkOneTip",
-		"checkPencilSize",
-
-		"checkNumberInPencil",
-
-		"checkLineOutsidePencil",
 		"checkBranchLine",
 		"checkCrossLine",
+		"checkOneTip",
+		"checkLineSingleTip",
+		"checkLineTooLong",
+		"checkNumberTooHigh",
+		"checkTipNotInsidePencil",
+		
+		"checkLineOutsidePencil",
+		"checkNumberInPencil",
 		"checkTipHasLine",
 		"checkLineHasTip", // does not start at a pencil tip
-		"checkLineSingleTip",
-
-		"checkLineLength",
+		"checkNumberTooLow",
+		"checkLineTooShort",
+		
+		"checkTipHasPencil",
 		"checkCellsUsed"
 	],
 
@@ -622,7 +623,14 @@ AnsCheck:{
 		}
 	},
 
-	checkPencilSize : function(){
+	checkNumberTooLow : function() {
+		this.pencils_checkPencilSize(-1, "nmSizeLt");
+	},
+	checkNumberTooHigh : function() {
+		this.pencils_checkPencilSize(+1, "nmSizeGt");
+	},
+
+	pencils_checkPencilSize : function(factor, code){
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
@@ -630,8 +638,9 @@ AnsCheck:{
 			var n=room.clist.length;
 			for(var i=0;i<room.clist.length;i++){
 				var cell=room.clist[i];
-				if(cell.qnum>0&&cell.qnum!==n){
-					this.failcode.add("nmWrongSize");
+				var q = cell.qnum;
+				if(q>0 && ((factor < 0 && q < n)||(factor > 0 && q > n)) ){
+					this.failcode.add(code);
 					if(this.checkOnly){ return;}
 					cell.seterr(2);
 					room.seterr(1);
@@ -674,15 +683,22 @@ AnsCheck:{
 		this.pencils_checkLines(function(ends){ return (ends.length>1);}, "lnMultipleTips");
 	},
 
-	checkLineLength : function(){
+	checkLineTooShort : function() {
+		this.pencils_checkLineLength(-1, "lnLengthLt");
+	},
+	checkLineTooLong : function() {
+		this.pencils_checkLineLength(+1, "lnLengthGt");
+	},
+
+	pencils_checkLineLength : function(factor, code){
 		var cells=this.board.cell;
 		for(var i=0;i<cells.length;i++){
 			var cell=cells[i];
 			if(!cell.isTip()||cell.lcnt!==1){ continue;}
 			var l=cell.path.nodes.length-1;
 			var s=cell.getPencilSize();
-			if(s>0&&s!==l){
-				this.failcode.add("lnWrongLength");
+			if(s>0 && ((factor < 0 && l < s)||(factor > 0 && l > s)) ){
+				this.failcode.add(code);
 				if(this.checkOnly){ return;}
 				cell.getPencilStart().room.seterr(1);
 				cell.path.setedgeerr(1);
@@ -699,13 +715,15 @@ FailCode:{
 	ptNoPencil : ["(please translate) A tip is not at the short end of a 1xN rectangle.","A tip is not at the short end of a 1xN rectangle."],
 	ptInPencil : ["(please translate) A tip is inside a pencil.","A tip is inside a pencil."],
 	pcMultipleTips : ["(please translate) A pencil has more than one tip.","A pencil has more than one tip."],
-	nmWrongSize : ["(please translate) A number is different from the length of the pencil.","A number is different from the length of the pencil."],
+	nmSizeLt : ["(please translate) A number is smaller than the length of the pencil.","A number is smaller than the length of the pencil."],
+	nmSizeGt : ["(please translate) A number is larger than the length of the pencil.","A number is larger than the length of the pencil."],
 	nmOutsidePencil : ["(please translate) A number is not inside a pencil.","A number is not inside a pencil."],
 	lnCrossPencil: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
 	ptNoLine: ["(please translate) A pencil tip is not connected to a line.","A pencil tip is not connected to a line."],
 	lnNoTip: ["(please translate) A line is not connected to a pencil tip.","A line is not connected to a pencil tip."],
 	lnMultipleTips : ["(please translate) A line connects to more than one pencil tip.","A line connects to more than one pencil tip."],
-	lnWrongLength : ["(please translate) A line has a different length than a connected pencil.","A line has a different length than a connected pencil."],
+	lnLengthLt : ["(please translate) A line is shorter than the connected pencil.","A line is shorter than the connected pencil."],
+	lnLengthGt : ["(please translate) A line is longer than the connected pencil.","A line is longer than the connected pencil."],
 	unusedCell : ["(please translate) A cell is unused.","A cell is unused."]
 }
 }));
