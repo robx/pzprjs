@@ -31,7 +31,7 @@ Config.prototype =
 		this.add('disptype_bosanowa',  1, {option:[1,2,3]});	/* bosanowa: 表示形式 */
 		this.add('snakebd', false);								/* hebi: へびの境界線を表示する */
 		this.add('dispqnumbg', false);							/* yinyang: 問題のまるに背景色をつける */
-		this.add('undefcell', false);							/* shugaku: 未確定マスはグレー表示にする */
+		this.add('undefcell', true);							/* shugaku, nurimisaki: 未確定マスはグレー表示にする */
 
 		this.add('squarecell', true);							/* セルは正方形にする */
 
