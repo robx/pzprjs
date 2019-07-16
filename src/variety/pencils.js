@@ -371,7 +371,7 @@ Border: {
 
 			return cell0.anum === cell0.UP || cell1.anum === cell1.DN;
 		}
-	},
+	}
 },
 BoardExec:{
 	adjustBoardData : function(key,d){
@@ -488,7 +488,7 @@ Graphic:{
 			else{ return (!cell.trial ? this.qanscolor : this.trialcolor);}
 		}
 		return null;
-	},
+	}
 },
 
 //---------------------------------------------------------
