@@ -198,7 +198,7 @@ Border:{
 	}
 },
 Board:{
-	hasborder : 1,
+	hasborder : 1
 },
 "Board@yajilin":{
 	redrawAffected : function(cells){
@@ -464,7 +464,7 @@ AnsCheck:{
 		"checkOneLoop",
 		"checkEmptyCell_yajilin+@yajilin",
 		"checkEmptyCell_regions+@yajilin-regions",
-		"checkNumberHasArrow@yajilin",
+		"checkNumberHasArrow@yajilin"
 	],
 
 	checkEmptyCell_yajilin : function(){

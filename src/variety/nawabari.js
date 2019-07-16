@@ -42,10 +42,10 @@ MouseEvent:{
 	inputModes : {edit:['number','clear'],play:['border','subline']}
 },
 "MouseEvent@fourcells,fivecells":{
-	inputModes : {edit:['empty','number','clear'],play:['border','subline']},
+	inputModes : {edit:['empty','number','clear'],play:['border','subline']}
 },
 "MouseEvent@heteromino":{
-	inputModes : {edit:['empty','clear'],play:['border','subline']},
+	inputModes : {edit:['empty','clear'],play:['border','subline']}
 },
 "MouseEvent@fourcells,fivecells,heteromino":{
 	inputModes : {edit:['empty','number','clear'],play:['border','subline']}
@@ -131,7 +131,7 @@ Border:{
 },
 
 Board:{
-	hasborder : 2,
+	hasborder : 2
 },
 "Board@fourcells,fivecells":{
 	initBoardSize : function(col,row){

@@ -221,7 +221,7 @@ Graphic:{
 			this.drawQuesNumbers();
 			this.drawTarget();
 		}
-	},
+	}
 },
 
 "Graphic@cbblock":{
@@ -360,7 +360,7 @@ AnsCheck:{
 		"checkDifferentShapeBlock@cbblock",
 		"checkLargeBlock",
 		"checkEqualShapes@dbchoco",
-		"checkLargeNumberArea@dbchoco",
+		"checkLargeNumberArea@dbchoco"
 	],
 
 	checkBlockNotRect : function(){
@@ -471,6 +471,6 @@ AnsCheck:{
 	bkSubGt2 : ["(please translate) A block has three or more shapes.","A block has three or more shapes."],
 	bkSizeLt : ["(please translate) A number is bigger than the size of the shape.","A number is bigger than the size of the shape."],
 	bkSizeGt : ["(please translate) A number is smaller than the size of the shape.","A number is smaller than the size of the shape."],
-	bkDifferentShape: ["(please translate) The two shapes inside a block are different.","The two shapes inside a block are different."],
+	bkDifferentShape: ["(please translate) The two shapes inside a block are different.","The two shapes inside a block are different."]
 }
 }));

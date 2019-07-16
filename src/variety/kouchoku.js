@@ -91,7 +91,7 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
-	moveTarget : function(ca){ return this.moveTCross(ca);},
+	moveTarget : function(ca){ return this.moveTCross(ca);}
 },
 
 "KeyEvent@kouchoku":{
