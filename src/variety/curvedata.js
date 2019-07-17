@@ -11,7 +11,7 @@
 // by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
 // Use CurveDataOperation for all changes to clues on the grid.
 MouseEvent:{
-    inputModes : {edit:[],play:['line','peke']},
+    inputModes : {edit:['copylines','undef','clear'],play:['line','peke']},
     mouseinput_auto : function(){
         if(this.puzzle.playmode){
             if(this.btn==='left'){
@@ -23,6 +23,44 @@ MouseEvent:{
             }
         }
         else if(this.puzzle.editmode){
+        }
+    },
+
+    mouseinput_undef : function(){ return this.enterqnum(-2); },
+    mouseinput_clear : function(){ return this.enterqnum(-1); },
+
+    enterqnum: function(value) {
+        var cell = this.getcell();
+        if(cell.isnull || cell===this.mouseCell || !this.puzzle.editmode){ return;}
+
+        this.mouseCell = cell;
+
+        if(cell.qnum !== value) {
+            var ope = new this.klass.CurveDataOperation(cell, value);
+            ope.redo();
+            this.puzzle.opemgr.add(ope);
+            cell.draw();
+        }
+    },
+    
+    mouseinput_other : function(){
+		if(this.inputMode==='copylines' && this.mousestart){ this.mouseinput_copylines();}
+    },
+    
+    mouseinput_copylines: function() {
+        var cell = this.getcell();
+        if(cell.isnull || cell===this.mouseCell || !this.puzzle.editmode){ return;}
+
+        this.mouseCell = cell;
+
+        if(!cell.path) {return;}
+
+        var shape = cell.path.clist.toCurveData();
+        if(!shape.deepEquals(this.board.shapes[cell.qnum])) {
+            var ope = new this.klass.CurveDataOperation(cell, shape);
+            ope.redo();
+            this.puzzle.opemgr.add(ope);
+            cell.draw();
         }
     }
 },
@@ -67,7 +105,7 @@ Board:{
             for(i = 0; i < this.linegraph.components.length; i++) {
                 var path = this.linegraph.components[i];
                 path.isomorphicWith = null;
-                path.scanForClues();
+                this.linegraph.components.scanForClues(path);
             }
         }
     }
@@ -404,7 +442,7 @@ CurveData: {
                 return this.execNum(i);
             }
         }
-        
+
         this.board.shapes.push(shape);
         return this.execNum(len);
     },
@@ -412,7 +450,10 @@ CurveData: {
     execNum: function(num) {
         var cell = this.board.getc(this.x, this.y);
         cell.qnum = num;
-        if(cell.shape) {cell.shape.scanForClues();}
+        if(cell.path) {
+            this.board.linegraph.scanForClues(cell.path);
+        }
+
         cell.draw();
     }
 },
@@ -427,12 +468,6 @@ Cell: {
     minnum: 0,
     maxnum: function() {
         return this.board.shapes.length - 1;
-    },
-
-    posthook : {
-        qnum : function(num){
-            if(this.path) { this.board.linegraph.scanForClues(this.path); }
-        }
     },
 
     getBits: function() {
