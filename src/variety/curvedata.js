@@ -7,8 +7,11 @@
 }(
 ['curvedata'], {
 
+// In this puzzle, clue numbers are not stable. They can be changed on the entire board
+// by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
+// Use CurveDataOperation for all changes to clues on the grid.
 MouseEvent:{
-    inputModes : {edit:['number','clean'],play:['line','peke']},
+    inputModes : {edit:[],play:['line','peke']},
     mouseinput_auto : function(){
         if(this.puzzle.playmode){
             if(this.btn==='left'){
@@ -32,6 +35,42 @@ Board:{
     createExtraObject : function(){
         this.shapes = [];
     },
+
+    compressShapes: function() {
+        var map = {};
+        var i;
+        for(i = 0; i < this.cell.length; i++) {
+            map[this.cell[i].qnum] = true;
+        }
+
+        map[-1] = -1;
+        map[-2] = -2;
+
+        var next = 0;
+        for(i = 0; i < this.shapes.length; i++) {
+            if(i in map) {
+                map[i] = next++;
+            }
+        }
+
+        if(next!==i) {
+            for(i = 0; i < this.cell.length; i++) {
+                this.cell[i].qnum = map[this.cell[i].qnum];
+            }
+
+            for(i = 0; i < this.shapes.length; i++) {
+                this.shapes[map[i]] = this.shapes[i];
+            }
+
+            this.shapes = this.shapes.slice(0, next);
+        
+            for(i = 0; i < this.linegraph.components.length; i++) {
+                var path = this.linegraph.components[i];
+                path.isomorphicWith = null;
+                path.scanForClues();
+            }
+        }
+    }
 },
 
 CurveData: {
@@ -60,10 +99,13 @@ CurveData: {
     // and a map of four adjacent positions as the value. This represents the graph.
     connections: null,
     nodecnt: 0,
+    // Cached result of encodeBits().
+    serialized: null,
 
     initialize: function() {
         this.w = 0;
         this.bits = [];
+        this.invalidate();
     },
 
     init: function(rows, cols) {
@@ -77,6 +119,8 @@ CurveData: {
     invalidate: function() {
         this.positions = null;
         this.connections = null;
+        this.nodecnt = 0;
+        this.serialized = null;
     },
 
     buildBits: function() {
@@ -157,12 +201,7 @@ CurveData: {
     },
 
     deepEquals: function(other) {
-        var len = this.bits.length;
-        if(!other || this.w !== other.w || len !== other.bits.length) {return false;}
-        for(var id = 0; id < len; id++) {
-            if((this.bits[id] & 3) !== (other.bits[id] & 3)) {return false;}
-        }
-        return true;
+        return other && this.w === other.w && this.encodeBits() === other.encodeBits();
     },
 
     isIsomorphic: function(other) {
@@ -262,7 +301,126 @@ CurveData: {
             }
         }
         return true;
+    },
+
+    encodeBits: function() {
+        if(this.serialized!==null) { return this.serialized; }
+        var bits = "";
+        var len = this.bits.length;
+        for(var b = 0; b < len-1; b+= 2) {
+            var bit = this.bits[b] & 3;
+            bit |= (this.bits[b+1] & 3) << 2;
+            bits += bit.toString(16);
+        }
+        this.serialized = bits;
+        return bits;
+    },
+
+    decodeBits: function(code) {
+        var len = this.bits.length;
+        for(var b = 0; b < len-1; b+= 2) {
+            var num = parseInt(code[b/2], 16);
+            this.bits[b] = num & 3;
+            this.bits[b+1] = (num & 12) >> 2;
+        }
+        this.invalidate();
     }
+},
+
+"CurveDataOperation:Operation": {
+    type: 'curvedata',
+
+    setData: function(cell, shape) {
+        var old = cell.board.shapes[cell.qnum];
+
+        if(old) {
+            this.oldw = old.w;
+            this.oldh = old.bits.length / old.w;
+            this.oldbits = old.encodeBits();
+        } else {
+            this.oldqnum = cell.qnum;
+        }
+
+        if(shape && typeof shape === "object" && shape.bits.length > 0) {
+            this.neww = shape.w;
+            this.newh = shape.bits.length / shape.w;
+            this.newbits = shape.encodeBits();
+        } else {
+            this.newqnum = shape === -2 ? -2 : -1;
+        }
+
+        this.x = cell.bx;
+        this.y = cell.by;
+    },
+
+    decode: function(strs) {
+        var i = 0;
+        if(strs[i++] !== "DC") {return false;}
+
+        this.x = +strs[i++];
+        this.y = +strs[i++];
+
+        this.neww = +strs[i++];
+        this.newh = +strs[i++];
+        this.newbits = strs[i++];
+        this.newqnum = +strs[i++];
+
+        this.oldw = +strs[i++];
+        this.oldh = +strs[i++];
+        this.oldbits = strs[i++];
+        this.oldqnum = +strs[i++];
+
+        return true;
+    },
+
+    toString : function() {
+        return ["DC", this.x, this.y, 
+            this.neww, this.newh, this.newbits, this.newqnum, 
+            this.oldw, this.oldh, this.oldbits, this.oldqnum].join(",");
+    },
+
+    undo: function() {
+        if(this.oldqnum) {
+            this.execNum(this.oldqnum);
+        } else {
+            this.execShape(this.oldw, this.oldh, this.oldbits);
+        }
+    },
+    redo: function() {
+        if(this.newqnum) {
+            this.execNum(this.newqnum);
+        } else {
+            this.execShape(this.neww, this.newh, this.newbits);
+        }
+    },
+    execShape: function(w, h, data) {
+        var shape = new this.klass.CurveData();
+        shape.init(w, h);
+        shape.decodeBits(data);
+
+        var len = this.board.shapes.length;
+        for(var i = 0; i < len; i++) {
+            if(this.board.shapes[i].deepEquals(shape)) {
+                return this.execNum(i);
+            }
+        }
+        
+        this.board.shapes.push(shape);
+        return this.execNum(len);
+    },
+
+    execNum: function(num) {
+        var cell = this.board.getc(this.x, this.y);
+        cell.qnum = num;
+        if(cell.shape) {cell.shape.scanForClues();}
+        cell.draw();
+    }
+},
+
+OperationManager:{
+	addExtraOperation : function(){
+		this.operationlist.push(this.klass.CurveDataOperation);
+	}
 },
 
 Cell: {
@@ -371,6 +529,7 @@ Graphic:{
             var cell = clist[i];
             
             g.lineWidth = this.lw/2;
+            var dot = this.lw/4;
             
             if(cell.qnum >= 0){
                 var shape = this.board.shapes[cell.qnum];
@@ -391,16 +550,16 @@ Graphic:{
                 for(var y = 0; y < h; y++) {
                     for(var x = 0; x < w-1; x++) {
                         if(shape.bits[y*w+x] & 1) {
-                            g.moveTo(px+(x*step),py+(y*step));
-                            g.lineTo(px+((x+1)*step),py+(y*step));
+                            g.moveTo(px+(x*step) - dot, py+(y*step));
+                            g.lineTo(px+((x+1)*step) + dot, py+(y*step));
                         }
                     }
                 }
                 for(var y = 0; y < h-1; y++) {
                     for(var x = 0; x < w; x++) {
                         if(shape.bits[y*w+x] & 2) {
-                            g.moveTo(px+(x*step),py+(y*step));
-                            g.lineTo(px+(x*step),py+((y+1)*step));
+                            g.moveTo(px+(x*step), py+(y*step) - dot);
+                            g.lineTo(px+(x*step), py+((y+1)*step) + dot);
                         }
                     }
                 }
@@ -439,13 +598,11 @@ BoardExec:{
                 if(key & this.TURN) { 
                     data.w = h; 
                     
-                    var transpose = Array(len);
                     for(var y = 0; y < h; y++) {
                         for(var x = 0; x < w; x++) {
-                            transpose[x*h+y] = newBits[y*w+x];
+                            data.bits[x*h+y] = newBits[y*w+x];
                         }
                     }
-                    data.bits = transpose;
                 } else {
                     data.bits = newBits;
                 }
@@ -510,20 +667,17 @@ Encode:{
 
             if(!w || !h || w > this.board.cols || h > this.board.rows) {continue;}
 
-            var len = w*h;
             data.init(w, h);
 
             var code = parts[(id*3) + 2];
-            for(var b = 0; b < len-1; b+= 2) {
-                var num = parseInt(code[b/2], 16);
-                data.bits[b] = num & 3;
-                data.bits[b+1] = (num & 12) >> 2;
-            }
+            data.decodeBits(code);
 
             this.board.shapes[id] = data;
         }
     },
     encodePzpr : function(type){
+        this.board.compressShapes();
+
         var count = this.board.shapes.length;
         this.encodeNumber16();
         this.outbstr += "/";
@@ -536,14 +690,7 @@ Encode:{
             var h = len / w;
             parts.push(w);
             parts.push(h);
-
-            var bits = "";
-            for(var b = 0; b < len-1; b+= 2) {
-                var bit = shape.bits[b] & 3;
-                bit |= (shape.bits[b+1] & 3) << 2;
-                bits += bit.toString(16);
-            }
-            parts.push(bits);
+            parts.push(shape.encodeBits());
         }        
         this.outbstr += parts.join("/");
     }
