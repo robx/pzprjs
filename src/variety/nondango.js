@@ -211,7 +211,6 @@ AnsCheck:{
 	},
 	checkThreeCircles : function(func, failcode){
 		var bd = this.board, CellList = this.klass.CellList;
-		allloop:
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], bx = cell.bx, by = cell.by, clist, clists = [new CellList(cell)];
 			if(cell.bx<bd.maxbx-4){

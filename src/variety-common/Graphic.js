@@ -232,8 +232,8 @@ Graphic:{
 			g.vid = "c_slash_"+cell.id;
 			if(cell.qans!==0){
 				var info = cell.error || cell.qinfo, addwidth = 0, color;
-				if(this.puzzle.execConfig('irowake')){
-					if(cell.trial){ addwidth = -basewidth/2;}
+				if(this.pid==='gokigen' || this.pid==='wagiri'){
+					if(cell.trial && this.puzzle.execConfig('irowake')){ addwidth = -basewidth/2;}
 					else if(info===1||info===3){ addwidth = basewidth/2;}
 				}
 				

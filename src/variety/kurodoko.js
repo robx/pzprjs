@@ -21,10 +21,10 @@ MouseEvent:{
 },
 "MouseEvent@kurodoko":{
 	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
-	RBShadeCell : true,
+	RBShadeCell : true
 },
 "MouseEvent@nurimisaki":{
-	inputModes : {edit:['number','clear','info-ublk'],play:['shade','unshade','info-ublk']},
+	inputModes : {edit:['number','clear','info-ublk'],play:['shade','unshade','info-ublk']}
 },
 
 //---------------------------------------------------------

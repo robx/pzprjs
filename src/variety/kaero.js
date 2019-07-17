@@ -191,7 +191,7 @@ Graphic:{
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
-				else                   { g.fillStyle = "white";}
+				else                   { g.fillStyle = this.bgcolor;}
 
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
@@ -279,7 +279,7 @@ FileIO:{
 		"checkNoObjectBlock",
 
 		"checkDisconnectLine"
-	],
+	]
 },
 "AnsCheck@armyants#1":{
 	checklist : [
@@ -296,7 +296,7 @@ FileIO:{
 
 		"checkDisconnectLine",
 		"checkNumberExist"
-	],
+	]
 },
 "AnsCheck@kaero":{
 	// checkSameObjectInRoom()にbaseを付加した関数
@@ -373,7 +373,6 @@ FileIO:{
 
 	checkAntNumber : function(){
 		var areas = this.board.antmgr.components;
-		allloop:
 		for(var id=0;id<areas.length;id++){
 			var ant = areas[id];
 			if(ant.clist.isCmp()){ continue;}

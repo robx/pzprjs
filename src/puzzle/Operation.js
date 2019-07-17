@@ -167,7 +167,7 @@ Operation:{
 	},
 	toString : function(){
 		return this.prefix;
-	},
+	}
 },
 
 // BoardAdjustOperationクラス

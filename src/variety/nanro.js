@@ -198,7 +198,8 @@ AnsCheck:{
 		"checkNumCountOver",
 		"checkConnectNumber",
 		"checkNumCountLack",
-		"checkNoEmptyArea"
+		"checkNoEmptyArea",
+		"checkNoSuspendCell"
 	],
 
 	check2x2NumberCell : function(){
@@ -207,8 +208,11 @@ AnsCheck:{
 	checkSideAreaNumber : function(){
 		this.checkSideAreaCell(function(cell1,cell2){ return cell1.sameNumber(cell2);}, false, "cbSameNum");
 	},
+	checkNoSuspendCell : function(){
+		this.checkAllCell(function(cell){ return (cell.qsub===1);}, "ceSuspend");
+	},
 
-	checkNotMultiNum  : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},	/* jshint ignore:line */
+	checkNotMultiNum  : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind>1);}, "bkPlNum");},
 	checkNumCountLack : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number>area.numcnt);}, "nmCountLt");},
 	checkNumCountOver : function(){ this.checkAllErrorRoom(function(area){ return !(area.numkind===1 && area.number<area.numcnt);}, "nmCountGt");},
 	checkNoEmptyArea  : function(){ this.checkAllErrorRoom(function(area){ return area.numkind!==0;}, "bkNoNum");},
@@ -230,6 +234,7 @@ FailCode:{
 	nm2x2   : ["数字が2x2のかたまりになっています。","There is a 2x2 block of numbers."],
 	cbSameNum : ["同じ数字が境界線を挟んで隣り合っています。","Adjacent blocks have the same number."],
 	nmCountGt : ["入っている数字の数が数字より多いです。","A number is bigger than the size of block."],
-	nmCountLt : ["入っている数字の数が数字より少ないです。","A number is smaller than the size of block."]
+	nmCountLt : ["入っている数字の数が数字より少ないです。","A number is smaller than the size of block."],
+	ceSuspend  : ["数字の入っていないマスがあります。","There is a cell that is not filled in number."]
 }
 }));

@@ -75,27 +75,31 @@ MouseEvent:{
 	checkCornerData : function(cell){
 		if(cell.isNum()){ return -1;}
 
-		// Input support mode
-		var adc = cell.adjacent, wall = {count:0};
-		var data = {top:[2,3],bottom:[4,5],left:[3,4],right:[2,5]};
-		for(var key in adc){
-			var cell2 = adc[key];
-			wall[key] = (cell2.isWall() || cell2.qans===data[key][0] || cell2.qans===data[key][1]);
-			if(wall[key]){ ++wall.count;}
+		var val = null;
+		if(this.puzzle.getConfig('support_tri')){
+			// Input support mode
+			var adc = cell.adjacent, wall = {count:0};
+			var data = {top:[2,3],bottom:[4,5],left:[3,4],right:[2,5]};
+			for(var key in adc){
+				var cell2 = adc[key];
+				wall[key] = (cell2.isWall() || cell2.qans===data[key][0] || cell2.qans===data[key][1]);
+				if(wall[key]){ ++wall.count;}
+			}
+
+			if(wall.count>2 || (wall.count===2 && ((wall.top && wall.bottom) || (wall.left && wall.right)))){
+				return (cell.qsub===0 ? -1 : 0);
+			}
+
+			if(wall.count===2){
+				if     (wall.bottom && wall.left) { val = 2;}
+				else if(wall.bottom && wall.right){ val = 3;}
+				else if(wall.top    && wall.right){ val = 4;}
+				else if(wall.top    && wall.left) { val = 5;}
+				else                              { val = 0;}
+			}
 		}
 
-		if(wall.count>2 || (wall.count===2 && ((wall.top && wall.bottom) || (wall.left && wall.right)))){
-			return (cell.qsub===0 ? -1 : 0);
-		}
-
-		var val = 0;
-		if(wall.count===2){
-			if     (wall.bottom && wall.left) { val = 2;}
-			else if(wall.bottom && wall.right){ val = 3;}
-			else if(wall.top    && wall.right){ val = 4;}
-			else if(wall.top    && wall.left) { val = 5;}
-		}
-		else{
+		if(val===null){
 			var dx = this.inputPoint.bx - cell.bx;
 			var dy = this.inputPoint.by - cell.by;
 			if(dx<=0){ val = ((dy<=0)?5:2);}

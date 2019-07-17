@@ -53,7 +53,7 @@ MouseEvent:{
 				this.inputmark_mouseup();
 			}
 		}
-	},
+	}
 },
 "MouseEvent@minarism":{
 	inputmark_mousemove : function(){
@@ -543,7 +543,7 @@ AnsCheck:{
 		this.checkHintSideCell(function(border,a1,a2){
 			return (border.qnum!==2 && (a1*2===a2 || a1===a2*2) && !(border.qnum===1 && a1*a2===2));
 		}, "nmDivEq2");
-	},
+	}
 },
 
 "FailCode@minarism":{

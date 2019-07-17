@@ -1,6 +1,6 @@
-// debug.js v3.6.0
-/* jshint evil:true, devel:true, latedef:false */
-/* global pzpr:false */
+// for_test.js v3.6.0
+/* global pzpr:readonly */
+
 (function(){
 
 if(typeof window==='undefined'){ return;}
@@ -26,6 +26,7 @@ pzpr.on('load', function(){
 	var pzl = pzpr.parser.parseURL(search), pid = pzl.pid;
 
 	/* テスト用ファイルのinclude */
+	/* eslint-disable no-use-before-define */
 	debug.includeDebugScript(pid, function(){
 		/* パズルオブジェクトの作成 */
 		onload_option.mode = 'play';
@@ -38,6 +39,7 @@ pzpr.on('load', function(){
 		puzzle.on('mode', debug.initinputmodelist);
 		document.getElementById('inputmode').addEventListener('change',debug.setinputmode,false);
 	});
+	/* eslint-enable no-use-before-define */
 });
 
 /* Debug用オブジェクトに関数などを追加する */
@@ -157,7 +159,7 @@ var debug = window.debug =
 	includedScript : {},
 
 	loadperf : function(){
-		puzzle.open(perfstr, function(puzzle){
+		puzzle.open(perfstr, function(puzzle){ // eslint-disable-line no-use-before-define
 			puzzle.setMode('playmode');
 			puzzle.setConfig('irowake',true);
 		});
@@ -271,7 +273,7 @@ var debug = window.debug =
 				var timetext = ""+((ms/10)|0)+"."+(ms%10)+" sec.";
 				self.addTA("Total time: "+timetext);
 				self.alltimer = false;
-				alert(["All tests done.", "pzpr.js: v"+pzpr.version, "Total time: "+timetext, "Fail count="+self.totalfails].join('\n')); // jshint ignore:line
+				alert(["All tests done.", "pzpr.js: v"+pzpr.version, "Total time: "+timetext, "Fail count="+self.totalfails].join('\n'));
 			}
 			return;
 		}

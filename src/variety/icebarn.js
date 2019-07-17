@@ -9,7 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@icebarn":{
-	inputModes : {edit:['ice','arrow','info-line'],play:['line','peke','diraux','info-line']},
+	inputModes : {edit:['ice','arrow','info-line'],play:['line','peke','diraux','info-line']}
 },
 "MouseEvent@icelom,icelom2":{
 	inputModes : {edit:['ice','arrow','number','clear','info-line'],play:['line','peke','diraux','info-line']}

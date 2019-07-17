@@ -32,6 +32,6 @@ ui.debug.addDebugData('easyasabc', {
 		{ input:["cursor,1,1", "key,-"],
 		  result:"pzprv3/easyasabc/4/4/3/. . . . . . /. .[1,,,] 2 +[2,,,] . . /. .[1,,,] . . . . /. . . . . . /. . . . . . /. . . . . . /"},
 		{ input:["cursor,5,1", "key, "],
-		  result:"pzprv3/easyasabc/4/4/3/. . . . . . /. .[1,,,] 2 . . . /. .[1,,,] . . . . /. . . . . . /. . . . . . /. . . . . . /"},
+		  result:"pzprv3/easyasabc/4/4/3/. . . . . . /. .[1,,,] 2 . . . /. .[1,,,] . . . . /. . . . . . /. . . . . . /. . . . . . /"}
 	]
 });
