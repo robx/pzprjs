@@ -779,12 +779,14 @@ FileIO:{
             this.writeLine(w);
             this.writeLine(h);
 
-            for(var y = 0; y < h; y++) {
-                var line = "";
-                for(var x = 0; x < w-1; x++) {
-                    line += shape.bits[y*w+x] & 1 ? "1 " : "0 ";
+            if(w > 1) {
+                for(var y = 0; y < h; y++) {
+                    var line = "";
+                    for(var x = 0; x < w-1; x++) {
+                        line += shape.bits[y*w+x] & 1 ? "1 " : "0 ";
+                    }
+                    this.writeLine(line);
                 }
-                this.writeLine(line);
             }
             for(var y = 0; y < h-1; y++) {
                 var line = "";
