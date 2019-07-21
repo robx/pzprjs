@@ -5,12 +5,12 @@
     if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
     else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['curvedata'], {
+['curvedata','curvedata-aux'], {
 
 // In this puzzle, clue numbers are not stable. They can be changed on the entire board
 // by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
 // Use CurveDataOperation for all changes to clues on the grid.
-MouseEvent:{
+"MouseEvent@curvedata":{
     inputModes : {edit:['copylines','undef','clear'],play:['line','peke']},
     mouseinput_auto : function(){
         if(this.puzzle.playmode){
@@ -22,7 +22,45 @@ MouseEvent:{
                 if(this.mousestart || this.mousemove){ this.inputpeke();}
             }
         }
-        else if(this.puzzle.editmode){
+        else if(this.puzzle.editmode && this.mousestart) {
+            var cell = this.getcell();
+            if(cell.isnull){ return;}
+            
+            this.setcursor(cell);
+            var shape = this.board.shapes[cell.qnum];
+            var w = this.puzzle.board.cols;
+            var h = this.puzzle.board.rows;
+            
+            if(shape && shape.w > 0) {
+                w = Math.max(w, shape.w);
+                h = Math.max(h, shape.bits.length / shape.w);
+            }
+            
+            var data = [w, h];
+
+            if(shape && shape.w > 0) {
+                data.push(shape.w);
+                data.push(shape.bits.length / shape.w);
+                data.push(shape.encodeBits());
+            }
+
+            var thiz = this;
+
+            this.puzzle.emit("request-aux-editor", "curvedata-aux", data.join("/"), function(auxpuzzle) {
+                var path = auxpuzzle.board.linegraph.components[0];
+                var shape = path && path.clist.toCurveData();
+
+                thiz.addOperation(cell, shape);
+            });
+        }
+    },
+
+    addOperation: function(cell, shape) {
+        var ope = new this.klass.CurveDataOperation(cell, shape);
+        if(ope.isvalid) {
+            ope.redo();
+            this.puzzle.opemgr.add(ope);
+            cell.draw();
         }
     },
 
@@ -34,13 +72,7 @@ MouseEvent:{
         if(cell.isnull || cell===this.mouseCell || !this.puzzle.editmode){ return;}
 
         this.mouseCell = cell;
-
-        if(cell.qnum !== value) {
-            var ope = new this.klass.CurveDataOperation(cell, value);
-            ope.redo();
-            this.puzzle.opemgr.add(ope);
-            cell.draw();
-        }
+        this.addOperation(cell, value);
     },
     
     mouseinput_other : function(){
@@ -56,12 +88,14 @@ MouseEvent:{
         if(!cell.path) {return;}
 
         var shape = cell.path.clist.toCurveData();
-        if(!shape.deepEquals(this.board.shapes[cell.qnum])) {
-            var ope = new this.klass.CurveDataOperation(cell, shape);
-            ope.redo();
-            this.puzzle.opemgr.add(ope);
-            cell.draw();
-        }
+        this.addOperation(cell, shape);
+    }
+},
+
+"MouseEvent@curvedata-aux":{
+    inputModes : {edit:[],play:['line']},
+    mouseinput_auto : function(){
+        this.inputLine();
     }
 },
 
@@ -389,6 +423,10 @@ CurveData: {
 
         this.x = cell.bx;
         this.y = cell.by;
+
+        this.isvalid = this.oldw !== this.neww || this.oldh !== this.newh || 
+                       this.oldbits !== this.newbits || 
+                       this.oldqnum !== this.newqnum;
     },
 
     decode: function(strs) {
@@ -538,7 +576,7 @@ LineGraph:{
     }
 },
 
-Graphic:{
+"Graphic@curvedata":{
     irowake : true,
     gridcolor_type : "LIGHT",
 
@@ -608,6 +646,17 @@ Graphic:{
             }
         }
     },
+},
+
+"Graphic@curvedata-aux":{
+    gridcolor_type : "LIGHT",
+
+    paint : function(){
+        this.drawBGCells();
+        this.drawDashedGrid();
+        this.drawLines();
+        this.drawChassis();
+    }
 },
 
 BoardExec:{
@@ -687,7 +736,7 @@ BoardExec:{
     }
 },
 
-Encode:{
+"Encode@curvedata":{
     decodePzpr : function(type){
         this.decodeNumber16();
         var parts = this.outbstr.substr(1).split("/");
@@ -731,7 +780,33 @@ Encode:{
     }
 },
 
-FileIO:{
+"Encode@curvedata-aux": {
+    decodePzpr : function(type){
+        var parts = this.outbstr.split("/");
+        var shape = new this.klass.CurveData();
+        shape.init(+parts[0], +parts[1]);
+        shape.decodeBits(parts[2]);
+
+        var w = shape.w;
+        var h = shape.bits.length / w;
+        var sx = 1;
+        var sy = 1;
+        for(var y = 0; y < h; y++){
+            for(var x = 0; x < w; x++){
+                var cell = this.board.getc(x*2 + sx, y*2+ sy);
+                if(!cell || cell.isnull) {continue;}
+                if((shape.bits[y*w+x] & 1) && !cell.adjborder.right.isnull){
+                    cell.adjborder.right.setLine(1);
+                }
+                if((shape.bits[y*w+x] & 2) && !cell.adjborder.bottom.isnull){
+                    cell.adjborder.bottom.setLine(1);
+                }
+            }
+        }
+    }
+},
+
+"FileIO@curvedata":{
     decodeData : function(){
         var count = +this.readLine();
         this.decodeCellQnum();
@@ -800,7 +875,7 @@ FileIO:{
     },
 },
 
-AnsCheck:{
+"AnsCheck@curvedata":{
     checklist : [
         "checkMultipleClues",
         "checkShapes",
