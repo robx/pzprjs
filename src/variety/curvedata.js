@@ -47,8 +47,8 @@
             var thiz = this;
 
             this.puzzle.emit("request-aux-editor", "curvedata-aux", data.join("/"), function(auxpuzzle) {
-                var path = auxpuzzle.board.linegraph.components[0];
-                var shape = path && path.clist.toCurveData();
+                var path = auxpuzzle.board.cell.filter(function(cell) { return cell.lcnt > 0; });
+                var shape = path && path.length > 0 && new thiz.klass.CellList(path).toCurveData();
 
                 thiz.addOperation(cell, shape);
             });
@@ -789,8 +789,8 @@ BoardExec:{
 
         var w = shape.w;
         var h = shape.bits.length / w;
-        var sx = 1;
-        var sy = 1;
+        var sx = (this.board.cols - w) | 1;
+        var sy = (this.board.rows - h) | 1;
         for(var y = 0; y < h; y++){
             for(var x = 0; x < w; x++){
                 var cell = this.board.getc(x*2 + sx, y*2+ sy);
