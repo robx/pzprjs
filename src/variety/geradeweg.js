@@ -180,8 +180,8 @@ AnsCheck:{
 	}
 },
 FailCode:{
-	segShort : ["(please translate) A segment is shorter than a number.","A segment is shorter than a number."],
-	segLong : ["(please translate) A segment is longer than a number.","A segment is longer than a number."],
-	numNoLine : ["(please translate) A number has no line.","A number has no line."]
+	segShort : ["線の長さが数字より短いです。","A segment is shorter than a number."],
+	segLong : ["線の長さが数字より長いです。","A segment is longer than a number."],
+	numNoLine : ["線の通っていない数字があります。","A number has no line."]
 }
 }));
