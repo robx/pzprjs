@@ -11,35 +11,76 @@
 MouseEvent:{
 	inputModes:{edit:['arrow','number','undef','clear'],play:['border','line','arrow','peke','bgcolor','bgcolor1','bgcolor2']},
 	mouseinput_number : function(){
-		if(this.mousestart){ this.inputqnum_pencils();}
+		if(this.mousestart){ this.inputqnum();}
 	},
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='undef'){
-			if(this.mousestart){ this.inputqnum_pencils();}
+			if(this.mousestart){ this.inputqnum();}
 		}
 		else{ this.common.mouseinput.call(this);}
 	},
 	mouseinput_auto : function(){
+		if(this.mousestart){this.isBorderMode(); } // XXX
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if(this.btn==='left'){
 					if(this.isBorderMode()) {
 						this.inputborder();
-					} else{
+					}
+					else{
 						this.inputLineOrArrow();
 					}
 				} else {
 					this.inputpeke();
 				}
 			}
-			else if(this.mouseend && this.notInputted() && !this.isBorderMode()) {
-				this.inputBGcolor();
+			else if(this.mouseend && this.notInputted()) {
+				if(this.isBorderMode()){
+					this.inputArrow();
+				}
+				else{
+					this.inputBGcolor();
+				}
 			}
 		}
 		else if(this.puzzle.editmode){
-			if(this.mousestart || this.mousemove){ this.inputarrow_cell();}
-			else if(this.mouseend && this.notInputted()){ this.inputqnum_pencils();}
+			if(this.mouseend){
+				if(this.isBorderMode()){
+					this.inputArrow();
+				}
+				else{
+					this.inputqnum_pencils();
+				}
+			}
 		}
+	},
+
+	inputArrow : function(){
+		var pos = this.getpos(0.22);
+		var border = pos.getb();
+		if(!border.inside){ return;}
+		var cell0=border.sidecell[0], cell1=border.sidecell[1];
+		var dir=border.getArrow();
+		var dir0=0, dir1=0;
+		if(border.isvert){
+			switch(dir){
+			case 0:		dir0=cell0.LT; dir1=0; break;
+			case cell0.LT:	dir0=0; dir1=cell0.RT; break;
+			default:	dir0=0; dir1=0; break;
+			}
+		}
+		else{
+			switch(dir){
+			case 0:		dir0=cell0.UP; dir1=0; break;
+			case cell0.UP:	dir0=0; dir1=cell0.DN; break;
+			default:	dir0=0; dir1=0; break;
+			}
+		}
+		cell0.setArrow(dir0, this.puzzle.editmode);
+		cell1.setArrow(dir1, this.puzzle.editmode);
+		cell0.draw();
+		cell1.draw();
+		border.draw();
 	},
 
 	inputLineOrArrow : function(){
@@ -51,7 +92,7 @@ MouseEvent:{
 		
 		if(!border.isnull){
 			if(this.inputData===null) {
-				// Do not use setPencilArrow here, leave the border intact
+				// Do not use setArrow here, leave the border intact
 				if(border.isvert && (cell0.anum === border.LT || cell1.anum === border.RT)) {
 					if(cell0.anum === border.LT) {cell0.setAnum(-1);}
 					if(cell1.anum === border.RT) {cell1.setAnum(-1);}
@@ -69,9 +110,9 @@ MouseEvent:{
 				if(border.qans === 1) {
 					var dir = this.getDrawArrowDirection(border);
 					if(dir > 0) {
-						cell1.setPencilArrow(border.isvert ? border.RT : border.DN, false);
+						cell1.setArrow(border.isvert?border.RT:border.DN, false);
 					} else {
-						cell0.setPencilArrow(border.isvert ? border.LT : border.UP, false);
+						cell0.setArrow(border.isvert?border.LT:border.UP, false);
 					}
 				} else {
 					border.setLine();
@@ -106,14 +147,14 @@ MouseEvent:{
 		var cell = this.getcell();
 
 		if(cell.getPencilDir()) {
-			cell.setPencilArrow(0, true);
+			cell.setArrow(0, true);
 		} else {
 			this.inputclean_cell();
 		}
 	},
 
 	inputarrow_cell_main : function(cell, dir){
-		cell.setPencilArrow(dir, this.puzzle.editmode);
+		cell.setArrow(dir, this.puzzle.editmode);
 	},
 
 	inputqnum_pencils : function(){
@@ -124,37 +165,8 @@ MouseEvent:{
 			this.setcursor(cell);
 		}
 		else{
-			this.inputcell_pencils(cell);
+			this.inputqnum(cell);
 		}
-	},
-	
-	inputcell_pencils : function(cell){
-		var dir = cell.qdir, num = cell.qnum, val;
-		// -4to-1:Arrow 0:? 1:何もなし 2以上:数字
-		if     (num===-2){ val = 0;}
-		else if(dir=== 0){ val = (num===-1?1:num+1);}
-		else             { val = dir - 5;}
-
-		var min = -4, max = cell.getmaxnum()+1;
-		if(this.inputMode.match(/number/)){ min = 1;}
-		if(this.inputMode==='undef'){ max = 1; min = 0;}
-
-		if(this.btn==='left'){
-			if(min<=val && val<max){ val++;  }
-			else                   { val=min;}
-		}
-		else if(this.btn==='right'){
-			if(min<val && val<=max){ val--;  }
-			else                   { val=max;}
-		}
-
-		if(val >= 0) { cell.setPencilArrow(0, true);}
-
-		if     (val >=2){ cell.setQdir(0); cell.setNum(val-1);}
-		else if(val===1){ cell.setQdir(0); cell.setNum(-1);}
-		else if(val===0){ cell.setQdir(0); cell.setNum(-2);}
-		else            { cell.setPencilArrow(val+5, true);}
-		cell.draw();
 	}
 },
 
@@ -167,6 +179,7 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		var cell = this.cursor.getc();
+		if(cell.isnull){ return;}
 		var dir = 0;
 		switch(ca){
 			case 'shift+up':    dir = cell.UP; break;
@@ -175,10 +188,11 @@ KeyEvent:{
 			case 'shift+right': dir = cell.RT; break;
 		}
 
-		if(dir !== 0 && !cell.isnull) {
-			cell.setPencilArrow(dir, true);
+		if(dir!==0) {
+			cell.setArrow(dir, true);
 			this.cursor.draw();
-		} else {
+		}
+		else{
 			this.key_inputqnum_pencils(ca);
 		}
 	},
@@ -187,23 +201,21 @@ KeyEvent:{
 		var cell = this.cursor.getc();
 		if(ca==='q' || ca==='-'){
 			if(cell.qnum !== -2) {
-				cell.setPencilArrow(0, true);
-				cell.setQdir(0);
+				cell.setArrow(0, true);
 				cell.setQnum(-2);
 			} else {
-				cell.setPencilArrow(0, true);
+				cell.setArrow(0, true);
 				cell.setQnum(-1);
 			}
 		}
 		else if(ca===' ' || ca==='BS'){
-			cell.setPencilArrow(0, true);
+			cell.setArrow(0, true);
 			cell.setQnum(-1);
 		}
 		else{
 			this.key_inputqnum_main(cell,ca);
 			if(cell.isNum()) {
-				cell.setPencilArrow(0, true);
-				cell.setQdir(0);
+				cell.setArrow(0, true);
 			}
 		}
 
@@ -221,8 +233,8 @@ Cell:{
 	},
 	minnum : 1,
 
-	setPencilArrow: function(dir, question) {
-		if(!(dir>=0 && dir <=4)) {return -1;}
+	setArrow: function(dir, question) {
+		if(!(dir>=0 && dir <=4)) {return;}
 
 		var dirs = {};
 		dirs[this.UP] = { inv: this.DN, border: this.adjborder.bottom, cell: this.adjacent.bottom };
@@ -251,8 +263,6 @@ Cell:{
 			if(dir > 0 && !dirs[dir].border.isnull) { dirs[dir].border.setQans(1); }
 			this.setAnum(dir);
 		}
-
-		return dir;
 	},
 
 	getPencilDir: function() {
@@ -358,18 +368,24 @@ Board:{
 },
 
 Border: {
+	getArrow : function(){
+		var cell0 = this.sidecell[0], cell1 = this.sidecell[1];
+		if(this.isvert){
+			if(cell0.getPencilDir()===cell0.LT){ return cell0.LT;}
+			if(cell1.getPencilDir()===cell1.RT){ return cell1.RT;}
+		}
+		else{
+			if(cell0.getPencilDir()===cell0.UP){ return cell0.UP;}
+			if(cell1.getPencilDir()===cell1.DN){ return cell1.DN;}
+		}
+		return 0;
+	},
+
 	prehook : {
 		qans : function(num){ 
 			if (this.ques!==0) {return true;}
 			if(num) {return false;}
-
-			var cell0 = this.sidecell[0], cell1 = this.sidecell[1];
-
-			if(this.isvert) {
-				return cell0.anum === cell0.LT || cell1.anum === cell1.RT;
-			}
-
-			return cell0.anum === cell0.UP || cell1.anum === cell1.DN;
+			return (this.getArrow()!==0);
 		}
 	}
 },
@@ -504,7 +520,7 @@ Encode:{
 			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
 			else if(ca === '.'){ cell.qnum = -2;}
 			else if(ca>='g' && ca<='j'){
-				cell.setPencilArrow(parseInt(ca,20)-15, true);
+				cell.setArrow(parseInt(ca,20)-15, true);
 			}
 			else if(ca>='k' && ca<='z'){ c+=(parseInt(ca,36)-20);}
 
@@ -541,7 +557,7 @@ FileIO:{
 				cell.qdir = 5;
 				if(ca.length>1){ cell.qnum = +ca.substr(1);}
 			}
-			else if(ca!=="."){ cell.setPencilArrow(+ca, true);}
+			else if(ca!=="."){ cell.setArrow(+ca, true);}
 		});
 
 		this.decodeBorderAns();
