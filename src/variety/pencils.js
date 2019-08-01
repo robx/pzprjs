@@ -60,18 +60,23 @@ MouseEvent:{
 		var border = pos.getb();
 		if(!border.inside){ return;}
 		var cell0=border.sidecell[0], cell1=border.sidecell[1];
+		var blocked = (cell0.qnum !== -1) && this.puzzle.playmode;
 		var dir=border.getArrow();
 		var dir0=0, dir1=0;
 		if(border.isvert){
 			switch(dir){
-			case 0:		dir0=cell0.LT; dir1=0; break;
+			case 0:		if(!blocked){
+						dir0=cell0.LT; dir1=0; break;
+					} // fallthrough
 			case cell0.LT:	dir0=0; dir1=cell0.RT; break;
 			default:	dir0=0; dir1=0; break;
 			}
 		}
 		else{
 			switch(dir){
-			case 0:		dir0=cell0.UP; dir1=0; break;
+			case 0:		if(!blocked){
+						dir0=cell0.UP; dir1=0; break;
+					} // fallthrough
 			case cell0.UP:	dir0=0; dir1=cell0.DN; break;
 			default:	dir0=0; dir1=0; break;
 			}

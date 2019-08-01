@@ -42,6 +42,16 @@ ui.debug.addDebugData('pencils', {
 		{ input:["mouse,left,1,1,3,1"],
 		result:"pzprv3/pencils/2/3/. . . /. . . /1 0 /0 0 /0 0 0 /0 1 /0 0 /0 0 0 /. . . /. . . /" },
 		{ input:["mouse,left,3,1,1,1", "mouse,right,3,1", "mouse,left,1,1"],
-		result:"pzprv3/pencils/2/3/. . . /. . . /1 0 /0 0 /0 0 0 /0 1 /0 0 /0 0 0 /+ -4 . /. . . /" }
+		result:"pzprv3/pencils/2/3/. . . /. . . /1 0 /0 0 /0 0 0 /0 1 /0 0 /0 0 0 /+ -4 . /. . . /" },
+
+		{ input:["newboard,4,1", "editmode"],
+		result:"pzprv3/pencils/1/4/. . . . /0 0 0 /0 0 0 /. . . . /" },
+		{ input:["cursor,1,1", "key,1", "cursor,7,1", "key,1"],
+		result:"pzprv3/pencils/1/4/o1 . . o1 /0 0 0 /0 0 0 /. . . . /" },
+		{ input:["playmode"] },
+		{ input:["mouse,left, 2,1"],
+		result:"pzprv3/pencils/1/4/o1 . . o1 /1 0 0 /0 0 0 /. 4 . . /" },
+		{ input:["mouse,left, 6,1"],
+		result:"pzprv3/pencils/1/4/o1 . . o1 /1 0 1 /0 0 0 /. 4 3 . /" }
 	]
 });
