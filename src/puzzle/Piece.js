@@ -558,11 +558,13 @@ pzpr.classmgr.makeCommon({
 	// border.setLine()     該当するBorderに線を引く
 	// border.setPeke()     該当するBorderに×印をつける
 	// border.removeLine()  該当するBorderから線を消す
+	// border.removePeke()  allow separate override
 	//-----------------------------------------------------------------------
 	isLine : function(){ return this.line>0;},
 	setLine    : function(id){ this.setLineVal(1); this.setQsub(0);},
 	setPeke    : function(id){ this.setLineVal(0); this.setQsub(2);},
 	removeLine : function(id){ this.setLineVal(0); this.setQsub(0);},
+	removePeke : function(id){ this.removeLine(id);},
 
 	//---------------------------------------------------------------------------
 	// border.isBorder()     該当するBorderに境界線が引かれているか判定する

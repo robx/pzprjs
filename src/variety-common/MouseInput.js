@@ -583,7 +583,7 @@ MouseEvent:{
 			if(this.inputData===null){ this.inputData=(border.qsub===0?2:3);}
 			if(this.inputData===2 && border.isLine() && this.puzzle.execConfig('dispmove')){}
 			else if(this.inputData===2){ border.setPeke();}
-			else if(this.inputData===3){ border.removeLine();}
+			else if(this.inputData===3){ border.removePeke();}
 			border.draw();
 		}
 		this.prevPos = pos;

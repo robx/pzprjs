@@ -229,7 +229,8 @@ Border:{
 	enableLineNG : true,
 
 	setLine    : function(id){ this.setLineVal(1); if(this.qsub===2){ this.setQsub(0);}},
-	removeLine : function(id){ this.setLineVal(0); if(this.qsub===2){ this.setQsub(0);}}
+	removeLine : function(id){ this.setLineVal(0); if(this.qsub===2){ this.setQsub(0);}},
+	removePeke : function(id){ this.setLineVal(0); this.setQsub(0);}
 },
 Board:{
 	hasborder : 1,
