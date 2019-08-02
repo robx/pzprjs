@@ -18,11 +18,13 @@
 * amibo, usotatami: Allow encoding multi-digit clues
 * cbblock: Fix wrong error during edit
 * fourcells, fivecells: No borders and connection lines between empty cells
+* heteromino: Don't compare shapes of non-triminos
 * kinkonkan: Fix answer check for large clues
+* nagare: Allow cross input mode to remove aux marks
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
 * nurimisaki: Switch to unshaded cell connection info for edit mode, too
-* Fix interaction of "Clear Answer" and trial mode.
+* Fix interaction of "Clear Answer" and trial mode
 
 ## Version 0.11.1
 
