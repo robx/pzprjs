@@ -295,6 +295,7 @@ Board:{
 	// 呼び出し元：回答消去ボタン押した時
 	ansclear : function(){
 		var opemgr = this.puzzle.opemgr;
+		opemgr.rejectTrial(true);
 		opemgr.newOperation();
 		opemgr.add(new this.puzzle.klass.BoardClearOperation());
 		
@@ -302,12 +303,6 @@ Board:{
 		this.cross.ansclear();
 		this.border.ansclear();
 		this.excell.ansclear();
-		opemgr.rejectTrial(true);
-		if(opemgr.history[opemgr.history.length-1].length===1){
-			opemgr.puzzle.undo();
-			opemgr.removeDescendant();
-		}
-		
 		this.rebuildInfo();
 	},
 	// 呼び出し元：補助消去ボタン押した時

@@ -22,6 +22,7 @@
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
 * nurimisaki: Switch to unshaded cell connection info for edit mode, too
+* Fix interaction of "Clear Answer" and trial mode.
 
 ## Version 0.11.1
 
