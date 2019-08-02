@@ -336,6 +336,7 @@ AnsCheck:{
 			if(!cell1.isValid()||!cell2.isValid()){ continue;}
 
 			var l1=cell1.room.clist, l2=cell2.room.clist;
+			if(l1.length!==3||l2.length!==3){ continue;}
 			if(l1.triminoShape()!==l2.triminoShape()){ continue;}
 
 			this.failcode.add("bkSameTouch");
