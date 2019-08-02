@@ -295,8 +295,8 @@ AnsCheck:{
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
 		}
-		function noans(cell2){
-			return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);
+		function ans(cell2){
+			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum!==-1);
 		}
 
 		for(var c=0;c<bd.cell.length;c++){
@@ -309,18 +309,18 @@ AnsCheck:{
 			// cell2は数字のあるマスのIDか、null(盤面外)を指す
 
 			// 矢印つき数字が0で、その先に回答の数字がある
-			if(num===0 && !noans(cell2)){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				if(num<=0){ cell2.seterr(1);}
-			}
-			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
-			else if(num>0 && (noans(cell2) || cell2.anum!==num)){
+			if(num===0 && ans(cell2)){
 				result = false;
 				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell2.seterr(1);
+			}
+			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
+			else if(num>0 && (!ans(cell2) || cell2.anum!==num)){
+				result = false;
+				if(this.checkOnly){ break;}
+				cell.seterr(1);
+				if(ans(cell2)){ cell2.seterr(1);}
 			}
 		}
 		if(!result){ this.failcode.add("anNumberNe");}
