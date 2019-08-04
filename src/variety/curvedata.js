@@ -1,6 +1,9 @@
 //
 // curvedata.js: Implementation of Curve Data puzzle type.
 //
+
+/* global Set:false */
+
 (function(pidlist, classbase){
     if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
     else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
@@ -76,7 +79,7 @@
     },
     
     mouseinput_other : function(){
-		if(this.inputMode==='copylines' && this.mousestart){ this.mouseinput_copylines();}
+        if(this.inputMode==='copylines' && this.mousestart){ this.mouseinput_copylines();}
     },
     
     mouseinput_copylines: function() {
@@ -93,9 +96,47 @@
 },
 
 "MouseEvent@curvedata-aux":{
-    inputModes : {edit:[],play:['line']},
+    inputModes : {edit:[],play:['line','slide']},
     mouseinput_auto : function(){
         this.inputLine();
+    },
+
+    mouseinput_other : function(){
+        if(this.inputMode==='slide'){ this.mouseinput_slide();}
+    },
+
+    mouseinput_slide: function() {
+        var cell = this.getcell();
+        
+        if(this.mousestart) {
+            this.inputData = cell.lcnt > 0 ? cell : null;
+            return;
+        }
+
+        if(!this.inputData || this.inputData === cell) { return;}
+
+        if     (this.inputData.bx < cell.bx && this.addSlideOperation("R", this.inputData)) { 
+            this.inputData = this.inputData.adjacent.right;
+        }
+        else if(this.inputData.bx > cell.bx && this.addSlideOperation("L", this.inputData)) { 
+            this.inputData = this.inputData.adjacent.left;
+        }
+        else if(this.inputData.by < cell.by && this.addSlideOperation("D", this.inputData)) { 
+            this.inputData = this.inputData.adjacent.bottom;
+        }
+        else if(this.inputData.by > cell.by && this.addSlideOperation("U", this.inputData)) { 
+            this.inputData = this.inputData.adjacent.top;
+        }
+    },
+
+    addSlideOperation: function(dir, cell) {
+        var ope = new this.klass.SlideOperation(dir, cell);
+        if(ope.isvalid()) {
+            ope.redo();
+            this.puzzle.opemgr.add(ope);
+            return true;
+        }
+        return false;
     }
 },
 
@@ -413,12 +454,19 @@ CurveData: {
             this.oldqnum = cell.qnum;
         }
 
-        if(shape && typeof shape === "object" && shape.bits.length > 0) {
-            this.neww = shape.w;
-            this.newh = shape.bits.length / shape.w;
-            this.newbits = shape.encodeBits();
+        if(shape && typeof shape === "object") {
+            if(shape.bits.length > 0) {
+                this.neww = shape.w;
+                this.newh = shape.bits.length / shape.w;
+                this.newbits = shape.encodeBits();
+            } else { this.newqnum = -1; }
+        } else if(typeof shape ==="number" && shape < 0) {
+            this.newqnum = shape;
+        } else if(!shape && shape !== 0) {
+            this.newqnum = -1;
         } else {
-            this.newqnum = shape === -2 ? -2 : -1;
+            console.log(shape);
+            throw Error("Can only set shapes or negative qnum values");
         }
 
         this.x = cell.bx;
@@ -496,10 +544,102 @@ CurveData: {
     }
 },
 
+"SlideOperation:Operation": {
+    setData: function(dir, cell) {
+        this.dir = dir;
+        this.x = cell.bx;
+        this.y = cell.by;
+    },
+
+    toString: function() {
+        return ["DS", this.dir, this.x, this.y].join(",");
+    },
+
+    decode: function(strs) {
+        if(strs[0] !== "DS") {return false;}
+        
+        this.dir = strs[1];
+        this.x = +strs[2];
+        this.y = +strs[3];
+
+        return true;
+    },
+
+    slide: function(dir, x, y) {
+        var shape = this.board.getc(x, y).path;
+
+        var dx = {R: 2, L: -2}[dir] || 0;
+        var dy = {D: 2, U: -2}[dir] || 0;
+
+        var set = new Set();
+        shape.nodes.forEach(function(node) {
+            for(var key in node.obj.adjborder) {
+                var value = node.obj.adjborder[key];
+                if(!value.isnull && value.line) {
+                    set.add(value.id);
+                }
+            }
+        });
+
+        var ids = Array.from(set);
+        var sorter = dir === "R" || dir === "D" ?
+            function(a, b) {return b-a;} :
+            function(a, b) {return a-b;};
+        ids.sort(sorter);
+        
+        for(var key in ids) {
+            var bd = this.board.border[ids[key]];
+            var next = this.board.getb(bd.bx+dx,bd.by+dy);
+
+            bd.line = 0;
+            next.line = 1;
+
+            this.board.modifyInfo(bd, "border.line");
+            bd.draw();
+            this.board.modifyInfo(next, "border.line");
+            next.draw();
+        }
+    },
+
+    undo: function() {
+        switch(this.dir) {
+            case "L":
+                return this.slide("R", this.x-2, this.y);
+            case "R":
+                return this.slide("L", this.x+2, this.y);
+            case "U":
+                return this.slide("D", this.x, this.y-2);
+            case "D":
+                return this.slide("U", this.x, this.y+2);
+        }
+    },
+
+    redo: function() {
+        return this.slide(this.dir, this.x, this.y);
+    },
+
+    isvalid: function() {
+        var shape = this.board.getc(this.x, this.y).path;
+        if(!shape) {return false;}
+
+        var dir = {U: "top", D: "bottom", L:"left", R:"right"}[this.dir];
+        
+        for(var key = 0; key < shape.clist.length; key++) {
+            var next = shape.clist[key].adjacent[dir];
+            if(!next || next.isnull || (next.path && next.path !== shape)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+},
+
 OperationManager:{
-	addExtraOperation : function(){
-		this.operationlist.push(this.klass.CurveDataOperation);
-	}
+    addExtraOperation : function(){
+        this.operationlist.push(this.klass.CurveDataOperation);
+        this.operationlist.push(this.klass.SlideOperation);
+    }
 },
 
 Cell: {
