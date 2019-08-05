@@ -11,6 +11,8 @@
 * amibo, mashu, starbattle: Reword English error messages
 * cbblock: Add error for dead-end walls
 * slither: Allow 4 as clue number
+* starbattle: Input dots in auto-mode; change style of empty cells;
+  hide redundant dots
 * Change default value of "shade undefined cells" back to `true`
 * Change unshaded cells without changing shaded cells in checkerboard
   puzzles (Hitori, Heyawake, Yajilin, etc.)
