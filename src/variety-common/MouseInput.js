@@ -17,7 +17,10 @@ MouseEvent:{
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
-		if(this.firstCell.isnull){ this.firstCell = cell;}
+		if(this.firstCell.isnull){
+			this.firstCell = cell;
+			this.firstState = cell.qans;
+		}
 
 		var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
 		if(this.inputData===shade&&!cell.allowShade()){ return;}
@@ -26,6 +29,9 @@ MouseEvent:{
 		if(this.RBShadeCell && this.inputData===1){
 			var cell0 = this.firstCell;
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
+		}
+		if(this.RBShadeCell && this.inputData!==1){
+			if(this.firstState!==1&&cell.qans===1){ return;}
 		}
 
 		cell.setQans(this.inputData===1?1:0);

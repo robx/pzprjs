@@ -22,6 +22,7 @@ MouseEvent:{
 
 		this.btn = '';				// 押されているボタン
 		this.inputData = null;		// 入力中のデータ番号(実装依存)
+		this.firstState = null;
 
 		this.bordermode = false;	// 境界線を入力中かどうか
 

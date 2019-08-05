@@ -12,6 +12,8 @@
 * cbblock: Add error for dead-end walls
 * slither: Allow 4 as clue number
 * Change default value of "shade undefined cells" back to `true`
+* Change unshaded cells without changing shaded cells in checkerboard
+  puzzles (Hitori, Heyawake, Yajilin, etc.)
 
 #### BugFix
 
