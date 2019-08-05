@@ -336,7 +336,7 @@ Graphic:{
 			g.vid = 'c_star_'+cell.id;
 			if(cell.qans===1){
 				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
-				this.dispStar(g, cell.bx*this.bw, cell.by*this.bh, this.bw*0.9, this.bh*0.9);
+				this.dispStar(g, cell.bx*this.bw, cell.by*this.bh, this.bw*0.8, this.bh*0.8);
 			}
 			else{ g.vhide();}
 		}
