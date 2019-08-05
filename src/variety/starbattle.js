@@ -183,6 +183,34 @@ Board:{
 		var dot=this.dots[id];
 		return (dot.isnull?null:dot);
 	},
+	isDot : function(bx,by){
+		var dot=this.getDot(bx,by);
+		if(dot!==null){ return dot.getDot()===1;}
+		return false;
+	},
+	isStar: function(bx,by){
+		var cell=this.getc(bx,by);
+		return cell.qans===1;
+	},
+	dotIsRedundant : function(bx,by){
+		var dot = this.getDot(bx,by);
+		if(dot===null||dot.isnull){ return false;}
+		var piece = dot.piece;
+		if(piece.group==='cross'){
+			return this.isStar(bx-1,by-1) || this.isStar(bx-1,by+1)
+				|| this.isStar(bx+1,by-1) || this.isStar(bx+1,by+1);
+		}
+		else if(piece.group==='border'){
+			if(piece.isvert){
+				return this.isStar(bx-1,by) || this.isStar(bx+1,by);
+			}
+			else{
+				return this.isStar(bx,by-1) || this.isStar(bx,by+1);
+			}
+		}
+		return false;
+	},
+
 	dotinside : function(x1,y1,x2,y2){
 		var dlist = new this.klass.PieceList();
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
@@ -314,7 +342,7 @@ Graphic:{
 		for(var i=0;i<dlist.length;i++){
 			var dot = dlist[i], bx=dot.bx, by=dot.by;
 			g.vid = "s_dot_"+dot.id;
-			if(dot.getDot()===1){
+			if(dot.getDot()===1&&!this.board.dotIsRedundant(bx,by)){
 				g.fillStyle = dot.getTrial()?this.trialcolor:this.pekecolor;
 				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.15);
 			}
