@@ -269,7 +269,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawDots();
-		this.drawCrossMarks();
+		this.drawDashes();
 		this.drawStars();
 
 		this.drawChassis();
@@ -313,18 +313,17 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	drawCrossMarks : function(){
-		var g = this.vinc('cell_cross', 'auto', true);
-		g.lineWidth = 1;
-		var rsize = this.cw*0.35;
+	drawDashes : function(){
+		var g = this.vinc('cell_dash', 'auto', true);
+		g.lineWidth = 2;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px, py;
-			g.vid = "c_cross_" + cell.id;
+			g.vid = "c_dash_" + cell.id;
 			if(cell.qsub===1){
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				g.strokeStyle = (!cell.trial ? this.mbcolor : "rgb(192, 192, 192)");
-				g.strokeCross(px, py, rsize);
+				g.strokeLine(px-0.2*this.bw,py,px+0.2*this.bw,py);
 			}
 			else{ g.vhide();}
 		}
