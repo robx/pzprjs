@@ -23,7 +23,13 @@ MouseEvent:{
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ this.inputcell_starbattle();}
+			if(this.mousestart){
+				this.inputdot();
+			}
+			if(this.mousestart || this.mousemove){
+				if(this.inputData===3){ return;}
+				this.inputcell_starbattle();
+			}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputEdit();}
@@ -68,15 +74,17 @@ MouseEvent:{
 		}
 	},
 	inputdot : function(){
-		var pos = this.getpos(0.25);
+		var pos = this.getpos(0.15);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var dot = pos.getDot();
-		if(dot!==null&&this.inputMode==='dot'){
+		if(dot!==null){
+			if(this.inputData===null){ this.inputData=3;}
+			else if(this.inputData!==3){ return;}
 			dot.setDot(dot.getDot()!==1?1:0);
 			dot.draw();
+			this.prevPos = pos;
 		}
-		this.prevPos = pos;
 	}
 },
 
