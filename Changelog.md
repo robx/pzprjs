@@ -167,7 +167,7 @@ Release data: 2017/4/14
 #### BugFix
 
 * util: Listen both touch and mouse event for user agents supporting touch event
-* util: Surpress prural finger tap from inputting the board
+* util: Surpress plural finger tap from inputting the board
 * util: Fix mouse button detection when Pointer Event is triggered
 * Operation: Add ansclear history to ensure regenerate graph info
 
@@ -338,7 +338,7 @@ Release date: 2016/9/18
 #### Improvement
 
 * Config: Add config to paint circles background for yinyang
-* hanare: Add singlenum config to allow prural numbers in a room
+* hanare: Add singlenum config to allow plural numbers in a room
 * shugaku: Add undefcell config to paint background color of unfilled cells
 * toichika, hanare: Enable autocmp config
 * Graph: Validate 'irowakeblk' config to set and draw color of shaded cell blocks

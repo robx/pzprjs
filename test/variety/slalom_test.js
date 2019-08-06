@@ -51,7 +51,7 @@ describe('Variety:slalom',function(){
 		assert.equal(puzzle.board.getc(3,13).gate.number,-1);
 		assert.equal(puzzle.board.getc(5,11).gate.number,-1);
 	});
-	it('Check gate number - prural single number', function(){
+	it('Check gate number - plural single number', function(){
 		puzzle.open('pzprv3.2/slalom/7/4/. . . # /. # - # /o # . # /. # - # /. # . # /. 0,2 - 0,3 /. i . # ');
 		
 		assert.equal(puzzle.board.getc(3,13).gate.number, 2);
