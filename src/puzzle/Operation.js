@@ -146,7 +146,6 @@ Operation:{
 		
 		switch(this.property){
 			case 'qcmp': bd.cell.each(function(cell){ if(piece===cell.base){ cell.draw();}}); break;
-			case 'qsub': break;
 			default:     this.puzzle.checker.resetCache(); break;
 		}
 	}
@@ -489,7 +488,7 @@ OperationManager:{
 			/* 前の履歴を更新したときは何もしない */
 		}
 		
-		if(newope.property!=='qsub' && newope.property!=='qcmp' && newope.property!=='snum'){
+		if(newope.property!=='qcmp' && newope.property!=='snum'){
 			puzzle.checker.resetCache();
 		}
 		this.changeflag = true;
