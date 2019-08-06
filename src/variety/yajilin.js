@@ -1,6 +1,6 @@
 //
 // パズル固有スクリプト部 ヤジリン版 yajilin.js
-// 
+//
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
@@ -268,7 +268,7 @@ Graphic:{
 		if(this.pid==='yajilin-regions'){ this.drawShadedCells();}
 		this.drawDotCells();
 		this.drawGrid();
-		
+
 
 		this.drawBorders();
 
@@ -313,12 +313,12 @@ Graphic:{
 "Encode@yajilin":{
 	decodePzpr : function(type){
 		this.decodeArrowNumber16();
-		
+
 		this.puzzle.setConfig('disptype_yajilin', (!this.checkpflag('b')?1:2));
 	},
 	encodePzpr : function(type){
 		this.encodeArrowNumber16();
-		
+
 		this.outpflag = ((this.puzzle.getConfig('disptype_yajilin')===2)?"b":null);
 	},
 
@@ -481,7 +481,7 @@ AnsCheck:{
 			var clist = cell.getClist();
 			var count = cell.countShade(clist);
 			if(count<0||cell.qnum===count){ continue;}
-			
+
 			this.failcode.add("anShadeNe");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

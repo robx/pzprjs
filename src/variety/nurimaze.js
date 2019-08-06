@@ -64,7 +64,7 @@ MouseEvent:{
 		if(this.inputData===null){
 			this.inputEdit_first();
 		}
-		
+
 		// startposの入力中の場合
 		if(this.inputData===10){
 			this.board.startpos.input(cell);
@@ -97,7 +97,7 @@ MouseEvent:{
 	inputEdit_end : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
-		
+
 		if(this.inputData===10 || this.inputData===11){
 			this.inputData = null;
 			cell.draw();
@@ -116,9 +116,9 @@ MouseEvent:{
 	inputmarks : function(){
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
-		
+
 		this.inputQuesMark(cell);
-		
+
 		this.mouseCell = cell;
 	},
 	inputQuesMark :function(cell){
@@ -140,7 +140,7 @@ MouseEvent:{
 // キーボード入力系
 KeyEvent:{
 	enablemake : true,
-	
+
 	keyinput : function(ca){
 		if(this.keydown && this.puzzle.editmode){
 			this.key_inputqnum_nurimaze(ca);
@@ -191,7 +191,7 @@ Board:{
 		var old_goal  = this.goalpos.getc();
 		this.startpos.set(old_goal);
 		this.goalpos.set(old_start);
-		
+
 		this.startpos.draw();
 		this.goalpos.draw();
 	}
@@ -207,7 +207,7 @@ BoardExec:{
 	adjustBoardData2 : function(key,d){
 		var bd = this.board, opemgr = this.puzzle.opemgr;
 		var info1 = this.posinfo_start, info2 = this.posinfo_goal, isrec;
-		
+
 		isrec = ((key & this.REDUCE) && (info1.isdel || info2.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
 		bd.startpos.set(info1.pos.getc());
@@ -242,10 +242,10 @@ BoardExec:{
 	set : function(pos){
 		var pos0 = this.getaddr();
 		this.addOpe(pos.bx, pos.by);
-		
+
 		this.bx = pos.bx;
 		this.by = pos.by;
-		
+
 		pos0.draw();
 		this.draw();
 	},
@@ -341,7 +341,7 @@ Graphic:{
 	drawStartGoal : function(){
 		var g = this.vinc('cell_sg', 'auto');
 		var bd = this.board, d = this.range;
-		
+
 		g.vid = "text_stpos";
 		var cell = bd.startpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
@@ -351,7 +351,7 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
-		
+
 		g.vid = "text_glpos";
 		cell = bd.goalpos.getc();
 		if(cell.bx>=d.x1 && d.x2>=cell.bx && cell.by>=d.y1 && d.y2>=cell.by){
@@ -374,13 +374,13 @@ Graphic:{
 			var cell = clist[i], num=cell.ques;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
 			g.strokeStyle = this.getQuesNumberColor(cell);
-			
+
 			g.vid = "c_mk1_"+cell.id;
 			if(num===41){
 				g.strokeCircle(px, py, rsize);
 			}
 			else{ g.vhide();}
-			
+
 			g.vid = "c_mk2_"+cell.id;
 			if(num===42){
 				g.beginPath();
@@ -403,7 +403,7 @@ Encode:{
 		this.encodeBorder();
 		this.encodeCell_nurimaze();
 	},
-	
+
 	decodeCell_nurimaze : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
@@ -434,7 +434,7 @@ Encode:{
 			else if(pstr || count===31){ cm+=((4+count).toString(36)+pstr); count=0;}
 		}
 		if(count>0){ cm+=(4+count).toString(36);}
-		
+
 		this.outbstr += cm;
 	}
 },
@@ -450,7 +450,7 @@ FileIO:{
 		this.encodeCellQues_nurimaze();
 		this.encodeCellAns();
 	},
-	
+
 	decodeCellQues_nurimaze : function(){
 		var bd = this.board;
 		this.decodeCell( function(cell,ca){
@@ -476,7 +476,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
-		"checkSameColorTile",					// 問題チェック用 
+		"checkSameColorTile",					// 問題チェック用
 		"checkShadedObject",					// 問題チェック用
 		"checkConnectUnshade",
 		"check2x2ShadeCell+",
@@ -499,7 +499,7 @@ AnsCheck:{
 		var bd = this.board, ublks = bd.ublkmgr.components;
 		for(var r=0;r<ublks.length;r++){
 			if(ublks[r].circuits===0){ continue;}
-			
+
 			this.failcode.add("cuLoop");
 			if(this.checkOnly){ return;}
 			this.searchloop(ublks[r]).seterr(1);

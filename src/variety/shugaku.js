@@ -424,7 +424,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.qans!==43){ continue;}
-			
+
 			this.failcode.add("kitamakura");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -448,7 +448,7 @@ AnsCheck:{
 			}
 			if( cell.countDir4Cell(function(cell){ return cell.isShade();})>0 ||
 				adj .countDir4Cell(function(cell){ return cell.isShade();})>0 ){ continue;}
-			
+
 			this.failcode.add("futonMidPos");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

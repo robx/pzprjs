@@ -51,11 +51,11 @@ KeyEvent:{
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	e_keydown : function(e){
 		if(!this.enableKey){ return;}
-		
+
 		var c = this.getchar(e);
 		this.checkbutton(c,0);
 		if(c){ this.keyevent(c,0);}
-		
+
 		if(e.target===this.puzzle.canvas || this.cancelDefault){
 			e.stopPropagation();
 			e.preventDefault();
@@ -63,11 +63,11 @@ KeyEvent:{
 	},
 	e_keyup : function(e){
 		if(!this.enableKey){ return;}
-		
+
 		var c = this.getchar(e);
 		this.checkbutton(c,1);
 		if(c){ this.keyevent(c,1);}
-		
+
 		if(e.target===this.puzzle.canvas || this.cancelDefault){
 			e.stopPropagation();
 			e.preventDefault();

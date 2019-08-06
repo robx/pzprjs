@@ -140,7 +140,7 @@ AreaRoomGraph:{
 	setComponentRefs : function(obj, component){ obj.nori = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.norinodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.norinodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.anum>0);},
 	isedgevalidbylinkobj : function(border){
 		return (border.sideobj[0].anum===border.sideobj[1].anum) && !border.isBorder();
@@ -302,7 +302,7 @@ AnsCheck:{
 			if(border.qnum<=0){ continue;}
 			var num1 = cell1.anum, num2 = cell2.anum;
 			if(num1===-1 || num2===-1 || border.qnum===num1+num2){ continue;}
-			
+
 			this.failcode.add("nmSumNe");
 			if(this.checkOnly){ break;}
 			border.seterr(1);
@@ -316,13 +316,13 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], bx=cell.bx, by=cell.by;
 			if(bx>=bd.maxbx-1 || by>=bd.maxby-1){ continue;}
-			
+
 			var clist = bd.cellinside(bx, by, bx+2, by+2);
 			if(clist[0].anum<=0){ continue;}
 			for(var i=1;i<4;i++){
 				if(clist[0].anum!==clist[i].anum){ continue allloop;}
 			}
-			
+
 			this.failcode.add("nmSame2x2");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -337,7 +337,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){ if(clist[i].anum>=min){ d[clist[i].anum]++;} }
 			var clist2 = clist.filter(function(cell){ return (d[cell.anum]>=3);});
 			if(clist2.length===0){ continue;}
-			
+
 			this.failcode.add("bkSameNumGt2");
 			if(this.checkOnly){ break;}
 			clist2.seterr(1);

@@ -2,7 +2,7 @@
 
 var assert = require('assert');
 
-var pzpr = require('../../dist/pzpr.js');
+var pzpr = require('../../dist/js/pzpr.js');
 
 describe('Trial mode test', function(){
 	it('Enter test', function(){

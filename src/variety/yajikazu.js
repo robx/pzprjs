@@ -125,7 +125,7 @@ AnsCheck:{
 				clist.add(cell2);
 			}
 			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
-			
+
 			this.failcode.add("anShadeNe");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

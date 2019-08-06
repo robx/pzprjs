@@ -232,28 +232,28 @@ Config.prototype =
 		case 'snakebd': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;
-		
+
 		case 'font':
 			puzzle.painter.initFont();
 			puzzle.redraw();
 			break;
-		
+
 		case 'multierr':
 			puzzle.checker.resetCache();
 			break;
-		
+
 		case 'disptype_bosanowa':
 			puzzle.setCanvasSizeByCellSize();	/* セルのサイズを変えないために、この関数を引数なしで呼び出す */
 			break;
-		
+
 		case 'color_shadecolor':
 			puzzle.painter.setColor('shadecolor', newval);
 			break;
-		
+
 		case 'color_bgcolor':
 			puzzle.painter.setColor('bgcolor', newval);
 			break;
-		
+
 		case 'uramashu':
 			puzzle.board.revCircleConfig(newval);
 			puzzle.redraw();

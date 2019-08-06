@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pzpr rules</title>
+<style>
+.testcase {
+  background: #f0f0f0;
+  margin: 10px;
+}
+.canvas {
+  display: inline-block;
+  vertical-align: middle;
+}
+.error-label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 1em;
+}
+.error-msg {
+  display: inline-block;
+  vertical-align: middle;
+}
+.error-msg span {
+  display: block;
+}
+</style>
+
+<script type="text/javascript" src="./js/pzpr.js?<%= pkg.version %>"></script>
+<script>
+
+function render(testcase, data, ready){
+  var canvas = document.createElement('div');
+  canvas.className = 'canvas';
+  canvas.style = "width:200px; height:200px;"
+  testcase.appendChild(canvas);
+  var puzzle = new pzpr.Puzzle(canvas, {type:'viewer'});
+  puzzle.setConfig('autocmp', false);
+  puzzle.setConfig('forceallcell',true);
+  puzzle.once("ready", function(){ready(canvas, puzzle);});
+  puzzle.open(data);
+}
+
+pzpr.on("load", function(){
+  var pid = window.location.search.substring(1);
+  pid = pzpr.variety.toPID(pid);
+
+  var failcheck;
+  window.ui = {};
+  window.ui.debug = {};
+  window.ui.debug.addDebugData = function(pid, data){
+    failcheck = data.failcheck;
+  };
+
+  var datadir='./js/pzpr-samples';
+
+  var _script = document.createElement('script');
+  _script.type = 'text/javascript';
+  _script.src = datadir+'/'+pid+'.js';
+  _script.onload = function(){
+    failcheck.forEach(function(data){
+      var testcase = document.createElement('div');
+      testcase.className = 'testcase';
+      document.getElementsByTagName('body')[0].appendChild(testcase);
+      // blank puzzle
+      //render(testcase, data[1], function(canvas, puzzle){
+      //  puzzle.ansclear();
+      //});
+      // solution
+      //render(testcase, data[1], function(canvas, puzzle){});
+      // marked solution
+      render(testcase, data[1], function(canvas, puzzle){
+        var failcode = puzzle.check(true);
+        var label = document.createElement('div');
+        label.className = 'error-label';
+        label.innerHTML = (failcode.complete?'OK':'NG') + ':';
+        var error = document.createElement('div');
+        error.className = 'error-msg';
+        var langs = ['en', 'ja'];
+        langs.forEach(function(lang){
+          var span = document.createElement('span');
+          span.setAttribute('lang', lang);
+          span.innerHTML =  failcode.gettext(lang);
+          error.appendChild(span);
+        });
+        testcase.appendChild(label);
+        testcase.appendChild(error);
+      });
+    });
+  };
+  document.getElementsByTagName('head')[0].appendChild(_script);
+});
+</script>
+</head>
+<body>
+</body>

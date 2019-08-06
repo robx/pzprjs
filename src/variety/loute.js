@@ -420,7 +420,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], num = cell.getObjNum();
 				if(num<1 || num>4 || cell.place===2){ continue;}
-				
+
 				this.failcode.add("arBlkEdge");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);
@@ -443,7 +443,7 @@ AnsCheck:{
 					(num===cell.DN && adb.bottom.isBorder()) ||
 					(num===cell.LT && adb.left.isBorder()  ) ||
 					(num===cell.RT && adb.right.isBorder() ) ) ){ continue;}
-				
+
 				this.failcode.add("arNotPtCnr");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);
@@ -462,7 +462,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				if(!cell.isCircle() || cell.place===3){ continue;}
-				
+
 				this.failcode.add("ciNotOnCnr");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);
@@ -475,7 +475,7 @@ AnsCheck:{
 		var rooms = this.board.roommgr.components;
 		for(var id=0;id<rooms.length;id++){
 			if(rooms[id].shape!==0){ continue;}
-			
+
 			this.failcode.add("bkNotLshape");
 			if(this.checkOnly){ break;}
 			rooms[id].clist.seterr(1);

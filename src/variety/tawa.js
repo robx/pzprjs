@@ -181,12 +181,12 @@ BoardExec:{
 			}
 			bd.setminmax();
 		}
-		
+
 		// main operation
 		if     (key & this.EXPAND){ this.expandGroup('cell', key);}
 		else if(key & this.REDUCE){ this.reduceGroup('cell', key);}
 		else                      { this.turnflipGroup('cell', key, d);}
-		
+
 		if(key & this.REDUCE){
 			switch(key & 0x0F){
 				case this.LT: bd.cols-=[1,1,0,0][bd.shape];  bd.shape=[2,3,0,1][bd.shape]; break;
@@ -324,7 +324,7 @@ FileIO:{
 
 		this.encodeCellQnumAns();
 	},
-	
+
 	// オーバーライド
 	decodeCell : function(func){
 		var bd = this.board, n=0, item = this.getItemList(bd.rows);
@@ -372,7 +372,7 @@ AnsCheck:{
 				else{ clist.add(cell);}
 			}
 			if(clist.length<3){ continue;}
-			
+
 			this.failcode.add("csConsecGt3");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -391,7 +391,7 @@ AnsCheck:{
 			clist.add(cell.relcell(-1, 2));
 			clist.add(cell.relcell( 1, 2));
 			if(cell.qnum===clist.filter(function(cell){ return cell.isShade();}).length){ continue;}
-			
+
 			this.failcode.add("nmShadeNe");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -405,7 +405,7 @@ AnsCheck:{
 			if(cell.isUnshade() || cell.by===bd.maxby-1){ continue;}
 
 			if(cell.relcell(-1,2).isShade() || cell.relcell(1,2).isShade()){ continue;}
-			
+
 			this.failcode.add("csNotOnShade");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

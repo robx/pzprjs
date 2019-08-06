@@ -308,7 +308,7 @@ AnsCheck:{
 			}
 			else{ continue;}
 			if(qn===val){ continue;}
-			
+
 			this.failcode.add("nmSumRowShadeNe");
 			if(this.checkOnly){ break;}
 			excell.seterr(1);

@@ -9,7 +9,7 @@ pzpr.classmgr.makeCommon({
 Board:{
 	initialize : function(){
 		var classes = this.klass;
-		
+
 		// 盤面の範囲
 		this.minbx = 0;
 		this.minby = 0;
@@ -166,7 +166,7 @@ Board:{
 		if(piece!==this.nullobj && id!==void 0){ piece.id = id;}
 		return piece;
 	},
- 
+
 	//---------------------------------------------------------------------------
 	// bd.setposAll()    全てのCell, Cross, BorderオブジェクトのsetposCell()等を呼び出す
 	//                   盤面の新規作成や、拡大/縮小/回転/反転時などに呼び出される
@@ -298,7 +298,7 @@ Board:{
 		opemgr.rejectTrial(true);
 		opemgr.newOperation();
 		opemgr.add(new this.puzzle.klass.BoardClearOperation());
-		
+
 		this.cell.ansclear();
 		this.cross.ansclear();
 		this.border.ansclear();
@@ -308,7 +308,7 @@ Board:{
 	// 呼び出し元：補助消去ボタン押した時
 	subclear : function(){
 		this.puzzle.opemgr.newOperation();
-		
+
 		this.cell.subclear();
 		this.cross.subclear();
 		this.border.subclear();

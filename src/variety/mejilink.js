@@ -86,7 +86,7 @@ LineGraph:{
 	setComponentRefs : function(obj, component){ obj.tile = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},
-	
+
 	isnodevalid : function(nodeobj){ return true;},
 	isedgevalidbylinkobj : function(border){ return border.isGround();}
 },
@@ -210,7 +210,7 @@ AnsCheck:{
 		for(var r=0;r<tiles.length;r++){
 			var clist = tiles[r].clist, count = tiles[r].count;
 			if(count<0 || count===clist.length){ continue;}
-			
+
 			this.failcode.add("bkNoLineNe");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

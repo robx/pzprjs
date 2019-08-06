@@ -32,7 +32,7 @@ MouseEvent:{
 				this.inputborder();
 			}
 		}
-		
+
 		if(this.mouseend && this.notInputted()){
 			this.mouseCell = null;
 			this.inputqnum();
@@ -49,7 +49,7 @@ MouseEvent:{
 			this.mouseCell = cell;
 			return;
 		}
-		
+
 		if(this.inputData===-2){
 			cell.setAnum(-1);
 			cell.setQsub(1);
@@ -220,7 +220,7 @@ AnsCheck:{
 			target = cell.relcell(-2,2); if(func(target)){ clist.add(target);}
 			target = cell.relcell( 2,2); if(func(target)){ clist.add(target);}
 			if(clist.length<=1){ continue;}
-			
+
 			this.failcode.add("nmAround");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

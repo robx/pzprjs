@@ -10,16 +10,16 @@ var puzzle = window.puzzle;
 pzpr.on('load', function(){
 	/* index.htmlからURLが入力されていない場合は現在のURLの?以降をとってくる */
 	var search = location.search;
-	
+
 	/* 一旦先頭の?記号を取り除く */
 	if(search.charAt(0)==="?"){ search = search.substr(1);}
-	
+
 	var onload_option = {};
 	while(search.match(/^(\w+)\=(\w+)\&?(.*)/)){
 		onload_option[RegExp.$1] = RegExp.$2;
 		search = RegExp.$3;
 	}
-	
+
 	// エディタモードかplayerモードか、等を判定する
 	if(!search){ search = 'country';}
 
@@ -33,7 +33,7 @@ pzpr.on('load', function(){
 		onload_option.config = {irowake:true};
 		puzzle = window.puzzle = new pzpr.Puzzle(document.getElementById('divques'), onload_option);
 		pzpr.connectKeyEvents(puzzle);
-		
+
 		puzzle.open((!!pzl.cols && !!pzl.rows && !!pzl.body) ? pzl : pid+"/"+debug.urls[pid]);
 		puzzle.on('key', debug.keydown);
 		puzzle.on('mode', debug.initinputmodelist);
@@ -369,7 +369,7 @@ var debug = window.debug =
 				self.addTA("Encode kanpen = failure..."); self.fails++;
 			}
 			else if(!self.alltimer){ self.addTA("Encode kanpen = pass");}
-			
+
 			self.testing = false;
 		});
 	},

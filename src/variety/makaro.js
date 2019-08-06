@@ -99,11 +99,11 @@ KeyEvent:{
 
 	keyinput : function(ca){
 		var cell = this.cursor.getc();
-		
+
 		if(this.puzzle.editmode){
 			if(this.key_inputcell_makaro_edit(cell,ca)){ return;}
 		}
-		
+
 		if(cell.ques!==1){
 			this.key_inputqnum(ca);
 		}
@@ -111,7 +111,7 @@ KeyEvent:{
 
 	key_inputcell_makaro_edit : function(cell, ca){
 		var retval = false;
-		
+
 		if(ca===' '){
 			cell.setQues(0);
 			cell.setQdir(cell.NDIR);
@@ -144,9 +144,9 @@ KeyEvent:{
 			cell.setAnum(-1);
 			retval = true;
 		}
-		
+
 		if(retval){ cell.draw();}
-		
+
 		return retval;
 	}
 },
@@ -258,9 +258,9 @@ Encode:{
 			sv_ques[id] = bd.border[id].ques;
 			bd.border[id].ques = (bd.border[id].isBorder() ? 1 : 0);
 		}
-		
+
 		this.encodeBorder();
-		
+
 		for(var id=0;id<bd.border.length;id++){
 			bd.border[id].ques = sv_ques[id];
 		}
@@ -329,14 +329,14 @@ AnsCheck:{
 				if(num===-1){ /* 数字が入っていない場合何もしない */ }
 				else if(num>maxnum){ maxnum=num; maxdir=list[i][1]; dupnum=false;}
 				else if(num===maxnum){ maxdir=cell.NDIR; dupnum=true;}
-				
+
 				if(list[i][1]===cell.qdir){
 					if(list[i][0].ques===0){ invalidarrow = false;}
 					if(num===-1){ isempty = true;}
 				}
 			}
 			if(!invalidarrow && (isempty || (!dupnum && cell.qdir===maxdir))){ continue;}
-			
+
 			this.failcode.add("arNotMax");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

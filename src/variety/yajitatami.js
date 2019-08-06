@@ -150,7 +150,7 @@ AnsCheck:{
 			else if(dir===cell.RT){ blist = bd.borderinside(bx,by,bd.maxbx,by);}
 			else{ continue;}
 			if(cell.qnum===blist.filter(function(border){ return border.isBorder();}).length){ continue;}
-			
+
 			this.failcode.add("anTatamiNe");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -162,7 +162,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c], dir = cell.qdir;
 			if(!cell.isValidNum() || !dir || cell.reldirbd(dir,1).isBorder()){ continue;}
-			
+
 			this.failcode.add("anNoAdjBd");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

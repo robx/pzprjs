@@ -265,7 +265,7 @@ FileIO:{
 	encodeAreaRoom_com : function(isques){
 		var bd = this.board;
 		bd.roommgr.rebuild();
-		
+
 		var rooms = bd.roommgr.components;
 		this.writeLine(rooms.length);
 		var data = '';
@@ -507,7 +507,7 @@ FileIO:{
 			if(bdv.line===1){ val += 2;}
 			if(bdh.qsub===2){ val += 4;}
 			if(bdv.qsub===2){ val += 8;}
-			
+
 			if     (val===0){ nodename = 's';}
 			else if(val===1){ nodename = 'h';}
 			else if(val===2){ nodename = 'v';}

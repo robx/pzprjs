@@ -155,7 +155,7 @@ Board:{
 	setComponentRefs : function(obj, component){ obj.stone = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.stonenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.stonenodes = [];},
-	
+
 	isedgevalidbylinkobj : function(border){
 		return !border.isBorder();
 	}
@@ -213,7 +213,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			
+
 			g.vid = "c_dot_"+cell.id;
 			if(cell.qsub===1){
 				g.fillStyle = this.bcolor;
@@ -340,7 +340,7 @@ FileIO:{
 				}
 			}
 			if(check){ continue;}
-			
+
 			this.failcode.add("bkShadeDivide");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -362,7 +362,7 @@ FileIO:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.by>bd.maxby/2 || cell.base.isnull){ continue;}
-			
+
 			this.failcode.add("csUpper");
 			if(this.checkOnly){ break;}
 			bd.falling = true;
@@ -374,7 +374,7 @@ FileIO:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.by<bd.maxby/2 || !cell.base.isnull){ continue;}
-			
+
 			this.failcode.add("cuLower");
 			if(this.checkOnly){ break;}
 			bd.falling = true;

@@ -113,7 +113,7 @@ FileIO:{
 		this.encodeCellQnum();
 		this.encodeCellBar();
 	},
-	
+
 	decodeCellBar : function(){
 		this.decodeCell( function(cell,ca){
 			if     (ca==="1"){ cell.qans = 12;}
@@ -174,7 +174,7 @@ AnsCheck:{
 				}
 			}
 		} while(0);
-		
+
 		if(!result){
 			this.failcode.add(code);
 			this.board.cell.setnoerr();
@@ -203,7 +203,7 @@ AnsCheck:{
 			}
 			count = (vcount>hcount ? vcount : hcount);
 			if((area.top.qnum===count) || (isover===(count<=area.top.qnum))){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			if     (vcount>hcount){ clist.filter(function(cell){ return cell.qans===12;}).seterr(4);}
@@ -214,7 +214,7 @@ AnsCheck:{
 			this.board.cell.setnoerr();
 		}
 	},
-	
+
 	checkEmptyCell_juosan : function(){
 		this.checkAllCell(function(cell){ return (cell.qans===0);}, "ceNoBar");
 	}

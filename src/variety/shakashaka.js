@@ -282,7 +282,7 @@ BoardExec:{
 	setComponentRefs : function(obj, component){ obj.wrect = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.wrectnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.wrectnodes = [];},
-	
+
 	isnodevalid : function(cell){ return cell.qnum===-1;},
 	sldir : [[],
 		[true,false,true,true,false,false],
@@ -406,7 +406,7 @@ FileIO:{
 	},
 
 	UNDECIDED_NUM_XML : -2,
-	
+
 	decodeCellShakashaka_XMLAnswer : function(){
 		this.decodeCellXMLArow(function(cell, name){
 			if(name.charAt(0)==='n'){ cell.qans = (((+name.substr(1))-1)&3)+2;}
@@ -452,7 +452,7 @@ AnsCheck:{
 			var clist=areas[id].clist, d=clist.getRectSize();
 			var cnt = clist.filter(function(cell){ return (cell.qans===0);}).length;
 			if(d.cols*d.rows===cnt || this.isAreaRect_slope(areas[id])){ continue;}
-			
+
 			this.failcode.add("cuNotRectx");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

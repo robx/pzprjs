@@ -94,7 +94,7 @@ MouseEvent:{
 		if(this.prevPos.equals(pos)){ return;}
 		border = this.prevPos.getnb(pos);
 		var cell0 = border.sidecell[0], cell1 = border.sidecell[1];
-		
+
 		if(!border.isnull){
 			if(this.inputData===null) {
 				// Do not use setArrow here, leave the border intact
@@ -387,7 +387,7 @@ Border: {
 	},
 
 	prehook : {
-		qans : function(num){ 
+		qans : function(num){
 			if (this.ques!==0) {return true;}
 			if(num) {return false;}
 			return (this.getArrow()!==0);
@@ -462,7 +462,7 @@ Graphic:{
 	drawCellArrows : function(){
 		var g = this.vinc('cell_arrow', 'crispEdges');
 
-		
+
 		var outer = this.cw*0.5;
 		var inner = this.cw*0.25;
 
@@ -471,30 +471,30 @@ Graphic:{
 			var cell = clist[i];
 			var dir = cell.getPencilDir();
 			var color = this.getCellArrowColor(cell);
-			
+
 			g.lineWidth = (this.lw + this.addlw)/2;
 			if(!!color){
 				g.fillStyle = color;
 				g.strokeStyle = color;
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				var idx = [0,0,0,0];
-				
+
 				switch(dir){
 					case cell.UP: idx = [ 1,  1, -1,  1]; break;
 					case cell.DN: idx = [ 1, -1, -1, -1]; break;
 					case cell.LT: idx = [ 1, -1,  1,  1]; break;
 					case cell.RT: idx = [-1, -1, -1,  1]; break;
 				}
-				
+
 				g.vid = "c_arrow_"+cell.id;
 				g.setOffsetLinePath(px,py, 0,0, idx[0]*inner, idx[1]*inner, idx[2]*inner, idx[3]*inner, true);
 				g.fill();
-				
+
 				g.vid = "c_arrow_outer_"+cell.id;
 				g.setOffsetLinePath(px,py, 0,0, idx[0]*outer, idx[1]*outer, idx[2]*outer, idx[3]*outer, true);
 				g.stroke();
 			}
-			else{ 
+			else{
 				g.vid = "c_arrow_"+cell.id;
 				g.vhide();
 				g.vid = "c_arrow_outer_"+cell.id;
@@ -586,7 +586,7 @@ FileIO:{
 
 		this.encodeBorderAns();
 		this.encodeBorderLine();
-		
+
 		this.encodeCell(function(cell){
 			var ca = "";
 			if(cell.qsub===1) { ca += "+";}
@@ -611,14 +611,14 @@ AnsCheck:{
 		"checkLineTooLong",
 		"checkNumberTooHigh",
 		"checkTipNotInsidePencil",
-		
+
 		"checkLineOutsidePencil",
 		"checkNumberInPencil",
 		"checkTipHasLine",
 		"checkLineHasTip", // does not start at a pencil tip
 		"checkNumberTooLow",
 		"checkLineTooShort",
-		
+
 		"checkTipHasPencil",
 		"checkCellsUsed"
 	],

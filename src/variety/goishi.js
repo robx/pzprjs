@@ -161,7 +161,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			
+
 			g.vid = "c_sq_"+cell.id;
 			if(cell.isStone() && cell.anum!==-1){
 				g.fillStyle = (cell.error===1 ? this.errbcolor1 : "white");

@@ -126,11 +126,11 @@ LineGraph:{
 	relation : {'border.line':'link', 'border.ques':'separator'},
 	makeClist : true,
 	coloring : false,
-	
+
 	setComponentRefs : function(obj, component){ obj.lpath = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.lpathnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.lpathnodes = [];},
-	
+
 	incdecLineCount : null,
 	isedgevalidbylinkobj : function(border){ return border.isLine() && !border.isBorder();},
 	isedgeexistsbylinkobj : function(border){ return border.lpath!==null;},
@@ -394,7 +394,7 @@ AnsCheck:{
 				border=adb.right;  if(border.ques===1 && border.line===1){ cnt++;}
 			}
 			if(cnt<=2){ continue;}
-			
+
 			this.failcode.add("bkPassTwice");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -449,7 +449,7 @@ AnsCheck:{
 		for(var id=0;id<rooms.length;id++){
 			var room = rooms[id], count = room.count;
 			if(cond(count)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			room.clist.filter(errfilter).seterr(1);
@@ -467,10 +467,10 @@ AnsCheck:{
 		for(var id=0;id<borders.length;id++){
 			var border = borders[id];
 			if(border.ques===0 || border.line===0){ continue;}
-			
+
 			var room1 = border.sidecell[0].room, room2 = border.sidecell[1].room;
 			if(room1===room2){ continue;}
-			
+
 			if(cond(room1,room2)){ continue;}
 
 			this.failcode.add(code);
@@ -512,7 +512,7 @@ AnsCheck:{
 			var num = numcache[pathid];
 			if(!num){ num = (numcache[pathid] || path.clist.getQnumCell().getNum());}
 			if(num<0 || num===lpaths[r].clist.length){ continue;}
-			
+
 			this.failcode.add("blLineNe");
 			if(this.checkOnly){ break;}
 			lpaths[r].clist.seterr(1);
@@ -527,7 +527,7 @@ AnsCheck:{
 		for(var r=0;r<paths.length;r++){
 			var path = paths[r], num = path.clist.getQnumCell().getNum();
 			if(num>=0){ continue;}
-			
+
 			var lpathlen = {}, length = null;
 			for(var i=0;i<path.clist.length;i++){
 				var id = lpaths.indexOf(path.clist[i].lpath);

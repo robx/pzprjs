@@ -130,7 +130,7 @@ Graphic:{
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
 			var excell = exlist[i], color = this.getBGEXcellColor(excell);
-			
+
 			g.vid = "ex_full_"+excell.id;
 			if(!!color){
 				g.fillStyle = color;
@@ -154,7 +154,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			
+
 			g.vid = "c_dot_"+cell.id;
 			if(cell.isDot()){
 				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
@@ -191,7 +191,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], dir=(!cell.numberAsObject ? cell.qdir : cell.getNum());
 			var color = ((dir>=1 && dir<=4) ? this.getCellArrowColor(cell) : null);
-			
+
 			g.vid = "c_arrow_"+cell.id;
 			if(!!color){
 				g.fillStyle = color;
@@ -236,7 +236,7 @@ Graphic:{
 					if(cell.trial && this.puzzle.execConfig('irowake')){ addwidth = -basewidth/2;}
 					else if(info===1||info===3){ addwidth = basewidth/2;}
 				}
-				
+
 				if     (info===1){ color = this.errcolor1;}
 				else if(info===2){ color = this.errcolor2;}
 				else if(info===-1){color = this.noerrcolor;}
@@ -504,7 +504,7 @@ Graphic:{
 		var clist = this.range.crosses;
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i];
-			
+
 			g.vid = "x_cm_"+cross.id;
 			if(cross.qnum===1){
 				g.fillStyle = (cross.error===1||cross.qinfo===1 ? this.errcolor1 : this.quescolor);
@@ -529,7 +529,7 @@ Graphic:{
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], color = this.getBorderColor(border);
-			
+
 			g.vid = header+border.id;
 			if(!!color){
 				var px = border.bx*this.bw, py = border.by*this.bh;
@@ -606,7 +606,7 @@ Graphic:{
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i];
-			
+
 			g.vid = "b_qsub1_" + border.id;
 			if(border.qsub===1){
 				var px = border.bx*this.bw, py = border.by*this.bh;
@@ -628,7 +628,7 @@ Graphic:{
 
 		g.strokeStyle = this.bbcolor;
 		g.lineWidth = 1;
-		
+
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], isdraw = (cell.qans===1);
@@ -639,7 +639,7 @@ Graphic:{
 				var px = (cell.bx-1)*this.bw, py = (cell.by-1)*this.bh;
 				var px0 = px-0.5, px1 = px+lm+0.5, px2 = px+cw-lm-0.5, px3 = px+cw+0.5;
 				var py0 = py-0.5, py1 = py+lm+0.5, py2 = py+ch-lm-0.5, py3 = py+ch+0.5;
-				
+
 				// この関数を呼ぶ場合は全てhasborder===1なので
 				// 外枠用の考慮部分を削除しています。
 				var adb = cell.adjborder;
@@ -655,29 +655,29 @@ Graphic:{
 				var isUR = (!UPin || !RTin || cell.relbd( 2,-1).ques===1 || cell.relbd( 1,-2).ques===1);
 				var isDL = (!DNin || !LTin || cell.relbd(-2, 1).ques===1 || cell.relbd(-1, 2).ques===1);
 				var isDR = (!DNin || !RTin || cell.relbd( 2, 1).ques===1 || cell.relbd( 1, 2).ques===1);
-				
+
 				g.beginPath();
-				
+
 				if( isUP || isUL){ g.moveTo(px1, py1);}
 				if(!isUP && isUL){ g.lineTo(px1, py0);}
 				if(!isUP && isUR){ g.moveTo(px2, py0);}
 				if( isUP || isUR){ g.lineTo(px2, py1);}
-				
+
 				else if( isRT || isUR){ g.moveTo(px2, py1);}
 				if(!isRT && isUR){ g.lineTo(px3, py1);}
 				if(!isRT && isDR){ g.moveTo(px3, py2);}
 				if( isRT || isDR){ g.lineTo(px2, py2);}
-				
+
 				else if( isDN || isDR){ g.moveTo(px2, py2);}
 				if(!isDN && isDR){ g.lineTo(px2, py3);}
 				if(!isDN && isDL){ g.moveTo(px1, py3);}
 				if( isDN || isDL){ g.lineTo(px1, py2);}
-				
+
 				else if( isLT || isDL){ g.moveTo(px1, py2);}
 				if(!isLT && isDL){ g.lineTo(px0, py2);}
 				if(!isLT && isUL){ g.moveTo(px0, py1);}
 				if( isLT || isUL){ g.lineTo(px1, py1);}
-				
+
 				g.stroke();
 			}
 			else{ g.vhide();}
@@ -694,13 +694,13 @@ Graphic:{
 		var blist = this.range.borders;
 		for(var i=0;i<blist.length;i++){
 			var border = blist[i], color = this.getLineColor(border);
-			
+
 			g.vid = "b_line_"+border.id;
 			if(!!color){
 				var px = border.bx*this.bw, py = border.by*this.bh;
 				var isvert = (this.board.borderAsLine===border.isVert());
 				var lm = this.lm + this.addlw/2;
-				
+
 				g.fillStyle = color;
 				if(isvert){ g.fillRectCenter(px, py, lm, this.bh+lm);}
 				else      { g.fillRectCenter(px, py, this.bw+lm, lm);}
@@ -715,10 +715,10 @@ Graphic:{
 			var info = border.error || border.qinfo, puzzle = this.puzzle;
 			var isIrowake = (puzzle.execConfig('irowake') && border.path && border.path.color);
 			var isDispmove = puzzle.execConfig('dispmove');
-			
+
 			if(border.trial && puzzle.execConfig('irowake')){ this.addlw=-this.lm;}
 			else if(info===1){ this.addlw=1;}
-			
+
 			if     (info=== 1) { return this.errlinecolor;}
 			else if(info===-1) { return this.noerrcolor;}
 			else if(isDispmove){ return (border.trial ? this.movetrialcolor : this.movelinecolor);}
@@ -871,7 +871,7 @@ Graphic:{
 
 		var ra = this.circleratio;
 		var rsize_stroke = this.cw*(ra[0]+ra[1])/2, rsize_fill = this.cw*ra[0];
-		
+
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
@@ -960,7 +960,7 @@ Graphic:{
 	drawDepartures : function(){
 		var g = this.vinc('cell_depart', 'auto', true);
 		g.fillStyle = this.movelinecolor;
-		
+
 		var rsize  = this.cw*0.15;
 		var isdrawmove = this.puzzle.execConfig('dispmove');
 		var clist = this.range.cells;
@@ -1369,12 +1369,12 @@ Graphic:{
 			var clist = this.range.cells;
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], px = (cell.bx-1)*this.bw, py = (cell.by-1)*this.bh;
-				
+
 				if(cell.bx===1){
 					g.vid = "chs1_sub_"+cell.by;
 					if(cell.ques!==51){ g.fillRect(-lm, py-lm, lw, this.ch+lw);}else{ g.vhide();}
 				}
-				
+
 				if(cell.by===1){
 					g.vid = "chs2_sub_"+cell.bx;
 					if(cell.ques!==51){ g.fillRect(px-lm, -lm, this.cw+lw, lw);}else{ g.vhide();}

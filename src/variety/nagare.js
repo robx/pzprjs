@@ -48,7 +48,7 @@ MouseEvent:{
 		else              { trans = (this.btn==='left'?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
 		qs = trans[qs] || 0;
 		if(this.inputMode==='diraux' && qs===2){ qs=trans[qs] || 0;}
-		
+
 		border.setQsub(qs);
 		border.draw();
 	},
@@ -190,7 +190,7 @@ Range:{
 		cell=cell0; cell2=adc.top;    while(!cell2.isnull && !func(cell2)){ cell=cell2; cell2=cell.adjacent.top;   } this.y1=cell.by;
 		cell=cell0; cell2=adc.bottom; while(!cell2.isnull && !func(cell2)){ cell=cell2; cell2=cell.adjacent.bottom;} this.y2=cell.by;
 	},
-	
+
 	getdirclist : function(dir){
 		return this.getdirrange(dir).cellinside();
 	},
@@ -261,7 +261,7 @@ LineGraph:{
 BoardExec:{
 	adjustBoardData : function(key,d){
 		this.adjustCellArrow(key,d);
-		
+
 		if(key & this.TURNFLIP){
 			var trans = this.getTranslateDir(key);
 			var blist = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
@@ -389,7 +389,7 @@ FileIO:{
 				else if(lca==="r"){ border.qsub = 14;}
 				ca = ca.substr(0,ca.length-1);
 			}
-			
+
 			if(ca!=="" && ca!=="0"){
 				if(ca.charAt(0)==="-"){ border.line = (-ca)-1; border.qsub = 2;}
 				else                  { border.line = +ca;}
@@ -408,9 +408,9 @@ FileIO:{
 			var ca = "";
 			if     (border.qsub===2){ ca += ""+(-1-border.line);}
 			else if(border.line>  0){ ca += ""+border.line;}
-			
+
 			if(border.qsub>=11){ ca += ["u","d","l","r"][border.qsub-11];}
-			
+
 			return (ca!=="" ? ca+" " : "0 ");
 		});
 	}
@@ -438,7 +438,7 @@ AnsCheck:{
 		for(var i=0;i<boardcell.length;i++){
 			var cell = boardcell[i], arwind = (cell.wind&(15^[0,1,2,4,8][cell.qdir]));
 			if(cell.qdir===0 || cell.ques===1 || !arwind){ continue;}
-			
+
 			this.failcode.add("arAgainstWind");
 			if(this.checkOnly){ break;}
 			this.setCellErrorToWindBase(cell, arwind);
@@ -451,7 +451,7 @@ AnsCheck:{
 			var errv = ((cell.wind&3)!==0 && cell.isLineStraight()===2);
 			var errh = ((cell.wind&12)!==0 && cell.isLineStraight()===1);
 			if(!errv && !errh){ continue;}
-			
+
 			this.failcode.add("lrAcrossWind");
 			if(this.checkOnly){ break;}
 			this.setCellErrorToWindBase(cell, (cell.wind & ((errv?3:0)|(errh?12:0))));
@@ -473,10 +473,10 @@ AnsCheck:{
 		for(var i=0;i<traces.length;i++){
 			var blist = traces[i].blist;
 			if(blist.length===0){ continue;}
-			
+
 			this.failcode.add("lrAgainstWind");
 			if(this.checkOnly){ break;}
-			
+
 			this.board.border.setnoerr();
 			for(var j=0;j<blist.length;j++){
 				this.setBorderErrorToWindBase(blist[j], blist[j].wind);
@@ -488,7 +488,7 @@ AnsCheck:{
 		for(var i=0;i<traces.length;i++){
 			var clist = traces[i].clist;
 			if(clist.length===0){ continue;}
-			
+
 			this.failcode.add("lrAgainstArrow");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

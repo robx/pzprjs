@@ -8,9 +8,9 @@ PieceList:{
 	initialize : function(list){
 		if(!!list){ this.extend(list);}
 	},
-	
+
 	length : 0,
-	
+
 	//--------------------------------------------------------------------------------
 	// ☆Arrayオブジェクト関連の関数
 	// list.add()      与えられたオブジェクトを配列の末尾に追加する(push()相当)
@@ -24,7 +24,7 @@ PieceList:{
 		for(var i=0;i<len;i++){ this[n+i] = list[i];}
 	},
 	pop     : Array.prototype.pop,
-	
+
 	//--------------------------------------------------------------------------------
 	// ☆Arrayオブジェクトiterator関連の関数
 	// list.each()     全てのオブジェクトに指定された関数を実行する
@@ -32,7 +32,7 @@ PieceList:{
 	//--------------------------------------------------------------------------------
 	each    : Array.prototype.forEach,
 	some    : Array.prototype.some,
-	
+
 	//--------------------------------------------------------------------------------
 	// list.filter()   条件がtrueとなるオブジェクトを抽出したclistを新たに作成する
 	// list.notnull()  nullではないオブジェクトを抽出したclistを新たに作成する
@@ -47,7 +47,7 @@ PieceList:{
 		return list;
 	},
 	notnull : function(cond){ return this.filter(function(piece){ return !piece.isnull;});},
-	
+
 	//--------------------------------------------------------------------------------
 	// list.map()      clistの各要素に指定された関数を適用したclistを新たに作成する
 	//--------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ PieceList:{
 		for(var i=0;i<len;i++){ list[i] = changer(this[i]);}
 		return list;
 	},
-	
+
 	//--------------------------------------------------------------------------------
 	// list.indexOf()  与えられたオブジェクトの配列上の位置を取得する
 	// list.include()  与えられたオブジェクトが配列に存在するか判定する
@@ -69,7 +69,7 @@ PieceList:{
 		var idx = this.indexOf(piece);
 		if(idx>=0){ Array.prototype.splice.call(this, idx, 1);}
 	},
-	
+
 	//--------------------------------------------------------------------------------
 	// list.seterr()   保持しているオブジェクトにerror値を設定する
 	// list.setnoerr() エラー値が設定されていないオブジェクトにerror=-1を設定する

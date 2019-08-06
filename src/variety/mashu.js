@@ -200,7 +200,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!(cell.qnum===1 && cell.isLineCurve())){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cell.setCellLineError(1);
@@ -215,7 +215,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!(cell.qnum===2 && cell.isLineStraight())){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cell.setCellLineError(1);
@@ -237,7 +237,7 @@ AnsCheck:{
 			if(adb.left.isLine()   && adc.left.isLineStraight()  ){ stcnt++;}
 			if(adb.right.isLine()  && adc.right.isLineStraight() ){ stcnt++;}
 			if(stcnt<2){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cell.setErrorPearl();
@@ -257,7 +257,7 @@ AnsCheck:{
 			   !(adb.left.isLine()   && adc.left.isLineCurve()  ) &&
 			   !(adb.right.isLine()  && adc.right.isLineCurve() ) )
 			{ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cell.setErrorPearl();

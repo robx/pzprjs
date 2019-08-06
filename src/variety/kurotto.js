@@ -40,7 +40,7 @@ Cell:{
 
 	checkComplete : function(){
 		if(!this.isValidNum()){ return true;}
-		
+
 		var cnt = 0, arealist = [], list = this.getdir4clist();
 		for(var i=0;i<list.length;i++){
 			var area = list[i][0].sblk;
@@ -83,7 +83,7 @@ Graphic:{
 			x2 = bd.maxbx+2;
 			y2 = bd.maxby+2;
 		}
-		
+
 		this.common.setRange.call(this,x1,y1,x2,y2);
 	},
 
@@ -143,7 +143,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.checkComplete()){ continue;}
-			
+
 			this.failcode.add("nmSumSizeNe");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

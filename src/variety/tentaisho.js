@@ -44,7 +44,7 @@ MouseEvent:{
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){ this.inputData=(cell.qsub===0)?3:0;}
 		cell.setQsub(this.inputData);
-		this.mouseCell = cell; 
+		this.mouseCell = cell;
 		cell.draw();
 	},
 	inputBGcolor3 : function(){
@@ -529,7 +529,7 @@ AnsCheck:{
 		for(var s=0;s<bd.starmax;s++){
 			var star = bd.star[s];
 			if(star.getStar()<=0 || star.validcell()!==null){ continue;}
-			
+
 			this.failcode.add("bdPassStar");
 			if(this.checkOnly){ break;}
 			switch(star.piece.group){
@@ -550,7 +550,7 @@ AnsCheck:{
 				var cell = clist[i];
 				var cell2 = this.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
 				if(!cell2.isnull && cell.room===cell2.room){ continue;}
-				
+
 				this.failcode.add("bkNotSymSt");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);

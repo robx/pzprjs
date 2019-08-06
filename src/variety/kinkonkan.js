@@ -42,7 +42,7 @@ MouseEvent:{
 			var excell = this.getpos(0).getex();
 			if(!excell.isnull && excell.qinfo===1){ this.isclearflash = true;}
 		}
-		
+
 		this.common.mouseevent.call(this, step);
 	},
 
@@ -60,10 +60,10 @@ MouseEvent:{
 			if     (this.btn==='left') { state = ((current + 6) % 4) - 1;}
 			else if(this.btn==='right'){ state = ((current + 4) % 4) - 1;}
 		}
-		
+
 		cell.setState(state);
 		cell.drawaround();
-		
+
 		this.inputData = state;
 	},
 	inputflash : function(){
@@ -336,9 +336,9 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], info = cell.error || cell.qinfo;
 			var px = cell.bx*this.bw, py = cell.by*this.bh;
-			
+
 			g.fillStyle = (cell.error!==0 ? this.errbcolor1 : this.lightcolor);
-			
+
 			g.vid = "c_bglight_"+cell.id;
 			if     (info===1){ g.fillRectCenter(px, py, this.bw+0.5, this.bh+0.5);}
 			else if(info!==0){ this.drawTriangle1(px, py, cell.qinfo);}
@@ -519,7 +519,7 @@ AnsCheck:{
 			){
 				result = false;
 				if(this.checkOnly){ break;}
-				
+
 				excell.seterr(1);
 				excell2.seterr(1);
 				if(!errorExcell){ errorExcell = excell;}

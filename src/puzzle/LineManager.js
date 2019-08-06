@@ -8,30 +8,30 @@ pzpr.classmgr.makeCommon({
 	initialize : function(){
 		if(this.moveline){ this.relation['cell.qnum'] = 'move';}
 	},
-	
+
 	enabled : false,
 	relation : {'border.line':'link'},
-	
+
 	pointgroup : 'cell',
 	linkgroup  : 'border',
-	
+
 	isLineCross : false,	// 線が交差するパズル
-	
+
 	makeClist : false,		// 線が存在するclistを生成する
 	moveline  : false,		// 丸数字などを動かすパズル
-	
+
 	coloring : true,
-	
+
 	//--------------------------------------------------------------------------------
 	// linegraph.setComponentRefs()    objにcomponentの設定を行う (性能対策)
 	// linegraph.isedgeexistsbylinkobj() linkobjにedgeが存在するか判定する
-	// 
+	//
 	// linegraph.getObjNodeList()      objにあるnodeを取得する
 	// linegraph.resetObjNodeList()    objからnodeをクリアする
 	//--------------------------------------------------------------------------------
 	setComponentRefs : function(obj, component){ obj.path = component;},
 	isedgeexistsbylinkobj : function(linkobj){ return linkobj.path!==null;},
-	
+
 	getObjNodeList   : function(nodeobj){ return nodeobj.pathnodes;},
 	resetObjNodeList : function(nodeobj){
 		nodeobj.pathnodes = [];
@@ -112,7 +112,7 @@ pzpr.classmgr.makeCommon({
 	addEdgeByLinkObj : function(linkobj){ // 線(など)を引いた時の処理
 		var enattach = (this.modifyNodes.length===0);
 		var sidenodeobj = this.getSideObjByLinkObj(linkobj);
-		
+
 		// 周囲のNodeをグラフに追加するかどうか確認する
 		this.createNodeIfEmpty(sidenodeobj[0]);
 		this.createNodeIfEmpty(sidenodeobj[1]);
@@ -180,7 +180,7 @@ pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	createNodeIfEmpty : function(cell){
 		var nodes = this.getObjNodeList(cell);
-		
+
 		// 周囲のNode生成が必要かもしれないのでチェック＆create
 		if(nodes.length===0){
 			this.createNode(cell);
@@ -215,7 +215,7 @@ pzpr.classmgr.makeCommon({
 	},
 	deleteNodeIfEmpty : function(cell){
 		var nodes = this.getObjNodeList(cell);
-		
+
 		// 周囲のNodeが消えるかもしれないのでチェック＆remove
 		if(nodes.length===1 && nodes[0].nodes.length===0 && !this.isnodevalid(cell)){
 			this.deleteNode(nodes[0]);
@@ -232,7 +232,7 @@ pzpr.classmgr.makeCommon({
 			else if(nodes[1].nodes.length===2){
 				nodes.push(nodes.shift());
 			}
-			
+
 			// 不要になったNodeを削除
 			this.deleteNode(nodes[1]);
 		}
@@ -249,12 +249,12 @@ pzpr.classmgr.makeCommon({
 		if(this.coloring && !component.color){
 			component.color = this.puzzle.painter.getNewLineColor();
 		}
-		
+
 		var edgeobjs = component.getedgeobjs();
 		for(var i=0;i<edgeobjs.length;i++){
 			this.setComponentRefs(edgeobjs[i], component);
 		}
-		
+
 		if(this.makeClist || this.moveline){
 			component.clist = new this.klass.CellList(component.getnodeobjs());
 			if(this.moveline){ this.setMovedBase(component);}
@@ -280,14 +280,14 @@ pzpr.classmgr.makeCommon({
 		var emptycell = this.board.emptycell;
 		component.departure = component.destination = emptycell;
 		component.movevalid = false;
-		
+
 		var clist = component.clist;
 		if(clist.length<1){ return;}
 		for(var i=0;i<clist.length;i++){
 			var cell=clist[i];
 			cell.base = (cell.isNum() ? cell : emptycell);
 		}
-		
+
 		var before=null, after=null, point=0;
 		if(clist.length===1){
 			before = after = clist[0];

@@ -156,7 +156,7 @@ pzpr.classmgr = {
 			/* 各クラスをpzpr.customから設定する */
 			this.setClasses(puzzle, newpid);
 		}
-		
+
 		callback();
 	},
 

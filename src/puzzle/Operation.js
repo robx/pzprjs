@@ -9,7 +9,7 @@ pzpr.classmgr.makeCommon({
 Operation:{
 	initialize : function(){
 		this.manager = this.puzzle.opemgr;
-		
+
 		if(arguments.length>0){
 			var args = Array.prototype.slice.call(arguments);
 			this.setData.apply(this, args);
@@ -116,7 +116,7 @@ Operation:{
 			lastope.num      === this.old   &&
 			lastope.bx       === this.bx    &&
 			lastope.by       === this.by    &&
-			(property === 'qnum'  || 
+			(property === 'qnum'  ||
 			 property === 'qnum2' ||
 			 property === 'qchar' ||
 			 property === 'anum'  ||
@@ -135,7 +135,7 @@ Operation:{
 	exec : function(num){
 		var bd = this.board, piece = bd.getObjectPos(this.group, this.bx, this.by);
 		if(this.group!==piece.group){ return true;}
-		
+
 		if(this.pos===null){
 			piece.setdata(this.property, num);
 		}
@@ -143,7 +143,7 @@ Operation:{
 			piece.setdata2(this.property, this.pos, num);
 		}
 		piece.draw();
-		
+
 		switch(this.property){
 			case 'qcmp': bd.cell.each(function(cell){ if(piece===cell.base){ cell.draw();}}); break;
 			default:     this.puzzle.checker.resetCache(); break;
@@ -273,7 +273,7 @@ Operation:{
 		this.manager.position--;
 		this.manager.resumeTrial();
 		this.manager.position++;
-		
+
 		this.manager.trialpos.pop();
 		this.manager.emitTrial(this.old);
 	},
@@ -487,7 +487,7 @@ OperationManager:{
 		else{
 			/* 前の履歴を更新したときは何もしない */
 		}
-		
+
 		if(newope.property!=='qcmp' && newope.property!=='snum'){
 			puzzle.checker.resetCache();
 		}
@@ -501,7 +501,7 @@ OperationManager:{
 	//---------------------------------------------------------------------------
 	decodeHistory :function(historyinfo){
 		this.allerase();
-		
+
 		this.initpos = this.position = historyinfo.current || 0;
 		this.history = [];
 		var datas = historyinfo.datas || [];
@@ -526,9 +526,9 @@ OperationManager:{
 				}
 			}
 		}
-		
+
 		this.checkexec();
-		
+
 		this.trialpos = historyinfo.trialpos || [];
 		if(this.trialpos.length>0){
 			this.resumeTrial();

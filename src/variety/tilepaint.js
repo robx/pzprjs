@@ -37,7 +37,7 @@ MouseEvent:{
 			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputBGcolor1();}
 			}
-			
+
 			if(this.mouseend && this.notInputted()){ this.input51();}
 		}
 	},

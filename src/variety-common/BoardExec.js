@@ -8,7 +8,7 @@ BoardExec:{
 	// bd.exec.adjustBoardData2()   回転・反転終了後に各セルの調節を行う(共通処理)
 	//   から呼び出される共通関数
 	//------------------------------------------------------------------------------
-	
+
 	//------------------------------------------------------------------------------
 	// bd.exec.adjustNumberArrow()  回転・反転開始前の矢印つき数字の調整
 	// bd.exec.adjustCellArrow()    回転・反転開始前の矢印セルの調整
@@ -183,7 +183,7 @@ BoardExec:{
 			case this.REDUCERT: bx2 = bx1-(bx1>=bd.maxbx-2?2:0); by2 = by1; break;
 			default: bx2 = bx1; by2 = by1; break;
 		}
-		
+
 		return { pos:new puzzle.klass.Address(bx2,by2), isdel:this.isdel(key,piece) };
 	}
 }

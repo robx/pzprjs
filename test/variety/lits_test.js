@@ -12,31 +12,31 @@ describe('Variety:lits',function(){
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath(1,3, 1,1, 5,1);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(1,5, 1,1, 3,1);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(1,1, 5,1, 5,3);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(3,1, 5,1, 5,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(5,1, 5,5, 3,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(5,3, 5,5, 1,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(1,1, 1,5, 3,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(1,3, 1,5, 5,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'L');
@@ -46,7 +46,7 @@ describe('Variety:lits',function(){
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath(1,1, 1,7);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'I');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(1,1, 7,1);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'I');
@@ -56,15 +56,15 @@ describe('Variety:lits',function(){
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath(1,3, 5,3, 3,3, 3,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'T');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(1,3, 5,3, 3,3, 3,1);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'T');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(3,1, 3,5, 3,3, 1,3);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'T');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(3,1, 3,5, 3,3, 5,3);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'T');
@@ -74,15 +74,15 @@ describe('Variety:lits',function(){
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath(1,3, 3,3, 3,5, 5,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'S');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(3,1, 3,3, 5,3, 5,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'S');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(1,5, 3,5, 3,3, 5,3);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'S');
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(5,1, 5,3, 3,3, 3,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, 'S');
@@ -92,7 +92,7 @@ describe('Variety:lits',function(){
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath(1,5, 1,1, 5,1);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, null);
-		
+
 		puzzle.ansclear();
 		puzzle.mouse.inputPath(3,3, 3,5, 5,5);
 		assert.equal(puzzle.board.tetrograph.components[0].shape, null);

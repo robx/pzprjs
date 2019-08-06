@@ -221,7 +221,7 @@ AnsCheck:{
 		for(var id=0;id<rooms.length;id++){
 			var area = rooms[id];
 			if( !area || evalfunc(area) ){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			area.clist.seterr(1);

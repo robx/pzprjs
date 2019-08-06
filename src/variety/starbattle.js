@@ -94,7 +94,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(){ return false;},
-	
+
 	keyinput : function(ca){
 		if(this.keydown && this.puzzle.editmode){
 			this.key_inputqnum_starbattle(ca);
@@ -433,7 +433,7 @@ Encode:{
 		this.encodeStarCount();
 		this.encodeBorder();
 	},
-	
+
 	decodeStarCount : function(){
 		var barray = this.outbstr.split("/"), bd = this.board;
 		bd.starCount.count = +barray[0];
@@ -482,7 +482,7 @@ AnsCheck:{
 			target = cell.relcell(-2,2); if(target.qans===1){ clist.add(target);}
 			target = cell.relcell( 2,2); if(target.qans===1){ clist.add(target);}
 			if(clist.length<=1){ continue;}
-			
+
 			this.failcode.add("starAround");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

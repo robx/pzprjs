@@ -102,7 +102,7 @@ Graphic:{
 		for(var i=0;i<clist.length;i++){
 			var cross = clist[i], bx = cross.bx, by = cross.by;
 			if(bx===bd.maxbx || by===bd.maxby || bx===bd.minbx || by===bd.minby){ continue;}
-			
+
 			g.vid = "x_cm_"+cross.id;
 			g.fillRect(bx*this.bw-rsize/2, by*this.bh-rsize/2, rsize, rsize);
 		}
@@ -130,11 +130,11 @@ Graphic:{
 	},
 	drawBGCells : function(){
 		var g = this.vinc('cell_back', 'crispEdges', true), bd = this.board;
-		
+
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], color = this.getBGCellColor(cell);
-			
+
 			g.vid = "c_full_"+cell.id;
 			if(!!color){
 				g.fillStyle = color;
@@ -174,7 +174,7 @@ Graphic:{
 	},
 	encodePzpr : function(type){
 		this.encodeNumber16();
-		
+
 		this.outpflag = (this.puzzle.getConfig('passallcell')?null:'e');
 	}
 },

@@ -1,6 +1,6 @@
 // test/load_testdata.js
 
-var pzpr = require('../dist/pzpr.js');
+var pzpr = require('../dist/js/pzpr.js');
 
 // Load test data
 var testdata = {};

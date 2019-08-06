@@ -34,7 +34,7 @@ MouseEvent:{
 		if(this.mouseCell.isnull){
 			this.inputEdit_first(cell);
 		}
-		
+
 		// startposの入力中の場合
 		if(this.inputData===10){
 			this.board.startpos.input(cell);
@@ -47,7 +47,7 @@ MouseEvent:{
 		else{
 			this.inputGate(cell);
 		}
-		
+
 		this.mouseCell = cell;
 	},
 	inputEdit_first : function(cell){
@@ -66,7 +66,7 @@ MouseEvent:{
 	},
 	inputGate : function(cell){
 		var pos = cell.getaddr(), input = false;
-		
+
 		// 黒マス上なら何もしない
 		if(cell.ques===1){}
 		// まだ入力されていない(1つめの入力の)場合
@@ -84,7 +84,7 @@ MouseEvent:{
 					input = true;
 				}
 			}
-			
+
 			if(input){
 				if(cell.ques===this.inputData){ this.inputData=0;}
 				this.firstPoint.reset();
@@ -101,15 +101,15 @@ MouseEvent:{
 				}
 			}
 		}
-		
+
 		this.prevPos = pos;
-		
+
 		// 描画・後処理
 		if(input){
 			var bd = this.board;
 			cell.setQues(this.inputData);
 			bd.gatemgr.rebuild();
-			
+
 			cell.draw();
 			bd.startpos.draw();
 		}
@@ -118,7 +118,7 @@ MouseEvent:{
 	inputEdit_end : function(){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
-		
+
 		if(this.inputData===10){
 			this.inputData = null;
 			cell.draw();
@@ -271,12 +271,12 @@ BoardExec:{
 	adjustBoardData2 : function(key,d){
 		var bd = this.board, opemgr = this.puzzle.opemgr;
 		var info = this.posinfo, isrec;
-		
+
 		isrec = ((key & this.REDUCE) && (info.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
 		bd.startpos.set(info.pos.getc());
 		if(isrec){ opemgr.forceRecord = false;}
-		
+
 		bd.gatemgr.rebuild();	// 念のため
 	}
 },
@@ -353,7 +353,7 @@ LineGraph:{
 	setComponentRefs : function(obj, component){ obj.gate = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.gatenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.gatenodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.ques===21||cell.ques===22);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		var dir = cell1.getdir(cell2,2);
@@ -364,12 +364,12 @@ LineGraph:{
 
 	rebuild : function(){
 		this.klass.AreaGraphBase.prototype.rebuild.call(this);
-		
+
 		this.generateGateNumberAll();
 	},
 	remakeComponent : function(){
 		this.klass.AreaGraphBase.prototype.remakeComponent.call(this);
-		
+
 		this.generateGateNumberAll();
 	},
 
@@ -972,7 +972,7 @@ AnsCheck:{
 				if(clist[i].lcnt>0){ cnt++;}
 			}
 			if((type===1 && cnt<=1)||(type===2 && cnt>0)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			clist.seterr(4);

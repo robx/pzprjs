@@ -129,7 +129,7 @@ Cell:{
 	allowShade : function(){
 		return this.qnums.length===0;
 	},
-	
+
 	initialize : function(){
 		this.common.initialize.call(this);
 		this.qnums = [];
@@ -172,7 +172,7 @@ Cell:{
 CellList:{
 	allclear : function(isrec){
 		this.common.allclear.call(this,isrec);
-		
+
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
 			if(cell.qnums.length>0){
@@ -263,7 +263,7 @@ Graphic:{
 
 		this.drawTarget();
 	},
-	
+
 	drawTapaNumbers : function(){
 		var g = this.vinc('cell_tapanum', 'auto');
 		var bw = this.bw, bh = this.bh;

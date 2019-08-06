@@ -12,7 +12,7 @@ AnsCheck:{
 	initialize : function(){
 		this.inCheck = false;
 		this.checkOnly = false;
-		
+
 		this.makeCheckList();
 	},
 	failcodemode : (void 0),
@@ -38,10 +38,10 @@ AnsCheck:{
 				order.push([this[item], prio]);
 			}
 		}
-		
+
 		this.checklist_normal = [];
 		for(var i=0; i<order.length; i++){ this.checklist_normal.push(order[i][0]);}
-		
+
 		/* autocheck用のエラーをソートする */
 		order = order.sort(function(a,b){ return b[1] - a[1];});
 		this.checklist_auto = [];
@@ -55,7 +55,7 @@ AnsCheck:{
 	check : function(activemode){
 		var puzzle = this.puzzle, bd = this.board;
 		this.inCheck = true;
-		
+
 		if(!!activemode){
 			this.checkOnly = false;
 			this.checkAns(false);
@@ -73,7 +73,7 @@ AnsCheck:{
 			bd.enableSetError();
 		}
 		/* activemodeでなく、前回の判定結果が残っている場合はそれを返します */
-		
+
 		this.inCheck = false;
 		return this.failcode;
 	},
@@ -109,7 +109,7 @@ CheckInfo:{
 	text : '',
 	length : 0,
 	lastcode : null,
-	
+
 	add : function(code){
 		if(!code){ return;}
 		if(code!==this.lastcode){ this[this.length++] = this.lastcode = code;}

@@ -66,7 +66,7 @@ FileIO:{
 	fileencode : function(filetype, option){
 		var puzzle = this.puzzle, bd = puzzle.board;
 		var pzl = new pzpr.parser.FileData('', puzzle.pid);
-		
+
 		this.currentType = filetype = filetype || pzl.FILE_PZPR; /* type===pzl.FILE_AUTO(0)もまとめて変換する */
 		option = option || {};
 
@@ -315,7 +315,7 @@ FileIO:{
 			}
 		}
 	},
-	
+
 	PBOX_ADJUST : 0,
 	decodeCellXMLBrow : function(func){ this.decodeCellXMLrow_com(func, 'board', 'brow');},
 	encodeCellXMLBrow : function(func){ this.encodeCellXMLrow_com(func, 'board', 'brow');},

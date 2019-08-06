@@ -98,7 +98,7 @@ AreaRoomGraph:{
 	setComponentRefs : function(obj, component){ obj.tetro = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tetronodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tetronodes = [];},
-	
+
 	isedgevalidbylinkobj : function(border){
 		return !border.isBorder();
 	},
@@ -267,7 +267,7 @@ FileIO:{
 				}
 			}
 			if(check){ continue;}
-			
+
 			this.failcode.add("bkShadeDivide");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

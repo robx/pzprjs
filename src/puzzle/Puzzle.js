@@ -45,30 +45,30 @@ pzpr.Puzzle.prototype =
 {
 	pid : null,			// パズルのID("creek"など)
 	info : {},			// VarietyInfoへの参照
-	
+
 	klass    : null,
-	
+
 	ready    : false,	// 盤面の準備ができたかを示す (Canvas準備完了前にtrueになる)
 	editmode : false,	// 問題配置モード
 	playmode : false,	// 回答モード
 	playeronly : false,	// 回答モードのみで動作する
 	instancetype : '',	// editpr/player/viewerのいずれか
-	
+
 	starttime : 0,
-	
+
 	canvas    : null,	// 描画canvas本体
 	subcanvas : null,	// 補助canvas
-	
+
 	listeners : null,
-	
+
 	config : null,
-	
+
 	metadata : null,	// 作者やコメントなどの情報
-	
+
 	// モード設定用定数
 	MODE_EDITOR : 1,
 	MODE_PLAYER : 3,
-	
+
 	//---------------------------------------------------------------------------
 	// owner.open()    パズルデータを入力して盤面の初期化を行う
 	//---------------------------------------------------------------------------
@@ -111,14 +111,14 @@ pzpr.Puzzle.prototype =
 	//---------------------------------------------------------------------------
 	setCanvas : function(el, type){
 		if(!el){ return;}
-		
+
 		var rect = pzpr.util.getRect(el);
 		var _div = document.createElement('div');
 		_div.style.width  = rect.width+'px';
 		_div.style.height = rect.height+'px';
 		el.appendChild(_div);
 		this.canvas = _div;
-		
+
 		setCanvas_main(this, (type || this.preInitCanvasInfo.type));
 	},
 
@@ -352,7 +352,7 @@ pzpr.Puzzle.prototype =
 	execConfig : function(idname){
 		return (this.config.get(idname) && this.config.getexec(idname));
 	},
-	
+
 	//------------------------------------------------------------------------------
 	// owner.getCurrentConfig() 現在有効な設定と設定値を返す
 	// owner.saveConfig()     設定値の保存を行う
@@ -383,20 +383,20 @@ function openExecute(puzzle, data, variety, callback){
 		/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 		if(Board!==puzzle.klass.Board){ initObjects(puzzle);}
 		else{ puzzle.painter.suspendAll();}
-		
+
 		try{
 			puzzle.metadata.reset();
 			if     (pzl.isurl) { new puzzle.klass.Encode().decodeURL(pzl);}
 			else if(pzl.isfile){ new puzzle.klass.FileIO().filedecode(pzl);}
-			
+
 			puzzle.ready = true;
 			puzzle.emit('ready');
 			puzzle.emit('mode');
-			
+
 			if(!!puzzle.canvas){ postCanvasReady(puzzle);}
-			
+
 			puzzle.resetTime();
-			
+
 			if(!!callback){ callback(puzzle);}
 		}
 		catch(e){
@@ -435,7 +435,7 @@ function initObjects(puzzle){
 function setCanvas_main(puzzle, type){
 	/* fillTextが使えない場合は強制的にSVG描画に変更する */
 	if(type==='canvas' && !!pzpr.Candle.enable.canvas && !CanvasRenderingContext2D.prototype.fillText){ type = 'svg';}
-	
+
 	pzpr.Candle.start(puzzle.canvas, type, function(g){
 		pzpr.util.unselectable(g.canvas);
 		g.child.style.pointerEvents = 'none';
@@ -464,7 +464,7 @@ function createSubCanvas(type){
 //---------------------------------------------------------------------------
 function postCanvasReady(puzzle){
 	var pc = puzzle.painter, opt = puzzle.preInitCanvasInfo;
-	
+
 	if(puzzle.preInitCanvasInfo){
 		if(puzzle.instancetype!=='viewer'){
 			setCanvasEvents(puzzle);
@@ -482,7 +482,7 @@ function postCanvasReady(puzzle){
 		}
 		delete puzzle.preInitCanvasInfo;
 	}
-	
+
 	pc.initCanvas();
 }
 
@@ -492,7 +492,7 @@ function postCanvasReady(puzzle){
 //---------------------------------------------------------------------------
 function setCanvasEvents(puzzle){
 	function ae(type,func){ pzpr.util.addEvent(puzzle.canvas, type, puzzle, func);}
-	
+
 	// マウス入力イベントの設定
 	ae("mousedown", execMouseDown);
 	ae("mousemove", execMouseMove);
@@ -500,7 +500,7 @@ function setCanvasEvents(puzzle){
 	ae("mousecancel", execMouseCancel);
 	puzzle.canvas.oncontextmenu = function(){ return false;};
 	puzzle.canvas.style.touchAction = 'pinch-zoom';
-	
+
 	// キー入力イベントの設定
 	ae("keydown", execKeyDown);
 	ae("keyup",   execKeyUp);
@@ -529,18 +529,18 @@ function execKeyUp(e){
 //---------------------------------------------------------------------------
 function getLocalCanvas(puzzle, imageopt){
 	var imgcanvas = createSubCanvas(imageopt.type);
-	
+
 	var pc2 = new puzzle.klass.Graphic();
 	pc2.context = imgcanvas.getContext("2d");
 	pc2.context.enableTextLengthWA = false;
 	pc2.outputImage = true;		/* 一部画像出力時に描画しないオブジェクトがあるパズル向け設定 */
 	if('bgcolor' in imageopt){ pc2.bgcolor = imageopt.bgcolor;}
 	if(puzzle.pid==='kramma'){ pc2.imgtile = puzzle.painter.imgtile;}
-	
+
 	// canvasの設定を適用して、再描画
 	pc2.resizeCanvasByCellSize(imageopt.cellsize);
 	pc2.unsuspend();
-	
+
 	return imgcanvas;
 }
 
@@ -566,14 +566,14 @@ function parseImageOption(){ // (type,quality,option)のはず
 				break;
 		}
 	}
-	
+
 	imageopt.type = ((type||pzpr.Candle.current).match(/svg/)?'svg':'canvas');
 	imageopt.mimetype = (imageopt.type!=='svg' ? 'image/'+type : 'image/svg+xml');
 	if(quality!==null && quality!==void 0){ imageopt.quality = quality;}
-	
+
 	if(cellsize!==null){ imageopt.cellsize = cellsize;}
 	if(bgcolor !==null){ imageopt.bgcolor  = bgcolor;}
-	
+
 	return imageopt;
 }
 

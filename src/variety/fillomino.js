@@ -134,7 +134,7 @@ Board:{
 
 	setExtraData : function(component){
 		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
-		
+
 		var nums = [], numkind=0, filled=-1;
 		for(var i=0;i<clist.length;i++){
 			var num = clist[i].getNum();
@@ -275,7 +275,7 @@ AnsCheck:{
 		for(var id=0;id<rooms.length;id++){
 			var area = rooms[id];
 			if( !area || evalfunc(area) ){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			area.clist.seterr(1);

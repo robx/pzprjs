@@ -107,7 +107,7 @@ AreaRoomGraph:{
 	// オーバーライド
 	setExtraData : function(component){
 		component.clist = new this.klass.CellList(component.getnodeobjs());
-		
+
 		var d = component.clist.getRectSize();
 		component.is1x3 = (((d.x1===d.x2)||(d.y1===d.y2)) && d.cnt===3);
 	}

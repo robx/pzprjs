@@ -136,7 +136,7 @@ LineGraph:{
 	setComponentRefs : function(obj, component){ obj.ant = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.antnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.antnodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.base.qnum!==-1);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		var num1 = cell1.base.qnum, num2 = cell2.base.qnum;
@@ -376,7 +376,7 @@ FileIO:{
 		for(var id=0;id<areas.length;id++){
 			var ant = areas[id];
 			if(ant.clist.isCmp()){ continue;}
-			
+
 			this.failcode.add("bkWrongNum");
 			if(this.checkOnly){ break;}
 			this.board.cell.setnoerr();

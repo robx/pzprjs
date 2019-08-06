@@ -6,7 +6,7 @@
 pzpr.env = (function(){
 	var isbrowser = pzpr.Candle.env.browser;
 	var UA  = (isbrowser ? navigator.userAgent : '');
-	
+
 	var ios     = (UA.indexOf('like Mac OS X') > -1);
 	var android = (UA.indexOf('Android') > -1);
 	var os = {
@@ -14,7 +14,7 @@ pzpr.env = (function(){
 		Android: (android),
 		mobile : (ios || android)
 	};
-	
+
 	var FireFoxVersion = (function(){
 		if(UA.match(/Firefox\/(\w+(\.\w+)?)/)){
 			var ver = RegExp.$1;
@@ -41,7 +41,7 @@ pzpr.env = (function(){
 		AndroidBrowser: (os.Android && SafariVersion),
 		Presto: (typeof window==='object' && !!window.opera)
 	};
-	
+
 	var api = {
 		touchevent      : isbrowser && ((!!window.ontouchstart) || (!!document.createTouch)),
 		pointerevent    : isbrowser && (!!window.PointerEvent),
@@ -50,7 +50,7 @@ pzpr.env = (function(){
 		svgTextLength   : !isbrowser || ((FireFoxVersion||1000) >= 25),
 		anchor_download : isbrowser && (document.createElement("a").download!==(void 0))
 	};
-	
+
 	return {
 		bz      : bz,
 		OS      : os,

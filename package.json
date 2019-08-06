@@ -21,11 +21,11 @@
     "node": ">= 5.6.0"
   },
   "scripts": {
-    "build": "eslint --cache --quiet src && grunt default",
+    "build": "eslint --cache --quiet src src-ui && grunt default",
     "release": "npm run clean && eslint --cache --quiet src && grunt release",
     "clean": "del dist/* pzpr-*.{zip,tar.gz,tar.bz2,tgz}",
-    "lint": "eslint src test sample",
-    "test": "eslint --quiet src test sample && mocha -r source-map-support/register -R progress --recursive test",
+    "lint": "eslint src src-ui test sample",
+    "test": "eslint --quiet src src-ui test sample && mocha -r source-map-support/register -R progress --recursive test",
     "prepublishOnly": "npm test"
   },
   "devDependencies": {
@@ -33,6 +33,7 @@
     "grunt": "^1.0.4",
     "eslint": "^5.16.0",
     "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-newer": "^1.1.1",
     "mocha": "^6.1.4"

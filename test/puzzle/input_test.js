@@ -2,7 +2,7 @@
 
 var assert = require('assert');
 
-var pzpr = require('../../dist/pzpr.js');
+var pzpr = require('../../dist/js/pzpr.js');
 
 var testdata = require('../load_testdata.js');
 

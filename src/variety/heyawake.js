@@ -249,7 +249,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.board.getc(sx-cell.bx, sy-cell.by);
 				if(cell.isShade() === cell2.isShade()){ continue;}
-				
+
 				this.failcode.add("bkNotSymShade");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);

@@ -68,7 +68,7 @@ MouseEvent:{
 		this.mousestart = false;
 		this.mousemove  = false;
 		this.mouseend   = false;
-		
+
 		if(this.puzzle.execConfig('dispmove') && !!cell0 && !cell0.isnull){ cell0.draw();}
 	},
 	modechange : function(){
@@ -86,32 +86,32 @@ MouseEvent:{
 	// この3つのマウスイベントはCanvasから呼び出される(mvをbindしている)
 	e_mousedown : function(e){
 		if(!this.enableMouse){ return true;}
-		
+
 		this.setMouseButton(e);			/* どのボタンが押されたか取得 (mousedown時のみ) */
 		if(!this.btn){ this.mousereset(); return;}
 		var addrtarget = this.getBoardAddress(e);
 		this.moveTo(addrtarget.bx, addrtarget.by);
-		
+
 		e.stopPropagation();
 		e.preventDefault();
 	},
 	e_mouseup   : function(e){
 		if(!this.enableMouse || !this.btn){ return true;}
-		
+
 		this.inputEnd();
-		
+
 		e.stopPropagation();
 		e.preventDefault();
 	},
 	e_mousemove : function(e){
 		if(!this.enableMouse || !this.btn){ return true;}
-		
+
 		if(e.touches!==void 0 || e.which===void 0 || e.which!==0 || (e.type.match(/pointermove/i) && e.buttons>0)){
 			var addrtarget = this.getBoardAddress(e);
 			this.lineTo(addrtarget.bx, addrtarget.by);
 		}
 		else{ this.mousereset();}
-		
+
 		e.stopPropagation();
 		e.preventDefault();
 	},
@@ -125,7 +125,7 @@ MouseEvent:{
 	//---------------------------------------------------------------------------
 	setMouseButton : function(e){
 		this.btn = pzpr.util.getMouseButton(e);
-		
+
 		// SHIFTキー/Commandキーを押している時は左右ボタン反転
 		var kc = this.puzzle.key;
 		kc.checkmodifiers(e);
@@ -195,7 +195,7 @@ MouseEvent:{
 		this.mousestart = (step===0);
 		this.mousemove  = (step===1);
 		this.mouseend   = (step===2);
-		
+
 		var puzzle = this.puzzle;
 		puzzle.emit('mouse');
 		if(!this.cancelEvent && (this.btn==='left' || this.btn==='right')){
@@ -204,7 +204,7 @@ MouseEvent:{
 				puzzle.errclear();
 			}
 			else{ puzzle.opemgr.newChain();}
-			
+
 			this.mouseinput();
 		}
 	},

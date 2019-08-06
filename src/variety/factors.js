@@ -149,7 +149,7 @@ AnsCheck:{
 			var room = rooms[r], clist = room.clist;
 			var product = clist.getProduct();
 			if(product === 0 || product === room.top.qnum){ continue;}
-			
+
 			this.failcode.add("nmProduct");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

@@ -17,7 +17,7 @@ AnsCheck:{
 			var cell = this.board.cell[c];
 			if(cell.ques===7){ continue;}
 			if(!func(cell)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -51,7 +51,7 @@ AnsCheck:{
 			if(!cell.isValidNum()){ continue;}
 			var num = cell.getNum(), count=cell.countDir4Cell(iscount);
 			if((type===0 && num===count) || (type===1 && num<=count) || (type===2 && num>=count)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -99,11 +99,11 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.bx>=bd.maxbx-1 || cell.by>=bd.maxby-1){ continue;}
-			
+
 			var bx=cell.bx, by=cell.by;
 			var clist = bd.cellinside(bx, by, bx+2, by+2).filter(func);
 			if(clist.length<4){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -236,7 +236,7 @@ AnsCheck:{
 	checkLineCount : function(val, code){
 		var result = true, bd = this.board;
 		if(!bd.linegraph.ltotal[val]){ return;}
-		
+
 		if(!bd.borderAsLine){
 			this.checkAllCell(function(cell){ return cell.lcnt===val;}, code);
 		}
@@ -245,7 +245,7 @@ AnsCheck:{
 			for(var c=0;c<boardcross.length;c++){
 				var cross = boardcross[c];
 				if(cross.lcnt!==val){ continue;}
-				
+
 				result = false;
 				if(this.checkOnly){ break;}
 				cross.seterr(1);
@@ -266,7 +266,7 @@ AnsCheck:{
 	checkDeadendConnectLine : function(){ this.checkConnectLineCount(1, "lnDeadEnd");},
 	checkConnectLineCount : function(val, code){
 		if(!this.board.linegraph.ltotal[val]){ return;}
-		
+
 		this.checkAllCell(function(cell){ return (cell.noNum() && cell.lcnt===val);}, code);
 	},
 
@@ -282,7 +282,7 @@ AnsCheck:{
 				(!adb.left.isLine()   || !cell.noLP(cell.LT)) &&
 				(!adb.right.isLine()  || !cell.noLP(cell.RT)) )
 			{ continue;}
-		
+
 			this.failcode.add("ceAddLine");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -305,7 +305,7 @@ AnsCheck:{
 			var a = (!!filterfunc ? clist.filter(filterfunc) : clist).length;
 			var n = ((!!top && !top.isnull) ? top.qnum : -1);
 			if( evalfunc(d.cols, d.rows, a, n) ){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			if(areas!==this.board.linegraph){
@@ -363,7 +363,7 @@ AnsCheck:{
 		for(var id=0;id<paths.length;id++){
 			var clist = paths[id].clist;
 			if( evalfunc( clist.filter(function(cell){ return cell.isNum();}).length ) ){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			this.board.border.setnoerr();
@@ -385,7 +385,7 @@ AnsCheck:{
 		for(var i=0;i<sides.length;i++){
 			var a1=getval(sides[i][0]), a2=getval(sides[i][1]);
 			if(a1<=0 || a2<=0 || a1!==a2){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			sides[i][0].clist.seterr(1);
@@ -448,7 +448,7 @@ AnsCheck:{
 		for(var r=0;r<areas.length;r++){
 			var clist = areas[r].clist;
 			if( evalfunc.call(this, clist) ){ continue;}
-			
+
 			this.failcode.add("bkDupNum");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -483,7 +483,7 @@ AnsCheck:{
 			for(var by=1;by<=bd.maxby;by+=2){
 				var clist = bd.cellinside(bd.minbx+1,by,bd.maxbx-1,by);
 				if( evalfunc.call(this, clist) ){ continue;}
-				
+
 				result = false;
 				if(this.checkOnly){ break allloop;}
 			}
@@ -491,12 +491,12 @@ AnsCheck:{
 			for(var bx=1;bx<=bd.maxbx;bx+=2){
 				var clist = bd.cellinside(bx,bd.minby+1,bx,bd.maxby-1);
 				if( evalfunc.call(this, clist) ){ continue;}
-				
+
 				result = false;
 				if(this.checkOnly){ break allloop;}
 			}
 		} while(0);
-		
+
 		if(!result){
 			this.failcode.add(code);
 		}
@@ -541,7 +541,7 @@ AnsCheck:{
 				}
 			}
 		} while(0);
-		
+
 		if(!result){
 			this.failcode.add(code);
 		}
@@ -561,7 +561,7 @@ AnsCheck:{
 		for(var c=0;c<crosses.length;c++){
 			var cross = crosses[c];
 			if(cross.lcnt!==val || ((bp===1 && cross.qnum!==1) || (bp===2 && cross.qnum===1) )){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cross.setCrossBorderError();
@@ -608,7 +608,7 @@ AnsCheck:{
 		var bd = this.board;
 		var pathsegs = [], passed = [];
 		for(var id=0;id<bd.border.length;id++){ passed[id] = false;}
- 
+
 		var clist = bd.cell.filter(function(cell){ return cell.isNum();});
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], adb = cell.adjborder;
@@ -656,7 +656,7 @@ AnsCheck:{
 				if(isNaN(pathseg.length[pathseg.ccnt])){ pathseg.length[pathseg.ccnt]=1;}else{ pathseg.length[pathseg.ccnt]++;}
 			}
 		}
-		
+
 		if(pathseg.objs.length>0){
 			pathseg.cells[1] = pos.getc();
 			pathseg.dir2 = [0,2,1,4,3][dir];
@@ -685,21 +685,21 @@ FailCode:{
 	bkDupNum : ["同じブロックに同じ数字が入っています。","There are equal numbers in a block."],
 	bkPlNum  : ["複数種類の数字が入っているブロックがあります。","A block has two or more kinds of number."],
 	bkSepNum : ["同じ数字が異なるブロックに入っています。","One kind of number is included in different blocks."],
-	
+
 	bkSizeNe : ["数字とブロックの大きさが違います。","The size of the block is not equal to the number."],
-	
+
 	bkShadeNe     : ["部屋の数字と黒マスの数が一致していません。","The number of shaded cells in the room and the number written in the room is different."],
 	bkShadeDivide : ["1つの部屋に入る黒マスが2つ以上に分裂しています。","Shaded cells are divided in a room."],
 	bkNoShade     : ["黒マスがない部屋があります。","A room has no shaded cell."],
 	bkMixed       : ["白マスと黒マスの混在したタイルがあります。","A tile includes both shaded and unshaded cells."],
-	
+
 	bkWidthGt1 : ["幅が１マスではないタタミがあります。","The width of the tatami is not one."],
-	
+
 	brNoValidNum : ["盤面に数字がありません。","There are no numbers on the board."],
-	
+
 	/* ** 領域＋線を引く ** */
 	brNoLine : ["線が引かれていません。","There is no line on the board."],
-	
+
 	/* ** 盤面切り分け系 ** */
 	bkNotRect : ["四角形ではない部屋があります。","There is a room whose shape is not a rectangle."],
 	bdDeadEnd : ["途中で途切れている線があります。","There is a dead-end line."],
@@ -723,7 +723,7 @@ FailCode:{
 	lcOnNum   : ["数字の上を線が通過しています。","A line goes through a number."],
 	nmNoLine  : ["どこにもつながっていない数字があります。","A number is not connected to another number."],
 	nmConnected : ["アルファベットが繋がっています。","There are connected letters."],
-	
+
 	/* ** 線で動かす系 ** */
 	laIsolate : ["アルファベットにつながっていない線があります。","A line doesn't connect to any letter."],
 	laOnNum : ["アルファベットの上を線が通過しています。","A line goes through a letter."],
@@ -734,7 +734,7 @@ FailCode:{
 	ceNoNum   : ["数字の入っていないマスがあります。","There is an empty cell."],
 	ceNoLine  : ["線が引かれていないマスがあります。","There is an empty cell."],
 	ceAddLine : ["最初から引かれている線があるマスに線が足されています。","Lines are added to the cell that the mark lie in by the question."],
-	
+
 	anShadeNe : ["矢印の方向にある黒マスの数が正しくありません。","The number of shaded cells is not correct."],
 
 	/* ** 数字系 ** */

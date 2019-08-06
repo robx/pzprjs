@@ -200,7 +200,7 @@ AnsCheck:{
 
 			var clist = cell.getViewClist();
 			if(cell.getNum()===clist.length){ continue;}
-			
+
 			this.failcode.add("nmSumViewNe");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

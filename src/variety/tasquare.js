@@ -134,7 +134,7 @@ AnsCheck:{
 			if(adc.right.isShade() ){ clist.extend(adc.right .sblk.clist);}
 
 			if(flag ? (clist.length===cell.qnum) : (clist.length>0)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

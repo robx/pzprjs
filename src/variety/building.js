@@ -40,7 +40,7 @@ MouseEvent:{
 			var excell = this.getpos(0).getex();
 			if(!excell.isnull && excell.qinfo===1){ this.isclearflash = true;}
 		}
-		
+
 		this.common.mouseevent.call(this, step);
 	},
 
@@ -121,7 +121,7 @@ TargetCursor:{
 // 盤面管理系
 Cell:{
 	enableSubNumberArray : true,
-	
+
 	maxnum : function(){
 		return Math.max(this.board.cols,this.board.rows);
 	}
@@ -129,7 +129,7 @@ Cell:{
 
 EXCell:{
 	disInputHatena : true,
-	
+
 	maxnum : function(){
 		var bd = this.board;
 		if(this.by<0 || this.by>bd.rows*2){
@@ -376,10 +376,10 @@ AnsCheck:{
 			if(excell.qnum===-1){ continue;}
 			var count = bd.searchSight(excell, false).cnt;
 			if(excell.qnum===count){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
-			
+
 			excell.seterr(1);
 			errorExcell.add(excell);
 		}

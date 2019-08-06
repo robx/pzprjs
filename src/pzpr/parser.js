@@ -8,7 +8,7 @@ var URL_AUTO    = 0,
 	URL_KANPEN  = 3,
 	URL_KANPENP = 4,
 	URL_HEYAAPP = 5,
-	
+
 	FILE_AUTO = 0,
 	FILE_PZPR = 1,
 	FILE_PBOX = 2,
@@ -28,30 +28,30 @@ Parser.extend({
 	URL_KANPEN  : URL_KANPEN,
 	URL_KANPENP : URL_KANPENP,
 	URL_HEYAAPP : URL_HEYAAPP,
-	
+
 	// 定数(ファイル形式)
 	FILE_AUTO : FILE_AUTO,
 	FILE_PZPR : FILE_PZPR,
 	FILE_PBOX : FILE_PBOX,
 	FILE_PBOX_XML : FILE_PBOX_XML,
-	
+
 	/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
 	/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
 	parse : function(data, variety){
 		if(data instanceof URLData || data instanceof FileData){ return data;}
-		
+
 		return this.parseFile(data, variety) || this.parseURL(data);
 	},
-	
+
 	parseURL : function(url){
 		if(url instanceof URLData){ return url;}
-		
+
 		url = url.replace(/(\r|\n)/g,""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
 		return (new URLData(url)).parse();
 	},
 	parseFile : function(fstr, variety){
 		if(fstr instanceof FileData){ return fstr;}
-		
+
 		if(!fstr.match(/^\<\?xml/)){
 			fstr = fstr.replace(/[\t\r]*\n/g,"\n").replace(/\//g,"\n");
 		}
@@ -75,10 +75,10 @@ pzpr.parser.URLData.prototype = {
 	cols    : 0,
 	rows    : 0,
 	body    : "",
-	
+
 	isurl : true,
 	isfile : false,
-	
+
 	// 定数(URL形式)
 	URL_AUTO    : URL_AUTO,
 	URL_PZPRV3  : URL_PZPRV3,
@@ -86,7 +86,7 @@ pzpr.parser.URLData.prototype = {
 	URL_KANPEN  : URL_KANPEN,
 	URL_KANPENP : URL_KANPENP,
 	URL_HEYAAPP : URL_HEYAAPP,
-	
+
 	parse : function (){
 		this.parseURLType();
 		this.parseURLData();
@@ -96,7 +96,7 @@ pzpr.parser.URLData.prototype = {
 	generate : function (){
 		return this.outputURLType() + this.outputURLData();
 	},
-	
+
 	//---------------------------------------------------------------------------
 	// ★ parseURLType() 入力されたURLからどのパズルか、およびURLの種類を抽出する
 	//                   入力=URL 例:http://pzv.jp/p.html?(pid)/(qdata)
@@ -184,7 +184,7 @@ pzpr.parser.URLData.prototype = {
 			if(!!inp[0] && !isNaN(inp[0])){ inp.unshift("");}
 			this.pflag = inp.shift();
 		}
-		
+
 		/* サイズを表す文字列 */
 		if(this.type===URL_KANPEN){
 			if(this.pid==="kakuro"){
@@ -265,7 +265,7 @@ pzpr.parser.URLData.prototype = {
 		// this.bodyが空の場合はEncode.jsの仕様により対象外
 		// カンペンには以下のパズルは存在しないのでURL_KANPENPも対象外
 		if(!this.body || (this.type!==URL_PZPRV3 && this.type!==URL_PZPRAPP)){ return;}
-		
+
 		switch(this.pid){
 		case 'ichimaga':
 			if     (this.pflag.indexOf('m')>=0){ this.pid = 'ichimagam';}
@@ -324,16 +324,16 @@ pzpr.parser.FileData.prototype = {
 	history : "",
 	metadata: null,
 	xmldoc  : null,
-	
+
 	isurl : false,
 	isfile : true,
-	
+
 	// 定数(ファイル形式)
 	FILE_AUTO : FILE_AUTO,
 	FILE_PZPR : FILE_PZPR,
 	FILE_PBOX : FILE_PBOX,
 	FILE_PBOX_XML : FILE_PBOX_XML,
-	
+
 	parse : function(){
 		var result = (this.parseFileType() && this.parseFileData());
 		if(result){ this.changeProperPid();}
@@ -342,7 +342,7 @@ pzpr.parser.FileData.prototype = {
 	generate : function(){
 		return this.outputFileType() + this.outputFileData();
 	},
-	
+
 	//---------------------------------------------------------------------------
 	// ★ parseFileType() 入力されたファイルのデータからどのパズルか、およびパズルの種類を抽出する
 	//                   出力={pid:パズル種類, type:ファイル種類, fstr:ファイルの内容}
@@ -351,7 +351,7 @@ pzpr.parser.FileData.prototype = {
 		var lines = this.fstr.split("\n");
 		var firstline = lines.shift();
 		delete this.fstr;
-		
+
 		/* ヘッダからパズルの種類・ファイルの種類を判定する */
 		if(firstline.match(/^pzprv3/)){
 			this.type = FILE_PZPR;
@@ -378,10 +378,10 @@ pzpr.parser.FileData.prototype = {
 			this.pid = '';
 		}
 		this.pid = pzpr.variety.toPID(this.pid);
-		
+
 		return (!!this.pid);
 	},
-	
+
 	//---------------------------------------------------------------------------
 	// ★ outputFileType() パズル種類, ファイル種類からヘッダを生成する
 	//---------------------------------------------------------------------------
@@ -395,14 +395,14 @@ pzpr.parser.FileData.prototype = {
 		}
 		return "";
 	},
-	
+
 	//---------------------------------------------------------------------------
 	// ★ parseFileData() ファイルの内容からサイズなどを求める
 	//---------------------------------------------------------------------------
 	parseFileData : function(){
 		var lines = this.qdata.split("\n"), col = 0, row = 0;
 		delete this.qdata;
-		
+
 		/* サイズを表す文字列 */
 		if(this.type===FILE_PBOX_XML){
 			row = +this.body.querySelector('size').getAttribute('row');
@@ -423,37 +423,37 @@ pzpr.parser.FileData.prototype = {
 		if(row<=0 || col<=0){ return false;}
 		this.rows = row;
 		this.cols = col;
-		
+
 		/* サイズ以降のデータを取得 */
 		if(this.type===FILE_PZPR){
 			var historypos = null, str = "", strs = [], isinfo = false;
 			for(var i=0;i<lines.length;i++){
 				/* かなり昔のぱずぷれファイルは最終行にURLがあったので、末尾扱いする */
 				if(lines[i].match(/^http\:\/\//)){ break;}
-				
+
 				/* info行に到達した場合 */
 				if(lines[i].match(/info:\{/)){ historypos=i; isinfo = true; break;}
-				
+
 				/* 履歴行に到達した場合 */
 				if(lines[i].match(/history:\{|__HISTORY__/)){ historypos=i; break;}
-				
+
 				strs.push(lines[i]);
 			}
 			this.body += strs.join('\n');
-			
+
 			/* 履歴部分の読み込み */
 			if(historypos!==null && !!JSON){
 				var count = 0, cnt;
 				for(var i=historypos;i<lines.length;i++){
 					str += lines[i];
-					
+
 					cnt = count;
 					count += (lines[i].match(/\{/g)||[]).length;
 					count -= (lines[i].match(/\}/g)||[]).length;
 					if(cnt>0 && count===0){ break;}
 				}
 			}
-			
+
 			/* 履歴出力があったら入力する */
 			if(!!JSON){
 				if(isinfo && (str.substr(0,5)==="info:")){
@@ -479,10 +479,10 @@ pzpr.parser.FileData.prototype = {
 				meta.comment= (!!commentnode ? commentnode.childNodes[0].data : '');
 			}
 		}
-		
+
 		return true;
 	},
-	
+
 	//---------------------------------------------------------------------------
 	// ★ outputFileData() パズル種類, URL種類, fstrからファイルのデータを生成する
 	//---------------------------------------------------------------------------
@@ -539,7 +539,7 @@ pzpr.parser.FileData.prototype = {
 				propnode.appendChild(commentnode);
 			}
 			puzzlenode.appendChild(propnode);
-			
+
 			// 順番を入れ替え
 			puzzlenode.appendChild(puzzlenode.querySelector('board'));
 			puzzlenode.appendChild(puzzlenode.querySelector('answer'));
@@ -569,7 +569,7 @@ pzpr.parser.FileData.prototype = {
 	//---------------------------------------------------------------------------
 	changeProperPid : function(){
 		if(this.type!==FILE_PZPR){ return;}
-		
+
 		switch(this.pid){
 		case 'ichimaga':
 			var pzlflag = this.body.split('\n')[0];

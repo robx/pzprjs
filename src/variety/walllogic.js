@@ -44,25 +44,25 @@ MouseEvent:{
 			else if(dx<=-0.50){ dir=3;}
 			else if(dx>= 0.50){ dir=4;}
 			if(dir!==null && (this.inputData===null && cell.anum===dir)){ dir = -1;}
-			
+
 			// inputData/mode: -1:消去 1:追加 2:上書き
 			var mode = null;
 			if(dir===null){}
 			else if(dir===-1    || this.inputData===-1){ mode = -1; dir = -1;}
 			else if(cell.anum>0 || this.inputData=== 2){ mode = 2;}
 			else if(cell.anum<0){ mode = 1;}
-			
+
 			if(mode!==null && (this.inputData===null || this.inputData===mode)){
 				var basecell = [];
 				if(cell.wall && this.puzzle.execConfig('autocmp')){ basecell.push(cell.wall.clist.getBaseCell());}
-				
+
 				// 描画・後処理
 				cell.setAnum(dir);
 				cell.drawaround();
-				
+
 				this.inputData = mode;
 				this.firstPoint.reset();
-				
+
 				if(cell.wall && this.puzzle.execConfig('autocmp')){ basecell.push(cell.wall.clist.getBaseCell());}
 				if(basecell.length>0){
 					for(var i=0;i<basecell.length;i++){ if(basecell[i].qnum!==-1){ basecell[i].draw();}}
@@ -229,7 +229,7 @@ BoardExec:{
 	setComponentRefs : function(obj, component){ obj.wall = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.wallnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.wallnodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.anum>0);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		if(cell1.anum!==cell2.anum){ return false;}
@@ -296,7 +296,7 @@ Graphic:{
 				else if(info===-1) { color = this.noerrcolor;}
 				else               { color = (cell.trial ? this.trialcolor : this.linecolor);}
 			}
-			
+
 			g.vid = "c_wall_"+cell.id;
 			if(!!color){
 				g.fillStyle = color;
@@ -452,7 +452,7 @@ AnsCheck:{
 			if((type===1 && clist.length<=num) ||
 			   (type===2 && (clist.length>=num || clist.length===0)) ||
 			   (type===3 && (clist.length>0 && num>0))){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

@@ -123,7 +123,7 @@ MouseEvent:{
 		else              { trans = (this.btn==='left'?{0:2,2:13,13:14,14:0}:{0:14,14:13,13:2,2:0});}
 		qs = trans[qs] || 0;
 		if(this.inputMode==='diraux' && qs===2){ qs=trans[qs] || 0;}
-		
+
 		border.setQsub(qs);
 		border.draw();
 	}
@@ -213,7 +213,7 @@ Board:{
 		old_out.setArrow(0);
 		this.arrowin.set(old_out);
 		this.arrowout.set(old_in);
-		
+
 		this.arrowin.draw();
 		this.arrowout.draw();
 	}
@@ -231,19 +231,19 @@ BoardExec:{
 	adjustBoardData2 : function(key,d){
 		var puzzle = this.puzzle, bd = puzzle.board, opemgr = puzzle.opemgr;
 		var info1 = this.posinfo_in, info2 = this.posinfo_out, isrec;
-		
+
 		bd.disableInfo();
-		
+
 		isrec = ((key & this.REDUCE) && (info1.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
 		bd.arrowin.set(info1.pos);
 		if(isrec){ opemgr.forceRecord = false;}
-		
+
 		isrec = ((key & this.REDUCE) && (info2.isdel) && (!opemgr.undoExec && !opemgr.redoExec));
 		if(isrec){ opemgr.forceRecord = true;}
 		bd.arrowout.set(info2.pos);
 		if(isrec){ opemgr.forceRecord = false;}
-		
+
 		bd.enableInfo();
 	}
 },
@@ -280,11 +280,11 @@ BoardExec:{
 	set : function(pos){
 		var pos0 = this.getaddr();
 		this.addOpe(pos.bx, pos.by);
-		
+
 		this.bx = pos.bx;
 		this.by = pos.by;
 		this.setarrow(this.getb());
-		
+
 		pos0.draw();
 		this.draw();
 	},
@@ -296,7 +296,7 @@ BoardExec:{
 },
 "InAddress:InOutAddress":{
 	type : "in",
-	
+
 	setarrow : function(border){
 		/* setarrowin_arrow */
 		var bd = this.board;
@@ -308,7 +308,7 @@ BoardExec:{
 },
 "OutAddress:InOutAddress":{
 	type : "out",
-	
+
 	setarrow : function(border){
 		/* setarrowout_arrow */
 		var bd = this.board;
@@ -366,7 +366,7 @@ LineGraph:{
 			this.setComponentRefs(excells[c], null);
 			this.resetObjNodeList(excells[c]);
 		}
-		
+
 		this.common.rebuild2.call(this);
 	}
 },
@@ -577,31 +577,31 @@ Graphic:{
 	decodePzpr : function(type){
 		var parser = this.puzzle.pzpr.parser;
 		var urlver = (type===parser.URL_PZPRV3 ? 3 : (this.checkpflag("c") ? 2 : 1));
-		
+
 		if(urlver===2){
 			var barray = this.outbstr.split("/");
 			this.outbstr = [barray[2], barray[0], barray[1]].join("/");
 		}
-		
+
 		if     (urlver>= 2){ this.decodeIce();}
 		else               { this.decodeIce_old1();}
-		
+
 		if     (urlver===3){ this.decodeBorderArrow();}
 		else if(urlver===2){ this.decodeBorderArrow_old2();}
 		else               { this.decodeBorderArrow_old1();}
-		
+
 		this.decodeInOut();
 	},
 	encodePzpr : function(type){
 		var parser = this.puzzle.pzpr.parser;
 		var urlver = (type===parser.URL_PZPRV3 ? 3 : 1);
-		
+
 		if(urlver===3){ this.encodeIce();}
 		else          { this.encodeIce_old1();}
-		
+
 		if(urlver===3){ this.encodeBorderArrow();}
 		else          { this.encodeBorderArrow_old1();}
-		
+
 		this.encodeInOut();
 	},
 
@@ -743,7 +743,7 @@ Graphic:{
 			for(var i=0;i<array.length;i++){ var border=bd.cell[array[i]].adjborder.right; border.setArrow(border.RT);}
 		}
 		bd.enableInfo();
-		
+
 		this.outbstr = "/"+barray.join("/");
 	},
 	encodeBorderArrow_old1 : function(){
@@ -877,7 +877,7 @@ FileIO:{
 				else if(lca==="r"){ border.qsub = 14;}
 				ca = ca.substr(0,ca.length-1);
 			}
-			
+
 			if(ca!=="" && ca!=="0"){
 				if(ca.charAt(0)==="-"){ border.line = (-ca)-1; border.qsub = 2;}
 				else                  { border.line = +ca;}
@@ -889,9 +889,9 @@ FileIO:{
 			var ca = "";
 			if     (border.qsub===2){ ca += ""+(-1-border.line);}
 			else if(border.line>  0){ ca += ""+border.line;}
-			
+
 			if(border.qsub>=11){ ca += ["u","d","l","r"][border.qsub-11];}
-			
+
 			return (ca!=="" ? ca+" " : "0 ");
 		});
 	}
@@ -941,7 +941,7 @@ AnsCheck:{
 		for(var id=0;id<bd.border.length;id++){
 			var border = bd.border[id];
 			if(!(border.isArrow() && !border.isLine())){ continue;}
-			
+
 			this.failcode.add("arNoLine");
 			if(this.checkOnly){ break;}
 			border.seterr(4);
@@ -1022,7 +1022,7 @@ AnsCheck:{
 			else{
 				border = info.lastborder = pos.getb();
 				if(!border.isLine()){ break;}
-				
+
 				info.blist.add(border);
 				var arrow = border.getArrow();
 				if(arrow!==border.NDIR && dir!==arrow){ break;}

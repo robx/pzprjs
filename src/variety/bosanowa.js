@@ -354,12 +354,12 @@ Graphic:{
 		for(var bx=(d.x1-2)|1;bx<=d.x2+2;bx+=2){
 			for(var by=(d.y1-2)|1;by<=d.y2+2;by+=2){
 				var addr=new this.klass.Address(bx,by);
-				
+
 				g.vid = ["c_full_",bx,by].join('_');
 				if( addr.getc().isEmpty() && (
-					addr.relcell(-2, 0).ques===0 || addr.relcell(2, 0).ques===0 || 
-					addr.relcell( 0,-2).ques===0 || addr.relcell(0, 2).ques===0 || 
-					addr.relcell(-2,-2).ques===0 || addr.relcell(2,-2).ques===0 || 
+					addr.relcell(-2, 0).ques===0 || addr.relcell(2, 0).ques===0 ||
+					addr.relcell( 0,-2).ques===0 || addr.relcell(0, 2).ques===0 ||
+					addr.relcell(-2,-2).ques===0 || addr.relcell(2,-2).ques===0 ||
 					addr.relcell(-2, 2).ques===0 || addr.relcell(2, 2).ques===0 ) )
 				{
 					g.fillRectCenter(bx*this.bw, by*this.bh, this.bw+0.5, this.bh+0.5);
@@ -513,7 +513,7 @@ AnsCheck:{
 			sub=subs[adb.left.id  ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			sub=subs[adb.right.id ]; if(sub>0){ sum+=sub;}else if(sub===UNDEF){ continue;}
 			if(num===sum){ continue;}
-			
+
 			this.failcode.add("nmSumOfDiff");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

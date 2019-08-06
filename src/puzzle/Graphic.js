@@ -187,16 +187,16 @@ Graphic:{
 			this.subcontext = (!!puzzle.subcanvas ? puzzle.subcanvas.getContext("2d") : null);
 			this.useBuffer = !!this.subcontext;
 		}
-		
+
 		if(this.canvasWidth===null || this.canvasHeight===null){
 			var rect = pzpr.util.getRect(puzzle.canvas);
 			this.resizeCanvas(rect.width, rect.height);
 		}
-		
+
 		this.pendingResize = true;
 		this.resize_canvas_main();
 		puzzle.emit('canvasReady');
-		
+
 		this.unsuspend();
 	},
 
@@ -238,22 +238,22 @@ Graphic:{
 	resizeCanvas : function(cwid, chgt){
 		var insuspend = this.suspended;
 		this.suspendAll();
-		
+
 		this.canvasWidth  = cwid || this.canvasWidth;
 		this.canvasHeight = chgt || this.canvasHeight;
-		
+
 		this.pendingResize = true;
 		if(!insuspend){ this.unsuspend();}
 	},
 	resizeCanvasByCellSize : function(cellsize){
 		var insuspend = this.suspended;
 		this.suspendAll();
-		
+
 		this.cw = cellsize || this.cw;
 		this.ch = cellsize || this.ch;
 		this.canvasWidth  = this.cw*this.getCanvasCols();
 		this.canvasHeight = this.ch*this.getCanvasRows();
-		
+
 		this.pendingResize = true;
 		if(!insuspend){ this.unsuspend();}
 	},
@@ -304,15 +304,15 @@ Graphic:{
 	setOffset : function(){
 		var g = this.context, g2 = this.subcontext;
 		var cwid = this.canvasWidth, chgt = this.canvasHeight;
-		
+
 		// canvas要素のサイズを変更する
 		g.changeSize(cwid|0, chgt|0);
 		if(!!g2){ g2.changeSize(cwid|0, chgt|0);}
-		
+
 		// 盤面のセルID:0が描画される左上の位置の設定 (Canvas左上からのオフセット)
 		var x0 = this.x0 = (((cwid-this.cw*this.getBoardCols())/2+this.cw*this.getOffsetCols())|0) + 0.5;
 		var y0 = this.y0 = (((chgt-this.ch*this.getBoardRows())/2+this.ch*this.getOffsetRows())|0) + 0.5;
-		
+
 		// CanvasのOffset位置変更 (SVGの時、小数点以下の端数調整を行う)
 		if(!g.use.canvas){
 			var rect = pzpr.util.getRect(g.canvas);
@@ -374,9 +374,9 @@ Graphic:{
 	},
 	unsuspend : function(){
 		if(!this.context){ return;}
-		
+
 		this.resize_canvas_main();
-		
+
 		if(this.suspendedAll){
 			var bd = this.board;
 			this.setRange(bd.minbx-2,bd.minby-2,bd.maxbx+2,bd.maxby+2);

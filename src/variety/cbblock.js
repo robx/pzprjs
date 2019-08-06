@@ -45,7 +45,7 @@
 				(this.mousemove && this.inputData>=0)) {
 				this.inputShade();
 			}
-			else if(this.mouseend && this.notInputted()) { 
+			else if(this.mouseend && this.notInputted()) {
 				if(cell!==this.cursor.getc() && this.inputMode==='auto' && this.btn==='left') {
 					this.setcursor(cell);
 				}
@@ -113,13 +113,13 @@ Board:{
 	setComponentRefs : function(obj, component){ obj.tile = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.tilenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.tilenodes = [];},
-	
+
 	isnodevalid : function(nodeobj){ return true;},
 
 	setExtraData : function(component){
 		// Call super class
 		this.klass.AreaGraphBase.prototype.setExtraData.call(this, component);
-		
+
 		if(this.rebuildmode || component.clist.length === 0) {return;}
 
 		// A tile is always contained within a single block.
@@ -135,7 +135,7 @@ Board:{
 },
 "AreaTileGraph@dbchoco":{
 	relation : {'border.qans':'separator', 'cell.ques':'node'},
-	isedgevalidbylinkobj : function(border){ 
+	isedgevalidbylinkobj : function(border){
 		if(border.sidecell[0].isnull || border.sidecell[1].isnull) {return false;}
 		return border.qans === 0 && border.sidecell[0].ques === border.sidecell[1].ques;
 	}
@@ -174,7 +174,7 @@ Board:{
 CellList:{
 	getBlockShapes : function(){
 		if(!!this.shape){ return this.shape;}
-		
+
 		var bd=this.board;
 		var d=this.getRectSize();
 		var data=[[],[],[],[],[],[],[],[]];
@@ -374,7 +374,7 @@ AnsCheck:{
 		for(var r=0;r<blocks.length;r++){
 			var cnt=blocks[r].dotcnt;
 			if((flag===1&&cnt>1) || (flag===3&&cnt<=2)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			blocks[r].clist.seterr(1);
@@ -387,7 +387,7 @@ AnsCheck:{
 			var area1 = sides[i][0], area2 = sides[i][1];
 			if(area1.dotcnt!==2 || area2.dotcnt!==2) {continue;}
 			if(this.isDifferentShapeBlock(area1, area2)){ continue;}
-			
+
 			this.failcode.add("bsSameShape");
 			if(this.checkOnly){ break;}
 			area1.clist.seterr(1);
@@ -410,7 +410,7 @@ AnsCheck:{
 		return this.checkNumberArea(+1, "bkSizeGt");
 	},
 
-	checkNumberArea : function(factor, code){ 
+	checkNumberArea : function(factor, code){
 		var tiles = this.board.tilegraph.components;
 		for(var r=0;r<tiles.length;r++){
 			var clist = tiles[r].clist, d = clist.length;
@@ -433,7 +433,7 @@ AnsCheck:{
 			var block = blocks[r];
 			if(block.dotcnt!==2){continue;}
 			if(this.isEqualShapes(block.clist)){continue;}
-			
+
 			this.failcode.add("bkDifferentShape");
 			if(this.checkOnly){ break;}
 			block.clist.seterr(1);

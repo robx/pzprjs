@@ -42,7 +42,7 @@ MouseEvent:{
 			cross.draw();
 			if(cross0!==null){ cross0.draw();}
 		}
-		
+
 		this.mouseCell = cross;
 	},
 	inputsegment_up : function(){
@@ -319,7 +319,7 @@ Segment:{
 			bd.getx(seg.bx2, seg.by2).seglist.add(seg);
 			if(bd.isenableInfo()){ bd.linegraph.modifyInfo(seg, 'segment');}
 			seg.addOpe(0, 1);
-			
+
 			if(bd.trialstage>0){ seg.trial = bd.trialstage;}
 		}
 	},
@@ -394,7 +394,7 @@ Board:{
 
 	setposCrosses : function(){
 		this.common.setposCrosses.call(this);
-		
+
 		for(var id=0;id<this.cross.length;id++){
 			if(!this.cross[id].seglist){
 				this.cross[id].seglist = new this.klass.PieceList();
@@ -404,13 +404,13 @@ Board:{
 
 	allclear : function(isrec){
 		this.segment.allclear();
-		
+
 		this.common.allclear.call(this,isrec);
 	},
 	ansclear : function(){
 		this.puzzle.opemgr.newOperation();
 		this.segment.ansclear();
-		
+
 		this.common.ansclear.call(this);
 	},
 	errclear : function(){
@@ -505,12 +505,12 @@ BoardExec:{
 LineGraph:{
 	enabled : true,
 	relation : {'segment':'link'},
-	
+
 	pointgroup : 'cross',
 	linkgroup  : 'segment',
-	
+
 	isedgevalidbylinkobj : function(seg){ return !seg.isnull;},
-	
+
 	repaintNodes : function(components){
 		var segs_all = new this.klass.SegmentList();
 		for(var i=0;i<components.length;i++){
@@ -610,7 +610,7 @@ Graphic:{
 		if(isdraw){
 			if(seg.trial && this.puzzle.getConfig('irowake')){ g.lineWidth = this.lw - this.lm;}
 			else{ g.lineWidth = this.lw;}
-			
+
 			if     (seg.error=== 1){ g.strokeStyle = this.errlinecolor;}
 			else if(seg.error===-1){ g.strokeStyle = this.noerrcolor;}
 			else if(this.puzzle.execConfig('irowake') && seg.path.color){ g.strokeStyle = seg.path.color;}
@@ -846,7 +846,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cross.length;c++){
 			var cross = bd.cross[c];
 			if(!func(cross)){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cross.seterr(1);
@@ -863,7 +863,7 @@ AnsCheck:{
 			if(paths[r].length===0){ continue;}
 			validcount++;
 			if(validcount<=1){ continue;}
-			
+
 			this.failcode.add("lnPlLoop");
 			bd.segment.setnoerr();
 			paths[r].setedgeerr(1);
@@ -931,7 +931,7 @@ AnsCheck:{
 		for(var i=0;i<qnlist.length;i++){
 			var qn = qnlist[i];
 			if(count[qn][2]===2 && (count[qn][1]===count[qn][0]-1)){ continue;}
-			
+
 			this.failcode.add("nmNotConseq");
 			if(this.checkOnly){ break;}
 			bd.cross.filter(function(cross){ return cross.qnum===qn;}).seterr(1);
@@ -944,7 +944,7 @@ AnsCheck:{
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=segs[i], seg2=segs[j];
 			if(seg1===null || seg2===null || !seg1.isOverLapSegment(seg2)){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break allloop;}
 			seg1.seterr(1);
@@ -962,7 +962,7 @@ AnsCheck:{
 		for(var i=0;i<len;i++){ for(var j=i+1;j<len;j++){
 			var seg1=segs[i], seg2=segs[j];
 			if(seg1===null || seg2===null || !seg1.isCrossing(seg2) || seg1.isRightAngle(seg2)){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break allloop;}
 			seg1.seterr(1);
