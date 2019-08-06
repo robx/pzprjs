@@ -10,6 +10,7 @@
 
 * amibo, mashu, starbattle: Reword English error messages
 * cbblock: Add error for dead-end walls
+* heyawake: Don't autocheck until the grid is fully decided
 * slither: Allow 4 as clue number
 * starbattle: Input dots in auto-mode; change style of empty cells;
   hide redundant dots

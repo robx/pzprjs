@@ -173,6 +173,13 @@ AnsCheck:{
 		}
 	},
 
+	checkShadingDecided : function(){
+		var bd = this.board;
+		if(bd.cell.some(function(cell){ return (cell.qans===0&&cell.qsub===0);})){
+			this.failcode.setUndecided();
+		}
+	},
+
 	//---------------------------------------------------------------------------
 	// ans.checkOneLoop()  盤面に引かれているループが一つに繋がっていることを判定する
 	//---------------------------------------------------------------------------

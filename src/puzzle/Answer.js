@@ -105,6 +105,7 @@ CheckInfo:{
 		this.add(code);
 	},
 	complete : true,
+	undecided : false,
 	text : '',
 	length : 0,
 	lastcode : null,
@@ -123,6 +124,9 @@ CheckInfo:{
 			texts.push(textitem[langcode]);
 		}
 		return texts.join("\n");
+	},
+	setUndecided : function(){
+		this.undecided = true;
 	}
 },
 

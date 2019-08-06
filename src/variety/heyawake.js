@@ -236,7 +236,8 @@ AnsCheck:{
 		"checkShadeCellCount",
 		"checkCountinuousUnshadeCell",
 		"checkRoomRect@heyawake",
-		"checkRoomRect@ayeheya"
+		"checkRoomRect@ayeheya",
+		"checkDone"
 	],
 
 	checkFractal : function(){
@@ -280,6 +281,10 @@ AnsCheck:{
 		var result = (count<=1);
 		if(!result){ clist.seterr(1);}
 		return result;
+	},
+
+	checkDone : function(){
+		this.checkShadingDecided();
 	}
 },
 

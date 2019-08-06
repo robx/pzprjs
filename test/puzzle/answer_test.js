@@ -14,7 +14,11 @@ pzpr.variety.each(function(pid){
 			testdata[pid].failcheck.forEach(function(testcase){
 				it('Check: '+testcase[0], function(){
 					puzzle.open(testcase[1]);
-					assert.equal(puzzle.check(true)[0], testcase[0]);
+					var failcode = puzzle.check(true);
+					assert.equal(failcode[0], testcase[0]);
+					if(testcase.length>2){
+						assert.equal(failcode.undecided, testcase[2]);
+					}
 				});
 			});
 		});
