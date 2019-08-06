@@ -16,6 +16,7 @@ var starYOffset = [-1, -0.309, -0.309, 0.124, 0.809, 0.4, 0.809, 0.124, -0.309, 
 // マウス入力系
 MouseEvent:{
 	use : true,
+	RBShadeCell : true,
 	inputModes : {play:['star','unshade','dot']},
 	mouseinput_other : function(){
 		if(this.inputMode==='star' && this.mousestart){ this.inputcell_starbattle();}
