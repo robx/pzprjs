@@ -17,10 +17,7 @@ MouseEvent:{
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
-		if(this.firstCell.isnull){
-			this.firstCell = cell;
-			this.firstState = cell.qans;
-		}
+		this.initFirstCell(cell);
 
 		var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
 		if(this.inputData===shade&&!cell.allowShade()){ return;}
@@ -38,6 +35,11 @@ MouseEvent:{
 		cell.setQsub(this.inputData===2?1:0);
 
 		cell.draw();
+	},
+	initFirstCell : function(cell){
+		if(!this.firstCell.isnull){ return;}
+		this.firstCell = cell;
+		this.firstState = cell.qans;
 	},
 	decIC : function(cell){
 		var ans = cell.qansUnshade?'unshade':'shade';
@@ -530,7 +532,7 @@ MouseEvent:{
 		}
 		
 		var cell = this.getcell();
-		if(this.firstCell.isnull){ this.firstCell = cell;}
+		this.initFirstCell(cell);
 
 		var pos, border;
 		if(!this.board.borderAsLine){
