@@ -136,7 +136,7 @@ LineGraph:{
 	setComponentRefs : function(obj, component){ obj.ant = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.antnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.antnodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.base.qnum!==-1);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		var num1 = cell1.base.qnum, num2 = cell2.base.qnum;
@@ -191,7 +191,7 @@ Graphic:{
 				if     (cell.error===1){ g.fillStyle = this.errbcolor1;}
 				else if(cell.qsub ===1){ g.fillStyle = this.qsubcolor1;}
 				else if(cell.qsub ===2){ g.fillStyle = this.qsubcolor2;}
-				else                   { g.fillStyle = "white";}
+				else                   { g.fillStyle = this.bgcolor;}
 
 				g.fillRectCenter(cell.bx*this.bw, cell.by*this.bh, rw, rh);
 			}
@@ -279,7 +279,7 @@ FileIO:{
 		"checkNoObjectBlock",
 
 		"checkDisconnectLine"
-	],
+	]
 },
 "AnsCheck@armyants#1":{
 	checklist : [
@@ -296,7 +296,7 @@ FileIO:{
 
 		"checkDisconnectLine",
 		"checkNumberExist"
-	],
+	]
 },
 "AnsCheck@kaero":{
 	// checkSameObjectInRoom()にbaseを付加した関数
@@ -373,11 +373,10 @@ FileIO:{
 
 	checkAntNumber : function(){
 		var areas = this.board.antmgr.components;
-		allloop:
 		for(var id=0;id<areas.length;id++){
 			var ant = areas[id];
 			if(ant.clist.isCmp()){ continue;}
-			
+
 			this.failcode.add("bkWrongNum");
 			if(this.checkOnly){ break;}
 			this.board.cell.setnoerr();

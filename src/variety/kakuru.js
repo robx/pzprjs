@@ -264,7 +264,7 @@ AnsCheck:{
 			}
 			for(var n=1;n<=9;n++){
 				if(d[n]<=1){ continue;}
-				
+
 				this.failcode.add("nqAroundDup");
 				if(this.checkOnly){ break allloop;}
 				cell.seterr(1);
@@ -290,7 +290,7 @@ AnsCheck:{
 				}
 			}
 			if(cell.qnum===cnt){ continue;}
-			
+
 			this.failcode.add("nqAroundSumNe");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -310,7 +310,7 @@ AnsCheck:{
 				if(cell!==cell2 && cell.anum===cell2.anum){ clist.add(cell2);}
 			}
 			if(clist.length<=1){ continue;}
-			
+
 			this.failcode.add("nmAround");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

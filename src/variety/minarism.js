@@ -53,7 +53,7 @@ MouseEvent:{
 				this.inputmark_mouseup();
 			}
 		}
-	},
+	}
 },
 "MouseEvent@minarism":{
 	inputmark_mousemove : function(){
@@ -308,7 +308,7 @@ Graphic:{
 				g.stroke();
 			}
 			else{ g.vhide();}
-			
+
 			g.vid = "b_is2_"+border.id;
 			if(border.qdir===border.DN||border.qdir===border.RT){
 				g.beginPath();
@@ -498,7 +498,7 @@ AnsCheck:{
 			var border = boardborder[id], cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			var num1 = cell1.getNum(), num2 = cell2.getNum();
 			if(num1<=0 || num2<=0 || !func(border,num1,num2)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			cell1.seterr(1);
@@ -543,7 +543,7 @@ AnsCheck:{
 		this.checkHintSideCell(function(border,a1,a2){
 			return (border.qnum!==2 && (a1*2===a2 || a1===a2*2) && !(border.qnum===1 && a1*a2===2));
 		}, "nmDivEq2");
-	},
+	}
 },
 
 "FailCode@minarism":{

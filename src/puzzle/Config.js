@@ -42,6 +42,7 @@ Config.prototype =
 		/* 入力方法設定 */
 		this.add('use', (!pzpr.env.API.touchevent?1:2), {option:[1,2]});	/* 黒マスの入力方法 */
 		this.add('use_tri', 1, {option:[1,2,3]});				/* shakashaka: 三角形の入力方法 */
+		this.add('support_tri', true);							/* shakashaka: 三角形の入力補助 (for 2つ以上の壁に接したCell) */
 
 		this.add('bgcolor', false);			/* slither 背景色入力 */
 		this.add('singlenum', (!pzpr.env.API.touchevent));	/* hanare: 部屋に回答数字を一つだけ入力 */
@@ -194,6 +195,7 @@ Config.prototype =
 		switch(name){
 			case 'use':      exec = puzzle.mouse.use; break;
 			case 'use_tri':  exec = (pid==="shakashaka"); break;
+			case 'support_tri':  exec = (pid==="shakashaka"); break;
 			case 'dispmove': exec = puzzle.board.linegraph.moveline; break;
 			case 'disptype_pipelinkr': exec = (pid==="pipelinkr"); break;
 			case 'disptype_bosanowa':  exec = (pid==="bosanowa"); break;
@@ -230,28 +232,28 @@ Config.prototype =
 		case 'snakebd': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;
-		
+
 		case 'font':
 			puzzle.painter.initFont();
 			puzzle.redraw();
 			break;
-		
+
 		case 'multierr':
 			puzzle.checker.resetCache();
 			break;
-		
+
 		case 'disptype_bosanowa':
 			puzzle.setCanvasSizeByCellSize();	/* セルのサイズを変えないために、この関数を引数なしで呼び出す */
 			break;
-		
+
 		case 'color_shadecolor':
 			puzzle.painter.setColor('shadecolor', newval);
 			break;
-		
+
 		case 'color_bgcolor':
 			puzzle.painter.setColor('bgcolor', newval);
 			break;
-		
+
 		case 'uramashu':
 			puzzle.board.revCircleConfig(newval);
 			puzzle.redraw();

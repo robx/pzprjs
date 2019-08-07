@@ -236,7 +236,8 @@ AnsCheck:{
 		"checkShadeCellCount",
 		"checkCountinuousUnshadeCell",
 		"checkRoomRect@heyawake",
-		"checkRoomRect@ayeheya"
+		"checkRoomRect@ayeheya",
+		"checkDone"
 	],
 
 	checkFractal : function(){
@@ -248,7 +249,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i], cell2 = this.board.getc(sx-cell.bx, sy-cell.by);
 				if(cell.isShade() === cell2.isShade()){ continue;}
-				
+
 				this.failcode.add("bkNotSymShade");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);
@@ -280,6 +281,10 @@ AnsCheck:{
 		var result = (count<=1);
 		if(!result){ clist.seterr(1);}
 		return result;
+	},
+
+	checkDone : function(){
+		this.checkShadingDecided();
 	}
 },
 

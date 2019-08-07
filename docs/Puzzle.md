@@ -191,4 +191,4 @@ For details, see [list of puzzle config document](Config.md).
 |`autocmp_area`|`boolean`|`false`|Paint background of completed blocks/areas automatically.|
 |`autocmp_border`|`boolean`|`false`|Paint borders between different blocks/areas automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
-|`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
+|`multierr`|`boolean`|`false`|Check plural errors in `puzzle.check()` API.|

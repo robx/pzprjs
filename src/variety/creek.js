@@ -124,7 +124,7 @@ AnsCheck:{
 			var clist = bd.cellinside(bx-1,by-1,bx+1,by+1);
 			var cnt = clist.filter(function(cell){ return cell.isShade();}).length;
 			if((type===1 && qn>=cnt) || (type===2 && qn<=cnt)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			cross.seterr(1);

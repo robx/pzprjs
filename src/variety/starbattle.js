@@ -16,6 +16,7 @@ var starYOffset = [-1, -0.309, -0.309, 0.124, 0.809, 0.4, 0.809, 0.124, -0.309, 
 // マウス入力系
 MouseEvent:{
 	use : true,
+	RBShadeCell : true,
 	inputModes : {play:['star','unshade','dot']},
 	mouseinput_other : function(){
 		if(this.inputMode==='star' && this.mousestart){ this.inputcell_starbattle();}
@@ -23,7 +24,13 @@ MouseEvent:{
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ this.inputcell_starbattle();}
+			if(this.mousestart&&this.btn==="left"){
+				this.inputdot();
+			}
+			if(this.mousestart || this.mousemove){
+				if(this.inputData===3){ return;}
+				this.inputcell_starbattle();
+			}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputEdit();}
@@ -68,15 +75,17 @@ MouseEvent:{
 		}
 	},
 	inputdot : function(){
-		var pos = this.getpos(0.25);
+		var pos = this.getpos(0.15);
 		if(this.prevPos.equals(pos)){ return;}
 
 		var dot = pos.getDot();
-		if(dot!==null&&this.inputMode==='dot'){
+		if(dot!==null){
+			if(this.inputData===null){ this.inputData=3;}
+			else if(this.inputData!==3){ return;}
 			dot.setDot(dot.getDot()!==1?1:0);
 			dot.draw();
+			this.prevPos = pos;
 		}
-		this.prevPos = pos;
 	}
 },
 
@@ -85,7 +94,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget : function(){ return false;},
-	
+
 	keyinput : function(ca){
 		if(this.keydown && this.puzzle.editmode){
 			this.key_inputqnum_starbattle(ca);
@@ -175,6 +184,34 @@ Board:{
 		var dot=this.dots[id];
 		return (dot.isnull?null:dot);
 	},
+	isDot : function(bx,by){
+		var dot=this.getDot(bx,by);
+		if(dot!==null){ return dot.getDot()===1;}
+		return false;
+	},
+	isStar: function(bx,by){
+		var cell=this.getc(bx,by);
+		return cell.qans===1;
+	},
+	dotIsRedundant : function(bx,by){
+		var dot = this.getDot(bx,by);
+		if(dot===null||dot.isnull){ return false;}
+		var piece = dot.piece;
+		if(piece.group==='cross'){
+			return this.isStar(bx-1,by-1) || this.isStar(bx-1,by+1)
+				|| this.isStar(bx+1,by-1) || this.isStar(bx+1,by+1);
+		}
+		else if(piece.group==='border'){
+			if(piece.isvert){
+				return this.isStar(bx-1,by) || this.isStar(bx+1,by);
+			}
+			else{
+				return this.isStar(bx,by-1) || this.isStar(bx,by+1);
+			}
+		}
+		return false;
+	},
+
 	dotinside : function(x1,y1,x2,y2){
 		var dlist = new this.klass.PieceList();
 		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
@@ -269,7 +306,7 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawDots();
-		this.drawCrossMarks();
+		this.drawDashes();
 		this.drawStars();
 
 		this.drawChassis();
@@ -306,25 +343,24 @@ Graphic:{
 		for(var i=0;i<dlist.length;i++){
 			var dot = dlist[i], bx=dot.bx, by=dot.by;
 			g.vid = "s_dot_"+dot.id;
-			if(dot.getDot()===1){
+			if(dot.getDot()===1&&!this.board.dotIsRedundant(bx,by)){
 				g.fillStyle = dot.getTrial()?this.trialcolor:this.pekecolor;
 				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.15);
 			}
 			else{ g.vhide();}
 		}
 	},
-	drawCrossMarks : function(){
-		var g = this.vinc('cell_cross', 'auto', true);
-		g.lineWidth = 1;
-		var rsize = this.cw*0.35;
+	drawDashes : function(){
+		var g = this.vinc('cell_dash', 'auto', true);
+		g.lineWidth = 2;
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i], px, py;
-			g.vid = "c_cross_" + cell.id;
+			g.vid = "c_dash_" + cell.id;
 			if(cell.qsub===1){
 				var px = cell.bx*this.bw, py = cell.by*this.bh;
 				g.strokeStyle = (!cell.trial ? this.mbcolor : "rgb(192, 192, 192)");
-				g.strokeCross(px, py, rsize);
+				g.strokeLine(px-0.2*this.bw,py,px+0.2*this.bw,py);
 			}
 			else{ g.vhide();}
 		}
@@ -337,7 +373,7 @@ Graphic:{
 			g.vid = 'c_star_'+cell.id;
 			if(cell.qans===1){
 				g.fillStyle = (!cell.trial ? this.qanscolor : this.trialcolor);
-				this.dispStar(g, cell.bx*this.bw, cell.by*this.bh, this.bw*0.9, this.bh*0.9);
+				this.dispStar(g, cell.bx*this.bw, cell.by*this.bh, this.bw*0.8, this.bh*0.8);
 			}
 			else{ g.vhide();}
 		}
@@ -397,7 +433,7 @@ Encode:{
 		this.encodeStarCount();
 		this.encodeBorder();
 	},
-	
+
 	decodeStarCount : function(){
 		var barray = this.outbstr.split("/"), bd = this.board;
 		bd.starCount.count = +barray[0];
@@ -430,7 +466,7 @@ AnsCheck:{
 		"checkAroundStars",
 		"checkOverSaturatedStars",
 		"checkInsufficientStars",
-		"checkStarCountInLine",
+		"checkStarCountInLine"
 	],
 
 	checkAroundStars : function(){
@@ -446,7 +482,7 @@ AnsCheck:{
 			target = cell.relcell(-2,2); if(target.qans===1){ clist.add(target);}
 			target = cell.relcell( 2,2); if(target.qans===1){ clist.add(target);}
 			if(clist.length<=1){ continue;}
-			
+
 			this.failcode.add("starAround");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

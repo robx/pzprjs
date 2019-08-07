@@ -35,7 +35,7 @@ MouseEvent:{
 		if(cell.isnull || cell===this.mouseCell || cell.qnum!==-1){ return;}
 
 		if(this.inputData===null){ this.inputData=(cell.qsub===1?0:1);}
-		
+
 		cell.setAnum(-1);
 		cell.setQsub(this.inputData===1?1:0);
 		this.mouseCell = cell;
@@ -208,7 +208,7 @@ AnsCheck:{
 		var ainfo = this.getPairArrowsInfo();
 		for(var i=0;i<ainfo.length;i++){
 			if(ainfo[i].length!==1){ continue;}
-			
+
 			this.failcode.add("arAlone");
 			if(this.checkOnly){ break;}
 			ainfo[i][0].seterr(1);
@@ -222,7 +222,7 @@ AnsCheck:{
 			var room1 = ainfo[i][0].room, room2 = ainfo[i][1].room;
 			var key = (room1.id<room2.id ? room1.id*len+room2.id : room2.id*len+room1.id);
 			if(!adjs[key]){ continue;}
-			
+
 			this.failcode.add("arAdjPair");
 			if(this.checkOnly){ break;}
 			room1.clist.seterr(1);

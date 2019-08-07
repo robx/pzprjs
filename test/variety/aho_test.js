@@ -9,7 +9,7 @@ var puzzle = new pzpr.Puzzle();
 describe('Variety:aho',function(){
 	it('Check area generating', function(){
 		puzzle.open('aho/6/6');
-		
+
 		puzzle.setMode('edit');
 		puzzle.cursor.init(1,1);
 		puzzle.key.inputKeys('4','down','4');
@@ -21,7 +21,7 @@ describe('Variety:aho',function(){
 		puzzle.key.inputKeys('2','right','3');
 		puzzle.cursor.init(11,9);
 		puzzle.key.inputKeys('2','down','4');
-		
+
 		puzzle.setMode('play');
 		puzzle.mouse.inputPath('right', 1,1, 7,1);
 		puzzle.mouse.inputPath(0,2, 8,2, 8,0);
@@ -36,7 +36,7 @@ describe('Variety:aho',function(){
 		puzzle.mouse.inputPath(4,6, 4,8);
 		puzzle.mouse.inputPath(4,6, 8,6);
 		puzzle.mouse.inputPath(0,4, 8,4);
-		
+
 		assert.equal(puzzle.board.roommgr.components.length, 10);
 		assert.equal(puzzle.check().complete, true);
 	});

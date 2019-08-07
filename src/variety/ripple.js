@@ -251,7 +251,7 @@ AnsCheck:{
 			var cell=bd.cell[c], cell2=cell.adjacent.bottom;
 			if(cell.room!==cell2.room || !cell.isNum() || !cell2.isNum()){ continue;}
 			if(cell.getNum()>=cell2.getNum()){ continue;}
-			
+
 			this.failcode.add("bkSmallOnBig");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

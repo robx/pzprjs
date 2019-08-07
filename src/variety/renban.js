@@ -167,7 +167,7 @@ AnsCheck:{
 			if(breakflag){ break;}
 
 			if(clist.length === (max-min)+1){ continue;}
-			
+
 			this.failcode.add("bkNotSeqNum");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);
@@ -188,7 +188,7 @@ AnsCheck:{
 
 			var blist = rdata.path[rdata.id[i]].blist;
 			if(Math.abs(val1-val2)===blist.length){ continue;}
-			
+
 			this.failcode.add("cbDiffLenNe");
 			if(this.checkOnly){ break;}
 			cell1.seterr(1);

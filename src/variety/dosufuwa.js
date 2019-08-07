@@ -202,9 +202,9 @@ Encode:{
 			sv_ques[id] = bd.border[id].ques;
 			bd.border[id].ques = (bd.border[id].isBorder() ? 1 : 0);
 		}
-		
+
 		this.encodeBorder();
-		
+
 		for(var id=0;id<bd.border.length;id++){
 			bd.border[id].ques = sv_ques[id];
 		}
@@ -227,7 +227,7 @@ FileIO:{
 		this.readLine();
 		var items = this.getItemList(bd.rows);
 		this.rdata2Border(isques, items);
-		
+
 		for(var c=0;c<bd.cell.length;c++){
 			if(items[c]==='#'){ bd.cell[c].ques = 1;}
 		}

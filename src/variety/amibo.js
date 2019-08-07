@@ -98,7 +98,7 @@ BoardExec:{
 	setComponentRefs : function(obj, component){ obj.net = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.netnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.netnodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.qans>0);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		var dir = cell1.getdir(cell2,2);
@@ -106,7 +106,7 @@ BoardExec:{
 		else if(dir===cell1.LT||dir===cell1.RT){ return !(cell1.qans===0||cell1.qans===12||cell2.qans===0||cell2.qans===12);}
 		return false;
 	},
-	
+
 	setExtraData : function(component){
 		component.clist = new this.klass.CellList(component.getnodeobjs());
 		if(!component.color){
@@ -132,7 +132,7 @@ BoardExec:{
 	setComponentRefs : function(obj, component){ obj.bar = component;}, // 2つのbarが設定されることがあるため信頼できない
 	getObjNodeList   : function(nodeobj){ return nodeobj.barnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.qans>0);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		return this.klass.AreaNetGraph.prototype.isedgevalidbynodeobj.call(this,cell1,cell2);
@@ -159,7 +159,7 @@ BoardExec:{
 	addEdgeByNodeObj : function(cell){
 		// Nodeを付加する
 		for(var i=0,len=this.calcNodeCount(cell);i<len;i++){ this.createNode(cell);}
-		
+
 		// Edgeの付加
 		var sidenodeobj = this.getSideObjByNodeObj(cell);
 		var nodes1 = this.getObjNodeList(cell);
@@ -175,16 +175,16 @@ BoardExec:{
 
 	searchGraph : function(){
 		var components = this.klass.AreaGraphBase.prototype.searchGraph.call(this);
-		
+
 		//全component生成後でないとcrossbarがうまく設定できない場合があるのでsetExtraDataを設定し直す
 		for(var i=0;i<components.length;i++){ this.setExtraData(components[i]);}
-		
+
 		return components;
 	},
 	setExtraData : function(component){
 		component.clist = new this.klass.CellList(component.getnodeobjs());
 		component.size = component.clist.length;
-		
+
 		if(component.nodes>1){
 			var d = component.clist.getRectSize();
 			component.vert = (d.cols===1);
@@ -334,7 +334,7 @@ Graphic:{
 		this.addlw = 0;
 		if(cell.trial && this.puzzle.execConfig('irowake')){ this.addlw = -this.lm;}
 		else if(isErr){ this.addlw=1;}
-		
+
 		if(isErr){ color = this.errlinecolor;}
 		else if(err!==0){ color = this.noerrcolor;}
 		else if(this.puzzle.execConfig('irowake') && cell.net && cell.net.color){ color = cell.net.color;}
@@ -412,7 +412,7 @@ AnsCheck:{
 			if(!cell.isNum()){ continue;}
 			var poles = cell.getPoleBar();
 			if((type===1 && poles.length<=1) || (type===2 && poles.length>0)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -425,14 +425,14 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum()){ continue;}
-			
+
 			// polebarの数は0か1 (checkNotMultiBarが先にcheckされるため)
 			var bar=cell.getPoleBar()[0];
 			if(!bar){ continue;}
-			
+
 			var qn=cell.getNum(), clist=bar.clist, llen=clist.length;
 			if((type===1 && llen<=qn) || (type===2 && llen>=qn)){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
@@ -451,7 +451,7 @@ AnsCheck:{
 				if(bar.size===links[i].size){ check=true; break;}
 			}
 			if(check){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			bar.clist.setErrorBar(bar.vert);
@@ -470,10 +470,10 @@ AnsCheck:{
 		var bd = this.board, nets = bd.netgraph.components;
 		for(var r=0;r<nets.length;r++){
 			if(nets[r].circuits===0){ continue;}
-			
+
 			this.failcode.add("lbLoop");
 			if(this.checkOnly){ return;}
-			
+
 			bd.cell.filter(function(cell){ return cell.noNum();}).setnoerr();
 			this.searchloop(nets[r]).seterr(4);
 		}

@@ -44,7 +44,7 @@ MouseEvent:{
 				dy = this.inputPoint.by-this.firstPoint.by;
 			if     (dx*dy>0 && Math.abs(dx)>=0.50 && Math.abs(dy)>=0.50){ val=31;}
 			else if(dx*dy<0 && Math.abs(dx)>=0.50 && Math.abs(dy)>=0.50){ val=32;}
-			
+
 			if(val!==null){
 				if(this.inputData===null){
 					if(val===cell.qans){ val = 0;}
@@ -189,22 +189,22 @@ BoardExec:{
 LineGraph:{
 	enabled : true,
 	relation : {'cell.qans':'link'},
-	
+
 	pointgroup : 'cross',
 	linkgroup  : 'cell',
-	
+
 	rebuild2 : function(){
 		var boardcell = this.board.cell;
 		for(var c=0;c<boardcell.length;c++){
 			boardcell[c].setSideObj();
 			boardcell[c].isloop = false;
 		}
-		
+
 		this.common.rebuild2.call(this);
 	},
-	
+
 	isedgevalidbylinkobj : function(cell){ return cell.qans>0;},
-	
+
 	setEdgeByLinkObj : function(cell){
 		// 斜線の形が変わった時は一旦セルの情報を取り除いてから再度付加する
 		if(cell.path!==null){
@@ -217,15 +217,15 @@ LineGraph:{
 			this.addEdgeByLinkObj(cell);
 		}
 	},
-	
+
 	setExtraData : function(component){
 		this.common.setExtraData.call(this, component);
-		
+
 		// Loopがない場合はisloopにfalseを設定してreturn
 		var edgeobjs = component.getedgeobjs();
 		for(var c=0;c<edgeobjs.length;c++){ edgeobjs[c].isloop = false;}
 		if(component.circuits<=0){ return;}
-		
+
 		// どこにLoopが存在するか判定を行う
 		var bd = this.board;
 		var prevcross;
@@ -245,7 +245,7 @@ LineGraph:{
 					if(history[i].group==='cell'){ history[i].isloop = true;}
 				}
 			}
-			
+
 			if(obj.group==='cross'){
 				prevcross = obj;
 				for(var i=0;i<obj.pathnodes[0].nodes.length;i++){
@@ -402,7 +402,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cross.length;c++){
 			var cross = bd.cross[c], qn = cross.qnum;
 			if(qn<0 || qn===cross.lcnt){ continue;}
-			
+
 			this.failcode.add("crConnSlNe");
 			if(this.checkOnly){ break;}
 			cross.seterr(1);

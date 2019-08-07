@@ -11,7 +11,7 @@ pzpr.MetaData.prototype =
 	hard    : '',
 	comment : '',
 	items : {author:'',source:'',hard:'',comment:''},
-	
+
 	update : function(metadata){
 		if(!metadata){ return;}
 		for(var i in this.items){ if(typeof metadata[i]==='string'){ this[i] = metadata[i];}}

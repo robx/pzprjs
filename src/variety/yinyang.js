@@ -67,7 +67,7 @@ Board:{
 	setComponentRefs : function(obj, component){ obj.yin = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.yinnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.yinnodes = [];},
-	
+
 	isnodevalid : function(cell){ return cell.getNum()===2;}
 },
 
@@ -77,7 +77,7 @@ Board:{
 	setComponentRefs : function(obj, component){ obj.yang = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.yangnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.yangnodes = [];},
-	
+
 	isnodevalid : function(cell){ return cell.getNum()===1;}
 },
 

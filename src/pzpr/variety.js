@@ -1,6 +1,4 @@
 // Variety.js v3.4.1
-/* jshint latedef: false */
-/* global pzpr:false */
 
 (function(){
 
@@ -44,7 +42,7 @@ delete variety.extend;
 			Object.freeze(_info[pzprid].alias);
 		}catch(e){}
 	}
-})
+}) // eslint-disable-next-line no-unexpected-multiline
 (function Genre(pzprid, datalist){
 	this.valid  = true;
 	this.pid    = pzprid;		/* パズルID */
@@ -97,6 +95,7 @@ delete variety.extend;
 	firefly   :[1,0,"ホタルビーム","Hotaru Beam (Glow of Fireflies)"],
 	fivecells :[0,0,"ファイブセルズ","FiveCells",'nawabari'],
 	fourcells :[0,0,"フォーセルズ","FourCells",'nawabari'],
+	geradeweg :[0,0,"グラーデヴェグ","Geradeweg"],
 	goishi    :[0,1,"碁石ひろい","Goishi"],
 	gokigen   :[1,0,"ごきげんななめ","Gokigen-naname (Slalom, Slant)",'gokigen'],
 	hakoiri   :[1,0,"はこいり○△□","Hokoiri-masashi"],
@@ -155,6 +154,7 @@ delete variety.extend;
 	nurimisaki:[0,0,"ぬりみさき","Nurimisaki",'kurodoko'],
 	onsen     :[0,0,"温泉めぐり","Onsen-meguri",'country'],
 	paintarea :[1,0,"ペイントエリア","Paintarea"],
+	pencils   :[0,0,"ペンシルズ","Pencils"],
 	pipelink  :[1,0,"パイプリンク","Pipelink",'pipelink'],
 	pipelinkr :[1,0,"帰ってきたパイプリンク","Pipelink Returns",'pipelink'],
 	rectslider:[0,0,"四角スライダー","Rectangle-Slider",'bonsan'],

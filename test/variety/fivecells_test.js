@@ -37,7 +37,7 @@ describe('Variety:fivecells',function(){
 
 		var puzzle2 = new pzpr.Puzzle();
 		puzzle2.open(puzzle.getURL());
-		for(var c=0; c<puzzle.board.cell.length;c++){
+		for(c=0; c<puzzle.board.cell.length;c++){
 			assert.equal(puzzle.board.cell[c].isEmpty(), puzzle2.board.cell[c].isEmpty());
 		}
 	});

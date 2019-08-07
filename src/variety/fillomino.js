@@ -77,12 +77,12 @@ KeyEvent:{
 		if(cell.isnull){ return false;}
 
 		var adc=cell.adjacent, adb=cell.adjborder;
-		var nc, nb, dir=cell.NDIR;
+		var nc, nb;
 		switch(ca){
-			case 'up':    nc=adc.top;    nb=adb.top;    dir=cell.UP; break;
-			case 'down':  nc=adc.bottom; nb=adb.bottom; dir=cell.DN; break;
-			case 'left':  nc=adc.left;   nb=adb.left;   dir=cell.LT; break;
-			case 'right': nc=adc.right;  nb=adb.right;  dir=cell.RT; break;
+			case 'up':    nc=adc.top;    nb=adb.top;    break;
+			case 'down':  nc=adc.bottom; nb=adb.bottom; break;
+			case 'left':  nc=adc.left;   nb=adb.left;   break;
+			case 'right': nc=adc.right;  nb=adb.right;  break;
 			default: return false;
 		}
 		if(!nc.isnull){
@@ -134,11 +134,11 @@ Board:{
 
 	setExtraData : function(component){
 		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
-		
-		var emptycell=0, nums = [], numkind=0, filled=-1;
+
+		var nums = [], numkind=0, filled=-1;
 		for(var i=0;i<clist.length;i++){
 			var num = clist[i].getNum();
-			if(num===-1){ emptycell++;}
+			if(num===-1){}
 			else if(isNaN(nums[num])){
 				numkind++; nums[num]=1;
 				if(filled===-1||num!==-2){ filled=num;}
@@ -275,7 +275,7 @@ AnsCheck:{
 		for(var id=0;id<rooms.length;id++){
 			var area = rooms[id];
 			if( !area || evalfunc(area) ){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			area.clist.seterr(1);

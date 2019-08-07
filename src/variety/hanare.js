@@ -208,7 +208,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){ if(clist[i].isNum()){ num=clist[i].getNum(); break;}}
 
 			if( num===-1 || num===clist.length ){ continue;}
-			
+
 			this.failcode.add("bkSizeNe");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

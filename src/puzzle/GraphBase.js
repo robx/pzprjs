@@ -9,12 +9,12 @@ GraphBase:{
 
 	enabled : false,
 	relation : {},
-	
+
 	pointgroup : '',
 	linkgroup  : '',
-	
+
 	coloring : false,
-	
+
 	//--------------------------------------------------------------------------------
 	// graph.removeFromArray()    Arrayからitemを取り除く
 	//--------------------------------------------------------------------------------
@@ -22,18 +22,18 @@ GraphBase:{
 		var idx = array.indexOf(item);
 		if(idx>=0){ Array.prototype.splice.call(array, idx, 1);}
 	},
-		
+
 	//--------------------------------------------------------------------------------
 	// graph.setComponentRefs()    objにcomponentの設定を行う (性能対策)
-	// 
+	//
 	// graph.getObjNodeList()      objにあるnodeを取得する
 	// graph.resetObjNodeList()    objからnodeをクリアする
 	//--------------------------------------------------------------------------------
 	setComponentRefs : function(obj, component){},
-	
+
 	getObjNodeList   : function(nodeobj){ return [];},
 	resetObjNodeList : function(nodeobj){ },
-	
+
 	//--------------------------------------------------------------------------------
 	// graph.isnodevalid()           そのセルにNodeが存在すべきかどうか返す
 	// graph.isedgevalidbylinkobj()  そのborderにEdgeが存在すべきかどうか返す
@@ -48,12 +48,12 @@ GraphBase:{
 		if(!sidenodes){ return false;}
 		return sidenodes[0].nodes.indexOf(sidenodes[1])>=0;
 	},
-	
+
 	//--------------------------------------------------------------------------------
 	// graph.calcNodeCount()    そのセルにあるべきNode数を返す
 	//--------------------------------------------------------------------------------
 	calcNodeCount : function(cell){ return (this.isnodevalid(cell)?1:0);},
-	
+
 	//---------------------------------------------------------------------------
 	// graph.rebuild()  既存の情報からデータを再設定する
 	// graph.rebuild2() 継承先に固有のデータを設定する
@@ -125,7 +125,7 @@ GraphBase:{
 		var cell = node.obj;
 		this.setComponentRefs(cell, null);
 		this.removeFromArray(this.getObjNodeList(cell), node);
-		
+
 		// rebuildmode中にはこの関数は呼ばれません
 		this.removeFromArray(this.modifyNodes, node);
 		var component = node.component;
@@ -150,7 +150,7 @@ GraphBase:{
 	},
 	deleteNodeIfEmpty : function(nodeobj){
 		var nodes = this.getObjNodeList(nodeobj);
-		
+
 		// 周囲のNodeが消えるかもしれないのでチェック＆remove
 		if(nodes[0].nodes.length===0 && !this.isnodevalid(nodeobj)){
 			this.deleteNode(nodes[0]);
@@ -165,7 +165,7 @@ GraphBase:{
 		if(node1.nodes.indexOf(node2)>=0){ return;} // 多重辺にしないため
 		node1.nodes.push(node2);
 		node2.nodes.push(node1);
-		
+
 		if(!this.rebuildmode){
 			if(this.modifyNodes.indexOf(node1)<0){ this.modifyNodes.push(node1);}
 			if(this.modifyNodes.indexOf(node2)<0){ this.modifyNodes.push(node2);}
@@ -175,7 +175,7 @@ GraphBase:{
 		if(node1.nodes.indexOf(node2)<0){ return;} // 存在しない辺を削除しない
 		this.removeFromArray(node1.nodes, node2);
 		this.removeFromArray(node2.nodes, node1);
-		
+
 		if(!this.rebuildmode){
 			if(this.modifyNodes.indexOf(node1)<0){ this.modifyNodes.push(node1);}
 			if(this.modifyNodes.indexOf(node2)<0){ this.modifyNodes.push(node2);}
@@ -292,12 +292,12 @@ GraphBase:{
 	remakeComponent : function(){
 		// subgraph中にcomponentが何種類あるか調べる
 		var remakeComponents = this.getAffectedComponents();
-		
+
 		// Component数が1ならsubgraphが分断していないかどうかチェック
 		if(remakeComponents.length===1){
 			this.checkDividedComponent(remakeComponents[0]);
 		}
-		
+
 		// Component数が0なら現在のmodifyNodesに新規IDを割り振り終了
 		// Component数が2以上ならmodifyNodesに極大部分グラフを取り込んで再探索
 		if(!!this.modifyNodes && this.modifyNodes.length>0){
@@ -390,11 +390,11 @@ GraphBase:{
 		for(var i=0;i<component.nodes.length;i++){
 			var node = component.nodes[i];
 			edges += node.nodes.length;
-			
+
 			this.setComponentRefs(node.obj, component);
 		}
 		component.circuits = (edges>>1) - component.nodes.length + 1;
-		
+
 		this.setExtraData(component);
 	},
 
@@ -421,7 +421,7 @@ GraphBase:{
 	setLongColor : function(components, longColor){
 		if(components.length===0){ return;}
 		var puzzle = this.puzzle;
-		
+
 		// できた線の中でもっとも長いものを取得する
 		var largeComponent = null;
 		if(!!longColor){
@@ -430,13 +430,13 @@ GraphBase:{
 				if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
 			}
 		}
-		
+
 		// 新しい色の設定
 		for(var i=0;i<components.length;i++){
 			var path = components[i];
 			path.color = (path===largeComponent ? longColor : path.color);
 		}
-		
+
 		if(this.coloring && (puzzle.execConfig('irowake') || puzzle.execConfig('irowakeblk'))){
 			this.repaintNodes(components);
 		}

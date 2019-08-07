@@ -25,6 +25,7 @@
 |---|---|---|---|
 |`use`|`number`|`1`|Input method for shaded cells from mouse <br> Possible value: `1 or 2`|
 |`use_tri`|`number`|`1`|Input method for triangles from mouse for `'Shakashaka'` <br> Possible value: `1, 2 or 3`|
+|`support_tri`|`boolean`|`true`|Enable to support inputting triangles next to two or more walls for `'Shakashaka'`|
 |`bgcolor`|`boolean`|`false`|Enable to input background color for `'Slitherlink'`|
 |`singlenum`|`boolean`|`true`|Disable to input plural answer numbers in a room for `'Hanare-gumi'`|
 |`enline`|`boolean`|`true`|Limit to input segments only between points for `'Kouchoku'`|
@@ -36,7 +37,7 @@
 |---|---|---|---|
 |`autocmp`|`boolean`|`true`|Show complete numbers apart from incompleted one automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
-|`multierr`|`boolean`|`false`|Check prural errors in `puzzle.check()` API.|
+|`multierr`|`boolean`|`false`|Check plural errors in `puzzle.check()` API.|
 |`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|
 |`forceallcell`|`boolean`|`false`|Force all cells to have number to get completed for `'fillomino'`|
 |`passallcell`|`boolean`|`true`|Force all cells to be passed for `'arukone'`|

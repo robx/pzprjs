@@ -31,7 +31,7 @@ Encode:{
 	//---------------------------------------------------------------------------
 	// enc.decodeURL()   parseURL()を行い、各種各パズルのdecode関数を呼び出す
 	// enc.encodeURL()   各種各パズルのencode関数を呼び出し、URLを出力する
-	// 
+	//
 	// enc.decodePzpr()  各パズルのURL入力用(オーバーライド用)
 	// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 	//---------------------------------------------------------------------------
@@ -67,7 +67,7 @@ Encode:{
 	encodeURL : function(type){
 		var puzzle = this.puzzle, pid = puzzle.pid, bd = puzzle.board;
 		var pzl = new pzpr.parser.URLData('');
-		
+
 		type = type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
 		if(type===pzl.URL_KANPEN && pid==='lits'){ type = pzl.URL_KANPENP;}
 

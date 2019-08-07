@@ -43,7 +43,7 @@ MouseEvent:{
 
 	inputLine : function(){
 		this.common.inputLine.call(this);
-		
+
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
 		if(this.puzzle.execConfig('autocmp') && !this.puzzle.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
@@ -54,12 +54,12 @@ MouseEvent:{
 		var opemgr = this.puzzle.opemgr, lastope = opemgr.lastope;
 		if(lastope.group!=='border' || lastope.property!=='line'){ return;}
 		var border = this.board.getb(lastope.bx, lastope.by);
-		
+
 		/* 線を引いた/消した箇所にある領域を取得 */
 		var clist = new this.klass.CellList();
 		Array.prototype.push.apply(clist, border.sideobj);
 		clist = clist.notnull().filter(function(cell){ return cell.path!==null || cell.isNum();});
-		
+
 		/* 改めて描画対象となるセルを取得して再描画 */
 		clist.each(function(cell){
 			if(cell.path===null){ if(cell.isNum()){ cell.draw();}}
@@ -81,13 +81,13 @@ MouseEvent:{
 	inputqcmp : function(val){
 		var cell = this.getcell();
 		if(cell.isnull){ return;}
-		
+
 		this.inputdark(cell,val);
 	},
 	inputdark : function(cell,val){
 		var cell = this.getcell();
 		if(cell.isnull){ return false;}
-		
+
 		var targetcell = (!this.puzzle.execConfig('dispmove') ? cell : cell.base),
 			distance = 0.60,
 			dx = this.inputPoint.bx-cell.bx, /* ここはtargetcellではなくcell */
@@ -112,13 +112,13 @@ Cell:{
 	isCmp : function(){ // 描画用
 		return this.isCmp_bonsan(this.puzzle.execConfig('autocmp'), this.puzzle.execConfig('dispmove'));
 	},
-	
+
 	isCmp_bonsan : function(is_autocmp, is_dispmove) {
 		var targetcell = (!is_dispmove ? this : this.base);
 		if(targetcell.qcmp===1){ return true;}
-		
+
 		if(!is_autocmp){ return false;}
-		
+
 		var	num = targetcell.getNum();
 		if(this.path===null){ return (num===0);}
 		else{
@@ -127,7 +127,7 @@ Cell:{
 			return ((d.cols===1||d.rows===1) && (num===clist.length-1));
 		}
 	},
-	
+
 	maxnum : function(){
 		var bd=this.board, bx=this.bx, by=this.by;
 		var col = (((bx<(bd.maxbx>>1))?(bd.maxbx-bx):bx)>>1);
@@ -197,20 +197,20 @@ Board:{
 LineGraph:{
 	enabled : true,
 	moveline : true,
-	
+
 	resetExtraData : function(cell){
 		cell.distance = (cell.qnum>=0 ? cell.qnum : null);
-		
+
 		this.common.resetExtraData.call(this, cell);
 	},
 	setExtraData : function(component){
 		this.common.setExtraData.call(this, component);
-		
+
 		var cell = component.departure, num = cell.qnum;
 		num = (num>=0 ? num : this.board.cell.length);
 		cell.distance = num;
 		if(cell.lcnt===0){ return;}
-		
+
 		/* component.departureは線が1方向にしかふられていないはず */
 		var dir = cell.getdir(cell.pathnodes[0].nodes[0].obj,2);
 		var pos = cell.getaddr(), n = cell.distance;
@@ -218,7 +218,7 @@ LineGraph:{
 			pos.movedir(dir,2);
 			var cell = pos.getc(), adb = cell.adjborder;
 			if(cell.isnull || cell.lcnt>=3 || cell.lcnt===0){ break;}
-			
+
 			cell.distance = --n;
 			if(cell===component.destination){ break;}
 			else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
@@ -236,7 +236,7 @@ LineGraph:{
 	enabled : true,
 	relation : {'cell.qnum':'node','border.line':'move'},
 	isnodevalid : function(cell){ return cell.base.qnum!==-1;},
-	
+
 	modifyOtherInfo : function(border,relation){
 		this.setEdgeByNodeObj(border.sidecell[0]);
 		this.setEdgeByNodeObj(border.sidecell[1]);
@@ -255,7 +255,7 @@ LineGraph:{
 },
 "CellList@satogaeri":{
 	checkCmp : function(){
-		return this.filter(function(cell){ 
+		return this.filter(function(cell){
 			return cell.isDestination() && cell.isCmp_bonsan(true, true);
 		}).length===1;
 	}
@@ -313,7 +313,7 @@ Graphic:{
 		var puzzle = this.puzzle;
 		if((puzzle.execConfig('dispmove') ? cell.base : cell).qnum===-1){ return null;}
 		if(puzzle.execConfig('dispmove') && puzzle.mouse.mouseCell===cell){ return this.movecolor;}
-		
+
 		var info = cell.error || cell.qinfo;
 		if     (info===0){ return this.quescolor;}
 		else if(info===1){ return this.errcolor1;}
@@ -508,7 +508,7 @@ AnsCheck:{
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
 				if(cell.isDestination() === this.board.getc(d.xx-cell.bx, d.yy-cell.by).isDestination()){ continue;}
-				
+
 				this.failcode.add(this.pid==="bonsan" ? "brObjNotSym" : "bkObjNotSym");
 				if(this.checkOnly){ break allloop;}
 				clist.filter(function(cell){ return cell.isDestination();}).seterr(1);

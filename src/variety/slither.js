@@ -81,7 +81,6 @@ Graphic:{
 	bgcellcolor_func : "qsub2",
 	numbercolor_func : "qnum",
 	margin : 0.5,
-	flushmargin : 0.35,
 
 	paint : function(){
 		this.drawBGCells();
@@ -181,7 +180,7 @@ FileIO:{
 			if(bdv.line===1){ val += 2;}
 			if(bdh.qsub===2){ val += 4;}
 			if(bdv.qsub===2){ val += 8;}
-			
+
 			if     (val===0){ nodename = 's';}
 			else if(val===1){ nodename = 'h';}
 			else if(val===2){ nodename = 'v';}

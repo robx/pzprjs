@@ -33,7 +33,7 @@ MouseEvent:{
 	/* inputLine, inputautodarkはぼんさんのものと同じ */
 	inputLine : function(){
 		this.common.inputLine.call(this);
-		
+
 		/* "丸数字を移動表示しない"場合の背景色描画準備 */
 		if(this.puzzle.execConfig('autocmp') && !this.puzzle.execConfig('dispmove') && !this.notInputted()){
 			this.inputautodark();
@@ -44,12 +44,12 @@ MouseEvent:{
 		var opemgr = this.puzzle.opemgr, lastope = opemgr.lastope;
 		if(lastope.group!=='border' || lastope.property!=='line'){ return;}
 		var border = this.board.getb(lastope.bx, lastope.by);
-		
+
 		/* 線を引いた/消した箇所にある領域を取得 */
 		var clist = new this.klass.CellList();
 		Array.prototype.push.apply(clist, border.sideobj);
 		clist = clist.notnull().filter(function(cell){ return cell.path!==null || cell.isNum();});
-		
+
 		/* 改めて描画対象となるセルを取得して再描画 */
 		clist.each(function(cell){
 			if(cell.path===null){ if(cell.isNum()){ cell.draw();}}
@@ -170,7 +170,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	distance : null,
-	
+
 	isViaPoint : function(){
 		if(this.distance===null){ return false;}
 		var n=this.distance, k=0;
@@ -211,20 +211,20 @@ Board:{
 LineGraph:{
 	enabled : true,
 	moveline : true,
-	
+
 	resetExtraData : function(cell){
 		cell.distance = (cell.qnum>=0 ? (cell.qnum+1)*cell.qnum/2 : null);
-		
+
 		this.common.resetExtraData.call(this, cell);
 	},
 	setExtraData : function(component){
 		this.common.setExtraData.call(this, component);
-		
+
 		var cell = component.departure, num = cell.qnum;
 		num = (num>=0 ? num : this.board.cell.length);
 		cell.distance = (num+1)*num/2;
 		if(cell.lcnt===0){ return;}
-		
+
 		/* component.departureは線が1方向にしかふられていないはず */
 		var dir = cell.getdir(cell.pathnodes[0].nodes[0].obj,2);
 		var pos = cell.getaddr(), n = cell.distance;
@@ -232,7 +232,7 @@ LineGraph:{
 			pos.movedir(dir,2);
 			var cell = pos.getc(), adb = cell.adjborder;
 			if(cell.isnull || cell.lcnt>=3 || cell.lcnt===0){ break;}
-			
+
 			cell.distance = --n;
 			if(cell===component.destination){ break;}
 			else if(dir!==1 && adb.bottom.isLine()){ dir=2;}
@@ -297,11 +297,11 @@ Graphic:{
 			var info = border.error || border.qinfo;
 			if(border.trial && this.puzzle.getConfig('irowake')){ this.addlw=-this.lm;}
 			else if(info===1){ this.addlw=1;}
-			
+
 			if     (info===1) { return this.errlinecolor;}
 			else if(info===-1){ return this.noerrcolor;}
 			else if(border.trial){ return (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
-			
+
 			var cells = border.sidecell;
 			var isvalidline = (cells[0].distance>=0 && cells[1].distance>=0);
 			if(this.puzzle.execConfig('dispmove')){
@@ -336,7 +336,7 @@ Graphic:{
 				if(border.trial && this.puzzle.getConfig('irowake')){ this.addlw=-this.lm;}
 				else if(info===1){ this.addlw=1;}
 				g.lineWidth = this.lw + this.addlw; //LineWidth
-				
+
 				if     (info=== 1)       { g.strokeStyle = this.errlinecolor;}
 				else if(info===-1)       { g.strokeStyle = this.noerrcolor;}
 				else if(border.trial)    { g.strokeStyle = (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
@@ -479,7 +479,7 @@ AnsCheck:{
 
 		"checkDisconnectLine"
 	],
-	
+
 	checkMoveOver : function(){
 		var result = true, bd = this.board;
 		for(var id=0;id<bd.border.length;id++){
@@ -487,7 +487,7 @@ AnsCheck:{
 			if(!border.isLine()){ continue;}
 			var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
 			if(cell1.distance>=0 && cell2.distance>=0){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			border.seterr(1);

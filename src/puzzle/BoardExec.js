@@ -120,14 +120,14 @@ BoardExec:{
 			if     (key===this.EXPANDUP||key===this.EXPANDDN){ bd.rows++;}
 			else if(key===this.EXPANDLT||key===this.EXPANDRT){ bd.cols++;}
 		}
-		
+
 		// main operation
 		['cell','cross','border','excell'].forEach(function(group){
 			if     (key & EXPAND){ bd.exec.expandGroup(group, key);}
 			else if(key & REDUCE){ bd.exec.reduceGroup(group, key);}
 			else                 { bd.exec.turnflipGroup(group, key, d);}
 		});
-		
+
 		if(key & REDUCE){
 			if     (key===this.REDUCEUP||key===this.REDUCEDN){ bd.rows--;}
 			else if(key===this.REDUCELT||key===this.REDUCERT){ bd.cols--;}

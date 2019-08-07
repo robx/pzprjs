@@ -21,10 +21,10 @@ MouseEvent:{
 },
 "MouseEvent@kurodoko":{
 	inputModes : {edit:['number','clear','info-blk'],play:['shade','unshade','info-blk']},
-	RBShadeCell : true,
+	RBShadeCell : true
 },
 "MouseEvent@nurimisaki":{
-	inputModes : {edit:['number','clear','info-ublk'],play:['shade','unshade','info-ublk']},
+	inputModes : {edit:['number','clear','info-ublk'],play:['shade','unshade','info-ublk']}
 },
 
 //---------------------------------------------------------
@@ -210,7 +210,7 @@ AnsCheck:{
 			target=adc.top;    while(target.isUnshade()){ clist.add(target); target=target.adjacent.top;   }
 			target=adc.bottom; while(target.isUnshade()){ clist.add(target); target=target.adjacent.bottom;}
 			if(cell.qnum===clist.length){ continue;}
-			
+
 			this.failcode.add("nmSumViewNe");
 			if(this.checkOnly){ break;}
 			clist.seterr(1);

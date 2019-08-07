@@ -131,14 +131,14 @@ Cell:{
 	enableSubNumberArray : true,
 	numberWithMB : true,
 	numberAsLetter : true,
-	
+
 	maxnum : function(){ return this.board.indicator.count;}
 },
 
 EXCell:{
 	disInputHatena : true,
 	numberAsLetter : true,
-	
+
 	maxnum : function(){ return this.board.indicator.count;}
 },
 
@@ -472,10 +472,10 @@ AnsCheck:{
 			if(excell.qnum===-1){ continue;}
 			var cell = bd.searchSight(excell, false).dest;
 			if(cell.isnull || excell.qnum===cell.anum || cell.qsub===1){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
-			
+
 			excell.seterr(1);
 			bd.searchSight(excell, true);
 		}

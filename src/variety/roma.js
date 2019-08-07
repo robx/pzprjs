@@ -232,7 +232,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			if(ldata[c]!==-1){ continue;}
 			if(bd.trackBall1(c,ldata)){ continue;}
-			
+
 			this.failcode.add("stopHalfway");
 			if(this.checkOnly){ break;}
 			bd.cell.filter(function(cell){ return ldata[cell.id]===1;}).seterr(1);

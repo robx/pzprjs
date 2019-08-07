@@ -1,6 +1,4 @@
 // classmgr.js v3.6.0
-// jshint node:true
-/* global pzpr:false */
 
 //---------------------------------------------------------------
 // クラス設定用関数など
@@ -158,7 +156,7 @@ pzpr.classmgr = {
 			/* 各クラスをpzpr.customから設定する */
 			this.setClasses(puzzle, newpid);
 		}
-		
+
 		callback();
 	},
 

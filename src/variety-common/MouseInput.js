@@ -17,7 +17,7 @@ MouseEvent:{
 		if(this.inputData===null){ this.decIC(cell);}
 
 		this.mouseCell = cell;
-		if(this.firstCell.isnull){ this.firstCell = cell;}
+		this.initFirstCell(cell);
 
 		var shade=cell.qansUnshade?2:1, unshade=cell.qansUnshade?1:2;
 		if(this.inputData===shade&&!cell.allowShade()){ return;}
@@ -27,11 +27,19 @@ MouseEvent:{
 			var cell0 = this.firstCell;
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
+		if(this.RBShadeCell && this.inputData!==1){
+			if(this.firstState!==1&&cell.qans===1){ return;}
+		}
 
 		cell.setQans(this.inputData===1?1:0);
 		cell.setQsub(this.inputData===2?1:0);
 
 		cell.draw();
+	},
+	initFirstCell : function(cell){
+		if(!this.firstCell.isnull){ return;}
+		this.firstCell = cell;
+		this.firstState = cell.qans;
 	},
 	decIC : function(cell){
 		var ans = cell.qansUnshade?'unshade':'shade';
@@ -268,7 +276,7 @@ MouseEvent:{
 		cell.setQsub(this.inputData-10);
 		cell.draw();
 
-		this.mouseCell = cell; 
+		this.mouseCell = cell;
 	},
 
 	//---------------------------------------------------------------------------
@@ -522,9 +530,9 @@ MouseEvent:{
 			this.inputMoveLine();
 			return;
 		}
-		
+
 		var cell = this.getcell();
-		if(this.firstCell.isnull){ this.firstCell = cell;}
+		this.initFirstCell(cell);
 
 		var pos, border;
 		if(!this.board.borderAsLine){
@@ -537,7 +545,7 @@ MouseEvent:{
 			if(this.prevPos.equals(pos)){ return;}
 			border = this.prevPos.getborderobj(pos);
 		}
-		
+
 		if(!border.isnull){
 			if(this.inputData===null){ this.inputData=(border.isLine()?0:1);}
 			if     (this.inputData===1){ border.setLine();}
@@ -583,7 +591,7 @@ MouseEvent:{
 			if(this.inputData===null){ this.inputData=(border.qsub===0?2:3);}
 			if(this.inputData===2 && border.isLine() && this.puzzle.execConfig('dispmove')){}
 			else if(this.inputData===2){ border.setPeke();}
-			else if(this.inputData===3){ border.removeLine();}
+			else if(this.inputData===3){ border.removePeke();}
 			border.draw();
 		}
 		this.prevPos = pos;
@@ -623,29 +631,29 @@ MouseEvent:{
 				dy = this.inputPoint.by-this.firstPoint.by;
 			if     (dy<=-0.50 || 0.50<=dy){ val=1;}
 			else if(dx<=-0.50 || 0.50<=dx){ val=2;}
-			
+
 			if(val!==null){
 				var plus = (this.pid==="amibo"||this.pid==="tatamibari");
-				
+
 				var shape = 0;
 				if(this.puzzle.playmode){ shape = {0:0,11:3,12:1,13:2}[cell.qans];}
 				else                    { shape = {'-1':0,1:3,2:1,3:2}[cell.qnum];}
 				if((this.inputData===null) ? (shape & val) : this.inputData<=0){
 					val = (!plus ? 0 : -val);
 				}
-				
+
 				// 描画・後処理
 				if(!plus)     { shape  = val;}
 				else if(val>0){ shape |= val;}
 				else          { shape &= ~(-val);}
-				
+
 				if(this.puzzle.playmode){ cell.setQans([0,12,13,11][shape]);}
 				else                    { cell.setQnum([-1,2,3,1][shape]);}
 				cell.draw();
-				
+
 				this.inputData = +(val>0);
 				this.firstPoint.reset();
-				
+
 				if(this.pid==="tatamibari"){ this.mousereset();}
 			}
 		}

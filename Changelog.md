@@ -1,25 +1,35 @@
 #### New puzzle
 
 * dbchoco: Introduce new puzzle: Double Chocolate (due to Lennard Sprong)
+* geradeweg: Introduce new puzzle: Geradeweg
 * heteromino: Introduce new puzzle: Heteromino
+* pencils: Introduce new puzzle: Pencils (due to Lennard Sprong)
 * yajilin-regions: Introduce new puzzle: Regional Yajilin
 
 #### Improvement
 
 * amibo, mashu, starbattle: Reword English error messages
 * cbblock: Add error for dead-end walls
+* heyawake: Don't autocheck until the grid is fully decided
 * slither: Allow 4 as clue number
+* starbattle: Input dots in auto-mode; change style of empty cells;
+  hide redundant dots
 * Change default value of "shade undefined cells" back to `true`
+* Change unshaded cells without changing shaded cells in checkerboard
+  puzzles (Hitori, Heyawake, Yajilin, etc.)
 
 #### BugFix
 
 * amibo, usotatami: Allow encoding multi-digit clues
 * cbblock: Fix wrong error during edit
 * fourcells, fivecells: No borders and connection lines between empty cells
+* heteromino: Don't compare shapes of non-triminos
 * kinkonkan: Fix answer check for large clues
+* nagare: Allow cross input mode to remove aux marks
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
 * nurimisaki: Switch to unshaded cell connection info for edit mode, too
+* Fix interaction of "Clear Answer" and trial mode
 
 ## Version 0.11.1
 
@@ -158,7 +168,7 @@ Release data: 2017/4/14
 #### BugFix
 
 * util: Listen both touch and mouse event for user agents supporting touch event
-* util: Surpress prural finger tap from inputting the board
+* util: Surpress plural finger tap from inputting the board
 * util: Fix mouse button detection when Pointer Event is triggered
 * Operation: Add ansclear history to ensure regenerate graph info
 
@@ -329,7 +339,7 @@ Release date: 2016/9/18
 #### Improvement
 
 * Config: Add config to paint circles background for yinyang
-* hanare: Add singlenum config to allow prural numbers in a room
+* hanare: Add singlenum config to allow plural numbers in a room
 * shugaku: Add undefcell config to paint background color of unfilled cells
 * toichika, hanare: Enable autocmp config
 * Graph: Validate 'irowakeblk' config to set and draw color of shaded cell blocks

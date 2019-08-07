@@ -204,9 +204,9 @@ pzpr.classmgr.makeCommon({
 
 	lcnt : 0,		// セルに存在する線の本数
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
-	
+
 	disInputHatena : false,	// qnum==-2を入力できないようにする
-	
+
 	numberWithMB   : false,	// 回答の数字と○×が入るパズル(○は数字が入っている扱いされる)
 	numberAsObject : false,	// 数字以外でqnum/anumを使用する(同じ値を入力で消去できたり、回答で・が入力できる)
 	numberAsLetter : false,	// 数字の代わりにアルファベットを入力する
@@ -264,7 +264,7 @@ pzpr.classmgr.makeCommon({
 		}
 		return true;
 	},
-	
+
 	//-----------------------------------------------------------------------
 	// cell.getNum()     該当するCellの数字を返す
 	// cell.setNum()     該当するCellに数字を設定する
@@ -293,7 +293,7 @@ pzpr.classmgr.makeCommon({
 			if(!(this.numberWithMB && vala===-1)){ this.clrSnum();}
 		}
 	},
-	
+
 	//-----------------------------------------------------------------------
 	// cell.isNum()       該当するCellに数字があるか返す
 	// cell.noNum()       該当するCellに数字がないか返す
@@ -558,11 +558,13 @@ pzpr.classmgr.makeCommon({
 	// border.setLine()     該当するBorderに線を引く
 	// border.setPeke()     該当するBorderに×印をつける
 	// border.removeLine()  該当するBorderから線を消す
+	// border.removePeke()  allow separate override
 	//-----------------------------------------------------------------------
 	isLine : function(){ return this.line>0;},
 	setLine    : function(id){ this.setLineVal(1); this.setQsub(0);},
 	setPeke    : function(id){ this.setLineVal(0); this.setQsub(2);},
 	removeLine : function(id){ this.setLineVal(0); this.setQsub(0);},
+	removePeke : function(id){ this.removeLine(id);},
 
 	//---------------------------------------------------------------------------
 	// border.isBorder()     該当するBorderに境界線が引かれているか判定する

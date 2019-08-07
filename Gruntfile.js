@@ -1,4 +1,3 @@
-/* jshint node: true, browser: false */
 module.exports = function(grunt){
   var pkg = grunt.file.readJSON('package.json'), deps = pkg.devDependencies;
   for(var plugin in deps){ if(plugin.match(/^grunt\-/)){ grunt.loadNpmTasks(plugin);}}
@@ -12,14 +11,16 @@ module.exports = function(grunt){
   grunt.initConfig({
     pkg: pkg,
 
-    clean: {
-      all: ['dist/*', 'pzprv3-*.{zip,tar.gz,tar.bz2}']
-    },
-
     copy: {
-      license: {
+      ui: {
+        options: {
+          process: function(content, srcpath){ return grunt.template.process(content);},
+          noProcess: ['**/*.{png,gif,ico}'],
+          mode: true
+        },
         files : [
-          { src: 'LICENSE.txt', dest: 'dist/LICENSE.txt'}
+          { expand: true, cwd: 'src-ui/css', src: ['*.css'], dest: 'dist/css' },
+          { expand: true, cwd: 'src-ui',     src: ['*'],     dest: 'dist'     }
         ]
       }
     },
@@ -34,7 +35,15 @@ module.exports = function(grunt){
           sourceMap: !PRODUCTION
         },
         files: [
-          { src: require('./src/pzpr.js').files, dest: 'dist/pzpr.concat.js' }
+          { src: require('./src/pzpr.js').files, dest: 'dist/js/pzpr.concat.js' }
+        ]
+      },
+      ui: {
+        options:{
+          sourceMap: !PRODUCTION
+        },
+        files: [
+          { src: require('./src-ui/js/pzpr-ui.js').files, dest: 'dist/js/pzpr-ui.concat.js' }
         ]
       }
     },
@@ -46,12 +55,12 @@ module.exports = function(grunt){
       },
       pzpr:{
         options: (PRODUCTION ? {} : {
-          sourceMap : 'dist/pzpr.js.map',
-          sourceMapIn : 'dist/pzpr.concat.js.map',
+          sourceMap : 'dist/js/pzpr.js.map',
+          sourceMapIn : 'dist/js/pzpr.concat.js.map',
           sourceMapIncludeSources : true
         }),
         files: [
-          { src: 'dist/pzpr.concat.js', dest: 'dist/pzpr.js'}
+          { src: 'dist/js/pzpr.concat.js', dest: 'dist/js/pzpr.js'}
         ]
       },
       variety:{
@@ -59,7 +68,7 @@ module.exports = function(grunt){
           sourceMap : function(filename){ return filename+'.map';}
         }),
         files: [
-          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/pzpr-variety' }
+          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/js/pzpr-variety' }
         ]
       },
       samples:{
@@ -67,46 +76,28 @@ module.exports = function(grunt){
           sourceMap : function(filename){ return filename+'.map';}
         }),
         files: [
-          { expand: true, cwd: 'test/script', src: ['*.js'], dest: 'dist/pzpr-samples' }
-        ]
-      }
-    },
-
-    jshint: {
-      options: {
-        jshintrc: true
-      },
-      all: {
-        src: [
-          'Gruntfile.js',
-          'src/*.js',
-          'src/pzpr/*.js',
-          'src/puzzle/*.js',
-          'src/variety/*.js',
-          'src/variety-common/*.js',
-          'sample/*.js',
-          'test/**/*.js'
+          { expand: true, cwd: 'test/script', src: ['*.js'], dest: 'dist/js/pzpr-samples' }
         ]
       },
-      source:{
-        src: [
-          'src/*.js',
-          'src/pzpr/*.js',
-          'src/puzzle/*.js',
-          'src/variety/*.js',
-          'src/variety-common/*.js',
-          'test/script/*.js'
+      ui: {
+        options: (PRODUCTION ? {} : {
+          sourceMap : 'dist/js/pzpr-ui.js.map',
+          sourceMapIn : 'dist/js/pzpr-ui.concat.js.map',
+          sourceMapIncludeSources : true
+        }),
+        files: [
+          { src: 'dist/js/pzpr-ui.concat.js', dest: 'dist/js/pzpr-ui.js' },
+          { src: 'src/js/v3index.js',           dest: 'dist/js/v3index.js' }
         ]
       }
     }
   });
   
-  grunt.registerTask('default', ['lint:source',                              'build']);
-  grunt.registerTask('release', ['lint:source', 'clean:all', 'copy:license', 'build']);
-  grunt.registerTask('lint',        ['newer:jshint:all']);
-  grunt.registerTask('lint:source', ['newer:jshint:source']);
-  grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples']);
+  grunt.registerTask('default', ['build']);
+  grunt.registerTask('release', ['build']);
+  grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);
   grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
+  grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);
   grunt.registerTask('build:variety',['newer:uglify:variety']);
   grunt.registerTask('build:samples',['newer:uglify:samples']);
 };

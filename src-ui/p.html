@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<HTML lang="ja">
+<HEAD>
+<META CHARSET="utf-8">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="./css/sc8.css?<%= pkg.version %>" type="text/css">
+<script type="text/javascript" src="./js/pzpr.js?<%= pkg.version %>"></script>
+<script type="text/javascript" src="./js/pzpr-ui.js?<%= pkg.version %>"></script>
+<TITLE>ぱずぷれv3</TITLE>
+</HEAD>
+
+<BODY>
+
+<div id="main">
+
+<h2 id="title2">読み込み中です...</h2>
+
+<div id="menuboard" class="outofboard">
+  <menu id="menupanel" style="display:none;">
+   <li><span>__ファイル__File__</span><menu label="__ファイル__File__">
+     <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New Board__</span></li>
+     <li data-popup="urlinput"><span>__URL入力__Import from URL__</span></li>
+     <li data-popup="urloutput" id="menu_urloutput"><span>__URL出力__Export URL__</span></li>
+     <hr>
+     <li data-popup="fileopen"><span>__ファイルを開く__Open file__</span></li>
+     <li data-popup="filesave"><span>__ファイル保存__Save file as ...__</span></li>
+     <hr>
+     <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
+   </menu></li>
+   <li><span>__編集__Edit__</span><menu label="__編集__Edit__">
+     <li><span>__盤面__Board__</span> -&gt;<menu label="__盤面__Board__">
+       <li data-menu-exec="anscheck"><span>__チェック__Check the Answer__</span></li>
+       <li data-menu-exec="ansclear"><span>__解答消去__Erase answer__</span></li>
+       <li data-menu-exec="subclear" id="menu_subclear"><span>__補助記号消去__Erase auxiliary marks__</span></li>
+     </menu></li>
+     <li data-disp-pid="stostone"><span>__ブロックの位置__Blocks position__</span> -&gt;<menu label="__ブロックの位置__Blocks position__">
+       <li data-press-exec="dropblocks,resetblocks"><span>__ブロックを落とす__Drop blocks__</span></li>
+       <li data-press-exec="raiseblocks,resetblocks"><span>__ブロックを上げる__Raise blocks__</span></li>
+     </menu></li>
+     <li data-disp-pid="slalom"><span>__旗門上の数字__Number on gates__</span> -&gt;<menu label="__旗門上の数字__Number on gates__">
+       <li data-press-exec="showgatenum,hidegatenum"><span>__一時的に表示する__Show temporarily__</span></li>
+     </menu></li>
+     <hr id="menu_sep_edit1">
+     <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the Board__</span></li>
+     <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
+     <hr>
+     <li data-menu-exec="duplicate" id="menu_duplicate"><span>__盤面の複製__Duplicate the Board__</span></li>
+   </menu></li>
+   <li><span>__表示__Display__</span><menu label="__表示__Display__">
+     <li data-config="cellsizeval"><span>__表示サイズ__Cell Size__</span> -&gt;<menu label="__表示サイズ__Cell Size__">
+       <li data-popup="dispsize"><span>__数値指定__Set by Number__</span></li>
+       <hr>
+       <li data-value="19"><span>__サイズ 極小__Ex Small__</span></li>
+       <li data-value="36"><span>__サイズ 小__Small__</span></li>
+       <li data-value="48"><span>__サイズ 標準__Normal__</span></li>
+       <li data-value="72"><span>__サイズ 大__Large__</span></li>
+       <li data-value="108"><span>__サイズ 特大__Ex Large__</span></li>
+     </menu></li>
+     <li data-config="font"><span>__フォント__Font Family__</span> -&gt;<menu label="__フォント__Font Family__">
+       <li data-value="1"><span>__ゴシック__Sans-Serif__</span></li>
+       <li data-value="2"><span>__明朝__Serif__</span></li>
+     </menu></li>
+     <li data-config="disptype_yajilin"><span>__表示形式__Display__</span> -&gt;<menu label="__表示形式__Display__">
+       <li data-value="1"><span>__ニコリ紙面形式__Original Type__</span></li>
+       <li data-value="2"><span>__背景色をグレーにする__Gray Background__</span></li>
+     </menu></li>
+     <li data-config="disptype_pipelinkr"><span>__表示形式__Display__</span> -&gt;<menu label="__表示形式__Display__">
+       <li data-value="1"><span>__○__Circle__</span></li>
+       <li data-value="2"><span>__■__Icebarn__</span></li>
+     </menu></li>
+     <li data-config="disptype_bosanowa"><span>__表示形式__Display__</span> -&gt;<menu label="__表示形式__Display__">
+       <li data-value="1"><span>__ニコリ紙面形式__Original Type__</span></li>
+       <li data-value="2"><span>__倉庫番形式__Sokoban Type__</span></li>
+       <li data-value="3"><span>__ワリタイ形式__Waritai Type__</span></li>
+     </menu></li>
+     <hr>
+     <li class="check" data-config="irowake"><span>__線の色分け__Color coding__</span></li>
+     <li class="check" data-config="irowakeblk"><span>__黒マスの色分け__Color coding__</span></li>
+     <li class="check" data-config="dispqnumbg"><span>__問題背景描画__Paint bg of question circles__</span></li>
+     <li class="check" data-config="undefcell"><span>__未確定領域背景描画__Paint uninputted cells__</span></li>
+     <li class="check" data-config="cursor"><span>__カーソルの表示__Show cursor__</span></li>
+     <li class="check" data-config="adjsize"><span>__自動横幅調節__Auto Size Adjust__</span></li>
+     <li class="check" data-config="fullwidth"><span>__横幅最大拡張__Expand Canvas Width__</span></li>
+     <hr>
+     <li data-popup="colors"><span>__色の設定__Change Color__</span></li>
+     <li data-menu-exec="repaint"><span>__盤面の再描画__Repaint whole board__</span></li>
+     <li data-menu-exec="toolarea"><span id="menu_toolarea">ツールエリアを隠す</span></li>
+   </menu></li>
+   <li><span>__設定__Setting__</span><menu label="__設定__Setting__">
+     <li data-config="mode"><span>__モード__Mode__</span> -&gt;<menu label="__モード__Mode__">
+       <li data-value="edit"><span>__問題作成モード__Edit mode__</span></li>
+       <li data-value="play"><span>__解答モード__Answer mode__</span></li>
+     </menu></li>
+     <li data-config="use"><span>__操作方法__Input Type__</span> -&gt;<menu label="__操作方法__Input Type__">
+       <li data-value="1"><span>__左右ボタン__LR Button__</span></li>
+       <li data-value="2"><span>__1ボタン__One Button__</span></li>
+     </menu></li>
+     <li data-config="use_tri"><span>__操作方法__Input Type__</span> -&gt;<menu label="__操作方法__Input Type__">
+       <li data-value="1"><span>__クリックした位置__Corner-side__</span></li>
+       <li data-value="2"><span>__引っ張り入力__Pull-to-Input__</span></li>
+       <li data-value="3"><span>__1ボタン__One Button__</span></li>
+     </menu></li>
+     <li data-config="inputmode"><span>__入力モード__Input Mode__</span> -&gt;<menu label="__入力モード__Input Mode__">
+       <li data-value="auto"><span>__自動__Auto__</span></li>
+       <li data-value="shade"><span>__黒マス__Shaded cells__</span></li>
+       <li data-value="unshade"><span>__白マス__Unshaded cells__</span></li>
+       <li data-value="number"><span>__数字__Number__</span></li>
+       <li data-value="number-"><span>__数字(逆順)__Number (rev)__</span></li>
+       <li data-value="letter"><span>__アルファベット__Alphabet__</span></li>
+       <li data-value="letter-"><span>__アルファベット(逆順)__Alphabet (rev)__</span></li>
+       <li data-value="quesmark"><span>__盤面記号__Question marks__</span></li>
+       <li data-value="quesmark-"><span>__盤面記号(逆順)__Question marks (rev)__</span></li>
+       <li data-value="border"><span>__境界線__Border__</span></li>
+       <li data-value="subline"><span>__補助線__Aux. conn. lines__</span></li>
+       <li data-value="direc"><span>__向き__Direction__</span></li>
+       <li data-value="arrow"><span>__矢印__Arrows__</span></li>
+       <li data-value="circle-unshade"><span>__白まる__Unshaded circles__</span></li>
+       <li data-value="circle-shade"><span>__黒まる__Shaded circles__</span></li>
+       <li data-value="goat"><span>__ヤギ__Goats__</span></li>
+       <li data-value="wolf"><span>__オオカミ__Wolves__</span></li>
+       <li data-value="moon"><span>__月__Marks of moon__</span></li>
+       <li data-value="sun"><span>__太陽__Marks of sun__</span></li>
+       <li data-value="empty"><span>__無効セル__Invalid cells__</span></li>
+       <li data-value="ice"><span>__アイスバーン__Icebarns__</span></li>
+       <li data-value="water"><span>__ウォーターハザード__Water hazard__</span></li>
+       <li data-value="nabe"><span>__鍋__Crocks__</span></li>
+       <li data-value="crossdot"><span>__黒点__Shaded dots__</span></li>
+       <li data-value="ineq"><span>__不等号__Inequality marks__</span></li>
+       <li data-value="mark-circle"><span>__丸記号__Circles__</span></li>
+       <li data-value="mark-triangle"><span>__三角形__Triangles__</span></li>
+       <li data-value="mark-rect"><span>__四角形__Rectangles__</span></li>
+       <li data-value="undef"><span>__？記号__Question marks__</span></li>
+       <li data-value="line"><span>__線__Lines__</span></li>
+       <li data-value="peke"><span>__バツ印__Cross marks__</span></li>
+       <li data-value="diraux"><span>__線向補助記号__Aux. dir. marks__</span></li>
+       <li data-value="bar"><span>__線__Bars__</span></li>
+       <li data-value="akari"><span>__あかり__Blubs__</span></li>
+       <li data-value="star"><span>__スター__Stars__</span></li>
+       <li data-value="balloon"><span>__風船__Balloons__</span></li>
+       <li data-value="ironball"><span>__鉄球__Iron balls__</span></li>
+       <li data-value="futon"><span>__ふとん__Futons__</span></li>
+       <li data-value="completion"><span>__確定数字__Completion__</span></li>
+       <li data-value="copycircle"><span>__コピー__Copy circles__</span></li>
+       <li data-value="copynum"><span>__コピー__Copy nums__</span></li>
+       <li data-value="dragnum+"><span>__数字を増やしてコピー__Drag inc. nums__</span></li>
+       <li data-value="dragnum-"><span>__数字を減らしてコピー__Drag dec. nums__</span></li>
+       <li data-value="objblank"><span>__ドット__Aux. dots__</span></li>
+       <li data-value="numexist"><span>__数字あり補助記号__Aux. circles__</span></li>
+       <li data-value="numblank"><span>__数字なし補助記号__Aux. crosses__</span></li>
+       <li data-value="subcircle"><span>__補助丸記号__Aux. circles__</span></li>
+       <li data-value="subcross"><span>__補助バツ記号__Aux. crosses__</span></li>
+       <li data-value="bgcolor"><span>__背景色1/2__Bgcolor 1/2__</span></li>
+       <li data-value="bgcolor1"><span>__背景色1__Bgcolor 1__</span></li>
+       <li data-value="bgcolor2"><span>__背景色2__Bgcolor 2__</span></li>
+       <li data-value="bgpaint"><span>__下絵__Draft sketch__</span></li>
+       <li data-value="clear"><span>__消去__Erase data__</span></li>
+       <li data-value="info-line"><span>__線の繋がりチェック__Check line connection__</span></li>
+       <li data-value="info-blk"><span>__黒マス繋がりチェック__Check shaded cell connection__</span></li>
+       <li data-value="info-road"><span>__経路チェック__Check route__</span></li>
+     </menu></li>
+     <hr>
+     <li class="check" data-config="bgcolor"><span>__背景色入力__Input BGcolor__</span></li>
+     <li class="check" data-config="autocmp"><span data-autocmp-type="number">__数字をグレーにする__Set Grey Color__</span
+                                            ><span data-autocmp-type="room">__背景色をつける__Paint background__</span
+                                            ><span data-autocmp-type="akari">__背景色をつける__Paint background__</span
+                                            ><span data-autocmp-type="kouchoku">__点をグレーにする__Set Grey Color__</span
+                                            ><span data-autocmp-type="border">__グレーの境界線を引く__Draw gray borders__</span></li>
+     <li class="check" data-config="autoerr"><span data-disp-pid="hitori">__重複した数字を表示__Show overlapped number__</span
+                                            ><span data-disp-pid="gokigen,wagiri">__ループした斜線の色分け__Loop slash with color__</span></li>
+     <li class="check" data-config="multierr"><span>__複数エラー検出__Check multiple errors__</span></li>
+     <li class="check" data-config="allowempty"><span>__空盤面でも正解許可__Allow empty board__</span></li>
+     <li class="check" data-config="forceallcell"><span>__全マス数字必須__Number in all cells__</span></li>
+     <li class="check" data-config="passallcell"><span>__全交差点通過__Pass all crossings__</span></li>
+     <li class="check" data-config="dirauxmark"><span>__方向の補助記号__Direction Aux. Mark__</span></li>
+     <li class="check" data-config="enline"><span>__線は点の間__Line between points__</span></li>
+     <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
+     <li class="check" data-config="uramashu"><span>__裏ましゅ__Ura-Mashu__</span></li>
+     <li class="check" data-config="singlenum"><span>__領域に数字1つ__Single num in a region__</span></li>
+     <li class="check" data-config="dispmove"><span>__動かしたように描画__Paint as move__</span></li>
+     <li class="check" data-config="snakebd"><span>__へび境界線描画__Draw snake border__</span></li>
+     <li class="check" data-config="bdpadding"><span>__空隙つきURL__URL with Padding__</span></li>
+     <li class="check" data-config="discolor"><span>__色分け無効化__Disable color__</span></li>
+     <li class="check" data-config="autocheck"><span>__正答自動判定__Auto Answer Check__</span></li>
+     <li class="check" data-config="lrinvert"><span>__マウス左右反転__Mouse button inversion__</span></li>
+     <li class="check" data-config="keypopup"><span>__パネル入力__Panel inputting__</span></li>
+     <hr>
+     <li data-config="language"><span>言語/Language</span> -&gt;<menu label="言語/Language">
+       <li class="child" data-value="ja"><span>日本語</span></li>
+       <li class="child" data-value="en"><span>English</span></li>
+     </menu></li>
+   </menu></li>
+   <li><span>__ヘルプ__Help__</span><menu label="__ヘルプ__Help__">
+     <li data-pidlink="rules.html?"><a target="_blank">__ルール__Rules__</a></li>
+     <hr>
+     <li data-popup="credit"><span>__ぱずぷれv3について__About PUZ-PRE v3__</span></li>
+     <li><a target="_blank" href="https://github.com/robx/pzprjs">Bug reports and feature requests</a></li>
+   </menu></li>
+  </menu>
+  <div id="usepanel" style="display:none;">
+    <div class="config" data-config="mode">
+     <div><span>__モード__Mode__</span> | </div>
+     <div>
+      <div class="child" data-value="edit">__問題入力モード__Edit mode__</div>
+      <div class="child" data-value="play">__解答モード__Answer mode__</div>
+     </div>
+    </div>
+    <div class="config" data-config="use">
+     <div><span>__操作方法__Input Type__</span> | </div>
+     <div>
+      <div class="child" data-value="1">__左右ボタン__LR Button__</div>
+      <div class="child" data-value="2">__1ボタン__One Button__</div>
+     </div>
+    </div>
+    <div class="config" data-config="use_tri">
+     <div><span>__三角形の入力方法__Input Triangle Type__</span> | </div>
+     <div>
+      <div class="child" data-value="1">__クリックした位置__Corner-side__</div>
+      <div class="child" data-value="2">__引っ張り入力__Pull-to-Input__</div>
+      <div class="child" data-value="3">__1ボタン__One Button__</div>
+     </div>
+    </div>
+    <div class="config" data-config="inputmode" id="panel_inputmode">
+     <div><span>__入力モード__Input Mode__</span> | </div>
+     <div>
+      <div class="child" data-value="auto">__自動__Auto__</div>
+      <div class="child" data-value="shade">__黒マス__Shaded cells__</div>
+      <div class="child" data-value="unshade">__白マス__Unshaded cells__</div>
+      <div class="child" data-value="number">__数字__Number__</div>
+      <div class="child" data-value="number-">__数字(逆順)__Number (rev)__</div>
+      <div class="child" data-value="letter">__アルファベット__Alphabet__</div>
+      <div class="child" data-value="letter-">__アルファベット(逆順)__Alphabet (rev)__</div>
+      <div class="child" data-value="quesmark">__盤面記号__Question marks__</div>
+      <div class="child" data-value="quesmark-">__盤面記号(逆順)__Question marks (rev)__</div>
+      <div class="child" data-value="border">__境界線__Border__</div>
+      <div class="child" data-value="subline">__補助線__Aux. conn. lines__</div>
+      <div class="child" data-value="direc">__向き__Direction__</div>
+      <div class="child" data-value="arrow">__矢印__Arrows__</div>
+      <div class="child" data-value="circle-unshade">__白まる__Unshaded circles__</div>
+      <div class="child" data-value="circle-shade">__黒まる__Shaded circles__</div>
+      <div class="child" data-value="goat">__ヤギ__Goats__</div>
+      <div class="child" data-value="wolf">__オオカミ__Wolves__</div>
+      <div class="child" data-value="moon">__月__Marks of moon__</div>
+      <div class="child" data-value="sun">__太陽__Marks of sun__</div>
+      <div class="child" data-value="empty">__無効セル__Invalid cells__</div>
+      <div class="child" data-value="ice">__アイスバーン__Icebarns__</div>
+      <div class="child" data-value="water">__ウォーターハザード__Water hazard__</div>
+      <div class="child" data-value="nabe">__鍋__Crocks__</div>
+      <div class="child" data-value="crossdot">__黒点__Shaded dots__</div>
+      <div class="child" data-value="ineq">__不等号__Inequality marks__</div>
+      <div class="child" data-value="mark-circle">__丸記号__Circles__</div>
+      <div class="child" data-value="mark-triangle">__三角形__Triangles__</div>
+      <div class="child" data-value="mark-rect">__四角形__Rectangles__</div>
+      <div class="child" data-value="undef">__？記号__Question marks__</div>
+      <div class="child" data-value="line">__線__Lines__</div>
+      <div class="child" data-value="peke">__バツ印__Cross marks__</div>
+      <div class="child" data-value="diraux">__線の向き補助記号__Aux. dir. marks__</div>
+      <div class="child" data-value="bar">__線__Bars__</div>
+      <div class="child" data-value="akari">__あかり__Blubs__</div>
+      <div class="child" data-value="star">__スター__Stars__</div>
+      <div class="child" data-value="dot">__黒点__Dots__</div>
+      <div class="child" data-value="balloon">__風船__Balloons__</div>
+      <div class="child" data-value="ironball">__鉄球__Iron balls__</div>
+      <div class="child" data-value="futon">__ふとん__Futons__</div>
+      <div class="child" data-value="completion">__確定数字__Completion__</div>
+      <div class="child" data-value="copycircle">__コピー__Copy circles__</div>
+      <div class="child" data-value="copynum">__コピー__Copy nums__</div>
+      <div class="child" data-value="dragnum+">__数字を増やしてコピー__Drag inc. nums__</div>
+      <div class="child" data-value="dragnum-">__数字を減らしてコピー__Drag dec. nums__</div>
+      <div class="child" data-value="objblank">__ドット__Aux. dots__</div>
+      <div class="child" data-value="numexist">__数字あり補助記号__Aux. circles__</div>
+      <div class="child" data-value="numblank">__数字なし補助記号__Aux. crosses__</div>
+      <div class="child" data-value="subcircle">__補助丸記号__Aux. circles__</div>
+      <div class="child" data-value="subcross">__補助バツ記号__Aux. crosses__</div>
+      <div class="child" data-value="bgcolor">__背景色1/2__Bgcolor 1/2__</div>
+      <div class="child" data-value="bgcolor1">__背景色1__Bgcolor 1__</div>
+      <div class="child" data-value="bgcolor2">__背景色2__Bgcolor 2__</div>
+      <div class="child" data-value="bgpaint">__下絵__Draft sketch__</div>
+      <div class="child" data-value="clear">__消去__Erase data__</div>
+      <div class="child" data-value="info-line">__線の繋がりチェック__Check line connection__</div>
+      <div class="child" data-value="info-blk">__黒マス繋がりチェック__Check shaded cell connection__</div>
+      <div class="child" data-value="info-road">__経路チェック__Check route__</div>
+     </div>
+    </div>
+    <div class="config" data-config="disptype_yajilin">
+     <div><span>__表示形式__Display__</span> | </div>
+     <div>
+      <div class="child" data-value="1">__ニコリ紙面形式__Original Type__</div>
+      <div class="child" data-value="2">__背景色をグレーにする__Gray Background__</div>
+     </div>
+    </div>
+    <div class="config" data-config="disptype_bosanowa">
+     <div><span>__表示形式__Display__</span> | </div>
+     <div>
+      <div class="child" data-value="1">__ニコリ紙面形式__Original Type__</div>
+      <div class="child" data-value="2">__倉庫番形式__Sokoban Type__</div>
+      <div class="child" data-value="3">__ワリタイ形式__Waritai type__</div>
+     </div>
+    </div>
+  </div>
+  <div id="checkpanel" style="display:none;">
+    <div class="config" data-config="dispmove">
+      <input type="checkbox">
+      <span>__動かしたように描画を行う__Display as object moving__</span>
+    </div>
+    <div class="config" data-config="bgcolor">
+      <input type="checkbox">
+      <span>__セルの中央をクリックした時に背景色の入力を有効にする__Enable to Input BGColor when the center of the cell is clicked__</span>
+    </div>
+    <div class="config" data-config="autocmp">
+      <input type="checkbox">
+      <span data-autocmp-type="number">__正しい数字をグレーにする__Grey each correct number__</span>
+      <span data-autocmp-type="room">__条件を満たした領域に背景色をつける__Paint background of each completed block__</span>
+      <span data-autocmp-type="akari">__光の照らす領域に背景色をつける__Paint background of each shined block__</span>
+      <span data-autocmp-type="kouchoku">__線が2本以上になったら点をグレーにする__Grey each letter which links over two segments__</span>
+      <span data-autocmp-type="border">__異なる数字の間にグレーの境界線を引く__Grey border between different areas__</span>
+    </div>
+    <div class="config" data-config="autoerr">
+      <input type="checkbox">
+      <span data-disp-pid="hitori">__重複している数字を赤くする__Show overlapped number as red__</span>
+      <span data-disp-pid="gokigen">__ループになっている斜線を赤くする__Draw loop line as red__</span>
+      <span data-disp-pid="wagiri">__ループになっている斜線を太くする__Draw loop line as bold__</span>
+    </div>
+    <div class="config" data-config="dispqnumbg">
+      <input type="checkbox">
+      <span>__問題の背景色をグレーにする__Paint background of question circles__</span>
+    </div>
+    <div class="config" data-config="undefcell">
+      <input type="checkbox">
+      <span>__何も入力されていないセルの背景色をグレーにする__Paint background of uninputted cells__</span>
+    </div>
+    <div class="config" data-config="dirauxmark">
+      <input type="checkbox">
+      <span>__方向を表す補助記号を入力する__Enable to input aux mark of direction__</span>
+    </div>
+    <div class="config" data-config="enline">
+      <input type="checkbox">
+      <span>__点の間のみ線を引けるようにする__Enable to draw line only between the points__</span>
+    </div>
+    <div class="config" data-config="lattice">
+      <input type="checkbox">
+      <span>__点を通過する線を引けないようにする__Disable drawing segment passing over a lattice point__</span>
+    </div>
+    <div class="config" data-config="uramashu">
+      <input type="checkbox">
+      <span>__裏ましゅにする__Change to Ura-Mashu__</span>
+    </div>
+    <div class="config" data-config="singlenum">
+      <input type="checkbox">
+      <span>__領域に一つだけ数字を入力できるようにする__Ensure that a region has a number__</span>
+    </div>
+    <div class="config" data-config="forceallcell">
+      <input type="checkbox">
+      <span>__全てのマスに数字が入った場合のみ正解とする__Force each cell to have a number__</span>
+    </div>
+    <div class="config" data-config="passallcell">
+      <input type="checkbox">
+      <span>__全ての交差点に線が通過した場合のみ正解とする__Lines should pass all crossings__</span>
+    </div>
+    <div class="config" data-config="snakebd">
+      <input type="checkbox">
+      <span>__へびの周りに境界線を表示する__Draw border around a snake__</span>
+    </div>
+    <div class="config" data-config="bdpadding">
+      <input type="checkbox">
+      <span>__URL生成時に周り1マス何もない部分をつける__Add Padding around the Board in outputting URL__</span>
+    </div>
+    <div class="config" data-config="discolor">
+      <input type="checkbox">
+      <span>__星クリックによる色分けを無効化する__Disable Coloring up by clicking star__</span>
+    </div>
+    <div class="config" data-config="lrinvert">
+      <input type="checkbox">
+      <span>__マウス左右反転/タップは右クリック__Invert mouse button / Tap as right click__</span>
+    </div>
+    <div class="config" data-config="keypopup">
+      <input type="checkbox">
+      <span>__数字・記号をパネルで入力する__Input numbers by panel__</span>
+    </div>
+    <div class="config" data-config="irowake">
+      <input type="checkbox">
+      <span>__線の色分けをする__Color each line__</span>
+      <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the line colors__</button>
+    </div>
+    <div class="config" data-config="irowakeblk">
+      <input type="checkbox">
+      <span>__黒マスの色分けをする__Color each block__</span>
+      <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the block colors__</button>
+    </div>
+  </div>
+  <hr id="separator2">
+  <div id="timerpanel">経過時間：00:00</div>
+</div>
+
+<div id="quesboard">
+  <div id="divques"></div>						<!-- Canvas用 -->
+</div>
+
+<div id="btnarea" class="outofboard" style="display:none;">	<!-- Canvas下部のボタン -->
+  <button type="button" class="btn btn-ok" id="btncheck" data-button-exec="answercheck">__チェック__Check__</button>
+  <button type="button" class="btn" id="btnundo"    data-press-exec="undo,undostop">__戻__&lt;-__</button
+ ><button type="button" class="btn" id="btnredo"    data-press-exec="redo,redostop">__進__-&gt;__</button>
+  <button type="button" class="btn" id="btnclear"   data-button-exec="ansclear">__解答消去__Erase Answer__</button
+ ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__補助消去__Erase Aux. Marks__</button>
+  <button type="button" class="btn" id="btnirowake" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change the color of Line__</button>
+  <button type="button" class="btn" id="btnirowakeblk" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change the color of blocks__</button>
+  <button type="button" class="btn" id="btncircle"  data-button-exec="toggledisp">○</button>
+  <button type="button" class="btn" id="btncolor"   data-button-exec="encolorall">__色をつける__Color up__</button>
+  <button type="button" class="btn" data-disp-pid="stostone" data-press-exec="dropblocks,resetblocks">__ブロックを落とす__Drop blocks__</button>
+  <button type="button" class="btn" data-disp-pid="slalom" data-press-exec="showgatenum,hidegatenum">__旗門数字表示__Show gate num__</button>
+  <button type="button" class="btn" id="btntrial"   data-button-exec="enterTrial">__仮置きモード__Trial mode__</button>
+  <div id="btntrialarea" style="display:none;">
+    <button type="button" class="btn btn-ok" id="btntriala"  data-button-exec="acceptTrial">__仮置き確定__Accept trial__</button>
+    <button type="button" class="btn btn-danger" id="btntrialr"  data-button-exec="rejectTrial">__仮置き破棄__Reject trial__</button>
+    <button type="button" class="btn btn-danger" id="btntrialr2" data-button-exec="rejectCurrentTrial">__仮置き破棄__Reject currect trial__</button>
+    <button type="button" class="btn btn-danger" id="btntrialra" data-button-exec="rejectTrial">__全仮置き破棄__Reject all trial__</button>
+    <button type="button" class="btn" id="btntriale"  data-button-exec="enterFurtherTrial">__多重仮置き__Enter further trial__</button>
+  </div>
+</div>
+
+</div> <!-- div#main close. -->
+
+<div id="notifies" class="outofboard">
+
+  <!-- チェック用ダイアログ -->
+  <div class="notify" id="assertbox">
+    <div class="titlebar">Notice</div>
+    <div class="content">
+      <span id="notification"></span>
+      <div class="buttons">
+        <button class="btn btn-ok" data-button-exec="closealert">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- クリア用ダイアログ -->
+  <div class="notify" id="confirmbox">
+    <div class="titlebar">Confirmation</div>
+    <div class="content">
+      <span id="confirmcaption"></span>
+      <div class="buttons">
+        <button class="btn btn-danger" data-button-exec="confirmtrue">OK</button>
+        <button class="btn" data-button-exec="confirmfalse">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 背景色を暗くする＆入力操作を効かなくするためのエレメント -->
+  <div id="notifybg"></div>
+
+</div>
+
+<!-- ポップアップメニュー(＋キーポップアップ/for_test)用 -->
+<div id="popup_parent" class="outofboard">
+
+  <div class="popup">
+    <div class="titlebar">__盤面の新規作成__New Board__</div>
+    <form name="newboard">
+      <span>__盤面を新規作成します。__Create New Board.__</span>
+      <br>
+      <div id="nb_size" data-disp-pid="!sudoku">
+        <span id="nb_cols" data-disp-pid="!tawa">__よこ__Cols__</span>
+        <input type="number" name="col" value="1" size=4 maxlength=3 min=1 max=999>
+        <span id="nb_cols_tawa" data-disp-pid="tawa">__横幅 (黄色の数)__Width (Yellows)__</span>
+        <br>
+        <span id="nb_rows" data-disp-pid="!tawa">__たて__Rows__</span>
+        <input type="number" name="row" value="1" size=4 maxlength=3 min=1 max=999>
+        <span id="nb_rows_tawa" data-disp-pid="tawa">__高さ__Height__</span>
+      </div>
+      <div id="nb_size_sudoku" data-disp-pid="sudoku">
+        <input type="radio" name="size" id="nb_size_sudoku_0" value="0"> 4x4<br>
+        <input type="radio" name="size" id="nb_size_sudoku_4" value="4"> 6x6<br>
+        <input type="radio" name="size" id="nb_size_sudoku_1" value="1" checked> 9x9<br>
+        <input type="radio" name="size" id="nb_size_sudoku_2" value="2"> 16x16<br>
+        <input type="radio" name="size" id="nb_size_sudoku_3" value="3"> 25x25
+      </div>
+      <br>
+      <table id="nb_shape_tawa" data-disp-pid="tawa" border=0 cell-padding=0 cell-spaceing=2><tr>
+        <td><div id="nb_shape_0"><img src="" data-button-exec="clickshape"></div></td>
+        <td><div id="nb_shape_1"><img src="" data-button-exec="clickshape"></div></td>
+        <td><div id="nb_shape_2"><img src="" data-button-exec="clickshape"></div></td>
+        <td><div id="nb_shape_3"><img src="" data-button-exec="clickshape"></div></td>
+      </tr></table>
+      <button type="button" class="btn btn-ok" data-button-exec="execute">__新規作成__Create__</button>
+      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__URL入力__Import from URL__</div>
+    <form name="urlinput">
+      <span>__URLから問題を読み込みます。__Import a question from URL.__</span>
+      <br>
+      <textarea name="ta" cols=48 rows=8 wrap="hard"></textarea>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="urlinput">__読み込む__Import__</button>
+      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__URL出力__Export URL__</div>
+    <form name="urloutput">
+      <button type="button" class="btn" data-button-exec="urloutput" name="pzprv3" >__ぱずぷれv3のURLを出力する__Output PUZ-PRE v3 URL__</button><br>
+ <!-- <button type="button" class="btn" data-button-exec="urloutput" name="pzprapp">__ぱずぷれ(アプレット)のURLを出力する__Output PUZ-PRE(JavaApplet) URL__</button><br> -->
+      <button type="button" class="btn" data-button-exec="urloutput" name="kanpen" >__カンペンのURLを出力する__Output Kanpen URL__</button><br>
+      <button type="button" class="btn" data-button-exec="urloutput" name="heyaapp">__へやわけアプレットのURLを出力する__Output Heyawake-Applet URL__</button><br>
+      <button type="button" class="btn" data-button-exec="urloutput" name="pzprv3e">__ぱずぷれv3の再編集用URLを出力する__Output PUZ-PRE v3 Re-Edit URL__</button><br>
+      <br>
+      <textarea name="ta" cols=48 rows=8 wrap="hard" readonly></textarea>
+      <br>
+      <button type="button" class="btn btn-info" data-button-exec="openurl">__このURLを開く__Open this URL on another window/tab__</button>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__ファイルを開く__Open File__</div>
+    <form name="fileform" target="fileiopanel">
+      <input type="hidden" name="operation" value="open">
+      <input type="hidden" name="pencilbox" value="0">
+      <span>__ファイル選択__Choose file__</span>
+      <br>
+      <input type="file" name="filebox" data-change-exec="fileopen" class="btn btn-info" id="filebox" value="">
+      <br>
+      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__ファイルを保存する__Save File__</div>
+    <form name="filesave" target="fileiopanel">
+      <input type="hidden" name="operation" value="save">
+      <input type="hidden" name="ques" value="">
+      <input type="hidden" name="urlstr" value="">
+      <span>__ファイル形式__File format__</span>
+      <select name="filetype" data-change-exec="changefilename">
+        <option value="filesave">__ぱずぷれv3形式__Puz-Pre v3 format__</option>
+   <!-- <option value="filesave3">__ぱずぷれv3(履歴つき)__Puz-Pre v3 with history__</option> -->
+        <option value="filesave2">__pencilbox形式__Pencilbox Text format__</option>
+        <option value="filesave4">__pencilbox XML形式__Pencilbox XML format__</option>
+      </select>
+      <br>
+      <span>__ファイル名__Filename__</span>
+      <input type="text" name="filename" value="">
+      <br>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="filesave">__保存__Save__</button>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__画像を保存する__Save Image__</div>
+    <form name="imagesave" target="fileiopanel">
+      <input type="hidden" name="operation" value="imagesave">
+      <input type="hidden" name="urlstr" value="">
+      <span>__ファイル形式__File format__</span>
+      <select name="filetype" data-change-exec="changefilename">
+        <option value="png">__PNG形式__PNG Format__</option>
+        <option value="svg">__ベクター画像(SVG)__Vector Image (SVG)__</option>
+        <option value="gif">__GIF形式__GIF Format__</option>
+        <option value="jpeg">__jpeg形式__jpeg Format__</option>
+        <option value="webp">__webp形式__webp Format__</option>
+      </select>
+      <br>
+      <span>__ファイル名__Filename__</span>
+      <input type="text" name="filename" value="">
+      <br>
+      <span>__画像のサイズ__Image Size__</span>
+      <input type="number" name="cellsize" value="36" size=4 maxlength=3 min=8 max=999 data-change-exec="estimatesize">
+      <span id="showsize">x</span>
+      <br>
+      <label>
+        <span>__背景色を透明にする__Set background to transparent__</span>
+        <input type="checkbox" name="transparent">
+      </label>
+      <br>
+      <br>
+      <button type="button" class="btn btn-ok"   data-button-exec="saveimage">__ダウンロード__Download__</button>
+      <button type="button" class="btn btn-info" data-button-exec="openimage">__別ウィンドウで開く__Open in another window__</button>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__盤面の調整__Board Dimension Resizer__</div>
+    <form name="adjust">
+      <span>__盤面の調整を行います。__Adjust the board.__</span>
+      <br>
+      <span>__拡大__Expand__</span>
+      <button type="button" class="btn" data-button-exec="adjust" name="expandup">__上__Top__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="expanddn">__下__Bottom__</button>
+      <span> </span>
+      <button type="button" class="btn" data-button-exec="adjust" name="expandlt">__左__Left__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="expandrt">__右__right__</button>
+      <br>
+      <span>__縮小__Reduce__</span>
+      <button type="button" class="btn" data-button-exec="adjust" name="reduceup">__上__Top__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="reducedn">__下__Bottom__</button>
+      <span> </span>
+      <button type="button" class="btn" data-button-exec="adjust" name="reducelt">__左__Left__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="reducert">__右__right__</button>
+      <br>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__反転・回転__Flip/Turn the board__</div>
+    <form name="turnflip">
+      <span>__盤面の回転・反転を行います。__Flip/Turn the board.__</span>
+      <br>
+      <button type="button" class="btn" data-button-exec="adjust" name="turnl">__左90°回転__Turn left by 90 degree__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="turnr">__右90°回転__Turn right by 90 degree__</button>
+      <br>
+      <button type="button" class="btn" data-button-exec="adjust" name="flipy">__上下反転__Flip upside down__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="flipx">__左右反転__Flip leftside right__</button>
+      <br>
+      <br>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__表示サイズの変更__Change size__</div>
+    <form name="dispsize">
+      <span>__表示サイズを変更します。__Change the display size.__</span>
+      <br>
+      <span>__表示サイズ__Display size__</span>
+      <input type="number" name="cellsize" value="" size=4 maxlength=3 min=8 max=999>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="changesize">__変更する__Change__</button>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup">
+    <div class="titlebar">__色の変更___Change Colors__</div>
+    <form name="colors">
+      <div data-color-target="shadecolor">
+        <span>__黒マス (解答入力)__Shaded Cell (Answer)__</span>
+        <input type="color" value="">
+        <button type="button" class="btn btn-warn">Reset</button>
+      </div>
+      <div data-color-target="bgcolor">
+        <span>__背景色__Background__</span>
+        <input type="color" value="">
+        <button type="button" class="btn btn-warn">Reset</button>
+      </div>
+      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
+
+  <div class="popup" id="credit3_1">
+    <div class="titlebar">credit</div>
+    <form name="credit">
+      <span>pzprjs</span> v<%= pkg.version %> <br>
+      <br>
+      based on <span>__ぱずぷれv3__PUZ-PRE v3__</span> v3.6.9 (+pzpr.js v<span>0.11.1</span>) <br>
+      <br>
+      <span>__ぱずぷれv3は はっぱ/連続発破が作成しています。__PUZ-PRE v3 is made by happa.__</span>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
+    </form>
+  </div>
+
+  <div class="popup" id="keypopup" style="z-index:100;">
+    <div class="titlebar" id="barkeypopup">panel</div>
+    <div class="panelbase" id="panelbase1"></div>
+    <div class="panelbase" id="panelbase3"></div>
+  </div>
+
+</div>
+
+<!-- 隠し要素 -->
+<div id="hidden_element">
+  <!-- ファイル入出力用インラインフレーム -->
+  <iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
+  <!-- ファイル保存用アンカー -->
+  <a id="saveanchor"></a>
+</div>
+<!-- ここまで -->
+
+</BODY>
+</HTML>

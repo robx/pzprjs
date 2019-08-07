@@ -1,5 +1,4 @@
 // util.js v3.4.0
-// jshint node:true
 
 (function(){
 
@@ -80,10 +79,10 @@ pzpr.util = {
 		else if(type==="mousemove"){ types = eventMouseMove;}
 		else if(type==="mouseup")  { types = eventMouseUp;}
 		else if(type==="mousecancel"){ types = eventMouseCancel;}
-		
+
 		function executer(e){ callback.call(self, e);}
 		types.forEach(function(type){ el.addEventListener(type, executer, !!capt);});
-		
+
 		return function remover(){
 			types.forEach(function(type){ el.removeEventListener(type, executer, !!capt);});
 		};

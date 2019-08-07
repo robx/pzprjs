@@ -21,7 +21,7 @@ pzpr.classmgr.makeCommon({
 		if(this.getObjNodeList(nodeobj).length>0){
 			this.removeEdgeByNodeObj(nodeobj);
 		}
-		
+
 		// Edgeを付け直す
 		if(this.calcNodeCount(nodeobj)>0){
 			this.addEdgeByNodeObj(nodeobj);
@@ -41,7 +41,7 @@ pzpr.classmgr.makeCommon({
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
 			if(!!node1 && !!node2){
 				this.removeEdge(node1, node2);
-				
+
 				if(!!this.incdecBorderCount){
 					this.incdecBorderCount(this.board.getb(((node1.obj.bx+node2.obj.bx)>>1), ((node1.obj.by+node2.obj.by)>>1)), true);
 				}
@@ -60,7 +60,7 @@ pzpr.classmgr.makeCommon({
 	addEdgeByNodeObj : function(cell){
 		// Nodeを付加する
 		for(var i=0,len=this.calcNodeCount(cell);i<len;i++){ this.createNode(cell);}
-		
+
 		// Edgeの付加
 		var sidenodeobj = this.getSideObjByNodeObj(cell);
 		var node1 = this.getObjNodeList(cell)[0];
@@ -70,7 +70,7 @@ pzpr.classmgr.makeCommon({
 			var node2 = this.getObjNodeList(sidenodeobj[i])[0];
 			if(!!node1 && !!node2){
 				this.addEdge(node1, node2);
-				
+
 				if(!!this.incdecBorderCount){
 					this.incdecBorderCount(this.board.getb(((node1.obj.bx+node2.obj.bx)>>1), ((node1.obj.by+node2.obj.by)>>1)), false);
 				}
@@ -102,7 +102,7 @@ pzpr.classmgr.makeCommon({
 	setComponentRefs : function(obj, component){ obj.sblk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.sblknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.sblknodes = [];},
-	
+
 	isnodevalid : function(cell){ return cell.isShade();},
 
 	//--------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ pzpr.classmgr.makeCommon({
 	setComponentRefs : function(obj, component){ obj.ublk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.ublknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.ublknodes = [];},
-	
+
 	isnodevalid : function(cell){ return cell.isUnshade();}
 },
 
@@ -141,7 +141,7 @@ pzpr.classmgr.makeCommon({
 	setComponentRefs : function(obj, component){ obj.nblk = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.nblknodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.nblknodes = [];},
-	
+
 	isnodevalid : function(cell){ return cell.isNumberObj();}
 },
 
@@ -157,7 +157,7 @@ pzpr.classmgr.makeCommon({
 	setComponentRefs : function(obj, component){ obj.room = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.roomnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.roomnodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.ques!==7);},
 	isedgevalidbylinkobj : function(border){ return !border.isBorder();},
 
@@ -250,7 +250,7 @@ pzpr.classmgr.makeCommon({
 		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
 		if(this.hastop){
 			component.top = clist.getTopCell();
-			
+
 			if(this.rebuildmode){
 				var val = -1, clist = clist, top = component.top;
 				for(var i=0,len=clist.length;i<len;i++){

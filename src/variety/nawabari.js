@@ -42,10 +42,10 @@ MouseEvent:{
 	inputModes : {edit:['number','clear'],play:['border','subline']}
 },
 "MouseEvent@fourcells,fivecells":{
-	inputModes : {edit:['empty','number','clear'],play:['border','subline']},
+	inputModes : {edit:['empty','number','clear'],play:['border','subline']}
 },
 "MouseEvent@heteromino":{
-	inputModes : {edit:['empty','clear'],play:['border','subline']},
+	inputModes : {edit:['empty','clear'],play:['border','subline']}
 },
 "MouseEvent@fourcells,fivecells,heteromino":{
 	inputModes : {edit:['empty','number','clear'],play:['border','subline']}
@@ -131,7 +131,7 @@ Border:{
 },
 
 Board:{
-	hasborder : 2,
+	hasborder : 2
 },
 "Board@fourcells,fivecells":{
 	initBoardSize : function(col,row){
@@ -336,6 +336,7 @@ AnsCheck:{
 			if(!cell1.isValid()||!cell2.isValid()){ continue;}
 
 			var l1=cell1.room.clist, l2=cell2.room.clist;
+			if(l1.length!==3||l2.length!==3){ continue;}
 			if(l1.triminoShape()!==l2.triminoShape()){ continue;}
 
 			this.failcode.add("bkSameTouch");

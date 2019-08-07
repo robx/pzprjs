@@ -42,7 +42,7 @@ MouseEvent:{
 			var borders = this.board.borderinside(d.x1,d.y1,d.x2,d.y2);
 
 			if(this.prevblist.length===0 || !this.prevblist.include(border)){ this.inputData=null;}
-			
+
 			if(this.inputData===null){ this.inputData = [1,2,0][border.line];}
 			if(this.inputData>0 && (dir===border.UP||dir===border.LT)){ borders.reverse();} // 色分けの都合上の処理
 			borders.setLineVal(this.inputData);

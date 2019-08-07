@@ -287,12 +287,12 @@ Graphic:{
 "Encode@pipelink,pipelinkr":{
 	decodePzpr : function(type){
 		this.decodePipelink();
-		
+
 		if(this.pid==='pipelinkr'){ this.puzzle.setConfig('disptype_pipelinkr', (!this.checkpflag('i')?1:2));}
 	},
 	encodePzpr : function(type){
 		this.encodePipelink(type);
-		
+
 		this.outpflag = ((this.pid==='pipelinkr' && this.puzzle.getConfig('disptype_pipelinkr')===2)?"i":null);
 	},
 

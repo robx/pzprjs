@@ -2,7 +2,7 @@
 // jshint node:true, browser:false, esnext:true
 /* global describe:false, it:false */
 
-var pzpr = require('../../dist/pzpr.js');
+var pzpr = require('../../dist/js/pzpr.js');
 
 var testdata = require('../load_testdata.js');
 

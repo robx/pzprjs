@@ -9,7 +9,7 @@ var puzzle = new pzpr.Puzzle();
 describe('Variety:cbblock',function(){
 	it('Check that errors are correct after editing', function(){
 		puzzle.open('cbblock/2/2');
-		
+
 		puzzle.setMode('edit');
 		puzzle.setConfig('multierr', true);
 

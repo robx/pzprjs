@@ -172,7 +172,7 @@ AnsCheck:{
 			var cell = bd.cell[c], dir=cell.qdir;
 			if(cell.noNum() || dir===0){ continue;}
 			if(cell.reldirbd(dir,1).isLine()){ continue;}
-			
+
 			this.failcode.add("nmNoLine");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);

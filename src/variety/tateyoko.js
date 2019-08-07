@@ -103,7 +103,7 @@ BoardExec:{
 	setComponentRefs : function(obj, component){ obj.bar = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.barnodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.barnodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.qans>0);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		var dir = cell1.getdir(cell2,2);
@@ -275,13 +275,13 @@ AnsCheck:{
 			cell2=adc.left;   if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
 			cell2=adc.right;  if(!cell2.isnull){ if(cell2.qans===13){ cnt1++;}else if(cell2.qans===12){ cnt2++;} }
 			if((type===1 && (num<=4-cnt2 && num>=cnt1)) || (type===2 && num===cnt1)){ continue;}
-			
+
 			this.failcode.add(code);
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
 		}
 	},
-	
+
 	checkEmptyCell_tateyoko : function(){
 		this.checkAllCell(function(cell){ return (cell.ques===0 && cell.qans===0);}, "ceNoBar");
 	}

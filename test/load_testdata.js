@@ -1,7 +1,6 @@
 // test/load_testdata.js
-// jshint node:true, browser:false, esnext:true
 
-var pzpr = require('../dist/pzpr.js');
+var pzpr = require('../dist/js/pzpr.js');
 
 // Load test data
 var testdata = {};

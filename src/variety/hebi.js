@@ -33,7 +33,7 @@ MouseEvent:{
 				this.inputdirec();
 			}
 		}
-		
+
 		if(this.mouseend && this.notInputted()){
 			this.inputqnum_snakes();
 		}
@@ -56,7 +56,7 @@ MouseEvent:{
 			else if(cell.qsub=== 1){ this.inputData = 10;}
 			else                   { this.inputData = -2;}
 		}
-		
+
 		if(cell.qnum!==-1){ return;}
 		else if(this.inputData>=1 && this.inputData<=5){
 			if(this.inputMode==='dragnum+' || (this.inputMode==='auto' && this.btn==='left')){ this.inputData++;}
@@ -77,7 +77,7 @@ MouseEvent:{
 			cell.setQsub(0);
 		}
 		else{ return;}
-		
+
 		this.mouseCell = cell;
 		cell.draw();
 	},
@@ -164,7 +164,7 @@ BoardExec:{
 	setComponentRefs : function(obj, component){ obj.snake = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.snakenodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.snakenodes = [];},
-	
+
 	isnodevalid : function(cell){ return (cell.anum>0);},
 	isedgevalidbynodeobj : function(cell1, cell2){
 		return ((cell1.anum===-1)===(cell2.anum===-1)) && (Math.abs(cell1.anum-cell2.anum)===1);
@@ -219,7 +219,7 @@ Graphic:{
 		var clist = this.range.cells;
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
-			
+
 			g.vid = "c_dot_"+cell.id;
 			if(cell.qsub===1){
 				g.fillStyle = (!cell.trial ? "rgb(255, 96, 191)" : this.trialcolor);
@@ -227,7 +227,7 @@ Graphic:{
 			}
 			else{ g.vhide();}
 		}
-	},
+	}
 },
 
 //---------------------------------------------------------
@@ -295,8 +295,8 @@ AnsCheck:{
 			cell2 = pos.getc();
 			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum===-1);
 		}
-		function noans(cell2){
-			return (cell2.isnull || cell2.qnum!==-1 || cell2.anum===-1);
+		function ans(cell2){
+			return (!cell2.isnull && cell2.qnum===-1 && cell2.anum!==-1);
 		}
 
 		for(var c=0;c<bd.cell.length;c++){
@@ -309,18 +309,18 @@ AnsCheck:{
 			// cell2は数字のあるマスのIDか、null(盤面外)を指す
 
 			// 矢印つき数字が0で、その先に回答の数字がある
-			if(num===0 && !noans(cell2)){
-				result = false;
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-				if(num<=0){ cell2.seterr(1);}
-			}
-			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
-			else if(num>0 && (noans(cell2) || cell2.anum!==num)){
+			if(num===0 && ans(cell2)){
 				result = false;
 				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				cell2.seterr(1);
+			}
+			// 矢印つき数字が1以上で、その先に回答の数字がない or 回答の数字が違う
+			else if(num>0 && (!ans(cell2) || cell2.anum!==num)){
+				result = false;
+				if(this.checkOnly){ break;}
+				cell.seterr(1);
+				if(ans(cell2)){ cell2.seterr(1);}
 			}
 		}
 		if(!result){ this.failcode.add("anNumberNe");}
@@ -351,7 +351,7 @@ AnsCheck:{
 			// cellは数字のあるマスか、null(盤面外)を指す
 
 			if(cell.isnull || cell.anum<=0 || cell.qnum!==-1 || cell.snake===null || cell.snake===snakes[r]){ continue;}
-			
+
 			this.failcode.add("snakeAttack");
 			if(this.checkOnly){ break;}
 			clist2.seterr(1);

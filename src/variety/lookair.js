@@ -103,13 +103,13 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(!cell.isValidNum() || cell.getNum()===cell.countDir5ShadedCell()){ continue;}
-			
+
 			this.failcode.add("nmShade5Ne");
 			if(this.checkOnly){ break;}
 			cell.seterr(1);
 		}
 	},
-	
+
 	checkSquareShade : function(){
 		this.checkAllArea(this.board.sblkmgr, function(w,h,a,n){ return (w*h===a && w===h);}, "csNotSquare");
 	},
@@ -119,7 +119,7 @@ AnsCheck:{
 			var cell = bd.getc(bx,by);
 			if(cell.isnull){ return 1;}	/* break with no error (end of board) */
 			else if(!cell.isShade()){ return 0;}	/* continue loop */
-			
+
 			var target = cell.sblk.clist;
 			if(base.length === target.length){
 				this.failcode.add("lookairBC");

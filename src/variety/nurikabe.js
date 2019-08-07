@@ -68,7 +68,7 @@ AreaUnshadeGraph:{
 	setComponentRefs : function(obj, component){ obj.ublk8 = component;},
 	getObjNodeList   : function(nodeobj){ return nodeobj.ublk8nodes;},
 	resetObjNodeList : function(nodeobj){ nodeobj.ublk8nodes = [];},
-	
+
 	getSideObjByNodeObj : function(cell){
 		var list = cell.getdir8clist(), cells = [];
 		for(var i=0;i<list.length;i++){
@@ -233,7 +233,7 @@ AnsCheck : {
 
 			var block1 = cells[i][0].sblk.clist, block2 = cells[i][1].sblk.clist;
 			if(block1.length !== block2.length){ continue;}
-			
+
 			this.failcode.add("csCornerSize");
 			if(this.checkOnly){ break;}
 			block1.seterr(1);

@@ -315,7 +315,7 @@ AnsCheck:{
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
 			if(cell.ques===0 || cell.ques===11 || cell.lcnt>0){ continue;}
-			
+
 			this.failcode.add("lnExTri");
 			if(this.checkOnly){ break;}
 			cell.seterr(4);
@@ -332,7 +332,7 @@ AnsCheck:{
 
 			var blist = cell.getTriLine();
 			if(type===1 ? cell.qnum>=(blist.length+1) : cell.qnum<=(blist.length+1)){ continue;}
-			
+
 			result = false;
 			if(this.checkOnly){ break;}
 			cell.seterr(4);
