@@ -465,7 +465,6 @@ CurveData: {
         } else if(!shape && shape !== 0) {
             this.newqnum = -1;
         } else {
-            console.log(shape);
             throw Error("Can only set shapes or negative qnum values");
         }
 
@@ -785,7 +784,7 @@ LineGraph:{
                 g.vhide();
             }
         }
-    },
+    }
 },
 
 "Graphic@curvedata-aux":{
@@ -1012,7 +1011,7 @@ BoardExec:{
             }
         }
         this.encodeBorderLine();
-    },
+    }
 },
 
 "AnsCheck@curvedata":{
