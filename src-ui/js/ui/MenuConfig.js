@@ -31,6 +31,7 @@ ui.menuconfig = {
 		this.add('toolarea', true);							/* ツールエリアの表示 */
 
 		this.add('inputmode', 'auto', {volatile:true});		/* inputMode */
+		this.add('auxeditor_inputmode', 'auto', {volatile:true});
 
 		this.add('lrinvert', false, {volatile:true});		/* マウスの左右ボタンを反転する設定 */
 
@@ -86,6 +87,10 @@ ui.menuconfig = {
 		if(!this.list[idname]){ return;}
 		if(idname==='mode'){ ui.puzzle.setMode(newval); newval = (!ui.puzzle.playmode?'edit':'play');}
 		else if(idname==='inputmode'){ ui.puzzle.mouse.setInputMode(newval); newval = ui.puzzle.mouse.inputMode;}
+		else if(idname==='auxeditor_inputmode'){
+			ui.auxeditor.puzzle.mouse.setInputMode(newval);
+			newval = ui.auxeditor.puzzle.mouse.inputMode;
+		}
 
 		newval = this.setproper(names, newval);
 
