@@ -50,9 +50,7 @@
             var thiz = this;
 
             this.puzzle.emit("request-aux-editor", "curvedata-aux", data.join("/"), function(auxpuzzle) {
-                var path = auxpuzzle.board.cell.filter(function(cell) { return cell.lcnt > 0; });
-                var shape = path && path.length > 0 && new thiz.klass.CellList(path).toCurveData();
-
+                var shape = auxpuzzle.board.getShape();
                 thiz.addOperation(cell, shape);
             });
         }
@@ -183,6 +181,32 @@ Board:{
                 this.linegraph.components.scanForClues(path);
             }
         }
+    }
+},
+
+"Board@curvedata-aux": {
+    setShape: function(shape) {
+        var w = shape.w;
+        var h = shape.bits.length / w;
+        var sx = (this.cols - w) | 1;
+        var sy = (this.rows - h) | 1;
+        for(var y = 0; y < h; y++){
+            for(var x = 0; x < w; x++){
+                var cell = this.getc(x*2 + sx, y*2+ sy);
+                if(!cell || cell.isnull) {continue;}
+                if((shape.bits[y*w+x] & 1) && !cell.adjborder.right.isnull){
+                    cell.adjborder.right.setLine(1);
+                }
+                if((shape.bits[y*w+x] & 2) && !cell.adjborder.bottom.isnull){
+                    cell.adjborder.bottom.setLine(1);
+                }
+            }
+        }
+    },
+
+    getShape: function() {
+        var path = this.cell.filter(function(cell) { return cell.lcnt > 0; });
+        return path && path.length > 0 && new this.klass.CellList(path).toCurveData();
     }
 },
 
@@ -914,7 +938,7 @@ BoardExec:{
             parts.push(w);
             parts.push(h);
             parts.push(shape.encodeBits());
-        }        
+        }
         this.outbstr += parts.join("/");
     }
 },
@@ -926,22 +950,17 @@ BoardExec:{
         shape.init(+parts[0], +parts[1]);
         shape.decodeBits(parts[2]);
 
-        var w = shape.w;
-        var h = shape.bits.length / w;
-        var sx = (this.board.cols - w) | 1;
-        var sy = (this.board.rows - h) | 1;
-        for(var y = 0; y < h; y++){
-            for(var x = 0; x < w; x++){
-                var cell = this.board.getc(x*2 + sx, y*2+ sy);
-                if(!cell || cell.isnull) {continue;}
-                if((shape.bits[y*w+x] & 1) && !cell.adjborder.right.isnull){
-                    cell.adjborder.right.setLine(1);
-                }
-                if((shape.bits[y*w+x] & 2) && !cell.adjborder.bottom.isnull){
-                    cell.adjborder.bottom.setLine(1);
-                }
-            }
-        }
+        this.board.setShape(shape);
+    },
+
+    encodePzpr: function(type) {
+        var shape = this.board.getShape();
+
+        var parts = [];
+        parts.push(shape.w);
+        parts.push(shape.w ? shape.bits.length / shape.w : 0);
+        parts.push(shape.encodeBits());
+        this.outbstr += parts.join("/");
     }
 },
 
@@ -1011,6 +1030,25 @@ BoardExec:{
             }
         }
         this.encodeBorderLine();
+    }
+},
+
+"FileIO@curvedata-aux":{
+    decodeData : function(){
+        var data = new this.klass.CurveData();
+        var w = +this.readLine();
+        var h = +this.readLine();
+
+        data.init(w, h);
+        data.decodeBits(this.readLine());
+        this.board.setShape(data);
+    },
+    encodeData : function(){
+        var shape = this.board.getShape();
+
+        this.writeLine(shape.w);
+        this.writeLine(shape.w ? shape.bits.length / shape.w : 0);
+        this.writeLine(shape.encodeBits());
     }
 },
 
