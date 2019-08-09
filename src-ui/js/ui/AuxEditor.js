@@ -10,6 +10,7 @@ ui.popupmgr.addpopup('auxeditor',
             ui.auxeditor.cb(ui.auxeditor.puzzle);
             ui.auxeditor.cb = null;
         }
+        ui.auxeditor.current = null;
         
         ui.popupmgr.popups.template.close.apply(this);
     },
@@ -41,7 +42,12 @@ ui.popupmgr.addpopup('auxeditor',
 });
 
 ui.auxeditor = {
-    open: function(sender, pid, url, cb) {
+    current: null,
+    cb: null,
+
+    open: function(sender, args, cb) {
+        if(ui.auxeditor.current === args.key) { return; }
+
         ui.popupmgr.open("auxeditor", 0, 0);
 
         if(!ui.auxeditor.puzzle) {
@@ -50,10 +56,11 @@ ui.auxeditor = {
         }
         var pz = ui.auxeditor.puzzle;
 
-        pz.open(pid+"/"+url, function() {
+        pz.open(args.pid+"/"+args.url, function() {
             ui.popupmgr.popups.auxeditor.titlebar.innerText = ui.selectStr(pz.info.ja, pz.info.en);
         });
 
+        ui.auxeditor.current = args.key;
         ui.auxeditor.cb = cb;
         ui.menuconfig.set("auxeditor_inputmode", "auto");
         // TODO calculate cellsize

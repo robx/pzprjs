@@ -48,8 +48,13 @@
             }
 
             var thiz = this;
+            var args = {
+                pid: "curvedata-aux",
+                key: cell.bx+","+cell.by,
+                url: data.join("/")
+            };
 
-            this.puzzle.emit("request-aux-editor", "curvedata-aux", data.join("/"), function(auxpuzzle) {
+            this.puzzle.emit("request-aux-editor", args, function(auxpuzzle) {
                 var shape = auxpuzzle.board.getShape();
                 thiz.addOperation(cell, shape);
             });
