@@ -58,11 +58,6 @@ function startPuzzle(){
 	puzzle.open(pzl);
 
 	puzzle.on('request-aux-editor', ui.auxeditor.open);
-	puzzle.on('mode', function() {
-		if(puzzle.playmode && ui.popupmgr.popups.auxeditor.pop) {
-			ui.popupmgr.popups.auxeditor.close();
-		}
-	});
 
 	return true;
 }
