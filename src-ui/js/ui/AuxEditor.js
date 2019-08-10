@@ -1,5 +1,5 @@
 /* jshint devel:true */
-/* global ui:false */
+/* global ui:false, getEL:readonly */
 
 ui.popupmgr.addpopup('auxeditor',
 {
@@ -48,11 +48,16 @@ ui.auxeditor = {
     open: function(sender, args, cb) {
         if(ui.auxeditor.current === args.key) { return; }
 
-        ui.popupmgr.open("auxeditor", 0, 0);
+        var cellsize = ui.puzzle.painter.cw;
+        if(cellsize > 32) { cellsize = Math.floor(cellsize * 0.75); }
+
+        var rect = pzpr.util.getRect(getEL("divques"));
+        ui.popupmgr.open("auxeditor", rect.right, rect.top);
+        // TODO move popup when window is too narrow
 
         if(!ui.auxeditor.puzzle) {
             var element = document.getElementById('divauxeditor');
-            ui.auxeditor.puzzle = new pzpr.Puzzle(element, {type: "player", cellsize: 32});
+            ui.auxeditor.puzzle = new pzpr.Puzzle(element, {type: "player", cellsize: cellsize});
         }
         var pz = ui.auxeditor.puzzle;
 
@@ -60,10 +65,10 @@ ui.auxeditor = {
             ui.popupmgr.popups.auxeditor.titlebar.innerText = ui.selectStr(pz.info.ja, pz.info.en);
         });
 
+        ui.auxeditor.puzzle.setCanvasSizeByCellSize(cellsize);
+
         ui.auxeditor.current = args.key;
         ui.auxeditor.cb = cb;
         ui.menuconfig.set("auxeditor_inputmode", "auto");
-        // TODO calculate cellsize
-        // TODO open at different coordinates
     }
 };
