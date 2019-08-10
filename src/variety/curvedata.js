@@ -116,7 +116,7 @@
             return;
         }
 
-        if(!this.inputData || this.inputData === cell) { return;}
+        if(!this.inputData || this.inputData === cell || cell.isnull) { return;}
 
         if     (this.inputData.bx < cell.bx && this.addSlideOperation("R", this.inputData)) { 
             this.inputData = this.inputData.adjacent.right;
