@@ -14,7 +14,7 @@
 // by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
 // Use CurveDataOperation for all changes to clues on the grid.
 "MouseEvent@curvedata":{
-    inputModes : {edit:['copylines','undef','clear'],play:['line','peke']},
+    inputModes : {edit:['copylines','move-clue','undef','clear'],play:['line','peke']},
     mouseinput_auto : function(){
         if(this.puzzle.playmode){
             if(this.btn==='left'){
@@ -83,6 +83,7 @@
     
     mouseinput_other : function(){
         if(this.inputMode==='copylines' && this.mousestart){ this.mouseinput_copylines();}
+        if(this.inputMode==='move-clue'){ this.mouseinput_moveClue();}
     },
     
     mouseinput_copylines: function() {
@@ -95,6 +96,26 @@
 
         var shape = cell.path.clist.toCurveData();
         this.addOperation(cell, shape);
+    },
+
+    mouseinput_moveClue: function() {
+        var cell = this.getcell();
+        
+        if(this.mousestart) {
+            this.inputData = cell.qnum !== -1 ? cell : null;
+            return;
+        }
+
+        if(!this.inputData || cell.isnull) { return;}
+
+        if(!this.inputData.equals(cell) && cell.qnum === -1) {
+            var swap = this.board.shapes[this.inputData.qnum] || this.inputData.qnum;
+
+            this.addOperation(cell, swap);
+            this.addOperation(this.inputData, -1);
+
+            this.inputData = cell;
+        }
     }
 },
 
@@ -116,7 +137,7 @@
             return;
         }
 
-        if(!this.inputData || this.inputData === cell || cell.isnull) { return;}
+        if(!this.inputData || cell.isnull) { return;}
 
         if     (this.inputData.bx < cell.bx && this.addSlideOperation("R", this.inputData)) { 
             this.inputData = this.inputData.adjacent.right;
