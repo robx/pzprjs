@@ -14,7 +14,7 @@
 // by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
 // Use CurveDataOperation for all changes to clues on the grid.
 "MouseEvent@curvedata":{
-    inputModes : {edit:['copylines','move-clue','undef','clear'],play:['line','peke']},
+    inputModes : {edit:['copylines','move-clue','border','undef','clear'],play:['line','peke']},
     mouseinput_auto : function(){
         if(this.puzzle.playmode){
             if(this.btn==='left'){
@@ -161,6 +161,18 @@
             return true;
         }
         return false;
+    }
+},
+
+Border:{
+    enableLineNG : true,
+    isLineNG : function(){ return (this.ques===1);},
+
+    prehook: {
+        ques: function(num) {
+            if(num>0){ this.removeLine(); }
+            return false; 
+        }
     }
 },
 
@@ -779,6 +791,7 @@ LineGraph:{
         this.drawCellShapes();
         this.drawHatenas();
 
+        this.drawBorders();
         this.drawChassis();
         this.drawTarget();
     },
@@ -929,20 +942,26 @@ BoardExec:{
     decodePzpr : function(type){
         this.decodeNumber16();
         var parts = this.outbstr.substr(1).split("/");
+        var i = 0;
+
+        if(parts[i] && parts[i][0] === "b") {
+            this.outbstr = parts[i++].substr(1);
+            this.decodeBorder();
+        }
 
         var count = Math.floor(parts.length/3);
 
         this.board.shapes = Array(count);
         for(var id = 0; id < count; id++) {
             var data = new this.klass.CurveData();
-            var w = +parts[(id*3)];
-            var h = +parts[(id*3) + 1];
+            var w = +parts[i++];
+            var h = +parts[i++];
+            var code = parts[i++];
 
             if(!w || !h || w > this.board.cols || h > this.board.rows) {continue;}
 
             data.init(w, h);
 
-            var code = parts[(id*3) + 2];
             data.decodeBits(code);
 
             this.board.shapes[id] = data;
@@ -954,6 +973,12 @@ BoardExec:{
         var count = this.board.shapes.length;
         this.encodeNumber16();
         this.outbstr += "/";
+
+        if(this.board.border.some(function(cell){ return cell.ques===1;})){
+            this.outbstr += "b";
+            this.encodeBorder();
+            this.outbstr += "/";
+        }
 
         var parts = [];
         for(var id = 0; id < count; id++) {
@@ -1023,7 +1048,11 @@ BoardExec:{
 
             this.board.shapes[id] = data;
         }
-        this.decodeBorderLine();
+        this.decodeBorder(function(border, ca) {
+            if     (ca==="-2"){ border.ques = 1;}
+            else if(ca==="-1"){ border.qsub = 2;}
+            else if(+ca > 0) { border.line = +ca;}
+        });
     },
     encodeData : function(){
         var count = this.board.shapes.length;
@@ -1055,7 +1084,12 @@ BoardExec:{
                 this.writeLine(line);
             }
         }
-        this.encodeBorderLine();
+        this.encodeBorder(function(border) {
+            if     (border.ques===1){ return "-2 ";}
+            else if(border.line>  0){ return border.line+" ";}
+            else if(border.qsub===2){ return "-1 ";}
+            else                   { return "0 ";}
+        });
     }
 },
 
