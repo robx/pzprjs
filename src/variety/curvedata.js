@@ -212,6 +212,7 @@ Board:{
 
         map[-1] = -1;
         map[-2] = -2;
+        map[-3] = -3;
 
         var next = 0;
         for(i = 0; i < this.shapes.length; i++) {
