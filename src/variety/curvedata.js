@@ -14,7 +14,7 @@
 // by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
 // Use CurveDataOperation for all changes to clues on the grid.
 "MouseEvent@curvedata":{
-    inputModes : {edit:['copylines','move-clue','border','undef','clear'],play:['line','peke']},
+    inputModes : {edit:['copylines','move-clue','border','shade','undef','clear'],play:['line','peke']},
     mouseinput_auto : function(){
         if(this.puzzle.playmode){
             if(this.btn==='left'){
@@ -56,7 +56,9 @@
 
             this.puzzle.emit("request-aux-editor", args, function(auxpuzzle) {
                 var shape = auxpuzzle.board.getShape();
-                thiz.addOperation(cell, shape);
+                if(shape || cell.qnum >= 0) {
+                    thiz.addOperation(cell, shape);
+                }
             });
         }
     },
@@ -70,6 +72,7 @@
         }
     },
 
+    inputShade : function(){ return this.enterqnum(-3); },
     mouseinput_undef : function(){ return this.enterqnum(-2); },
     mouseinput_clear : function(){ return this.enterqnum(-1); },
 
@@ -78,7 +81,20 @@
         if(cell.isnull || cell===this.mouseCell || !this.puzzle.editmode){ return;}
 
         this.mouseCell = cell;
-        this.addOperation(cell, value);
+        if(this.mousestart) {
+            this.inputData = cell.qnum !== value ? value : -1;
+        }
+
+        if(this.inputData===-3) {
+            ["left", "right", "top", "bottom"].forEach(function(dir) {
+                if(!cell.adjborder[dir].isnull) {
+                    cell.adjborder[dir].setQues(0);
+                    cell.adjborder[dir].removeLine();
+                }
+            });
+        }
+
+        this.addOperation(cell, this.inputData);
     },
     
     mouseinput_other : function(){
@@ -88,9 +104,7 @@
     
     mouseinput_copylines: function() {
         var cell = this.getcell();
-        if(cell.isnull || cell===this.mouseCell || !this.puzzle.editmode){ return;}
-
-        this.mouseCell = cell;
+        if(cell.isnull || !this.puzzle.editmode){ return;}
 
         if(!cell.path) {return;}
 
@@ -102,19 +116,19 @@
         var cell = this.getcell();
         
         if(this.mousestart) {
-            this.inputData = cell.qnum !== -1 ? cell : null;
+            this.mouseCell = cell.qnum !== -1 && cell.qnum !== -3 ? cell : null;
             return;
         }
 
-        if(!this.inputData || cell.isnull) { return;}
+        if(!this.mouseCell || cell.isnull) { return;}
 
-        if(!this.inputData.equals(cell) && cell.qnum === -1) {
-            var swap = this.board.shapes[this.inputData.qnum] || this.inputData.qnum;
+        if(!this.mouseCell.equals(cell) && cell.qnum === -1) {
+            var swap = this.board.shapes[this.mouseCell.qnum] || this.mouseCell.qnum;
 
             this.addOperation(cell, swap);
-            this.addOperation(this.inputData, -1);
+            this.addOperation(this.mouseCell, -1);
 
-            this.inputData = cell;
+            this.mouseCell = cell;
         }
     }
 },
@@ -166,7 +180,11 @@
 
 Border:{
     enableLineNG : true,
-    isLineNG : function(){ return (this.ques===1);},
+    isLineNG : function(){
+        return this.ques===1 ||
+            this.sidecell[0].qnum === -3 ||
+            this.sidecell[1].qnum === -3;
+    },
 
     prehook: {
         ques: function(num) {
@@ -847,11 +865,23 @@ LineGraph:{
                 g.vhide();
             }
         }
+    },
+
+    getBorderColor : function(border){
+        if(border.ques===1 || border.sidecell[0].qnum===-3 || border.sidecell[1].qnum===-3) { return this.quescolor;}
+        return null;
+    },
+
+    getBGCellColor : function(cell){
+        if(cell.qnum===-3) { return this.quescolor; }
+        if(cell.error) { return this.errbcolor1;}
+        return null;
     }
 },
 
 "Graphic@curvedata-aux":{
     gridcolor_type : "LIGHT",
+    linecolor: "black",
 
     paint : function(){
         this.drawBGCells();
@@ -940,7 +970,7 @@ BoardExec:{
 
 "Encode@curvedata":{
     decodePzpr : function(type){
-        this.decodeNumber16();
+        this.decodeClues();
         var parts = this.outbstr.substr(1).split("/");
         var i = 0;
 
@@ -967,12 +997,31 @@ BoardExec:{
             this.board.shapes[id] = data;
         }
     },
+
+    decodeClues: function() {
+        var c=0, i=0, bstr = this.outbstr, bd = this.board;
+        for(i=0;i<bstr.length;i++){
+            var cell = bd.cell[c], ca = bstr.charAt(i);
+
+            if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+                            { cell.qnum = parseInt(ca,16);}
+            else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16);      i+=2;}
+            else if(ca === '+'){ cell.qnum = parseInt(bstr.substr(i+1,3),16);      i+=3;}
+            else if(ca === '.'){ cell.qnum = -2;}
+            else if(ca === '='){ cell.qnum = -3;}
+            else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
+
+            c++;
+            if(!bd.cell[c]){ break;}
+        }
+        this.outbstr = bstr.substr(i+1);
+    },
+
     encodePzpr : function(type){
         this.board.compressShapes();
 
         var count = this.board.shapes.length;
-        this.encodeNumber16();
-        this.outbstr += "/";
+        this.encodeClues();
 
         if(this.board.border.some(function(cell){ return cell.ques===1;})){
             this.outbstr += "b";
@@ -991,6 +1040,26 @@ BoardExec:{
             parts.push(shape.encodeBits());
         }
         this.outbstr += parts.join("/");
+    },
+
+    encodeClues: function() {
+        var count=0, cm="", bd = this.board;
+        for(var c=0;c<bd.cell.length;c++){
+            var pstr = "", qn = bd.cell[c].qnum;
+
+            if     (qn=== -2           ){ pstr = ".";}
+            else if(qn=== -3           ){ pstr = "=";}
+            else if(qn>=   0 && qn<  16){ pstr =       qn.toString(16);}
+            else if(qn>=  16 && qn< 256){ pstr = "-" + qn.toString(16);}
+            else if(qn>= 256 && qn<4096){ pstr = "+" + qn.toString(16);}
+            else{ count++;}
+
+            if(count===0){ cm += pstr;}
+            else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
+        }
+        if(count>0){ cm+=(15+count).toString(36);}
+
+        this.outbstr += cm + "/";
     }
 },
 
@@ -1018,7 +1087,10 @@ BoardExec:{
 "FileIO@curvedata":{
     decodeData : function(){
         var count = +this.readLine();
-        this.decodeCellQnum();
+        this.decodeCell( function(cell,ca){
+            if(ca!=="."){ cell.qnum = +ca;}
+        });
+
         this.board.shapes = Array(count);
         for(var id = 0; id < count; id++) {
             var data = new this.klass.CurveData();
@@ -1057,7 +1129,11 @@ BoardExec:{
     encodeData : function(){
         var count = this.board.shapes.length;
         this.writeLine(count);
-        this.encodeCellQnum();
+        this.encodeCell( function(cell){
+            if (cell.qnum===-1){ return ". ";}
+            else               { return cell.qnum+" ";}
+        });
+
         for(var id = 0; id < count; id++) {
             var shape = this.board.shapes[id];
 
@@ -1125,6 +1201,9 @@ BoardExec:{
     },
     checkMultipleClues: function() {
         return this.curvedata_shapecount(2, "shMultiple");
+    },
+    checkNoLine: function() {
+        this.checkAllCell(function(cell){ return cell.qnum!==-3 && cell.lcnt===0;}, "ceNoLine");
     },
 
     curvedata_shapecount: function (amount, code){
