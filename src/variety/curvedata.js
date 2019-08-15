@@ -1184,9 +1184,9 @@ BoardExec:{
     encodeData : function(){
         var shape = this.board.getShape();
 
-        this.writeLine(shape.w);
+        this.writeLine(shape.w || 0);
         this.writeLine(shape.w ? shape.bits.length / shape.w : 0);
-        this.writeLine(shape.encodeBits());
+        if(shape.w) { this.writeLine(shape.encodeBits()); }
     }
 },
 
