@@ -1128,6 +1128,7 @@ BoardExec:{
         });
     },
     encodeData : function(){
+        this.board.compressShapes();
         var count = this.board.shapes.length;
         this.writeLine(count);
         this.encodeCell( function(cell){

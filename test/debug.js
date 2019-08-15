@@ -203,6 +203,7 @@ var debug = window.debug =
 			case 'playmode':
 			case 'editmode':
 				puzzle.setMode(strs[0]);
+				if(strs.length > 1) { puzzle.mouse.setInputMode(strs[1]); }
 				break;
 			case 'setconfig':
 				if     (strs[2]==="true") { puzzle.setConfig(strs[1], true);}
