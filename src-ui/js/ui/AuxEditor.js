@@ -52,8 +52,7 @@ ui.auxeditor = {
         if(cellsize > 32) { cellsize = Math.floor(cellsize * 0.75); }
 
         var rect = pzpr.util.getRect(getEL("divques"));
-        ui.popupmgr.open("auxeditor", rect.right, rect.top);
-        // TODO move popup when window is too narrow
+        ui.popupmgr.open("auxeditor", 4, rect.top);
 
         if(!ui.auxeditor.puzzle) {
             var element = document.getElementById('divauxeditor');
@@ -63,9 +62,11 @@ ui.auxeditor = {
 
         pz.open(args.pid+"/"+args.url, function() {
             ui.popupmgr.popups.auxeditor.titlebar.innerText = ui.selectStr(pz.info.ja, pz.info.en);
-        });
+            ui.auxeditor.puzzle.setCanvasSizeByCellSize(cellsize);
 
-        ui.auxeditor.puzzle.setCanvasSizeByCellSize(cellsize);
+            var bounds = pzpr.util.getRect(getEL("popauxeditor"));
+            ui.popupmgr.open("auxeditor", Math.max(4, rect.left - bounds.width), bounds.top);
+        });
 
         ui.auxeditor.current = args.key;
         ui.auxeditor.cb = cb;
