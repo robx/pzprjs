@@ -1195,7 +1195,7 @@ BoardExec:{
         "checkMultipleClues",
         "checkShapes",
         "checkNoClues",
-        "checkNoLine"
+        "checkNoLine++"
     ],
 
     checkNoClues: function() {
