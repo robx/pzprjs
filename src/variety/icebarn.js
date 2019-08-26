@@ -419,8 +419,8 @@ Graphic:{
 	getCanvasCols : function(){
 		var bd = this.board, cols = this.getBoardCols()+2*this.margin;
 		if(this.puzzle.playeronly){
-			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=0.7;}
-			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols+=0.7;}
+			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=1.2;}
+			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols+=1.2;}
 		}
 		else{ cols+=1.4;}
 		return cols;
@@ -447,8 +447,8 @@ Graphic:{
 	getOffsetCols : function(){
 		var bd = this.board, cols = 0;
 		if(this.puzzle.playeronly){
-			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=0.35;}
-			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols-=0.35;}
+			if(bd.arrowin.bx===bd.minbx+2 || bd.arrowout.bx===bd.minbx+2){ cols+=0.6;}
+			if(bd.arrowin.bx===bd.maxbx-2 || bd.arrowout.bx===bd.maxbx-2){ cols-=0.6;}
 		}
 		return cols;
 	},
