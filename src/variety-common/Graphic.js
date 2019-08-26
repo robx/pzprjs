@@ -1256,16 +1256,20 @@ Graphic:{
 	drawGrid : function(haschassis, isdraw){
 		var g = this.vinc('grid', 'crispEdges', true), bd = this.board;
 
+		// ignore excells
+		var minx=Math.max(bd.minbx,0), maxx=Math.min(bd.maxbx,2*bd.cols);
+		var miny=Math.max(bd.minby,0), maxy=Math.min(bd.maxby,2*bd.rows);
+
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
-		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
+		if(x1<minx){ x1=minx;} if(x2>maxx){ x2=maxx;}
+		if(y1<miny){ y1=miny;} if(y2>maxy){ y2=maxy;}
 		x1-=(x1&1); y1-=(y1&1); /* (x1,y1)を外側の偶数位置に移動する */
 		if(x1>=x2 || y1>=y2){ return;}
 
 		var bs = ((bd.hasborder!==2&&haschassis!==false)?2:0), bw = this.bw, bh = this.bh;
-		var xa = Math.max(x1,0+bs), xb = Math.min(x2,2*bd.cols-bs);
-		var ya = Math.max(y1,0+bs), yb = Math.min(y2,2*bd.rows-bs);
+		var xa = Math.max(x1,minx+bs), xb = Math.min(x2,maxx-bs);
+		var ya = Math.max(y1,miny+bs), yb = Math.min(y2,maxy-bs);
 
 		// isdraw!==false: 指定無しかtrueのときは描画する
 		g.lineWidth = 1;
@@ -1290,18 +1294,22 @@ Graphic:{
 	drawDashedGrid : function(haschassis){
 		var g = this.vinc('grid', 'crispEdges', true), bd = this.board;
 
+		// ignore excells
+		var minx=Math.max(bd.minbx,0), maxx=Math.min(bd.maxbx,2*bd.cols);
+		var miny=Math.max(bd.minby,0), maxy=Math.min(bd.maxby,2*bd.rows);
+
 		// 外枠まで描画するわけじゃないので、maxbxとか使いません
 		var x1=this.range.x1, y1=this.range.y1, x2=this.range.x2, y2=this.range.y2;
-		if(x1<0){ x1=0;} if(x2>2*bd.cols){ x2=2*bd.cols;}
-		if(y1<0){ y1=0;} if(y2>2*bd.rows){ y2=2*bd.rows;}
+		if(x1<minx){ x1=minx;} if(x2>maxx){ x2=maxx;}
+		if(y1<miny){ y1=miny;} if(y2>maxy){ y2=maxy;}
 		x1-=(x1&1); y1-=(y1&1); x2+=(x2&1); y2+=(y2&1); /* (x1,y1)-(x2,y2)を外側の偶数範囲に移動する */
 
 		var dotCount = (Math.max(this.cw/(this.cw/10+3), 1)|0);
 		var dotSize  = this.cw/(dotCount*2);
 
 		var bs = ((haschassis!==false)?2:0), bw = this.bw, bh = this.bh;
-		var xa = Math.max(x1,bd.minbx+bs), xb = Math.min(x2,bd.maxbx-bs);
-		var ya = Math.max(y1,bd.minby+bs), yb = Math.min(y2,bd.maxby-bs);
+		var xa = Math.max(x1,minx+bs), xb = Math.min(x2,maxx-bs);
+		var ya = Math.max(y1,miny+bs), yb = Math.min(y2,maxy-bs);
 
 		g.lineWidth = 1;
 		g.strokeStyle = this.gridcolor;
