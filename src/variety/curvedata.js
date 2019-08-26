@@ -989,7 +989,7 @@ BoardExec:{
             var h = +parts[i++];
             var code = parts[i++];
 
-            if(!w || !h || w > this.board.cols || h > this.board.rows) {continue;}
+            if(!w || !h) {break;}
 
             data.init(w, h);
 
