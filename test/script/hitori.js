@@ -44,7 +44,7 @@ ui.debug.addDebugData('hitori', {
 		{ input:["mouse,right, 3,1, 7,1, 7,3, 1,3, 1,5, 7,5, 7,7, 1,7"],
 		  result:"pzprv3/hitori/4/4/. . . . /. . . . /. . . . /. . . . /# + # + /+ # + # /# + # + /+ # + # /" },
 		{ input:["mouse,left, 3,1, 7,1, 7,3, 1,3, 1,5, 7,5, 7,7, 1,7"],
-		  result:"pzprv3/hitori/4/4/. . . . /. . . . /. . . . /. . . . /# . # . /. # . # /# . # . /. # . # /" },
+		  result:"pzprv3/hitori/4/4/. . . . /. . . . /. . . . /. . . . /# . . . /. . . . /. . . . /. . . . /" },
 		/* 問題入力テスト */
 		{ input:["editmode", "newboard,6,1"] },
 		{ input:["cursor,1,1", "key,-", "key,right", "key,0", "key,right", "key,1", "key,right", "key,2", "key,right", "key,3", "key,right", "key,4" ],

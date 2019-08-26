@@ -16,7 +16,7 @@
   hide redundant dots
 * Change default value of "shade undefined cells" back to `true`
 * Change unshaded cells without changing shaded cells in checkerboard
-  puzzles (Hitori, Heyawake, Yajilin, etc.)
+  puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
 
 #### BugFix
 

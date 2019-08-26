@@ -28,7 +28,7 @@ MouseEvent:{
 			if(((cell0.bx&2)^(cell0.by&2))!==((cell.bx&2)^(cell.by&2))){ return;}
 		}
 		if(this.RBShadeCell && this.inputData!==1){
-			if(this.firstState!==1&&cell.qans===1){ return;}
+			if(this.firstState!==1&&cell.qans===1&&this.btn==='right'){ return;}
 		}
 
 		cell.setQans(this.inputData===1?1:0);
