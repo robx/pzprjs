@@ -110,7 +110,7 @@ Border:{
 	hascross : 2,
 	isLine : function(){
 		return (this.sidecell[0].isShade()!==this.sidecell[1].isShade());
-        }
+	    }
 },
 Board:{
 	hasborder : 2,
@@ -205,22 +205,22 @@ Graphic:{
 	numbercolor_func : "qnum",
 	circlefillcolor_func : "qnum",
 
-        drawCrossMarks : function(){
-                var g = this.vinc('cell_cross', 'auto', true);
-                g.lineWidth = 1;
-                var rsize = this.cw*0.35;
-                var clist = this.range.cells;
-                for(var i=0;i<clist.length;i++){
-                        var cell = clist[i], px, py;
-                        g.vid = "c_cross_" + cell.id;
-                        if(cell.qsub===1){
-                                var px = cell.bx*this.bw, py = cell.by*this.bh;
-                                g.strokeStyle = (!cell.trial ? this.mbcolor : "rgb(192, 192, 192)");
-                                g.strokeCross(px, py, rsize);
-                        }
-                        else{ g.vhide();}
-                }
-        }
+	drawCrossMarks : function(){
+		var g = this.vinc('cell_cross', 'auto', true);
+		g.lineWidth = 1;
+		var rsize = this.cw*0.35;
+		var clist = this.range.cells;
+		for(var i=0;i<clist.length;i++){
+			var cell = clist[i], px, py;
+			g.vid = "c_cross_" + cell.id;
+			if(cell.qsub===1){
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+				g.strokeStyle = (!cell.trial ? this.mbcolor : "rgb(192, 192, 192)");
+				g.strokeCross(px, py, rsize);
+			}
+			else{ g.vhide();}
+		}
+	}
 },
 
 //---------------------------------------------------------

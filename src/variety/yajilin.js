@@ -139,7 +139,7 @@ Cell:{
 
 		if(this.countUndecided(clist)!==0){ return false;}
 		return this.qnum===this.countShade(clist);
-        },
+	},
 
 	getClist : function(){
 		if(!this.isValidNum() || this.qdir===0){ return null;}
@@ -180,7 +180,7 @@ Cell:{
 		var clist = this.room.clist;
 		if(this.countUndecided(clist)!==0){ return false;}
 		return this.qnum===this.countShade(clist);
-        }
+	}
 },
 Border:{
 	enableLineNG : true,
