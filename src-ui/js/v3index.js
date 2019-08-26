@@ -230,7 +230,7 @@ v3index.fileif.extend({
 			reader.readAsText(fileEL.files[0]);
 		}
 		else if(typeof FileList !== 'undefined' &&
-			    typeof File.prototype.getAsText !== 'undefined')
+			typeof File.prototype.getAsText !== 'undefined')
 		{
 			if(!fileEL.files[0]){ return;}
 			this.fileonload(fileEL.files[0].getAsText(''));

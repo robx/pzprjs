@@ -25,7 +25,6 @@
     "no-empty": "off",                  // Allow empty block statements
     "no-useless-escape": "off",         // Allow unnessesary escape charactors
     "no-extra-boolean-cast": "off",     // Allow to use boolean cast for boolean value
-    "no-mixed-spaces-and-tabs": "off",  // Allow to use spaces and tabs for indent
     "dot-notation": "off",              // Allow object access via obj["name"]
     "no-loop-func": "off"               // Allow function definition in loop
   }
