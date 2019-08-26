@@ -14,7 +14,7 @@
 // by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
 // Use CurveDataOperation for all changes to clues on the grid.
 "MouseEvent@curvedata":{
-    inputModes : {edit:['copylines','move-clue','border','shade','undef','clear'],play:['line','peke']},
+    inputModes : {edit:['copy-answer','move-clue','border','shade','undef','clear'],play:['line','peke']},
     mouseinput_auto : function(){
         if(this.puzzle.playmode){
             if(this.btn==='left'){
@@ -98,11 +98,11 @@
     },
     
     mouseinput_other : function(){
-        if(this.inputMode==='copylines' && this.mousestart){ this.mouseinput_copylines();}
+        if(this.inputMode==='copy-answer' && this.mousestart){ this.mouseinput_copyAnswer();}
         if(this.inputMode==='move-clue'){ this.mouseinput_moveClue();}
     },
     
-    mouseinput_copylines: function() {
+    mouseinput_copyAnswer: function() {
         var cell = this.getcell();
         if(cell.isnull || !this.puzzle.editmode){ return;}
 

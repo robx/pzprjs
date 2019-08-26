@@ -27,7 +27,7 @@ ui.debug.addDebugData('curvedata', {
         result:"pzprv3/curvedata/3/2/0/. . /. . /. . /0 /0 /0 /0 0 /0 0 /" },
         { input:["mouse,left, 1,1, 1,3, 3,3, 3,5"], /* Add lines */
         result:"pzprv3/curvedata/3/2/0/. . /. . /. . /0 /1 /0 /1 0 /0 1 /" },
-        { input:["editmode,copylines", "mouse,left, 1,3"], /* Copy lines */
+        { input:["editmode,copy-answer", "mouse,left, 1,3"], /* Copy answer */
         result:"pzprv3/curvedata/3/2/1/. . /0 . /. . /2/3/0 /1 /0 /1 0 /0 1 /0 /1 /0 /1 0 /0 1 /" },
         { input:["mouse,left, 3,3"], /* Copying lines again results in identical shape */
         result:"pzprv3/curvedata/3/2/1/. . /0 0 /. . /2/3/0 /1 /0 /1 0 /0 1 /0 /1 /0 /1 0 /0 1 /" },
