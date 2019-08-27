@@ -574,24 +574,22 @@ Graphic:{
 	// pc.getQuesBorderColor() 問題の境界線の設定・描画判定する
 	// pc.getQansBorderColor() 回答の境界線の設定・描画判定する
 	//---------------------------------------------------------------------------
-	drawQansBorders : function(){
-		this.vinc('border_answer', 'crispEdges', true);
-		this.getBorderColor = this.getQansBorderColor;
-		this.drawBorders_common("b_bdans_");
-	},
 	drawQuesBorders : function(){
 		this.vinc('border_question', 'crispEdges', true);
 		this.getBorderColor = this.getQuesBorderColor;
 		this.drawBorders_common("b_bdques_");
 	},
-
+	drawQansBorders : function(){
+		this.vinc('border_answer', 'crispEdges', true);
+		this.getBorderColor = this.getQansBorderColor;
+		this.drawBorders_common("b_bdans_");
+	},
 	getQuesBorderColor : function(border){
-		if(border.ques===1){ return this.quescolor;}
+		if(border.ques>=1){ return this.getBorderColor_ques(border); }
 		return null;
 	},
 	getQansBorderColor : function(border){
-		if(border.qans===1){ return (!border.trial ? this.qanscolor : this.trialcolor);}
-		if(!!border.isCmp&&border.isCmp()){ return this.qcmpcolor;}
+		if(border.qans>=1){ return this.getBorderColor_qans(border); }
 		return null;
 	},
 

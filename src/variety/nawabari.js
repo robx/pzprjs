@@ -171,16 +171,6 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	getQansBorderColor : function(border){
-		if(border.qans===1){
-			var err = border.error;
-			if     (err=== 1){ return this.errcolor1;       }
-			else if(err===-1){ return this.noerrcolor;      }
-			else if(border.trial){ return this.trialcolor;  }
-			else             { return this.qanscolor;       }
-		}
-		return null;
-	},
 	getQuesBorderColor : function(border){
 		return (border.isQuesBorder() ? this.quescolor : null);
 	},
