@@ -32,9 +32,7 @@ MouseEvent:{
 
 		if(this.inputData===null){ this.inputData = (cell.isEmpty()?0:7);}
 
-		cell.setQues(this.inputData);
-		cell.setQnum(-1);
-		cell.drawaround();
+		cell.setValid(this.inputData);
 		this.mouseCell = cell;
 	}
 },
@@ -67,9 +65,7 @@ KeyEvent:{
 		if(ca==='w'){
 			var cell = this.cursor.getc();
 			if(!cell.isnull){
-				cell.setQues(cell.ques!==7?7:0);
-				cell.setNum(-1);
-				cell.drawaround();
+				cell.setValid(cell.ques!==7?7:0);
 			}
 		}
 	}
@@ -85,6 +81,17 @@ Cell:{
 			if(tcell.isnull || tcell.isEmpty() || tborder.isBorder()){ cnt++;}
 		}
 		return cnt;
+	},
+
+	setValid : function(inputData) {
+		this.setQues(inputData);
+		this.setQnum(-1);
+		this.adjborder.top.qans=0;
+		this.adjborder.bottom.qans=0;
+		this.adjborder.right.qans=0;
+		this.adjborder.left.qans=0;
+		this.drawaround();
+		this.board.roommgr.rebuild();
 	}
 },
 "Cell@nawabari":{
