@@ -252,7 +252,7 @@ Cell:{
 	},
 
 	isTri : function(){ return this.qans!==0;},
-	isWall : function(){ return (this.qsub===1 || this.isnull || this.isNum());}
+	isWall : function(){ return (this.isnull || this.isNum());}
 },
 Board:{
 	addExtraInfo : function(){

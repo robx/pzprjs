@@ -31,6 +31,7 @@
 * nawabari: Correct English translation
 * nurimisaki: Switch to unshaded cell connection info for edit mode, too
 * roma: Fix "Check route" input mode
+* shakashaka: Allow drawing diagonal rooms around dotted cells
 * yajitatami: Fix error color for border crossing
 * Fix interaction of "Clear Answer" and trial mode
 
