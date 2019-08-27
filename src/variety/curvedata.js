@@ -822,9 +822,6 @@ LineGraph:{
 		for(var i=0;i<clist.length;i++){
 			var cell = clist[i];
 
-			g.lineWidth = this.lw/2;
-			var dot = this.lw/4;
-
 			if(cell.qnum >= 0){
 				var shape = this.board.shapes[cell.qnum];
 				if(!shape || !shape.bits.length){continue;}
@@ -832,6 +829,9 @@ LineGraph:{
 				var h = shape.bits.length / w;
 
 				var step = Math.min(this.bw/(w-1), this.bh/(h-1)) * 1.3;
+				var lw = Math.min(this.lw/2, step/4);
+				var dot = lw/2;
+				g.lineWidth = lw;
 
 				var px = (cell.bx*this.bw) - (step*(w-1))/2;
 				var py = (cell.by*this.bh) - (step*(h-1))/2;
