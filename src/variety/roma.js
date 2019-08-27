@@ -163,8 +163,8 @@ Graphic:{
 
 	getBGCellColor : function(cell){
 		if     (cell.error===1){ return this.errbcolor1;}
-		else if(cell.error===2){ return this.errbcolor2;}
-		else if(cell.error===3){ return this.errbcolor3;}
+		else if(cell.qinfo===2){ return this.errbcolor2;}
+		else if(cell.qinfo===3){ return this.errbcolor3;}
 		return null;
 	},
 
