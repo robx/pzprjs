@@ -40,6 +40,14 @@ ui.debug.addDebugData('yosenabe', {
 		/* 数字をクリックしたらグレーにする */
 		{ input:["playmode"]},
 		{ input:["mouse,left, 9,1", "mouse,left, 7,1", "mouse,left, 9,1"],
-		  result:"pzprv3.1/yosenabe/2/6/i o1 i2 o3 o4 . /. i . i . . /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 16 0 0 /0 0 0 0 0 0 /" }
+		  result:"pzprv3.1/yosenabe/2/6/i o1 i2 o3 o4 . /. i . i . . /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 0 /0 0 0 16 0 0 /0 0 0 0 0 0 /" },
+		/* test deleting circles that have been moved, #51 */
+		{ input:["newboard,3,3", "editmode"] },
+		{ input:["cursor,3,1", "key,-", "cursor,1,3", "key,-"],
+		  result:"pzprv3.1/yosenabe/3/3/. o . /o . . /. . . /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /" },
+		{ input:["playmode", "mouse,left, 1,3, 5,3"],
+		  result:"pzprv3.1/yosenabe/3/3/. o . /o . . /. . . /0 0 /1 1 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /" },
+		{ input:["editmode", "cursor,1,3", "key, "],
+		  result:"pzprv3.1/yosenabe/3/3/. o . /. . . /. . . /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /" }
 	]
 });
