@@ -138,6 +138,16 @@ KeyEvent:{
 Cell:{
 	isCmp : function(){ // 描画用
 		return (!this.puzzle.execConfig('dispmove') ? this : this.base).qcmp===1;
+	},
+
+	posthook : {
+		// delete lines corresponding to a circle when it's changed in edit mode
+		qnum : function(num) {
+			if(num!==-1){ return;}
+			if(this.path===null){ return;}
+			var edges = this.path.getedgeobjs();
+			edges.forEach(function(edge){ edge.line=0; });
+		}
 	}
 },
 CellList:{
