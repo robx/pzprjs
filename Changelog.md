@@ -29,6 +29,7 @@
 * nagare: Allow cross input mode to remove aux marks
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
+* nawabari and related puzzles, editor: Remove answer lines from invalid cells
 * nurimisaki: Switch to unshaded cell connection info for edit mode, too
 * roma: Fix "Check route" input mode
 * shakashaka: Allow drawing diagonal rooms around dotted cells
