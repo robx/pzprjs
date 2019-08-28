@@ -87,6 +87,10 @@ ui.menuarea = {
 					setevent = true;
 				}
 
+				if(el.className==="link"){
+					setevent = true; // bypass setting event below
+				}
+
 				if(!setevent){
 					if(!menuarea.nohover || !el.querySelector("menu")){
 						addmenuevent(el, "mousedown", function(e){ e.preventDefault();});
@@ -95,6 +99,7 @@ ui.menuarea = {
 						addmenuevent(el, "mousedown", function(e){ menuarea.showHovering(e,el); e.preventDefault(); e.stopPropagation();});
 					}
 				}
+
 				var link = ui.customAttr(el,"pidlink");
 				if(!!link){
 					el.firstChild.setAttribute("href", link+ui.puzzle.pid);
