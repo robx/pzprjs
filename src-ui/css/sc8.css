@@ -310,7 +310,6 @@
   }
 	#menupanel > li:hover > span {
 		color : maroon;
-		font-weight : 900;
 	}
 
 	/* submenu popup (any level) */
@@ -391,7 +390,6 @@
 		background : #ffcccc;
 	}
 	#menupanel menu li:hover > span {
-		font-weight : 900;
 		text-decoration : underline;
 	}
   @media screen and (max-device-width: 1024px) {
