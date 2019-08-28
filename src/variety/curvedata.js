@@ -353,11 +353,17 @@ CurveData: {
 			for(var x = 0; x < w; x++) {
 				var id = y*w+x;
 				if(hold===null && (this.bits[id] & 1)) {
-					hold = id;
+					hold = [id];
 				} else if (hold!==null && this.bits[id]!==5) {
-					this.connections[hold].right = [id];
-					this.connections[id].left = [hold];
-					hold = (this.bits[id] & 1) ? id : null;
+					hold.push(id);
+					if(!(this.bits[id] & 1)) {
+						var conns = this.connections;
+						hold.forEach(function (pos, index) {
+							conns[pos].left = hold.slice(0, index);
+							conns[pos].right = hold.slice(index);
+						});
+						hold = null;
+					}
 				}
 			}
 		}
@@ -367,11 +373,17 @@ CurveData: {
 			for(var y = 0; y < h; y++) {
 				var id = y*w+x;
 				if(hold===null && (this.bits[id] & 2)) {
-					hold = id;
+					hold = [id];
 				} else if (hold!==null && this.bits[id]!==10) {
-					this.connections[hold].bottom = [id];
-					this.connections[id].top = [hold];
-					hold = (this.bits[id] & 2) ? id : null;
+					hold.push(id);
+					if(!(this.bits[id] & 2)) {
+						var conns = this.connections;
+						hold.forEach(function (pos, index) {
+							conns[pos].top = hold.slice(0, index);
+							conns[pos].bottom = hold.slice(index);
+						});
+						hold = null;
+					}
 				}
 			}
 		}
