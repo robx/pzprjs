@@ -16,8 +16,8 @@ pzpr.variety.each(function(pid){
 					puzzle.open(testcase[1]);
 					var failcode = puzzle.check(true);
 					assert.equal(failcode[0], testcase[0]);
-					if(testcase.length>2){
-						assert.equal(failcode.undecided, testcase[2]);
+					if(testcase.length>2 && 'undecided' in testcase[2]){
+						assert.equal(failcode.undecided, testcase[2].undecided);
 					}
 				});
 			});

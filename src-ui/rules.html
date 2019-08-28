@@ -59,6 +59,7 @@ pzpr.on("load", function(){
   _script.src = datadir+'/'+pid+'.js';
   _script.onload = function(){
     failcheck.forEach(function(data){
+      if(data.length>2&&data[2].skiprules){ return;}
       var testcase = document.createElement('div');
       testcase.className = 'testcase';
       document.getElementsByTagName('body')[0].appendChild(testcase);
