@@ -290,7 +290,7 @@ CurveData: {
 	// positions short, which means less permutations and less total combinations.
 	positions: null,
 	// Connections is a map with positions in `bits` as the key,
-	// and a map of four adjacent positions as the value. This represents the graph.
+	// and a map of four position arrays as the value. This represents the graph.
 	connections: null,
 	nodecnt: 0,
 	// Cached result of encodeBits().
@@ -344,7 +344,7 @@ CurveData: {
 		for(var id = 0; id < len; id++) {
 			var key = this.bits[id];
 			if(key===0||key===5||key===10){continue;}
-			this.connections[id] = {left:null, right:null, top:null, bottom:null};
+			this.connections[id] = {left:[], right:[], top:[], bottom:[]};
 			this.nodecnt++;
 		}
 		// Horizontal connections
@@ -355,8 +355,8 @@ CurveData: {
 				if(hold===null && (this.bits[id] & 1)) {
 					hold = id;
 				} else if (hold!==null && this.bits[id]!==5) {
-					this.connections[hold].right = id;
-					this.connections[id].left = hold;
+					this.connections[hold].right = [id];
+					this.connections[id].left = [hold];
 					hold = (this.bits[id] & 1) ? id : null;
 				}
 			}
@@ -369,8 +369,8 @@ CurveData: {
 				if(hold===null && (this.bits[id] & 2)) {
 					hold = id;
 				} else if (hold!==null && this.bits[id]!==10) {
-					this.connections[hold].bottom = id;
-					this.connections[id].top = hold;
+					this.connections[hold].bottom = [id];
+					this.connections[id].top = [hold];
 					hold = (this.bits[id] & 2) ? id : null;
 				}
 			}
@@ -382,15 +382,19 @@ CurveData: {
 			if(bits===0||bits===5||bits===10){continue;}
 
 			var conns = this.connections[id];
-			var key = [bits, "R", this.bits[conns.right],
-					"B", this.bits[conns.bottom],
-					"L", this.bits[conns.left],
-					"T", this.bits[conns.top]].join("");
-			if(!(key in this.positions)) {
-				this.positions[key] = [];
-			}
+			var allBits = this.bits;
+			var mapBits = function(i) { return allBits[i]; }
 
-			this.positions[key].push(id);
+			var key = [bits, "R", conns.right.map(mapBits).join(","),
+					"B", conns.bottom.map(mapBits).join(","),
+					"L", conns.left.map(mapBits).join(","),
+					"T", conns.top.map(mapBits).join(",")
+				].join("");
+			if(key in this.positions) {
+				this.positions[key].push(id);
+			} else {
+				this.positions[key] = [id];
+			}
 		}
 	},
 
@@ -487,11 +491,22 @@ CurveData: {
 		for(var id in this.connections) {
 			var conn = this.connections[id];
 			var otherconn = other.connections[matching[id]];
-			if(conn.right!==null && otherconn.right !== matching[conn.right]) {
+
+			if(conn.right.length!==otherconn.right.length) {
 				return false;
 			}
-			if(conn.bottom!==null && otherconn.bottom !== matching[conn.bottom]) {
+			for(var j = 0; j < conn.right.length; j++) {
+				if(otherconn.right[j]!==matching[conn.right[j]]) {
+					return false;
+				}
+			}
+			if(conn.bottom.length!==otherconn.bottom.length) {
 				return false;
+			}
+			for(var j = 0; j < conn.bottom.length; j++) {
+				if(otherconn.bottom[j]!==matching[conn.bottom[j]]) {
+					return false;
+				}
 			}
 		}
 		return true;
