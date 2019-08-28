@@ -389,7 +389,16 @@
 	#menupanel menu li:hover {
 		background : #ffcccc;
 	}
+
+	#menupanel menu li > a {
+		display : inline-block;
+		width : 100%;
+	}
+
 	#menupanel menu li:hover > span {
+		text-decoration : underline;
+	}
+	#menupanel menu li:hover > a {
 		text-decoration : underline;
 	}
   @media screen and (max-device-width: 1024px) {
