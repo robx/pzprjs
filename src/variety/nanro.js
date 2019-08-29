@@ -46,6 +46,9 @@ MouseEvent:{
 			this.mouseCell = cell;
 		}
 		else if(cell.qnum===-1){
+			if(cell.room!==this.mouseCell.room && this.inputData>0){
+				this.inputData = (cell.room.numkind===1) ? cell.room.number : -2;
+			}
 			cell.setNum(this.inputData);
 			this.mouseCell = cell;
 			cell.draw();
