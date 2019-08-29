@@ -9,7 +9,7 @@
 
 #### Improvement
 
-* amibo, mashu, starbattle: Reword English error messages
+* amibo, juosan, mashu, starbattle: Reword English error messages
 * cbblock: Add error for dead-end walls
 * heyawake: Don't autocheck until the grid is fully decided
 * slither: Allow 4 as clue number
