@@ -15,7 +15,10 @@ MouseEvent:{
 		if(this.puzzle.playmode){
 			if(this.mousestart || this.mousemove){
 				if     (this.btn==='left') { this.inputLine();}
-				else if(this.btn==='right'){ this.inputcell();}
+				else if(this.btn==='right'){
+					if(this.mousestart && this.inputpeke_ifborder()){ return;}
+					if(!this.firstCell.isnull||this.notInputted()){ this.inputcell();}
+				}
 			}
 			else if(this.mouseend && this.notInputted()){
 				var cell = this.getcell();

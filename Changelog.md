@@ -16,6 +16,7 @@
 * slither: Allow 4 as clue number
 * starbattle: Input dots in auto-mode; change style of empty cells;
   hide redundant dots
+* yajilin: Allow crossmark-input in auto-mode on right click.
 * Change default value of "shade undefined cells" back to `true`
 * Change unshaded cells without changing shaded cells in checkerboard
   puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
