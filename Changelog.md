@@ -15,6 +15,7 @@
 * heyawake: Don't autocheck until the grid is fully decided
 * heyawake: Don't insist on rectangular rooms, and treat
   heyawacky as an alias, for consistency with pzv.jp
+* kakuro: Support blank clues, distinguish between 0 and blank
 * nanro: Don't drag number, drag "there's a number"
 * slither: Allow 4 as clue number
 * starbattle: Input dots in auto-mode; change style of empty cells;

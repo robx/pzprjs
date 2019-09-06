@@ -49,10 +49,10 @@ TargetCursor:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
-	qnum : 0,
-	qnum2 : 0,
+	qnum : -1,
+	qnum2 : -1,
 
-	noNum : function(){ return !this.isnull && (this.qnum===0 && this.qnum2===0 && this.anum===-1);},
+	noNum : function(){ return !this.isnull && this.ques===0 && this.anum===-1;},
 
 	/* 問題の0入力は↓の特別処理で可能にしてます */
 	disInputHatena : true,
@@ -75,10 +75,10 @@ Cell:{
 
 EXCell:{
 	ques : 51,
-	qnum : 0,
-	qnum2 : 0,
+	qnum : -1,
+	qnum2 : -1,
 	maxnum : 45,
-	minnum : 1,
+	minnum : 0,
 
 	disInputHatena : true
 },
@@ -210,7 +210,7 @@ Encode:{
 			var pstr="", cell=bd.cell[c];
 
 			if(cell.ques===51){
-				if(cell.qnum<=0 && cell.qnum2<=0){ pstr = ".";}
+				if(cell.qnum<0 && cell.qnum2<0){ pstr = ".";}
 				else{ pstr = ""+this.encval(cell.qnum2)+this.encval(cell.qnum);}
 			}
 			else{ count++;}
@@ -239,12 +239,12 @@ Encode:{
 		if     (ca>='0'&&ca<='9'){ return parseInt(ca,36);}
 		else if(ca>='a'&&ca<='j'){ return parseInt(ca,36);}
 		else if(ca>='A'&&ca<='Z'){ return parseInt(ca,36)+10;}
-		return 0;
+		return -1;
 	},
 	encval : function(val){
-		if     (val>= 1&&val<=19){ return val.toString(36).toLowerCase();}
+		if     (val>= 0&&val<=19){ return val.toString(36).toLowerCase();}
 		else if(val>=20&&val<=45){ return (val-10).toString(36).toUpperCase();}
-		return "0";
+		return "-";
 	}
 },
 //---------------------------------------------------------
@@ -283,8 +283,8 @@ FileIO:{
 			else{
 				var cell = bd.getc((+item[1])*2-1,(+item[0])*2-1);
 				cell.ques = 51;
-				cell.qnum2 = +item[3];
 				cell.qnum  = +item[2];
+				cell.qnum2 = +item[3];
 			}
 		}
 	},
@@ -342,8 +342,8 @@ FileIO:{
 			var b = +node.getAttribute('b');
 			var piece = bd.getobj(bx,by); /* cell or excell */
 			piece.ques = 51;
-			if(a>0){ piece.qnum  = a;}
-			if(b>0){ piece.qnum2 = b;}
+			piece.qnum  = a;
+			piece.qnum2 = b;
 		}
 	},
 	encodeCellQnum51_XMLBoard : function(){
@@ -353,8 +353,8 @@ FileIO:{
 			for(var bx=-1;bx<bd.maxbx;bx+=2){
 				var piece = bd.getobj(bx,by); /* cell or excell */
 				if(piece.ques===51){
-					var a = (piece.qnum  > 0 ? piece.qnum  : 0);
-					var b = (piece.qnum2 > 0 ? piece.qnum2 : 0);
+					var a = piece.qnum;
+					var b = piece.qnum2;
 					boardnode.appendChild(this.createXMLNode('wall',{r:((by+3)>>1),c:((bx+3)>>1),a:a,b:b}));
 				}
 			}
