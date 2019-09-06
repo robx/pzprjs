@@ -17,7 +17,7 @@ MouseEvent:{
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			if(this.mouseend && this.notInputted()){
-				if(this.inputpeke_onend()){ return;}
+				if(this.inputpeke_ifborder()){ return;}
 				this.clickTateyoko();
 			}
 		}

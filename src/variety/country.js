@@ -43,7 +43,7 @@ MouseEvent:{
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){
-				if(this.inputpeke_onend()){ return;}
+				if(this.inputpeke_ifborder()){ return;}
 				this.inputMB();
 			}
 		}

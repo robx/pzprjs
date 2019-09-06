@@ -596,7 +596,7 @@ MouseEvent:{
 		}
 		this.prevPos = pos;
 	},
-	inputpeke_onend : function(){
+	inputpeke_ifborder : function(){
 		var border = this.getpos(0.22).getb();
 		if(border.group==='border' && !border.isnull){
 			this.inputpeke();
