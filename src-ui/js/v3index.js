@@ -6,6 +6,7 @@ var v3index = {
 	complete : false,
 	testdoc  : false,
 	captions : [],
+	phtml    : "p.html",
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
 };
 
@@ -20,6 +21,10 @@ if(location.search==='?en'||location.search==='?ja'){
 if(location.href.match(/\/tests\/index/)){
 	self.doclang = 'ja';
 	self.testdoc = true;
+}
+if(location.hostname==='puzz.link'){
+	// puzz.link serves p.html at puzz.link/p
+	self.phtml = "p";
 }
 
 function getEL(id){ return _doc.getElementById(id);}
@@ -129,7 +134,7 @@ v3index.extend({
 			if(!pinfo.valid){ return;}
 			if(el.childNodes.length===0){
 				el.className = (self.variety[pid] ? self.variety[pid].state : 'omopa');
-				el.innerHTML = '<a href="p?'+pid+(!self.testdoc?'':'_test')+'"></a>';
+				el.innerHTML = '<a href="'+v3index.phtml+'?'+pid+(!self.testdoc?'':'_test')+'"></a>';
 			}
 			self.captions.push({anode:el.firstChild, str_jp:pinfo.ja, str_en:pinfo.en});
 		});
