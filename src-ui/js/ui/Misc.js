@@ -79,6 +79,18 @@ ui.misc = {
 };
 
 function toBGimage(pid){
+	var imgs = [
+		'building',
+		'curvedata',
+		'kropki',
+		'moonsun',
+		'pencils',
+		'scrin',
+		'starbattle'
+	];
+	if(imgs.indexOf(pid)>=0){
+		return 'img/'+pid+'.png';
+	}
 	var header;
 	var data = {
 	/* カラーパレットが2色時のHeader(途中まで), 16×16サイズのData Block(途中から) */
