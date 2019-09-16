@@ -20,6 +20,7 @@
 * Change default value of "shade undefined cells" back to `true`
 * Change unshaded cells without changing shaded cells in checkerboard
   puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
+* Fix various English language typos
 
 #### BugFix
 
