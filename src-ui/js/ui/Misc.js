@@ -93,7 +93,8 @@ function toBGimage(pid){
 		'pencils',
 		'satogaeri',
 		'scrin',
-		'starbattle'
+		'starbattle',
+		'walllogic'
 	];
 	if(imgs.indexOf(pid)>=0){
 		return 'img/'+pid+'.png';
