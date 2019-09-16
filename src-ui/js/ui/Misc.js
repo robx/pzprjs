@@ -82,6 +82,7 @@ function toBGimage(pid){
 	var imgs = [
 		'building',
 		'curvedata',
+		'heteromino',
 		'kropki',
 		'moonsun',
 		'pencils',
