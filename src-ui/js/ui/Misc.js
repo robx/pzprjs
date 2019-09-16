@@ -80,13 +80,16 @@ ui.misc = {
 
 function toBGimage(pid){
 	var imgs = [
+		'angleloop',
 		'building',
 		'curvedata',
+		'doubleback',
 		'easyasabc',
 		'heteromino',
 		'kropki',
 		'moonsun',
 		'pencils',
+		'satogaeri',
 		'scrin',
 		'starbattle'
 	];
