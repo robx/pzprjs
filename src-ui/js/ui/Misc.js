@@ -83,6 +83,7 @@ function toBGimage(pid){
 		'angleloop',
 		'building',
 		'curvedata',
+		'dbchoco',
 		'doubleback',
 		'easyasabc',
 		'heteromino',
