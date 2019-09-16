@@ -88,6 +88,7 @@ function toBGimage(pid){
 		'heteromino',
 		'kropki',
 		'moonsun',
+		'nurimisaki',
 		'pencils',
 		'satogaeri',
 		'scrin',
