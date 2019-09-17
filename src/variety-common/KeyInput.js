@@ -65,6 +65,7 @@ KeyEvent:{
 
 		cell0.draw();
 		this.prev = cell;
+		this.cancelDefault = true;
 	},
 	getNewNumber : function(cell,ca,cur){
 		var max = cell.getmaxnum(), min = cell.getminnum(), val = null;
