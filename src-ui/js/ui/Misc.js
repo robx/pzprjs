@@ -86,6 +86,7 @@ function toBGimage(pid){
 		'dbchoco',
 		'doubleback',
 		'easyasabc',
+		'geradeweg',
 		'heteromino',
 		'kropki',
 		'moonsun',
