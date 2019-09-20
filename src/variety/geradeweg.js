@@ -116,6 +116,7 @@ AnsCheck:{
 
 		"checkShortSegment",
 		"checkLongSegment",
+		"checkDiffSegment",
 		"checkNoLineNumber",
 
 		"checkDeadendLine+",
@@ -126,7 +127,7 @@ AnsCheck:{
 		var result = true, bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
-			if(!cell.isNum()){ continue;}
+			if(!cell.isNum()||cell.qnum<1){ continue;}
 			var horiz = cell.getSegment(true);
 			var vert = cell.getSegment(false);
 			if(horiz.length>0&&horiz.length<cell.qnum){
@@ -152,7 +153,7 @@ AnsCheck:{
 		var result = true, bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
 			var cell = bd.cell[c];
-			if(!cell.isNum()){ continue;}
+			if(!cell.isNum()||cell.qnum<1){ continue;}
 			var horiz = cell.getSegment(true);
 			var vert = cell.getSegment(false);
 			if(horiz.length>cell.qnum){
@@ -174,6 +175,27 @@ AnsCheck:{
 		}
 	},
 
+	// question mark clues only
+	checkDiffSegment : function(){
+		var result = true, bd = this.board;
+		for(var c=0;c<bd.cell.length;c++){
+			var cell = bd.cell[c];
+			if(!cell.isNum()||cell.qnum>=1){ continue;}
+			var horiz = cell.getSegment(true);
+			var vert = cell.getSegment(false);
+			if(horiz.length>0&&vert.length>0&&horiz.length!==vert.length){
+				result = false;
+				if(this.checkOnly){ break;}
+				cell.seterr(1);
+				horiz.seterr(1);
+			}
+		}
+		if(!result){
+			this.failcode.add("segDiff");
+			bd.border.setnoerr();
+		}
+	},
+
 	checkNoLineNumber : function(){
 		this.checkAllCell(function(cell){
 			return (cell.isNum() && cell.lcnt===0);}, "numNoLine");
@@ -182,6 +204,7 @@ AnsCheck:{
 FailCode:{
 	segShort : ["線の長さが数字より短いです。","A segment is shorter than a number."],
 	segLong : ["線の長さが数字より長いです。","A segment is longer than a number."],
+	segDiff : ["(please translate) Segments have different length.","Segments have different length."],
 	numNoLine : ["線の通っていない数字があります。","A number has no line."]
 }
 }));
