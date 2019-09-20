@@ -188,6 +188,7 @@ AnsCheck:{
 				if(this.checkOnly){ break;}
 				cell.seterr(1);
 				horiz.seterr(1);
+				vert.seterr(1);
 			}
 		}
 		if(!result){
