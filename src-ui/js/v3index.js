@@ -286,7 +286,7 @@ var pstate = {
 			'wagiri','shugaku','hakoiri','roma','toichika','cbblock','nondango','onsen'],
 	orig  :['mochinyoro','ayeheya','aho'],
 	genre :['tapa','arukone','yinyang','building','kropki','starbattle','easyasabc','walllogic'],
-	add   :['angleloop', 'doubleback', 'heyawacky', 'nurimisaki', 'meander', 'satogaeri', 'scrin', 'heteromino',
+	add   :['angleloop', 'doubleback', 'nurimisaki', 'meander', 'satogaeri', 'scrin', 'heteromino',
 			'yajilin-regions', 'dbchoco', 'geradeweg', 'pencils', 'curvedata']
 };
 var tabstate = {
