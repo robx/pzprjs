@@ -49,6 +49,7 @@ ui.toolarea = {
 				}
 				else if(el.nodeName==="INPUT" && el.type==="checkbox"){
 					parent = el.parentNode, idname = ui.customAttr(parent,"config");
+					if(!idname){ parent = parent.parentNode, idname = ui.customAttr(parent,"config"); }
 					if(!idname){ return;}
 					toolarea.items[idname].checkbox=el;
 
