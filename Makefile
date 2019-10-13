@@ -5,4 +5,3 @@ build:
 
 test:
 	npm test
-

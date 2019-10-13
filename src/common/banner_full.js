@@ -1,7 +1,7 @@
 /*!
  * @license
  *
- * pzpr.js v<%= pkg.version %>
+ * pzpr.js v<%= git.hash %>
  *  https://github.com/sabo2/pzprv3
  *
  * This script includes candle.js, see below

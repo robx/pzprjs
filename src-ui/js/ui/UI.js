@@ -12,7 +12,7 @@ function createEL(tagName){ return _doc.createElement(tagName);}
 //---------------------------------------------------------------------------
 /* extern */
 window.ui = {
-	version : '<%= pkg.version %>',
+	version : '<%= git.hash %>',
 
 	/* このサイトで使用するパズルのオブジェクト */
 	puzzle    : null,

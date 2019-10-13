@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 /* extern */
 var pzpr = {
-	version : '<%= pkg.version %>'
+	version : '<%= git.hash %>'
 };
 
 if(typeof module==='object' && module.exports){ module.exports = pzpr;}

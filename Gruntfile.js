@@ -11,6 +11,8 @@ module.exports = function(grunt){
   grunt.initConfig({
     pkg: pkg,
 
+    git: grunt.file.readJSON("git.json"),
+
     copy: {
       ui: {
         options: {
