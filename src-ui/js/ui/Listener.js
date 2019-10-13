@@ -68,8 +68,8 @@ ui.listener =
 		var kc = puzzle.key, ut = ui.undotimer, result = true;
 		if(kc.keydown){
 			/* TimerでUndo/Redoする */
-			if(c==='ctrl+z' || c==='meta+z'){ ut.startKeyUndo(); result = false;}
-			if(c==='ctrl+y' || c==='meta+y'){ ut.startKeyRedo(); result = false;}
+			if(c==='ctrl+z' || c==='meta+z'){ ut.startUndo(); result = false;}
+			if(c==='ctrl+y' || c==='meta+y'){ ut.startRedo(); result = false;}
 
 			/* F2で回答モード Shift+F2で問題作成モード */
 			if(!puzzle.playeronly){

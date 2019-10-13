@@ -254,11 +254,11 @@ ui.menuarea = {
 	//---------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	anscheck : function(){ this.answercheck();},
-	undo     : function(){ ui.undotimer.startButtonUndo();},
-	undostop : function(){ ui.undotimer.stopButtonUndo();},
+	undo     : function(){ ui.undotimer.startUndo();},
+	undostop : function(){ ui.undotimer.stopUndo();},
 	undoall  : function(){ ui.puzzle.undoall();},
-	redo     : function(){ ui.undotimer.startButtonRedo();},
-	redostop : function(){ ui.undotimer.stopButtonRedo();},
+	redo     : function(){ ui.undotimer.startRedo();},
+	redostop : function(){ ui.undotimer.stopRedo();},
 	redoall  : function(){ ui.puzzle.redoall();},
 	ansclear : function(){ this.answerclear();},
 	subclear : function(){ this.submarkclear();},

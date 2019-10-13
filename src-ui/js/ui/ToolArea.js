@@ -188,10 +188,10 @@ ui.toolarea = {
 	// Canvas下にあるボタンが押された/放された時の動作
 	//---------------------------------------------------------------------------
 	answercheck : function(){ ui.menuarea.answercheck();},
-	undo     : function(){ ui.undotimer.startButtonUndo();},
-	undostop : function(){ ui.undotimer.stopButtonUndo();},
-	redo     : function(){ ui.undotimer.startButtonRedo();},
-	redostop : function(){ ui.undotimer.stopButtonRedo();},
+	undo     : function(){ ui.undotimer.startUndo();},
+	undostop : function(){ ui.undotimer.stopUndo();},
+	redo     : function(){ ui.undotimer.startRedo();},
+	redostop : function(){ ui.undotimer.stopRedo();},
 	ansclear : function(){ ui.menuarea.answerclear();},
 	subclear : function(){ ui.menuarea.submarkclear();},
 	irowake  : function(){ ui.puzzle.irowake();},
