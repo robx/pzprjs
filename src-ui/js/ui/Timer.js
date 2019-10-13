@@ -98,19 +98,15 @@ ui.timer =
 //---------------------------------------------------------------------------
 // ★UndoTimerクラス   Undo/Redo用タイマー
 //---------------------------------------------------------------------------
-var KeyUndo = 1,
-	ButtonUndo = 2,
-	AnswerUndo = 4,
-	undoTimerInterval = 25,		/* タイマー割り込み間隔 */
+var undoTimerInterval = 25,		/* タイマー割り込み間隔 */
 	execWaitTime      = 300;	/* 1回目にwaitを多く入れるための値 */
 
 ui.undotimer = {
 	/* メンバ変数 */
 	TID    : null,	/* タイマーID */
 
-	/* bit1:button bit0:key */
-	inUNDO : 0,	/* Undo実行中 */
-	inREDO : 0,	/* Redo実行中 */
+	inUNDO : false,	/* Undo実行中 */
+	inREDO : false,	/* Redo実行中 */
 
 	//---------------------------------------------------------------------------
 	// ut.reset()  タイマーをスタートする
@@ -120,45 +116,15 @@ ui.undotimer = {
 	},
 
 	//---------------------------------------------------------------------------
-	// ut.startKeyUndo() キー入力によるUndoを開始する
-	// ut.startKeyRedo() キー入力によるRedoを開始する
-	// ut.startButtonUndo() ボタンによるUndoを開始する
-	// ut.startButtonRedo() ボタンによるRedoを開始する
-	// ut.startAnswerUndo() 碁石ひろい用のマウスによるUndoを開始する
-	// ut.startAnswerRedo() 碁石ひろい用のマウスによるRedoを開始する
-	//---------------------------------------------------------------------------
-	startKeyUndo    : function(){ this.startUndo(KeyUndo);},
-	startKeyRedo    : function(){ this.startRedo(KeyUndo);},
-	startButtonUndo : function(){ this.startUndo(ButtonUndo);},
-	startButtonRedo : function(){ this.startRedo(ButtonUndo);},
-	startAnswerUndo : function(){ this.startUndo(AnswerUndo);},
-	startAnswerRedo : function(){ this.startRedo(AnswerUndo);},
-
-	//---------------------------------------------------------------------------
-	// ut.stopKeyUndo() キー入力によるUndoを停止する
-	// ut.stopKeyRedo() キー入力によるRedoを停止する
-	// ut.stopButtonUndo() ボタンによるUndoを停止する
-	// ut.stopButtonRedo() ボタンによるRedoを停止する
-	// ut.startAnswerUndo() 碁石ひろい用のマウスによるUndoを停止する
-	// ut.startAnswerRedo() 碁石ひろい用のマウスによるRedoを停止する
-	//---------------------------------------------------------------------------
-	stopKeyUndo    : function(){ this.stopUndo(KeyUndo);},
-	stopKeyRedo    : function(){ this.stopRedo(KeyUndo);},
-	stopButtonUndo : function(){ this.stopUndo(ButtonUndo);},
-	stopButtonRedo : function(){ this.stopRedo(ButtonUndo);},
-	/* stopAnswerUndo : function(){ this.stopUndo(AnswerUndo);}, */
-	/* stopAnswerRedo : function(){ this.stopRedo(AnswerUndo);}, */
-
-	//---------------------------------------------------------------------------
 	// ut.startUndo() Undo開始共通処理
 	// ut.startRedo() Redo開始共通処理
 	// ut.stopUndo() Undo停止共通処理
 	// ut.stopRedo() Redo停止共通処理
 	//---------------------------------------------------------------------------
-	startUndo : function(bit){ if(!(this.inUNDO & bit)){ this.inUNDO |=  bit; this.proc();}},
-	startRedo : function(bit){ if(!(this.inREDO & bit)){ this.inREDO |=  bit; this.proc();}},
-	stopUndo  : function(bit){ if(  this.inUNDO & bit ){ this.inUNDO &= ~bit; this.proc();}},
-	stopRedo  : function(bit){ if(  this.inREDO & bit ){ this.inREDO &= ~bit; this.proc();}},
+	startUndo : function(){ if(!(this.inUNDO || this.inREDO)){ this.inUNDO = true; this.proc();}},
+	startRedo : function(){ if(!(this.inREDO || this.inUNDO)){ this.inREDO = true; this.proc();}},
+	stopUndo  : function(){ if(  this.inUNDO ){ this.inUNDO = false; this.proc();}},
+	stopRedo  : function(){ if(  this.inREDO ){ this.inREDO = false; this.proc();}},
 
 	//---------------------------------------------------------------------------
 	// ut.start() Undo/Redo呼び出しを開始する
@@ -175,8 +141,8 @@ ui.undotimer = {
 		this.exec();
 	},
 	stop : function(){
-		this.inUNDO = 0;
-		this.inREDO = 0;
+		this.inUNDO = false;
+		this.inREDO = false;
 
 		clearInterval(this.TID);
 		this.TID = null;
@@ -187,8 +153,8 @@ ui.undotimer = {
 	// ut.exec()  Undo/Redo関数を呼び出す
 	//---------------------------------------------------------------------------
 	proc : function(){
-		if     (!!(this.inUNDO | this.inREDO) &&  !this.TID){ this.start();}
-		else if( !(this.inUNDO | this.inREDO) && !!this.TID){ this.stop();}
+		if     ( (this.inUNDO || this.inREDO) &&  !this.TID){ this.start();}
+		else if(!(this.inUNDO || this.inREDO) && !!this.TID){ this.stop();}
 		else if(!!this.TID){ this.exec();}
 	},
 	exec : function(){
@@ -203,17 +169,6 @@ ui.undotimer = {
 	checknextprop : function(){
 		var opemgr = ui.puzzle.opemgr;
 		var isenable = ((this.inUNDO && opemgr.enableUndo) || (this.inREDO && opemgr.enableRedo));
-		if(isenable && ui.puzzle.pid==="goishi"){
-			var nextopes;
-			if(this.inUNDO===AnswerUndo){
-				nextopes = opemgr.ope[opemgr.position-1];
-				isenable = (nextopes[nextopes.length-1].property==='anum');
-			}
-			else if(this.inREDO===AnswerUndo){
-				nextopes = opemgr.ope[opemgr.position];
-				isenable = (nextopes[0].property==='anum');
-			}
-		}
 		return isenable;
 	}
 };

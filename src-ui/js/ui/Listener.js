@@ -79,13 +79,8 @@ ui.listener =
 		}
 		else if(kc.keyup){
 			/* TimerのUndo/Redoを停止する */
-			if(c==='ctrl+z' || c==='meta+z'){ ut.stopKeyUndo(); result = false;}
-			if(c==='ctrl+y' || c==='meta+y'){ ut.stopKeyRedo(); result = false;}
+			ut.stop();
 		}
-
-		if(!kc.isCTRL && !kc.isMETA){ ut.reset();}
-		else if(!kc.isZ){ ut.stopKeyUndo();}
-		else if(!kc.isY){ ut.stopKeyRedo();}
 
 		kc.cancelEvent = !result;
 	},
@@ -95,25 +90,6 @@ ui.listener =
 			ui.menuconfig.set('mode', puzzle.playmode ? 'edit' : 'play');
 			mv.mousereset();
 			result = false;
-		}
-		else if(ui.puzzle.pid === "goishi"){
-			if(mv.mousestart && ui.puzzle.playmode){
-				if(mv.btn==='left'){
-					var cell = mv.getcell();
-					if(cell.isnull || !cell.isStone() || cell.anum!==-1){
-						ui.undotimer.startAnswerRedo();
-						result = false;
-					}
-				}
-				else if(mv.btn==='right'){
-					ui.undotimer.startAnswerUndo();
-					result = false;
-				}
-			}
-			else if(mv.mouseend){
-				ui.undotimer.stop();
-				result = false;
-			}
 		}
 
 		mv.cancelEvent = !result;

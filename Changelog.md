@@ -42,6 +42,7 @@
 * yajitatami: Fix error color for border crossing
 * Fix interaction of "Clear Answer" and trial mode
 * Don't scroll on space input
+* Fix sticky undo/redo
 
 ## Version 0.11.1
 
