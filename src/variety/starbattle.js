@@ -24,7 +24,7 @@ MouseEvent:{
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart&&this.btn==="left"){
+			if(this.mousestart&&this.btn==="right"){
 				this.inputdot();
 			}
 			if(this.mousestart || this.mousemove){
