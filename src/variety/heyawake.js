@@ -235,7 +235,7 @@ AnsCheck:{
 		"checkFractal@ayeheya",
 		"checkShadeCellCount",
 		"checkCountinuousUnshadeCell",
-		"checkRoomRect@ayeheya",
+		"checkRoomSymm@ayeheya",
 		"checkDone"
 	],
 
@@ -250,6 +250,23 @@ AnsCheck:{
 				if(cell.isShade() === cell2.isShade()){ continue;}
 
 				this.failcode.add("bkNotSymShade");
+				if(this.checkOnly){ break allloop;}
+				clist.seterr(1);
+			}
+		}
+	},
+
+	checkRoomSymm : function(){
+		var rooms = this.board.roommgr.components;
+		allloop:
+		for(var r=0;r<rooms.length;r++){
+			var clist = rooms[r].clist, d = clist.getRectSize();
+			var sx=d.x1+d.x2, sy=d.y1+d.y2;
+			for(var i=0;i<clist.length;i++){
+				var cell = clist[i], cell2 = this.board.getc(sx-cell.bx, sy-cell.by);
+				if(cell2.room===rooms[r]){ continue;}
+
+				this.failcode.add("bkNotSymRoom");
 				if(this.checkOnly){ break allloop;}
 				clist.seterr(1);
 			}
@@ -289,6 +306,7 @@ AnsCheck:{
 
 FailCode:{
 	bkUnshadeConsecGt3 : ["白マスが3部屋連続で続いています。","Unshaded cells are continued for three consecutive room."],
-	bkNotSymShade      : ["部屋の中の黒マスが点対称に配置されていません。","Position of shaded cells in the room is not point symmetric."]
+	bkNotSymShade      : ["部屋の中の黒マスが点対称に配置されていません。","Position of shaded cells in the room is not point symmetric."],
+	bkNotSymRoom       : ["(please translate) The room is not point symmetric.","The room is not point symmetric."]
 }
 }));
