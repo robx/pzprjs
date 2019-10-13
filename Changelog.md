@@ -24,6 +24,7 @@
 * Change unshaded cells without changing shaded cells in checkerboard
   puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
 * Fix various English language typos
+* Allow clicking labels to toggle options
 
 #### BugFix
 
