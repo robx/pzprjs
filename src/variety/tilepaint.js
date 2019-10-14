@@ -10,7 +10,7 @@
 // マウス入力系
 MouseEvent:{
 	use : true,
-	inputModes:{edit:['cell51','clear','number','border','bgpaint'],play:['shade','unshade']},
+	inputModes:{edit:['clear','number','border','bgpaint'],play:['shade','unshade']},
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='shade'||this.inputMode==='unshade'){
 			this.inputtile();

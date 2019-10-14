@@ -9,7 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes:{edit:['cell51','clear','number'],play:['border','subline','bgcolor','bgcolor1','bgcolor2','clear']},
+	inputModes:{edit:['clear','number'],play:['border','subline','bgcolor','bgcolor1','bgcolor2','clear']},
 	mouseinput_clear : function(){
 		this.input51_fixed();
 	},
