@@ -118,6 +118,7 @@ ui.listener =
 		ui.setdisplay('keypopup');
 		ui.setdisplay('bgcolor');
 		ui.setdisplay('passallcell');
+		ui.setdisplay('aquarium_regions');
 		ui.keypopup.display();
 	},
 

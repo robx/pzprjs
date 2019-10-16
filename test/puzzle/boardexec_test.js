@@ -16,7 +16,7 @@ pzpr.variety.each(function(pid){
 	describe(pid+' boardexec test', function(){
 		describe('Turn', function(){
 			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
-			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku');
+			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku'||pid==='aquarium');
 			var relyon90deg  = (pid==='stostone');
 
 			if(puzzle.pid==='tawa'){ return;}
@@ -63,7 +63,7 @@ pzpr.variety.each(function(pid){
 		});
 		describe('Flip', function(){
 			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
-			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku'||pid==='tawa');
+			var relyonupdn   = (pid==='dosufuwa'||pid==='box'||pid==='cojun'||pid==='shugaku'||pid==='tawa'||pid==='aquarium');
 			var relyonanydir = (pid==='box'||pid==='shugaku');
 
 			it('flipX', function(){

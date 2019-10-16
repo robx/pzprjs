@@ -62,6 +62,8 @@ ui.menuconfig = {
 			case 'yajirin':   idname = 'disptype_yajilin';   break;
 			case 'pipelinkr': idname = 'disptype_pipelinkr'; break;
 			case 'bosanowa':  idname = 'disptype_bosanowa';  break;
+			case 'arukone':   idname = 'passallcell';        break;
+			case 'aquarium':  idname = 'aquarium_regions';   break;
 		}
 		if(!!idname){ this.set(idname, ui.puzzle.getConfig(idname));}
 

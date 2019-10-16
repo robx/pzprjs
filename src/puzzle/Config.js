@@ -58,6 +58,7 @@ Config.prototype =
 		this.add('allowempty', false);		/* 盤面に線や黒マスがなくても正解と判定する */
 		this.add('forceallcell', false);	/* fillomino: すべての数字が入っている時のみ正解とする */
 		this.add('passallcell', true);		/* arukone: すべてのセルに線が通っている時のみ正解とする */
+		this.add('aquarium_regions', false);	/* aquarium: Rule variation for disconnected cells in one region */
 
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
@@ -215,6 +216,7 @@ Config.prototype =
 			case 'uramashu': exec = (pid==="mashu"); break;
 			case 'forceallcell': exec = (pid==="fillomino"); break;
 			case 'passallcell': exec = (pid==="arukone"); break;
+			case 'aquarium_regions': exec = (pid==="aquarium"); break;
 			default: exec = !!this.list[name];
 		}
 		return exec;
@@ -228,7 +230,7 @@ Config.prototype =
 		if(!puzzle.klass || !this.getexec(name)){ return;}
 		switch(name){
 		case 'irowake': case 'irowakeblk': case 'dispmove': case 'cursor': case 'undefcell':
-		case 'autocmp': case 'autoerr':
+		case 'autocmp': case 'autoerr': case 'aquarium_regions':
 		case 'snakebd': case 'disptype_pipelinkr': case 'disptype_yajilin': case 'dispqnumbg':
 			puzzle.redraw();
 			break;

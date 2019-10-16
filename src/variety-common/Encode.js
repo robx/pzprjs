@@ -199,6 +199,43 @@ Encode:{
 		}
 	},
 
+
+	decodeNumber16EXCell : function(){
+		// 盤面外数字のデコード
+		var ec=0, i=0, bstr = this.outbstr, bd = this.board;
+		for(i=0;i<bstr.length;i++){
+			var ca = bstr.charAt(i), excell=bd.excell[ec];
+			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+			                 { excell.qnum = parseInt(bstr.substr(i  ,1),16);}
+			else if(ca==='-'){ excell.qnum = parseInt(bstr.substr(i+1,2),16); i+=2;}
+			else if(ca==='.'){ excell.qnum = -2;}
+			else if(ca >= 'g' && ca <= 'z'){ ec += (parseInt(ca,36)-16);}
+
+			ec++;
+			if(ec>=bd.excell.length){ break;}
+		}
+
+		this.outbstr = bstr.substr(i+1);
+	},
+	encodeNumber16EXCell : function(){
+		// 盤面外数字のエンコード
+		var count=0, cm="", bd = this.board;
+		for(var ec=0;ec<bd.excell.length;ec++){
+			var pstr = "", qn = bd.excell[ec].qnum;
+
+			if     (qn=== -2           ){ pstr = ".";}
+			else if(qn>=   0 && qn<  16){ pstr =       qn.toString(16);}
+			else if(qn>=  16 && qn< 256){ pstr = "-" + qn.toString(16);}
+			else{ count++;}
+
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
+		}
+		if(count>0){ cm+=(15+count).toString(36);}
+
+		this.outbstr += cm;
+	},
+
 	//---------------------------------------------------------------------------
 	// enc.decodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、デコードする
 	// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
