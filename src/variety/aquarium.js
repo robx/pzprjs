@@ -50,17 +50,23 @@ MouseEvent:{
 
         this.mouseCell = cell;
 
-        var start = cell;
-        while(!start.adjborder.left.isnull && !start.adjborder.left.isBorder()) {
-            start = start.adjacent.left;
-        }
+        var clist = null;
 
-        var end = cell;
-        while(!end.adjborder.right.isnull && !end.adjborder.right.isBorder()) {
-            end = end.adjacent.right;
-        }
+        if(this.puzzle.getConfig('aquarium_regions')) {
+            clist = cell.room.clist.filter(function(c){ return c.by === cell.by; } );
+        } else {
+            var start = cell;
+            while(!start.adjborder.left.isnull && !start.adjborder.left.isBorder()) {
+                start = start.adjacent.left;
+            }
 
-        var clist = this.board.cellinside(start.bx, start.by, end.bx, end.by);
+            var end = cell;
+            while(!end.adjborder.right.isnull && !end.adjborder.right.isBorder()) {
+                end = end.adjacent.right;
+            }
+
+            clist = this.board.cellinside(start.bx, start.by, end.bx, end.by);
+        }
 
         for(var i=0;i<clist.length;i++){
             var cell2 = clist[i];
@@ -151,6 +157,10 @@ Board:{
     }
 },
 
+AreaRoomGraph:{
+    enabled : true
+},
+
 BoardExec:{
     adjustBoardData : function(key,d){
         var bx1=(d.x1|1), by1=(d.y1|1);
@@ -227,8 +237,11 @@ Encode:{
         this.decodeBorder();
         this.outbstr = this.outbstr.substr(1);
         this.decodeNumber16EXCell();
+
+        this.puzzle.setConfig('aquarium_regions', this.checkpflag('r'));
     },
     encodePzpr : function(type){
+        this.outpflag = this.puzzle.getConfig('aquarium_regions') ? "r" : null;
         this.encodeBorder();
         this.outbstr += "/";
         this.encodeNumber16EXCell();
@@ -237,6 +250,7 @@ Encode:{
 
 FileIO:{
     decodeData : function(){
+        this.decodeConfig();
         this.decodeBorderQues();
         this.decodeCellExcell(function(obj,ca){
             if(ca==="."){ return;}
@@ -250,6 +264,7 @@ FileIO:{
         });
     },
     encodeData : function(){
+        this.encodeConfig();
         this.encodeBorderQues();
         this.encodeCellExcell(function(obj){
             if(obj.group==='excell' && !obj.isnull && obj.qnum !== -1){
@@ -261,6 +276,21 @@ FileIO:{
             }
             return ". ";
         });
+    },
+
+    decodeConfig: function() {
+        if(this.dataarray[this.lineseek] === "r") {
+            this.puzzle.setConfig('aquarium_regions', true);
+            this.readLine();
+        } else {
+            this.puzzle.setConfig('aquarium_regions', false);
+        }
+    },
+
+    encodeConfig: function() {
+        if(this.puzzle.getConfig('aquarium_regions')) {
+            this.writeLine("r");
+        }
     }
 },
 
@@ -269,6 +299,7 @@ AnsCheck:{
         "checkShadeCellExist+",
         "checkSupports",
         "checkPoolLevel",
+        "checkRegionLevel",
         "checkShadeCount+"
     ],
 
@@ -292,10 +323,11 @@ AnsCheck:{
     },
 
     checkPoolLevel: function() {
-        var rooms = this.board.poolgraph.components;
+        if(this.puzzle.getConfig('aquarium_regions')) { return; }
+        var pools = this.board.poolgraph.components;
         var invalid = false;
-        for(var r=0;r<rooms.length;r++){
-            var clist = rooms[r].clist;
+        for(var r=0;r<pools.length;r++){
+            var clist = pools[r].clist;
 
             var level = clist.getRectSize().y1;
 
@@ -312,6 +344,35 @@ AnsCheck:{
             }
 
             if(this.checkOnly && invalid){ break;}
+        }
+    },
+
+    checkRegionLevel: function() {
+        if(!this.puzzle.getConfig('aquarium_regions')) { return; }
+        var rooms = this.board.roommgr.components;
+
+        for(var r=0;r<rooms.length;r++){
+            var clist = rooms[r].clist;
+
+            var water = this.board.maxby+1;
+            var empty = -1;
+
+            for(var i=0;i<clist.length;i++){
+                var cell = clist[i];
+                if(cell.isShade() && cell.by < water) {
+                    water = cell.by;
+                } else if(!cell.isShade() && cell.by > empty) {
+                    empty = cell.by;
+                }
+
+                if(empty >= water) { break; }
+            }
+
+            if(empty >= water) {
+                this.failcode.add("bkNoLevel");
+                if(this.checkOnly){ break;}
+                clist.seterr(1);
+            }
         }
     },
 
@@ -348,6 +409,7 @@ AnsCheck:{
 FailCode:{
     csNoSupport: ["(please translate) A shaded cell does not have a shaded cell or border below it.","A shaded cell does not have a shaded cell or border below it."],
     csNoLevel: ["(please translate) A body of water has different surface levels.","A body of water has different surface levels."],
+    bkNoLevel: ["(please translate) A region has different water surface levels.","A region has different water surface levels."],
     exShadeNe: ["(please translate) The number of shaded cells in the row or column is not correct.","The number of shaded cells in the row or column is not correct."]
 }
 

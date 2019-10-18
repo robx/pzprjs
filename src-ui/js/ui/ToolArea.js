@@ -161,7 +161,7 @@ ui.toolarea = {
 
 				if(idname==="keypopup"){ disabled = !ui.keypopup.paneltype[ui.puzzle.editmode?1:3];}
 				if(idname==="bgcolor") { disabled = ui.puzzle.editmode;}
-				if(idname==="passallcell"){ disabled = !ui.puzzle.editmode;}
+				if(idname==="passallcell"||idname==="aquarium_regions"){ disabled = !ui.puzzle.editmode;}
 				if(disabled!==null){ toolitem.checkbox.disabled = (!disabled ? "" : "true");}
 			}
 
