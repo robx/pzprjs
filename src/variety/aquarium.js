@@ -211,12 +211,14 @@ BoardExec:{
 
 Graphic:{
 	enablebcolor : true,
-	bgcellcolor_func : "qsub1",
 
-	bbcolor : "rgb(96, 96, 96)",
+	bbcolor : "rgb(96, 96, 128)",
+	shadecolor : "rgb(0, 0, 128)",
 
 	paint : function(){
 		this.drawBGCells();
+		this.drawDotCells();
+
 		this.drawShadedCells();
 		this.drawGrid();
 
