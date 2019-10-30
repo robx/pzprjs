@@ -81,6 +81,7 @@ ui.misc = {
 function toBGimage(pid){
 	var imgs = [
 		'angleloop',
+		'aquarium',
 		'building',
 		'curvedata',
 		'dbchoco',
