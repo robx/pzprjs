@@ -14,7 +14,7 @@ MouseEvent:{
 
 	mouseinput : function(){ // オーバーライド
 		if(this.inputMode==='shade'||this.inputMode==='unshade'){
-			this.inputwater();
+			this.inputcell();
 		}
 		else{ this.common.mouseinput.call(this);}
 	},
@@ -23,7 +23,7 @@ MouseEvent:{
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
-			if(this.mousestart || this.mousemove){ this.inputwater();}
+			if(this.mousestart || this.mousemove){ this.inputcell();}
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart || this.mousemove){ this.inputborder();}
@@ -41,41 +41,6 @@ MouseEvent:{
 		else{
 			this.inputqnum_main(excell);
 		}
-	},
-
-	inputwater : function(){
-		var cell = this.getcell();
-		if(cell.isnull || cell===this.mouseCell){ return;}
-		if(this.inputData===null){ this.decIC(cell);}
-
-		this.mouseCell = cell;
-
-		var clist = null;
-
-		if(this.puzzle.getConfig('aquarium_regions')) {
-			clist = cell.room.clist.filter(function(c){ return c.by === cell.by; } );
-		} else {
-			var start = cell;
-			while(!start.adjborder.left.isnull && !start.adjborder.left.isBorder()) {
-				start = start.adjacent.left;
-			}
-
-			var end = cell;
-			while(!end.adjborder.right.isnull && !end.adjborder.right.isBorder()) {
-				end = end.adjacent.right;
-			}
-
-			clist = this.board.cellinside(start.bx, start.by, end.bx, end.by);
-		}
-
-		for(var i=0;i<clist.length;i++){
-			var cell2 = clist[i];
-			if(this.inputData===1 || cell2.qsub!==3){
-				(this.inputData===1?cell2.setShade:cell2.clrShade).call(cell2);
-				cell2.setQsub(this.inputData===2?1:0);
-			}
-		}
-		clist.draw();
 	}
 },
 
