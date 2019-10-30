@@ -277,10 +277,8 @@ AnsCheck:{
 			for(var i in dirs) {
 				var dir = dirs[i];
 				var adjBorder = cell.adjborder[dir];
-				var adjCell = cell.adjacent[dir];
-				if(adjBorder.isnull) {continue;}
-
-				if(!adjBorder.isBorder() && !adjCell.isShade()) {return true;}
+				if(adjBorder.isnull || adjBorder.isBorder()) {continue;}
+				if(!cell.adjacent[dir].isShade()) {return true;}
 			}
 
 			return false;
