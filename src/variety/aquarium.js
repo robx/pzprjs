@@ -370,7 +370,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	csNoSupport: ["(please translate) A shaded cell does not have a shaded cell or border below it.","A shaded cell does not have a shaded cell or border below it."],
+	csNoSupport: ["(please translate) A water cell is next to or above an empty cell.","A water cell is next to or above an empty cell."],
 	csNoLevel: ["(please translate) A body of water has different surface levels.","A body of water has different surface levels."],
 	bkNoLevel: ["(please translate) A region has different water surface levels.","A region has different water surface levels."],
 	exShadeNe: ["(please translate) The number of shaded cells in the row or column is not correct.","The number of shaded cells in the row or column is not correct."]
