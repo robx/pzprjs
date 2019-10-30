@@ -177,8 +177,8 @@ BoardExec:{
 Graphic:{
 	enablebcolor : true,
 
-	bbcolor : "rgb(96, 96, 128)",
-	shadecolor : "rgb(0, 0, 128)",
+	shadecolor : "#0096ff",
+	qanscolor : "#0096ff",
 
 	paint : function(){
 		this.drawBGCells();
@@ -192,8 +192,6 @@ Graphic:{
 		this.drawBorders();
 
 		this.drawChassis();
-
-		this.drawBoxBorders(true);
 
 		this.drawTarget();
 	}
