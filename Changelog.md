@@ -1,5 +1,6 @@
 #### New puzzle
 
+* aquarium: Introduce new puzzle: Aquarium (due to Lennard Sprong)
 * curvedata: Introduce new puzzle: Curve Data (due to Lennard Sprong)
 * dbchoco: Introduce new puzzle: Double Chocolate (due to Lennard Sprong)
 * geradeweg: Introduce new puzzle: Geradeweg
