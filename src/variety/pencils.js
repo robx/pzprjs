@@ -733,18 +733,18 @@ AnsCheck:{
 },
 
 FailCode:{
-	ptNoPencil : ["(please translate) A tip is not at the short end of a 1xN rectangle.","A tip is not at the short end of a 1xN rectangle."],
-	ptInPencil : ["(please translate) A tip is inside a pencil.","A tip is inside a pencil."],
-	pcMultipleTips : ["(please translate) A pencil has more than one tip.","A pencil has more than one tip."],
-	nmSizeLt : ["(please translate) A number is smaller than the length of the pencil.","A number is smaller than the length of the pencil."],
-	nmSizeGt : ["(please translate) A number is larger than the length of the pencil.","A number is larger than the length of the pencil."],
-	nmOutsidePencil : ["(please translate) A number is not inside a pencil.","A number is not inside a pencil."],
-	lnCrossPencil: ["(please translate) A line crosses a pencil.","A line crosses a pencil."],
-	ptNoLine: ["(please translate) A pencil tip is not connected to a line.","A pencil tip is not connected to a line."],
-	lnNoTip: ["(please translate) A line is not connected to a pencil tip.","A line is not connected to a pencil tip."],
-	lnMultipleTips : ["(please translate) A line connects to more than one pencil tip.","A line connects to more than one pencil tip."],
-	lnLengthLt : ["(please translate) A line is shorter than the connected pencil.","A line is shorter than the connected pencil."],
-	lnLengthGt : ["(please translate) A line is longer than the connected pencil.","A line is longer than the connected pencil."],
-	unusedCell : ["(please translate) A cell is unused.","A cell is unused."]
+	ptNoPencil : ["幅が1の長方形の軸の先端に位置していない芯があります。","A tip is not at the short end of a 1xN rectangle."],
+	ptInPencil : ["芯が他の鉛筆の軸に入り込んでいます。","A tip is inside a pencil."],
+	pcMultipleTips : ["2つ以上の芯を持つ鉛筆があります。","A pencil has more than one tip."],
+	nmSizeLt : ["中の数字よりも長い軸があります。","A number is smaller than the length of the pencil."],
+	nmSizeGt : ["中の数字よりも短い軸があります。","A number is larger than the length of the pencil."],
+	nmOutsidePencil : ["軸の中に入っていない数字があります。","A number is not inside a pencil."],
+	lnCrossPencil: ["線が鉛筆の軸と交差しています。","A line crosses a pencil."],
+	ptNoLine: ["線が繋がっていない芯があります。","A pencil tip is not connected to a line."],
+	lnNoTip: ["芯に繋がっていない線があります。","A line is not connected to a pencil tip."],
+	lnMultipleTips : ["2つ以上の芯に繋がっている線があります。","A line connects to more than one pencil tip."],
+	lnLengthLt : ["鉛筆から引かれた線が軸よりも短くなっているところがあります。","A line is shorter than the connected pencil."],
+	lnLengthGt : ["鉛筆から引かれた線が軸よりも長くなっているところがあります。","A line is longer than the connected pencil."],
+	unusedCell : ["何も書かれていないマスがあります。","A cell is unused."]
 }
 }));
