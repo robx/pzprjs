@@ -467,10 +467,10 @@ AnsCheck:{
 },
 
 "FailCode@dbchoco":{
-	bkSubLt2 : ["(please translate) A block contains a single color.","A block contains a single color."],
-	bkSubGt2 : ["(please translate) A block has three or more shapes.","A block has three or more shapes."],
-	bkSizeLt : ["(please translate) A number is bigger than the size of the shape.","A number is bigger than the size of the shape."],
-	bkSizeGt : ["(please translate) A number is smaller than the size of the shape.","A number is smaller than the size of the shape."],
-	bkDifferentShape: ["(please translate) The two shapes inside a block are different.","The two shapes inside a block are different."]
+	bkSubLt2 : ["1色のマスしか入っていないブロックがあります。","A block contains a single color."],
+	bkSubGt2 : ["同じ色のマスの塊が3個以上入っているブロックがあります。","A block has three or more shapes."],
+	bkSizeLt : ["数字よりも少ないマス数しかない同じ色のマスの塊があります。","A number is bigger than the size of the shape."],
+	bkSizeGt : ["数字よりも大きいマス数になっている同じ色のマスの塊があります。","A number is smaller than the size of the shape."],
+	bkDifferentShape: ["同じ形でないマスの塊を含むブロックがあります。","The two shapes inside a block are different."]
 }
 }));

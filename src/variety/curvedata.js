@@ -1291,9 +1291,9 @@ BoardExec:{
 },
 
 FailCode:{
-	"shNone": ["(please translate) A shape is not connected to a clue.","A shape is not connected to a clue."],
-	"shMultiple": ["(please translate) A shape is connected to multiple clues.","A shape is connected to multiple clues."],
-	"shIncorrect": ["(please translate) A shape does not match the clue.","A shape does not match the clue."]
+	"shNone": ["記号マスを通っていない線があります。","A shape is not connected to a clue."],
+	"shMultiple": ["2つ以上の記号マスを通る線があります。","A shape is connected to multiple clues."],
+	"shIncorrect": ["記号の形に合っていない線があります。","A shape does not match the clue."]
 }
 
 }));
