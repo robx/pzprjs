@@ -551,15 +551,12 @@
   <div class="popup">
     <div class="titlebar">__URL出力__Export URL__</div>
     <form name="urloutput">
-      <button type="button" class="btn" data-button-exec="urloutput" name="pzprv3" >__ぱずぷれv3のURLを出力する__Output PUZ-PRE v3 URL__</button><br>
- <!-- <button type="button" class="btn" data-button-exec="urloutput" name="pzprapp">__ぱずぷれ(アプレット)のURLを出力する__Output PUZ-PRE(JavaApplet) URL__</button><br> -->
-      <button type="button" class="btn" data-button-exec="urloutput" name="kanpen" >__カンペンのURLを出力する__Output Kanpen URL__</button><br>
-      <button type="button" class="btn" data-button-exec="urloutput" name="heyaapp">__へやわけアプレットのURLを出力する__Output Heyawake-Applet URL__</button><br>
-      <button type="button" class="btn" data-button-exec="urloutput" name="pzprv3e">__ぱずぷれv3の再編集用URLを出力する__Output PUZ-PRE v3 Re-Edit URL__</button><br>
+      <a id="urlanchor" target="_blank"></a>
       <br>
-      <textarea name="ta" cols=48 rows=8 wrap="hard" readonly></textarea>
+      <button type="button" class="btn" data-button-exec="urloutput" name="kanpen" >__カンペンのURLを出力する__Change to Kanpen URL__</button><br>
+      <button type="button" class="btn" data-button-exec="urloutput" name="heyaapp">__へやわけアプレットのURLを出力する__Change to Heyawake-Applet URL__</button><br>
+      <button type="button" class="btn" data-button-exec="urloutput" name="pzprv3e">__ぱずぷれv3の再編集用URLを出力する__Change to PUZ-PRE v3 Re-Edit URL__</button><br>
       <br>
-      <button type="button" class="btn btn-info" data-button-exec="openurl">__このURLを開く__Open this URL on another window/tab__</button>
       <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
     </form>
   </div>
@@ -583,10 +580,13 @@
       <input type="hidden" name="operation" value="save">
       <input type="hidden" name="ques" value="">
       <input type="hidden" name="urlstr" value="">
+      <textarea name="ta" cols=48 rows=8 wrap="hard"></textarea>
+      <br>
+      <textarea name="ta2" cols=48 rows=2 wrap="hard"></textarea>
+      <br>
       <span>__ファイル形式__File format__</span>
       <select name="filetype" data-change-exec="changefilename">
         <option value="filesave">__ぱずぷれv3形式__Puz-Pre v3 format__</option>
-   <!-- <option value="filesave3">__ぱずぷれv3(履歴つき)__Puz-Pre v3 with history__</option> -->
         <option value="filesave2">__pencilbox形式__Pencilbox Text format__</option>
         <option value="filesave4">__pencilbox XML形式__Pencilbox XML format__</option>
       </select>

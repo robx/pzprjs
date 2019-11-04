@@ -31,6 +31,8 @@
 * Fix various English language typos
 * Allow clicking labels to toggle options
 * URL output properly deals with non-default ports
+* URL output generates a clickable link
+* File output puts file contents into copyable text areas
 
 #### BugFix
 

@@ -354,10 +354,15 @@ ui.popupmgr.addpopup('urloutput',
 {
 	formname : 'urloutput',
 
+	init : function(){
+		ui.popupmgr.popups.template.init.call(this);
+		this.urlanchor = getEL("urlanchor");
+	},
+
 	reset : function(px,py){
-		var form = this.form, pid = ui.puzzle.pid, exists = pzpr.variety(pid).exists;
-		form.ta.value = '';
-		// form.pzprapp.style.display = form.pzprapp.nextSibling.style.display = (exists.pzprapp ? "" : "none");
+		var form = this.form, pid = ui.puzzle.pid, exists = pzpr.variety(pid).exists, parser = pzpr.parser;
+		var url = ui.puzzle.getURL(parser.URL_PZPRV3);
+		this.urlanchor.href = this.urlanchor.textContent = url;
 		form.kanpen.style.display  = form.kanpen.nextSibling.style.display  = (exists.kanpen ? "" : "none");
 		form.heyaapp.style.display = form.heyaapp.nextSibling.style.display = ((pid==="heyawake") ? "" : "none");
 	},
@@ -374,18 +379,11 @@ ui.popupmgr.addpopup('urloutput',
 	urloutput : function(e){
 		var url = '', parser = pzpr.parser;
 		switch(e.target.name){
-			case "pzprv3":     url = ui.puzzle.getURL(parser.URL_PZPRV3);  break;
-			// case "pzprapp": url = ui.puzzle.getURL(parser.URL_PZPRAPP); break;
 			case "kanpen":     url = ui.puzzle.getURL(parser.URL_KANPEN);  break;
 			case "pzprv3e":    url = ui.puzzle.getURL(parser.URL_PZPRV3).replace(/\?(\w+)/,"?$1_edit"); break;
 			case "heyaapp":    url = ui.puzzle.getURL(parser.URL_HEYAAPP); break;
 		}
-		this.form.ta.value = url;
-	},
-	openurl : function(e){
-		if(this.form.ta.value!==''){
-			window.open(this.form.ta.value, '', '');
-		}
+		this.urlanchor.href = this.urlanchor.textContent = url;
 	}
 });
 
@@ -434,10 +432,14 @@ ui.popupmgr.addpopup('filesave',
 		var ispencilbox = pzpr.variety(ui.puzzle.pid).exists.pencilbox;
 		this.form.filetype.options[1].disabled = !ispencilbox;
 		this.form.filetype.options[2].disabled = !ispencilbox;
+		var parser = pzpr.parser;
+		this.form.ta.value = ui.puzzle.getFileData(parser.FILE_PZPR, {});
+		this.form.ta2.value = this.form.ta.value.replace(/\n/g, "/");
 	},
 	/* オーバーライド */
 	show : function(px,py){
 		ui.popupmgr.popups.template.show.call(this,px,py);
+		this.reset();
 
 		this.form.filename.value = ui.puzzle.pid + '.txt';
 		this.changefilename();
