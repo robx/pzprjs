@@ -499,6 +499,6 @@ AnsCheck:{
 
 FailCode:{
 	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."],
-	anNoArrow : ["(please translate) A number has no arrow.","A number has no arrow."]
+	anNoArrow : ["矢印がない数字のマスがあります。","A number has no arrow."]
 }
 }));

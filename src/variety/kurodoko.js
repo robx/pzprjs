@@ -248,7 +248,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmShade : ["(please translate) A clue is not unshaded.", "A clue is not unshaded."],
+	nmShade : ["丸のマスが白マスになっていません。", "A clue is not unshaded."],
 	nmSumViewNe : ["数字と黒マスにぶつかるまでの4方向のマスの合計が違います。","The number and the sum of the continuous unshaded cells of four direction is different."],
 	cu2x2 : ["2x2の白マスのかたまりがあります。","There is a 2x2 block of unshaded cells."],
 	circleNotPromontory : ["丸のマスが岬になっていません。","A circle has more than one unshaded neighbor."],
