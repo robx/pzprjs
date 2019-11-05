@@ -83,6 +83,7 @@ function toBGimage(pid){
 		'angleloop',
 		'aquarium',
 		'building',
+		'compass',
 		'curvedata',
 		'dbchoco',
 		'doubleback',

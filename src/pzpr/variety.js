@@ -82,6 +82,7 @@ delete variety.extend;
 	cbblock   :[0,0,"コンビブロック","Combi Block"],
 	chocona   :[0,0,"チョコナ","Chocona",'shimaguni'],
 	cojun     :[0,0,"コージュン","Cojun",'ripple'],
+	compass   :[0,0,"Compass","Compass",'compass'],
 	country   :[1,0,"カントリーロード","Country Road"],
 	creek     :[1,0,"クリーク","Creek"],
 	curvedata :[0,0,"カーブデータ","Curve Data"],

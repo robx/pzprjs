@@ -287,7 +287,7 @@ var pstate = {
 	orig  :['mochinyoro','ayeheya','aho'],
 	genre :['tapa','arukone','yinyang','building','kropki','starbattle','easyasabc','walllogic'],
 	add   :['angleloop', 'doubleback', 'nurimisaki', 'meander', 'satogaeri', 'scrin', 'heteromino',
-			'yajilin-regions', 'dbchoco', 'geradeweg', 'pencils', 'curvedata', 'aquarium']
+			'yajilin-regions', 'dbchoco', 'geradeweg', 'pencils', 'curvedata', 'aquarium', 'compass']
 };
 var tabstate = {
 	lunch:'lunch', lunch2:'lunch', lunch3:'nigun',
