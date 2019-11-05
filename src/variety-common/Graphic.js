@@ -834,6 +834,18 @@ Graphic:{
 		}
 		g.fill();
 	},
+	drawTriangle2 : function(px,py,dir){
+		var g = this.context;
+		var bw = this.bw+1, bh = this.bh+1;
+		g.beginPath();
+		switch(dir){
+			case 1: g.setOffsetLinePath(px,py, 0,0, -bw,-bh, bw,-bh, true); break;
+			case 2: g.setOffsetLinePath(px,py, 0,0, -bw,bh, bw,bh, true); break;
+			case 3: g.setOffsetLinePath(px,py, 0,0, -bw,-bh, -bw,bh, true); break;
+			case 4: g.setOffsetLinePath(px,py, 0,0, bw,-bh, bw,bh, true); break;
+		}
+		g.fill();
+	},
 
 	//---------------------------------------------------------------------------
 	// pc.drawMBs()    Cell上の○,×をCanvasに書き込む
@@ -1072,6 +1084,13 @@ Graphic:{
 				g.strokeLine(px-this.bw,py-this.bh, px+this.bw,py+this.bh);
 			}
 			else{ g.vhide();}
+
+			g.vid = "c_slash51b_"+cell.id;
+			if(cell.ques===51&&cell.dirs51===4){
+				var px = cell.bx*this.bw, py = cell.by*this.bh;
+					g.strokeLine(px-this.bw,py+this.bh, px+this.bw,py-this.bh);
+				}
+			else{ g.vhide();}
 		}
 	},
 	drawSlash51EXcells : function(){
@@ -1120,7 +1139,13 @@ Graphic:{
 		for(var bx=(d.x1|1);bx<=d.x2;bx+=2){
 			for(var by=(d.y1|1);by<=d.y2;by+=2){
 				var piece = this.board.getobj(bx,by); /* cell or excell */
-				if(!piece.isnull){ this.drawQuesNumbersOn51_1(piece);}
+				if(!piece.isnull){
+					if(piece.dirs51===4){
+						this.drawQuesNumbersOn51_2(piece);
+					}else{
+						this.drawQuesNumbersOn51_1(piece);
+					}
+				}
 			}
 		}
 	},
@@ -1148,6 +1173,21 @@ Graphic:{
 			this.disptext(""+val, px, py, option);
 		}
 		else{ g.vhide();}
+	},
+	drawQuesNumbersOn51_2 : function(piece){
+		var g = this.context, val, px = piece.bx*this.bw, py = piece.by*this.bh;
+		var option = {ratio:0.4, width:[0.35,0.23,0.15]};
+		g.fillStyle = (piece.error===1||piece.qinfo===1 ? this.errcolor1 : this.quescolor);
+
+		for(var dir=1;dir<=4;dir++){
+			val = piece.getQnumDir(dir);
+			g.vid = [piece.group, piece.id, 'text_ques51', dir].join('_');
+			if(val>=0){
+				option.position = dir + 5;
+				this.disptext(""+val, px, py, option);
+			}
+			else{ g.vhide();}
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -1214,7 +1254,11 @@ Graphic:{
 		g.vid = "target_triangle";
 		g.fillStyle = this.ttcolor;
 		if(this.puzzle.editmode && target!==0){
-			this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===4?4:2));
+			if(cursor.targetdirs===4){
+				this.drawTriangle2(cursor.bx*this.bw, cursor.by*this.bh, target);
+			}else{
+				this.drawTriangle1((cursor.bx*this.bw), (cursor.by*this.bh), (target===4?4:2));
+			}
 		}
 		else{ g.vhide();}
 	},

@@ -167,11 +167,10 @@ KeyEvent:{
 		cursor.draw();
 	},
 	setnum51 : function(piece,target,val){ /* piece : cell or excell */
-		if(target===piece.RT){ piece.setQnum(val);}
-		else                 { piece.setQnum2(val);}
+		piece.setQnumDir(target,val);
 	},
 	getnum51 : function(piece,target){ /* piece : cell or excell */
-		return (target===piece.RT ? piece.qnum : piece.qnum2);
+		return piece.getQnumDir(target);
 	}
 }
 });

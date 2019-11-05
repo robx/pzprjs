@@ -21,6 +21,9 @@ pzpr.classmgr.makeCommon({
 				// cross :(交点の数字)
 				// border:(マイナリズムの数字/天体ショーの星)
 	qnum2 :-1,	// cell  :(カックロの下側/よせなべの丸無し数字)
+	qnum3 :-1,
+	qnum4 :-1,
+
 	qchar : 0,	// excell:キンコンカンの文字
 
 	/* 回答データを保持するプロパティ */
@@ -85,6 +88,24 @@ pzpr.classmgr.makeCommon({
 	setQsub :    function(val){ this.setdata('qsub', val);},
 	setQcmp :    function(val){ this.setdata('qcmp', val);},
 	setSnum :    function(val){ this.setdata('snum', val);},
+
+	setQnumDir : function(dir, val){
+		switch(dir) {
+		case this.RT: this.setdata('qnum', val); return;
+		case this.DN: this.setdata('qnum2', val); return;
+		case this.LT: this.setdata('qnum3', val); return;
+		case this.UP: this.setdata('qnum4', val); return;
+		}
+	},
+	getQnumDir : function(dir){
+		switch(dir) {
+		case this.RT: return this.qnum;
+		case this.DN: return this.qnum2;
+		case this.LT: return this.qnum3;
+		case this.UP: return this.qnum4;
+		}
+		return -1;
+	},
 
 	//---------------------------------------------------------------------------
 	// setdata() Cell,Cross,Border,EXCellの値を設定する
@@ -204,6 +225,7 @@ pzpr.classmgr.makeCommon({
 
 	lcnt : 0,		// セルに存在する線の本数
 	base : null,	// 丸数字やアルファベットが移動してきた場合の移動元のセルを示す (移動なし時は自分自身を指す)
+	dirs51 : 2,
 
 	disInputHatena : false,	// qnum==-2を入力できないようにする
 
@@ -341,14 +363,16 @@ pzpr.classmgr.makeCommon({
 	is51cell : function(){ return (this.ques===51);},
 	set51cell : function(val){
 		this.setQues(51);
-		this.setQnum(-1);
-		this.setQnum2(-1);
+		for(var dir=0;dir<4;dir++){
+			this.setQnumDir(dir,-1);
+		}
 		this.setAnum(-1);
 	},
 	remove51cell : function(val){
 		this.setQues(0);
-		this.setQnum(-1);
-		this.setQnum2(-1);
+		for(var dir=0;dir<4;dir++){
+			this.setQnumDir(dir,-1);
+		}
 		this.setAnum(-1);
 	},
 

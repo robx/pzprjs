@@ -265,6 +265,7 @@ KeyEvent:{
 		this.by = 1;
 		this.mode51 = (this.puzzle.klass.EXCell.prototype.ques===51);
 		this.modesnum = (this.puzzle.klass.Cell.prototype.enableSubNumberArray);
+		this.targetdirs = (this.puzzle.klass.Cell.prototype.dirs51);
 		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 4;} // right
 	},
 	init : function(bx,by){
@@ -398,7 +399,11 @@ KeyEvent:{
 			}
 		}
 		else{
-			this.targetdir = (this.targetdir===2?4:2);
+			if(this.targetdirs===4){
+				this.targetdir = [4,0,3,1,2,0][this.targetdir];
+			}else{
+				this.targetdir = (this.targetdir===2?4:2);
+			}
 		}
 		this.draw();
 	},
@@ -408,7 +413,7 @@ KeyEvent:{
 		if(piece.isnull){ return 0;}
 		else if(piece.group==='cell'){
 			if(piece.ques!==51 || piece.id===bd.cell.length-1){ return 0;}
-			else{
+			else if(this.targetdirs===2){
 				var invalidRight  = (adc.right.isnull  || adc.right.ques ===51);
 				var invalidBottom = (adc.bottom.isnull || adc.bottom.ques===51);
 				if(invalidRight && invalidBottom){ return 0;}
