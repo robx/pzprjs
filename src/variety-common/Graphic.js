@@ -1065,9 +1065,9 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	drawQues51 : function(){
 		this.drawEXCellGrid();
+		this.drawTargetTriangle();
 		this.drawSlash51Cells();
 		this.drawSlash51EXcells();
-		this.drawTargetTriangle();
 	},
 	drawSlash51Cells : function(){
 		var g = this.vinc('cell_ques51', 'crispEdges', true);
