@@ -6,7 +6,11 @@ var CENTER      = 1,
 	BOTTOMLEFT  = 2,
 	BOTTOMRIGHT = 3,
 	TOPRIGHT    = 4,
-	TOPLEFT     = 5;
+	TOPLEFT     = 5,
+	UP = 6,
+	DN = 7,
+	LT = 8,
+	RT = 9;
 
 //---------------------------------------------------------------------------
 // ★Graphicクラス Canvasに描画する
@@ -572,6 +576,10 @@ Graphic:{
 	BOTTOMRIGHT : BOTTOMRIGHT,
 	TOPRIGHT    : TOPRIGHT,
 	TOPLEFT     : TOPLEFT,
+	UP : UP,
+	DN : DN,
+	RT : RT,
+	LT : LT,
 
 	disptext : function(text, px, py, option){
 		option = option || {};
@@ -596,14 +604,14 @@ Graphic:{
 		var voffset = this.bh*(option.voffset || 0.82);
 		var position = option.position || CENTER;
 		switch(position){
-			case CENTER:                     g.textAlign='center';             break;
-			case BOTTOMLEFT:  case TOPLEFT:  g.textAlign='left';  px-=hoffset; break;
-			case BOTTOMRIGHT: case TOPRIGHT: g.textAlign='right'; px+=hoffset; break;
+			case CENTER:      case UP:       case DN: g.textAlign='center';             break;
+			case BOTTOMLEFT:  case TOPLEFT:  case LT: g.textAlign='left';  px-=hoffset; break;
+			case BOTTOMRIGHT: case TOPRIGHT: case RT: g.textAlign='right'; px+=hoffset; break;
 		}
 		switch(position){
-			case CENTER:                       g.textBaseline='middle';                  break;
-			case TOPRIGHT:    case TOPLEFT:    g.textBaseline='candle-top'; py-=voffset; break;
-			case BOTTOMRIGHT: case BOTTOMLEFT: g.textBaseline='alphabetic'; py+=voffset; break;
+			case CENTER:      case LT:         case RT: g.textBaseline='middle';                  break;
+			case TOPRIGHT:    case TOPLEFT:    case UP: g.textBaseline='candle-top'; py-=voffset; break;
+			case BOTTOMRIGHT: case BOTTOMLEFT: case DN: g.textBaseline='alphabetic'; py+=voffset; break;
 		}
 
 		g.fillText(text, px, py, maxLength);
