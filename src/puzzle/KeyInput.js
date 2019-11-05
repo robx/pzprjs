@@ -389,7 +389,7 @@ KeyEvent:{
 	// tc.getNumOfTarget() Cell上でtargetとして取りうる数を返す
 	//---------------------------------------------------------------------------
 	targetdir : 0,
-	chtarget : function(){
+	chtarget : function(mouse,dx,dy){
 		if(this.oncell() && this.modesnum && this.puzzle.playmode){
 			if(this.pid!=='factors'){
 				this.targetdir = [5,1,3,0,2,4][this.targetdir];
@@ -400,9 +400,24 @@ KeyEvent:{
 		}
 		else{
 			if(this.targetdirs===4){
-				this.targetdir = [4,0,3,1,2,0][this.targetdir];
+				if(mouse){
+					var ur = (dx-dy)>0, ul = (dx+dy)<0;
+					if(ur){
+						if(ul){ this.targetdir = 1; }
+						else{ this.targetdir = 4; }
+					}else{
+						if(ul){ this.targetdir = 3; }
+						else{ this.targetdir = 2; }
+					}
+				}else{
+					this.targetdir = [4,0,3,1,2,0][this.targetdir];
+				}
 			}else{
-				this.targetdir = (this.targetdir===2?4:2);
+				if(mouse){
+					this.targetdir = (dx-dy>0)?4:2;
+				}else{
+					this.targetdir = (this.targetdir===2?4:2);
+				}
 			}
 		}
 		this.draw();

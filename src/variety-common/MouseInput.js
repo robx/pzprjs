@@ -371,7 +371,10 @@ MouseEvent:{
 		if(this.btn==='right'){ cell.remove51cell();}
 		else if(this.btn==='left'){
 			if(!cell.is51cell()){ cell.set51cell();}
-			else{ this.cursor.chtarget();}
+			else{
+				var dx=this.inputPoint.bx-cell.bx, dy=this.inputPoint.by-cell.by;
+				this.cursor.chtarget(true, dx, dy);
+			}
 		}
 
 		cell.drawaround();
