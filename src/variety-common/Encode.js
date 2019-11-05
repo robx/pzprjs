@@ -132,37 +132,56 @@ Encode:{
 	// enc.decodeNumber16()  quesが0～8192?までの場合、デコードする
 	// enc.encodeNumber16()  quesが0～8192?までの場合、問題部をエンコードする
 	//---------------------------------------------------------------------------
+	readNumber16 : function(bstr, i){
+		var ca = bstr.charAt(i);
+
+		if(this.include(ca,"0","9")||this.include(ca,"a","f"))
+			{ return [parseInt(ca, 16),                     1];}
+		else if(ca === '-')
+			{ return [parseInt(bstr.substr(i+1,2),16),      4];}
+		else if(ca === '+')
+			{ return [parseInt(bstr.substr(i+1,3),16),      4];}
+		else if(ca === '=')
+			{ return [parseInt(bstr.substr(i+1,3),16)+4096, 4];}
+		else if(ca === '%')
+			{ return [parseInt(bstr.substr(i+1,3),16)+8192, 4];}
+		else if(ca === '.')
+			{ return [-2,                                   1];}
+		else    { return [-1,                                   0];}
+	},
 	decodeNumber16 : function(){
 		var c=0, i=0, bstr = this.outbstr, bd = this.board;
-		for(i=0;i<bstr.length;i++){
+		while(i<bstr.length&&bd.cell[c]){
 			var cell = bd.cell[c], ca = bstr.charAt(i);
-
-			if(this.include(ca,"0","9")||this.include(ca,"a","f"))
-							   { cell.qnum = parseInt(ca,16);}
-			else if(ca === '-'){ cell.qnum = parseInt(bstr.substr(i+1,2),16);      i+=2;}
-			else if(ca === '+'){ cell.qnum = parseInt(bstr.substr(i+1,3),16);      i+=3;}
-			else if(ca === '='){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+4096; i+=3;}
-			else if(ca === '%'){ cell.qnum = parseInt(bstr.substr(i+1,3),16)+8192; i+=3;}
-			else if(ca === '.'){ cell.qnum = -2;}
-			else if(ca >= 'g' && ca <= 'z'){ c += (parseInt(ca,36)-16);}
-
-			c++;
-			if(!bd.cell[c]){ break;}
+			var res = this.readNumber16(bstr, i);
+			if(res[0]!==-1){
+				cell.qnum=res[0];
+				i+=res[1];
+				c++;
+			}else if(ca >= 'g' && ca <= 'z'){
+				c += parseInt(ca,36)-15;
+				i++;
+			}else{
+				i++;
+			}
 		}
-		this.outbstr = bstr.substr(i+1);
+		this.outbstr = bstr.substr(i);
+	},
+	writeNumber16 : function(qn){
+		if     (qn=== -2           ){ return ".";}
+		else if(qn>=   0 && qn<  16){ return qn.toString(16);}
+		else if(qn>=  16 && qn< 256){ return "-" + qn.toString(16);}
+		else if(qn>= 256 && qn<4096){ return "+" + qn.toString(16);}
+		else if(qn>=4096 && qn<8192){ return "=" + (qn-4096).toString(16);}
+		else if(qn>=8192           ){ return "%" + (qn-8192).toString(16);}
+		else{ return "";}
 	},
 	encodeNumber16 : function(){
 		var count=0, cm="", bd = this.board;
 		for(var c=0;c<bd.cell.length;c++){
-			var pstr = "", qn = bd.cell[c].qnum;
-
-			if     (qn=== -2           ){ pstr = ".";}
-			else if(qn>=   0 && qn<  16){ pstr =       qn.toString(16);}
-			else if(qn>=  16 && qn< 256){ pstr = "-" + qn.toString(16);}
-			else if(qn>= 256 && qn<4096){ pstr = "+" + qn.toString(16);}
-			else if(qn>=4096 && qn<8192){ pstr = "=" + (qn-4096).toString(16);}
-			else if(qn>=8192           ){ pstr = "%" + (qn-8192).toString(16);}
-			else{ count++;}
+			var qn = bd.cell[c].qnum;
+			var pstr = this.writeNumber16(qn);
+			if(pstr===""){ count++;}
 
 			if(count===0){ cm += pstr;}
 			else if(pstr || count===20){ cm+=((15+count).toString(36)+pstr); count=0;}
