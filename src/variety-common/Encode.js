@@ -138,7 +138,7 @@ Encode:{
 		if(this.include(ca,"0","9")||this.include(ca,"a","f"))
 			{ return [parseInt(ca, 16),                     1];}
 		else if(ca === '-')
-			{ return [parseInt(bstr.substr(i+1,2),16),      4];}
+			{ return [parseInt(bstr.substr(i+1,2),16),      3];}
 		else if(ca === '+')
 			{ return [parseInt(bstr.substr(i+1,3),16),      4];}
 		else if(ca === '=')
