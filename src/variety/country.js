@@ -577,7 +577,7 @@ AnsCheck:{
 	cbNoLine : ["線が通らないマスが、太線をはさんでタテヨコにとなりあっています。","The cells that is not passed any line are adjacent over border line."]
 },
 "FailCode@doubleback":{
-	bkNotPassTwice : ["(please translate) A room isn't passed exactly twice.","A room isn't passed exactly twice."]
+	bkNotPassTwice : ["線がちょうど２回通過していない部屋があります。","A room isn't passed exactly twice."]
 },
 "FailCode@moonsun":{
 	bkPassTwice : ["線が１つの部屋を２回以上通っています。","A line passes a room twice or more."],
