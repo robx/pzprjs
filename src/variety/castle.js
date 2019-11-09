@@ -88,12 +88,60 @@ Cell:{
 
 	noLP : function(dir){ return (this.isNum());},
 
-	isCmp : function(){ return this.qcmp===1; }
+	isUndecided: function() {
+		return !this.isNum() && this.lcnt < 2;
+	},
+
+	isCmp : function(){ 
+		if(this.qcmp===1){ return true;}
+		if(!this.puzzle.execConfig('autocmp')){ return false;}
+
+		var dir = this.qdir;
+		if(!this.isValidNum() || dir===0){ return false;}
+
+		var lines = 0;
+
+		var pos = this.getaddr();
+		pos.movedir(dir,1);
+		while(1){
+			pos.movedir(dir,2);
+			var border = pos.getb();
+			if(!border || border.isnull){ break;}
+			if(border.isLine()) { lines++; }
+			else if(border.qsub===0&&
+					border.sidecell[0].isUndecided()&&
+					border.sidecell[1].isUndecided()) {
+				return false;
+			}
+		}
+
+		return lines===this.qnum;
+	}
 },
 Border:{
 	enableLineNG : true,
 	isBorder : function(){
 		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
+	},
+	prehook : {
+		qsub : function(){ return this.sidecell[0].qnum!==-1 || this.sidecell[1].qnum!==-1;}
+	},
+	posthook : {
+		line : function(){ this.redrawAroundBorder();},
+		qsub : function(){ this.redrawAroundBorder();}
+	},
+	redrawAroundBorder : function() {
+		var c0 = this.sidecell[0], c1 = this.sidecell[1];
+		var verlist = this.board.cellinside(c0.bx, 1, c0.bx, this.board.maxby);
+		var horlist = this.board.cellinside(1, c0.by, this.board.maxbx, c0.by);
+		if(this.isvert) {
+			verlist.extend(this.board.cellinside(c1.bx, 1, c1.bx, this.board.maxby));
+		} else {
+			horlist.extend(this.board.cellinside(1, c1.by, this.board.maxbx, c1.by));
+		}
+
+		horlist.each(function(cell) { if(cell.qdir===cell.LT||cell.qdir===cell.RT) { cell.draw(); }});
+		verlist.each(function(cell) { if(cell.qdir===cell.UP||cell.qdir===cell.DN) { cell.draw(); }});
 	}
 },
 Board:{
@@ -241,8 +289,6 @@ AnsCheck:{
 		}, "cuOutside");
 	}
 },
-
-// TODO auto-completion
 
 FailCode:{
 	anLineNe : ["(please translate) The number of line segments is not correct.","The number of line segments is not correct."],
