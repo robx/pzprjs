@@ -4,13 +4,16 @@
 }(
 ['castle'], {
 MouseEvent:{
-	inputModes : {edit:['number','direc','shade','unshade','clear','info-line'],play:['line','peke','info-line']},
+	inputModes : {edit:['number','direc','shade','unshade','clear','info-line'],play:['line','peke','completion','info-line']},
 
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
 			if(this.btn==='left'){
 				if(this.mousestart || this.mousemove){ this.inputLine();}
-				else if(this.mouseend && this.notInputted()){ this.inputpeke();}
+				else if(this.mouseend && this.notInputted()){
+					this.inputpeke_ifborder();
+					if(this.notInputted()) { this.inputqcmp(); }
+				}
 			}
 			else if(this.btn==='right'){
 				if(this.mousestart || this.mousemove){ this.inputpeke();}
@@ -20,6 +23,16 @@ MouseEvent:{
 			if(this.mousestart || this.mousemove){ this.inputdirec(); }
 			else if(this.mouseend && this.notInputted()){ this.inputqnum();}
 		}
+	},
+
+	inputqcmp : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell.noNum()){ return;}
+
+		cell.setQcmp(+!cell.qcmp);
+		cell.draw();
+
+		this.mousereset();
 	},
 
 	inputShade : function(){
@@ -158,14 +171,17 @@ FileIO:{
 	decodeData : function(){
 		this.decodeCellDirecQnum();
 		this.decodeCell( function(cell,ca){
-			cell.ques = ca.charAt(0)==="1" ? 1 : 0;
+			var num = +ca.charAt(0);
+			cell.ques = (num & 1) ? 1 : 0;
+			cell.qcmp = (num & 2) ? 1 : 0;
 		});
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
 		this.encodeCellDirecQnum();
 		this.encodeCell( function(cell){
-			return cell.ques + " ";
+			var num = cell.ques & 1 | ((cell.qcmp & 1) << 1);
+			return num + " ";
 		});
 		this.encodeBorderLine();
 	}
