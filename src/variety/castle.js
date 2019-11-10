@@ -146,6 +146,7 @@ Border:{
 		qsub : function(){ this.redrawAroundBorder();}
 	},
 	redrawAroundBorder : function() {
+		this.board.scanResult = null;
 		var c0 = this.sidecell[0], c1 = this.sidecell[1];
 		var verlist = this.board.cellinside(c0.bx, 1, c0.bx, this.board.maxby);
 		var horlist = this.board.cellinside(1, c0.by, this.board.maxbx, c0.by);
@@ -162,8 +163,12 @@ Border:{
 Board:{
 	hasborder : 1,
 
+	scanResult: null,
 	scanInside: function() {
+		if(this.scanResult!==null) { return this.scanResult; }
+
 		if(this.cell.some(function(cell){ return cell.lcnt!==0 && cell.lcnt!==2;})){ 
+			this.scanResult = false;
 			return false; 
 		}
 
@@ -175,6 +180,7 @@ Board:{
 			}
 		}
 
+		this.scanResult = true;
 		return true;
 	}
 },
@@ -225,6 +231,7 @@ Encode:{
 		this.decodeArrowNumber16();
 		this.decodeQues(1);
 		this.board.cell.each(function(cell) { cell.actual = null; });
+		this.board.scanResult = null;
 	},
 	encodePzpr : function(type){
 		this.encodeArrowNumber16();
@@ -241,6 +248,7 @@ FileIO:{
 			cell.actual = null;
 		});
 		this.decodeBorderLine();
+		this.board.scanResult = null;
 	},
 	encodeData : function(){
 		this.encodeCellDirecQnum();
