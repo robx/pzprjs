@@ -92,6 +92,8 @@ Cell:{
 		return !this.isNum() && this.lcnt < 2;
 	},
 
+	actual: null,
+	undecided: true,
 	isCmp : function(){ 
 		if(this.qcmp===1){ return true;}
 		if(!this.puzzle.execConfig('autocmp')){ return false;}
@@ -99,7 +101,18 @@ Cell:{
 		var dir = this.qdir;
 		if(!this.isValidNum() || dir===0){ return false;}
 
-		var lines = 0;
+		this.recount();
+
+		return !this.undecided && this.actual===this.qnum;
+	},
+	recount: function() {
+		if(this.actual!==null) { return; }
+
+		var dir = this.qdir;
+		if(!this.isValidNum() || dir===0){ return; }
+
+		this.actual = 0;
+		this.undecided = false;
 
 		var pos = this.getaddr();
 		pos.movedir(dir,1);
@@ -107,15 +120,17 @@ Cell:{
 			pos.movedir(dir,2);
 			var border = pos.getb();
 			if(!border || border.isnull){ break;}
-			if(border.isLine()) { lines++; }
+			if(border.isLine()) { this.actual++; }
 			else if(border.qsub===0&&
 					border.sidecell[0].isUndecided()&&
 					border.sidecell[1].isUndecided()) {
-				return false;
+				this.undecided = true;
 			}
 		}
-
-		return lines===this.qnum;
+	},
+	invalidate: function () {
+		this.actual = null;
+		this.draw();
 	}
 },
 Border:{
@@ -140,8 +155,8 @@ Border:{
 			horlist.extend(this.board.cellinside(1, c1.by, this.board.maxbx, c1.by));
 		}
 
-		horlist.each(function(cell) { if(cell.qdir===cell.LT||cell.qdir===cell.RT) { cell.draw(); }});
-		verlist.each(function(cell) { if(cell.qdir===cell.UP||cell.qdir===cell.DN) { cell.draw(); }});
+		horlist.each(function(cell) { if(cell.qdir===cell.LT||cell.qdir===cell.RT) { cell.invalidate(); }});
+		verlist.each(function(cell) { if(cell.qdir===cell.UP||cell.qdir===cell.DN) { cell.invalidate(); }});
 	}
 },
 Board:{
@@ -209,6 +224,7 @@ Encode:{
 	decodePzpr : function(type){
 		this.decodeArrowNumber16();
 		this.decodeQues(1);
+		this.board.cell.each(function(cell) { cell.actual = null; });
 	},
 	encodePzpr : function(type){
 		this.encodeArrowNumber16();
@@ -222,6 +238,7 @@ FileIO:{
 			var num = +ca.charAt(0);
 			cell.ques = (num & 1) ? 1 : 0;
 			cell.qcmp = (num & 2) ? 1 : 0;
+			cell.actual = null;
 		});
 		this.decodeBorderLine();
 	},
@@ -247,29 +264,11 @@ AnsCheck:{
 	],
 
 	checkArrowNumber : function(){
-		var bd = this.board;
-		for(var c=0;c<bd.cell.length;c++){
-			var cell = bd.cell[c];
-			var dir = cell.qdir;
-			if(!cell.isValidNum() || dir===0){ continue;}
-
-			var lines = 0;
-
-			var pos = cell.getaddr();
-			pos.movedir(dir,1);
-			while(1){
-				pos.movedir(dir,2);
-				var border = pos.getb();
-				if(!border || border.isnull){ break;}
-				if(border.isLine()) { lines++; }
-			}
-
-			if(lines !== cell.qnum) {
-				this.failcode.add("anLineNe");
-				if(this.checkOnly){ break;}
-				cell.seterr(1);
-			}
-		}
+		this.checkAllCell(function(cell){ 
+			cell.recount();
+			return cell.isValidNum() && cell.qdir!==0 && 
+				cell.actual !== cell.qnum;
+		}, "anLineNe");
 	},
 
 	checkShadedOutside: function() {
