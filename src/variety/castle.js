@@ -264,19 +264,24 @@ AnsCheck:{
 		"checkLineExist+",
 		"checkBranchLine",
 		"checkCrossLine",
-		"checkOneLoop",
-		"checkArrowNumber",
+		"checkArrowNumberGt",
+		"checkArrowNumberLt",
 		"checkDeadendLine+",
+		"checkOneLoop",
 		"checkShadedOutside",
 		"checkUnshadedInside"
 	],
 
-	checkArrowNumber : function(){
+	checkArrowNumberGt: function() { this.checkArrowNumber(+1, "anLineGt"); },
+	checkArrowNumberLt: function() { this.checkArrowNumber(-1, "anLineLt"); },
+
+	checkArrowNumber : function(factor, code){
 		this.checkAllCell(function(cell){ 
 			cell.recount();
 			return cell.isValidNum() && cell.qdir!==0 && 
-				cell.actual !== cell.qnum;
-		}, "anLineNe");
+				((factor < 0 && cell.actual < cell.qnum)||
+				(factor > 0 && cell.actual > cell.qnum));
+		}, code);
 	},
 
 	checkShadedOutside: function() {
@@ -298,7 +303,8 @@ AnsCheck:{
 },
 
 FailCode:{
-	anLineNe : ["(please translate) The number of line segments is not correct.","The number of line segments is not correct."],
+	anLineLt : ["(please translate) The number of line segments is not correct.","The number of line segments is not correct."],
+	anLineGt : ["(please translate) The number of line segments is not correct.","The number of line segments is not correct."],
 	shInside : ["(please translate) A shaded cell is inside of the loop.","A shaded cell is inside of the loop."],
 	cuOutside : ["(please translate) An unshaded cell is outside of the loop.","An unshaded cell is outside of the loop."]
 }
