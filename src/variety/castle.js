@@ -188,6 +188,11 @@ Board:{
 		this.scanResult = null;
 		this.cell.each(function(cell) { if(cell.isValidNum()) { cell.invalidate(); }});
 		this.common.rebuildInfo.call(this);
+	},
+
+	subclear : function(){
+		this.common.subclear.call(this);
+		this.rebuildInfo();
 	}
 },
 BoardExec:{
