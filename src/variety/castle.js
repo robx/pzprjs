@@ -276,7 +276,8 @@ AnsCheck:{
 		"checkDeadendLine+",
 		"checkOneLoop",
 		"checkShadedOutside",
-		"checkUnshadedInside"
+		"checkUnshadedInside",
+		"checkNumberHasArrow"
 	],
 
 	checkArrowNumberGt: function() { this.checkArrowNumber(+1, "anLineGt"); },

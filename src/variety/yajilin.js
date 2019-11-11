@@ -490,15 +490,10 @@ AnsCheck:{
 			cell.seterr(1);
 			clist.seterr(1);
 		}
-	},
-
-	checkNumberHasArrow : function(){
-		this.checkAllCell(function(cell){ return (cell.qnum>0&&cell.qdir===cell.NDIR);}, "anNoArrow");
 	}
 },
 
 FailCode:{
-	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."],
-	anNoArrow : ["矢印がない数字のマスがあります。","A number has no arrow."]
+	ceEmpty : ["黒マスも線も引かれていないマスがあります。","There is an empty cell."]
 }
 }));

@@ -11,6 +11,7 @@ AnsCheck:{
 	// ans.checkLineOnShadeCell() 黒マス上に線がないことを判定する
 	// ans.checkNoLineObject()    線が出ていない数字や○がないかどうか判定する
 	// ans.checkLineOverLetter()  線が数字などを通過しているか判定する
+	// ans.checkNumberHasArrow()  For editors only. Check if a number clue is without an arrow.
 	//---------------------------------------------------------------------------
 	checkAllCell : function(func, code){
 		for(var c=0;c<this.board.cell.length;c++){
@@ -40,6 +41,9 @@ AnsCheck:{
 	},
 	checkLineOverLetter : function(){
 		this.checkAllCell( function(cell){ return (cell.lcnt>=2 && cell.isNum());}, (this.board.linegraph.moveline ? "laOnNum" : "lcOnNum"));
+	},
+	checkNumberHasArrow : function(){
+		this.checkAllCell(function(cell){ return (cell.qnum>=0&&cell.qdir===cell.NDIR);}, "anNoArrow");
 	},
 
 	//---------------------------------------------------------------------------
@@ -735,6 +739,7 @@ FailCode:{
 	ceNoLine  : ["線が引かれていないマスがあります。","There is an empty cell."],
 	ceAddLine : ["最初から引かれている線があるマスに線が足されています。","Lines are added to the cell that the mark lie in by the question."],
 
+	anNoArrow : ["矢印がない数字のマスがあります。","A number has no arrow."],
 	anShadeNe : ["矢印の方向にある黒マスの数が正しくありません。","The number of shaded cells is not correct."],
 
 	/* ** 数字系 ** */
