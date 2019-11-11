@@ -182,6 +182,12 @@ Board:{
 
 		this.scanResult = true;
 		return true;
+	},
+
+	rebuildInfo : function(){
+		this.scanResult = null;
+		this.cell.each(function(cell) { if(cell.isValidNum()) { cell.invalidate(); }});
+		this.common.rebuildInfo.call(this);
 	}
 },
 BoardExec:{
@@ -230,8 +236,6 @@ Encode:{
 	decodePzpr : function(type){
 		this.decodeArrowNumber16();
 		this.decodeQues(1);
-		this.board.cell.each(function(cell) { cell.actual = null; });
-		this.board.scanResult = null;
 	},
 	encodePzpr : function(type){
 		this.encodeArrowNumber16();
@@ -245,10 +249,8 @@ FileIO:{
 			var num = +ca.charAt(0);
 			cell.ques = (num & 1) ? 1 : 0;
 			cell.qcmp = (num & 2) ? 1 : 0;
-			cell.actual = null;
 		});
 		this.decodeBorderLine();
-		this.board.scanResult = null;
 	},
 	encodeData : function(){
 		this.encodeCellDirecQnum();
