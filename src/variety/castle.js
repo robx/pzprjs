@@ -229,7 +229,7 @@ Graphic:{
 		if(info===1){
 			return (cell.ques!==1 ? this.errbcolor1 : this.errcolor1);
 		} else if(cell.qnum!==-1){ 
-			return (cell.ques!==1 ? 'rgb(224,224,224)' : 'black');
+			return (cell.ques===0 ? 'white' : cell.ques===1 ? 'black' : "rgb(192,192,192)");
 		}
 		return null;
 	},
@@ -240,11 +240,42 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		this.decodeArrowNumber16();
-		this.decodeQues(1);
+		this.decodeCastle();
 	},
 	encodePzpr : function(type){
 		this.encodeArrowNumber16();
-		this.encodeQues(1);
+		this.encodeCastle();
+	},
+	decodeCastle : function() {
+		var c=0, i=0, bstr = this.outbstr, bd = this.board;
+		for(i=0;i<bstr.length;i++){
+			var ca = bstr.charAt(i), cell=bd.cell[c];
+
+			if(ca==="0"||ca==="1"){
+				cell.ques = (+ca) + 1
+			} else {
+				c+=parseInt(ca,36)-2;
+			}
+
+			c++;
+			if(!bd.cell[c]){ break;}
+		}
+		this.outbstr = bstr.substr(i+1);
+	},
+	encodeCastle : function() {
+		var cm = "", count = 0, bd = this.board;
+		for(var c=0;c<bd.cell.length;c++){
+			var pstr="", qn=bd.cell[c].ques;
+			if     (qn===1) { pstr = "0";}
+			else if(qn===2) { pstr = "1";}
+			else{ count++;}
+
+			if     (count=== 0){ cm += pstr;}
+			else if(pstr || count===34){ cm += ((count+1).toString(36)+pstr); count=0;}
+		}
+		if(count>0){ cm += (count+1).toString(36);}
+
+		this.outbstr += cm;
 	}
 },
 FileIO:{
@@ -252,15 +283,15 @@ FileIO:{
 		this.decodeCellDirecQnum();
 		this.decodeCell( function(cell,ca){
 			var num = +ca.charAt(0);
-			cell.ques = (num & 1) ? 1 : 0;
-			cell.qcmp = (num & 2) ? 1 : 0;
+			cell.ques = num & 3;
+			cell.qcmp = (num & 4) ? 1 : 0;
 		});
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
 		this.encodeCellDirecQnum();
 		this.encodeCell( function(cell){
-			var num = cell.ques & 1 | ((cell.qcmp & 1) << 1);
+			var num = cell.ques & 3 | ((cell.qcmp & 1) << 2);
 			return num + " ";
 		});
 		this.encodeBorderLine();
