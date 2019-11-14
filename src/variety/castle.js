@@ -4,7 +4,7 @@
 }(
 ['castle'], {
 MouseEvent:{
-	inputModes : {edit:['number','direc','shade','unshade','clear','info-line'],play:['line','peke','completion','info-line']},
+	inputModes : {edit:['number','direc','shade','clear','info-line'],play:['line','peke','completion','info-line']},
 
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
@@ -39,18 +39,16 @@ MouseEvent:{
 		var cell = this.getcell();
 		if(cell.isnull || cell===this.mouseCell){ return;}
 		if(this.inputData===null){ 
-			if(this.inputMode==='shade') {
-				this.inputData = cell.ques!==1 ? 1 : cell.qnum!==-1 ? 0 : 2;
-			} else {
-				this.inputData = cell.ques===0 && cell.qnum===-2 ? 0 : 2;
+			if(cell.qnum===-1){
+				this.inputData = 0;
+			}else{
+				this.inputData = [2,0,1][cell.ques];
 			}
 		}
 
-		cell.setQues(this.inputData===1?1:0);
-		if(cell.qnum===-1 && this.inputData!==0) {
+		cell.setQues(this.inputData);
+		if(cell.qnum===-1) {
 			cell.setQnum(-2);
-		} else if(cell.qnum===-2 && this.inputData===0) {
-			cell.setQnum(-1);
 		}
 
 		cell.drawaround();
@@ -68,10 +66,9 @@ KeyEvent:{
 		if(ca==='q'){
 			var cell = this.cursor.getc();
 			if(cell.qnum===-1) {
-				cell.setQues(1);
 				cell.setQnum(-2);
 			} else {
-				cell.setQues(cell.ques===1?0:1);
+				cell.setQues([2,0,1][cell.ques]);
 			}
 
 			this.prev=cell;
@@ -227,14 +224,14 @@ Graphic:{
 	getBGCellColor : function(cell){
 		var info = cell.error || cell.qinfo;
 		if(info===1){
-			return (cell.ques!==1 ? this.errbcolor1 : this.errcolor1);
+			return (cell.ques!==2 ? this.errbcolor1 : this.errcolor1);
 		} else if(cell.qnum!==-1){ 
-			return (cell.ques===0 ? 'white' : cell.ques===1 ? 'black' : "rgb(192,192,192)");
+			return (cell.ques===0 ? 'lightgray' : cell.ques===1 ? 'white' : 'black');
 		}
 		return null;
 	},
 	getQuesNumberColor : function(cell){
-		return (cell.isCmp() ? this.qcmpcolor : cell.ques!==1 ? this.quescolor : "white");
+		return (cell.isCmp() ? this.qcmpcolor : cell.ques!==2 ? this.quescolor : "white");
 	}
 },
 Encode:{
@@ -327,7 +324,7 @@ AnsCheck:{
 		var bd = this.board;
 		if(!bd.scanInside()) { return; }
 		this.checkAllCell(function(cell){ 
-			return cell.qnum!==-1 && cell.ques===1 && 
+			return cell.qnum!==-1 && cell.ques===2 &&
 				bd.getx(cell.bx-1, cell.by-1).inside;
 		}, "shInside");
 	},
@@ -335,7 +332,7 @@ AnsCheck:{
 		var bd = this.board;
 		if(!bd.scanInside()) { return; }
 		this.checkAllCell(function(cell){ 
-			return cell.qnum!==-1 && cell.ques===0 && 
+			return cell.qnum!==-1 && cell.ques===1 &&
 				!bd.getx(cell.bx-1, cell.by-1).inside;
 		}, "cuOutside");
 	}
