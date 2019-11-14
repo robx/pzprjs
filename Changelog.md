@@ -1,6 +1,7 @@
 #### New puzzle
 
 * aquarium: Introduce new puzzle: Aquarium (due to Lennard Sprong)
+* castle: Introduce new puzzle: Castle Wall (due to Lennard Sprong)
 * compass: Introduce new puzzle: Compass
 * curvedata: Introduce new puzzle: Curve Data (due to Lennard Sprong)
 * dbchoco: Introduce new puzzle: Double Chocolate (due to Lennard Sprong)
@@ -29,6 +30,7 @@
   puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
 * Fix various English language typos
 * Allow clicking labels to toggle options
+* URL output properly deals with non-default ports
 
 #### BugFix
 
