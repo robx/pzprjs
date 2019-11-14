@@ -92,6 +92,10 @@ Cell:{
 		return !this.isNum() && this.lcnt < 2;
 	},
 
+	posthook: {
+		qnum: function(num){ if(num===-1) { this.setQues(0); } }
+	},
+
 	actual: null,
 	undecided: true,
 	isCmp : function(){ 
@@ -136,7 +140,8 @@ Cell:{
 Border:{
 	enableLineNG : true,
 	isBorder : function(){
-		return (this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
+		return this.sidecell[0].ques!==this.sidecell[1].ques || 
+			(this.sidecell[0].qnum===-1)!==(this.sidecell[1].qnum===-1);
 	},
 	prehook : {
 		qsub : function(){ return this.sidecell[0].qnum!==-1 || this.sidecell[1].qnum!==-1;}
@@ -218,10 +223,50 @@ Graphic:{
 		this.drawArrowNumbers();
 		this.drawLines();
 
+		this.drawBaseMarks();
+
 		this.drawPekes();
 		this.drawChassis();
 
 		this.drawTarget();
+	},
+
+	drawBaseMarks : function(){
+		var g = this.vinc('cross_mark', 'crispEdges', true);
+
+		var size = this.cw/10;
+		var clist = this.range.crosses;
+		for(var i=0;i<clist.length;i++){
+			var cross = clist[i], color = this.getBaseMarkColor(cross);
+			g.vid = "x_cm_"+cross.id;
+			if(!!color) {
+				g.fillStyle = color;
+				g.fillRectCenter(cross.bx*this.bw, cross.by*this.bh, size/2, size/2);
+			}
+			else{ g.vhide();}
+		}
+	},
+
+	getBaseMarkColor : function(cross){
+		for(var dir in cross.adjborder) {
+			var border = cross.adjborder[dir];
+			if(border && !border.isnull && border.isBorder()) {
+				return this.quescolor;
+			}
+		}
+		return null;
+	},
+
+	getBorderColor : function(border){
+		if(border.isBorder()){ return this.quescolor; }
+		if(border.sidecell[0].qnum!==-1 && border.sidecell[1].qnum!==-1) {
+			switch(border.sidecell[0].ques) {
+				case 0: return "white";
+				case 1: return "black";
+				case 2: return "rgb(192,192,192)";
+			}
+		}
+		return null;
 	},
 
 	getBGCellColor : function(cell){
