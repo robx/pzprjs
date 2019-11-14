@@ -258,9 +258,9 @@ Graphic:{
 		if(border.isBorder()){ return this.quescolor; }
 		if(border.sidecell[0].qnum!==-1 && border.sidecell[1].qnum!==-1) {
 			switch(border.sidecell[0].ques) {
-				case 0: return "white";
-				case 1: return "black";
-				case 2: return "rgb(192,192,192)";
+				case 0: return "lightgray";
+				case 1: return "white";
+				case 2: return "black";
 			}
 		}
 		return null;
