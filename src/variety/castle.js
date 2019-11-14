@@ -206,6 +206,8 @@ LineGraph:{
 	enabled : true
 },
 Graphic:{
+	gridcolor_type : "DLIGHT",
+
 	qcmpcolor  : "rgb(127,127,127)",
 	autocmp : 'number',
 
