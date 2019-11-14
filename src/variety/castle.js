@@ -65,19 +65,26 @@ KeyEvent:{
 	},
 
 	keyinput : function(ca){
-		if(ca==='q'){
+		var colors = {q: 1, w: 0, e: 2};
+
+		if(ca in colors){
+			var c = colors[ca];
+
 			var cell = this.cursor.getc();
 			if(cell.qnum===-1) {
-				cell.setQues(1);
+				cell.setQues(c);
 				cell.setQnum(-2);
+			} else if(cell.qnum===-2 && cell.ques===c) {
+				cell.setQnum(-1);
 			} else {
-				cell.setQues(cell.ques===1?0:1);
+				cell.setQues(cell.ques!==c?c:0);
 			}
 
 			this.prev=cell;
 			cell.draw();
 			return;
 		}
+
 		if(this.key_inputdirec(ca)){ return;}
 		this.key_inputqnum(ca);
 	}
