@@ -29,6 +29,7 @@
   puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
 * Fix various English language typos
 * Allow clicking labels to toggle options
+* URL output properly deals with non-default ports
 
 #### BugFix
 
