@@ -277,19 +277,23 @@ Encode:{
 },
 FileIO:{
 	decodeData : function(){
-		this.decodeCellDirecQnum();
 		this.decodeCell( function(cell,ca){
-			var num = +ca.charAt(0);
+			if(ca==='.'){ return;}
+			var inp = ca.split(",");
+			cell.qdir = (inp[0]!=="0" ? +inp[0] : 0);
+			cell.qnum = (inp[1]!=="-" ? +inp[1] : -2);
+			var num = +inp[2];
 			cell.ques = num & 3;
 			cell.qcmp = (num & 4) ? 1 : 0;
 		});
 		this.decodeBorderLine();
 	},
 	encodeData : function(){
-		this.encodeCellDirecQnum();
 		this.encodeCell( function(cell){
+			var ca1 = (cell.qdir!==0 ? ""+cell.qdir : "0");
+			var ca2 = (cell.qnum!==-2 ? ""+cell.qnum : "-");
 			var num = cell.ques & 3 | ((cell.qcmp & 1) << 2);
-			return num + " ";
+			return [ca1, ",", ca2, ",", num, " "].join("");
 		});
 		this.encodeBorderLine();
 	}
