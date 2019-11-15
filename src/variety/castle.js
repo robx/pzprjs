@@ -217,12 +217,11 @@ Graphic:{
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
+		this.drawGridGaps();
 
 		this.drawBorders();
 		this.drawArrowNumbers();
 		this.drawLines();
-
-		this.drawBaseMarks();
 
 		this.drawPekes();
 		this.drawChassis();
@@ -230,42 +229,25 @@ Graphic:{
 		this.drawTarget();
 	},
 
-	drawBaseMarks : function(){
-		var g = this.vinc('cross_mark', 'crispEdges', true);
-
-		var size = this.cw/10;
-		var clist = this.range.crosses;
-		for(var i=0;i<clist.length;i++){
-			var cross = clist[i], color = this.getBaseMarkColor(cross);
-			g.vid = "x_cm_"+cross.id;
-			if(!!color) {
-				g.fillStyle = color;
-				g.fillRectCenter(cross.bx*this.bw, cross.by*this.bh, size/2, size/2);
+	drawGridGaps : function(){
+		var g = this.vinc('gridgaps', 'crispEdges', true);
+		var i, bd = this.board, bw = this.bw, bh = this.bh;
+		g.lineWidth = 1;
+		for(i=0;i<bd.border.length;i++){
+			var border = bd.border[i];
+			g.vid = "bdgap_"+i;
+			if(border.sidecell[0].qnum!==-1 && border.sidecell[1].qnum!==-1){
+				var bx1 = border.sidecross[0].bx, by1 = border.sidecross[0].by,
+				    bx2 = border.sidecross[1].bx, by2 = border.sidecross[1].by;
+				switch(border.sidecell[0].ques){
+				case 0: g.strokeStyle = "lightgray"; break;
+				case 1: g.strokeStyle = "white"; break;
+				case 2: g.strokeStyle = "black"; break;
+				}
+				g.strokeLine(bx1*bw, by1*bh, bx2*bw, by2*bh);
 			}
 			else{ g.vhide();}
 		}
-	},
-
-	getBaseMarkColor : function(cross){
-		for(var dir in cross.adjborder) {
-			var border = cross.adjborder[dir];
-			if(border && !border.isnull && border.isBorder()) {
-				return this.quescolor;
-			}
-		}
-		return null;
-	},
-
-	getBorderColor : function(border){
-		if(border.isBorder()){ return this.quescolor; }
-		if(border.sidecell[0].qnum!==-1 && border.sidecell[1].qnum!==-1) {
-			switch(border.sidecell[0].ques) {
-				case 0: return "lightgray";
-				case 1: return "white";
-				case 2: return "black";
-			}
-		}
-		return null;
 	},
 
 	getBGCellColor : function(cell){
