@@ -33,6 +33,7 @@
 * URL output properly deals with non-default ports
 * URL output generates a clickable link
 * File output puts file contents into copyable text areas
+* Improved background image rendering (crisp edges)
 
 #### BugFix
 

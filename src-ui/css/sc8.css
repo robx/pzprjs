@@ -5,6 +5,7 @@
 		padding : 0pt;
 		color : black;
 		line-height : 120%;
+		image-rendering : crisp-edges;
 	}
 
 	/* メインの白背景領域 */
