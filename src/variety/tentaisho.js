@@ -148,7 +148,25 @@ Cross:{
 },
 Border:{
 	qnum : 0,
-	minnum : 0
+	minnum : 0,
+
+	isGrid : function(){
+		return (this.sidecell[0].isValid() && this.sidecell[1].isValid());
+	},
+	isBorder : function(){
+		return ((this.qans>0) || this.isQuesBorder());
+	},
+	isQuesBorder : function(){
+		return !!(this.sidecell[0].isEmpty()^this.sidecell[1].isEmpty());
+	},
+	isBlack : function(){
+		return (this.sidecell[0].isEmpty()||this.sidecell[1].isEmpty());
+	},
+
+	prehook : {
+		'qans' : function(){ return !this.isGrid();},
+		'qsub' : function(){ return !this.isGrid();}
+	}
 },
 
 Star:{
@@ -327,14 +345,12 @@ Graphic:{
 
 	qanscolor : "rgb(72, 72, 72)",
 
-	getBGCellColor : function(cell){
-		return (cell.ques===7)?"black":this.getBGCellColor_qsub3(cell);
+	getQuesBorderColor : function(border){
+		return (border.isBlack() ? this.quescolor : null);
 	},
 
-	getQuesBorderColor : function(border){
-		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
-		if(!cell1.isnull&&!cell2.isnull&&(cell1.ques===7||cell2.ques===7)){ return "black";}
-		return this.getBorderColor_ques(border);
+	getBGCellColor : function(cell){
+		return (cell.ques===7)?"black":this.getBGCellColor_qsub3(cell);
 	},
 
 	paint : function(){
