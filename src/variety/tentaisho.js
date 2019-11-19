@@ -10,14 +10,6 @@
 // マウス入力系
 MouseEvent:{
 	inputModes:{edit:['circle-unshade','circle-shade','bgpaint'],play:['border','subline']},
-	mouseinput : function(){ // オーバーライド
-		if(this.puzzle.editmode && this.inputMode!=='auto'){
-			if(this.mousestart){ this.inputstar();}
-		}
-		else{
-			this.common.mouseinput.call(this);
-		}
-	},
 	mouseinput_other : function(){
 		if(this.inputMode==='bgpaint'){ this.inputBGcolor1();}
 	},
@@ -71,6 +63,10 @@ MouseEvent:{
 			border.draw();
 		}
 		this.prevPos = pos;
+	},
+	// this is called by mouseinput
+	inputFixedNumber : function(){
+		this.inputstar();
 	},
 	inputstar : function(){
 		var pos = this.getpos(0.25);
