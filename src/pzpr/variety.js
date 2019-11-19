@@ -185,7 +185,7 @@ delete variety.extend;
 	tatamibari:[1,0,"タタミバリ","Tatamibari"],
 	tateyoko  :[1,0,"タテボーヨコボー","Tatebo-Yokobo"],
 	tawa      :[0,0,"たわむれんが","Tawamurenga"],
-	tentaisho :[0,1,"天体ショー","Tentaisho"],
+	tentaisho :[0,0,"天体ショー","Tentaisho"],
 	tilepaint :[1,0,"タイルペイント","Tilepaint"],
 	toichika  :[0,0,"遠い誓い","Toichika"],
 	triplace  :[0,0,"トリプレイス","Tri-place"],

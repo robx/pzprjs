@@ -398,9 +398,6 @@ Encode:{
 	decodeKanpen : function(){
 		this.fio.decodeStarFile();
 	},
-	encodeKanpen : function(){
-		this.fio.encodeStarFile();
-	},
 
 	decodeStar : function(bstr){
 		var bd = this.board;
@@ -461,17 +458,13 @@ FileIO:{
 		this.decodeStarFile();
 		this.decodeAnsAreaRoom();
 	},
-	kanpenSave : function(){
-		this.encodeStarFile();
-		this.encodeAnsAreaRoom();
-	},
 
 	decodeStarFile : function(){
 		var  bd = this.board, s=0, data = '';
 		for(var i=0,rows=2*bd.rows-1;i<rows;i++){
 			var line = this.readLine();
 			if(line){
-				data += line.match(/[12\.]+/)[0];
+				data += line.match(/[12X\.]+/)[0];
 			}
 		}
 		bd.disableInfo();
@@ -479,6 +472,7 @@ FileIO:{
 			var star = bd.star[s], ca = data.charAt(s);
 			if     (ca==="1"){ star.setStar(1);}
 			else if(ca==="2"){ star.setStar(2);}
+			else if(ca==="X"){ star.piece.ques=7;}
 		}
 		bd.enableInfo();
 	},
@@ -490,6 +484,7 @@ FileIO:{
 				var star = bd.star[s];
 				if     (star.getStar()===1){ data += "1";}
 				else if(star.getStar()===2){ data += "2";}
+				else if(star.piece.ques===7){ data += "X";}
 				else                       { data += ".";}
 				s++;
 			}
@@ -507,26 +502,12 @@ FileIO:{
 		this.decodeStar_XMLBoard();
 		this.decodeAnsAreaRoom_XMLAnswer();
 	},
-	kanpenSaveXML : function(){
-		this.encodeStar_XMLBoard();
-		this.encodeAnsAreaRoom_XMLAnswer();
-	},
 	decodeStar_XMLBoard : function(){
 		var nodes = this.xmldoc.querySelectorAll('board number');
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
 			var star = this.board.gets(+node.getAttribute('c'), +node.getAttribute('r'));
 			if(star!==null){ star.setStar(+node.getAttribute('n'));}
-		}
-	},
-	encodeStar_XMLBoard : function(){
-		var boardnode = this.xmldoc.querySelector('board');
-		var bd = this.board;
-		for(var s=0;s<bd.starmax;s++){
-			var star = bd.star[s], val = star.getStar();
-			if(val>0){
-				boardnode.appendChild(this.createXMLNode('number',{r:star.by,c:star.bx,n:val}));
-			}
 		}
 	},
 	decodeAnsAreaRoom_XMLAnswer : function(){
@@ -537,16 +518,6 @@ FileIO:{
 		});
 		this.rdata2Border(false, rdata);
 		this.board.roommgr.rebuild();
-	},
-	encodeAnsAreaRoom_XMLAnswer : function(){
-		var bd = this.board;
-		bd.roommgr.rebuild();
-		var rooms = bd.roommgr.components;
-		this.xmldoc.querySelector('answer').appendChild(this.createXMLNode('areas',{N:rooms.length}));
-		this.encodeCellXMLArow(function(cell){
-			var roomid = rooms.indexOf(cell.room);
-			return (roomid>=0 ? 'n'+roomid : 'u');
-		});
 	}
 },
 
