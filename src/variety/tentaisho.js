@@ -9,9 +9,10 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes:{edit:['circle-unshade','circle-shade','bgpaint'],play:['border','subline']},
+	inputModes:{edit:['circle-unshade','circle-shade','bgpaint','empty'],play:['border','subline']},
 	mouseinput_other : function(){
 		if(this.inputMode==='bgpaint'){ this.inputBGcolor1();}
+		if(this.inputMode==='empty') { this.inputEmpty();}
 	},
 	mouseinput_auto : function(){
 		if(this.puzzle.playmode){
@@ -82,6 +83,15 @@ MouseEvent:{
 			star.draw();
 		}
 		this.prevPos = pos;
+	},
+	inputEmpty : function(){
+		var cell = this.getcell();
+		if(cell.isnull || cell===this.mouseCell){ return;}
+
+		if(this.inputData===null){ this.inputData = (cell.isEmpty()?0:7);}
+
+		cell.setValid(this.inputData);
+		this.mouseCell = cell;
 	}
 },
 
@@ -112,7 +122,25 @@ Cell:{
 	qnum : 0,
 	minnum : 0,
 
-	disInputHatena : true
+	disInputHatena : true,
+
+	isEmpty : function() { return this.ques===7; },
+
+	setValid : function(inputData) {
+		this.setQues(inputData);
+		this.qnum = 0;
+		var adj = [this.adjborder.top, this.adjborder.bottom, this.adjborder.right, this.adjborder.left];
+		for(var i=0; i<adj.length; i++){
+			var b=adj[i];
+			if(!b.inside){ continue;}
+			b.qnum = 0;
+			b.sidecross[0].qnum = 0;
+			b.sidecross[1].qnum = 0;
+			b.qans=0;
+		}
+		this.drawaround();
+		this.board.roommgr.rebuild();
+	}
 },
 Cross:{
 	qnum : 0,
@@ -294,17 +322,27 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
-	bgcellcolor_func : "qsub3",
 	qsubcolor1 : "rgb(176,255,176)",
 	qsubcolor2 : "rgb(108,108,108)",
 
 	qanscolor : "rgb(72, 72, 72)",
+
+	getBGCellColor : function(cell){
+		return (cell.ques===7)?"black":this.getBGCellColor_qsub3(cell);
+	},
+
+	getQuesBorderColor : function(border){
+		var cell1 = border.sidecell[0], cell2 = border.sidecell[1];
+		if(!cell1.isnull&&!cell2.isnull&&(cell1.ques===7||cell2.ques===7)){ return "black";}
+		return this.getBorderColor_ques(border);
+	},
 
 	paint : function(){
 		this.drawBGCells();
 		this.drawDashedGrid();
 
 		this.drawQansBorders();
+		this.drawQuesBorders();
 		this.drawBorderQsubs();
 
 		this.drawStars();
@@ -350,9 +388,11 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		this.decodeStar();
+		this.decodeEmpty();
 	},
 	encodePzpr : function(type){
 		this.encodeStar();
+		this.encodeEmpty();
 	},
 
 	decodeKanpen : function(){
