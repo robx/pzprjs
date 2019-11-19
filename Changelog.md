@@ -24,6 +24,7 @@
 * slither: Allow 4 as clue number
 * starbattle: Input dots in auto-mode; change style of empty cells;
   hide redundant dots
+* tentaisho: Allow empty cells
 * yajilin: Allow crossmark-input in auto-mode on right click.
 * Change default value of "shade undefined cells" back to `true`
 * Change unshaded cells without changing shaded cells in checkerboard
@@ -49,6 +50,7 @@
 * nurimisaki: Switch to unshaded cell connection info for edit mode, too
 * roma: Fix "Check route" input mode
 * shakashaka: Allow drawing diagonal rooms around dotted cells
+* tentaisho: Fix "Draft cells" input mode
 * yajitatami: Fix error color for border crossing
 * Fix interaction of "Clear Answer" and trial mode
 * Don't scroll on space input
