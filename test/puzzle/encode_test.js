@@ -31,7 +31,7 @@ pzpr.variety.each(function(pid){
 				var urlstr = puzzle.getURL();
 				assert.doesNotThrow(function(){
 					puzzle.open(urlstr+urlstr, function(){
-						if(pid!=='icebarn'&&pid!=='icelom'&&pid!=='icelom2'&&pid!=='mejilink'&&pid!=='yajitatami'){
+						if(pid!=='icebarn'&&pid!=='icelom'&&pid!=='icelom2'&&pid!=='mejilink'&&pid!=='yajitatami'&&pid!=='doubleback'){
 							assert_equal_board(bd,bd2);
 						}
 					});

@@ -512,15 +512,26 @@ Encode:{
 		}
 		this.outbstr = bstr.substr(i+1);
 	},
-	encodeQues : function(val){
+	encodeQues : function(val, skipnone){
 		var cm = "", num=0, pass=0, twi=[16,8,4,2,1], bd = this.board;
+		var found = false;
 		for(var c=0;c<bd.cell.length;c++){
-			if(bd.cell[c].ques===val){ pass+=twi[num];} num++;
-			if(num===5){ cm += pass.toString(32); num=0; pass=0;}
+			if(bd.cell[c].ques===val){
+				pass+=twi[num];
+				found = true;
+			}
+			num++;
+			if(num===5){
+				cm += pass.toString(32);
+				num=0;
+				pass=0;
+			}
 		}
 		if(num>0){ cm += pass.toString(32);}
 
-		this.outbstr += cm;
+		if(found || !skipnone){
+			this.outbstr += cm;
+		}
 	},
 	decodeIce : function(){
 		this.decodeQues(6);
@@ -532,7 +543,7 @@ Encode:{
 		this.decodeQues(7);
 	},
 	encodeEmpty : function(){
-		this.encodeQues(7);
+		this.encodeQues(7, true);
 	},
 
 	//---------------------------------------------------------------------------
