@@ -572,12 +572,14 @@ MouseEvent:{
 		else if(this.mousemove && !cell0.isnull && !cell.isDestination()){
 			var border = this.prevPos.getnb(pos);
 			if(!border.isnull && ((!border.isLine() && cell.lcnt===0) || (border.isLine() && cell0.lcnt===1))){
-				this.mouseCell = cell;
-				this.prevPos = pos;
 				var old = border.isLine();
 				if(!old){ border.setLine();}else{ border.removeLine();}
-				if(old===border.isLine()){ this.mousereset(); cell0.draw(); return;}
-				border.draw();
+				this.puzzle.opemgr.changeflag = true;
+				if(old!==border.isLine()){
+					this.mouseCell = cell;
+					this.prevPos = pos;
+					border.draw();
+				}
 			}
 		}
 	},
