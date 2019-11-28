@@ -150,6 +150,13 @@ CellList:{
 		return count;
 	}
 },
+
+Border:{
+	prehook : {
+		line : function(num){ return this.puzzle.execConfig('dispmove') && this.checkFormCurve(num); }
+	}
+},
+
 Board:{
 	cols : 8,
 	rows : 8,
