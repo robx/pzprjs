@@ -74,10 +74,13 @@ MouseEvent:{
 			if(!border.isnull && ((!border.isLine() && cell.lcnt===0) || (border.isLine() && cell0.lcnt===1))){
 				/* この条件を追加 */
 				if(border.isLine() || border.sidecell[0].distance>0 || border.sidecell[1].distance>0){
-					this.mouseCell = cell;
-					this.prevPos = pos;
-					if(!border.isLine()){ border.setLine();}else{ border.removeLine();}
-					border.draw();
+					var old = border.isLine();
+					if(!old){ border.setLine();}else{ border.removeLine();}
+					if(old!==border.isLine()){
+						this.mouseCell = cell;
+						this.prevPos = pos;
+						border.draw();
+					}
 				}
 			}
 		}
@@ -202,6 +205,14 @@ Cell:{
 	getDeparture : function(){
 		var bd = this.board, path = this.path;
 		return (path!==null ? path.departure : bd.emptycell);
+	}
+},
+Border:{
+	prehook : {
+		line : function(num){
+			return this.puzzle.execConfig('dispmove') && this.checkFormCurve(num) &&
+			!this.sidecell[0].isViaPoint() && !this.sidecell[1].isViaPoint();
+		}
 	}
 },
 Board:{
