@@ -625,6 +625,22 @@ pzpr.classmgr.makeCommon({
 		return false;
 	},
 
+	// Check if adding a line would create a corner in the side cells.
+	checkFormCurve : function(num) {
+		if (num===0) { return false; }
+		for(var i = 0; i <= 1; i++) {
+			if(this.isVert() && (this.sidecell[i].adjborder.top.isLine() ||
+			this.sidecell[i].adjborder.bottom.isLine())) {
+				return true;
+			}
+			if(!this.isVert() && (this.sidecell[i].adjborder.left.isLine() ||
+			this.sidecell[i].adjborder.right.isLine())) {
+				return true;
+			}
+		}
+		return false;
+	},
+
 	// cell.setQues => setCombinedLineから呼ばれる関数 (exist->ex)
 	//  -> cellidの片方がnullになっていることを考慮していません
 	isLineEX : function(){

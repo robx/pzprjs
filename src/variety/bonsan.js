@@ -142,6 +142,11 @@ Cell:{
 	}
 },
 
+Border:{
+	prehook : {
+		line : function(num){ return this.puzzle.execConfig('dispmove') && this.checkFormCurve(num); }
+	}
+},
 "Border@satogaeri":{
 	posthook : {
 		line : function(num){
