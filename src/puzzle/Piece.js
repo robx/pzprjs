@@ -470,6 +470,20 @@ pzpr.classmgr.makeCommon({
 		return cblist;
 	},
 
+	//------------------------------------------------------------------------------------
+	// cell.getOrthogonalCell()  Get an adjacent cell in the direction of the target cell.
+	//------------------------------------------------------------------------------------
+	getOrthogonalCell : function(target) {
+		if(this.bx === target.bx) {
+			if(this.by === target.by) { return this.board.emptycell; }
+			return this.by > target.by ? this.adjacent.top : this.adjacent.bottom;
+		} else if(this.by === target.by) {
+			return this.bx > target.bx ? this.adjacent.left : this.adjacent.right;
+		}
+
+		return this.board.emptycell;
+	},
+
 	//--------------------------------------------------------------------------------
 	// cell.eraseMovedLines()  移動系パズルの丸が消えたとき等、領域に含まれる線を消去する
 	//--------------------------------------------------------------------------------

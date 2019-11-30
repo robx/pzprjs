@@ -558,27 +558,34 @@ MouseEvent:{
 		this.prevPos = pos;
 	},
 	inputMoveLine : function(){
-		var cell = this.getcell();
-		if(cell.isnull){ return;}
+		var moving = true;
+		var targetCell = this.getcell();
 
-		var cell0 = this.mouseCell, pos = cell.getaddr();
-		/* 初回はこの中に入ってきます。 */
-		if(this.mousestart && cell.isDestination()){
-			this.mouseCell = cell;
-			this.prevPos = pos;
-			cell.draw();
-		}
-		/* 移動中の場合 */
-		else if(this.mousemove && !cell0.isnull && !cell.isDestination()){
-			var border = this.prevPos.getnb(pos);
-			if(!border.isnull && ((!border.isLine() && cell.lcnt===0) || (border.isLine() && cell0.lcnt===1))){
-				var old = border.isLine();
-				if(!old){ border.setLine();}else{ border.removeLine();}
-				this.puzzle.opemgr.changeflag = true;
-				if(old!==border.isLine()){
-					this.mouseCell = cell;
-					this.prevPos = pos;
-					border.draw();
+		while(moving) {
+			moving = false;
+			var cell = this.mouseCell && !this.mousestart ? this.mouseCell.getOrthogonalCell(targetCell) : targetCell;
+			if(cell.isnull){ return;}
+
+			var cell0 = this.mouseCell, pos = cell.getaddr();
+			/* 初回はこの中に入ってきます。 */
+			if(this.mousestart && cell.isDestination()){
+				this.mouseCell = cell;
+				this.prevPos = pos;
+				cell.draw();
+			}
+			/* 移動中の場合 */
+			else if(this.mousemove && !cell0.isnull && !cell.isDestination()){
+				var border = this.prevPos.getnb(pos);
+				if(!border.isnull && ((!border.isLine() && cell.lcnt===0) || (border.isLine() && cell0.lcnt===1))){
+					var old = border.isLine();
+					if(!old){ border.setLine();}else{ border.removeLine();}
+					this.puzzle.opemgr.changeflag = true;
+					if(old!==border.isLine()){
+						this.mouseCell = cell;
+						this.prevPos = pos;
+						border.draw();
+						moving = true;
+					}
 				}
 			}
 		}
