@@ -51,7 +51,7 @@ function startPuzzle(){
 	pzpr.connectKeyEvents(puzzle);
 
 	/* パズルオブジェクト作成〜open()間に呼ぶ */
-	ui.event.onload_func();
+	ui.event.onload_func(onload_option);
 
 	// 単体初期化処理のルーチンへ
 	puzzle.once('fail-open', failOpen);

@@ -23,6 +23,7 @@ window.ui = {
 	/* メンバオブジェクト */
 	event     : null,
 	menuconfig: null,
+	urlconfig : null,
 	menuarea  : null,
 	toolarea  : null,
 	popupmgr  : null,
@@ -87,7 +88,8 @@ window.ui = {
 	adjustcellsize : function(){
 		var puzzle = ui.puzzle, pc = puzzle.painter;
 		var cols = pc.getCanvasCols() + ui.getBoardPadding()*2;
-		var wwidth = ui.windowWidth()-6, mwidth;	//  margin/borderがあるので、適当に引いておく
+		var wwidth = ui.windowWidth() - (ui.urlconfig.embed ? 0 : 6);
+		var mwidth;	//  margin/borderがあるので、適当に引いておく
 		var uiconf = ui.menuconfig;
 
 		var cellsize, cellsizeval = uiconf.get('cellsizeval');
@@ -125,6 +127,9 @@ window.ui = {
 		// mainのサイズ変更
 		if(!pc.outputImage){
 			getEL('main').style.width = ''+(mwidth|0)+'px';
+			if(ui.urlconfig.embed){
+				getEL('main').style.border = 'none';
+			}
 		}
 
 		puzzle.setCanvasSizeByCellSize(cellsize);

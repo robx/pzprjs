@@ -6,6 +6,7 @@ exports.files = [
 	"ui/Event",
 	"ui/Listener",
 	"ui/MenuConfig",
+	"ui/UrlConfig",
 	"ui/Misc",
 	"ui/MenuArea",
 	"ui/PopupMenu",

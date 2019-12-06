@@ -19,7 +19,11 @@ ui.misc = {
 		var titleEL = _doc.getElementById('title2');
 		titleEL.innerHTML = title;
 
-		_doc.body.style.backgroundImage = "url("+this.bgimage(pid)+")";
+		if(ui.urlconfig.embed){
+			_doc.body.style.background = "white";
+		} else {
+			_doc.body.style.backgroundImage = "url("+this.bgimage(pid)+")";
+		}
 	},
 	bgimage : function(pid){
 		return toBGimage(pid);

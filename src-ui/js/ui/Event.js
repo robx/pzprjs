@@ -65,9 +65,10 @@ ui.event =
 	// event.onload_func()   ウィンドウを開いた時に呼ばれる関数
 	// event.onunload_func() ウィンドウをクローズする前に呼ばれる関数
 	//---------------------------------------------------------------------------
-	onload_func : function(){
+	onload_func : function(onload_option){
 		ui.initFileReadMethod();
 
+		ui.urlconfig.init(onload_option);
 		ui.menuconfig.restore();
 
 		ui.listener.setListeners(ui.puzzle);
