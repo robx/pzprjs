@@ -388,10 +388,10 @@ AnsCheck:{
 },
 
 FailCode:{
-	anLineLt : ["(please translate) The number of line segments is not correct.","The number of line segments is not correct."],
-	anLineGt : ["(please translate) The number of line segments is not correct.","The number of line segments is not correct."],
-	shInside : ["(please translate) A shaded cell is inside of the loop.","A shaded cell is inside of the loop."],
-	cuOutside : ["(please translate) An unshaded cell is outside of the loop.","An unshaded cell is outside of the loop."]
+	anLineLt : ["矢印の方向にあるループの長さが数字よりも短いです。","The number of line segments is not correct."],
+	anLineGt : ["矢印の方向にあるループの長さが数字よりも長いです。","The number of line segments is not correct."],
+	shInside : ["黒マスがループの中にあります。","A shaded cell is inside of the loop."],
+	cuOutside : ["白マスがループの外にあります。","An unshaded cell is outside of the loop."]
 }
 
 }));
