@@ -37,6 +37,9 @@
 * URL output generates a clickable link
 * File output puts file contents into copyable text areas
 * Improved background image rendering (crisp edges)
+* Disable certain touch events (e.g., tap and drag to zoom) on puzzle
+  applet.
+* Add `embed=yes` for improved applet embedding.
 
 #### BugFix
 
