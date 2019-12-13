@@ -485,7 +485,12 @@ OperationManager:{
 			this.lastope = newope;
 		}
 		else{
-			/* 前の履歴を更新したときは何もしない */
+			/* merged into previous operation, remove if noop */
+			if(this.lastope.isNoop && this.lastope.isNoop()){
+				this.history.pop();
+				this.position--;
+				this.lastope = null;
+			}
 		}
 
 		if(newope.property!=='qcmp' && newope.property!=='snum'){
