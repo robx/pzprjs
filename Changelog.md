@@ -50,6 +50,7 @@
 * heteromino: Don't compare shapes of non-triminos
 * kinkonkan: Fix answer check for large clues
 * nagare: Allow cross input mode to remove aux marks
+* nanro: Fix entering 11 and 22
 * nawabari: Fix answer check for border clues
 * nawabari: Correct English translation
 * nawabari and related puzzles, editor: Remove answer lines from invalid cells
