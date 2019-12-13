@@ -420,6 +420,9 @@ Board:{
 	// bd.operate()  BoardExecの拡大縮小・回転反転処理を実行する
 	//---------------------------------------------------------------------------
 	operate : function(type){
+		if(this.trialstage>0 && this.exec.isBoardOp(type)){
+			throw "board operations are not possible in trial mode";
+		}
 		this.exec.execadjust(type);
 	},
 

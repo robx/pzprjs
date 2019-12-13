@@ -73,12 +73,16 @@ BoardExec:{
 		excell : {1:true}
 	},
 
+	isBoardOp : function(name){
+		return !!this.boardtype[name];
+	},
+
 	//------------------------------------------------------------------------------
 	// bd.exec.execadjust()   盤面の調整、回転、反転で対応する関数へジャンプする
 	// bd.exec.execadjust_main() 盤面の調整、回転、反転処理の実行部
 	//------------------------------------------------------------------------------
 	execadjust : function(name){
-		if(!this.boardtype[name]){ return;}
+		if(!this.isBoardOp(name)){ return;}
 
 		var puzzle = this.puzzle, bd = this.board;
 		if(name.indexOf("reduce")===0){
