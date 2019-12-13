@@ -191,6 +191,12 @@ ui.menuarea = {
 		}
 	},
 	setdisplay : function(idname){
+		if(idname==='trialmode'){
+			var trial = ui.puzzle.board.trialstage > 0;
+			getEL("menu_adjust").className = (trial ? "disabled" : "");
+			getEL("menu_turnflip").className = (trial ? "disabled" : "");
+		}
+
 		if(idname==="toolarea"){
 			var str;
 			if(!ui.menuconfig.get("toolarea")){ str = ui.selectStr("ツールエリアを表示","Show tool area");}
