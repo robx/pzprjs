@@ -58,6 +58,7 @@
 * roma: Fix "Check route" input mode
 * shakashaka: Allow drawing diagonal rooms around dotted cells
 * tentaisho: Fix "Draft cells" input mode
+* yajilin: Fix "Gray Background" button sync
 * yajitatami: Fix error color for border crossing
 * Fix interaction of "Clear Answer" and trial mode
 * Don't scroll on space input
