@@ -370,10 +370,10 @@ AnsCheck:{
 },
 
 FailCode:{
-	csNoSupport: ["(please translate) A water cell is next to or above an empty cell.","A water cell is next to or above an empty cell."],
-	csNoLevel: ["(please translate) A body of water has different surface levels.","A body of water has different surface levels."],
-	bkNoLevel: ["(please translate) A region has different water surface levels.","A region has different water surface levels."],
-	exShadeNe: ["(please translate) The number of shaded cells in the row or column is not correct.","The number of shaded cells in the row or column is not correct."]
+	csNoSupport: ["水の入っているマスの隣や下のマスが空白になっています。","A water cell is next to or above an empty cell."],
+	csNoLevel: ["一繋がりの水のマスの水位が等しくなっていません。","A body of water has different surface levels."],
+	bkNoLevel: ["同じブロック内で、水のマスの水位が等しくないブロックがあります。","A region has different water surface levels."],
+	exShadeNe: ["行・列内にある水のマスの数と外の数字が異なります。","The number of shaded cells in the row or column is not correct."]
 }
 
 }));
