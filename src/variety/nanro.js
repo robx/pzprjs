@@ -76,12 +76,9 @@ KeyEvent:{
 	},
 	key_view : function(ca){
 		if(this.puzzle.playmode){
-			var cell = this.cursor.getc();
 			if     (ca==='q'||ca==='a'||ca==='z')          { ca='s1';}
 			else if(ca==='w'||ca==='s'||ca==='x')          { ca='s2';}
 			else if(ca==='e'||ca==='d'||ca==='c'||ca==='-'){ ca=' '; }
-			else if(ca==='1' && cell.anum===1)             { ca='s1';}
-			else if(ca==='2' && cell.anum===2)             { ca='s2';}
 		}
 		this.key_inputqnum(ca);
 	}
