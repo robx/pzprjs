@@ -59,7 +59,7 @@ ui.menuconfig = {
 	sync : function(){
 		var idname = null;
 		switch(ui.puzzle.pid){
-			case 'yajirin':   idname = 'disptype_yajilin';   break;
+			case 'yajilin':   idname = 'disptype_yajilin';   break;
 			case 'pipelinkr': idname = 'disptype_pipelinkr'; break;
 			case 'bosanowa':  idname = 'disptype_bosanowa';  break;
 			case 'arukone':   idname = 'passallcell';        break;
