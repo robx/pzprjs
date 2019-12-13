@@ -238,6 +238,8 @@ LineGraph:{
 	setExtraData : function(component){
 		this.common.setExtraData.call(this, component);
 
+		component.clist.each(function(cell){ if(!(cell.qnum>=0)){ cell.distance = null; }});
+
 		var cell = component.departure, num = cell.qnum;
 		num = (num>=0 ? num : this.board.cell.length);
 		cell.distance = (num+1)*num/2;
@@ -320,8 +322,8 @@ Graphic:{
 			else if(info===-1){ return this.noerrcolor;}
 			else if(border.trial){ return (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
 
-			var cells = border.sidecell;
-			var isvalidline = (cells[0].distance>=0 && cells[1].distance>=0);
+			var dists = [border.sidecell[0].distance, border.sidecell[1].distance];
+			var isvalidline = (dists[0]!==null&&dists[0]>=0&&dists[1]!==null&&dists[1]>=0);
 			if(this.puzzle.execConfig('dispmove')){
 				return (isvalidline ? this.movelinecolor : this.errlinecolor);
 			}
