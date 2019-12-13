@@ -26,6 +26,8 @@
   hide redundant dots
 * tentaisho: Allow empty cells
 * yajilin: Allow crossmark-input in auto-mode on right click.
+* yinyang: Rework play input, removing keyboard input and cell focus.
+* yinyang: Add auxiliary border input.
 * Change default value of "shade undefined cells" back to `true`
 * Change unshaded cells without changing shaded cells in checkerboard
   puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
