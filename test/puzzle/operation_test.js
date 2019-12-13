@@ -217,11 +217,9 @@ describe('Trial mode test', function(){
 		assert.equal(puzzle.opemgr.history[0][0].old, -1);
 		assert.equal(puzzle.opemgr.history[0][0].num, 3);
 
-		puzzle.mouse.inputPath(3,3); // click -> -1
+		puzzle.mouse.inputPath(3,3); // click -> -1, noop removed from history
 		assert.equal(puzzle.board.getc(3,3).anum, -1)
-		assert.equal(puzzle.opemgr.history.length, 1);
-		assert.equal(puzzle.opemgr.history[0][0].old, -1);
-		assert.equal(puzzle.opemgr.history[0][0].num, -1);
+		assert.equal(puzzle.opemgr.history.length, 0);
 	});
 
 	it('Number input test, cycle num -> num', function(){
@@ -267,10 +265,8 @@ describe('Trial mode test', function(){
 		assert.equal(puzzle.opemgr.history[2][0].old, 1);
 		assert.equal(puzzle.opemgr.history[2][0].num, -1);
 
-		puzzle.mouse.inputPath(3,3); // click -> 1
+		puzzle.mouse.inputPath(3,3); // click -> 1; noop removed from history
 		assert.equal(puzzle.board.getc(3,3).anum, 1)
-		assert.equal(puzzle.opemgr.history.length, 3);
-		assert.equal(puzzle.opemgr.history[2][0].old, 1);
-		assert.equal(puzzle.opemgr.history[2][0].num, 1);
+		assert.equal(puzzle.opemgr.history.length, 2);
 	});
 });
