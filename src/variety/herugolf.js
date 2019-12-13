@@ -352,16 +352,8 @@ Graphic:{
 
 			g.vid = "c_tip_"+cell.id;
 			if(dir!==0){
-				var info = border.error || border.qinfo;
-				if(border.trial && this.puzzle.getConfig('irowake')){ this.addlw=-this.lm;}
-				else if(info===1){ this.addlw=1;}
-				g.lineWidth = this.lw + this.addlw; //LineWidth
-
-				if     (info=== 1)       { g.strokeStyle = this.errlinecolor;}
-				else if(info===-1)       { g.strokeStyle = this.noerrcolor;}
-				else if(border.trial)    { g.strokeStyle = (this.puzzle.execConfig('dispmove') ? this.movetrialcolor : this.trialcolor);}
-				else if(cell.distance>=0){ g.strokeStyle = this.linecolor;}
-				else                     { g.strokeStyle = this.invalidlinecolor;}
+				g.strokeStyle = this.getLineColor(border);
+				g.lineWidth = this.lw + this.addlw;
 
 				g.beginPath();
 				var px = cell.bx*this.bw+1, py = cell.by*this.bh+1;
