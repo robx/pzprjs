@@ -9,17 +9,25 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
-	inputModes : {edit:['circle-shade','circle-unshade','clear'],play:['copycircle','circle-shade','circle-unshade','clear']},
+	inputModes : {edit:['circle-shade','circle-unshade','clear'],play:['copycircle','circle-shade','circle-unshade','border','subline','clear']},
 	mouseinput_other : function(){
 		if(this.inputMode==='copycircle'){ this.dragmarks();}
 	},
 	mouseinput_auto : function(){
-		if(this.mousestart || this.mousemove){
+		if(this.puzzle.playmode && (this.mousestart || this.mousemove)){
+			if(this.btn==='left'){
+				this.dragmarks();
+			}
+			else if(this.btn==='right'){
+				if(this.isBorderMode()){ this.inputborder();}
+				else                   { this.inputQsubLine();}
+			}
+		}
+		else if(this.mousestart || this.mousemove){
 			this.dragmarks();
 		}
 		else if(this.mouseend && this.notInputted()){
-			this.mouseCell = this.board.emptycell;	// Reset current mouseCell
-			this.inputqnum();
+			this.inputqnum_main(this.getcell());
 		}
 	},
 
@@ -46,8 +54,12 @@ Cell:{
 
 	maxnum : 2
 },
+
 Board:{
+	hasborder : 1,
+
 	disable_subclear : true,
+
 	addExtraInfo : function(){
 		this.yingraph  = this.addInfoList(this.klass.AreaYinGraph);
 		this.yanggraph = this.addInfoList(this.klass.AreaYangGraph);
@@ -77,15 +89,20 @@ Board:{
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
+	bordercolor_func : "qans",
+
 	paint : function(){
 		this.drawBGCells();
 		this.drawGrid();
+
+		this.drawBorders();
+		this.drawBorderQsubs();
 
 		this.drawCircles();
 
 		this.drawChassis();
 
-		this.drawCursor();
+		this.drawTarget();
 	},
 
 	getBGCellColor_error1 : function(cell){
