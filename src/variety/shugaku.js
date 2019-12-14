@@ -458,12 +458,12 @@ AnsCheck:{
 },
 
 FailCode:{
-	csDivide : ["通路が分断されています。","Aisle is divided."],
+	csDivide : ["通路が分断されています。","Tha aisle is divided."],
 	nmPillowGt : ["柱のまわりにある枕の数が間違っています。", "The number of pillows around the number is wrong."],
 	nmPillowLt : ["柱のまわりにある枕の数が間違っています。", "The number of pillows around the number is wrong."],
-	kitamakura : ["北枕になっている布団があります。", "There is a 'Kita-makura' futon."],
+	kitamakura : ["北枕になっている布団があります。", "There is a futon that faces down."],
 	futonHalf  : ["布団が2マスになっていません。", "There is a half-size futon."],
-	futonMidPos: ["通路に接していない布団があります。", "There is a futon separated to aisle."],
+	futonMidPos: ["通路に接していない布団があります。", "There is a futon that is not connected to the aisle."],
 	ceEmpty : ["布団でも黒マスでもないマスがあります。", "There is an empty cell."]
 }
 }));
