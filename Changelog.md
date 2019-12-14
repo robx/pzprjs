@@ -60,6 +60,7 @@
 * tentaisho: Fix "Draft cells" input mode
 * yajilin: Fix "Gray Background" button sync
 * yajitatami: Fix error color for border crossing
+* yosenabe: Remove lines when deleting circle, fixing buggy behaviour
 * Fix interaction of "Clear Answer" and trial mode
 * Don't scroll on space input
 * Fix sticky undo/redo
