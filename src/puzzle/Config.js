@@ -61,6 +61,7 @@ Config.prototype =
 		/* puzzle variant rules; must defaut to false */
 		this.add('dontpassallcell', false, {variant:true});		/* arukone: don't require passing all cells */
 		this.add('aquarium_regions', false, {variant:true});	/* aquarium: Rule variation for disconnected cells in one region */
+		this.add('country_empty', false, {variant:true});
 
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
@@ -234,6 +235,7 @@ Config.prototype =
 			case 'forceallcell': exec = (pid==="fillomino"); break;
 			case 'dontpassallcell': exec = (pid==="arukone"); break;
 			case 'aquarium_regions': exec = (pid==="aquarium"); break;
+			case 'country_empty': exec = (pid==="country"); break;
 			default: exec = !!this.list[name];
 		}
 		return exec;

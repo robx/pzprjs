@@ -288,6 +288,22 @@ FileIO:{
 		this.encodeObj(func, 'obj', -1, -1, this.board.maxbx-1, this.board.maxby-1);
 	},
 
+	decodeFlags : function(){
+		var flags = this.readLine().split(',');
+		for(var i=0; i<flags.length; i++){
+			this.puzzle.setConfig(flags[i], true);
+		}
+	},
+	encodeFlags : function(flagnames){
+		var flags=[];
+		for(var i=0; i<flagnames.length; i++){
+			if(this.puzzle.getConfig(flagnames[i])){
+				flags.push(flagnames[i]);
+			}
+		}
+		this.writeLine(flags.join(','));
+        },
+
 	//---------------------------------------------------------------------------
 	// fio.decodeCellXMLBoard()  配列で、個別文字列から個別セルの設定を行う (XML board用)
 	// fio.decodeCellXMLBrow()   配列で、個別文字列から個別セルの設定を行う (XML board用)

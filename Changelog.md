@@ -16,6 +16,7 @@
 * amibo, juosan, kusabi, mashu, shugaku, starbattle: Reword English error messages
 * ayeheya: Replace check for rectangular room by check for symmetric room
 * cbblock: Add error for dead-end walls
+* country: Add variant rule that allows empty areas
 * heyawake: Don't autocheck until the grid is fully decided
 * heyawake: Don't insist on rectangular rooms, and treat
   heyawacky as an alias, for consistency with pzv.jp

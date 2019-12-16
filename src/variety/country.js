@@ -282,6 +282,7 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
+		if     (this.pid==='country') { this.puzzle.setConfig('country_empty', this.checkpflag('e'));}
 		this.decodeBorder();
 		if     (this.pid==='country') { this.decodeRoomNumber16();}
 		else if(this.pid==='moonsun') { this.decodeCircle();}
@@ -289,6 +290,7 @@ Encode:{
 		else if(this.pid==='doubleback'){ this.decodeEmpty();}
 	},
 	encodePzpr : function(type){
+		if     (this.pid==='country') { this.outpflag = this.puzzle.getConfig('country_empty') ? 'e' : null;}
 		this.encodeBorder();
 		if     (this.pid==='country') { this.encodeRoomNumber16();}
 		else if(this.pid==='moonsun') { this.encodeCircle();}
@@ -299,12 +301,19 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
+		if(this.pid==='country'&&this.filever>=1){
+			this.decodeFlags();
+		}
 		this.decodeAreaRoom();
 		this.decodeCellQnum();
 		this.decodeBorderLine();
 		if(this.pid!=='onsen'){ this.decodeCellQsub();}
 	},
 	encodeData : function(){
+		if(this.pid==='country'){
+			this.filever = 1;
+			this.encodeFlags(['country_empty']);
+		}
 		this.encodeAreaRoom();
 		this.encodeCellQnum();
 		this.encodeBorderLine();
@@ -380,6 +389,7 @@ FileIO:{
 },
 AnsCheck:{
 	checkNoRoadCountry : function(){
+		if(this.puzzle.getConfig('country_empty')){ return;}
 		this.checkLinesInArea(this.board.roommgr, function(w,h,a,n){ return (a!==0);}, "bkNoLine");
 	},
 	checkRoomPassOnce : function(){
