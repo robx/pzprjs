@@ -127,35 +127,23 @@ AreaRoomGraph:{
 Graphic:{
 	autocmp : 'room',
 
+	gridcolor_type : "DARK",
+
+	qanscolor : "rgb(96, 96, 96)",
+	shadecolor : "rgb(96, 96, 96)",
+	qcmpbgcolor : "rgb(96, 255, 160)",
+	bgcellcolor_func : "qcmp",
+
 	paint : function(){
 		this.drawBGCells();
-		if(this.pid==='lits'){ this.drawShadedCells();}
-		if(this.pid==='lits'){ this.drawDotCells(false);}
+		this.drawShadedCells();
+		this.drawDotCells(false);
 		this.drawGrid();
-		if(this.pid==='norinori'){ this.drawShadedCells();}
 
 		this.drawBorders();
 
 		this.drawChassis();
-
-		if(this.pid==='norinori'){ this.drawBoxBorders(false);}
 	}
-},
-"Graphic@lits":{
-	gridcolor_type : "DARK",
-
-	qanscolor : "black",
-	shadecolor : "rgb(96, 96, 96)",
-	qcmpbgcolor : "rgb(96, 255, 160)",
-	bgcellcolor_func : "qcmp"
-},
-"Graphic@norinori":{
-	gridcolor_type : "LIGHT",
-
-	enablebcolor : true,
-	bcolor : "rgb(96, 224, 160)",
-	qcmpbgcolor : "rgb(96, 255, 160)",
-	bgcellcolor_func : "qcmp1"
 },
 
 //---------------------------------------------------------
