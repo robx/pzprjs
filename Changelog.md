@@ -42,6 +42,7 @@
 * Disable certain touch events (e.g., tap and drag to zoom) on puzzle
   applet.
 * Add `embed=yes` for improved applet embedding.
+* Display variant rules more clearly.
 
 #### BugFix
 

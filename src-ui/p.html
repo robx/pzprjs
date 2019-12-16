@@ -179,8 +179,6 @@
      <li class="check" data-config="multierr"><span>__複数エラー検出__Check multiple errors__</span></li>
      <li class="check" data-config="allowempty"><span>__空盤面でも正解許可__Allow empty board__</span></li>
      <li class="check" data-config="forceallcell"><span>__全マス数字必須__Number in all cells__</span></li>
-     <li class="check" data-config="passallcell"><span>__全交差点通過__Pass all crossings__</span></li>
-     <li class="check" data-config="aquarium_regions"><span>__Regions have same surface__Regions have same surface__</span></li> <!-- please translate -->
      <li class="check" data-config="dirauxmark"><span>__方向の補助記号__Direction Aux. Mark__</span></li>
      <li class="check" data-config="enline"><span>__線は点の間__Line between points__</span></li>
      <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
@@ -388,18 +386,6 @@
         <span>__全てのマスに数字が入った場合のみ正解とする__Force each cell to have a number__</span>
       </label>
     </div>
-    <div class="config" data-config="passallcell">
-      <label>
-        <input type="checkbox">
-        <span>__全ての交差点に線が通過した場合のみ正解とする__Lines should pass all crossings__</span>
-      </label>
-    </div>
-    <div class="config" data-config="aquarium_regions">
-      <label>
-        <input type="checkbox">
-        <span>__同一領域内の水面の高さがすべて等しい場合のみ正解とする__Water in one region must have the same surface level__</span>
-      </label>
-    </div>
     <div class="config" data-config="snakebd">
       <label>
         <input type="checkbox">
@@ -445,7 +431,22 @@
       <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the block colors__</button>
     </div>
   </div>
-  <hr id="separator2">
+  <hr class="separator" id="separator1">
+  <div id="variantpanel" style="display:none;">
+    <div class="config" data-config="dontpassallcell">
+      <label>
+        <input type="checkbox">
+        <span>__(please translate) Lines need not pass all crossings__Lines need not pass all crossings__</span>
+      </label>
+    </div>
+    <div class="config" data-config="aquarium_regions">
+      <label>
+        <input type="checkbox">
+        <span>__同一領域内の水面の高さがすべて等しい場合のみ正解とする__Water in one region must have the same surface level__</span>
+      </label>
+    </div>
+  </div>
+  <hr class="separator" id="separator2">
   <div id="timerpanel">経過時間：00:00</div>
 </div>
 

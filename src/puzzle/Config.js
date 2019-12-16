@@ -57,8 +57,10 @@ Config.prototype =
 		this.add('multierr', false);		/* エラー判定で複数エラーを出力する */
 		this.add('allowempty', false);		/* 盤面に線や黒マスがなくても正解と判定する */
 		this.add('forceallcell', false);	/* fillomino: すべての数字が入っている時のみ正解とする */
-		this.add('passallcell', true);		/* arukone: すべてのセルに線が通っている時のみ正解とする */
-		this.add('aquarium_regions', false);	/* aquarium: Rule variation for disconnected cells in one region */
+
+		/* puzzle variant rules; must defaut to false */
+		this.add('dontpassallcell', false, {variant:true});		/* arukone: don't require passing all cells */
+		this.add('aquarium_regions', false, {variant:true});	/* aquarium: Rule variation for disconnected cells in one region */
 
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
@@ -72,6 +74,7 @@ Config.prototype =
 		var item = {val:defvalue, defval:defvalue, volatile:!!extoption.volatile};
 		if(!!extoption.option){ item.option = extoption.option;}
 		if(!!extoption.variety){ item.variety = {};}
+		if(!!extoption.variant){ item.variant = true;}
 		this.list[name] = item;
 	},
 
@@ -87,7 +90,6 @@ Config.prototype =
 		}
 		return name;
 	},
-	getCurrnetName : function(name){ return this.getgetCurrentName(name);},
 	getNormalizedName : function(argname){
 		var info = {name:argname};
 		if(argname.match(/\@/)){
@@ -142,6 +144,21 @@ Config.prototype =
 		var conf = {};
 		for(var idname in this.list){
 			if(this.getexec(idname)){ conf[idname] = this.get(idname);}
+		}
+		return conf;
+	},
+
+	getvariant : function(name){
+		var item = this.list[name];
+		if(!item){ return null;}
+		return item.variant;
+	},
+	getVariants : function(){
+		var conf = {};
+		for(var key in this.list){
+			var item = this.list[key];
+			if(!item.variant){ continue;}
+			if(this.getexec(key)){ conf[key] = this.get(key);}
 		}
 		return conf;
 	},
@@ -215,7 +232,7 @@ Config.prototype =
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
 			case 'uramashu': exec = (pid==="mashu"); break;
 			case 'forceallcell': exec = (pid==="fillomino"); break;
-			case 'passallcell': exec = (pid==="arukone"); break;
+			case 'dontpassallcell': exec = (pid==="arukone"); break;
 			case 'aquarium_regions': exec = (pid==="aquarium"); break;
 			default: exec = !!this.list[name];
 		}

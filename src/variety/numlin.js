@@ -170,12 +170,12 @@ Graphic:{
 	decodePzpr : function(type){
 		this.decodeNumber16();
 
-		this.puzzle.setConfig('passallcell', !this.checkpflag('e'));
+		this.puzzle.setConfig('dontpassallcell', this.checkpflag('e'));
 	},
 	encodePzpr : function(type){
 		this.encodeNumber16();
 
-		this.outpflag = (this.puzzle.getConfig('passallcell')?null:'e');
+		this.outpflag = (this.puzzle.getConfig('dontpassallcell')?'e':null);
 	}
 },
 //---------------------------------------------------------
@@ -223,10 +223,10 @@ Graphic:{
 
 	decodeConfig : function(){
 		var disptype = this.readLine();
-		this.puzzle.setConfig('passallcell', (disptype==='passallcell'));
+		this.puzzle.setConfig('dontpassallcell', (disptype!=='passallcell'));
 	},
 	encodeConfig : function(){
-		var disptype = (this.puzzle.getConfig('passallcell') ? 'passallcell' : 'allowempty');
+		var disptype = (this.puzzle.getConfig('dontpassallcell') ? 'dontpassallcell' : 'passallcell');
 		this.writeLine(disptype);
 	},
 	decodeCellQnum_letter : function(){
@@ -269,7 +269,7 @@ AnsCheck:{
 		this.checkSameObjectInRoom(this.board.linegraph, function(cell){ return cell.qnum;}, "nmConnDiff");
 	},
 	checkNoLine_arukone : function(){
-		if(this.puzzle.getConfig('passallcell')){ this.checkNoLine();}
+		if(!this.puzzle.getConfig('dontpassallcell')){ this.checkNoLine();}
 	}
 },
 

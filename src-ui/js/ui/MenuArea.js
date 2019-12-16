@@ -224,7 +224,7 @@ ui.menuarea = {
 			else if(!!menuitem.el){
 				var cname = (ui.menuconfig.get(idname) ? "checked" : "check");
 				var disabled = null;
-				if(idname==="passallcell"||idname==="aquarium_regions"){ disabled = !ui.puzzle.editmode;}
+				if(ui.puzzle.config.getvariant(idname)){ disabled = !ui.puzzle.editmode;}
 				if(disabled===true){ cname += " disabled";}
 
 				menuitem.el.className = cname;

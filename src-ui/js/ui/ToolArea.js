@@ -15,7 +15,8 @@ ui.toolarea = {
 			this.items = {};
 			this.walkElement(getEL("usepanel"));
 			this.walkElement(getEL("checkpanel"));
-			this.walkElement(getEL('btnarea'));
+			this.walkElement(getEL("variantpanel"));
+			this.walkElement(getEL("btnarea"));
 		}
 		ui.misc.displayByPid(getEL("checkpanel"));
 		ui.misc.displayByPid(getEL("btnarea"));
@@ -82,17 +83,20 @@ ui.toolarea = {
 
 	//---------------------------------------------------------------------------
 	// toolarea.display()    全てのラベルに対して文字列を設定する
+	// toolarea.displayVariantPanel() display the variant panel
 	// toolarea.setdisplay() 管理パネルに表示する文字列を個別に設定する
 	//---------------------------------------------------------------------------
 	display : function(){
 		/* ツールパネル領域 */
 		/* -------------- */
-		var mandisp  = (ui.menuconfig.get("toolarea") ? 'block' : 'none');
+		var mandisp = (ui.menuconfig.get("toolarea") ? 'block' : 'none');
 		getEL('usepanel').style.display = mandisp;
 		getEL('checkpanel').style.display = mandisp;
+
 		/* 経過時間の表示/非表示設定 */
 		getEL('separator2').style.display = (ui.puzzle.playeronly ? "" : "none");
 		getEL('timerpanel').style.display = (ui.puzzle.playeronly ? "block" : "none");
+		this.displayVariantPanel();
 
 		for(var idname in this.items){ this.setdisplay(idname);}
 
@@ -117,6 +121,22 @@ ui.toolarea = {
 			obj.textnode.data = ui.selectStr(obj.str_jp, obj.str_en);
 		}
 	},
+	displayVariantPanel : function(){
+		// display if the type has variants, and we're in edit mode or some
+		// variants are enabled
+		var shouldDisplay = function() {
+			if(!ui.menuconfig.get("toolarea")){ return false;}
+			var variants = ui.puzzle.config.getVariants();
+			if(Object.keys(variants).length <= 0){ return false;}
+			if(!ui.puzzle.playmode){ return true;}
+			for(var key in variants){
+				if(variants[key]){ return true;}
+			}
+		}();
+		var vardisp = shouldDisplay ? 'block' : 'none';
+		getEL('separator1').style.display = vardisp;
+		getEL('variantpanel').style.display = vardisp;
+	},
 	setdisplay : function(idname){
 		if(idname==="operation"){
 			var opemgr = ui.puzzle.opemgr;
@@ -140,6 +160,10 @@ ui.toolarea = {
 			var toolitem = this.items[idname];
 			toolitem.el.style.display = "";
 
+			if(idname==="mode"){
+				this.displayVariantPanel();
+			}
+
 			var disabled = null;
 			/* 子要素の設定を行う */
 			if(!!toolitem.children){
@@ -161,7 +185,7 @@ ui.toolarea = {
 
 				if(idname==="keypopup"){ disabled = !ui.keypopup.paneltype[ui.puzzle.editmode?1:3];}
 				if(idname==="bgcolor") { disabled = ui.puzzle.editmode;}
-				if(idname==="passallcell"||idname==="aquarium_regions"){ disabled = !ui.puzzle.editmode;}
+				if(ui.puzzle.config.getvariant(idname)){ disabled = !ui.puzzle.editmode;}
 				if(disabled!==null){ toolitem.checkbox.disabled = (!disabled ? "" : "true");}
 			}
 
