@@ -20,10 +20,10 @@ Config.prototype =
 		this.list = {};
 
 		/* 盤面表示設定 */
-		this.add('font', 1, {option:[1,2]});					/* 文字の描画 1:ゴシック 2:明朝 */
-		this.add('cursor', true);								/* カーソルの表示 */
-		this.add('irowake', false);								/* 線の色分け */
-		this.add('irowakeblk', false);							/* 黒マスの色分け */
+		this.add('font', 1, {option:[1,2]});			/* 文字の描画 1:ゴシック 2:明朝 */
+		this.add('cursor', true);				/* カーソルの表示 */
+		this.add('irowake', false, {variety:true});		/* 線の色分け */
+		this.add('irowakeblk', false, {variety:true});		/* 黒マスの色分け */
 
 		this.add('dispmove', true);								/* 線で動かすパズルで実際に動いたように描画 */
 		this.add('disptype_yajilin',   1, {option:[1,2]});		/* yajilin: 表示形式 */

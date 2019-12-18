@@ -29,15 +29,16 @@
 * yajilin: Allow crossmark-input in auto-mode on right click.
 * yinyang: Rework play input, removing keyboard input and cell focus.
 * yinyang: Add auxiliary border input.
-* Change default value of "shade undefined cells" back to `true`
+* Change line coloring setting to be per-variety.
+* Change default value of "shade undefined cells" back to `true`.
 * Change unshaded cells without changing shaded cells in checkerboard
-  puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.)
-* Fix various English language typos
-* Allow clicking labels to toggle options
-* URL output properly deals with non-default ports
-* URL output generates a clickable link
-* File output puts file contents into copyable text areas
-* Improved background image rendering (crisp edges)
+  puzzles with right mouse button (Hitori, Heyawake, Yajilin, etc.).
+* Fix various English language typos.
+* Allow clicking labels to toggle options.
+* URL output properly deals with non-default ports.
+* URL output generates a clickable link.
+* File output puts file contents into copyable text areas.
+* Improved background image rendering (crisp edges).
 * Disable certain touch events (e.g., tap and drag to zoom) on puzzle
   applet.
 * Add `embed=yes` for improved applet embedding.
