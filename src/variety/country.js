@@ -84,6 +84,11 @@ KeyEvent:{
 		return Math.min(999, this.room.clist.length);
 	}
 },
+"Cell@country":{
+	minnum : function(){
+		return this.puzzle.getConfig('country_empty') ? 0 : 1;
+	}
+},
 "Cell@moonsun":{
 	disInputHatena : true,
 	numberAsObject : true,
