@@ -59,9 +59,9 @@ Config.prototype =
 		this.add('forceallcell', false);	/* fillomino: すべての数字が入っている時のみ正解とする */
 
 		/* puzzle variant rules; must defaut to false */
-		this.add('dontpassallcell', false, {variant:true});		/* arukone: don't require passing all cells */
-		this.add('aquarium_regions', false, {variant:true});	/* aquarium: Rule variation for disconnected cells in one region */
-		this.add('country_empty', false, {variant:true});
+		this.add('dontpassallcell', false, {variant:true,volatile:true});		/* arukone: don't require passing all cells */
+		this.add('aquarium_regions', false, {variant:true,volatile:true});	/* aquarium: Rule variation for disconnected cells in one region */
+		this.add('country_empty', false, {variant:true,volatile:true});
 
 		/* EDITORのみ */
 		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
