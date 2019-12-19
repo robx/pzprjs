@@ -199,7 +199,10 @@ Config.prototype =
 		}
 		if(!item.option || (item.option.indexOf(newval)>=0)){
 			if(!!item.variety){
-				item.variety[names.pid!==void 0 ? names.pid : this.puzzle.pid] = newval;
+				var pid = names.pid!==void 0 ? names.pid : this.puzzle.pid;
+				if(!!pid){
+					item.variety[pid] = newval;
+				}
 			}
 			else{ item.val = newval;}
 		}
