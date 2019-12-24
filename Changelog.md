@@ -1,3 +1,5 @@
+## Version 0.12.0
+
 #### New puzzle
 
 * aquarium: Introduce new puzzle: Aquarium (due to Lennard Sprong)
