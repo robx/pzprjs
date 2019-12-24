@@ -10,48 +10,102 @@ main {
   padding: 2rem;
   margin: auto;
 }
+iframe {
+  display: block;
+  width: 100%;
+  height: 800px;
+}
+h2 {
+  margin-top: 0.83em;
+  margin-bottom: 0.415em;
+}
+h3 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+h4 {
+  margin-top: 1.33em;
+  margin-bottom: 0.665em;
+}
+h3 + h4 {
+  margin-top: 0.33em;
+}
+hr {
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
 </style>
 </head>
 <body>
 <main>
 <h1>puzz.link</h1>
 
-puzz.link hosts some puzzle things. Currently, that's:
+puzz.link hosts some puzzle things. "Puzzle" here refers to
+<a href="https://www.nikoli.co.jp/">Nikoli</a>/<a href="https://worldpuzzle.org">WPF</a>
+style logic puzzles, for example
+<a href="https://en.wikipedia.org/wiki/Sudoku">Sudoku</a> or <a href="https://en.wikipedia.org/wiki/Slitherlink">Slitherlink</a>.
+<p>
+Currently, you can find
+<ul>
+<li>A tool to share and solve puzzles online</li>
+<li>A database of publicly shared puzzles from across the web.</li>
+</ul>
 
-<h2>A tool to share puzzles online</h2>
-
-puzz.link hosts the <a href="https://github.com/robx/pzprjs">pzprjs applet</a>,
+<h2>The pzprjs applet</h2>
+puzz.link hosts the <a href="https://github.com/robx/pzprjs">robx/pzprjs applet</a>,
 an improved fork of the applet that powers <a href="http://pzv.jp">pzv.jp</a>.
 <p>
-Try solving a <a href="p?masyu/10/10/6000123630000664000026000239000000">Masyu puzzle</a>,
-or explore the <a href="list.html">list of puzzle types</a>. To share a puzzle, create
-it in the editor, then share the link via "File &gt; Export URL".
+For example, the URL
+<a href="https://puzz.link/p?skyscrapers/5/5/g2l2g43l35">puzz.link/p?skyscrapers/5/5/g2l2g43l35</a>
+is a
+<details>
+<summary>Skyscrapers puzzle</summary>
+<iframe src="/p.html?embed=yes&skyscrapers/5/5/g2l2g43l35"></iframe>
+</details>
+<p>
+And <a href="https://puzz.link/p?masyu/10/10/6000123630000664000026000239000000">puzz.link/p?masyu/10/10/6000123630000664000026000239000000</a>
+is a
+<details>
+<summary>Masyu puzzle</summary>
+<iframe src="/p.html?embed=yes&masyu/10/10/6000123630000664000026000239000000"></iframe>
+</details>
+<p>
+You can explore the <a href="list.html">list of puzzle types</a> to reach the editor.
+To share a puzzle, share the link via "File &gt; Export URL".
+
+You can find puzzles that use this applet around the web, for example
+<a href="https://twitter.com/search?q=url:puzz.link&src=typed_query">on Twitter</a>
+or at
+<a href="http://puzsq.sakura.ne.jp/">Puzzle Square JP</a>
+(e.g., the <a href="http://puzsq.sakura.ne.jp/main/index.php?puzzle=132">Geradeweg puzzles</a>).
 
 <h2>The puzz.link puzzle database</h2>
 
 At <a href="/db">puzz.link/db</a>, you can access a database of publicly accessible
 puzzles, found via twitter and puzzle blogs, among others. For example,
-<a href="/db?type=masyu">here</a> are more Masyu puzzles.
+you can find <a href="/db?type=masyu">more Masyu puzzles</a>.
+
+<hr>
 
 <h2 id="terms">Terms, Privacy</h2>
 
-<h4>Puzzle content</h3>
+<h3>Puzzle content</h3>
 
 For all puzzles shared via puzz.link, the copyright lies with their authors. We merely
 serve an interface for solving those puzzles; any issues should be taken up with the
 site hosting the link.
 
-<h4>Privacy</h3>
+<h3>Privacy</h3>
 
-<h5>Puzzle applet</h4>
+<h4>Puzzle applet</h4>
 
 The solving applet at <code>https://puzz.link/p</code> stores user preferences in the
 browser local storage. These preferences are not shared with the puzz.link servers.
 
-Additionally, when logged in to an account at the puzzle database (see below), the
+When logged in to an account at the puzzle database (see below), the
 applet sends information about solved puzzles to the puzz.link servers.
 
-<h5>Puzzle database</h4>
+<h4>Puzzle database</h4>
 
 It's possible to create an account with the puzz.link database at
 <code>https://puzz.link/db</code>. In that case, we store account details to
@@ -68,7 +122,7 @@ will be recorded in your account.
 
 <h2>Contact</h2>
 
-If you have any questions, get in touch at <code>contact at puzz.link</code>.
+If you have any questions or comments, get in touch at <code>contact at puzz.link</code>.
 
 </main>
 </body>
