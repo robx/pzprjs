@@ -28,35 +28,10 @@
   </li><li class="puzmenu" id='puzmenu_extra' data-table='all'>
     <span lang="ja">その他のパズル</span><span lang="en">Other puzzles</span>
   </li><li class="puzmenu" id='puzmenu_add' data-table='all'>
-    <span lang="ja">その他のパズル</span><span lang="en">Added puzzles</span>
-  </li><li class="puzmenu" id="puzmenu_input" data-table='input'>
-    <span lang="ja">データ入力</span><span lang="en">Data input</span></li>
+    <span lang="ja">その他のパズル</span><span lang="en">Added puzzles</span></li>
  </menu>
 
 <br clear="all">
-
-<!-- ////////////////////////////////////////////////////////////////////// -->
-
-<div class="puztable" id="table_input">
-  <div class="sentence">
-   <form name="urlinput">
-    <h4 class="notice_item"><span lang="ja">URLを入力する</span><span lang="en">Import URL</span></h4>
-    <textarea id="urlinput_text" cols="72" rows="4" wrap="hard"></textarea><br>
-    <input type="button" class="btn btn-ok" id="urlinput_btn" value="Import">
-    <input type="reset" class="btn" id="urlinput_clr" value="Clear"><br>
-   </form>
-   <hr>
-   <form name="fileform" id="fileform" action="fileio.cgi" method="post"
-         target="fileiopanel" enctype="multipart/form-data" onsubmit="return false;">
-    <h4 class="notice_item"><span lang="ja">ファイルを読み込む</span><span lang="en">File Input</span></h4>
-    <input type="file" name="filebox" class="btn btn-info" id="filebox"><br>
-    <input type="hidden" name="pencilbox" value="0">
-    <input type="hidden" name="operation" value="open">
-   </form>
-  </div>
-</div>
-
-<!-- ////////////////////////////////////////////////////////////////////// -->
 
 <div class="puztable" id="table_all">
  <div class='container'>
