@@ -18,10 +18,6 @@ self.doclang = JSON.parse(localStorage['pzprv3_config:ui']||'{}').language || pz
 if(location.search==='?en'||location.search==='?ja'){
 	self.doclang = location.search.substr(1,2);
 }
-if(location.href.match(/\/tests\/index/)){
-	self.doclang = 'ja';
-	self.testdoc = true;
-}
 if(location.hostname==='puzz.link'){
 	// puzz.link serves p.html at puzz.link/p
 	self.phtml = "p";

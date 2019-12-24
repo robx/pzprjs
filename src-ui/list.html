@@ -3,7 +3,7 @@
 <HEAD>
 <META CHARSET="utf-8">
 <meta http-equiv="Content-Type" content="text/html">
-<TITLE>PUZ-PRE puzz.link</TITLE>
+<TITLE>puzz.link list of puzzle types</TITLE>
 <link rel="stylesheet" href="./css/v3index.css?<%= git.hash %>">
 <script src="./js/pzpr.js?<%= git.hash %>"></script>
 <script src="./js/v3index.js?<%= git.hash %>"></script>
@@ -12,14 +12,12 @@
 
 <div class=main id=main>
 
-<h2 id="title"><span lang="ja">ぱずぷれv3 エディタリンク</span><span lang="en">PUZ-PRE v3 Editor Link</span></h2>
+<h2 id="title"><span lang="ja">パズルの種類のリスト</span><span lang="en">List of puzzle types</span></h2>
 
 <div id="design1">
 
  <menu class="selector" id="puztypes">
-  <li class="puzmenusel" id="puzmenu_notice" data-table='notice'>
-    <span lang="ja">説明</span><span lang="en">Explanation</span>
-  </li><li class="puzmenu" id='puzmenu_all' data-table='all'>
+  <li class="puzmenusel" id='puzmenu_all' data-table='all'>
     <span lang="ja">全パズル</span><span lang="en">All puzzles</span>
   </li><li class="puzmenu" id='puzmenu_lunch' data-table='all'>
     <span lang="ja">定食パズル</span><span lang="en">Regular puzzles</span>
@@ -36,41 +34,6 @@
  </menu>
 
 <br clear="all">
-
-<!-- ////////////////////////////////////////////////////////////////////// -->
-
-<div class="puztable" id="table_notice">
-  <div class="sentence">
-   <p class=expression>
-    <h4 class="notice_item"></h4>
-    <h4 class="notice_item"><span>About PUZ-PRE v3 (puzz.link)</span></h4>
-    <div style="margin-left:6pt;">
-      <a href="http://pzv.jp">PUZ-PRE v3</a> is a Web application that is for editing and playing pencil puzzles.
-      puzz.link hosts a forked version of PUZ-PRE.
-    </div>
-    <div style="margin-left:6pt; margin-top:6pt;">
-     <a href="javascript:v3index.setlang('en')" lang="ja">to English Menu</a>
-     <a href="javascript:v3index.setlang('ja')" lang="en">to Japanese Menu</a>
-    </div>
-   </p>
-   <hr>
-   <p class=expression style="margin-top:6pt;">
-    <h4 class="notice_item"><span lang="ja">リンク</span><span lang="en">Link</span></h4>
-    <div style="margin-left:6pt;">
-     The original PUZ-PRE v3 is on Github (Download source code etc.) at <a href="https://github.com/sabo2/pzprv3/">sabo2/pzprv3</a>.<br>
-     This fork is on Github at <a href="https://github.com/robx/pzprjs/">robx/pzprjs</a>.<br>
-    </div>
-   </p>
-   <hr>
-   <p class=expression style="margin-top:6pt;">
-    <h4 class="notice_item">LICENCE</h4>
-    <div style="margin-left:6pt;">
-     This script is licensed under the MIT license. See below,<br>
-     <a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a>
-    </div>
-   </p>
-  </div>
-</div>
 
 <!-- ////////////////////////////////////////////////////////////////////// -->
 
@@ -341,12 +304,6 @@
 
 </div><!-- <div id="design1"> -->
 
-</div>
-
-<!-- 隠し要素 -->
-<div id="hidden_element">
-  <!-- ファイル入力用インラインフレーム -->
-  <iframe name="fileiopanel" id="fileiopanel" src="about:blank"></iframe>
 </div>
 
 </BODY>
