@@ -45,8 +45,8 @@ ui.event =
 		this.addEvent(_doc, 'blur', this, this.onblur_func);
 
 		// onresizeイベントを割り当てる
-		var evname = (!pzpr.env.OS.iOS ? 'resize' : 'orientationchange');
-		this.addEvent(window, evname, this, this.onresize_func);
+		this.addEvent(window, 'resize', this, this.onresize_func);
+		this.addEvent(window, 'orientationchange', this, this.onresize_func);
 
 		// onbeforeunloadイベントを割り当てる
 		this.addEvent(window, 'beforeunload', this, this.onbeforeunload_func);
