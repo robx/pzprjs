@@ -190,7 +190,7 @@ describe('Trial mode test', function(){
 
 	// Testing cyclic number input: https://github.com/robx/pzprjs/issues/93
 	it('Number input test, cycle empty -> empty', function(){
-		var puzzle = new pzpr.Puzzle().open('building/3/3');
+		var puzzle = new pzpr.Puzzle().open('skyscrapers/3/3');
 		puzzle.setMode('play');
 
 		puzzle.mouse.inputPath(3,3); // select center cell
@@ -223,7 +223,7 @@ describe('Trial mode test', function(){
 	});
 
 	it('Number input test, cycle num -> num', function(){
-		var puzzle = new pzpr.Puzzle().open('building/3/3');
+		var puzzle = new pzpr.Puzzle().open('skyscrapers/3/3');
 		puzzle.setMode('play');
 
 		// first set things up so we can start cycling from a number

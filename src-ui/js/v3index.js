@@ -271,7 +271,7 @@ var pstate = {
 	trial :['stostone','armyants'],
 	lunch2:['box','lits','kurodoko','goishi'],
 	lunch3:['minarism','factors'],
-	nigun :['creek','mochikoro','tasquare','kurotto','shimaguni','yajikazu','bag','country','reflect','icebarn',
+	nigun :['creek','mochikoro','tasquare','kurotto','shimaguni','yajikazu','cave','country','reflect','icebarn',
 			'firefly','kaero','yosenabe','bdblock','fivecells','sashigane','tatamibari','sukoro',
 			'gokigen','tateyoko','kinkonkan','hebi','makaro','juosan'],
 	omopa :['nuribou','tawa','lookair','paintarea','chocona','kurochute','mejilink',
@@ -281,7 +281,7 @@ var pstate = {
 			'kakuru','view','bosanowa','nanro','cojun','renban','sukororoom','hanare','kazunori',
 			'wagiri','shugaku','hakoiri','roma','toichika','cbblock','nondango','onsen'],
 	orig  :['mochinyoro','ayeheya','aho'],
-	genre :['tapa','arukone','yinyang','building','kropki','starbattle','easyasabc','walllogic'],
+	genre :['tapa','arukone','yinyang','skyscrapers','kropki','starbattle','easyasabc','walllogic'],
 	add   :['angleloop', 'doubleback', 'nurimisaki', 'meander', 'satogaeri', 'scrin', 'heteromino',
 			'yajilin-regions', 'dbchoco', 'geradeweg', 'pencils', 'curvedata', 'aquarium', 'compass', 'castle']
 };

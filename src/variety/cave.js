@@ -1,11 +1,11 @@
 //
-// bag.js
+// cave.js
 //
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['bag'], {
+['cave'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{

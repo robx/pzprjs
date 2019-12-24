@@ -144,10 +144,10 @@ window.ui = {
 			case 'kouchoku': case 'gokigen': case 'wagiri': case 'creek':
 				padding = 0.20; break;
 
-			case 'slither': case 'bag': case 'mejilink':
+			case 'slither': case 'cave': case 'mejilink':
 				padding = 0.15; break;
 
-			case 'kinkonkan': case 'building': case 'easyasabc': case 'box':
+			case 'kinkonkan': case 'skyscrapers': case 'easyasabc': case 'box':
 				padding = 0.05; break;
 
 			case 'bosanowa':

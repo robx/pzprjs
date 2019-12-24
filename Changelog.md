@@ -1,3 +1,5 @@
+* Change canonical names: bag becomes cave, building becomes skyscrapers.
+
 ## Version 0.12.0
 
 #### New puzzle

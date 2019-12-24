@@ -1,11 +1,11 @@
 //
-// パズル固有スクリプト部 ビルディングパズル版 building.js
+// パズル固有スクリプト部 ビルディングパズル版 skyscrapers.js
 //
 (function(pidlist, classbase){
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['building'], {
+['skyscrapers'], {
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
@@ -355,6 +355,6 @@ AnsCheck:{
 },
 
 FailCode:{
-	nmSightNe : ["見えるビルの数が正しくありません。", "The count of seeable buildings is wrong."]
+	nmSightNe : ["見えるビルの数が正しくありません。", "The number of visible buildings is wrong."]
 }
 }));
