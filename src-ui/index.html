@@ -4,9 +4,16 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html">
 <title>puzz.link</title>
+<style>
+main {
+  max-width: 38rem;
+  padding: 2rem;
+  margin: auto;
+}
+</style>
 </head>
 <body>
-
+<main>
 <h1>puzz.link</h1>
 
 puzz.link hosts some puzzle things. Currently, that's:
@@ -26,4 +33,42 @@ At <a href="/db">puzz.link/db</a>, you can access a database of publicly accessi
 puzzles, found via twitter and puzzle blogs, among others. For example,
 <a href="/db?type=masyu">here</a> are more Masyu puzzles.
 
+<h2 id="terms">Terms, Privacy</h2>
+
+<h4>Puzzle content</h3>
+
+For all puzzles shared via puzz.link, the copyright lies with their authors. We merely
+serve an interface for solving those puzzles; any issues should be taken up with the
+site hosting the link.
+
+<h4>Privacy</h3>
+
+<h5>Puzzle applet</h4>
+
+The solving applet at <code>https://puzz.link/p</code> stores user preferences in the
+browser local storage. These preferences are not shared with the puzz.link servers.
+
+Additionally, when logged in to an account at the puzzle database (see below), the
+applet sends information about solved puzzles to the puzz.link servers.
+
+<h5>Puzzle database</h4>
+
+It's possible to create an account with the puzz.link database at
+<code>https://puzz.link/db</code>. In that case, we store account details to
+enable login. You can optionally provide an email address which will be used to
+get in touch for important issues relating to your account, such as password reset.
+<p>
+When you log in to the puzz.link database, we store a session identifier in the
+browser local storage.
+<p>
+When interacting with the puzz.link database while logged in, we store data such
+as tags and solve status as entered while interacting with the database. Furthermore,
+when you solve puzzles using the puzz.link applet while logged in, those solves
+will be recorded in your account.
+
+<h2>Contact</h2>
+
+If you have any questions, get in touch at <code>contact at puzz.link</code>.
+
+</main>
 </body>
