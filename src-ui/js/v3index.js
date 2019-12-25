@@ -42,14 +42,6 @@ function customAttr(el, name){
 v3index.extend({
 	/* onload function */
 	onload_func : function(){
-		if(!window.pzprfaq && !self.input_init()){
-			var el = getEL("puzmenu_input");
-			if(!!el){
-				el.parentNode.removeChild(el);
-				getEL("table_input").style.display = 'none';
-			}
-		}
-
 		Array.prototype.slice.call(_doc.querySelectorAll('#puztypes > li')).forEach(function(el){
 			if(el.id.match(/puzmenu_(.+)$/)){
 				var typename = RegExp.$1;
@@ -62,13 +54,6 @@ v3index.extend({
 
 		self.setTranslation();
 		self.translate();
-	},
-	input_init : function(){
-		var cnt=0;
-		if(self.urlif.init()) { cnt++;}
-		if(self.fileif.init()){ cnt++;}
-
-		return (cnt>0);
 	},
 
 	/* tab-click function */
