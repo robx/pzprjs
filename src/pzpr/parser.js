@@ -68,6 +68,7 @@ URLData = pzpr.parser.URLData = function(url){
 };
 pzpr.parser.URLData.prototype = {
 	pid     : '',
+	mode    : '',
 	type    : URL_AUTO,	/* ==0 */
 	url     : "",
 	qdata   : "",
@@ -141,13 +142,17 @@ pzpr.parser.URLData.prototype = {
 		// ぱずぷれv3の場合
 		else{
 			var qs = url.indexOf("/", url.indexOf("?"));
+			var pid = "";
 			if(qs>-1){
-				this.pid = url.substring(url.indexOf("?")+1,qs);
+				pid = url.substring(url.indexOf("?")+1,qs);
 				this.qdata = url.substr(qs+1);
 			}
 			else{
-				this.pid = url.substr(url.indexOf("?")+1);
+				pid = url.substr(url.indexOf("?")+1);
 			}
+	                if(pid.match(/_edit$/)){ this.mode = 'editor';}
+	                else if(pid.match(/_play$/)){ this.mode = 'player';}
+	                this.pid = pid.replace(/(_edit|_play)$/, '');
 			this.type = URL_PZPRV3;
 		}
 		this.pid = pzpr.variety.toPID(this.pid);
