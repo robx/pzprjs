@@ -84,16 +84,9 @@ function importURL(){
 	// エディタモードかplayerモードか、等を判定する
 	if(search==="test"){ search = 'country_test';}
 
-	var startmode = '';
-	if(search.match(/_edit/)){ startmode = 'EDITOR';}
-	else if(search.match(/_play/)){ startmode = 'PLAYER';}
-
-	search=search.replace(/(_edit|_play)/,'');
-
 	var pzl = pzpr.parser.parseURL(search);
-
-	startmode = startmode || (!pzl.body ? 'EDITOR' : 'PLAYER');
-	if(startmode==='PLAYER'){ onload_option.type = 'player';}
+	var startmode = pzl.mode || (!pzl.body ? 'editor' : 'player');
+	onload_option.type = startmode;
 
 	return pzl;
 }
