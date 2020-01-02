@@ -142,6 +142,7 @@
 		margin-left:auto;
 		margin-right:auto;
 		padding:8px;
+		touch-action:manipulation;
 	}
 	div#btnarea {
 		position : relative;
