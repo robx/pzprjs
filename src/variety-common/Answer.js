@@ -737,7 +737,7 @@ FailCode:{
 	/* ** 単体セルチェック ** */
 	ceNoNum   : ["数字の入っていないマスがあります。","There is an empty cell."],
 	ceNoLine  : ["線が引かれていないマスがあります。","There is an empty cell."],
-	ceAddLine : ["最初から引かれている線があるマスに線が足されています。","Lines are added to the cell that the mark lie in by the question."],
+	ceAddLine : ["最初から引かれている線があるマスに線が足されています。","A cell with given lines has extra lines."],
 
 	anNoArrow : ["矢印がない数字のマスがあります。","A number has no arrow."],
 	anShadeNe : ["矢印の方向にある黒マスの数が正しくありません。","The number of shaded cells is not correct."],
