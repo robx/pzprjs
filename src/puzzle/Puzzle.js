@@ -504,6 +504,8 @@ function setCanvasEvents(puzzle){
 	// キー入力イベントの設定
 	ae("keydown", execKeyDown);
 	ae("keyup",   execKeyUp);
+
+	ae("click", function(e){ e.stopPropagation(); e.preventDefault(); });
 }
 function execMouseDown(e){
 	if(!!this.mouse){ this.mouse.e_mousedown(e);}
