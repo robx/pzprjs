@@ -438,6 +438,7 @@ function setCanvas_main(puzzle, type){
 
 	pzpr.Candle.start(puzzle.canvas, type, function(g){
 		pzpr.util.unselectable(g.canvas);
+		g.canvas.style.touchAction = 'manipulation';
 		g.child.style.pointerEvents = 'none';
 		if(g.use.canvas && !puzzle.subcanvas){
 			var canvas = puzzle.subcanvas = createSubCanvas('canvas');
@@ -499,7 +500,6 @@ function setCanvasEvents(puzzle){
 	ae("mouseup",   execMouseUp);
 	ae("mousecancel", execMouseCancel);
 	puzzle.canvas.oncontextmenu = function(){ return false;};
-	puzzle.canvas.style.touchAction = 'pinch-zoom';
 
 	// キー入力イベントの設定
 	ae("keydown", execKeyDown);
