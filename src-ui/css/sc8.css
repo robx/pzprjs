@@ -1,5 +1,10 @@
 @charset "UTF-8" ;
 
+	html {
+		/* fix iOS text size change on rotation */
+		-webkit-text-size-adjust: 100%;
+	}
+
 	body {
 		margin  : 0pt;
 		padding : 0pt;
