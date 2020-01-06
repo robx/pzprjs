@@ -69,6 +69,7 @@ delete variety.extend;
 	amibo     :[0,0,"あみぼー","Amibo",'amibo'],
 	angleloop :[0,0,"鋭直鈍ループ","Angle Loop",'kouchoku'],
 	aquarium  :[0,0,"アクアプレース","Aquarium",'aquarium'],
+	araf      :[0,0,"相ダ部屋","Araf",'araf'],
 	armyants  :[0,0,"ぐんたいあり","Army Ants",'kaero'],
 	arukone   :[0,0,"アルコネ","Arukone",'numlin'],
 	ayeheya   :[0,1,"∀人∃ＨＥＹＡ","ekawayeh",'heyawake'],
