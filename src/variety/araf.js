@@ -230,7 +230,7 @@ AnsCheck:{
 			var clist = room.clist;
 			var clist2 = clist.filter(function(cell){return cell.qnum>=0;})
 
-			if(clist2.length == 2){
+			if(clist2.length === 2){
 				var roomarea = clist.length;
 				if(roomarea >= clist2[0].qnum && roomarea >= clist2[1].qnum){
 					this.failcode.add("bkArafTooBig");
@@ -249,7 +249,7 @@ AnsCheck:{
 			var clist = room.clist;
 			var clist2 = clist.filter(function(cell){return cell.qnum>=0;})
 
-			if(clist2.length == 2){
+			if(clist2.length === 2){
 				var roomarea = clist.length;
 				if(roomarea <= clist2[0].qnum && roomarea <= clist2[1].qnum){
 					this.failcode.add("bkArafTooSmall");
@@ -266,6 +266,6 @@ FailCode:{
 	bkLessThan2Num  : ["(please translate) An area has less than two numbers.","An area has less than two numbers."],
 	bkMoreThan2Num  : ["(please translate) An area has more than two numbers.","An area has more than two numbers."],
 	bkArafTooBig:     ["(please translate) An area is too big.",  "An area is too big."],
-	bkArafTooSmall:   ["(please translate) An area is too small.","An area is too small."],
+	bkArafTooSmall:   ["(please translate) An area is too small.","An area is too small."]
 }
 }));
