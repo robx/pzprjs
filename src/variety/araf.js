@@ -78,7 +78,7 @@ Encode:{
 	},
 	encodePzpr : function(type){
 		this.encodeNumber16();
-	},
+	}
 },
 
 //---------------------------------------------------------
