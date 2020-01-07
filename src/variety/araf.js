@@ -181,9 +181,9 @@ AnsCheck:{
 },
 
 FailCode:{
-	bkArafTooSmall:   ["(please translate) An area is too small.","An area is too small."],
-	bkArafTooBig:     ["(please translate) An area is too big.",  "An area is too big."],
-	bkLessThan2Num  : ["(please translate) An area has less than two numbers.","An area has less than two numbers."],
-	bkMoreThan2Num  : ["(please translate) An area has more than two numbers.","An area has more than two numbers."]
+	bkArafTooSmall:   ["面積が小さすぎるブロックがあります。","An area is too small."],
+	bkArafTooBig:     ["面積が大きすぎるブロックがあります。",  "An area is too big."],
+	bkLessThan2Num  : ["1つしか数字を含まないブロックがあります。","An area has less than two numbers."],
+	bkMoreThan2Num  : ["3つ以上の数字を含むブロックがあります。","An area has more than two numbers."]
 }
 }));
