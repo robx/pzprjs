@@ -82,6 +82,18 @@ Encode:{
 },
 
 //---------------------------------------------------------
+FileIO:{
+	decodeData : function(){
+		this.decodeCellQnum();
+		this.decodeBorderAns();
+	},
+	encodeData : function(){
+		this.encodeCellQnum();
+		this.encodeBorderAns();
+	}
+}
+
+//---------------------------------------------------------
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
