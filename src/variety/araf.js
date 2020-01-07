@@ -85,10 +85,10 @@ Encode:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkSmallArea",
+		"checkBigArea",
 		"checkLessThan2Num",
 		"checkMoreThan2Num",
-		"checkBigArea",
-		"checkSmallArea",
 		"checkBorderDeadend+"
 	],
 
