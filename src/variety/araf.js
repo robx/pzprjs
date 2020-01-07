@@ -52,7 +52,7 @@ AreaRoomGraph:{
 
 	setExtraData : function(component){
 		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
-		var numlist = clist.filter(function(cell){return cell.qnum>=0;});
+		var numlist = clist.filter(function(cell){return cell.qnum!==-1;});
 		var nums = [];
 
 		for(var i = 0; i < numlist.length; i++){
@@ -128,6 +128,7 @@ AnsCheck:{
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
 			if(room.numcount === 2){
+				if(room.nums[0] < 0 || room.nums[1] < 0){ continue;}
 				var roomarea = room.clist.length;
 				if(roomarea <= room.nums[0] && roomarea <= room.nums[1]){
 					this.failcode.add("bkArafTooSmall");
@@ -143,6 +144,7 @@ AnsCheck:{
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
 			if(room.numcount === 2){
+				if(room.nums[0] < 0 || room.nums[1] < 0){ continue;}
 				var roomarea = room.clist.length;
 				if(roomarea >= room.nums[0] && roomarea >= room.nums[1]){
 					this.failcode.add("bkArafTooBig");
