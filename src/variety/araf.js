@@ -42,7 +42,20 @@ Board:{
 },
 
 AreaRoomGraph:{
-	enabled : true
+	enabled : true,
+
+	setExtraData : function(component){
+		var clist = component.clist = new this.klass.CellList(component.getnodeobjs());
+		var numlist = clist.filter(function(cell){return cell.qnum>=0;});
+		var nums = [];
+
+		for(var i = 0; i < numlist.length; i++){
+			nums[i] = numlist[i].qnum;
+		}
+
+		component.numcount = numlist.length;
+		component.nums = nums;
+	}
 },
 
 //---------------------------------------------------------
@@ -106,48 +119,38 @@ AnsCheck:{
 
 	checkLessThan2Num : function(){
 		var rooms = this.board.roommgr.components;
-
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
-			var clist = room.clist;
-			var clist2 = clist.filter(function(cell){return cell.qnum>=0;})
-
-			if(clist2.length < 2){
+			if(room.numcount < 2){
 				this.failcode.add("bkLessThan2Num");
-				clist.seterr(1);
+				if(this.checkOnly){ break;}
+				room.clist.seterr(1);
 			}		
 		}
 	},
 
 	checkMoreThan2Num : function(){
 		var rooms = this.board.roommgr.components;
-
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
-			var clist = room.clist;
-			var clist2 = clist.filter(function(cell){return cell.qnum>=0;})
-
-			if(clist2.length > 2){
+			if(room.numcount > 2){
 				this.failcode.add("bkMoreThan2Num");
-				clist.seterr(1);
+				if(this.checkOnly){ break;}
+				room.clist.seterr(1);
 			}		
 		}
 	},
 
 	checkBigArea : function(){
 		var rooms = this.board.roommgr.components;
-
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
-			var clist = room.clist;
-			var clist2 = clist.filter(function(cell){return cell.qnum>=0;})
-
-			if(clist2.length === 2){
-				var roomarea = clist.length;
-				if(roomarea >= clist2[0].qnum && roomarea >= clist2[1].qnum){
+			if(room.numcount === 2){
+				var roomarea = room.clist.length;
+				if(roomarea >= room.nums[0] && roomarea >= room.nums[1]){
 					this.failcode.add("bkArafTooBig");
 					if(this.checkOnly){ break;}
-					clist.seterr(1);
+					room.clist.seterr(1);
 				}
 			}
 		}
@@ -155,18 +158,14 @@ AnsCheck:{
 
 	checkSmallArea : function(){
 		var rooms = this.board.roommgr.components;
-
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
-			var clist = room.clist;
-			var clist2 = clist.filter(function(cell){return cell.qnum>=0;})
-
-			if(clist2.length === 2){
-				var roomarea = clist.length;
-				if(roomarea <= clist2[0].qnum && roomarea <= clist2[1].qnum){
+			if(room.numcount === 2){
+				var roomarea = room.clist.length;
+				if(roomarea <= room.nums[0] && roomarea <= room.nums[1]){
 					this.failcode.add("bkArafTooSmall");
 					if(this.checkOnly){ break;}
-					clist.seterr(1);
+					room.clist.seterr(1);
 				}
 			}
 		}
@@ -175,9 +174,9 @@ AnsCheck:{
 },
 
 FailCode:{
-	bkLessThan2Num  : ["(please translate) An area has less than two numbers.","An area has less than two numbers."],
-	bkMoreThan2Num  : ["(please translate) An area has more than two numbers.","An area has more than two numbers."],
+	bkArafTooSmall:   ["(please translate) An area is too small.","An area is too small."],
 	bkArafTooBig:     ["(please translate) An area is too big.",  "An area is too big."],
-	bkArafTooSmall:   ["(please translate) An area is too small.","An area is too small."]
+	bkLessThan2Num  : ["(please translate) An area has less than two numbers.","An area has less than two numbers."],
+	bkMoreThan2Num  : ["(please translate) An area has more than two numbers.","An area has more than two numbers."]
 }
 }));
