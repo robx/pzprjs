@@ -117,6 +117,36 @@ AnsCheck:{
 		"checkBorderDeadend+"
 	],
 
+	checkSmallArea : function(){
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var room = rooms[r];
+			if(room.numcount === 2){
+				var roomarea = room.clist.length;
+				if(roomarea <= room.nums[0] && roomarea <= room.nums[1]){
+					this.failcode.add("bkArafTooSmall");
+					if(this.checkOnly){ break;}
+					room.clist.seterr(1);
+				}
+			}
+		}
+	},
+
+	checkBigArea : function(){
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var room = rooms[r];
+			if(room.numcount === 2){
+				var roomarea = room.clist.length;
+				if(roomarea >= room.nums[0] && roomarea >= room.nums[1]){
+					this.failcode.add("bkArafTooBig");
+					if(this.checkOnly){ break;}
+					room.clist.seterr(1);
+				}
+			}
+		}
+	},
+
 	checkLessThan2Num : function(){
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
@@ -139,37 +169,8 @@ AnsCheck:{
 				room.clist.seterr(1);
 			}		
 		}
-	},
-
-	checkBigArea : function(){
-		var rooms = this.board.roommgr.components;
-		for(var r=0;r<rooms.length;r++){
-			var room = rooms[r];
-			if(room.numcount === 2){
-				var roomarea = room.clist.length;
-				if(roomarea >= room.nums[0] && roomarea >= room.nums[1]){
-					this.failcode.add("bkArafTooBig");
-					if(this.checkOnly){ break;}
-					room.clist.seterr(1);
-				}
-			}
-		}
-	},
-
-	checkSmallArea : function(){
-		var rooms = this.board.roommgr.components;
-		for(var r=0;r<rooms.length;r++){
-			var room = rooms[r];
-			if(room.numcount === 2){
-				var roomarea = room.clist.length;
-				if(roomarea <= room.nums[0] && roomarea <= room.nums[1]){
-					this.failcode.add("bkArafTooSmall");
-					if(this.checkOnly){ break;}
-					room.clist.seterr(1);
-				}
-			}
-		}
 	}
+
 
 },
 
