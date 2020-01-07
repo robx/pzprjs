@@ -31,7 +31,13 @@ KeyEvent:{
 
 Cell:{
 	minnum: 0,
-	maxnum: 999
+	maxnum: 999,
+
+	posthook : {
+		qnum : function() {
+			this.board.roommgr.setExtraData(this.room);
+		}
+	}
 },
 
 Board:{
