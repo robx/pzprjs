@@ -116,6 +116,7 @@ FileIO:{
 // 正解判定処理実行部
 AnsCheck:{
 	checklist : [
+		"checkEqualArea",
 		"checkSmallArea",
 		"checkBigArea",
 		"checkLessThan2Num",
@@ -123,18 +124,31 @@ AnsCheck:{
 		"checkBorderDeadend+"
 	],
 
+	checkEqualArea : function(){
+		var rooms = this.board.roommgr.components;
+		for(var r=0;r<rooms.length;r++){
+			var room = rooms[r];
+			if(room.numcount !== 2){ continue;}
+			var roomarea = room.clist.length;
+			if(roomarea === room.nums[0] || roomarea === room.nums[1]){
+				this.failcode.add("bkArafEqual");
+				if(this.checkOnly){ break;}
+				room.clist.seterr(1);
+			}
+		}
+	},
+
 	checkSmallArea : function(){
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
-			if(room.numcount === 2){
-				if(room.nums[0] < 0 || room.nums[1] < 0){ continue;}
-				var roomarea = room.clist.length;
-				if(roomarea <= room.nums[0] && roomarea <= room.nums[1]){
-					this.failcode.add("bkArafTooSmall");
-					if(this.checkOnly){ break;}
-					room.clist.seterr(1);
-				}
+			if(room.numcount !== 2){ continue;}
+			if(room.nums[0] < 0 || room.nums[1] < 0){ continue;}
+			var roomarea = room.clist.length;
+			if(roomarea < room.nums[0] && roomarea < room.nums[1]){
+				this.failcode.add("bkArafTooSmall");
+				if(this.checkOnly){ break;}
+				room.clist.seterr(1);
 			}
 		}
 	},
@@ -143,14 +157,13 @@ AnsCheck:{
 		var rooms = this.board.roommgr.components;
 		for(var r=0;r<rooms.length;r++){
 			var room = rooms[r];
-			if(room.numcount === 2){
-				if(room.nums[0] < 0 || room.nums[1] < 0){ continue;}
-				var roomarea = room.clist.length;
-				if(roomarea >= room.nums[0] && roomarea >= room.nums[1]){
-					this.failcode.add("bkArafTooBig");
-					if(this.checkOnly){ break;}
-					room.clist.seterr(1);
-				}
+			if(room.numcount !== 2){ continue;}
+			if(room.nums[0] < 0 || room.nums[1] < 0){ continue;}
+			var roomarea = room.clist.length;
+			if(roomarea > room.nums[0] && roomarea > room.nums[1]){
+				this.failcode.add("bkArafTooBig");
+				if(this.checkOnly){ break;}
+				room.clist.seterr(1);
 			}
 		}
 	},
@@ -183,8 +196,9 @@ AnsCheck:{
 },
 
 FailCode:{
-	bkArafTooSmall:   ["面積が小さすぎるブロックがあります。","An area is too small."],
-	bkArafTooBig:     ["面積が大きすぎるブロックがあります。",  "An area is too big."],
+	bkArafEqual     : ["(please translate) An area is equal to a number.","An area is equal to a number."],
+	bkArafTooSmall  : ["面積が小さすぎるブロックがあります。","An area is smaller than both numbers."],
+	bkArafTooBig    : ["面積が大きすぎるブロックがあります。",  "An area is larger than both numbers."],
 	bkLessThan2Num  : ["1つしか数字を含まないブロックがあります。","An area has less than two numbers."],
 	bkMoreThan2Num  : ["3つ以上の数字を含むブロックがあります。","An area has more than two numbers."]
 }
