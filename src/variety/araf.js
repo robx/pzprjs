@@ -196,7 +196,7 @@ AnsCheck:{
 },
 
 FailCode:{
-	bkArafEqual     : ["(please translate) An area is equal to a number.","An area is equal to a number."],
+	bkArafEqual     : ["面積が数字と一致しています。","An area is equal to a number."],
 	bkArafTooSmall  : ["面積が小さすぎるブロックがあります。","An area is smaller than both numbers."],
 	bkArafTooBig    : ["面積が大きすぎるブロックがあります。",  "An area is larger than both numbers."],
 	bkLessThan2Num  : ["1つしか数字を含まないブロックがあります。","An area has less than two numbers."],
