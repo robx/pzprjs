@@ -162,19 +162,17 @@ AnsCheck:{
 	// ans.checkShadeCellExist()  盤面に少なくとも一つは黒マスがあることを判定する
 	//---------------------------------------------------------------------------
 	checkShadeCellExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			var bd = this.board;
-			if(bd.sblkmgr.enabled){
-				if(bd.sblkmgr.components.length>0){ return;}
-			}
-			else if(bd.ublkmgr.enabled){
-				if(bd.ublkmgr.components.length===0 || bd.ublkmgr.components[0].nodes.length!==bd.cell.length){ return;}
-			}
-			else{
-				if(bd.cell.some(function(cell){ return cell.isShade();})){ return;}
-			}
-			this.failcode.add("brNoShade");
+		var bd = this.board;
+		if(bd.sblkmgr.enabled){
+			if(bd.sblkmgr.components.length>0){ return;}
 		}
+		else if(bd.ublkmgr.enabled){
+			if(bd.ublkmgr.components.length===0 || bd.ublkmgr.components[0].nodes.length!==bd.cell.length){ return;}
+		}
+		else{
+			if(bd.cell.some(function(cell){ return cell.isShade();})){ return;}
+		}
+		this.failcode.add("brNoShade");
 	},
 
 	checkShadingDecided : function(){
@@ -200,10 +198,8 @@ AnsCheck:{
 	// ans.checkNumberExist()  盤面に少なくとも一つは数字があることを判定する
 	//---------------------------------------------------------------------------
 	checkNumberExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			if(this.board.cell.some(function(cell){ return cell.isValidNum();})){ return;}
-			this.failcode.add("brNoValidNum");
-		}
+		if(this.board.cell.some(function(cell){ return cell.isValidNum();})){ return;}
+		this.failcode.add("brNoValidNum");
 	},
 
 	//---------------------------------------------------------------------------
@@ -223,11 +219,9 @@ AnsCheck:{
 	// ans.checkLineExist()  盤面に少なくとも一本は線が引かれていることを判定する
 	//---------------------------------------------------------------------------
 	checkLineExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			var bd = this.board;
-			if(bd.linegraph.ltotal[0]!==(!bd.borderAsLine ? bd.cell : bd.cross).length){ return;}
-			this.failcode.add("brNoLine");
-		}
+		var bd = this.board;
+		if(bd.linegraph.ltotal[0]!==(!bd.borderAsLine ? bd.cell : bd.cross).length){ return;}
+		this.failcode.add("brNoLine");
 	},
 
 	//---------------------------------------------------------------------------

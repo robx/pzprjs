@@ -55,7 +55,6 @@ Config.prototype =
 
 		/* 正解判定 */
 		this.add('multierr', false);		/* エラー判定で複数エラーを出力する */
-		this.add('allowempty', false);		/* 盤面に線や黒マスがなくても正解と判定する */
 		this.add('forceallcell', false);	/* fillomino: すべての数字が入っている時のみ正解とする */
 
 		/* puzzle variant rules; must defaut to false */

@@ -38,7 +38,6 @@
 |`autocmp`|`boolean`|`true`|Show complete numbers apart from incompleted one automatically.|
 |`autoerr`|`boolean`|`false`|Show incomplete/wrong numbers automatically.|
 |`multierr`|`boolean`|`false`|Check plural errors in `puzzle.check()` API.|
-|`allowempty`|`boolean`|`false`|Ignore 'No lines/blocks on the board' error.|
 |`forceallcell`|`boolean`|`false`|Force all cells to have number to get completed for `'fillomino'`|
 |`passallcell`|`boolean`|`true`|Force all cells to be passed for `'arukone'`|
 

@@ -433,10 +433,8 @@ AnsCheck:{
 	],
 
 	checkTriangleExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			if(this.board.cell.some(function(cell){ return cell.qans>0;})){ return;}
-			this.failcode.add("brNoTriangle");
-		}
+		if(this.board.cell.some(function(cell){ return cell.qans>0;})){ return;}
+		this.failcode.add("brNoTriangle");
 	},
 
 	checkOverTriangle : function(){

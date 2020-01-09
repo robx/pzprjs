@@ -397,10 +397,8 @@ AnsCheck:{
 	],
 
 	checkBarExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			if(this.board.netgraph.components.length>0){ return;}
-			this.failcode.add("brNoLine");
-		}
+		if(this.board.netgraph.components.length>0){ return;}
+		this.failcode.add("brNoLine");
 	},
 
 	checkNotMultiBar : function(){ this.checkOutgoingBars(1, "nmLineGt1");},

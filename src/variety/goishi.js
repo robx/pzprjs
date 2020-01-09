@@ -371,10 +371,8 @@ AnsCheck:{
 	],
 
 	checkStoneExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			if(this.board.cell.some(function(cell){ return cell.isStone();})){ return;}
-			this.failcode.add("brNoStone");
-		}
+		if(this.board.cell.some(function(cell){ return cell.isStone();})){ return;}
+		this.failcode.add("brNoStone");
 	},
 
 	checkPickedStone :function(){

@@ -437,10 +437,8 @@ AnsCheck:{
 	],
 
 	checkWallExist : function(){
-		if(!this.puzzle.execConfig('allowempty')){
-			if(this.board.wallgraph.components.length>0){ return;}
-			this.failcode.add("brNoLine");
-		}
+		if(this.board.wallgraph.components.length>0){ return;}
+		this.failcode.add("brNoLine");
 	},
 
 	checkLongWall  : function(){ this.checkWall(1, "nmConnWallGt");},
