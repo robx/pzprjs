@@ -49,9 +49,9 @@ Cell:{
 	minnum : 0
 },
 "Cell@stostone":{
-	getFallableLength : function(isdrop){
+	getFallableLength : function(){
 		if(!this.base.stone){ return 0;}
-		var cell2 = this, len = 0, move = ((isdrop!==false) ? 2 : -2);
+		var cell2 = this, len = 0, move = 2;
 		while(!cell2.isnull){
 			cell2 = cell2.relcell(0,move);
 			if(cell2.isnull || (!!cell2.base.stone && this.base.stone!==cell2.base.stone)){ break;}
@@ -88,8 +88,7 @@ Board:{
 	operate : function(type){
 		switch(type){
 		case 'drop':
-		case 'raise':
-			this.drop(type==='drop');
+			this.drop();
 			this.falling = true;
 			this.hasinfo = true;
 			this.puzzle.redraw();
@@ -108,15 +107,15 @@ Board:{
 			cell.base = cell.destination = (cell.isShade() ? cell : this.emptycell);
 		}
 	},
-	drop : function(isdrop){
-		var afterstate = (isdrop!==false?1:2);
+	drop : function(){
+		var afterstate = 1;
 		if(this.fallstate===afterstate){ return;}
 		this.resetpos();
 		var fallable = true, blks = this.stonegraph.components;
 		while(fallable){
 			fallable = false;
 			for(var n=blks.length-1;n>=0;--n){
-				var length = blks[n].clist.fall(isdrop);
+				var length = blks[n].clist.fall();
 				if(length>0){ fallable = true;}
 			}
 		}
@@ -125,11 +124,11 @@ Board:{
 },
 
 "CellList@stostone":{
-	fall : function(isdrop){
-		var length = this.board.rows, move = ((isdrop!==false) ? 2 : -2);
+	fall : function(){
+		var length = this.board.rows, move = 2;
 		for(var i=0;i<this.length;i++){
 			if(this[i].stone===this[i].relcell(0,move).stone){ continue;} // Skip if the block also contains bottom neighbor cell
-			var len = this[i].destination.getFallableLength(isdrop);
+			var len = this[i].destination.getFallableLength();
 			if(length>len){ length = len;}
 			if(length===0){ return 0;}
 		}
