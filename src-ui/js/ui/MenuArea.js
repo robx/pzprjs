@@ -171,6 +171,7 @@ ui.menuarea = {
 		getEL("menu_imagesave").className = (ui.enableSaveImage ? "" : "disabled");
 
 		var EDITOR = !ui.puzzle.playeronly;
+		getEL("menu_edit").style.display      = (EDITOR ? "" : "none");
 		getEL("menu_newboard").style.display  = (EDITOR ? "" : "none");
 		getEL("menu_urloutput").style.display = (EDITOR ? "" : "none");
 		getEL("menu_adjust").style.display    = (EDITOR ? "" : "none");

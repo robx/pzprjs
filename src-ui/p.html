@@ -24,7 +24,7 @@
 
 <div id="menuboard" class="outofboard">
   <menu id="menupanel" style="display:none;">
-   <li><span>__ファイル__File__</span><menu label="__ファイル__File__">
+   <li id="menu_file"><span>__ファイル__File__</span><menu label="__ファイル__File__">
      <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New Board__</span></li>
      <li data-popup="urlinput"><span>__URL入力__Load from URL__</span></li>
      <li data-popup="urloutput" id="menu_urloutput"><span>__URL出力__Export URL__</span></li>
@@ -35,11 +35,11 @@
      <hr>
      <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
    </menu></li>
-   <li><span>__編集__Edit__</span><menu label="__編集__Edit__">
+   <li id="menu_edit"><span>__編集__Edit__</span><menu label="__編集__Edit__">
      <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the Board__</span></li>
      <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
    </menu></li>
-   <li><span>__表示__Display__</span><menu label="__表示__Display__">
+   <li id="menu_display"><span>__表示__Display__</span><menu label="__表示__Display__">
      <li data-config="cellsizeval"><span>__表示サイズ__Cell Size__</span> -&gt;<menu label="__表示サイズ__Cell Size__">
        <li data-popup="dispsize"><span>__数値指定__Set by Number__</span></li>
        <hr>
@@ -77,7 +77,7 @@
      <li data-menu-exec="repaint"><span>__盤面の再描画__Repaint whole board__</span></li>
      <li data-menu-exec="toolarea"><span id="menu_toolarea">ツールエリアを隠す</span></li>
    </menu></li>
-   <li><span>__設定__Setting__</span><menu label="__設定__Setting__">
+   <li id="menu_setting"><span>__設定__Setting__</span><menu label="__設定__Setting__">
      <li data-config="use_tri"><span>__操作方法__Input Type__</span> -&gt;<menu label="__操作方法__Input Type__">
        <li data-value="1"><span>__クリックした位置__Corner-side__</span></li>
        <li data-value="2"><span>__引っ張り入力__Pull-to-Input__</span></li>
@@ -106,7 +106,7 @@
        <li class="child" data-value="en"><span>English</span></li>
      </menu></li>
    </menu></li>
-   <li><span>__ヘルプ__Help__</span><menu label="__ヘルプ__Help__">
+   <li id="menu_help"><span>__ヘルプ__Help__</span><menu label="__ヘルプ__Help__">
      <li class="link" data-pidlink="rules.html?"><a target="_blank">__ルール__Rules__</a></li>
      <hr>
      <li data-popup="credit"><span>__ぱずぷれv3について__About PUZ-PRE v3__</span></li>
