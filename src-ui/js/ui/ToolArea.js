@@ -75,7 +75,12 @@ ui.toolarea = {
 			}
 			else if(el.nodeType===3){
 				if(el.data.match(/^__(.+)__(.+)__$/)){
-					toolarea.captions.push({textnode:el, str_jp:RegExp.$1, str_en:RegExp.$2});
+					var str_jp=RegExp.$1, str_en=RegExp.$2;
+					toolarea.captions.push({textnode:el, str_jp:str_jp, str_en:str_en});
+					parent = el.parentNode;
+					if(parent.className.match(/child/)){
+						toolarea.captions.push({datanode:parent, str_jp:str_jp, str_en:str_en});
+					}
 				}
 			}
 		});
@@ -118,7 +123,12 @@ ui.toolarea = {
 		/* --------------------- */
 		for(var i=0;i<this.captions.length;i++){
 			var obj = this.captions[i];
-			obj.textnode.data = ui.selectStr(obj.str_jp, obj.str_en);
+			if(!!obj.textnode){
+				obj.textnode.data = ui.selectStr(obj.str_jp, obj.str_en);
+			}
+			if(!!obj.datanode){
+				obj.datanode.setAttribute("data-text", ui.selectStr(obj.str_jp, obj.str_en));
+			}
 		}
 	},
 	displayVariantPanel : function(){

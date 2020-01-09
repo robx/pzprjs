@@ -111,8 +111,18 @@
 	div#timerpanel{ margin:6pt 6pt 6pt 12pt;}
 	hr.separator { margin:0pt;}
 
-	div.child   { display:inline; cursor:pointer;}
-	div.childsel{ color:maroon; font-weight:bold; background-color:#efefef;}
+	div.child   { display:inline; padding: 0 5px; cursor:pointer; }
+	div.childsel:before {
+		position: absolute;
+		left: 50%;
+		bottom: -1px;
+		transform: translateX(-50%);
+		font-weight: bold;
+		background-color: #efefef;
+		white-space: nowrap;
+		content: attr(data-text);
+	}
+	div.childsel{ position: relative; color:maroon; background-color:#efefef;}
 
 	div#usepanel > div { display: flex; display: -webkit-flex;}
 	div#usepanel > div > div { display: inline-block;}
