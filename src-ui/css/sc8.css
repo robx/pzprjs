@@ -377,11 +377,11 @@
 	#menupanel menu { top:2.0em;}
   }
 	#menupanel menu menu[label]
-		{ left:120px; top:-1.5em; min-width:80px;  z-index:23;}
+		{ left:120px; top:0px; min-width:80px;  z-index:23;}
 	#menupanel menu menu
-		{ left:120px; top:-0.2em; min-width:80px;  z-index:23;}
+		{ left:120px; top:0px; min-width:80px;  z-index:23;}
 	#menupanel menu menu[label] menu
-		{ left:72px;  top:-1.5em; min-width:80px;  z-index:24;}
+		{ left:72px;  top:0px; min-width:80px;  z-index:24;}
 
 	/* submenu items */
 	#menupanel menu li {
