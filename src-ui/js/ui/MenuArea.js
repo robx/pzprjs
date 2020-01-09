@@ -169,7 +169,6 @@ ui.menuarea = {
 		getEL('menupanel').style.display = "";
 
 		getEL("menu_imagesave").className = (ui.enableSaveImage ? "" : "disabled");
-		getEL("menu_subclear").style.display  = (!ui.puzzle.board.disable_subclear ? "" : "none");
 
 		var EDITOR = !ui.puzzle.playeronly;
 		getEL("menu_newboard").style.display  = (EDITOR ? "" : "none");
