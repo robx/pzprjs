@@ -45,6 +45,5 @@
 
 |Name|Type|Default value|Description|
 |---|---|---|---|
-|`bdpadding`|`boolean`|`true`|Output URL with one row padding for `'Goishi'`.|
 |`discolor`|`boolean`|`false`|Disable setting color for `'Tentai-show'`.|
 |`uramashu`|`boolean`|`false`|Ura-masyu mode for `Masyu`.|

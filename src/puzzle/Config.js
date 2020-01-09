@@ -63,7 +63,6 @@ Config.prototype =
 		this.add('country_empty', false, {variant:true,volatile:true});
 
 		/* EDITORのみ */
-		this.add('bdpadding', true);		/* goishi: URL出力で1マス余裕を持って出力する */
 		this.add('discolor', false);		/* tentaisho: 色分け無効化 */
 
 		/* その他の特殊項目(保存なし) */
@@ -231,7 +230,6 @@ Config.prototype =
 			case 'autoerr':  exec = (pid==="hitori"||pid==="gokigen"||pid==="wagiri"); break;
 			case 'singlenum':exec = (pid==="hanare"); break;
 			case 'enline': case'lattice': exec = (pid==="kouchoku"||pid==="angleloop"); break;
-			case 'bdpadding': exec = (EDITOR && pid==='goishi'); break;
 			case 'discolor':  exec = (EDITOR && pid==='tentaisho'); break;
 			case 'uramashu': exec = (pid==="mashu"); break;
 			case 'forceallcell': exec = (pid==="fillomino"); break;

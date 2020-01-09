@@ -205,39 +205,16 @@ Encode:{
 		bd.enableInfo();
 		this.outbstr = bstr.substr(i+1);
 	},
-	// エンコード時は、盤面サイズの縮小という特殊処理を行ってます
 	encodeGoishi : function(){
-		var d = this.getSizeOfBoard_goishi();
-
+		var bd=this.board;
 		var cm="", count=0, pass=0, twi=[16,8,4,2,1];
-		for(var by=d.y1;by<=d.y2;by+=2){
-			for(var bx=d.x1;bx<=d.x2;bx+=2){
-				var cell = this.board.getc(bx,by);
-				if(cell.isnull || !cell.isStone()){ pass+=twi[count];} count++;
-				if(count===5){ cm += pass.toString(32); count=0; pass=0;}
-			}
+		for(var i=0;i<bd.cell.length;i++){
+			var cell = bd.cell[i];
+			if(cell.isnull || !cell.isStone()){ pass+=twi[count];} count++;
+			if(count===5){ cm += pass.toString(32); count=0; pass=0;}
 		}
 		if(count>0){ cm += pass.toString(32);}
 		this.outbstr += cm;
-
-		this.outcols = d.cols;
-		this.outrows = d.rows;
-	},
-
-	getSizeOfBoard_goishi : function(){
-		var x1=9999, x2=-1, y1=9999, y2=-1, count=0, bd = this.board;
-		for(var c=0;c<bd.cell.length;c++){
-			var cell = bd.cell[c];
-			if(!cell.isStone()){ continue;}
-			if(x1>cell.bx){ x1=cell.bx;}
-			if(x2<cell.bx){ x2=cell.bx;}
-			if(y1>cell.by){ y1=cell.by;}
-			if(y2<cell.by){ y2=cell.by;}
-			count++;
-		}
-		if(count===0){ return {x1:0, y1:0, x2:1, y2:1, cols:2, rows:2};}
-		if(this.puzzle.getConfig('bdpadding')){ return {x1:x1-2, y1:y1-2, x2:x2+2, y2:y2+2, cols:(x2-x1+6)/2, rows:(y2-y1+6)/2};}
-		return {x1:x1, y1:y1, x2:x2, y2:y2, cols:(x2-x1+2)/2, rows:(y2-y1+2)/2};
 	}
 },
 //---------------------------------------------------------
