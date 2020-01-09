@@ -235,20 +235,6 @@ Board:{
 	},
 	initExtraObject : function(col,row){
 		this.startpos.set(this.cell[0]);
-	},
-
-	operate : function(type){
-		switch(type){
-		case 'showgatenumber':
-			this.puzzle.painter.drawNumbersOnGate(true);
-			break;
-		case 'hidegatenumber':
-			this.puzzle.painter.drawNumbersOnGate(false);
-			break;
-		default:
-			this.common.operate.call(this,type);
-			break;
-		}
 	}
 },
 BoardExec:{
@@ -603,25 +589,6 @@ Graphic:{
 
 			// startは一箇所だけなので、描画したら終了してよい
 			break;
-		}
-	},
-
-	// Xキー押した時に数字を表示するメソッド
-	drawNumbersOnGate : function(keydown){
-		var g = this.context, bd = this.board;
-		if(keydown){ bd.gatemgr.generateGateNumberAll();}
-
-		for(var c=0;c<bd.cell.length;c++){
-			var cell = bd.cell[c];
-			if(cell.ques!==21 && cell.ques!==22){ continue;}
-
-			var num = cell.gate.number;
-			g.vid = "cell_text_"+c;
-			if(keydown && num>0){
-				g.fillStyle = "tomato";
-				this.disptext(""+num, cell.bx*this.bw, cell.by*this.bh);
-			}
-			else{ g.vhide();}
 		}
 	}
 },

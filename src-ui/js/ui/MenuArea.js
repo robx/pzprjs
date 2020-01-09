@@ -264,8 +264,6 @@ ui.menuarea = {
 	redo     : function(){ ui.undotimer.startRedo();},
 	redostop : function(){ ui.undotimer.stopRedo();},
 	redoall  : function(){ ui.puzzle.redoall();},
-	showgatenum : function(){ ui.puzzle.board.operate('showgatenumber');},
-	hidegatenum : function(){ ui.puzzle.board.operate('hidegatenumber');},
 	enterTrial         : function(){ if(ui.puzzle.board.trialstage===0){ ui.puzzle.enterTrial();}},
 	enterFurtherTrial  : function(){ ui.puzzle.enterTrial();},
 	acceptTrial        : function(){ ui.puzzle.acceptTrial();},

@@ -36,10 +36,6 @@
      <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
    </menu></li>
    <li><span>__編集__Edit__</span><menu label="__編集__Edit__">
-     <li data-disp-pid="slalom"><span>__旗門上の数字__Number on gates__</span> -&gt;<menu label="__旗門上の数字__Number on gates__">
-       <li data-press-exec="showgatenum,hidegatenum"><span>__一時的に表示する__Show temporarily__</span></li>
-     </menu></li>
-     <hr id="menu_sep_edit1">
      <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the Board__</span></li>
      <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
    </menu></li>
@@ -352,7 +348,6 @@
   <button type="button" class="btn" id="btncircle"  data-button-exec="toggledisp">○</button>
   <button type="button" class="btn" id="btncolor"   data-button-exec="encolorall">__色をつける__Color up__</button>
   <button type="button" class="btn" data-disp-pid="stostone" data-press-exec="dropblocks,resetblocks">__ブロックを落とす__Drop blocks__</button>
-  <button type="button" class="btn" data-disp-pid="slalom" data-press-exec="showgatenum,hidegatenum">__旗門数字表示__Show gate num__</button>
   <button type="button" class="btn" id="btntrial"   data-button-exec="enterTrial">__仮置きモード__Trial mode__</button>
   <div id="btntrialarea" style="display:none;">
     <button type="button" class="btn btn-ok" id="btntriala"  data-button-exec="acceptTrial">__仮置き確定__Accept trial__</button>

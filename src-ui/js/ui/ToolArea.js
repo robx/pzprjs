@@ -223,8 +223,6 @@ ui.toolarea = {
 	encolorall : function(){ ui.puzzle.board.encolorall();}, /* 天体ショーのボタン */
 	dropblocks : function(){ ui.puzzle.board.operate('drop');},
 	resetblocks: function(){ ui.puzzle.board.operate('resetpos');},
-	showgatenum: function(){ ui.puzzle.board.operate('showgatenumber');},
-	hidegatenum: function(){ ui.puzzle.board.operate('hidegatenumber');},
 	enterTrial : function(){ if(ui.puzzle.board.trialstage===0){ ui.puzzle.enterTrial();}},
 	enterFurtherTrial : function(){ ui.puzzle.enterTrial();},
 	acceptTrial : function(){ ui.puzzle.acceptTrial();},

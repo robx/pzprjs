@@ -13,9 +13,6 @@ This sub-object contains board model data.
     * `operation==='turnl'` Turn left the board by 90 degree.
     * `operation==='expand(up|dn|lt|rt)'` Expand the board by a row.
     * `operation==='reduce(up|dn|lt|rt)'` Reduce the board by a row.
-    * These two below operations are for 'Slalom' only.
-        * `operation==='showgatenumber'` Show numbers on gates.
-        * `operation==='hidegatenumber'` Reset `'showgatenumber'` effect.
     * These two below operations are for 'Stostone' only.
         * `operation==='drop'` Drop all blocks and display them.
         * `operation==='resetpos'` Reset the blocks position.
