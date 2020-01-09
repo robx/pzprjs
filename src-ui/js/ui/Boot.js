@@ -81,9 +81,6 @@ function importURL(){
 		search = RegExp.$3;
 	}
 
-	// エディタモードかplayerモードか、等を判定する
-	if(search==="test"){ search = 'country_test';}
-
 	var pzl = pzpr.parser.parseURL(search);
 	var startmode = pzl.mode || (!pzl.body ? 'editor' : 'player');
 	onload_option.type = startmode;
