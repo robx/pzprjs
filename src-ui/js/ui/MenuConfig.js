@@ -96,6 +96,7 @@
 				this.set(idname, ui.puzzle.getConfig(idname));
 			}
 
+			this.set("variant", ui.puzzle.getConfig("variant"));
 			this.set("lrinvert", ui.puzzle.mouse.inversion);
 			this.set("autocmp", ui.puzzle.getConfig("autocmp"));
 			this.set("autoerr", ui.puzzle.getConfig("autoerr"));

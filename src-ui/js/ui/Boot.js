@@ -71,6 +71,9 @@
 		// 単体初期化処理のルーチンへ
 		puzzle.once("fail-open", failOpen);
 		puzzle.open(pzl);
+		if (onload_option.variant !== void 0) {
+			puzzle.config.set("variant", true);
+		}
 
 		puzzle.on("request-aux-editor", ui.auxeditor.open);
 

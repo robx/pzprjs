@@ -88,10 +88,12 @@
 				volatile: true
 			}); /* aquarium: Rule variation for disconnected cells in one region */
 			this.add("country_empty", false, { variant: true, volatile: true });
+			/* generic variant */
+			this.add("variant", false, { variant: true, volatile: true });
+			this.add("variantid", "", { volatile: true });
 
 			/* EDITORのみ */
 			this.add("discolor", false); /* tentaisho: 色分け無効化 */
-
 			/* その他の特殊項目(保存なし) */
 			this.add("uramashu", false, { volatile: true }); /* 裏ましゅにする */
 		},

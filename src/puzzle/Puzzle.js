@@ -39,6 +39,9 @@
 		if (option.mode !== void 0) {
 			this.setMode(option.mode);
 		}
+		if (option.variant !== void 0) {
+			this.config.set("variant", true);
+		}
 
 		if (!!canvas) {
 			this.setCanvas(canvas);

@@ -86,6 +86,7 @@
 		url: "",
 		qdata: "",
 		pflag: null,
+		variant: null,
 		cols: 0,
 		rows: 0,
 		body: "",
@@ -116,7 +117,7 @@
 		// ★ parseURLType() 入力されたURLからどのパズルか、およびURLの種類を抽出する
 		//                   入力=URL 例:http://pzv.jp/p.html?(pid)/(qdata)
 		//                   出力={pid:パズル種類, type:URL種類, qdata:タテヨコ以下のデータ}
-		//                         qdata -> [(pflag)/](cols)/(rows)/(bstr)
+		//                         qdata -> [(variant)/][(pflag)/](cols)/(rows)/(bstr)
 		//---------------------------------------------------------------------------
 		parseURLType: function() {
 			/* URLからパズルの種類・URLの種類を判定する */
@@ -239,7 +240,7 @@
 
 		//---------------------------------------------------------------------------
 		// ★ parseURLData() URLを縦横・問題部分などに分解する
-		//                   qdata -> [(pflag)/](cols)/(rows)/(bstr)
+		//                   qdata -> [(variant)/][(pflag)/](cols)/(rows)/(bstr)
 		//---------------------------------------------------------------------------
 		parseURLData: function() {
 			if (this.type === URL_PZPRFILE) {
@@ -257,6 +258,10 @@
 			delete this.qdata;
 			/* URLにつけるオプション */
 			if (this.type !== URL_KANPEN && this.type !== URL_HEYAAPP) {
+				if (!!inp[0] && inp[0].match(/^v:(.*)/)) {
+					this.variant = RegExp.$1;
+					inp.shift();
+				}
 				if (!!inp[0] && isNaN(inp[0])) {
 					this.pflag = inp[0];
 					inp.shift();
@@ -305,6 +310,9 @@
 
 			/* URLにつけるオプション */
 			if (pzl.type !== URL_KANPEN && pzl.type !== URL_HEYAAPP) {
+				if (pzl.variant !== null) {
+					out.push("v:" + pzl.variant);
+				}
 				if (pzl.type === URL_KANPENP || !!pzl.pflag) {
 					out.push(pzl.pflag);
 				}

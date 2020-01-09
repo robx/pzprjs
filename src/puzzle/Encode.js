@@ -10,6 +10,7 @@ pzpr.classmgr.makeCommon({
 	Encode: {
 		pflag: "",
 		outpflag: "",
+		outvariant: null,
 		outcols: null,
 		outrows: null,
 		outbstr: "",
@@ -48,6 +49,10 @@ pzpr.classmgr.makeCommon({
 			}
 
 			bd.initBoardSize(pzl.cols, pzl.rows);
+			if (pzl.variant !== null) {
+				puzzle.setConfig("variant", true);
+				puzzle.setConfig("variantid", pzl.variant);
+			}
 
 			if (!!pzl.body) {
 				this.pflag = pzl.pflag;
@@ -87,6 +92,8 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.outpflag = null;
+			var variant = puzzle.getConfig("variant");
+			this.outvariant = variant ? puzzle.getConfig("variantid") : null;
 			this.outcols = bd.cols;
 			this.outrows = bd.rows;
 			this.outbstr = "";
@@ -133,6 +140,7 @@ pzpr.classmgr.makeCommon({
 			pzl.pid = pid;
 			pzl.type = type;
 			pzl.pflag = this.outpflag;
+			pzl.variant = this.outvariant;
 			pzl.cols = this.outcols;
 			pzl.rows = this.outrows;
 			pzl.body = this.outbstr;
