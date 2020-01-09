@@ -26,7 +26,7 @@
   <menu id="menupanel" style="display:none;">
    <li><span>__ファイル__File__</span><menu label="__ファイル__File__">
      <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New Board__</span></li>
-     <li data-popup="urlinput"><span>__URL入力__Import from URL__</span></li>
+     <li data-popup="urlinput"><span>__URL入力__Load from URL__</span></li>
      <li data-popup="urloutput" id="menu_urloutput"><span>__URL出力__Export URL__</span></li>
      <hr>
      <li data-popup="fileopen"><span>__ファイルを開く__Open file__</span></li>
@@ -437,13 +437,13 @@
   </div>
 
   <div class="popup">
-    <div class="titlebar">__URL入力__Import from URL__</div>
+    <div class="titlebar">__URL入力__Load from URL__</div>
     <form name="urlinput">
-      <span>__URLから問題を読み込みます。__Import a question from URL.__</span>
+      <span>__URLから問題を読み込みます。__Load a puzzle from URL.__</span>
       <br>
       <textarea name="ta" cols=48 rows=8 wrap="hard"></textarea>
       <br>
-      <button type="button" class="btn btn-ok" data-button-exec="urlinput">__読み込む__Import__</button>
+      <button type="button" class="btn btn-ok" data-button-exec="urlinput">__読み込む__Load__</button>
       <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
     </form>
   </div>
