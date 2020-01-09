@@ -357,14 +357,13 @@
 		padding    : 3px;
 		border-radius:8px;
 		box-shadow : 6px 6px 6px rgba(64,64,64,.5);
-		/* box-shadow : 6px 6px 6px rgba(64,64,64,.5), inset 32px 32px 48px -16px rgba(0,0,0,.5); */
 
 		text-align : left;
 		cursor     : default;
 	}
 	#menupanel menu li:first-child {
-		border-top-left-radius :3px;
-		border-top-right-radius:3px;
+		border-top-left-radius :6px;
+		border-top-right-radius:6px;
 	}
 	#menupanel menu li:last-child {
 		border-bottom-left-radius :6px;
