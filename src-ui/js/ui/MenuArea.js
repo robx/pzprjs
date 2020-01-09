@@ -259,15 +259,12 @@ ui.menuarea = {
 	// メニューがクリックされた時の動作を呼び出す
 	//---------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
-	anscheck : function(){ this.answercheck();},
 	undo     : function(){ ui.undotimer.startUndo();},
 	undostop : function(){ ui.undotimer.stopUndo();},
 	undoall  : function(){ ui.puzzle.undoall();},
 	redo     : function(){ ui.undotimer.startRedo();},
 	redostop : function(){ ui.undotimer.stopRedo();},
 	redoall  : function(){ ui.puzzle.redoall();},
-	ansclear : function(){ this.answerclear();},
-	subclear : function(){ this.submarkclear();},
 	dropblocks  : function(){ ui.puzzle.board.operate('drop');},
 	raiseblocks : function(){ ui.puzzle.board.operate('raise');},
 	resetblocks : function(){ ui.puzzle.board.operate('resetpos');},
