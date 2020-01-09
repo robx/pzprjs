@@ -175,7 +175,6 @@ ui.menuarea = {
 		getEL("menu_urloutput").style.display = (EDITOR ? "" : "none");
 		getEL("menu_adjust").style.display    = (EDITOR ? "" : "none");
 		getEL("menu_turnflip").style.display  = (EDITOR ? "" : "none");
-		getEL("menu_sep_edit1").style.display = (EDITOR ? "" : "none");
 
 		for(var idname in this.menuitem){ this.setdisplay(idname);}
 		this.setdisplay("operation");
