@@ -112,7 +112,6 @@ v3index.extend({
 			var pid = pinfo.pid;
 			if(!pinfo.valid){ return;}
 
-			el.className = (self.variety[pid] ? self.variety[pid].state : 'omopa');
 			var editor = document.createElement("a");
 			editor.href = v3index.phtml + '?' + pid;
 			el.appendChild(editor);
