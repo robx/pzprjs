@@ -619,10 +619,10 @@ AnsCheck:{
 		var rooms = this.board.roommgr.components;
 		for(var r=0; r<rooms.length; r++){
 			var room = rooms[r];
-			if(room.clist.filter(function(cell){return cell.lcnt < 2;}).length>0) continue;
+			if(room.clist.filter(function(cell){return cell.lcnt < 2;}).length>0) {continue;}
 			var qnumcell = room.clist.getQnumCell();
-			if(qnumcell.isnull) continue;
-			if(qnumcell.qnum < 0) continue;
+			if(qnumcell.isnull) {continue;}
+			if(qnumcell.qnum < 0) {continue;}
 			var maxlength = 0;
 			for(var i=0; i < room.clist.length; i++){
 				maxlength = Math.max(maxlength, room.clist[i].lpath.clist.length);
@@ -639,8 +639,8 @@ AnsCheck:{
 		for(var r=0; r<rooms.length; r++){
 			var room = rooms[r];
 			var qnumcell = room.clist.getQnumCell();
-			if(qnumcell.isnull) continue;
-			if(qnumcell.qnum < 0) continue;
+			if(qnumcell.isnull) {continue;}
+			if(qnumcell.qnum < 0) {continue;}
 			var visited = room.clist.filter(function(cell){return cell.lcnt>0;});
 			for(var c=0; c<visited.length; c++){
 				if(visited[c].lpath.clist.length > qnumcell.qnum){
@@ -682,6 +682,6 @@ AnsCheck:{
 },
 "FailCode@maxi":{
 	blLineShort : ["(Please translate) All lines in a room are shorter than the number.","All lines in a room are shorter than the number."],
-	blLineLong  : ["(Please translate) A line in a room is longer than the number.","A line in a room is longer than the number."],
+	blLineLong  : ["(Please translate) A line in a room is longer than the number.","A line in a room is longer than the number."]
 }
 }));
