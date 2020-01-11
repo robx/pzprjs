@@ -54,6 +54,13 @@ function render(testcase, data, type_, ready){
   puzzle.open(data);
 }
 
+function nopid(){
+  var link = document.createElement('a');
+  link.href = "list.html";
+  link.text = "List of puzzle types / パズルの種類のリスト";
+  document.getElementsByTagName('body')[0].appendChild(link);
+}
+
 pzpr.on("load", function(){
   var pid = window.location.search.substring(1);
   pid = pzpr.variety.toPID(pid);
