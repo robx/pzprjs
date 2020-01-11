@@ -97,6 +97,7 @@ function toBGimage(pid){
 		'geradeweg',
 		'heteromino',
 		'kropki',
+		'maxi',
 		'moonsun',
 		'nondango',
 		'nurimisaki',
