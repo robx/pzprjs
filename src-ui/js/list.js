@@ -3,8 +3,6 @@
 /* variables */
 var v3index = {
 	doclang  : pzpr.lang,
-	complete : false,
-	testdoc  : false,
 	captions : [],
 	phtml    : "p.html",
 	extend : function(obj){ for(var n in obj){ this[n] = obj[n];}}
@@ -115,7 +113,7 @@ v3index.extend({
 			if(!pinfo.valid){ return;}
 			if(el.childNodes.length===0){
 				el.className = (self.variety[pid] ? self.variety[pid].state : 'omopa');
-				el.innerHTML = '<a href="'+v3index.phtml+'?'+pid+(!self.testdoc?'':'_test')+'"></a>';
+				el.innerHTML = '<a href="'+v3index.phtml+'?'+pid+'"></a>';
 			}
 			self.captions.push({anode:el.firstChild, str_jp:pinfo.ja, str_en:pinfo.en});
 		});
