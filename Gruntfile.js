@@ -90,7 +90,7 @@ module.exports = function(grunt){
         }),
         files: [
           { src: 'dist/js/pzpr-ui.concat.js', dest: 'dist/js/pzpr-ui.js' },
-          { src: 'src-ui/js/v3index.js',      dest: 'dist/js/v3index.js' }
+          { src: 'src-ui/js/list.js',         dest: 'dist/js/list.js' }
         ]
       }
     }
