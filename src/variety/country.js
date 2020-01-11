@@ -632,7 +632,7 @@ AnsCheck:{
 		var rooms = this.board.roommgr.components;
 		for(var r=0; r<rooms.length; r++){
 			var room = rooms[r];
-			if(room.clist.filter(function(cell){return cell.lcnt==0;}).length>0) continue;
+			if(room.clist.filter(function(cell){return cell.lcnt < 0;}).length>0) continue;
 			var qnumcell = room.clist.getQnumCell();
 			if(qnumcell.isnull) continue;
 			if(qnumcell.qnum < 0) continue;
