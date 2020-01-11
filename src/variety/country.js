@@ -690,7 +690,7 @@ AnsCheck:{
 	lpNoNum  : ["○を含んでいないループがあります。","A loop has no numbers."]
 },
 "FailCode@maxi":{
-	blLineLong  : ["(Please translate) A line in a room is longer than the number.","A line in a room is longer than the number."],
 	blLineShort : ["(Please translate) All lines in a room are shorter than the number.","All lines in a room are shorter than the number."],
+	blLineLong  : ["(Please translate) A line in a room is longer than the number.","A line in a room is longer than the number."],
 }
 }));
