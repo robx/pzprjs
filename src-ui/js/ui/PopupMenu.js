@@ -838,15 +838,9 @@ ui.popupmgr.addpopup('dispsize',
 });
 
 //---------------------------------------------------------------------------
-// ★Popup_Creditクラス Creditやバージョン情報を表示します
+// ★Popup_About
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup('credit',
+ui.popupmgr.addpopup('about',
 {
-	formname : 'credit',
-
-	init : function(){
-		ui.popupmgr.popups.template.init.call(this);
-
-		getEL('pzprversion').innerHTML = pzpr.version;
-	}
+	formname : 'about'
 });

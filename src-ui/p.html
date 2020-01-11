@@ -109,7 +109,7 @@
    <li id="menu_help"><span>__ヘルプ__Help__</span><menu label="__ヘルプ__Help__">
      <li class="link" data-pidlink="rules.html?"><a target="_blank">__ルール__Rules__</a></li>
      <hr>
-     <li data-popup="credit"><span>__ぱずぷれv3について__About PUZ-PRE v3__</span></li>
+     <li data-popup="about"><span>__について__About__</span></li>
      <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__バグレポートと機能リクエスト__Bug reports and feature requests__</a></li>
    </menu></li>
   </menu>
@@ -590,15 +590,11 @@
     </form>
   </div>
 
-  <div class="popup" id="credit3_1">
-    <div class="titlebar">credit</div>
-    <form name="credit">
-      <span>pzprjs</span> v<%= git.hash %> <br>
-      <br>
-      based on <span>__ぱずぷれv3__PUZ-PRE v3__</span> v3.6.9 (+pzpr.js v<span>0.11.1</span>) <br>
-      <br>
-      <span>__ぱずぷれv3は はっぱ/連続発破が作成しています。__PUZ-PRE v3 is made by happa.__</span>
-      <br>
+  <div class="popup" id="about">
+    <div class="titlebar">__について__About__</div>
+    <form name="about">
+      <p><a href="https://github.com/robx/pzprjs">github.com/robx/pzprjs</a> version <%= git.hash %></p>
+      <p>based on <span>__ぱずぷれv3__PUZ-PRE v3__</span> by <span>__は はっぱ/連続発破__happa__</span></p>
       <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
     </form>
   </div>
