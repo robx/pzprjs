@@ -5,11 +5,14 @@
 	if(typeof module==='object' && module.exports){module.exports = [pidlist, classbase];}
 	else{ pzpr.classmgr.makeCustom(pidlist, classbase);}
 }(
-['country','moonsun','onsen','doubleback'], {
+['country','moonsun','onsen','doubleback','maxi'], {
 //---------------------------------------------------------
 // マウス入力系
 "MouseEvent@country,onsen":{
 	inputModes : {edit:['border','number','clear','info-line'],play:['line','peke','subcircle','subcross','clear','info-line']}
+},
+"MouseEvent@maxi":{
+	inputModes : {edit:['border','number','clear','info-line'],play:['line','peke','clear','info-line']}
 },
 "MouseEvent@moonsun":{
 	inputModes : {edit:['border','moon','sun','clear','info-line'],play:['line','peke','lineblank','clear','info-line']},
@@ -43,7 +46,7 @@ MouseEvent:{
 				else if(this.btn==='right'){ this.inputpeke();}
 			}
 			else if(this.mouseend && this.notInputted()){
-				if(this.inputpeke_ifborder()){ return;}
+				if(this.inputpeke_ifborder() || this.pid==='maxi'){ return;}
 				this.inputMB();
 			}
 		}
@@ -79,7 +82,7 @@ KeyEvent:{
 
 //---------------------------------------------------------
 // 盤面管理系
-"Cell@country,onsen":{
+"Cell@country,onsen,maxi":{
 	maxnum : function(){
 		return Math.min(999, this.room.clist.length);
 	}
@@ -88,6 +91,9 @@ KeyEvent:{
 	minnum : function(){
 		return this.puzzle.getConfig('country_empty') ? 0 : 1;
 	}
+},
+"Cell@maxi":{
+	minnum : 1
 },
 "Cell@moonsun":{
 	disInputHatena : true,
@@ -101,17 +107,26 @@ KeyEvent:{
 },
 "Border@moonsun":{
 	posthook : {
-		line : function(num){
+		line : function(){
 			var room1 = this.sidecell[0].room, room2 = this.sidecell[1].room;
 			room1.countMarkAndLine();
 			if(room1!==room2){ room2.countMarkAndLine();}
 		}
 	}
 },
+"Border@maxi":{
+	posthook : {
+		line : function(){
+			var room1 = this.sidecell[0].room, room2 = this.sidecell[1].room;
+			this.board.roommgr.setExtraData(room1);
+			if(room1!==room2){ this.board.roommgr.setExtraData(room2); }
+		}
+	}
+},
 Board:{
 	hasborder : 1
 },
-"Board@onsen":{
+"Board@onsen,maxi":{
 	cols : 8,
 	rows : 8,
 
@@ -123,10 +138,10 @@ Board:{
 LineGraph:{
 	enabled : true
 },
-"LineGraph@onsen":{
+"LineGraph@onsen,maxi":{
 	makeClist : true
 },
-"LineBlockGraph:LineGraph@onsen":{
+"LineBlockGraph:LineGraph@onsen,maxi":{
 	enabled : true,
 	relation : {'border.line':'link', 'border.ques':'separator'},
 	makeClist : true,
@@ -160,13 +175,26 @@ LineGraph:{
 AreaRoomGraph:{
 	enabled : true
 },
-"AreaRoomGraph@country":{
+"AreaRoomGraph@country,maxi":{
 	hastop : true
 },
 "AreaRoomGraph@moonsun":{
 	setExtraData : function(component){
 		this.common.setExtraData.call(this, component);
 		component.countMarkAndLine();
+	}
+},
+"AreaRoomGraph@maxi":{
+	setExtraData : function(component){
+		this.common.setExtraData.call(this, component);
+
+		var currentmax = 0;
+		var visited = component.clist.filter(function(cell){return cell.lcnt>0;});
+		for (var i=0; i<visited.length; i++) {
+			var len = visited[i].lpath.clist.length;
+			currentmax = Math.max(currentmax, len);
+		}
+		component.maxlength = currentmax;
 	}
 },
 "GraphComponent@moonsun":{
@@ -186,7 +214,6 @@ AreaRoomGraph:{
 		}
 	}
 },
-
 //---------------------------------------------------------
 // 画像表示系
 Graphic:{
@@ -198,7 +225,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		if     (this.pid==='country'){ this.drawQuesNumbers();}
+		if     (this.pid==='country' || this.pid==='maxi'){ this.drawQuesNumbers();}
 		else if(this.pid==='moonsun'){ this.drawMarks();}
 		else if(this.pid==='onsen'){ this.drawCircledNumbers();}
 
@@ -281,6 +308,9 @@ Graphic:{
 		return  this.getBorderColor_ques(border);
 	}
 },
+"Graphic@maxi":{
+	textoption : {ratio:0.4, position: 5, hoffset: 0.8, voffset: 0.75}
+},
 
 
 //---------------------------------------------------------
@@ -289,7 +319,7 @@ Encode:{
 	decodePzpr : function(type){
 		if     (this.pid==='country') { this.puzzle.setConfig('country_empty', this.checkpflag('e'));}
 		this.decodeBorder();
-		if     (this.pid==='country') { this.decodeRoomNumber16();}
+		if     (this.pid==='country' || this.pid==="maxi") { this.decodeRoomNumber16();}
 		else if(this.pid==='moonsun') { this.decodeCircle();}
 		else if(this.pid==='onsen'){ this.decodeNumber16();}
 		else if(this.pid==='doubleback'){ this.decodeEmpty();}
@@ -297,7 +327,7 @@ Encode:{
 	encodePzpr : function(type){
 		if     (this.pid==='country') { this.outpflag = this.puzzle.getConfig('country_empty') ? 'e' : null;}
 		this.encodeBorder();
-		if     (this.pid==='country') { this.encodeRoomNumber16();}
+		if     (this.pid==='country' || this.pid==="maxi") { this.encodeRoomNumber16();}
 		else if(this.pid==='moonsun') { this.encodeCircle();}
 		else if(this.pid==='onsen'){ this.encodeNumber16();}
 		else if(this.pid==='doubleback'){ this.encodeEmpty();}
@@ -390,6 +420,19 @@ FileIO:{
 
 		"checkDeadendLine+",
 		"checkIsolatedCircle+"
+	]
+},
+"AnsCheck@maxi#1":{
+	checklist : [
+		"checkBranchLine",
+		"checkCrossLine",
+
+		"checkShortLineInRoom",
+		"checkLongLineInRoom",
+		
+		"checkDeadendLine+",
+		"checkOneLoop",
+		"checkNoLine"
 	]
 },
 AnsCheck:{
@@ -584,6 +627,39 @@ AnsCheck:{
 		}
 	}
 },
+"AnsCheck@maxi":{
+	checkShortLineInRoom : function(){
+		var rooms = this.board.roommgr.components;
+		for(var r=0; r<rooms.length; r++){
+			var room = rooms[r];
+			if(room.clist.filter(function(cell){return cell.lcnt==0;}).length>0) continue;
+			var qnumcell = room.clist.getQnumCell();
+			if(qnumcell.isnull) continue;
+			if(qnumcell.qnum < 0) continue;
+			if(room.maxlength < qnumcell.qnum){
+				this.failcode.add("blLineShort");
+				if(this.checkOnly){break;}
+				room.clist.seterr(1);
+			}
+		}
+	},
+	checkLongLineInRoom : function(){
+		var rooms = this.board.roommgr.components;
+		for(var r=0; r<rooms.length; r++){
+			var room = rooms[r];
+			var qnumcell = room.clist.getQnumCell();
+			if(qnumcell.isnull) continue;
+			if(qnumcell.qnum < 0) continue;
+			var visited = room.clist.filter(function(cell){return cell.lcnt>0;});
+			for(var c=0; c<visited.length; c++){
+				if(visited[c].lpath.clist.length > qnumcell.qnum){
+					this.failcode.add("blLineLong");
+					visited[c].lpath.clist.seterr(1);
+				}
+			}
+		}
+	}
+},
 
 "FailCode@country":{
 	bkPassTwice : ["線が１つの国を２回以上通っています。","A line passes a country twice or more."],
@@ -612,5 +688,9 @@ AnsCheck:{
 	lnIsolate : ["線の通っていない○があります。","Lines doesn't pass a circle."],
 	lpNumGt2 : ["数字が2つ以上含まれたループがあります。","A loop has plural numbers."],
 	lpNoNum  : ["○を含んでいないループがあります。","A loop has no numbers."]
+},
+"FailCode@maxi":{
+	blLineLong  : ["(Please translate) A line in a room is longer than the number.","A line in a room is longer than the number."],
+	blLineShort : ["(Please translate) All lines in a room are shorter than the number.","All lines in a room are shorter than the number."],
 }
 }));
