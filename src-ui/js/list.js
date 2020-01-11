@@ -111,11 +111,17 @@ v3index.extend({
 			var pinfo = pzpr.variety(customAttr(el, 'pid'));
 			var pid = pinfo.pid;
 			if(!pinfo.valid){ return;}
-			if(el.childNodes.length===0){
-				el.className = (self.variety[pid] ? self.variety[pid].state : 'omopa');
-				el.innerHTML = '<a href="'+v3index.phtml+'?'+pid+'"></a>';
-			}
-			self.captions.push({anode:el.firstChild, str_jp:pinfo.ja, str_en:pinfo.en});
+
+			el.className = (self.variety[pid] ? self.variety[pid].state : 'omopa');
+			var editor = document.createElement("a");
+			editor.href = v3index.phtml + '?' + pid;
+			el.appendChild(editor);
+			var rules = document.createElement("a");
+			rules.className = "rules";
+			rules.href = 'rules.html?' + pid;
+			rules.textContent = '?';
+			el.appendChild(rules);
+			self.captions.push({anode:editor, str_jp:pinfo.ja, str_en:pinfo.en});
 		});
 	},
 	translate : function(){
