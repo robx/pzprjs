@@ -107,7 +107,7 @@ KeyEvent:{
 },
 "Border@moonsun":{
 	posthook : {
-		line : function(){
+		line : function(num){
 			var room1 = this.sidecell[0].room, room2 = this.sidecell[1].room;
 			room1.countMarkAndLine();
 			if(room1!==room2){ room2.countMarkAndLine();}
