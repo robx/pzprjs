@@ -114,15 +114,6 @@ KeyEvent:{
 		}
 	}
 },
-"Border@maxi":{
-	posthook : {
-		line : function(){
-			var room1 = this.sidecell[0].room, room2 = this.sidecell[1].room;
-			this.board.roommgr.setExtraData(room1);
-			if(room1!==room2){ this.board.roommgr.setExtraData(room2); }
-		}
-	}
-},
 Board:{
 	hasborder : 1
 },
