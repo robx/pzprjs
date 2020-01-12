@@ -363,14 +363,14 @@ pzpr.classmgr.makeCommon({
 	is51cell : function(){ return (this.ques===51);},
 	set51cell : function(val){
 		this.setQues(51);
-		for(var dir=0;dir<4;dir++){
+		for(var dir=1;dir<=4;dir++){
 			this.setQnumDir(dir,-1);
 		}
 		this.setAnum(-1);
 	},
 	remove51cell : function(val){
 		this.setQues(0);
-		for(var dir=0;dir<4;dir++){
+		for(var dir=1;dir<=4;dir++){
 			this.setQnumDir(dir,-1);
 		}
 		this.setAnum(-1);
