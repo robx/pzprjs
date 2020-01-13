@@ -44,7 +44,7 @@ KeyEvent:{
 // 盤面管理系
 Cell:{
 	akariinfo : 0, /* 0:なし 1:あかり 2:黒マス */
-	qlight : 0,	// EXCell基準に表示している情報を保持する変数
+	qlight : 0,	// ExCell基準に表示している情報を保持する変数
 
 	numberRemainsUnshaded : true,
 

@@ -78,7 +78,7 @@ Cell:{
 		}
 	}
 },
-EXCell:{
+ExCell:{
 	disInputHatena : true,
 	ques : 51,
 	getmaxnum : function(){
@@ -131,14 +131,14 @@ Graphic:{
 		else if(cell.ques===51){ return "rgb(192,192,192)";}
 		return this.getBGCellColor_qsub2(cell);
 	},
-	getBGEXcellColor : function(excell){
+	getBGExCellColor : function(excell){
 		if(excell.error){ return this.errbcolor1;}
 		else            { return "rgb(192,192,192)";}
 	},
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawBGEXcells();
+		this.drawBGExCells();
 		this.drawQues51();
 
 		this.drawGrid();

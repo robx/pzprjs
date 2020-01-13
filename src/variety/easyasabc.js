@@ -61,7 +61,7 @@ KeyEvent:{
 		if(this.puzzle.playmode){
 			return this.moveTCell(ca);
 		}
-		return this.moveEXCell(ca);
+		return this.moveExCell(ca);
 	},
 	keyinput : function(ca){
 		if(this.puzzle.playmode){
@@ -135,7 +135,7 @@ Cell:{
 	maxnum : function(){ return this.board.indicator.count;}
 },
 
-EXCell:{
+ExCell:{
 	disInputHatena : true,
 	numberAsLetter : true,
 
@@ -260,7 +260,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawBGEXcells();
+		this.drawBGExCells();
 		this.drawTargetSubNumber();
 
 		this.drawGrid();
@@ -269,7 +269,7 @@ Graphic:{
 		this.drawMBs();
 		this.drawSubNumbers();
 		this.drawAnsNumbers();
-		this.drawNumbersEXcell();
+		this.drawNumbersExCell();
 
 		this.drawChassis();
 
@@ -339,11 +339,11 @@ Graphic:{
 Encode:{
 	decodePzpr : function(type){
 		this.decodeIndicator();
-		this.decodeNumber16EXCell();
+		this.decodeNumber16ExCell();
 	},
 	encodePzpr : function(type){
 		this.encodeIndicator();
-		this.encodeNumber16EXCell();
+		this.encodeNumber16ExCell();
 	},
 
 	decodeIndicator : function(){
@@ -359,11 +359,11 @@ Encode:{
 FileIO:{
 	decodeData : function(){
 		this.decodeIndicator();
-		this.decodeCellEXCellQnumAnumsub();
+		this.decodeCellExCellQnumAnumsub();
 	},
 	encodeData : function(){
 		this.encodeIndicator();
-		this.encodeCellEXCellQnumAnumsub();
+		this.encodeCellExCellQnumAnumsub();
 	},
 
 	decodeIndicator : function(){
@@ -373,8 +373,8 @@ FileIO:{
 		this.writeLine(this.board.indicator.count);
 	},
 
-	decodeCellEXCellQnumAnumsub : function(){
-		this.decodeCellExcell(function(obj, ca){
+	decodeCellExCellQnumAnumsub : function(){
+		this.decodeCellExCell(function(obj, ca){
 			if(ca==="."){ return;}
 			else if(obj.group==='excell'){
 				obj.qnum = +ca;
@@ -387,8 +387,8 @@ FileIO:{
 			}
 		});
 	},
-	encodeCellEXCellQnumAnumsub : function(){
-		this.encodeCellExcell(function(obj){
+	encodeCellExCellQnumAnumsub : function(){
+		this.encodeCellExCell(function(obj){
 			if(obj.group==='excell'){
 				if(obj.qnum!==-1){ return ""+obj.qnum+" ";}
 			}

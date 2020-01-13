@@ -108,7 +108,7 @@ MouseEvent:{
 
 		this.mouseCell = excell;
 
-		var exlist = new this.klass.EXCellList([excell]);
+		var exlist = new this.klass.ExCellList([excell]);
 		if(this.puzzle.playmode){ exlist.ansclear();}
 		else                    { exlist.allclear();}
 
@@ -147,7 +147,7 @@ MouseEvent:{
 KeyEvent:{
 	enablemake : true,
 	moveTarget  : function(ca){
-		return this.moveEXCell(ca);
+		return this.moveExCell(ca);
 	},
 
 	keyinput : function(ca){
@@ -214,7 +214,7 @@ Cell:{
 	}
 },
 
-EXCell:{
+ExCell:{
 	disInputHatena : true,
 	minnum : 0
 },
@@ -322,8 +322,8 @@ Graphic:{
 
 		this.drawSlashes();
 
-		this.drawBGEXcells();
-		this.drawNumbersEXcell();
+		this.drawBGExCells();
+		this.drawNumbersExCell();
 		this.drawChassis();
 
 		this.drawTarget();
@@ -345,7 +345,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	getBGEXcellColor : function(excell){
+	getBGExCellColor : function(excell){
 		if(excell.qinfo===1){ return this.lightcolor;}
 		return null;
 	},
@@ -448,7 +448,7 @@ FileIO:{
 
 	decodeKinkonkan : function(){
 		var filever = this.filever;
-		this.decodeCellExcell(function(obj, ca){
+		this.decodeCellExCell(function(obj, ca){
 			if(ca==="."){ return;}
 			else if(obj.group==='excell'){
 				var inp = ca.split(",");
@@ -463,7 +463,7 @@ FileIO:{
 		});
 	},
 	encodeKinkonkan : function(){
-		this.encodeCellExcell(function(obj){
+		this.encodeCellExCell(function(obj){
 			if(obj.isnull){}
 			else if(obj.group==='excell'){
 				var dir=obj.qchar, qn=obj.qnum;
@@ -509,7 +509,7 @@ AnsCheck:{
 	checkPairMirror      : function(){ this.checkMirrors(1, "pairedLetterNe");},
 	checkReflectionCount : function(){ this.checkMirrors(2, "pairedNumberNe");},
 	checkMirrors : function(type, code){
-		var d = [], bd = this.board, result = true, errorExcell = null;
+		var d = [], bd = this.board, result = true, errorExCell = null;
 		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			if(!isNaN(d[ec]) || excell.qnum===-1 || excell.qchar===0){ continue;}
@@ -522,13 +522,13 @@ AnsCheck:{
 
 				excell.seterr(1);
 				excell2.seterr(1);
-				if(!errorExcell){ errorExcell = excell;}
+				if(!errorExCell){ errorExCell = excell;}
 			}
 			d[ec]=1; d[ret.dest]=1;
 		}
 		if(!result){
 			this.failcode.add(code);
-			if(errorExcell){ bd.searchLight(errorExcell, true);}
+			if(errorExCell){ bd.searchLight(errorExCell, true);}
 		}
 	}
 },

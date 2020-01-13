@@ -202,7 +202,7 @@ FileIO:{
 	// fio.decodeCell()    配列で、個別文字列から個別セルの設定を行う
 	// fio.decodeCross()   配列で、個別文字列から個別Crossの設定を行う
 	// fio.decodeBorder()  配列で、個別文字列から個別Borderの設定を行う
-	// fio.decodeCellExcell()  配列で、個別文字列から個別セル/Excellの設定を行う
+	// fio.decodeCellExCell()  配列で、個別文字列から個別セル/ExCellの設定を行う
 	//---------------------------------------------------------------------------
 	decodeObj : function(func, group, startbx, startby, endbx, endby){
 		var bx=startbx, by=startby, step=2;
@@ -239,7 +239,7 @@ FileIO:{
 			}
 		}
 	},
-	decodeCellExcell : function(func){
+	decodeCellExCell : function(func){
 		this.decodeObj(func, 'obj', -1, -1, this.board.maxbx-1, this.board.maxby-1);
 	},
 
@@ -248,7 +248,7 @@ FileIO:{
 	// fio.encodeCell()    個別セルデータから個別文字列の設定を行う
 	// fio.encodeCross()   個別Crossデータから個別文字列の設定を行う
 	// fio.encodeBorder()  個別Borderデータから個別文字列の設定を行う
-	// fio.encodeCellExcell()  個別セル/Excellデータから個別文字列の設定を行う
+	// fio.encodeCellExCell()  個別セル/ExCellデータから個別文字列の設定を行う
 	//---------------------------------------------------------------------------
 	encodeObj : function(func, group, startbx, startby, endbx, endby){
 		var step=2;
@@ -284,7 +284,7 @@ FileIO:{
 			}
 		}
 	},
-	encodeCellExcell : function(func){
+	encodeCellExCell : function(func){
 		this.encodeObj(func, 'obj', -1, -1, this.board.maxbx-1, this.board.maxby-1);
 	},
 

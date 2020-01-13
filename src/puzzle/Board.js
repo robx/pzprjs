@@ -29,14 +29,14 @@ Board:{
 		this.cell   = new classes.CellList();
 		this.cross  = new classes.CrossList();
 		this.border = new classes.BorderList();
-		this.excell = new classes.EXCellList();
+		this.excell = new classes.ExCellList();
 
 		// 空オブジェクト
 		this.nullobj     = new classes.BoardPiece();
 		this.emptycell   = new classes.Cell();
 		this.emptycross  = new classes.Cross();
 		this.emptyborder = new classes.Border();
-		this.emptyexcell = new classes.EXCell();
+		this.emptyexcell = new classes.ExCell();
 		try{
 			Object.freeze(this.nullobj);
 			Object.freeze(this.emptycell);
@@ -152,7 +152,7 @@ Board:{
 			else if(this.hasborder===2){ return 2*col*row+(col+row);}
 		}
 		else if(group==='excell'){
-			if     (this.hasexcell===1){ return col+row+(this.emptyexcell.ques===51?1:0);} /* 左上角のEXCellを追加 */
+			if     (this.hasexcell===1){ return col+row+(this.emptyexcell.ques===51?1:0);} /* 左上角のExCellを追加 */
 			else if(this.hasexcell===2){ return 2*(col+row);}
 		}
 		return 0;
@@ -162,7 +162,7 @@ Board:{
 		if     (group==='cell')  { piece = new classes.Cell();}
 		else if(group==='cross') { piece = new classes.Cross();}
 		else if(group==='border'){ piece = new classes.Border();}
-		else if(group==='excell'){ piece = new classes.EXCell();}
+		else if(group==='excell'){ piece = new classes.ExCell();}
 		if(piece!==this.nullobj && id!==void 0){ piece.id = id;}
 		return piece;
 	},
@@ -174,7 +174,7 @@ Board:{
 	// bd.setposCell()   該当するidのセルのbx,byプロパティを設定する
 	// bd.setposCross()  該当するidの交差点のbx,byプロパティを設定する
 	// bd.setposBorder() 該当するidの境界線/Lineのbx,byプロパティを設定する
-	// bd.setposEXCell() 該当するidのExtendセルのbx,byプロパティを設定する
+	// bd.setposExCell() 該当するidのExtendセルのbx,byプロパティを設定する
 	// bd.set_xnum()     crossは存在しないが、bd._xnumだけ設定したい場合に呼び出す
 	//---------------------------------------------------------------------------
 	/* setpos関連関数 */
@@ -182,13 +182,13 @@ Board:{
 		this.setposCells();
 		this.setposCrosses();
 		this.setposBorders();
-		this.setposEXcells();
+		this.setposExCells();
 	},
 	setposGroup : function(group){
 		if     (group==='cell')  { this.setposCells();}
 		else if(group==='cross') { this.setposCrosses();}
 		else if(group==='border'){ this.setposBorders();}
-		else if(group==='excell'){ this.setposEXcells();}
+		else if(group==='excell'){ this.setposExCells();}
 	},
 
 	setposCells : function(){
@@ -240,7 +240,7 @@ Board:{
 			border.initSideObject();
 		}
 	},
-	setposEXcells : function(){
+	setposExCells : function(){
 		var qc = this.cols, qr = this.rows;
 		for(var id=0;id<this.excell.length;id++){
 			var excell = this.excell[id], i=id;
@@ -250,7 +250,7 @@ Board:{
 			if(this.hasexcell===1){
 				if(i>=0 && i<qc){ excell.bx=i*2+1; excell.by=-1;   } i-=qc;
 				if(i>=0 && i<qr){ excell.bx=-1;    excell.by=i*2+1;} i-=qr;
-				if(i===0 && excell.ques===51){ excell.bx=-1;    excell.by=-1;   } i--;	/* 左上角のEXCellを追加 */
+				if(i===0 && excell.ques===51){ excell.bx=-1;    excell.by=-1;   } i--;	/* 左上角のExCellを追加 */
 			}
 			else if(this.hasexcell===2){
 				if(i>=0 && i<qc){ excell.bx=i*2+1;  excell.by=-1;    } i-=qc;
@@ -394,7 +394,7 @@ Board:{
 	getex : function(bx,by){
 		var id = null, qc=this.cols, qr=this.rows;
 		if(this.hasexcell===1){
-			if(this.emptyexcell.ques===51 && bx===-1&&by===-1){ id = qc+qr;}	/* 左上角のEXCellを追加 */
+			if(this.emptyexcell.ques===51 && bx===-1&&by===-1){ id = qc+qr;}	/* 左上角のExCellを追加 */
 			else if(by===-1&&bx>0&&bx<2*qc){ id = (bx>>1);}
 			else if(bx===-1&&by>0&&by<2*qr){ id = qc+(by>>1);}
 		}
@@ -441,7 +441,7 @@ Board:{
 	// bd.cellinside()   座標(x1,y1)-(x2,y2)に含まれるCellのリストを取得する
 	// bd.crossinside()  座標(x1,y1)-(x2,y2)に含まれるCrossのリストを取得する
 	// bd.borderinside() 座標(x1,y1)-(x2,y2)に含まれるBorderのリストを取得する
-	// bd.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExcellのリストを取得する
+	// bd.excellinside() 座標(x1,y1)-(x2,y2)に含まれるExCellのリストを取得する
 	//---------------------------------------------------------------------------
 	cellinside : function(x1,y1,x2,y2){
 		var clist = new this.klass.CellList();
@@ -472,7 +472,7 @@ Board:{
 		return blist;
 	},
 	excellinside : function(x1,y1,x2,y2){
-		var exlist = new this.klass.EXCellList();
+		var exlist = new this.klass.ExCellList();
 		if(!!this.hasexcell){
 			if(y1<-1){ y1 = -1;}
 			for(var by=(y1|1);by<=y2;by+=2){ for(var bx=(x1|1);bx<=x2;bx+=2){

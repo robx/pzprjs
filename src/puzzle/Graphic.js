@@ -454,7 +454,7 @@ Graphic:{
 			cells   : (new classes.CellList()),
 			crosses : (new classes.CrossList()),
 			borders : (new classes.BorderList()),
-			excells : (new classes.EXCellList())
+			excells : (new classes.ExCellList())
 		};
 	},
 

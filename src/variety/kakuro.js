@@ -73,7 +73,7 @@ Cell:{
 	}
 },
 
-EXCell:{
+ExCell:{
 	ques : 51,
 	qnum : -1,
 	qnum2 : -1,
@@ -108,7 +108,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawBGEXcells();
+		this.drawBGExCells();
 		this.drawTargetSubNumber();
 		this.drawQues51();
 
@@ -131,7 +131,7 @@ Graphic:{
 		else if(cell.ques===51){ return "rgb(192,192,192)";}
 		return null;
 	},
-	getBGEXcellColor : function(excell){
+	getBGExCellColor : function(excell){
 		if(excell.error){ return this.errbcolor1;   }
 		else            { return "rgb(192,192,192)";}
 	},
@@ -311,12 +311,12 @@ FileIO:{
 	},
 
 	decodeQans_kanpen : function(){
-		this.decodeCellExcell(function(obj,ca){
+		this.decodeCellExCell(function(obj,ca){
 			if(ca!=="." && ca!=="0"){ obj.anum = +ca;}
 		});
 	},
 	encodeQans_kanpen : function(){
-		this.encodeCellExcell(function(obj){
+		this.encodeCellExCell(function(obj){
 			if(obj.ques!==51){ return ((obj.anum>0 ? obj.anum : "0")+" ");}
 			return ". ";
 		});

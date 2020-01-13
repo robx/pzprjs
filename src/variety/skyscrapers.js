@@ -80,7 +80,7 @@ KeyEvent:{
 		if(this.puzzle.playmode){
 			return this.moveTCell(ca);
 		}
-		return this.moveEXCell(ca);
+		return this.moveExCell(ca);
 	},
 	keyinput : function(ca){
 		if(this.puzzle.playmode){
@@ -127,7 +127,7 @@ Cell:{
 	}
 },
 
-EXCell:{
+ExCell:{
 	disInputHatena : true,
 
 	maxnum : function(){
@@ -203,7 +203,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawBGEXcells();
+		this.drawBGExCells();
 		this.drawTargetSubNumber();
 
 		this.drawGrid();
@@ -211,7 +211,7 @@ Graphic:{
 
 		this.drawSubNumbers();
 		this.drawAnsNumbers();
-		this.drawArrowNumbersEXCell_skyscrapers();
+		this.drawArrowNumbersExCell_skyscrapers();
 
 		this.drawChassis();
 
@@ -223,13 +223,13 @@ Graphic:{
 		else if(cell.qinfo===1){ return this.lightcolor;}
 		return null;
 	},
-	getBGEXcellColor : function(excell){
+	getBGExCellColor : function(excell){
 		if(excell.error===1){ return this.errbcolor1;}
 		else if(excell.qinfo===1){ return this.lightcolor;}
 		return null;
 	},
 
-	drawArrowNumbersEXCell_skyscrapers : function(){
+	drawArrowNumbersExCell_skyscrapers : function(){
 		var g = this.vinc('excell_number', 'auto'), bd = this.board;
 
 		var tho = this.bw*0.5;		// y offset of horizonal arrows' head
@@ -281,23 +281,23 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		this.decodeNumber16EXCell();
+		this.decodeNumber16ExCell();
 	},
 	encodePzpr : function(type){
-		this.encodeNumber16EXCell();
+		this.encodeNumber16ExCell();
 	}
 },
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCellEXCellQnumAnumsub();
+		this.decodeCellExCellQnumAnumsub();
 	},
 	encodeData : function(){
-		this.encodeCellEXCellQnumAnumsub();
+		this.encodeCellExCellQnumAnumsub();
 	},
 
-	decodeCellEXCellQnumAnumsub : function(){
-		this.decodeCellExcell(function(obj, ca){
+	decodeCellExCellQnumAnumsub : function(){
+		this.decodeCellExCell(function(obj, ca){
 			if(ca==="."){ return;}
 			else if(obj.group==='excell'){
 				obj.qnum = +ca;
@@ -308,8 +308,8 @@ FileIO:{
 			}
 		});
 	},
-	encodeCellEXCellQnumAnumsub : function(){
-		this.encodeCellExcell(function(obj){
+	encodeCellExCellQnumAnumsub : function(){
+		this.encodeCellExCell(function(obj){
 			if(obj.group==='excell'){
 				if(obj.qnum!==-1){ return ""+obj.qnum+" ";}
 			}
@@ -334,7 +334,7 @@ AnsCheck:{
 	],
 
 	checkSight : function(type){
-		var bd = this.board, result = true, errorExcell = new this.klass.EXCellList();
+		var bd = this.board, result = true, errorExCell = new this.klass.ExCellList();
 		for(var ec=0;ec<bd.excell.length;ec++){
 			var excell = bd.excell[ec];
 			if(excell.qnum===-1){ continue;}
@@ -345,11 +345,11 @@ AnsCheck:{
 			if(this.checkOnly){ break;}
 
 			excell.seterr(1);
-			errorExcell.add(excell);
+			errorExCell.add(excell);
 		}
 		if(!result){
 			this.failcode.add("nmSightNe");
-			errorExcell.each(function(excell){ bd.searchSight(excell, true);});
+			errorExCell.each(function(excell){ bd.searchSight(excell, true);});
 		}
 	}
 },

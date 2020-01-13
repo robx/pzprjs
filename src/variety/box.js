@@ -95,7 +95,7 @@ TargetCursor:{
 
 //---------------------------------------------------------
 // 盤面管理系
-EXCell:{
+ExCell:{
 	qnum : 0,
 
 	disInputHatena : true,
@@ -163,8 +163,8 @@ Graphic:{
 		this.drawDotCells(false);
 		this.drawGrid();
 
-		this.drawBGEXcells();
-		this.drawNumbersEXcell();
+		this.drawBGExCells();
+		this.drawNumbersExCell();
 
 		this.drawCircledNumbers_box();
 
@@ -251,7 +251,7 @@ Encode:{
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeCellExcell(function(obj,ca){
+		this.decodeCellExCell(function(obj,ca){
 			if(ca==="."){ return;}
 			else if(obj.group==='excell' && !obj.isnull){
 				obj.qnum = +ca;
@@ -263,7 +263,7 @@ FileIO:{
 		});
 	},
 	encodeData : function(){
-		this.encodeCellExcell(function(obj){
+		this.encodeCellExCell(function(obj){
 			if(obj.group==='excell' && !obj.isnull){
 				return (obj.qnum+" ");
 			}

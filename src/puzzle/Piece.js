@@ -2,7 +2,7 @@
 
 pzpr.classmgr.makeCommon({
 //---------------------------------------------------------------------------
-// ★BoardPieceクラス Cell, Cross, Border, EXCellクラスのベース
+// ★BoardPieceクラス Cell, Cross, Border, ExCellクラスのベース
 //---------------------------------------------------------------------------
 "BoardPiece:Position":{
 	group  : 'none',
@@ -108,7 +108,7 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// setdata() Cell,Cross,Border,EXCellの値を設定する
+	// setdata() Cell,Cross,Border,ExCellの値を設定する
 	// addOpe()  履歴情報にプロパティの変更を通知する
 	//---------------------------------------------------------------------------
 	setdata : function(prop, num){
@@ -131,7 +131,7 @@ pzpr.classmgr.makeCommon({
 	},
 
 	//---------------------------------------------------------------------------
-	// setdata2() Cell,Cross,Border,EXCellのpos付きの値を設定する
+	// setdata2() Cell,Cross,Border,ExCellのpos付きの値を設定する
 	//---------------------------------------------------------------------------
 	setdata2 : function(prop, pos, num){
 		if(this[prop][pos]===num){ return;}
@@ -670,11 +670,11 @@ pzpr.classmgr.makeCommon({
 },
 
 //---------------------------------------------------------------------------
-// ★EXCellクラス BoardクラスがEXCellの数だけ保持する
+// ★ExCellクラス BoardクラスがExCellの数だけ保持する
 //---------------------------------------------------------------------------
 // ボードメンバデータの定義(4)
-// EXCellクラスの定義
-'EXCell:BoardPiece':{
+// ExCellクラスの定義
+'ExCell:BoardPiece':{
 	group : 'excell',
 
 	adjacent  : {},	// 四方向に隣接するセルを保持する

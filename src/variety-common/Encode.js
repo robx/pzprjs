@@ -219,7 +219,7 @@ Encode:{
 	},
 
 
-	decodeNumber16EXCell : function(){
+	decodeNumber16ExCell : function(){
 		// 盤面外数字のデコード
 		var ec=0, i=0, bstr = this.outbstr, bd = this.board;
 		for(i=0;i<bstr.length;i++){
@@ -236,7 +236,7 @@ Encode:{
 
 		this.outbstr = bstr.substr(i+1);
 	},
-	encodeNumber16EXCell : function(){
+	encodeNumber16ExCell : function(){
 		// 盤面外数字のエンコード
 		var count=0, cm="", bd = this.board;
 		for(var ec=0;ec<bd.excell.length;ec++){

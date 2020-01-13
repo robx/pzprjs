@@ -296,7 +296,7 @@ FileIO:{
 	decodeCellQnum51 : function(){
 		var bd = this.board;
 		bd.disableInfo(); /* mv.set51cell()用 */
-		this.decodeCellExcell(function(obj,ca){
+		this.decodeCellExCell(function(obj,ca){
 			if(ca==="."){ return;}
 			else if(obj.group==='excell'){
 				if     (obj.bx!==-1 && obj.by===-1){ obj.qnum2 = +ca;}
@@ -312,7 +312,7 @@ FileIO:{
 		bd.enableInfo(); /* mv.set51cell()用 */
 	},
 	encodeCellQnum51 : function(){
-		this.encodeCellExcell(function(obj){
+		this.encodeCellExCell(function(obj){
 			if(obj.group==='excell'){
 				if(obj.bx===-1 && obj.by===-1){ return "0 ";}
 				return ((obj.by===-1)?obj.qnum2:obj.qnum)+" ";

@@ -220,9 +220,9 @@ KeyEvent:{
 	},
 
 	//---------------------------------------------------------------------------
-	// kc.moveEXCell()  EXCellのキーボードからの入力対象を矢印キーで動かす
+	// kc.moveExCell()  ExCellのキーボードからの入力対象を矢印キーで動かす
 	//---------------------------------------------------------------------------
-	moveEXCell : function(ca){
+	moveExCell : function(ca){
 		var cursor = this.cursor, addr0 = cursor.getaddr(), flag = true, dir = addr0.NDIR;
 		switch(ca){
 		case 'up':
@@ -263,7 +263,7 @@ KeyEvent:{
 	initialize : function(){
 		this.bx = 1;
 		this.by = 1;
-		this.mode51 = (this.puzzle.klass.EXCell.prototype.ques===51);
+		this.mode51 = (this.puzzle.klass.ExCell.prototype.ques===51);
 		this.modesnum = (this.puzzle.klass.Cell.prototype.enableSubNumberArray);
 		this.targetdirs = (this.puzzle.klass.Cell.prototype.dirs51);
 		if(this.mode51 && this.puzzle.editmode){ this.targetdir = 4;} // right
@@ -313,7 +313,7 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	// tc.adjust_init()       初期化時にカーソルの位置がおかしい場合に調整する
 	// tc.adjust_modechange() モード変更時にカーソルの位置を調節する
-	// tc.adjust_cell_to_excell() モード変更時にカーソルの位置をCellからEXCellへ移動する
+	// tc.adjust_cell_to_excell() モード変更時にカーソルの位置をCellからExCellへ移動する
 	//---------------------------------------------------------------------------
 	adjust_init : function(){
 		if(this.bx<this.minx){ this.bx=this.minx;}

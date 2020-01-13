@@ -102,7 +102,7 @@ Cell:{
 		}
 	}
 },
-EXCell:{
+ExCell:{
 	ques: 51,
 	qnum: 0,
 	qnum2: 0,
@@ -164,7 +164,7 @@ Graphic:{
 
 	paint : function(){
 		this.drawBGCells();
-		this.drawBGEXcells();
+		this.drawBGExCells();
 		this.drawShadedCells();
 		this.drawQues51();
 

@@ -121,15 +121,15 @@ Graphic:{
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawBGEXcells()    EXCellに描画される背景色をCanvasに書き込む
-	// pc.getBGEXcellColor() 背景色の設定・描画判定する
+	// pc.drawBGExCells()    ExCellに描画される背景色をCanvasに書き込む
+	// pc.getBGExCellColor() 背景色の設定・描画判定する
 	//---------------------------------------------------------------------------
-	drawBGEXcells : function(){
+	drawBGExCells : function(){
 		var g = this.vinc('excell_back', 'crispEdges', true);
 
 		var exlist = this.range.excells;
 		for(var i=0;i<exlist.length;i++){
-			var excell = exlist[i], color = this.getBGEXcellColor(excell);
+			var excell = exlist[i], color = this.getBGExCellColor(excell);
 
 			g.vid = "ex_full_"+excell.id;
 			if(!!color){
@@ -140,7 +140,7 @@ Graphic:{
 		}
 	},
 
-	getBGEXcellColor : function(excell){
+	getBGExCellColor : function(excell){
 		if(excell.error===1||excell.qinfo===1){ return this.errbcolor1;}
 	},
 
@@ -360,9 +360,9 @@ Graphic:{
 	},
 
 	//---------------------------------------------------------------------------
-	// pc.drawNumbersEXcell()  EXCellの数字をCanvasに書き込む
+	// pc.drawNumbersExCell()  ExCellの数字をCanvasに書き込む
 	//---------------------------------------------------------------------------
-	drawNumbersEXcell : function(){
+	drawNumbersExCell : function(){
 		var g = this.vinc('excell_number', 'auto');
 
 		var exlist = this.range.excells;
@@ -1060,14 +1060,14 @@ Graphic:{
 	//---------------------------------------------------------------------------
 	// pc.drawQues51()         Ques===51があるようなパズルで、描画関数を呼び出す
 	// pc.drawSlash51Cells()   [＼]のナナメ線をCanvasに書き込む
-	// pc.drawSlash51EXcells() EXCell上の[＼]のナナメ線をCanvasに書き込む
-	// pc.drawEXCellGrid()     EXCell間の境界線をCanvasに書き込む
+	// pc.drawSlash51ExCells() ExCell上の[＼]のナナメ線をCanvasに書き込む
+	// pc.drawExCellGrid()     ExCell間の境界線をCanvasに書き込む
 	//---------------------------------------------------------------------------
 	drawQues51 : function(){
-		this.drawEXCellGrid();
+		this.drawExCellGrid();
 		this.drawTargetTriangle();
 		this.drawSlash51Cells();
-		this.drawSlash51EXcells();
+		this.drawSlash51ExCells();
 	},
 	drawSlash51Cells : function(){
 		var g = this.vinc('cell_ques51', 'crispEdges', true);
@@ -1093,7 +1093,7 @@ Graphic:{
 			else{ g.vhide();}
 		}
 	},
-	drawSlash51EXcells : function(){
+	drawSlash51ExCells : function(){
 		var g = this.vinc('excell_ques51', 'crispEdges', true);
 
 		g.strokeStyle = this.quescolor;
@@ -1105,7 +1105,7 @@ Graphic:{
 			g.strokeLine(px-this.bw,py-this.bh, px+this.bw,py+this.bh);
 		}
 	},
-	drawEXCellGrid : function(){
+	drawExCellGrid : function(){
 		var g = this.vinc('grid_excell', 'crispEdges', true);
 
 		g.fillStyle = this.quescolor;

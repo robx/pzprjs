@@ -99,7 +99,7 @@ TargetCursor:{
 	}
 },
 
-EXCell:{
+ExCell:{
 	disInputHatena : true,
 
 	maxnum : function(){
@@ -187,7 +187,7 @@ Graphic:{
 		this.drawShadedCells();
 		this.drawGrid();
 
-		this.drawNumbersEXcell();
+		this.drawNumbersExCell();
 
 		this.drawBorders();
 
@@ -201,7 +201,7 @@ Encode:{
 	decodePzpr : function(type){
 		this.decodeBorder();
 		this.outbstr = this.outbstr.substr(1);
-		this.decodeNumber16EXCell();
+		this.decodeNumber16ExCell();
 
 		this.puzzle.setConfig('aquarium_regions', this.checkpflag('r'));
 	},
@@ -209,7 +209,7 @@ Encode:{
 		this.outpflag = this.puzzle.getConfig('aquarium_regions') ? "r" : null;
 		this.encodeBorder();
 		this.outbstr += "/";
-		this.encodeNumber16EXCell();
+		this.encodeNumber16ExCell();
 	}
 },
 
@@ -217,7 +217,7 @@ FileIO:{
 	decodeData : function(){
 		this.decodeConfig();
 		this.decodeBorderQues();
-		this.decodeCellExcell(function(obj,ca){
+		this.decodeCellExCell(function(obj,ca){
 			if(ca==="."){ return;}
 			else if(obj.group==='excell' && !obj.isnull){
 				obj.qnum = +ca;
@@ -231,7 +231,7 @@ FileIO:{
 	encodeData : function(){
 		this.encodeConfig();
 		this.encodeBorderQues();
-		this.encodeCellExcell(function(obj){
+		this.encodeCellExCell(function(obj){
 			if(obj.group==='excell' && !obj.isnull && obj.qnum !== -1){
 				return (obj.qnum+" ");
 			}
