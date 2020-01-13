@@ -101,6 +101,10 @@ Board:{
 		this.setminmax();
 		this.setposAll();
 
+		if(this.hasdots===1) {
+			this.initDots(this.cols,this.rows);
+		}
+
 		this.initExtraObject(col,row);
 
 		this.rebuildInfo();
@@ -555,6 +559,43 @@ Board:{
 				this[group][c].compare(bd2[group][c],callback);
 			}
 		}
+	},
+
+	dotsmax : 0,
+	dots : [],
+
+	//---------------------------------------------------------------------------
+	initDots : function(col,row){
+		this.dotsmax = (2*col-1)*(2*row-1);
+		this.dots = [];
+		for(var id=0;id<this.dotsmax;id++){
+			this.dots[id] = new this.klass.Dot();
+			var dot = this.dots[id];
+			dot.id = id;
+
+			dot.bx = id%(2*col-1)+1;
+			dot.by = ((id/(2*col-1))|0)+1;
+
+			dot.isnull = false;
+			dot.piece = dot.getaddr().getobj();
+		}
+	},
+
+	getDot : function(bx,by){
+		var qc=this.cols, qr=this.rows;
+		if((bx<=0||bx>=(qc<<1)||by<=0||by>=(qr<<1))){ return null;}
+		var id=(bx-1)+(by-1)*(2*qc-1);
+		var dot=this.dots[id];
+		return (dot.isnull?null:dot);
+	},
+
+	dotinside : function(x1,y1,x2,y2){
+		var dlist = new this.klass.PieceList();
+		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
+			var dot = this.getDot(bx,by);
+			if(!!dot){ dlist.add(dot);}
+		}}
+		return dlist;
 	}
 }
 });

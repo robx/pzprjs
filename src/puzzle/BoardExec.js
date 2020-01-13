@@ -138,6 +138,10 @@ BoardExec:{
 		}
 		bd.setposAll();
 
+		if(bd.hasdots===1) {
+			bd.initDots(bd.cols, bd.rows);
+		}
+
 		this.adjustBoardData2(key,d);
 	},
 

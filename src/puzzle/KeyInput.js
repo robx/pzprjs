@@ -476,6 +476,8 @@ KeyEvent:{
 			}
 		}
 		return num;
-	}
+	},
+
+	getDot : function(){ return this.board.getDot(this.bx, this.by);}
 }
 });
