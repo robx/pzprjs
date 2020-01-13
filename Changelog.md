@@ -1,5 +1,19 @@
-* araf: Introduce new puzzle: Araf (due to Giuliano Montelucci)
+#### New puzzle types
+
+* araf: New puzzle type Araf (due to Giuliano Montelucci)
+* maxi: New puzzle type Maxi Loop (due to Giuliano Montelucci)
+
+#### Improvements
+
+* Simplify English puzzle names.
 * Change canonical names: bag becomes cave, building becomes skyscrapers.
+* triplace: Shade clue background.
+* rules.html: Include player.
+
+#### Bugfixes
+
+* compass: Fix erasing clues
+* triplace: Don't allow drawing on clues
 
 ## Version 0.12.0
 
