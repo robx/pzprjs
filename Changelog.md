@@ -7,6 +7,7 @@
 
 * Simplify English puzzle names.
 * Change canonical names: bag becomes cave, building becomes skyscrapers.
+* cave: Allow switching mouse button mode like other shading puzzles.
 * creek, gokigen: Fix behavior of -,backspace in edit mode.
 * triplace: Shade clue background.
 * rules.html: Include player.

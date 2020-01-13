@@ -9,6 +9,7 @@
 //---------------------------------------------------------
 // マウス入力系
 MouseEvent:{
+	use : true,
 	inputModes : {edit:['number','clear'],play:['shade','unshade','peke','clear']},
 	mouseinput_auto : function(){
 		var puzzle = this.puzzle;
