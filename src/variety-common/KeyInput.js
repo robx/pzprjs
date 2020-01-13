@@ -16,8 +16,8 @@ KeyEvent:{
 			val = cur*10+num;
 			if(val>max){ return;}
 		}
-		else if(ca==='-'){ cross.setQnum(cross.qnum!==-2 ? -2 : -1);}
-		else if(ca===' '){ cross.setQnum(-1);}
+		else if(ca==='-')           { val=(cross.qnum!==-2 ? -2 : -1);}
+		else if(ca===' '||ca==='BS'){ val=-1;}
 		else{ return;}
 
 		cross.setQnum(val);

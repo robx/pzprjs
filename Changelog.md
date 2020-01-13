@@ -7,6 +7,7 @@
 
 * Simplify English puzzle names.
 * Change canonical names: bag becomes cave, building becomes skyscrapers.
+* creek, gokigen: Fix behavior of -,backspace in edit mode.
 * triplace: Shade clue background.
 * rules.html: Include player.
 * keyboard: Prevent navigation using backspace, scrolling using space.
