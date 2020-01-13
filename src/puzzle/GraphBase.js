@@ -414,10 +414,17 @@ GraphBase:{
 	getLargeComponent : function(components){
 		if(components.length===0){ return null;}
 		var largeComponent = components[0];
+		var largeTrial = largeComponent.isTrial();
 		for(var i=1;i<components.length;i++){
-			var comp = components[i];
-			if(largeComponent.nodes.length < comp.nodes.length){
+			var comp = components[i], trial = comp.isTrial();
+			if(trial===largeTrial){
+				if(largeComponent.nodes.length < comp.nodes.length){
+					largeComponent = comp;
+					largeTrial = trial;
+				}
+			}else if(!trial){
 				largeComponent = comp;
+				largeTrial = trial;
 			}
 		}
 		return largeComponent;
@@ -500,6 +507,17 @@ GraphComponent:{
 				this.clist.draw();
 			}
 		}
+	},
+
+	//---------------------------------------------------------------------------
+	// component.isTrial()  check whether this component is entirely made up of trial edges (irowake)
+	//---------------------------------------------------------------------------
+	isTrial : function(){
+		var edges = this.getedgeobjs();
+		for(var i=0;i<edges.length;i++){
+			if(!edges[i].trial){ return false; }
+		}
+		return true;
 	},
 
 	//---------------------------------------------------------------------------
