@@ -4,7 +4,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pzpr rules</title>
 <style>
+html {
+  font-family: sans-serif;
+}
+h1 {
+  font-size: medium;
+}
+div + h1 {
+  margin-top: 20px;
+}
 .testcase {
+  background: #f0f0f0;
+  margin: 10px;
+}
+.player {
   background: #f0f0f0;
   margin: 10px;
 }
@@ -29,15 +42,15 @@
 <script type="text/javascript" src="./js/pzpr.js?<%= git.hash %>"></script>
 <script>
 
-function render(testcase, data, ready){
+function render(testcase, data, type_, ready){
   var canvas = document.createElement('div');
   canvas.className = 'canvas';
   canvas.style = "width:200px; height:200px;"
   testcase.appendChild(canvas);
-  var puzzle = new pzpr.Puzzle(canvas, {type:'viewer'});
+  var puzzle = new pzpr.Puzzle(canvas, {type:type_});
   puzzle.setConfig('autocmp', false);
   puzzle.setConfig('forceallcell',true);
-  puzzle.once("ready", function(){ready(canvas, puzzle);});
+  puzzle.once("ready", function(){ready(puzzle);});
   puzzle.open(data);
 }
 
@@ -45,10 +58,11 @@ pzpr.on("load", function(){
   var pid = window.location.search.substring(1);
   pid = pzpr.variety.toPID(pid);
 
-  var failcheck;
+  var failcheck, url;
   window.ui = {};
   window.ui.debug = {};
   window.ui.debug.addDebugData = function(pid, data){
+    url = pid + "/" + data.url;
     failcheck = data.failcheck;
   };
 
@@ -58,30 +72,43 @@ pzpr.on("load", function(){
   _script.type = 'text/javascript';
   _script.src = datadir+'/'+pid+'.js';
   _script.onload = function(){
+    var body = document.getElementsByTagName('body')[0];
+
+    var heading = document.createElement('h1');
+    heading.textContent = "Example player";
+    body.appendChild(heading);
+    var player = document.createElement('div');
+    player.className = 'player';
+    body.appendChild(player);
+    render(player, url, 'player', function(puzzle){});
+
+    heading = document.createElement('h1');
+    heading.textContent = "Example errors";
+    body.appendChild(heading);
     failcheck.forEach(function(data){
       if(data.length>2&&data[2].skiprules){ return;}
       var testcase = document.createElement('div');
       testcase.className = 'testcase';
-      document.getElementsByTagName('body')[0].appendChild(testcase);
+      body.appendChild(testcase);
       // blank puzzle
-      //render(testcase, data[1], function(canvas, puzzle){
+      //render(testcase, data[1], 'viewer', function(puzzle){
       //  puzzle.ansclear();
       //});
       // solution
-      //render(testcase, data[1], function(canvas, puzzle){});
+      //render(testcase, data[1], 'viewer', function(puzzle){});
       // marked solution
-      render(testcase, data[1], function(canvas, puzzle){
+      render(testcase, data[1], 'viewer', function(puzzle){
         var failcode = puzzle.check(true);
         var label = document.createElement('div');
         label.className = 'error-label';
-        label.innerHTML = (failcode.complete?'OK':'NG') + ':';
+        label.textContent = (failcode.complete?'OK':'NG') + ':';
         var error = document.createElement('div');
         error.className = 'error-msg';
         var langs = ['en', 'ja'];
         langs.forEach(function(lang){
           var span = document.createElement('span');
           span.setAttribute('lang', lang);
-          span.innerHTML =  failcode.gettext(lang);
+          span.textContent =  failcode.gettext(lang);
           error.appendChild(span);
         });
         testcase.appendChild(label);
