@@ -14,8 +14,9 @@
 
 #### Bugfixes
 
-* compass: Fix erasing clues
-* triplace: Don't allow drawing on clues
+* compass: Fix erasing clues.
+* triplace: Don't allow drawing on clues.
+* walllogic: Fix redraw with autocompletion.
 
 ## Version 0.12.0
 

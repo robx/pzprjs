@@ -53,20 +53,11 @@ MouseEvent:{
 			else if(cell.anum<0){ mode = 1;}
 
 			if(mode!==null && (this.inputData===null || this.inputData===mode)){
-				var basecell = [];
-				if(cell.wall && this.puzzle.execConfig('autocmp')){ basecell.push(cell.wall.clist.getBaseCell());}
-
 				// 描画・後処理
 				cell.setAnum(dir);
-				cell.drawaround();
 
 				this.inputData = mode;
 				this.firstPoint.reset();
-
-				if(cell.wall && this.puzzle.execConfig('autocmp')){ basecell.push(cell.wall.clist.getBaseCell());}
-				if(basecell.length>0){
-					for(var i=0;i<basecell.length;i++){ if(basecell[i].qnum!==-1){ basecell[i].draw();}}
-				}
 			}
 		}
 
@@ -118,7 +109,6 @@ MouseEvent:{
 		else if(val===-2){ cell.setQues(0); cell.setQnum(-1);}
 		else             { cell.setQues(1); cell.setQnum(-1);}
 		cell.setAnum(-1);
-		cell.draw();
 	}
 },
 
@@ -153,6 +143,9 @@ KeyEvent:{
 //---------------------------------------------------------
 // 盤面管理系
 Cell:{
+	basecell : null,
+	prevbasecell : null,
+
 	maxnum : function(){
 		var bd = this.board;
 		return (bd.cols + bd.rows - 2);
@@ -181,13 +174,24 @@ Cell:{
 		if(!this.puzzle.execConfig('autocmp')){ return false;}
 		return (this.qnum===this.getWallClist().length);
 	},
-	draw : function(){
-		var opemgr = this.puzzle.opemgr;
-		if(opemgr.undoExec || opemgr.redoExec){
-			this.drawaround();
+	prehook : {
+		anum : function(){
+			this.prevbasecell = this.basecell;
+			return false;
 		}
-		else{
-			this.common.draw.call(this);
+	},
+	posthook : {
+		anum : function(){
+			if(!!this.wall){
+				this.basecell = this.wall.clist.getBaseCell();
+			}else{
+				this.basecell = this.board.emptycell;
+			}
+			this.drawaround();
+			if(this.puzzle.execConfig('autocmp')){
+				if(!!this.prevbasecell){this.prevbasecell.draw();}
+				if(!!this.basecell){this.basecell.draw();}
+			}
 		}
 	}
 },
