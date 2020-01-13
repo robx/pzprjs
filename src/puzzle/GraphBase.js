@@ -406,35 +406,34 @@ GraphBase:{
 	setExtraData : function(component){},
 
 	//--------------------------------------------------------------------------------
+	// graph.getLargeComponent()
 	// graph.getLongColor() ブロックを設定した時、ブロックにつける色を取得する
 	// graph.setLongColor() ブロックに色をつけなおす
 	// graph.repaintNodes() ブロックを再描画する
 	//--------------------------------------------------------------------------------
-	getLongColor : function(components){
-		// 周りで一番大きな線は？
+	getLargeComponent : function(components){
+		if(components.length===0){ return null;}
 		var largeComponent = components[0];
 		for(var i=1;i<components.length;i++){
-			if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
+			var comp = components[i];
+			if(largeComponent.nodes.length < comp.nodes.length){
+				largeComponent = comp;
+			}
 		}
+		return largeComponent;
+	},
+	getLongColor : function(components){
+		var largeComponent = this.getLargeComponent(components);
 		return (!!largeComponent ? largeComponent.color : null);
 	},
 	setLongColor : function(components, longColor){
-		if(components.length===0){ return;}
+		if(components.length===0||!longColor){ return;}
 		var puzzle = this.puzzle;
 
 		// できた線の中でもっとも長いものを取得する
-		var largeComponent = null;
-		if(!!longColor){
-			largeComponent = components[0];
-			for(var i=1;i<components.length;i++){
-				if(largeComponent.nodes.length < components[i].nodes.length){ largeComponent = components[i];}
-			}
-		}
-
-		// 新しい色の設定
-		for(var i=0;i<components.length;i++){
-			var path = components[i];
-			path.color = (path===largeComponent ? longColor : path.color);
+		var largeComponent = this.getLargeComponent(components);
+		if(!!largeComponent){
+			largeComponent.color = longColor;
 		}
 
 		if(this.coloring && (puzzle.execConfig('irowake') || puzzle.execConfig('irowakeblk'))){
