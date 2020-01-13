@@ -83,6 +83,14 @@ type by visiting `p.html?mytype`. Feel free to skip steps 5 and 6
 when submitting a pull request for a new type.
 
 
+### Glossary
+
+There are some Japanese terms in the source code that may not be obvious.
+
+irowake: per-component coloring
+peke: cross mark
+
+
 [sabo2/pzprjs]: https://github.com/sabo2/pzprjs
 [puzz.link]: https://puzz.link/list.html
 [sudoku]: https://en.wikipedia.org/wiki/Sudoku
