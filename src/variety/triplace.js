@@ -126,7 +126,15 @@ AreaRoomGraph:{
 Graphic:{
 	gridcolor_type : "LIGHT",
 
-	bgcellcolor_func : "qsub2",
+	getBGCellColor : function(cell){
+		if     (cell.error===1){ return this.errbcolor1;}
+		else if(cell.ques===51){ return "rgb(192,192,192)";}
+		return this.getBGCellColor_qsub2(cell);
+	},
+	getBGEXcellColor : function(excell){
+		if(excell.error){ return this.errbcolor1;}
+		else            { return "rgb(192,192,192)";}
+	},
 
 	paint : function(){
 		this.drawBGCells();
