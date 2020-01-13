@@ -87,6 +87,14 @@ EXCell:{
 	},
 	minnum : 0
 },
+Border:{
+	prehook: {
+		qans: function(){
+			return (this.sidecell[0].isnull || this.sidecell[1].isnull
+				|| this.sidecell[0].ques===51 || this.sidecell[1].ques===51);
+		}
+	}
+},
 Board:{
 	hasborder : 1,
 	hasexcell : 1
