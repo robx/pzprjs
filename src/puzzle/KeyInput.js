@@ -50,9 +50,15 @@ KeyEvent:{
 	//---------------------------------------------------------------------------
 	// この3つのキーイベントはwindowから呼び出される(kcをbindしている)
 	e_keydown : function(e){
-		if(!this.enableKey){ return;}
-
 		var c = this.getchar(e);
+		if(!this.enableKey){
+			if(c==='BS'||c===' '){
+				e.stopPropagation();
+				e.preventDefault();
+			}
+			return;
+		}
+
 		this.checkbutton(c,0);
 		if(c){ this.keyevent(c,0);}
 
@@ -62,9 +68,15 @@ KeyEvent:{
 		}
 	},
 	e_keyup : function(e){
-		if(!this.enableKey){ return;}
-
 		var c = this.getchar(e);
+		if(!this.enableKey){
+			if(c==='BS'||c===' '){
+				e.stopPropagation();
+				e.preventDefault();
+			}
+			return;
+		}
+
 		this.checkbutton(c,1);
 		if(c){ this.keyevent(c,1);}
 
@@ -146,6 +158,9 @@ KeyEvent:{
 		this.cancelDefault = false;
 		this.keydown = (step===0);
 		this.keyup   = (step===1);
+
+		// always prevent backspace navigation, space scrolling
+		if(c==='BS'||c===' '){ this.cancelDefault = true;}
 
 		if(this.keydown){ puzzle.opemgr.newOperation();}
 		else            { puzzle.opemgr.newChain();}

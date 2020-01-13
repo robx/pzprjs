@@ -9,6 +9,7 @@
 * Change canonical names: bag becomes cave, building becomes skyscrapers.
 * triplace: Shade clue background.
 * rules.html: Include player.
+* keyboard: Prevent navigation using backspace, scrolling using space.
 
 #### Bugfixes
 
