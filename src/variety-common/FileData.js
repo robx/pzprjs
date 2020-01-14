@@ -325,6 +325,41 @@ FileIO:{
 			return ". ";
 		});
 	},
+
+	//---------------------------------------------------------------------------
+	decodeDotFile : function(){
+		var  bd = this.board, s=0, data = '';
+		for(var i=0,rows=2*bd.rows-1;i<rows;i++){
+			var line = this.readLine();
+			if(line){
+				data += line.match(/[12X\.]+/)[0];
+			}
+		}
+		bd.disableInfo();
+		for(var s=0;s<data.length;++s){
+			var dot = bd.dots[s], ca = data.charAt(s);
+			if     (ca==="1"){ dot.setDot(1);}
+			else if(ca==="2"){ dot.setDot(2);}
+			else if(ca==="X"){ dot.piece.ques=7;}
+		}
+		bd.enableInfo();
+	},
+	encodeDotFile : function(){
+		var bd = this.board, s=0;
+		for(var by=1;by<=2*bd.rows-1;by++){
+			var data = '';
+			for(var bx=1;bx<=2*bd.cols-1;bx++){
+				var dot = bd.dots[s];
+				if     (dot.getDot()===1){ data += "1";}
+				else if(dot.getDot()===2){ data += "2";}
+				else if(dot.piece.ques===7){ data += "X";}
+				else                       { data += ".";}
+				s++;
+			}
+			this.writeLine(data);
+		}
+	},
+
 	//---------------------------------------------------------------------------
 	// fio.decodeCellQnum_kanpen() pencilbox用問題数字のデコードを行う
 	// fio.encodeCellQnum_kanpen() pencilbox用問題数字のエンコードを行う

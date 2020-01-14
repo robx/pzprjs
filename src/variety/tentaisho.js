@@ -306,110 +306,36 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		this.decodeStar();
+		this.decodeDot();
 		this.decodeEmpty();
 	},
 	encodePzpr : function(type){
-		this.encodeStar();
+		this.encodeDot();
 		this.encodeEmpty();
 	},
 
 	decodeKanpen : function(){
 		this.fio.decodeStarFile();
-	},
-
-	decodeStar : function(bstr){
-		var bd = this.board;
-		bd.disableInfo();
-		var s=0, bstr = this.outbstr;
-		for(var i=0;i<bstr.length;i++){
-			var dot = bd.dots[s], ca = bstr.charAt(i);
-			if(this.include(ca,"0","f")){
-				var val = parseInt(ca,16);
-				dot.setDot(val%2+1);
-				s+=((val>>1)+1);
-			}
-			else if(this.include(ca,"g","z")){ s+=(parseInt(ca,36)-15);}
-
-			if(s>=bd.dotsmax){ break;}
-		}
-		bd.enableInfo();
-		this.outbstr = bstr.substr(i+1);
-	},
-	encodeStar : function(){
-		var count = 0, cm = "", bd = this.board;
-		for(var s=0;s<bd.dotsmax;s++){
-			var pstr = "", dot = bd.dots[s];
-			if(dot.getDot()>0){
-				for(var i=1;i<=7;i++){
-					var dot2 = bd.dots[s+i];
-					if(!!dot2 && dot2.getDot()>0){
-						pstr=""+(2*(i-1)+(dot.getDot()-1)).toString(16);
-						s+=(i-1); break;
-					}
-				}
-				if(pstr===""){ pstr=(13+dot.getDot()).toString(16); s+=7;}
-			}
-			else{ count++;}
-
-			if(count===0){ cm += pstr;}
-			else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
-		}
-		if(count>0){ cm += ((count+15).toString(36));}
-
-		this.outbstr += cm;
 	}
 },
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeStarFile();
+		this.decodeDotFile();
 		this.decodeBorderAns();
 		this.decodeCellQsub();
 	},
 	encodeData : function(){
-		this.encodeStarFile();
+		this.encodeDotFile();
 		this.encodeBorderAns();
 		this.encodeCellQsub();
 	},
 
 	kanpenOpen : function(){
-		this.decodeStarFile();
+		this.decodeDotFile();
 		this.decodeAnsAreaRoom();
 	},
 
-	decodeStarFile : function(){
-		var  bd = this.board, s=0, data = '';
-		for(var i=0,rows=2*bd.rows-1;i<rows;i++){
-			var line = this.readLine();
-			if(line){
-				data += line.match(/[12X\.]+/)[0];
-			}
-		}
-		bd.disableInfo();
-		for(var s=0;s<data.length;++s){
-			var dot = bd.dots[s], ca = data.charAt(s);
-			if     (ca==="1"){ dot.setDot(1);}
-			else if(ca==="2"){ dot.setDot(2);}
-			else if(ca==="X"){ dot.piece.ques=7;}
-		}
-		bd.enableInfo();
-	},
-	encodeStarFile : function(){
-		var bd = this.board, s=0;
-		for(var by=1;by<=2*bd.rows-1;by++){
-			var data = '';
-			for(var bx=1;bx<=2*bd.cols-1;bx++){
-				var dot = bd.dots[s];
-				if     (dot.getDot()===1){ data += "1";}
-				else if(dot.getDot()===2){ data += "2";}
-				else if(dot.piece.ques===7){ data += "X";}
-				else                       { data += ".";}
-				s++;
-			}
-			this.writeLine(data);
-		}
-	},
 	decodeAnsAreaRoom : function(){
 		this.decodeAreaRoom_com(false);
 	},

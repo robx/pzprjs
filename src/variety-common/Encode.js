@@ -560,6 +560,49 @@ Encode:{
 		}
 
 		this.outbstr = bstr.substr(i);
+	},
+
+	//---------------------------------------------------------------------------
+	decodeDot : function(bstr){
+		var bd = this.board;
+		bd.disableInfo();
+		var s=0, bstr = this.outbstr;
+		for(var i=0;i<bstr.length;i++){
+			var dot = bd.dots[s], ca = bstr.charAt(i);
+			if(this.include(ca,"0","f")){
+				var val = parseInt(ca,16);
+				dot.setDot(val%2+1);
+				s+=((val>>1)+1);
+			}
+			else if(this.include(ca,"g","z")){ s+=(parseInt(ca,36)-15);}
+
+			if(s>=bd.dotsmax){ break;}
+		}
+		bd.enableInfo();
+		this.outbstr = bstr.substr(i+1);
+	},
+	encodeDot : function(){
+		var count = 0, cm = "", bd = this.board;
+		for(var s=0;s<bd.dotsmax;s++){
+			var pstr = "", dot = bd.dots[s];
+			if(dot.getDot()>0){
+				for(var i=1;i<=7;i++){
+					var dot2 = bd.dots[s+i];
+					if(!!dot2 && dot2.getDot()>0){
+						pstr=""+(2*(i-1)+(dot.getDot()-1)).toString(16);
+						s+=(i-1); break;
+					}
+				}
+				if(pstr===""){ pstr=(13+dot.getDot()).toString(16); s+=7;}
+			}
+			else{ count++;}
+
+			if(count===0){ cm += pstr;}
+			else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
+		}
+		if(count>0){ cm += ((count+15).toString(36));}
+
+		this.outbstr += cm;
 	}
 }
 });
