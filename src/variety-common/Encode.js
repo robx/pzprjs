@@ -563,6 +563,9 @@ Encode:{
 	},
 
 	//---------------------------------------------------------------------------
+	// enc.decodeDot() Decodes Cross/Cell/Border values up to 2
+	// enc.encodeDot() Encodes Cross/Cell/Border values up to 2
+	//---------------------------------------------------------------------------
 	decodeDot : function(bstr){
 		var bd = this.board;
 		bd.disableInfo();

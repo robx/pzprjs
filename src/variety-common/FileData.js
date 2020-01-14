@@ -327,6 +327,9 @@ FileIO:{
 	},
 
 	//---------------------------------------------------------------------------
+	// fio.decodeDotFile() Decodes Cross/Cell/Border values and empty cells (ques===7)
+	// fio.encodeDotFile() Encodes Cross/Cell/Border values and empty cells (ques===7)
+	//---------------------------------------------------------------------------
 	decodeDotFile : function(){
 		var  bd = this.board, s=0, data = '';
 		for(var i=0,rows=2*bd.rows-1;i<rows;i++){

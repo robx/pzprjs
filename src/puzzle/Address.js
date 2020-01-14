@@ -153,6 +153,9 @@ Position:{
 "RawAddress:Address":{
 },
 
+//----------------------------------------------------------------------------
+// ★Dot class: Puzzle element using multiple underlying Piece subclasses
+//----------------------------------------------------------------------------
 "Dot:Position":{
 	isnull : true,
 	id : null,

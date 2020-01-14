@@ -1264,7 +1264,11 @@ Graphic:{
 	},
 
 	//--------------------------------------------------------------------------
-
+	// pc.getDotFillColor()  The circle fill color, or null for no fill.
+	// pc.getDotOutlineColor()  The circle outline color, or null for no outline.
+	// pc.getDotRadius()  The circle radius, as a fraction.
+	// pc.drawDots()  Draw circles on all dot positions
+	//--------------------------------------------------------------------------
 	getDotFillColor : function(dot) {
 		if (dot.getDot()===1) { return "white"; }
 		if (dot.getDot()===2) { return dot.iserror() ? this.errcolor1 : this.quescolor; }
