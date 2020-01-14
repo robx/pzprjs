@@ -1263,6 +1263,44 @@ Graphic:{
 		else{ g.vhide();}
 	},
 
+	//--------------------------------------------------------------------------
+	// pc.getDotFillColor()  The circle fill color, or null for no fill.
+	// pc.getDotOutlineColor()  The circle outline color, or null for no outline.
+	// pc.getDotRadius()  The circle radius, as a fraction.
+	// pc.drawDots()  Draw circles on all dot positions
+	//--------------------------------------------------------------------------
+	getDotFillColor : function(dot) {
+		if (dot.getDot()===1) { return "white"; }
+		if (dot.getDot()===2) { return dot.iserror() ? this.errcolor1 : this.quescolor; }
+		return null;
+	},
+	getDotOutlineColor : function(dot) {
+		if (dot.getDot()===1) { return dot.iserror() ? this.errcolor1 : this.quescolor; }
+		return null;
+	},
+	getDotRadius: function(dot) { return 0.18; },
+
+	drawDots : function(){
+		var g = this.vinc('dot', 'auto', true);
+
+		g.lineWidth = Math.max(this.cw*0.04, 1);
+		var d = this.range;
+		var dlist = this.board.dotinside(d.x1,d.y1,d.x2,d.y2);
+		for(var i=0;i<dlist.length;i++){
+			var dot = dlist[i], bx=dot.bx, by=dot.by;
+
+			g.vid = "s_dot_"+dot.id;
+			var outline = this.getDotOutlineColor(dot);
+			var color = this.getDotFillColor(dot);
+			if(!!color || !!outline){
+				g.strokeStyle = outline;
+				g.fillStyle   = color;
+				g.shapeCircle(bx*this.bw, by*this.bh, this.cw*this.getDotRadius(dot));
+			}
+			else{ g.vhide();}
+		}
+	},
+
 	//---------------------------------------------------------------------------
 	// pc.drawDashedCenterLines() セルの中心から中心にひかれる点線をCanvasに描画する
 	//---------------------------------------------------------------------------

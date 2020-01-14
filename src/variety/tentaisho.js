@@ -24,7 +24,7 @@ MouseEvent:{
 		}
 		else if(this.puzzle.editmode){
 			if(this.mousestart && this.btn==='left'){
-				this.inputstar();
+				this.inputdot();
 			}
 			else if((this.mousestart || this.mousemove) && this.btn==='right'){
 				this.inputBGcolor1();
@@ -44,10 +44,10 @@ MouseEvent:{
 		if(!this.puzzle.playeronly && this.puzzle.getConfig('discolor')){ return;}
 
 		var pos = this.getpos(0.34);
-		var star = pos.gets();
-		if(star===null || star.getStar()===0){ return;}
+		var dot = pos.getDot();
+		if(dot===null || dot.getDot()===0){ return;}
 
-		var cell = star.validcell();
+		var cell = dot.validcell();
 		if(cell!==null){
 			var clist = cell.room.clist;
 			if(clist.encolor()){ clist.draw();}
@@ -67,20 +67,20 @@ MouseEvent:{
 	},
 	// this is called by mouseinput
 	inputFixedNumber : function(){
-		this.inputstar();
+		this.inputdot();
 	},
-	inputstar : function(){
+	inputdot : function(){
 		var pos = this.getpos(0.25);
 		if(this.prevPos.equals(pos)){ return;}
 
-		var star = pos.gets();
-		if(star!==null){
-			if   (this.inputMode==='circle-unshade'){ star.setStar(star.getStar()!==1?1:0);}
-			else if(this.inputMode==='circle-shade'){ star.setStar(star.getStar()!==2?2:0);}
-			else if(this.btn==='left') { star.setStar({0:1,1:2,2:0}[star.getStar()]);}
-			else if(this.btn==='right'){ star.setStar({0:2,1:0,2:1}[star.getStar()]);}
+		var dot = pos.getDot();
+		if(dot!==null){
+			if   (this.inputMode==='circle-unshade'){ dot.setDot(dot.getDot()!==1?1:0);}
+			else if(this.inputMode==='circle-shade'){ dot.setDot(dot.getDot()!==2?2:0);}
+			else if(this.btn==='left') { dot.setDot({0:1,1:2,2:0}[dot.getDot()]);}
+			else if(this.btn==='right'){ dot.setDot({0:2,1:0,2:1}[dot.getDot()]);}
 			else { this.prevPos = pos; return;}
-			star.draw();
+			dot.draw();
 		}
 		this.prevPos = pos;
 	},
@@ -102,16 +102,16 @@ KeyEvent:{
 	moveTarget : function(ca){ return this.moveTBorder(ca); },
 
 	keyinput : function(ca){
-		this.key_inputstar(ca);
+		this.key_inputdot(ca);
 	},
-	key_inputstar : function(ca){
-		var star = this.cursor.gets();
-		if(star!==null){
-			if     (ca==='1'){ star.setStar(1);}
-			else if(ca==='2'){ star.setStar(2);}
-			else if(ca===' '||ca==='-'||ca==='0'||ca==='3'){ star.setStar(0);}
+	key_inputdot : function(ca){
+		var dot = this.cursor.getDot();
+		if(dot!==null){
+			if     (ca==='1'){ dot.setDot(1);}
+			else if(ca==='2'){ dot.setDot(2);}
+			else if(ca===' '||ca==='-'||ca==='0'||ca==='3'){ dot.setDot(0);}
 			else { return;}
-			star.draw();
+			dot.draw();
 		}
 	}
 },
@@ -169,26 +169,12 @@ Border:{
 	}
 },
 
-Star:{
-	bx : null,
-	by : null,
-
-	isnull : true,
-	id : null,
-
-	piece : null,
-
-	getStar : function(){
-		return this.piece.qnum;
-	},
-	setStar : function(val){
+Dot:{
+	setDot : function(val){
 		this.puzzle.opemgr.disCombine = true;
 		this.piece.setQnum(val);
 		this.puzzle.opemgr.disCombine = false;
 		this.puzzle.board.roommgr.setExtraData(this.validcell().room);
-	},
-	iserror : function(){
-		return (this.piece.error>0);
 	},
 
 	// 星に線が通っていないなら、近くのセルを返す
@@ -201,25 +187,12 @@ Star:{
 		else if(piece.group==='border' && piece.qans===0)
 			{ cell = piece.sidecell[0];}
 		return cell;
-	},
-
-	draw : function(){
-		this.puzzle.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
-	},
-	getaddr : function(){
-		return (new this.klass.Address(this.bx, this.by));
 	}
-},
-Address:{
-	gets : function(){ return this.board.gets(this.bx, this.by);}
-},
-TargetCursor:{
-	gets : function(){ return this.board.gets(this.bx, this.by);}
 },
 CellList:{
 	encolor : function(){
-		var star = this.getAreaStarInfo().star;
-		var flag = false, ret = (star!==null ? star.getStar() : 0);
+		var dot = this.getAreaDotInfo().dot;
+		var flag = false, ret = (dot!==null ? dot.getDot() : 0);
 		for(var i=0;i<this.length;i++){
 			var cell = this[i];
 			if(!this.puzzle.playeronly && cell.qsub===3 && ret!==2){ continue;}
@@ -230,16 +203,16 @@ CellList:{
 		}
 		return flag;
 	},
-	getAreaStarInfo : function(){
-		var ret = {star:null, err:-1};
+	getAreaDotInfo : function(){
+		var ret = {dot:null, err:-1};
 		for(var i=0;i<this.length;i++){
 			var cell=this[i];
-			var slist = this.board.starinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
+			var slist = this.board.dotinside(cell.bx,cell.by,cell.bx+1,cell.by+1);
 			for(var n=0;n<slist.length;n++){
-				var star=slist[n];
-				if(star.getStar()>0 && star.validcell()!==null){
-					if(ret.err===0){ return {star:null, err:-2};}
-					ret = {star:star, err:0};
+				var dot=slist[n];
+				if(dot.getDot()>0 && dot.validcell()!==null){
+					if(ret.err===0){ return {dot:null, err:-2};}
+					ret = {dot:dot, err:0};
 				}
 			}
 		}
@@ -269,46 +242,7 @@ CellList:{
 Board:{
 	hascross  : 1,
 	hasborder : 1,
-
-	createExtraObject : function(){
-		this.star = []; /* インスタンス化 */
-	},
-	initExtraObject : function(col,row){
-		this.initStar(this.cols,this.rows);
-	},
-
-	// 星アクセス用関数
-	starmax : 0,
-	star : [],
-	initStar : function(col,row){
-		this.starmax = (2*col-1)*(2*row-1);
-		this.star = [];
-		for(var id=0;id<this.starmax;id++){
-			this.star[id] = new this.klass.Star();
-			var star = this.star[id];
-			star.id = id;
-			star.isnull = false;
-
-			star.bx = id%(2*col-1)+1;
-			star.by = ((id/(2*col-1))|0)+1;
-			star.piece = star.getaddr().getobj();
-		}
-	},
-	gets : function(bx,by){
-		var id = null, qc=this.cols, qr=this.rows;
-		if((bx<=0||bx>=(qc<<1)||by<=0||by>=(qr<<1))){ }
-		else{ id = (bx-1)+(by-1)*(2*qc-1);}
-
-		return (id!==null ? this.star[id] : null);
-	},
-	starinside : function(x1,y1,x2,y2){
-		var slist = new this.klass.PieceList();
-		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
-			var star = this.gets(bx,by);
-			if(!!star){ slist.add(star);}
-		}}
-		return slist;
-	},
+	hasdots   : 1,
 
 	// 色をつける系関数
 	encolorall : function(){
@@ -317,20 +251,13 @@ Board:{
 		this.puzzle.redraw();
 	}
 },
-BoardExec:{
-	adjustBoardData2 : function(key,d){
-		var bd = this.board;
-		bd.initStar(bd.cols, bd.rows);
-	}
-},
-
 AreaRoomGraph:{
 	enabled : true,
 
 	setExtraData : function(component){
 		component.clist = new this.klass.CellList(component.getnodeobjs());
-		var ret = component.clist.getAreaStarInfo();
-		component.star  = ret.star;
+		var ret = component.clist.getAreaDotInfo();
+		component.dot  = ret.dot;
 		component.error = ret.err;
 	}
 },
@@ -361,38 +288,14 @@ Graphic:{
 		this.drawQuesBorders();
 		this.drawBorderQsubs();
 
-		this.drawStars();
+		this.drawDots();
 
 		this.drawChassis();
 
 		this.drawTarget_tentaisho();
 	},
 
-	drawStars : function(){
-		var g = this.vinc('star', 'auto', true);
-
-		g.lineWidth = Math.max(this.cw*0.04, 1);
-		var d = this.range;
-		var slist = this.board.starinside(d.x1,d.y1,d.x2,d.y2);
-		for(var i=0;i<slist.length;i++){
-			var star = slist[i], bx=star.bx, by=star.by;
-
-			g.vid = "s_star1_"+star.id;
-			if(star.getStar()===1){
-				g.strokeStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
-				g.fillStyle   = "white";
-				g.shapeCircle(bx*this.bw, by*this.bh, this.cw*0.16);
-			}
-			else{ g.vhide();}
-
-			g.vid = "s_star2_"+star.id;
-			if(star.getStar()===2){
-				g.fillStyle = (star.iserror() ? this.errcolor1 : this.quescolor);
-				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.18);
-			}
-			else{ g.vhide();}
-		}
-	},
+	getDotRadius: function(dot) { return dot.getDot()===1 ? 0.16 : 0.18; },
 
 	drawTarget_tentaisho : function(){
 		this.drawCursor(false,this.puzzle.editmode);
@@ -403,110 +306,36 @@ Graphic:{
 // URLエンコード/デコード処理
 Encode:{
 	decodePzpr : function(type){
-		this.decodeStar();
+		this.decodeDot();
 		this.decodeEmpty();
 	},
 	encodePzpr : function(type){
-		this.encodeStar();
+		this.encodeDot();
 		this.encodeEmpty();
 	},
 
 	decodeKanpen : function(){
 		this.fio.decodeStarFile();
-	},
-
-	decodeStar : function(bstr){
-		var bd = this.board;
-		bd.disableInfo();
-		var s=0, bstr = this.outbstr;
-		for(var i=0;i<bstr.length;i++){
-			var star = bd.star[s], ca = bstr.charAt(i);
-			if(this.include(ca,"0","f")){
-				var val = parseInt(ca,16);
-				star.setStar(val%2+1);
-				s+=((val>>1)+1);
-			}
-			else if(this.include(ca,"g","z")){ s+=(parseInt(ca,36)-15);}
-
-			if(s>=bd.starmax){ break;}
-		}
-		bd.enableInfo();
-		this.outbstr = bstr.substr(i+1);
-	},
-	encodeStar : function(){
-		var count = 0, cm = "", bd = this.board;
-		for(var s=0;s<bd.starmax;s++){
-			var pstr = "", star = bd.star[s];
-			if(star.getStar()>0){
-				for(var i=1;i<=7;i++){
-					var star2 = bd.star[s+i];
-					if(!!star2 && star2.getStar()>0){
-						pstr=""+(2*(i-1)+(star.getStar()-1)).toString(16);
-						s+=(i-1); break;
-					}
-				}
-				if(pstr===""){ pstr=(13+star.getStar()).toString(16); s+=7;}
-			}
-			else{ count++;}
-
-			if(count===0){ cm += pstr;}
-			else if(pstr || count===20){ cm += ((count+15).toString(36)+pstr); count=0;}
-		}
-		if(count>0){ cm += ((count+15).toString(36));}
-
-		this.outbstr += cm;
 	}
 },
 //---------------------------------------------------------
 FileIO:{
 	decodeData : function(){
-		this.decodeStarFile();
+		this.decodeDotFile();
 		this.decodeBorderAns();
 		this.decodeCellQsub();
 	},
 	encodeData : function(){
-		this.encodeStarFile();
+		this.encodeDotFile();
 		this.encodeBorderAns();
 		this.encodeCellQsub();
 	},
 
 	kanpenOpen : function(){
-		this.decodeStarFile();
+		this.decodeDotFile();
 		this.decodeAnsAreaRoom();
 	},
 
-	decodeStarFile : function(){
-		var  bd = this.board, s=0, data = '';
-		for(var i=0,rows=2*bd.rows-1;i<rows;i++){
-			var line = this.readLine();
-			if(line){
-				data += line.match(/[12X\.]+/)[0];
-			}
-		}
-		bd.disableInfo();
-		for(var s=0;s<data.length;++s){
-			var star = bd.star[s], ca = data.charAt(s);
-			if     (ca==="1"){ star.setStar(1);}
-			else if(ca==="2"){ star.setStar(2);}
-			else if(ca==="X"){ star.piece.ques=7;}
-		}
-		bd.enableInfo();
-	},
-	encodeStarFile : function(){
-		var bd = this.board, s=0;
-		for(var by=1;by<=2*bd.rows-1;by++){
-			var data = '';
-			for(var bx=1;bx<=2*bd.cols-1;bx++){
-				var star = bd.star[s];
-				if     (star.getStar()===1){ data += "1";}
-				else if(star.getStar()===2){ data += "2";}
-				else if(star.piece.ques===7){ data += "X";}
-				else                       { data += ".";}
-				s++;
-			}
-			this.writeLine(data);
-		}
-	},
 	decodeAnsAreaRoom : function(){
 		this.decodeAreaRoom_com(false);
 	},
@@ -522,8 +351,8 @@ FileIO:{
 		var nodes = this.xmldoc.querySelectorAll('board number');
 		for(var i=0;i<nodes.length;i++){
 			var node = nodes[i];
-			var star = this.board.gets(+node.getAttribute('c'), +node.getAttribute('r'));
-			if(star!==null){ star.setStar(+node.getAttribute('n'));}
+			var dot = this.board.getDot(+node.getAttribute('c'), +node.getAttribute('r'));
+			if(dot!==null){ dot.setDot(+node.getAttribute('n'));}
 		}
 	},
 	decodeAnsAreaRoom_XMLAnswer : function(){
@@ -549,15 +378,15 @@ AnsCheck:{
 
 	checkStarOnLine : function(){
 		var bd = this.board;
-		for(var s=0;s<bd.starmax;s++){
-			var star = bd.star[s];
-			if(star.getStar()<=0 || star.validcell()!==null){ continue;}
+		for(var s=0;s<bd.dotsmax;s++){
+			var dot = bd.dots[s];
+			if(dot.getDot()<=0 || dot.validcell()!==null){ continue;}
 
 			this.failcode.add("bdPassStar");
 			if(this.checkOnly){ break;}
-			switch(star.piece.group){
-				case "cross":  star.piece.setCrossBorderError(); break;
-				case "border": star.piece.seterr(1);             break;
+			switch(dot.piece.group){
+				case "cross":  dot.piece.setCrossBorderError(); break;
+				case "border": dot.piece.seterr(1);             break;
 			}
 		}
 	},
@@ -567,11 +396,11 @@ AnsCheck:{
 		allloop:
 		for(var r=0;r<rooms.length;r++){
 			var clist = rooms[r].clist;
-			var star = rooms[r].star;
-			if(star===null){ continue;}
+			var dot = rooms[r].dot;
+			if(dot===null){ continue;}
 			for(var i=0;i<clist.length;i++){
 				var cell = clist[i];
-				var cell2 = this.board.getc(star.bx*2-cell.bx, star.by*2-cell.by);
+				var cell2 = this.board.getc(dot.bx*2-cell.bx, dot.by*2-cell.by);
 				if(!cell2.isnull && cell.room===cell2.room){ continue;}
 
 				this.failcode.add("bkNotSymSt");

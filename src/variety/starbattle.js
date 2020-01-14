@@ -79,7 +79,7 @@ MouseEvent:{
 		if(this.prevPos.equals(pos)){ return;}
 
 		var dot = pos.getDot();
-		if(dot!==null){
+		if(dot!==null && dot.piece.group!=="cell"){
 			if(this.inputData===null){ this.inputData=3;}
 			else if(this.inputData!==3){ return;}
 			dot.setDot(dot.getDot()!==1?1:0);
@@ -110,14 +110,6 @@ KeyEvent:{
 },
 
 Dot:{
-	bx : null,
-	by : null,
-
-	isnull : true,
-	id : null,
-
-	piece : null,
-
 	getDot : function(){
 		return this.piece.qsub;
 	},
@@ -128,62 +120,23 @@ Dot:{
 	},
 	getTrial : function(){
 		return this.piece.trial;
-	},
-
-	draw : function(){
-		this.puzzle.painter.paintRange(this.bx-1, this.by-1, this.bx+1, this.by+1);
-	},
-	getaddr : function(){
-		return (new this.klass.Address(this.bx, this.by));
 	}
-},
-Address:{
-	getDot : function(){ return this.board.getDot(this.bx, this.by);}
-},
-TargetCursor:{
-	getDot : function(){ return this.board.getDot(this.bx, this.by);}
 },
 //---------------------------------------------------------
 // 盤面管理系
 Board:{
 	hasborder : 1,
+	hasdots: 1,
 
 	starCount : null,
-	dotmax : 0,
-	dots : [],
 
 	createExtraObject : function(){
 		this.starCount = new this.klass.StarCount(1);
-		this.dots = [];
 	},
 	initExtraObject : function(col,row){
 		this.starCount.init(1);
-		this.initDots(this.cols,this.rows);
 	},
 
-	initDots : function(col,row){
-		this.dotsmax = (2*col-1)*(2*row-1);
-		this.dots = [];
-		for(var id=0;id<this.dotsmax;id++){
-			this.dots[id] = new this.klass.Dot();
-			var dot = this.dots[id];
-			dot.id = id;
-
-			dot.bx = id%(2*col-1)+1;
-			dot.by = ((id/(2*col-1))|0)+1;
-			if(dot.bx%2===1&&dot.by%2===1){ continue;}
-
-			dot.isnull = false;
-			dot.piece = dot.getaddr().getobj();
-		}
-	},
-	getDot : function(bx,by){
-		var qc=this.cols, qr=this.rows;
-		if((bx<=0||bx>=(qc<<1)||by<=0||by>=(qr<<1))){ return null;}
-		var id=(bx-1)+(by-1)*(2*qc-1);
-		var dot=this.dots[id];
-		return (dot.isnull?null:dot);
-	},
 	isDot : function(bx,by){
 		var dot=this.getDot(bx,by);
 		if(dot!==null){ return dot.getDot()===1;}
@@ -210,21 +163,6 @@ Board:{
 			}
 		}
 		return false;
-	},
-
-	dotinside : function(x1,y1,x2,y2){
-		var dlist = new this.klass.PieceList();
-		for(var by=y1;by<=y2;by++){ for(var bx=x1;bx<=x2;bx++){
-			var dot = this.getDot(bx,by);
-			if(!!dot){ dlist.add(dot);}
-		}}
-		return dlist;
-	}
-},
-BoardExec:{
-	adjustBoardData2 : function(key,d){
-		var bd = this.board;
-		bd.initDots(bd.cols, bd.rows);
 	}
 },
 StarCount:{
@@ -334,22 +272,15 @@ Graphic:{
 		}
 	},
 
-	drawDots : function(){
-		var g = this.vinc('dot', 'auto', true);
-
-		g.lineWidth = Math.max(this.cw*0.04, 1);
-		var d = this.range;
-		var dlist = this.board.dotinside(d.x1,d.y1,d.x2,d.y2);
-		for(var i=0;i<dlist.length;i++){
-			var dot = dlist[i], bx=dot.bx, by=dot.by;
-			g.vid = "s_dot_"+dot.id;
-			if(dot.getDot()===1&&!this.board.dotIsRedundant(bx,by)){
-				g.fillStyle = dot.getTrial()?this.trialcolor:this.pekecolor;
-				g.fillCircle(bx*this.bw, by*this.bh, this.cw*0.15);
-			}
-			else{ g.vhide();}
+	getDotFillColor : function(dot) {
+		if (dot.getDot()===1 && dot.piece.group!=="cell" && !this.board.dotIsRedundant(dot.bx,dot.by)) {
+			return dot.getTrial()?this.trialcolor:this.pekecolor;
 		}
+		return null;
 	},
+	getDotOutlineColor : function(dot) { return null; },
+	getDotRadius: function(dot) { return 0.15; },
+
 	drawDashes : function(){
 		var g = this.vinc('cell_dash', 'auto', true);
 		g.lineWidth = 2;

@@ -131,6 +131,7 @@ Position:{
 	getb  : function(){ return this.board.getb(this.bx, this.by);},
 	getex : function(){ return this.board.getex(this.bx, this.by);},
 	getobj: function(){ return this.board.getobj(this.bx, this.by);},
+	getDot : function(){ return this.board.getDot(this.bx, this.by);},
 
 	//---------------------------------------------------------------------------
 	// addr.movedir() 指定した方向に指定した数移動する
@@ -150,5 +151,31 @@ Position:{
 // ★RawAddressクラス (bx,by)座標を扱う ※端数あり
 //---------------------------------------------------------------------------
 "RawAddress:Address":{
+},
+
+//----------------------------------------------------------------------------
+// ★Dot class: Puzzle element using multiple underlying Piece subclasses
+//----------------------------------------------------------------------------
+"Dot:Position":{
+	isnull : true,
+	id : null,
+
+	piece : null,
+
+	getDot : function(){
+		return this.piece.qnum;
+	},
+	setDot : function(val){
+		this.puzzle.opemgr.disCombine = true;
+		this.piece.setQnum(val);
+		this.puzzle.opemgr.disCombine = false;
+	},
+	iserror : function(){
+		return (this.piece.error>0);
+	},
+
+	getaddr : function(){
+		return (new this.klass.Address(this.bx, this.by));
+	}
 }
 });
