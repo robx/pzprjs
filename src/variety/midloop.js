@@ -106,6 +106,9 @@ Dot:{
 },
 
 Board:{
+	cols : 8,
+	rows : 8,
+
 	hascross  : 1,
 	hasborder : 1,
 	hasdots   : 1
