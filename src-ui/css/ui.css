@@ -111,7 +111,7 @@
 	div#timerpanel{ margin:6pt 6pt 6pt 12pt;}
 	hr.separator { margin:0pt;}
 
-	div.child   { display:inline; padding: 0 5px; cursor:pointer; }
+	div.child   { display:inline; padding: 0 1pt; cursor:pointer; }
 	div.childsel:before {
 		position: absolute;
 		left: 50%;
@@ -127,7 +127,7 @@
 	div#usepanel > div { display: flex; display: -webkit-flex;}
 	div#usepanel > div > div { display: inline-block;}
 	div#usepanel > div > div:first-child { white-space:nowrap; margin-right:6px; display: inline-block;}
-	div#usepanel > div > div > div { margin-right:6px; white-space: nowrap;}
+	div#usepanel > div > div > div { white-space: nowrap;}
 
 	div#checkpanel input[type="checkbox"]:disabled + span { color:silver;}
 
