@@ -34,6 +34,12 @@
 		line-height : 1.2;
 	}
 
+  @media screen and (max-device-width: 1024px) {
+	.outofboard {
+		font-size   : 0.8em;
+	}
+  }
+
 	.btn {
 		display : inline;
 		margin  : 2pt;
