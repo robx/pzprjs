@@ -171,7 +171,7 @@ delete variety.extend;
 	sashigane :[0,0,"さしがね","Sashigane",'loute'],
 	satogaeri :[0,1,"さとがえり","Satogaeri",'bonsan',{alias:'sato',kanpen:'satogaeri'}],
 	scrin     :[0,0,"スクリン","Scrin"],
-	shakashaka:[0,1,"シャカシャカ","ShakaShaka"],
+	shakashaka:[0,1,"シャカシャカ","Shakashaka"],
 	shikaku   :[0,1,"四角に切れ","Shikaku",'shikaku'],
 	shimaguni :[1,0,"島国","Islands",'shimaguni'],
 	shugaku   :[1,0,"修学旅行の夜","School Trip"],
