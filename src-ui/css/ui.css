@@ -79,10 +79,6 @@
 		background : linear-gradient(to bottom, #99334f, #993366);
 	}
 
-	.btn-warn {
-		background : yellow;
-		background : linear-gradient(to bottom, yellow, #cccc00);
-	}
 	.btn-warn:active {
 		background : #999900;
 		background : linear-gradient(to bottom, #999900, #cccc00);
