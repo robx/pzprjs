@@ -2,6 +2,7 @@
 
 * araf: New puzzle type Araf (due to Giuliano Montelucci)
 * maxi: New puzzle type Maxi Loop (due to Giuliano Montelucci)
+* midloop: New puzzle type Mid-loop (due to Lennard Sprong)
 
 #### Improvements
 
