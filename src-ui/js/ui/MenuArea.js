@@ -340,7 +340,7 @@ ui.menuarea = {
 	},
 	answerclear : function(){
 		this.stopHovering();
-		ui.notify.confirm("解答を消去しますか？","Do you want to erase the Answer?", function(){ ui.puzzle.ansclear();});
+		ui.notify.confirm("解答を消去しますか？","Do you want to erase the answer?", function(){ ui.puzzle.ansclear();});
 	},
 	submarkclear : function(){
 		this.stopHovering();
