@@ -8,6 +8,7 @@ var URL_AUTO    = 0,
 	URL_KANPEN  = 3,
 	URL_KANPENP = 4,
 	URL_HEYAAPP = 5,
+	URL_PZPRFILE = 6,
 
 	FILE_AUTO = 0,
 	FILE_PZPR = 1,
@@ -28,6 +29,7 @@ Parser.extend({
 	URL_KANPEN  : URL_KANPEN,
 	URL_KANPENP : URL_KANPENP,
 	URL_HEYAAPP : URL_HEYAAPP,
+	URL_PZPRFILE : URL_PZPRFILE,
 
 	// 定数(ファイル形式)
 	FILE_AUTO : FILE_AUTO,
@@ -87,6 +89,7 @@ pzpr.parser.URLData.prototype = {
 	URL_KANPEN  : URL_KANPEN,
 	URL_KANPENP : URL_KANPENP,
 	URL_HEYAAPP : URL_HEYAAPP,
+	URL_PZPRFILE : URL_PZPRFILE,
 
 	parse : function (){
 		this.parseURLType();
@@ -142,18 +145,31 @@ pzpr.parser.URLData.prototype = {
 		// ぱずぷれv3の場合
 		else{
 			var qs = url.indexOf("/", url.indexOf("?"));
-			var pid = "";
+			var first = "";
 			if(qs>-1){
-				pid = url.substring(url.indexOf("?")+1,qs);
-				this.qdata = url.substr(qs+1);
+				first = url.substring(url.indexOf("?")+1,qs);
 			}
 			else{
-				pid = url.substr(url.indexOf("?")+1);
+				first = url.substr(url.indexOf("?")+1);
 			}
-	                if(pid.match(/_edit$/)){ this.mode = 'editor';}
-	                else if(pid.match(/_play$/)){ this.mode = 'player';}
-	                this.pid = pid.replace(/(_edit|_play)$/, '');
-			this.type = URL_PZPRV3;
+			if(first.match(/^pzprv[0-9.]*$/)){
+				// encoded file; extract pid
+				url = decodeURIComponent(url);
+				var parts = url.split("/");
+				if(parts.length>=2){ this.pid=parts[1];}
+				this.qdata = url;
+				this.type = URL_PZPRFILE;
+			}
+			else{
+				if(qs>-1){
+					this.qdata = url.substr(qs+1);
+				}
+				var pid = first;
+		                if(pid.match(/_edit$/)){ this.mode = 'editor';}
+		                else if(pid.match(/_play$/)){ this.mode = 'player';}
+		                this.pid = pid.replace(/(_edit|_play)$/, '');
+				this.type = URL_PZPRV3;
+			}
 		}
 		this.pid = pzpr.variety.toPID(this.pid);
 	},
@@ -173,6 +189,7 @@ pzpr.parser.URLData.prototype = {
 			case URL_KANPEN:  url="http://www.kanpen.net/%KID%.html?problem="; break;
 			case URL_KANPENP: url="http://www.kanpen.net/%KID%.html?pzpr="; break;
 			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
+			case URL_PZPRFILE: url=url+"?"; break;
 		}
 
 		return url.replace("%PID%", pzpr.variety(this.pid).urlid)
@@ -184,6 +201,15 @@ pzpr.parser.URLData.prototype = {
 	//                   qdata -> [(pflag)/](cols)/(rows)/(bstr)
 	//---------------------------------------------------------------------------
 	parseURLData : function(){
+		if(this.type===URL_PZPRFILE){
+			var parts = this.qdata.split("/");
+			this.cols = +parts[2];
+			this.rows = +parts[3];
+			this.body = this.qdata.replace(/\//g, "\n");
+			delete this.qdata;
+			return;
+		}
+
 		var inp = this.qdata.split("/"), col = 0, row = 0;
 		delete this.qdata;
 		/* URLにつけるオプション */
@@ -251,7 +277,7 @@ pzpr.parser.URLData.prototype = {
 		else if(pzl.type===URL_HEYAAPP){
 			out.push([col, row].join("x"));
 		}
-		else{
+		else if(pzl.type!==URL_PZPRFILE){
 			out.push(col);
 			out.push(row);
 		}

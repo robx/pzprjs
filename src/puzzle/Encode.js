@@ -38,6 +38,11 @@ Encode:{
 	decodeURL : function(url){
 		var pzl = pzpr.parser.parseURL(url), puzzle = this.puzzle, bd = puzzle.board;
 
+		if(pzl.type===pzl.URL_PZPRFILE){
+			new puzzle.klass.FileIO().filedecode(pzl.body);
+			return;
+		}
+
 		bd.initBoardSize(pzl.cols, pzl.rows);
 
 		if(!!pzl.body){
@@ -79,6 +84,12 @@ Encode:{
 		switch(type){
 		case pzl.URL_PZPRV3:
 			this.encodePzpr(pzl.URL_PZPRV3);
+			break;
+
+		case pzl.URL_PZPRFILE:
+			var lines = this.puzzle.getFileData(pzl.FILE_PZPRV3).split('\n');
+			lines = lines.map(encodeURIComponent);
+			this.outbstr = lines.join('/');
 			break;
 
 		case pzl.URL_PZPRAPP:
