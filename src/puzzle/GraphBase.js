@@ -363,10 +363,17 @@ GraphBase:{
 			if(partslist[i].component!==null){ continue;}	// 既にidがついていたらスルー
 			var component = this.createComponent();
 			this.searchSingle(partslist[i], component);
-			this.setComponentInfo(component);
+
+			// defer setExtraData to avoid problems with half-built graph, compare #117
+			this.setComponentInfoExtra(component, false);
+
 			newcomponents.push(component);
 		}
 		this.modifyNodes = [];
+
+		for(var i=0;i<newcomponents.length;i++){
+			this.setExtraData(newcomponents[i]);
+		}
 		return newcomponents;
 	},
 	searchSingle : function(startparts, component){
@@ -386,6 +393,9 @@ GraphBase:{
 	// graph.setComponentInfo() Componentオブジェクトのデータを設定する
 	//--------------------------------------------------------------------------------
 	setComponentInfo : function(component){
+		this.setComponentInfoExtra(component, true);
+	},
+	setComponentInfoExtra : function(component, setExtra){
 		var edges = 0;
 		for(var i=0;i<component.nodes.length;i++){
 			var node = component.nodes[i];
@@ -395,7 +405,9 @@ GraphBase:{
 		}
 		component.circuits = (edges>>1) - component.nodes.length + 1;
 
-		this.setExtraData(component);
+		if(setExtra){
+			this.setExtraData(component);
+		}
 	},
 
 	//--------------------------------------------------------------------------------
