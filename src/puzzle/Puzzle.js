@@ -199,21 +199,6 @@ pzpr.Puzzle.prototype =
 	},
 
 	//---------------------------------------------------------------------------
-	// puzzle.clone()      オブジェクトを複製する
-	//---------------------------------------------------------------------------
-	clone : function(option){
-		option = option || {};
-		var opt = {
-			type   : (option.type   || this.instancetype || ''),
-			width  : (option.width  || this.painter.canvasWidth),
-			height : (option.height || this.painter.canvasHeight)
-		};
-		var newpuzzle = new pzpr.Puzzle(opt).open(this.getFileData(1,{history:!!option.history}));
-		newpuzzle.restoreConfig(this.saveConfig());
-		return newpuzzle;
-	},
-
-	//---------------------------------------------------------------------------
 	// owner.resetTime()      開始時間をリセットする
 	// owner.getTime()        開始からの時間をミリ秒単位で取得する
 	//---------------------------------------------------------------------------

@@ -38,10 +38,6 @@ If neither width, height nor cellsize is given, the size of given canvas element
     * `option.history:boolean` If filetype is FILE_PZPR and it is true, operation history will be outputted.
     * `option.time:boolean` If filetype is FILE_PZPR, option.history and it is true, operation history and operation time (millisecond) will be outputted.
     * `option.trial:boolean` If filetype is FILE_PZPR, option.history is false and it is true in trial mode, trial mode data will be outputted.
-* `puzzle.clone([option])` Return cloned puzzle object from the puzzle.
-    * Return value: cloned puzzle object.
-    * `option.type:string` It means the same as option.type in constructor. If not specified, the type of the puzzle will be used.
-    * `option.width:number` and `option.height:number` Set the size of the canvas of cloned puzzle object. If not specified, the size of current canvas will be used.
 
 ## Methods for events
 
