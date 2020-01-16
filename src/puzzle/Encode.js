@@ -82,10 +82,10 @@ Encode:{
 			break;
 
 		case pzl.URL_PZPRAPP:
-			throw "no Implemention";
+			throw "no implementation";
 
 		case pzl.URL_KANPENP:
-			if(!puzzle.info.exists.kanpen){ throw "no Implemention";}
+			if(!puzzle.info.exists.kanpen){ throw "no implementation";}
 			this.encodePzpr(pzl.URL_PZPRAPP);
 			this.outpflag = this.outpflag || "";
 			break;
@@ -116,11 +116,11 @@ Encode:{
 	},
 
 	// オーバーライド用
-	decodePzpr : function(type){ throw "no Implemention";},
-	encodePzpr : function(type){ throw "no Implemention";},
-	decodeKanpen : function(){ throw "no Implemention";},
-	encodeKanpen : function(){ throw "no Implemention";},
-	decodeHeyaApp : function(){ throw "no Implemention";},
-	encodeHeyaApp : function(){ throw "no Implemention";}
+	decodePzpr : function(type){ throw "no implementation";},
+	encodePzpr : function(type){ throw "no implementation";},
+	decodeKanpen : function(){ throw "no implementation";},
+	encodeKanpen : function(){ throw "no implementation";},
+	decodeHeyaApp : function(){ throw "no implementation";},
+	encodeHeyaApp : function(){ throw "no implementation";}
 }
 });

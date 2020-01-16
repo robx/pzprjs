@@ -2,7 +2,7 @@
 
 (function(){
 
-function throwNoImplementation(){ throw "no Implemention";}
+function throwNoImplementation(){ throw "no implementation";}
 
 //---------------------------------------------------------------------------
 // ★FileIOクラス ファイルのデータ形式エンコード/デコードを扱う
