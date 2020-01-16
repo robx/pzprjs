@@ -95,7 +95,7 @@ FileIO:{
 			break;
 
 		default:
-			throw "invalid File Type";
+			throw "invalid filetype";
 		}
 
 		pzl.type  = filetype;
