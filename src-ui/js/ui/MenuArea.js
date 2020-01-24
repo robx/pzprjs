@@ -304,19 +304,8 @@ ui.menuarea = {
 	//------------------------------------------------------------------------------
 	duplicate_board : function(){
 		if(getEL("menu_duplicate").className==="disabled"){ return;}
-		var filestr = ui.puzzle.getFileData(pzpr.parser.FILE_PZPR, {history:true});
-		var url = './p?'+ui.puzzle.pid+(ui.puzzle.playeronly?"_play":"");
-		if(!pzpr.env.browser.Presto){
-			var old = sessionStorage['filedata'];
-			sessionStorage['filedata'] = filestr;
-			window.open(url,'');
-			if(!!old){ sessionStorage['filedata'] = old;}
-			else     { delete sessionStorage['filedata'];}
-		}
-		else{
-			localStorage['pzprv3_filedata'] = filestr;
-			window.open(url,'');
-		}
+		var url = ui.puzzle.getURL(pzpr.parser.URL_PZPRFILE, ui.puzzle.playeronly?"player":"");
+		window.open(url,'');
 		this.stopHovering();
 	},
 
