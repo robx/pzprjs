@@ -25,7 +25,7 @@
 <div id="menuboard" class="outofboard">
   <menu id="menupanel" style="display:none;">
    <li id="menu_file"><span>__ファイル__File__</span><menu label="__ファイル__File__">
-     <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New Board__</span></li>
+     <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New board__</span></li>
      <li data-popup="urlinput"><span>__URL入力__Load from URL__</span></li>
      <li data-popup="urloutput" id="menu_urloutput"><span>__URL出力__Export URL__</span></li>
      <hr>
@@ -36,8 +36,8 @@
      <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
    </menu></li>
    <li id="menu_edit"><span>__編集__Edit__</span><menu label="__編集__Edit__">
-     <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the Board__</span></li>
-     <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Filp/Turn the Board__</span></li>
+     <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the board__</span></li>
+     <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Flip/Turn the board__</span></li>
    </menu></li>
    <li id="menu_display"><span>__表示__Display__</span><menu label="__表示__Display__">
      <li data-config="cellsizeval"><span>__表示サイズ__Cell size__</span> -&gt;<menu label="__表示サイズ__Cell size__">
@@ -79,8 +79,8 @@
    <li id="menu_setting"><span>__設定__Setting__</span><menu label="__設定__Setting__">
      <li data-config="use_tri"><span>__操作方法__Input type__</span> -&gt;<menu label="__操作方法__Input type__">
        <li data-value="1"><span>__クリックした位置__Corner-side__</span></li>
-       <li data-value="2"><span>__引っ張り入力__Pull-to-Input__</span></li>
-       <li data-value="3"><span>__1ボタン__One Button__</span></li>
+       <li data-value="2"><span>__引っ張り入力__Pull-to-input__</span></li>
+       <li data-value="3"><span>__1ボタン__One button__</span></li>
      </menu></li>
      <li class="check" data-config="bgcolor"><span>__背景色入力__Input background color__</span></li>
      <li class="check" data-config="autoerr"><span data-disp-pid="hitori">__重複した数字を表示__Show overlapped number__</span
@@ -90,7 +90,7 @@
      <li class="check" data-config="dirauxmark"><span>__方向の補助記号__Direction aux. mark__</span></li>
      <li class="check" data-config="enline"><span>__線は点の間__Line between points__</span></li>
      <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
-     <li class="check" data-config="singlenum"><span>__領域に数字1つ__Single num in a region__</span></li>
+     <li class="check" data-config="singlenum"><span>__領域に数字1つ__Single number in a region__</span></li>
      <li class="check" data-config="discolor"><span>__色分け無効化__Disable color__</span></li>
      <li class="check" data-config="autocheck"><span>__正答自動判定__Automatic answer check__</span></li>
      <hr>
@@ -117,8 +117,8 @@
     <div class="config" data-config="use">
      <div><span>__操作方法__Input Type__</span> | </div>
      <div>
-      <div class="child" data-value="1">__左右ボタン__LR Button__</div>
-      <div class="child" data-value="2">__1ボタン__One Button__</div>
+      <div class="child" data-value="1">__左右ボタン__L/R buttons__</div>
+      <div class="child" data-value="2">__1ボタン__One button__</div>
      </div>
     </div>
     <div class="config" data-config="inputmode" id="panel_inputmode">
@@ -188,16 +188,16 @@
     <div class="config" data-config="disptype_yajilin">
      <div><span>__表示形式__Display__</span> | </div>
      <div>
-      <div class="child" data-value="1">__ニコリ紙面形式__Original Type__</div>
-      <div class="child" data-value="2">__背景色をグレーにする__Gray Background__</div>
+      <div class="child" data-value="1">__ニコリ紙面形式__Original style__</div>
+      <div class="child" data-value="2">__背景色をグレーにする__Gray background__</div>
      </div>
     </div>
     <div class="config" data-config="disptype_bosanowa">
      <div><span>__表示形式__Display__</span> | </div>
      <div>
-      <div class="child" data-value="1">__ニコリ紙面形式__Original Type__</div>
-      <div class="child" data-value="2">__倉庫番形式__Sokoban Type__</div>
-      <div class="child" data-value="3">__ワリタイ形式__Waritai type__</div>
+      <div class="child" data-value="1">__ニコリ紙面形式__Original style__</div>
+      <div class="child" data-value="2">__倉庫番形式__Sokoban style__</div>
+      <div class="child" data-value="3">__ワリタイ形式__Waritai style__</div>
      </div>
     </div>
   </div>
@@ -211,7 +211,7 @@
     <div class="config" data-config="bgcolor">
       <label>
         <input type="checkbox">
-        <span>__セルの中央をクリックした時に背景色の入力を有効にする__Enable to Input BGColor when the center of the cell is clicked__</span>
+        <span>__セルの中央をクリックした時に背景色の入力を有効にする__Allow inputting background color when cell center is clicked__</span>
       </label>
     </div>
     <div class="config" data-config="autocmp">
@@ -334,8 +334,8 @@
   <button type="button" class="btn btn-ok" id="btncheck" data-button-exec="answercheck">__チェック__Check__</button>
   <button type="button" class="btn" id="btnundo"    data-press-exec="undo,undostop">__戻__&lt;-__</button
  ><button type="button" class="btn" id="btnredo"    data-press-exec="redo,redostop">__進__-&gt;__</button>
-  <button type="button" class="btn" id="btnclear"   data-button-exec="ansclear">__解答消去__Erase Answer__</button
- ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__補助消去__Erase Aux. Marks__</button>
+  <button type="button" class="btn" id="btnclear"   data-button-exec="ansclear">__解答消去__Erase answer__</button
+ ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__補助消去__Erase aux. marks__</button>
   <button type="button" class="btn" id="btnirowake" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change line colors__</button>
   <button type="button" class="btn" id="btnirowakeblk" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change block colors__</button>
   <button type="button" class="btn" id="btncircle"  data-button-exec="toggledisp">○</button>
