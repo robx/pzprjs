@@ -69,9 +69,9 @@ Encode:{
 
 		bd.rebuildInfo();
 	},
-	encodeURL : function(type){
+	encodeURL : function(type, mode){
 		var puzzle = this.puzzle, pid = puzzle.pid, bd = puzzle.board;
-		var pzl = new pzpr.parser.URLData('');
+		var pzl = new pzpr.parser.URLData('', mode);
 
 		type = type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
 		if(type===pzl.URL_KANPEN && pid==='lits'){ type = pzl.URL_KANPENP;}

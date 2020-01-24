@@ -191,8 +191,8 @@ pzpr.Puzzle.prototype =
 	// owner.getURL()      URLを取得する
 	// owner.getFileData() ファイルデータを取得する
 	//---------------------------------------------------------------------------
-	getURL : function(type){
-		return new this.klass.Encode().encodeURL(type);
+	getURL : function(type, mode){
+		return new this.klass.Encode().encodeURL(type, mode);
 	},
 	getFileData : function(type, option){
 		return new this.klass.FileIO().fileencode(type, option);

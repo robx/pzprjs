@@ -65,8 +65,9 @@ delete Parser.extend;
 //---------------------------------------------------------------------------
 // ★ URLData() URLデータのencode/decodeのためのオブジェクト
 //---------------------------------------------------------------------------
-URLData = pzpr.parser.URLData = function(url){
+URLData = pzpr.parser.URLData = function(url, mode){
 	this.url = url;
+	if(mode!==void 0){ this.mode = mode;}
 };
 pzpr.parser.URLData.prototype = {
 	pid     : '',
@@ -191,8 +192,16 @@ pzpr.parser.URLData.prototype = {
 			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
 			case URL_PZPRFILE: url=url+"?"; break;
 		}
-
-		return url.replace("%PID%", pzpr.variety(this.pid).urlid)
+		var pid = this.pid;
+		switch(this.mode){
+		case 'player':
+			pid = pid + '_play';
+			break;
+		case 'editor':
+			pid = pid + '_edit';
+			break;
+		}
+		return url.replace("%PID%", pzpr.variety(pid).urlid)
 				  .replace("%KID%", pzpr.variety(this.pid).kanpenid);
 	},
 
