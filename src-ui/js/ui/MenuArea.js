@@ -88,6 +88,7 @@ ui.menuarea = {
 				}
 
 				if(el.className==="link"){
+					addmenuevent(el, "mousedown", "updatelink");
 					setevent = true; // bypass setting event below
 				}
 
@@ -269,7 +270,6 @@ ui.menuarea = {
 	acceptTrial        : function(){ ui.puzzle.acceptTrial();},
 	rejectTrial        : function(){ ui.puzzle.rejectTrial();},
 	rejectCurrentTrial : function(){ ui.puzzle.rejectCurrentTrial();},
-	duplicate: function(){ this.duplicate_board();},
 	toolarea : function(){
 		ui.menuconfig.set("toolarea", !ui.menuconfig.get("toolarea"));
 		ui.displayAll();
@@ -291,15 +291,19 @@ ui.menuarea = {
 			this.stopHovering();
 		}
 	},
-
-	//------------------------------------------------------------------------------
-	// menuarea.duplicate_board() 盤面の複製を行う => 受取はBoot.jsのimportFileData()
-	//------------------------------------------------------------------------------
-	duplicate_board : function(){
-		if(getEL("menu_duplicate").className==="disabled"){ return;}
-		var url = ui.puzzle.getURL(pzpr.parser.URL_PZPRFILE, ui.puzzle.playeronly?"player":"");
-		window.open(url,'');
-		this.stopHovering();
+	updatelink : function(e){
+		var el = e.target;
+		var linktype = ui.customAttr(el.parentNode,"linktype");
+			/* eslint-disable no-console */
+		console.log("updatelink callback, linktype", linktype);
+		switch(linktype){
+		case "duplicate":
+			/* eslint-disable no-console */
+			console.log("updating duplicate link");
+			var url = ui.puzzle.getURL(pzpr.parser.URL_PZPRFILE, ui.puzzle.playeronly?"player":"");
+			el.setAttribute("href", url);
+			break;
+		}
 	},
 
 	//------------------------------------------------------------------------------
