@@ -128,7 +128,7 @@ hr.separator {
 
 div.child {
   display: inline;
-  padding: 0 1pt;
+  padding: 0 3pt;
   cursor: pointer;
 }
 div.childsel:before {
