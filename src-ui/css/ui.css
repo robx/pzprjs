@@ -608,11 +608,11 @@ form#fileform2 {
 /* toggle submenu items */
 #menupanel menu li.check > span,
 #menupanel menu li[data-value] > span {
-  font-size: small;
+  font-size: 0.9em;
   color: gray;
 }
 #menupanel menu li.checked > span {
-  font-size: small;
+  font-size: 0.9em;
   color: black;
 }
 
@@ -621,13 +621,13 @@ form#fileform2 {
   padding: 0pt 2pt;
   color: white;
   content: "_";
-  font-size: small;
+  font-size: 0.9em;
 }
 #menupanel menu li.checked > span:before {
   padding: 0pt 2pt;
   color: black;
   content: "+";
-  font-size: small;
+  font-size: 0.9em;
 }
 
 #menu_link li {
