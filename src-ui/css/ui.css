@@ -34,13 +34,6 @@ h2#title {
   line-height: 1.2;
 }
 
-@media screen and (max-device-width: 1024px) {
-  .outofboard {
-    font-size: 0.85em;
-    line-height: 1.4;
-  }
-}
-
 .btn {
   display: inline;
   margin: 2pt;
@@ -530,11 +523,6 @@ form#fileform2 {
   background: white;
   cursor: pointer;
 }
-@media screen and (max-device-width: 1024px) {
-  #menupanel menu li {
-    line-height: 1.3;
-  }
-}
 #menupanel menu li:hover {
   background: #ffcccc;
 }
@@ -556,11 +544,6 @@ form#fileform2 {
   border: none;
   height: 3px;
   color: lime;
-}
-@media screen and (max-device-width: 1024px) {
-  #menupanel menu hr {
-    height: 4px;
-  }
 }
 #menupanel menu span {
   white-space: nowrap;
