@@ -550,11 +550,6 @@ form#fileform2 {
 #menupanel menu li:hover > a {
   text-decoration: underline;
 }
-@media screen and (max-device-width: 1024px) {
-  #menupanel menu li + li {
-    margin-top: 1px;
-  }
-}
 #menupanel menu hr {
   margin: 0px;
   padding: 0px;
