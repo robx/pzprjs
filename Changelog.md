@@ -13,6 +13,10 @@
 * triplace: Shade clue background.
 * rules.html: Include player.
 * keyboard: Prevent navigation using backspace, scrolling using space.
+* Several UI layout fixes (including menu styling, input mode buttons).
+* Split options between menu and tool area.
+* Several language fixes to menu items.
+* Remove several options.
 
 #### Bugfixes
 
