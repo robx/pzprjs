@@ -294,13 +294,9 @@ ui.menuarea = {
 	updatelink : function(e){
 		var el = e.target;
 		var linktype = ui.customAttr(el.parentNode,"linktype");
-			/* eslint-disable no-console */
-		console.log("updatelink callback, linktype", linktype);
 		switch(linktype){
 		case "duplicate":
-			/* eslint-disable no-console */
-			console.log("updating duplicate link");
-			var url = ui.puzzle.getURL(pzpr.parser.URL_PZPRFILE, ui.puzzle.playeronly?"player":"");
+			var url = ui.puzzle.getURL(pzpr.parser.URL_PZPRFILE, ui.puzzle.playeronly?"player":"editor");
 			el.setAttribute("href", url);
 			break;
 		}

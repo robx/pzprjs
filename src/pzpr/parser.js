@@ -192,15 +192,18 @@ pzpr.parser.URLData.prototype = {
 			case URL_HEYAAPP: url="http://www.geocities.co.jp/heyawake/?problem="; break;
 			case URL_PZPRFILE: url=url+"?"; break;
 		}
-		var pid = this.pid;
+		var pid = this.pid, typ='';
 		switch(this.mode){
 		case 'player':
 			pid = pid + '_play';
+			typ = 'type=player&';
 			break;
 		case 'editor':
 			pid = pid + '_edit';
+			typ = 'type=editor&';
 			break;
 		}
+		if(this.type===URL_PZPRFILE){ url=url+typ;}
 		return url.replace("%PID%", pzpr.variety(pid).urlid)
 				  .replace("%KID%", pzpr.variety(this.pid).kanpenid);
 	},
