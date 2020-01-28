@@ -1,98 +1,118 @@
 body {
-	background:url(data:image/gif;base64,R0lGODdhEAAQAIACAMD/wPD/8CwAAAAAEAAQAAACKYQTpogKnFxbMDpa7W18yjhp1yGO1OidW5mSKFuaTyy585t0ctZ+EFAAADs=);
-	text-align:center;
-	color:black;
-	line-height:120%;
+  background: url(data:image/gif;base64,R0lGODdhEAAQAIACAMD/wPD/8CwAAAAAEAAQAAACKYQTpogKnFxbMDpa7W18yjhp1yGO1OidW5mSKFuaTyy585t0ctZ+EFAAADs=);
+  text-align: center;
+  color: black;
+  line-height: 120%;
 }
 
-a:link{ color:blue}
-a:active{ color:red}
-a:visited{ color:#336666}
-a:hover{ color:aqua}
+a:link {
+  color: blue;
+}
+a:active {
+  color: red;
+}
+a:visited {
+  color: #336666;
+}
+a:hover {
+  color: aqua;
+}
 
 a.rules {
-	margin-left: 1ch;
-	color: #303030;
-	text-decoration: none;
-	font-size: x-small;
-	vertical-align: super;
+  margin-left: 1ch;
+  color: #303030;
+  text-decoration: none;
+  font-size: x-small;
+  vertical-align: super;
 }
 
 div.main {
-	position : relative;
-	width    : 92%;
-	background-color : white;
-	margin     : auto;
-	margin-top : 24pt;
-	border : 2pt green solid;
-	text-align : center;
+  position: relative;
+  width: 92%;
+  background-color: white;
+  margin: auto;
+  margin-top: 24pt;
+  border: 2pt green solid;
+  text-align: center;
 }
 div#design1 {
-	width   : 94%;
-	margin  : auto;
-	margin-bottom : 12pt;
-	padding : 6pt;
+  width: 94%;
+  margin: auto;
+  margin-bottom: 12pt;
+  padding: 6pt;
 }
 
 menu.selector {
-	display : none;
-	position: relative;
-	margin  : auto;
-	padding : 0px;
-	list-style-type : none;
+  display: none;
+  position: relative;
+  margin: auto;
+  padding: 0px;
+  list-style-type: none;
 }
 menu.selector li {
-	display : block;
-	float   : left;
-	margin-right : 0px;
-	padding      : 3px 6px;
-	border       : solid 1px silver;
-	background : #dfdfdf;
-	background : linear-gradient(to bottom, #dfdfdf, #cccccc);
-	color  : gray;
-	cursor : pointer;
-	font-size : 85%;
-	white-space : nowrap;
-	border-top-left-radius : 4px;
-	border-top-right-radius : 4px;
+  display: block;
+  float: left;
+  margin-right: 0px;
+  padding: 3px 6px;
+  border: solid 1px silver;
+  background: #dfdfdf;
+  background: linear-gradient(to bottom, #dfdfdf, #cccccc);
+  color: gray;
+  cursor: pointer;
+  font-size: 85%;
+  white-space: nowrap;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 menu.selector li.puzmenusel {
-	background : white;
-	background : linear-gradient(to bottom, white, #efefef);
-	color  : black;
-	cursor : default;
+  background: white;
+  background: linear-gradient(to bottom, white, #efefef);
+  color: black;
+  cursor: default;
 }
 
 div.puztable {
-	position : relative;
-	z-index  : 1;
-	width    : 100%;
-	border   : solid 1px gray;
-	background-color : white;
-	text-align : left;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border: solid 1px gray;
+  background-color: white;
+  text-align: left;
 }
 div.puztable div.container {
-	display  : -webkit-flex;
-	display  : flex;
-	-webkit-flex-wrap: wrap;
-	flex-wrap: wrap;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 
 div.lists {
-	padding:6px 0pt 8px 6px;
-	margin:1px;
-	vertical-align:top;
-	width:32%;
-	flex-grow:1;
-	-webkit-flex-grow:1;
-	float:left;
+  padding: 6px 0pt 8px 6px;
+  margin: 1px;
+  vertical-align: top;
+  width: 32%;
+  flex-grow: 1;
+  -webkit-flex-grow: 1;
+  float: left;
 }
 div.lists ul {
-	padding-left: 32px;
+  padding-left: 32px;
 }
-div.blocks  { background-color:#ffdfdf;}
-div.loops   { background-color:#dfdfff;}
-div.lines   { background-color:#efefff;}
-div.divides { background-color:#ccffcc;}
-div.numbers { background-color:#dfdfdf;}
-div.others  { background-color:#ffffcc;}
+div.blocks {
+  background-color: #ffdfdf;
+}
+div.loops {
+  background-color: #dfdfff;
+}
+div.lines {
+  background-color: #efefff;
+}
+div.divides {
+  background-color: #ccffcc;
+}
+div.numbers {
+  background-color: #dfdfdf;
+}
+div.others {
+  background-color: #ffffcc;
+}
