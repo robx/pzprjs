@@ -36,7 +36,8 @@ h2#title {
 
 @media screen and (max-device-width: 1024px) {
   .outofboard {
-    font-size: 0.8em;
+    font-size: 0.85em;
+    line-height: 1.4;
   }
 }
 
@@ -442,11 +443,6 @@ form#fileform2 {
   -moz-user-select: none;
   -webkit-user-select: none;
 }
-@media screen and (max-device-width: 1024px) {
-  #menupanel {
-    height: 1.8em;
-  }
-}
 
 /* main-menu items */
 #menupanel > li {
@@ -467,11 +463,6 @@ form#fileform2 {
   font-size: 110%;
   vertical-align: middle;
 }
-@media screen and (max-device-width: 1024px) {
-  #menupanel > li > span {
-    line-height: 1.8;
-  }
-}
 #menupanel > li:hover > span {
   color: maroon;
 }
@@ -481,10 +472,6 @@ form#fileform2 {
   display: block;
 }
 
-/* for all level1+ submenus */
-#menupanel > li > menu {
-  font-size: 0.9em;
-}
 #menupanel menu {
   display: none;
   position: absolute;
@@ -500,17 +487,16 @@ form#fileform2 {
   cursor: default;
 }
 
+#menupanel > li > menu {
+  font-size: 0.9em;
+}
+
 /* level1, level2+ submenus */
 #menupanel menu {
   left: 0px;
-  top: 1.5em;
+  top: 1.7em;
   min-width: 132px;
   z-index: 22;
-}
-@media screen and (max-device-width: 1024px) {
-  #menupanel menu {
-    top: 2em;
-  }
 }
 #menupanel menu menu[label] {
   left: 120px;
@@ -546,7 +532,7 @@ form#fileform2 {
 }
 @media screen and (max-device-width: 1024px) {
   #menupanel menu li {
-    line-height: 1.8;
+    line-height: 1.3;
   }
 }
 #menupanel menu li:hover {
@@ -608,11 +594,9 @@ form#fileform2 {
 /* toggle submenu items */
 #menupanel menu li.check > span,
 #menupanel menu li[data-value] > span {
-  font-size: 0.9em;
   color: gray;
 }
 #menupanel menu li.checked > span {
-  font-size: 0.9em;
   color: black;
 }
 
@@ -621,15 +605,9 @@ form#fileform2 {
   padding: 0pt 2pt;
   color: white;
   content: "_";
-  font-size: 0.9em;
 }
 #menupanel menu li.checked > span:before {
   padding: 0pt 2pt;
   color: black;
   content: "+";
-  font-size: 0.9em;
-}
-
-#menu_link li {
-  font-size: 0.9em;
 }
