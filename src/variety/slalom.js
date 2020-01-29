@@ -977,7 +977,9 @@ AnsCheck:{
 					if(gatenumber<=0){ } // 何もしない
 					else if(ordertype===-1){
 						var revgatenumber = gatecount+1-gatenumber;
-						if(gatenumber===revgatenumber && passed!==gatenumber){errgate = gate; break;}
+						if(gatenumber===revgatenumber){
+							if(passed!==gatenumber){errgate = gate; break;}
+						}
 						else if(passed===gatenumber)                 { ordertype=1;}   // 順方向と確定
 						else if(passed===revgatenumber)              {                 // 逆方向なので別の方向から回る
 							if(cell1.lcnt<2){ break;} // 1つしか線がない場合は終了
