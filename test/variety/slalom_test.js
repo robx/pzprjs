@@ -84,4 +84,24 @@ describe('Variety:slalom',function(){
 
 		assert.equal(puzzle.check(false).complete, true);
 	});
+	it('Handle mid-numbered gates 1', function(){
+		puzzle.open('pzprv3.2/slalom/4/5/o . . . . /. 2,2 # # . /. i i i . /. 1,2 # # . /1 1 1 1 /0 0 0 0 /1 1 1 1 /0 0 0 0 /1 0 0 0 1 /1 0 0 0 1 /0 0 0 0 0 /');
+
+		assert.equal(puzzle.check(false)[0], 'lrOrder');
+	});
+	it('Handle mid-numbered gates 2', function(){
+		puzzle.open('pzprv3.2/slalom/4/5/o . . . . /. # 2,2 # . /. i i i . /. # 1,2 # . /1 1 1 1 /0 0 0 0 /1 1 1 1 /0 0 0 0 /1 0 0 0 1 /1 0 0 0 1 /0 0 0 0 0 /');
+
+		assert.equal(puzzle.check(false).complete, true);
+	});
+	it('Handle mid-numbered gates 3', function(){
+		puzzle.open('pzprv3.2/slalom/4/5/o . . . . /. # 2,2 2,1 . /. i i i . /. # 1,2 1,1 . /1 1 1 1 /0 0 0 0 /1 1 1 1 /0 0 0 0 /1 0 0 0 1 /1 0 0 0 1 /0 0 0 0 0 /');
+
+		assert.equal(puzzle.check(false).complete, true);
+	});
+	it('Handle mid-numbered gates 4', function(){
+		puzzle.open('pzprv3.2/slalom/4/5/o . . . . /. # 2,2 2,3 . /. i i i . /. # 1,2 1,3 . /1 1 1 1 /0 0 0 0 /1 1 1 1 /0 0 0 0 /1 0 0 0 1 /1 0 0 0 1 /0 0 0 0 0 /');
+
+		assert.equal(puzzle.check(false).complete, true);
+	});
 });
