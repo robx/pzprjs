@@ -5,8 +5,11 @@
 //---------------------------------------------------------------------------
 /* extern */
 var pzpr = {
-	version : '<%= git.hash %>'
+	version: "<%= git.hash %>"
 };
 
-if(typeof module==='object' && module.exports){ module.exports = pzpr;}
-else{ this.pzpr = pzpr;}
+if (typeof module === "object" && module.exports) {
+	module.exports = pzpr;
+} else {
+	this.pzpr = pzpr;
+}

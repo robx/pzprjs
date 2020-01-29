@@ -1,4 +1,3 @@
-
 exports.files = [
 	"common/intro",
 	"pzpr/core",
@@ -37,4 +36,6 @@ exports.files = [
 	"variety-common/Encode",
 	"variety-common/FileData",
 	"common/outro"
-].map(function(mod){ return "src/"+mod+".js";});
+].map(function(mod) {
+	return "src/" + mod + ".js";
+});

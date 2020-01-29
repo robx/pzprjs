@@ -1,12 +1,11 @@
-(function(){
-ui.urlconfig = {
-	embed : false,
+(function() {
+	ui.urlconfig = {
+		embed: false,
 
-	init : function(onload_option){
-		if(onload_option.embed === 'yes'){
-			this.embed = true;
+		init: function(onload_option) {
+			if (onload_option.embed === "yes") {
+				this.embed = true;
+			}
 		}
-	}
-};
-
+	};
 })();
