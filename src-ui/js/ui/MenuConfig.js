@@ -10,6 +10,7 @@
 	// Menuクラス
 	ui.menuconfig = {
 		list: null, // MenuConfigの設定内容を保持する
+		puzzle: null,
 
 		//---------------------------------------------------------------------------
 		// menuconfig.init()  MenuConfigの初期化を行う
@@ -47,12 +48,11 @@
 			this.add("language", pzpr.lang, { option: ["en", "ja"] }); /* 言語設定 */
 
 			/* puzzle.configを一括で扱うため登録 */
+			this.puzzle = ui.puzzle;
 			for (var name in ui.puzzle.config.list) {
 				var item = ui.puzzle.config.list[name],
-					extoption = { puzzle: true };
-				if (!!item.option) {
-					extoption.option = item.option;
-				}
+					extoption = {puzzle: true};
+				for (var field in item.extoption){ extoption[field] = item[field]; }
 				this.add(name, item.defval, extoption);
 			}
 			this.add("mode", !ui.puzzle.playmode ? "edit" : "play", {
