@@ -10,5 +10,13 @@ ui.debug.addDebugData('doubleback', {
 		['bkNotPassTwice', 'pzprv3/doubleback/4/4/3/0 0 0 0 /0 0 1 1 /0 0 1 1 /2 2 2 2 /. . . . /. . . . /. . . . /. . . . /1 0 1 /0 0 0 /0 1 0 /1 1 1 /1 1 1 1 /1 1 1 1 /1 0 0 1 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /'],
 		['bkNotPassTwice', 'pzprv3/doubleback/4/4/3/0 0 0 0 /0 0 1 1 /0 0 1 1 /2 2 2 2 /. . . . /. . . . /. . . . /. . . . /1 0 1 /0 1 0 /0 1 0 /1 0 1 /1 1 1 1 /1 0 0 1 /1 1 1 1 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /'],
 		[null,             'pzprv3/doubleback/4/4/3/0 0 0 0 /0 0 1 1 /0 0 1 1 /2 2 2 2 /. . . . /. . . . /. . . . /. . . . /1 1 1 /0 1 0 /0 0 0 /1 0 1 /1 0 0 1 /1 1 1 1 /1 1 1 1 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /']
+	],
+        inputs : [
+		{ input:["newboard,5,1", "editmode,empty", "mouse,left, 5,1"],
+		  result:"pzprv3/doubleback/1/5/2/0 0 . 1 1 /. . . . . /0 0 0 0 /0 0 0 0 0 /"
+		},
+		{ input:["playmode", "mouse,left, 1,1, 9,1"],
+		  result:"pzprv3/doubleback/1/5/2/0 0 . 1 1 /. . . . . /1 1 1 1 /0 0 0 0 0 /"
+		}
 	]
 });
