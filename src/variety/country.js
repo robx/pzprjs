@@ -137,6 +137,14 @@
 			}
 		}
 	},
+	"Cell@doubleback": {
+		noLP: function(dir) {
+			return this.isEmpty();
+		}
+	},
+	"Border@doubleback": {
+		enableLineNG: true
+	},
 	"Border@moonsun": {
 		posthook: {
 			line: function(num) {

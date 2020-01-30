@@ -21,6 +21,7 @@
 #### Bugfixes
 
 * compass: Fix erasing clues.
+* doubleback: Prohibit drawing over black cells.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
 * Correct display of color-each-line config option.
