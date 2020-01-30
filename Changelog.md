@@ -23,6 +23,7 @@
 * compass: Fix erasing clues.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
+* Correct display of color-each-line config option.
 
 ## Version 0.12.0
 
