@@ -51,8 +51,10 @@
 			this.puzzle = ui.puzzle;
 			for (var name in ui.puzzle.config.list) {
 				var item = ui.puzzle.config.list[name],
-					extoption = {puzzle: true};
-				for (var field in item.extoption){ extoption[field] = item[field]; }
+					extoption = { puzzle: true };
+				for (var field in item.extoption) {
+					extoption[field] = item[field];
+				}
 				this.add(name, item.defval, extoption);
 			}
 			this.add("mode", !ui.puzzle.playmode ? "edit" : "play", {
