@@ -36,6 +36,26 @@
 					this.inputFixedNumber(2);
 					break;
 			}
+		},
+		inputQsubLineAsPeke: function() {
+			var pos = this.getpos(0.22);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+
+			var border = pos.getb();
+			if (!border.isnull) {
+				if (this.inputData === null) {
+					this.inputData = border.qsub === 0 ? 1 : 0;
+				}
+				if (this.inputData === 1) {
+					border.setQsub(1);
+				} else if (this.inputData === 0) {
+					border.setQsub(0);
+				}
+				border.draw();
+			}
+			this.prevPos = pos;
 		}
 	},
 	MouseEvent: {
@@ -44,6 +64,8 @@
 				if (this.mousestart || this.mousemove) {
 					if (this.btn === "left" && this.isBorderMode()) {
 						this.inputborder();
+					} else if (this.btn === "right" && this.pid === "shwolf") {
+						this.inputQsubLineAsPeke();
 					} else {
 						this.inputQsubLine();
 					}
