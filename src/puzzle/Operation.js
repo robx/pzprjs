@@ -170,10 +170,11 @@ pzpr.classmgr.makeCommon({
 				return true;
 			}
 
+			// force setting data, to bypass prehook checks
 			if (this.pos === null) {
-				piece.setdata(this.property, num);
+				piece.setdata(this.property, num, true);
 			} else {
-				piece.setdata2(this.property, this.pos, num);
+				piece.setdata2(this.property, this.pos, num, true);
 			}
 			piece.draw();
 

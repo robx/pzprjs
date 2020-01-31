@@ -145,12 +145,14 @@ pzpr.classmgr.makeCommon({
 		// setdata() Cell,Cross,Border,ExCellの値を設定する
 		// addOpe()  履歴情報にプロパティの変更を通知する
 		//---------------------------------------------------------------------------
-		setdata: function(prop, num) {
+		setdata: function(prop, num, force) {
 			if (this[prop] === num) {
 				return;
 			}
 			if (!!this.prehook[prop]) {
-				if (this.prehook[prop].call(this, num)) {
+				// when force is set (undo, redo), bypass the check
+				// but still execute the prehook for side-effects
+				if (this.prehook[prop].call(this, num) && !force) {
 					return;
 				}
 			}
@@ -181,12 +183,12 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// setdata2() Cell,Cross,Border,ExCellのpos付きの値を設定する
 		//---------------------------------------------------------------------------
-		setdata2: function(prop, pos, num) {
+		setdata2: function(prop, pos, num, bypassPrehook) {
 			if (this[prop][pos] === num) {
 				return;
 			}
 			if (!!this.prehook[prop]) {
-				if (this.prehook[prop].call(this, pos, num)) {
+				if (this.prehook[prop].call(this, pos, num) && !bypassPrehook) {
 					return;
 				}
 			}
