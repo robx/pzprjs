@@ -475,7 +475,7 @@
 				g.vid = "ti";
 				if (isdraw) {
 					var rect = bd.starCount.rect;
-					g.strokeStyle = this.targetColor1;
+					g.strokeStyle = this.targetColorEdit;
 					g.lineWidth = Math.max(this.cw / 16, 2) | 0;
 					g.strokeRect(
 						rect.bx1 * this.bw,

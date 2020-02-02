@@ -1843,8 +1843,8 @@ pzpr.classmgr.makeCommon({
 				this.puzzle.getConfig("cursor") &&
 				!this.outputImage;
 			g.fillStyle = this.puzzle.editmode
-				? this.targetColor1
-				: this.targetColor3;
+				? this.targetColorEdit
+				: this.targetColorPlay;
 
 			g.vid = "ti1_";
 			if (isdraw) {
