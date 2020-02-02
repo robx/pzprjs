@@ -196,12 +196,12 @@ ui.toolarea = {
 	setdisplay: function(idname) {
 		if (idname === "operation") {
 			var opemgr = ui.puzzle.opemgr;
-			getEL("btnundo").style.color = !opemgr.enableUndo ? "silver" : "";
-			getEL("btnredo").style.color = !opemgr.enableRedo ? "silver" : "";
+			getEL("btnundo").disabled = !opemgr.enableUndo;
+			getEL("btnredo").disabled = !opemgr.enableRedo;
 		} else if (idname === "trialmode") {
 			var trialstage = ui.puzzle.board.trialstage;
 			getEL("btnclear").style.display = trialstage > 0 ? "none" : "";
-			getEL("btntrial").style.color = trialstage > 0 ? "silver" : "";
+			getEL("btntrial").disabled = trialstage > 0;
 			getEL("btntrialarea").style.display = trialstage > 0 ? "block" : "none";
 
 			getEL("btntrialr").style.display = trialstage <= 1 ? "" : "none";

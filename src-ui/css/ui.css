@@ -52,7 +52,9 @@ h2#title {
   background: #afafaf;
   background: linear-gradient(to bottom, #afafaf, #cccccc);
 }
-
+.btn:disabled {
+  color: silver;
+}
 .btn-ok {
   background: blue;
   background: linear-gradient(to bottom, #afafff, blue);
