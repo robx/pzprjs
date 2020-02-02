@@ -33,7 +33,6 @@ ui.toolarea = {
 			return function(e) {
 				toolarea[role](e);
 				if (e.type !== "click") {
-					e.preventDefault();
 					e.stopPropagation();
 				}
 			};
