@@ -475,7 +475,7 @@ pzpr.classmgr.makeCommon({
 			this.puzzle.emit("history");
 		},
 		checkenable: function() {
-			if (this.limitTrialUndo) {
+			if (this.limitTrialUndo && this.trialpos.length > 0) {
 				this.enableUndo =
 					this.position > this.trialpos[this.trialpos.length - 1] + 1;
 			} else {
@@ -763,7 +763,10 @@ pzpr.classmgr.makeCommon({
 		// opemgr.emtiTrial()    trial eventを呼び出す
 		//---------------------------------------------------------------------------
 		enterTrial: function() {
-			if (this.trialpos[this.trialpos.length - 1] + 1 === this.position) {
+			if (
+				this.trailpos.length > 0 &&
+				this.trialpos[this.trialpos.length - 1] + 1 === this.position
+			) {
 				return;
 			}
 			this.newOperation();
