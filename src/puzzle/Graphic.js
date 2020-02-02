@@ -444,21 +444,26 @@
 				} else if (!this.useBuffer) {
 					this.setRangeObject(x1, y1, x2, y2);
 					this.flushCanvas();
-					this.paint();
+					this.paintMain();
 				} else {
 					var g = this.context,
 						g2 = this.subcontext;
 					this.context = g2;
 					this.setRangeObject(x1 - 1, y1 - 1, x2 + 1, y2 + 1);
 					this.flushCanvas();
-					this.paint();
+					this.paintMain();
 					this.context = g;
 					this.copyBufferData(g, g2, x1, y1, x2, y2);
 				}
 
 				this.resetRange();
 			},
+			paintMain: function() {
+				this.paint();
+				this.paintPost();
+			},
 			paint: function() {}, //オーバーライド用
+			paintPost: function() {},
 
 			setRange: function(x1, y1, x2, y2) {
 				if (this.range.x1 > x1) {
