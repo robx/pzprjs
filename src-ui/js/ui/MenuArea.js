@@ -230,13 +230,16 @@ ui.menuarea = {
 		}
 	},
 	setdisplay: function(idname) {
-		if (idname === "trialmode") {
+		if (idname === "operation") {
+			getEL("menu_subclear").className = ui.puzzle.board.disable_subclear
+				? "disabled"
+				: "";
+		} else if (idname === "trialmode") {
 			var trial = ui.puzzle.board.trialstage > 0;
 			getEL("menu_adjust").className = trial ? "disabled" : "";
 			getEL("menu_turnflip").className = trial ? "disabled" : "";
-		}
-
-		if (idname === "toolarea") {
+			getEL("menu_ansclear").className = trial ? "disabled" : "";
+		} else if (idname === "toolarea") {
 			var str;
 			if (!ui.menuconfig.get("toolarea")) {
 				str = ui.selectStr("ツールエリアを表示", "Show tool area");
@@ -348,6 +351,12 @@ ui.menuarea = {
 	},
 	rejectCurrentTrial: function() {
 		ui.puzzle.rejectCurrentTrial();
+	},
+	ansclear: function() {
+		this.answerclear();
+	},
+	subclear: function() {
+		this.submarkclear();
 	},
 	toolarea: function() {
 		ui.menuconfig.set("toolarea", !ui.menuconfig.get("toolarea"));
