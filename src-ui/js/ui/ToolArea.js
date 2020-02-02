@@ -204,10 +204,6 @@ ui.toolarea = {
 			getEL("btnclear").disabled = trialstage > 0;
 			getEL("btntrial").disabled = trialstage > 0;
 			getEL("btntrialarea").style.display = trialstage > 0 ? "block" : "none";
-
-			getEL("btntrialr").style.display = trialstage <= 1 ? "" : "none";
-			getEL("btntrialr2").style.display = trialstage > 1 ? "" : "none";
-			getEL("btntrialra").style.display = trialstage > 1 ? "" : "none";
 		} else if (this.items === null || !this.items[idname]) {
 			/* DO NOTHING */
 		} else if (ui.menuconfig.valid(idname)) {
@@ -335,9 +331,6 @@ ui.toolarea = {
 		ui.puzzle.acceptTrial();
 	},
 	rejectTrial: function() {
-		ui.puzzle.rejectTrial();
-	},
-	rejectCurrentTrial: function() {
 		ui.puzzle.rejectCurrentTrial();
 	},
 
