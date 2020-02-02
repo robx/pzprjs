@@ -194,7 +194,9 @@ ui.toolarea = {
 		if (idname === "operation") {
 			var opemgr = ui.puzzle.opemgr;
 			getEL("btnundo").disabled = !opemgr.enableUndo;
+			getEL("btnundoall").disabled = !opemgr.enableUndo;
 			getEL("btnredo").disabled = !opemgr.enableRedo;
+			getEL("btnredoall").disabled = !opemgr.enableRedo;
 			getEL("btntriale").disabled = opemgr.atStartOfTrial();
 		} else if (idname === "trialmode") {
 			var trialstage = ui.puzzle.board.trialstage;
@@ -285,6 +287,9 @@ ui.toolarea = {
 	answercheck: function() {
 		ui.menuarea.answercheck();
 	},
+	undoall: function() {
+		ui.puzzle.undoall();
+	},
 	undo: function() {
 		ui.undotimer.startUndo();
 	},
@@ -296,6 +301,9 @@ ui.toolarea = {
 	},
 	redostop: function() {
 		ui.undotimer.stopRedo();
+	},
+	redoall: function() {
+		ui.puzzle.redoall();
 	},
 	ansclear: function() {
 		ui.menuarea.answerclear();
