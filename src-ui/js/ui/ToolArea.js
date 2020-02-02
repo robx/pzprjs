@@ -198,6 +198,7 @@ ui.toolarea = {
 			var opemgr = ui.puzzle.opemgr;
 			getEL("btnundo").disabled = !opemgr.enableUndo;
 			getEL("btnredo").disabled = !opemgr.enableRedo;
+			getEL("btntriale").disabled = opemgr.atStartOfTrial();
 		} else if (idname === "trialmode") {
 			var trialstage = ui.puzzle.board.trialstage;
 			getEL("btnclear").disabled = trialstage > 0;
