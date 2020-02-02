@@ -353,10 +353,10 @@ ui.menuarea = {
 		ui.puzzle.rejectCurrentTrial();
 	},
 	ansclear: function() {
-		this.answerclear();
+		ui.puzzle.ansclear();
 	},
 	subclear: function() {
-		this.submarkclear();
+		ui.puzzle.subclear();
 	},
 	toolarea: function() {
 		ui.menuconfig.set("toolarea", !ui.menuconfig.get("toolarea"));
@@ -416,25 +416,5 @@ ui.menuarea = {
 		}
 		this.stopHovering();
 		ui.notify.alert(str);
-	},
-	answerclear: function() {
-		this.stopHovering();
-		ui.notify.confirm(
-			"解答を消去しますか？",
-			"Do you want to erase the answer?",
-			function() {
-				ui.puzzle.ansclear();
-			}
-		);
-	},
-	submarkclear: function() {
-		this.stopHovering();
-		ui.notify.confirm(
-			"補助記号を消去しますか？",
-			"Do you want to erase the auxiliary marks?",
-			function() {
-				ui.puzzle.subclear();
-			}
-		);
 	}
 };
