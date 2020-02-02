@@ -90,10 +90,6 @@ h2#title {
   background: linear-gradient(to bottom, #cc0000, red);
 }
 
-#btnarea div#btnclear {
-  color: red;
-}
-
 /* 管理領域 */
 div#menuboard {
   width: 90%;

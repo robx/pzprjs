@@ -39,6 +39,10 @@
      <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the board__</span></li>
      <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Flip/Turn the board__</span></li>
    </menu></li>
+   <li id="menu_board"><span>__盤面__Board__</span><menu label="__盤面__Board__">
+     <li data-menu-exec="ansclear" id="menu_ansclear"><span>__解答消去__Erase answer__</span></li>
+     <li data-menu-exec="subclear" id="menu_subclear"><span>__補助記号消去__Erase auxiliary marks__</span></li>
+   </menu></li>
    <li id="menu_display"><span>__表示__Display__</span><menu label="__表示__Display__">
      <li data-config="cellsizeval"><span>__表示サイズ__Cell size__</span> -&gt;<menu label="__表示サイズ__Cell size__">
        <li data-value="19"><span>__サイズ 極小__Extra small__</span></li>
@@ -315,8 +319,6 @@
   <button type="button" class="btn btn-ok" id="btncheck" data-button-exec="answercheck">__チェック__Check__</button>
   <button type="button" class="btn" id="btnundo"    data-press-exec="undo,undostop">__戻__&lt;-__</button
  ><button type="button" class="btn" id="btnredo"    data-press-exec="redo,redostop">__進__-&gt;__</button>
-  <button type="button" class="btn" id="btnclear"   data-button-exec="ansclear">__解答消去__Erase answer__</button
- ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__補助消去__Erase aux. marks__</button>
   <button type="button" class="btn" id="btnirowake" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change line colors__</button>
   <button type="button" class="btn" id="btnirowakeblk" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change block colors__</button>
   <button type="button" class="btn" id="btncolor"   data-button-exec="encolorall">__色をつける__Color up__</button>

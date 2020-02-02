@@ -138,9 +138,6 @@ ui.toolarea = {
 		pzpr.util.unselectable(getEL("btnarea"));
 
 		this.setdisplay("operation");
-		getEL("btnclear2").style.display = !ui.puzzle.board.disable_subclear
-			? ""
-			: "none";
 		getEL("btncolor").style.display =
 			ui.puzzle.pid === "tentaisho" ? "" : "none";
 		/* ボタンエリアの色分けボタンは、ツールパネル領域が消えている時に表示 */
@@ -199,7 +196,6 @@ ui.toolarea = {
 			getEL("btntriale").disabled = opemgr.atStartOfTrial();
 		} else if (idname === "trialmode") {
 			var trialstage = ui.puzzle.board.trialstage;
-			getEL("btnclear").disabled = trialstage > 0;
 			getEL("btntrial").disabled = trialstage > 0;
 			getEL("btntrialarea").style.display = trialstage > 0 ? "block" : "none";
 		} else if (this.items === null || !this.items[idname]) {
