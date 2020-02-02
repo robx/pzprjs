@@ -200,7 +200,7 @@ ui.toolarea = {
 			getEL("btnredo").disabled = !opemgr.enableRedo;
 		} else if (idname === "trialmode") {
 			var trialstage = ui.puzzle.board.trialstage;
-			getEL("btnclear").style.display = trialstage > 0 ? "none" : "";
+			getEL("btnclear").disabled = trialstage > 0;
 			getEL("btntrial").disabled = trialstage > 0;
 			getEL("btntrialarea").style.display = trialstage > 0 ? "block" : "none";
 
