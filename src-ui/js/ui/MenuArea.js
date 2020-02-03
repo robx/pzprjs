@@ -243,7 +243,7 @@ ui.menuarea = {
 			} else {
 				str = ui.selectStr("ツールエリアを隠す", "Hide tool area");
 			}
-			getEL("menu_toolarea").childNodes[0].data = str;
+			getEL("menu_toolarea").textContent = str;
 		} else if (this.menuitem === null || !this.menuitem[idname]) {
 			/* DO NOTHING */
 		} else if (ui.menuconfig.valid(idname)) {
