@@ -719,19 +719,19 @@
 		],
 		lnCurveOnCir: [
 			"○の部分で線が曲がっています。",
-			"A line curves on circles."
+			"A line turns on a circle."
 		],
 		lnCrossOnNum: [
 			"○の部分で線が交差しています。",
-			"The lines are crossed on the number."
+			"Lines are crossed on a number."
 		],
 		lpPlNum: [
 			"異なる数字を含んだループがあります。",
-			"A loop has plural kinds of number."
+			"A loop has multiple kinds of number."
 		],
 		lpSepNum: [
 			"同じ数字が異なるループに含まれています。",
-			"A kind of numbers are in differernt loops."
+			"A kind of number is in different loops."
 		],
 		lpNoNum: ["○を含んでいないループがあります。", "A loop has no numbers."]
 	}
