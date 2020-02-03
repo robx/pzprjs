@@ -60,7 +60,6 @@
      <li class="check" data-config="adjsize"><span>__自動横幅調節__Auto size adjust__</span></li>
      <li class="check" data-config="fullwidth"><span>__横幅最大拡張__Expand canvas width__</span></li>
      <hr>
-     <li data-popup="colors"><span>__色の設定__Change colors__</span></li>
      <li data-menu-exec="toolarea"><span id="menu_toolarea">__ツールエリアを隠す__Hide tool area__</span></li>
    </menu></li>
    <li id="menu_setting"><span>__設定__Setting__</span><menu label="__設定__Setting__">
@@ -546,23 +545,6 @@
       <input type="number" name="cellsize" value="" size=4 maxlength=3 min=8 max=999>
       <br>
       <button type="button" class="btn btn-ok" data-button-exec="changesize">__変更する__Change__</button>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
-    </form>
-  </div>
-
-  <div class="popup">
-    <div class="titlebar">__色の変更___Change colors__</div>
-    <form name="colors">
-      <div data-color-target="shadecolor">
-        <span>__黒マス (解答入力)__Shaded cell (answer)__</span>
-        <input type="color" value="">
-        <button type="button" class="btn">Reset</button>
-      </div>
-      <div data-color-target="bgcolor">
-        <span>__背景色__Background__</span>
-        <input type="color" value="">
-        <button type="button" class="btn">Reset</button>
-      </div>
       <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
     </form>
   </div>
