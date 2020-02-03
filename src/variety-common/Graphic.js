@@ -1838,7 +1838,7 @@ pzpr.classmgr.makeCommon({
 					"trial_" + i,
 					piece,
 					false,
-					!piece.isnull,
+					!piece.isnull && this.puzzle.getConfig("trialmarker"),
 					this.targetColorTrial
 				);
 			}
