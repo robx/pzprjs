@@ -1815,16 +1815,20 @@ pzpr.classmgr.makeCommon({
 		},
 
 		drawCursor: function(islarge, isdraw) {
-			var g = this.vinc("target_cursor", "crispEdges");
+			this.drawRawCursor(
+				"target_cursor",
+				"",
+				this.puzzle.cursor,
+				islarge,
+				isdraw !== false && this.puzzle.getConfig("cursor"),
+				this.puzzle.editmode ? this.targetColorEdit : this.targetColorPlay
+			);
+		},
 
-			var d = this.range,
-				cursor = this.puzzle.cursor;
-			if (cursor.bx < d.x1 - 1 || d.x2 + 1 < cursor.bx) {
-				return;
-			}
-			if (cursor.by < d.y1 - 1 || d.y2 + 1 < cursor.by) {
-				return;
-			}
+		},
+
+		drawRawCursor: function(layerid, prefix, cursor, islarge, isdraw, color) {
+			var g = this.vinc(layerid, "crispEdges");
 
 			var px = cursor.bx * this.bw,
 				py = cursor.by * this.bh,
@@ -1838,33 +1842,28 @@ pzpr.classmgr.makeCommon({
 				size = this.bw * 0.56;
 			}
 
-			isdraw =
-				isdraw !== false &&
-				this.puzzle.getConfig("cursor") &&
-				!this.outputImage;
-			g.fillStyle = this.puzzle.editmode
-				? this.targetColorEdit
-				: this.targetColorPlay;
+			isdraw = isdraw !== false && !this.outputImage;
+			g.fillStyle = color;
 
-			g.vid = "ti1_";
+			g.vid = prefix + "ti1_";
 			if (isdraw) {
 				g.fillRect(px - size, py - size, size * 2, w);
 			} else {
 				g.vhide();
 			}
-			g.vid = "ti2_";
+			g.vid = prefix + "ti2_";
 			if (isdraw) {
 				g.fillRect(px - size, py - size, w, size * 2);
 			} else {
 				g.vhide();
 			}
-			g.vid = "ti3_";
+			g.vid = prefix + "ti3_";
 			if (isdraw) {
 				g.fillRect(px - size, py + size - w, size * 2, w);
 			} else {
 				g.vhide();
 			}
-			g.vid = "ti4_";
+			g.vid = prefix + "ti4_";
 			if (isdraw) {
 				g.fillRect(px + size - w, py - size, w, size * 2);
 			} else {
