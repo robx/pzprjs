@@ -583,12 +583,16 @@ form#fileform2 {
 
 #menupanel menu li.check > span:before,
 #menupanel menu li[data-value] > span:before {
+  display: inline-block;
   padding: 0pt 2pt;
+  width: 1em;
   color: white;
   content: "_";
 }
 #menupanel menu li.checked > span:before {
+  display: inline-block;
   padding: 0pt 2pt;
+  width: 1em;
   color: black;
   content: "+";
 }
