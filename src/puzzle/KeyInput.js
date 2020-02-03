@@ -214,6 +214,7 @@ pzpr.classmgr.makeCommon({
 
 			if (this.keydown && !this.isZ) {
 				puzzle.errclear();
+				puzzle.opemgr.updateStarts();
 			}
 
 			puzzle.emit("key", c);

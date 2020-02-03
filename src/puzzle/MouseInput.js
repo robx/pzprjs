@@ -234,13 +234,14 @@ pzpr.classmgr.makeCommon({
 			this.mousestart = step === 0;
 			this.mousemove = step === 1;
 			this.mouseend = step === 2;
-
 			var puzzle = this.puzzle;
+
 			puzzle.emit("mouse");
 			if (!this.cancelEvent && (this.btn === "left" || this.btn === "right")) {
 				if (this.mousestart) {
 					puzzle.opemgr.newOperation();
 					puzzle.errclear();
+					puzzle.opemgr.updateStarts();
 				} else {
 					puzzle.opemgr.newChain();
 				}
