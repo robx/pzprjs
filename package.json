@@ -25,6 +25,7 @@
     "release": "npm run clean && eslint --cache --quiet src && grunt release",
     "clean": "del dist/* pzpr-*.{zip,tar.gz,tar.bz2,tgz}",
     "format": "prettier --write '{src,src-ui,test}/**/*.{js,css}'",
+    "check-format": "prettier --check '{src,src-ui,test}/**/*.{js,css}'",
     "lint": "eslint src src-ui test sample",
     "test": "eslint --quiet src src-ui test sample && mocha -r source-map-support/register -R progress --recursive test",
     "prepublishOnly": "npm test"
