@@ -163,9 +163,13 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// ope.exec()  操作opeを反映する。ope.undo(),ope.redo()から内部的に呼ばれる
 		//---------------------------------------------------------------------------
+		getPiece: function() {
+			var bd = this.board;
+			return bd.getObjectPos(this.group, this.bx, this.by);
+		},
 		exec: function(num) {
-			var bd = this.board,
-				piece = bd.getObjectPos(this.group, this.bx, this.by);
+			var piece = this.getPiece(),
+				bd = this.board;
 			if (this.group !== piece.group) {
 				return true;
 			}
@@ -413,6 +417,7 @@ pzpr.classmgr.makeCommon({
 			this.position = 0; // 現在の表示操作番号を保持する
 			this.trialpos = []; // TrialModeの位置を保持する配列
 			this.disEmitTrial = 0; // Trial eventの呼び出し有効無効フラグ
+			this.savedStarts = [];
 
 			this.broken = false; // "以前の操作"を消して元に戻れなくなった状態
 			this.initpos = 0; // 盤面初期化時のposition
@@ -444,7 +449,48 @@ pzpr.classmgr.makeCommon({
 		},
 		addExtraOperation: function() {},
 
+		getStarts: function() {
+			var starts = [];
+			for (var i = 0; i < this.trialpos.length; i++) {
+				var pos = this.trialpos[i];
+				// it appears that the first input is always
+				// at index +1
+				if (pos + 1 < this.history.length) {
+					var ope = this.history[pos + 1][0];
+					if (!!ope.getPiece) {
+						starts.push(ope.getPiece());
+					}
+				}
+			}
+			return starts;
+		},
+		updateStarts: function() {
+			var oldstarts = this.savedStarts;
+			var starts = this.getStarts();
+			if (oldstarts.length === starts.length) {
+				// this implies that nothing changed,
+				// assuming updateStarts gets called regularly
+				return;
+			}
+			for (var i = 0; i < starts.length; i++) {
+				this.savedStarts[i] = starts[i];
+			}
+			// keep the full array length around since that's what we use to
+			// key the markers, hence to hide
+			for (var i = starts.length; i < this.savedStarts.length; i++) {
+				this.savedStarts[i] = new this.puzzle.board.klass.BoardPiece();
+			}
+			// this is more redraws than we need technically
+			for (var i = 0; i < oldstarts.length; i++) {
+				oldstarts[i].draw();
+			}
+			for (var i = 0; i < this.savedStarts.length; i++) {
+				this.savedStarts[i].draw();
+			}
+		},
+
 		//---------------------------------------------------------------------------
+
 		// um.disableRecord()  操作の登録を禁止する
 		// um.enableRecord()   操作の登録を許可する
 		// um.checkexec()      html上の[戻][進]ボタンを押すことが可能か設定する
@@ -566,6 +612,7 @@ pzpr.classmgr.makeCommon({
 				}
 				this.history[this.history.length - 1].push(newope);
 				this.lastope = newope;
+				this.updateStarts();
 			} else {
 				/* merged into previous operation, remove if noop */
 				if (this.lastope.isNoop && this.lastope.isNoop()) {
@@ -739,6 +786,7 @@ pzpr.classmgr.makeCommon({
 
 			puzzle.painter.suspend();
 			puzzle.errclear();
+			this.updateStarts();
 			if (this.reqReset) {
 				bd.disableInfo();
 			}
