@@ -103,6 +103,7 @@
 			// 入力ターゲットの色
 			targetColorEdit: "rgb(255, 64,  64)",
 			targetColorPlay: "rgb(64,  64, 255)",
+			targetColorTrial: "rgb(255,  64, 255)",
 			ttcolor: "rgb(127,255,127)", // ques=51の入力ターゲット(TargetTriangle)
 
 			movecolor: "red",

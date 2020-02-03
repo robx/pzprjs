@@ -1825,6 +1825,19 @@ pzpr.classmgr.makeCommon({
 			);
 		},
 
+		drawTrialStarts: function() {
+			var starts = this.puzzle.opemgr.savedStarts;
+			for (var i = 0; i < starts.length; i++) {
+				var piece = starts[i];
+				this.drawRawCursor(
+					"trial_cursor",
+					"trial_" + i,
+					piece,
+					false,
+					!piece.isnull,
+					this.targetColorTrial
+				);
+			}
 		},
 
 		drawRawCursor: function(layerid, prefix, cursor, islarge, isdraw, color) {
