@@ -212,7 +212,6 @@ div#quesboard {
 div#divques {
   display: inline-block;
   position: relative;
-  border: solid 1px gray;
   cursor: default;
   margin-left: auto;
   margin-right: auto;
