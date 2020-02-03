@@ -108,7 +108,12 @@ Border:{
 	}
 },
 Board:{
-	hasborder : 1
+	hasborder : 1,
+
+	rebuildInfo : function(){
+		this.cell.each(function(cell) { if(cell.counted){cell.invalidate(); }});
+		this.common.rebuildInfo.call(this);
+	}
 },
 LineGraph:{
 	enabled : true
