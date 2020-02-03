@@ -79,9 +79,6 @@
 				case "yajilin":
 					idname = "disptype_yajilin";
 					break;
-				case "pipelinkr":
-					idname = "disptype_pipelinkr";
-					break;
 				case "bosanowa":
 					idname = "disptype_bosanowa";
 					break;

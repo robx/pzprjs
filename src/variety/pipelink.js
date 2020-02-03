@@ -336,30 +336,15 @@
 		getBGCellColor: function(cell) {
 			if (cell.error === 1) {
 				return this.errbcolor1;
-			} else if (
-				cell.ques === 6 &&
-				this.puzzle.getConfig("disptype_pipelinkr") === 2
-			) {
-				return this.icecolor;
 			}
 			return null;
 		},
 		getBorderColor: function(border) {
-			if (this.puzzle.getConfig("disptype_pipelinkr") === 2) {
-				var cell1 = border.sidecell[0],
-					cell2 = border.sidecell[1];
-				if (!cell1.isnull && !cell2.isnull && cell1.ice() ^ cell2.ice()) {
-					return this.quescolor;
-				}
-			}
 			return null;
 		},
 
 		getCircleStrokeColor: function(cell) {
-			if (
-				this.puzzle.getConfig("disptype_pipelinkr") === 1 &&
-				cell.ques === 6
-			) {
+			if (cell.ques === 6) {
 				return this.quescolor;
 			}
 			return null;
@@ -387,22 +372,9 @@
 	"Encode@pipelink,pipelinkr": {
 		decodePzpr: function(type) {
 			this.decodePipelink();
-
-			if (this.pid === "pipelinkr") {
-				this.puzzle.setConfig(
-					"disptype_pipelinkr",
-					!this.checkpflag("i") ? 1 : 2
-				);
-			}
 		},
 		encodePzpr: function(type) {
 			this.encodePipelink(type);
-
-			this.outpflag =
-				this.pid === "pipelinkr" &&
-				this.puzzle.getConfig("disptype_pipelinkr") === 2
-					? "i"
-					: null;
 		},
 
 		decodePipelink: function() {
@@ -575,20 +547,14 @@
 		},
 
 		decodeDispType: function() {
-			var disptype = this.readLine();
-			if (this.pid === "pipelinkr") {
-				this.puzzle.setConfig(
-					"disptype_pipelinkr",
-					disptype === "circle" ? 1 : 2
-				);
-			}
+			// obsolete disptype flag
+			this.readLine();
 		},
 		encodeDispType: function() {
 			var puzzle = this.puzzle,
 				disptype = "pipe";
 			if (puzzle.pid === "pipelinkr") {
-				disptype =
-					puzzle.getConfig("disptype_pipelinkr") === 1 ? "circle" : "ice";
+				disptype = "circle";
 			}
 			this.writeLine(disptype);
 		},
@@ -654,18 +620,15 @@
 			var puzzle = this.puzzle,
 				texts = [];
 			var langcode = (lang || this.puzzle.pzpr.lang) === "ja" ? 0 : 1;
-			var isdispice = puzzle.getConfig("disptype_pipelinkr") === 2;
 			if (this.length === 0) {
 				return puzzle.faillist.complete[langcode];
 			}
 			for (var i = 0; i < this.length; i++) {
 				var code = this[i];
-				if (!isdispice) {
-					if (code === "lnCrossExIce") {
-						code = "lnCrossExCir";
-					} else if (code === "lnCurveOnIce") {
-						code = "lnCurveOnCir";
-					}
+				if (code === "lnCrossExIce") {
+					code = "lnCrossExCir";
+				} else if (code === "lnCurveOnIce") {
+					code = "lnCurveOnCir";
 				}
 				texts.push(puzzle.faillist[code][langcode]);
 			}

@@ -30,9 +30,6 @@
 			this.add("disptype_yajilin", 1, {
 				option: [1, 2]
 			}); /* yajilin: 表示形式 */
-			this.add("disptype_pipelinkr", 1, {
-				option: [1, 2]
-			}); /* pipelinkr: 表示形式 */
 			this.add("disptype_bosanowa", 1, {
 				option: [1, 2, 3]
 			}); /* bosanowa: 表示形式 */
@@ -320,9 +317,6 @@
 				case "dispmove":
 					exec = puzzle.board.linegraph.moveline;
 					break;
-				case "disptype_pipelinkr":
-					exec = pid === "pipelinkr";
-					break;
 				case "disptype_bosanowa":
 					exec = pid === "bosanowa";
 					break;
@@ -402,7 +396,6 @@
 				case "autoerr":
 				case "aquarium_regions":
 				case "snakebd":
-				case "disptype_pipelinkr":
 				case "disptype_yajilin":
 				case "dispqnumbg":
 					puzzle.redraw();
