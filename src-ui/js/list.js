@@ -350,7 +350,8 @@
 			"castle",
 			"araf",
 			"maxi",
-			"midloop"
+			"midloop",
+			"balance"
 		]
 	};
 	var tabstate = {

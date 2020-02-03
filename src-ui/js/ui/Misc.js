@@ -111,6 +111,7 @@ function toBGimage(pid) {
 		"aquarium",
 		"araf",
 		"skyscrapers",
+		"balance",
 		"castle",
 		"compass",
 		"curvedata",
