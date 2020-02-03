@@ -100,7 +100,7 @@ div#menuboard {
   max-width: 560px;
   margin: auto;
   margin-bottom: 8pt;
-  border: 1px gray solid;
+  border: 2px #404040 solid;
   text-align: left;
 }
 
@@ -119,7 +119,7 @@ div#timerpanel {
 }
 hr.separator {
   border: none;
-  border-top: 1px gray solid;
+  border-top: 1px #404040 solid;
   margin: 0pt;
 }
 
