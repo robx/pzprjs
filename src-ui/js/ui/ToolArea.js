@@ -141,8 +141,6 @@ ui.toolarea = {
 		getEL("btnclear2").style.display = !ui.puzzle.board.disable_subclear
 			? ""
 			: "none";
-		getEL("btncircle").style.display =
-			ui.puzzle.pid === "pipelinkr" ? "" : "none";
 		getEL("btncolor").style.display =
 			ui.puzzle.pid === "tentaisho" ? "" : "none";
 		/* ボタンエリアの色分けボタンは、ツールパネル領域が消えている時に表示 */
@@ -255,11 +253,6 @@ ui.toolarea = {
 					toolitem.checkbox.disabled = !disabled ? "" : "true";
 				}
 			}
-
-			if (idname === "disptype_pipelinkr" && !!getEL("btncircle")) {
-				getEL("btncircle").innerHTML =
-					ui.menuconfig.get(idname) === 1 ? "○" : "■";
-			}
 		} else if (!!this.items[idname]) {
 			this.items[idname].el.style.display = "none";
 		}
@@ -332,13 +325,5 @@ ui.toolarea = {
 	},
 	rejectTrial: function() {
 		ui.puzzle.rejectCurrentTrial();
-	},
-
-	//---------------------------------------------------------------------------
-	// toolarea.toggledisp()   帰ってきたパイプリンクでアイスと○などの表示切り替え時の処理を行う
-	//---------------------------------------------------------------------------
-	toggledisp: function() {
-		var current = ui.menuconfig.get("disptype_pipelinkr");
-		ui.menuconfig.set("disptype_pipelinkr", current === 1 ? 2 : 1);
 	}
 };
