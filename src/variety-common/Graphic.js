@@ -3,6 +3,10 @@
 pzpr.classmgr.makeCommon({
 	//---------------------------------------------------------
 	Graphic: {
+		paintPost: function() {
+			this.drawTrialStarts();
+		},
+
 		//---------------------------------------------------------------------------
 		// pc.drawQuesCells()    Cellの、境界線の上に描画される問題の黒マスをCanvasに書き込む
 		// pc.getQuesCellColor() 問題の黒マスの設定・描画判定する
