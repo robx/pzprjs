@@ -87,6 +87,7 @@ function toBGimage(pid){
 		'angleloop',
 		'aquarium',
 		'araf',
+		'balance',
 		'skyscrapers',
 		'castle',
 		'compass',
