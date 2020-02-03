@@ -40,7 +40,6 @@
 
 				this.resetRange();
 
-				this.initColor();
 				this.initFont();
 			},
 
@@ -209,33 +208,6 @@
 				puzzle.emit("canvasReady");
 
 				this.unsuspend();
-			},
-
-			//---------------------------------------------------------------------------
-			// pc.initColor()   初期化時に描画色の設定を行う
-			// pc.setColor()    描画色の設定を行う
-			//---------------------------------------------------------------------------
-			initColor: function() {
-				var configlist = this.puzzle.config.list;
-				for (var key in configlist) {
-					if (key.substr(0, 6) === "color_") {
-						this.setColor(key.substr(6), configlist[key].val);
-					}
-				}
-			},
-			setColor: function(name, color) {
-				if (name === "bgcolor") {
-					color =
-						typeof color === "string" && color !== "white"
-							? color
-							: this.constructor.prototype[name];
-				} else {
-					color = color || this.constructor.prototype[name];
-				}
-				this[name] = color;
-				if (!this.suspended) {
-					this.paintAll();
-				}
 			},
 
 			//---------------------------------------------------------------------------

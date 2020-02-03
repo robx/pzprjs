@@ -42,10 +42,6 @@
 
 			this.add("squarecell", true); /* セルは正方形にする */
 
-			/* 表示色の設定 */
-			this.add("color_shadecolor", ""); /* 黒マスの表示色の表示 */
-			this.add("color_bgcolor", "white"); /* 背景色の設定 */
-
 			/* 入力方法設定 */
 			this.add("use", !pzpr.env.API.touchevent ? 1 : 2, {
 				option: [1, 2]
@@ -412,14 +408,6 @@
 
 				case "disptype_bosanowa":
 					puzzle.setCanvasSizeByCellSize(); /* セルのサイズを変えないために、この関数を引数なしで呼び出す */
-					break;
-
-				case "color_shadecolor":
-					puzzle.painter.setColor("shadecolor", newval);
-					break;
-
-				case "color_bgcolor":
-					puzzle.painter.setColor("bgcolor", newval);
 					break;
 
 				case "uramashu":

@@ -15,8 +15,6 @@
 |`dispqnumbg`|`boolean`|`false`|Set background color of question circles silver for `'Yin Yang'`|
 |`undefcell`|`boolean`|`true`|Set background color of undetermined cell for `'School Trip'`|
 |`squarecell`|`boolean`|`true`|Set cell on the board always square|
-|`color_shadecolor`|`string`|''|Set the color of the shaded cells. `''` means default color (probably black)|
-|`color_bgcolor`|`string`|`'white'`|Set the background color of the board. `''` indicates transparent|
 
 ## List of config for input method
 
