@@ -124,7 +124,8 @@ ui.toolarea = {
 		getEL("checkpanel").style.display = mandisp;
 
 		/* 経過時間の表示/非表示設定 */
-		getEL("separator2").style.display = (ui.puzzle.playeronly && ui.menuconfig.get("toolarea")) ? "" : "none";
+		getEL("separator2").style.display =
+			ui.puzzle.playeronly && ui.menuconfig.get("toolarea") ? "" : "none";
 		getEL("timerpanel").style.display = ui.puzzle.playeronly ? "block" : "none";
 		this.displayVariantPanel();
 
