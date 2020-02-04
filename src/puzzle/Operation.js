@@ -466,8 +466,15 @@ pzpr.classmgr.makeCommon({
 		},
 		updateStarts: function() {
 			var oldstarts = this.savedStarts;
+			var count;
+			for (
+				count = oldstarts.length;
+				count > 0 && oldstarts[count - 1].isnull;
+				count--
+			) {}
+
 			var starts = this.getStarts();
-			if (oldstarts.length === starts.length) {
+			if (count === starts.length) {
 				// this implies that nothing changed,
 				// assuming updateStarts gets called regularly
 				return;
