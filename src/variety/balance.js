@@ -24,8 +24,17 @@
 					}
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum();
+				if (this.mousestart){
+					var cell = this.getcell();
+					if(cell.isnull){return;}
+					if(cell===this.cursor.getc() || this.btn==='left'){
+						this.inputqnum();
+					}
+					else {
+						if(cell.qnum === -1){return;}
+						cell.ques = 1 - cell.ques;
+						cell.draw();
+					}
 				}
 			}
 		},
@@ -47,8 +56,30 @@
 		}
 	},
 	KeyEvent: {
-		enablemake: true
+		enablemake: true,
+
+		keyinput: function(ca) {
+			if (this.puzzle.editmode) {
+				var cell = this.cursor.getc();
+				if(cell.isnull){return;}
+				if (ca === "q" || ca === "a" || ca === "z") {
+					if(cell.qnum===-1){cell.qnum=-2;}
+					cell.ques = 0;
+					cell.draw();
+				} else if (ca === "w" || ca === "s" || ca === "x") {
+					if(cell.qnum===-1){cell.qnum=-2;}
+					cell.ques = 1;
+					cell.draw();
+				} else if (ca === "e" || ca === "d" || ca === "c") {
+					cell.qnum = -1; cell.ques = 0;
+					cell.draw();
+				} else {
+					this.key_inputqnum(ca);
+				}
+			}
+		}
 	},
+
 	Cell: {
 		counted: false,
 		equalsegments: false,
