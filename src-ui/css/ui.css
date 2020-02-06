@@ -105,17 +105,8 @@ div#menuboard {
 }
 
 /* メニューより下の管理領域 */
-div#usepanel {
-  margin: 8pt 0pt 0pt 6pt;
-}
-div#checkpanel {
-  margin: 4pt 0pt 6pt 16pt;
-}
-div#variantpanel {
-  margin: 4pt 0pt 6pt 16pt;
-}
-div#timerpanel {
-  margin: 6pt 6pt 6pt 12pt;
+div#menuboard > div {
+  margin: 4pt 8pt 4pt 16pt;
 }
 hr.separator {
   border: none;
