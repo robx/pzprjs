@@ -257,10 +257,12 @@
 			delete this.qdata;
 			/* URLにつけるオプション */
 			if (this.type !== URL_KANPEN && this.type !== URL_HEYAAPP) {
-				if (!!inp[0] && !isNaN(inp[0])) {
-					inp.unshift("");
+				if (!!inp[0] && isNaN(inp[0])) {
+					this.pflag = inp[0];
+					inp.shift();
+				} else {
+					this.pflag = "";
 				}
-				this.pflag = inp.shift();
 			}
 
 			/* サイズを表す文字列 */
