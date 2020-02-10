@@ -19,6 +19,7 @@
 * Split options between menu and tool area.
 * Several language fixes to menu items.
 * Remove several options.
+* Allow specifying that a puzzle is a variant.
 
 #### Bugfixes
 
