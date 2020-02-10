@@ -19,10 +19,12 @@
 		init: function() {
 			this.list = {};
 
-			this.add("autocheck", ui.puzzle.playeronly); /* 正解自動判定機能 */
+			/* 正解自動判定機能 */
+			this.add("autocheck", ui.puzzle.playeronly);
+			/* per-solve autocheck status, turned off when complete */
 			this.add("autocheck_once", ui.puzzle.playeronly, {
 				volatile: true
-			}); /* 正解自動判定機能 */
+			});
 
 			this.add("keypopup", false); /* キーポップアップ (数字などのパネル入力) */
 
@@ -221,6 +223,8 @@
 					(!ui.puzzle.playeronly &&
 						ui.puzzle.mouse.getInputModeList("edit").length > 1)
 				);
+			} else if (idname === "autocheck" || idname === "autocheck_once") {
+				return !ui.puzzle.getConfig("variant");
 			} else if (this.list[idname].puzzle) {
 				return ui.puzzle.validConfig(idname);
 			}

@@ -96,7 +96,8 @@
 				this.current > this.nextACtime &&
 				puzzle.playmode &&
 				!puzzle.checker.inCheck &&
-				puzzle.board.trialstage === 0
+				puzzle.board.trialstage === 0 &&
+				!puzzle.getConfig("variant")
 			) {
 				var check = puzzle.check(false);
 				if (!check.undecided && check.complete) {
