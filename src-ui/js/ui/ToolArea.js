@@ -193,6 +193,16 @@ ui.toolarea = {
 		getEL("variantpanel").style.display = vardisp;
 	},
 	setdisplay: function(idname) {
+		if (idname === "variant") {
+			var str;
+			if (ui.menuconfig.get("variant")) {
+				str = ui.selectStr("チェック", "Check base type");
+			} else {
+				str = ui.selectStr("チェック", "Check"); /* please translate */
+			}
+			getEL("btncheck").textContent = str;
+		}
+
 		if (idname === "operation") {
 			var opemgr = ui.puzzle.opemgr;
 			getEL("btnundo").disabled = !opemgr.enableUndo;
