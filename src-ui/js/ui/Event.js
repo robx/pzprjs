@@ -7,6 +7,9 @@
 // メニュー描画/取得/html表示系
 ui.event = {
 	resizetimer: null, // resizeタイマー
+	visibilitystate: null,
+
+	visibilityCallbacks: [],
 
 	removers: [],
 
@@ -25,6 +28,14 @@ ui.event = {
 			remover();
 		});
 		this.removers = [];
+	},
+
+	addVisibilityCallback: function(callback) {
+		if (this.visibilitystate === "visible") {
+			callback();
+		} else {
+			this.visibilityCallbacks.push(callback);
+		}
 	},
 
 	//---------------------------------------------------------------------------
@@ -62,6 +73,16 @@ ui.event = {
 
 		// onunloadイベントを割り当てる
 		this.addEvent(window, "unload", this, this.onunload_func);
+	},
+
+	setDocumentEvents: function() {
+		this.addEvent(
+			document,
+			"visibilitychange",
+			this,
+			this.onvisibilitychange_func
+		);
+		this.onvisibilitychange_func(); // set state
 	},
 
 	//---------------------------------------------------------------------------
@@ -111,5 +132,18 @@ ui.event = {
 		var msg = ui.selectStr("盤面が更新されています", "The board is edited.");
 		e.returnValue = msg;
 		return msg;
+	},
+
+	onvisibilitychange_func: function(e) {
+		var state = document.visibilityState;
+		if (state !== this.visibilitystate) {
+			this.visibilitystate = state;
+			if (state === "visible") {
+				for (var i = 0; i < this.visibilityCallbacks.length; i++) {
+					this.visibilityCallbacks[i]();
+				}
+				this.visibilityCallbacks = [];
+			}
+		}
 	}
 };

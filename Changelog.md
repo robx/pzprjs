@@ -20,6 +20,7 @@
 * Several language fixes to menu items.
 * Remove several options.
 * Allow specifying that a puzzle is a variant.
+* Don't start timer until puzzle is visible.
 
 #### Bugfixes
 

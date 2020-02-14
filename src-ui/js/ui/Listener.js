@@ -28,6 +28,7 @@ ui.listener = {
 	//---------------------------------------------------------------------------
 	onFirstReady: function(puzzle) {
 		ui.initImageSaveMethod(puzzle);
+		ui.timer.init();
 	},
 	onReady: function(puzzle) {
 		/* パズルの種類が同じならMenuArea等の再設定は行わない */
@@ -47,6 +48,7 @@ ui.listener = {
 
 			/* Windowへのイベント設定 */
 			ui.event.setWindowEvents();
+			ui.event.setDocumentEvents();
 		}
 
 		ui.menuconfig.sync();
@@ -56,7 +58,9 @@ ui.listener = {
 		ui.adjustcellsize();
 		ui.keypopup.display();
 
-		ui.timer.reset(); /* タイマーリセット(最後) */
+		ui.event.addVisibilityCallback(function() {
+			ui.timer.start();
+		});
 	},
 
 	//---------------------------------------------------------------------------

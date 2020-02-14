@@ -24,19 +24,17 @@
 		// tm.start()      update()関数を200ms間隔で呼び出す
 		// tm.update()     200ms単位で呼び出される関数
 		//---------------------------------------------------------------------------
-		reset: function() {
+		init: function() {
 			this.worstACtime = 0;
 			this.timerEL = document.getElementById("timerpanel");
-
-			this.stop();
-			this.start();
+			this.showtime(0);
 		},
 		start: function() {
 			var self = this;
 			if (!!this.TID) {
 				return;
 			}
-			this.puzzle.resetTime();
+			ui.puzzle.resetTime();
 			this.update();
 			this.TID = setInterval(function() {
 				self.update();
@@ -89,7 +87,7 @@
 			if (this.bseconds === seconds) {
 				return;
 			}
-			this.settime(seconds);
+			this.showtime(seconds);
 			this.bseconds = seconds;
 		},
 		label: function() {
