@@ -29,17 +29,24 @@
 			this.timerEL = document.getElementById("timerpanel");
 			this.timerEL.innerHTML = this.label() + "00:00";
 
-			clearInterval(this.TID);
+			this.stop();
 			this.start();
 		},
 		start: function() {
 			var self = this;
+			if (!!this.TID) {
+				return;
+			}
 			this.TID = setInterval(function() {
 				self.update();
 			}, timerInterval);
 		},
 		stop: function() {
+			if (!this.TID) {
+				return;
+			}
 			clearInterval(this.TID);
+			this.TID = null;
 		},
 		update: function() {
 			this.current = pzpr.util.currentTime();
