@@ -36,6 +36,7 @@
 			if (!!this.TID) {
 				return;
 			}
+			this.puzzle.resetTime();
 			this.update();
 			this.TID = setInterval(function() {
 				self.update();
