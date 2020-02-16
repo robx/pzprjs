@@ -114,7 +114,10 @@
 		},
 
 		getCircleFillColor: function(cell) {
-			if (this.puzzle.execConfig("autocmp") && cell.isValidNum()) {
+			if (
+				this.puzzle.execConfig("autocmp") &&
+				(cell.qnum === -2 || cell.isValidNum())
+			) {
 				return cell.checkComplete() ? this.qcmpcolor : this.circlebasecolor;
 			}
 			return null;
