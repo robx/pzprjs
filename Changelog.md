@@ -11,7 +11,9 @@
 * Change canonical names: bag becomes cave, building becomes skyscrapers.
 * cave: Allow switching mouse button mode like other shading puzzles.
 * creek, gokigen: Fix behavior of -,backspace in edit mode.
+* juosan: Fix error highlighting when there is no majority.
 * kurotto: Mark blank clues complete.
+* shakashaka: Autogray complete clues.
 * shwolf: Easier aux line input with right mouse button.
 * triplace: Shade clue background.
 * rules.html: Include player.
