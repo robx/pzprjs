@@ -271,7 +271,7 @@
 				if (this.checkOnly) {
 					break;
 				}
-				if (vcount > hcount) {
+				if (vcount >= hcount) {
 					clist
 						.filter(function(cell) {
 							return cell.qans === 12;
