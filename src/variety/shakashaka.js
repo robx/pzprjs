@@ -76,7 +76,7 @@
 
 			cell.setAnswer(this.inputData);
 			this.mouseCell = cell;
-			cell.draw();
+			cell.drawaround();
 		},
 		checkCornerData: function(cell) {
 			if (cell.isNum()) {
@@ -174,7 +174,7 @@
 				}
 				cell.setAnswer(this.inputData);
 			}
-			cell.draw();
+			cell.drawaround();
 		},
 		inputTriangle_pull_end: function() {
 			var dx = this.inputPoint.bx - this.firstPoint.bx;
@@ -184,7 +184,7 @@
 			if (Math.abs(dx) <= 0.1 && Math.abs(dy) <= 0.1) {
 				var cell = this.mouseCell;
 				cell.setAnswer(cell.qsub !== 1 ? -1 : 0);
-				cell.draw();
+				cell.drawaround();
 			}
 		},
 
@@ -251,7 +251,7 @@
 				cell.setAnswer(ret);
 				this.inputData = ret;
 				this.mouseCell = cell;
-				cell.draw();
+				cell.drawaround();
 			}
 		},
 		inputDot: function() {
@@ -283,7 +283,7 @@
 			}
 			cell.setAnswer(this.inputData);
 			this.mouseCell = cell;
-			cell.draw();
+			cell.drawaround();
 		},
 
 		inputqcmp: function() {
@@ -337,6 +337,18 @@
 		},
 		isWall: function() {
 			return this.isnull || this.isNum();
+		},
+		isCmp: function() {
+			if (this.qcmp === 1) {
+				return true;
+			}
+			if (!this.puzzle.execConfig("autocmp")) {
+				return false;
+			}
+			var is_tri = function(cell) {
+				return cell.isTri();
+			};
+			return this.qnum === this.countDir4Cell(is_tri);
 		}
 	},
 	Board: {
@@ -408,7 +420,7 @@
 	// 画像表示系
 	Graphic: {
 		hideHatena: true,
-
+		autocmp: "number",
 		gridcolor_type: "LIGHT",
 
 		qanscolor: "black",
@@ -433,7 +445,7 @@
 			return !cell.trial ? this.shadecolor : this.trialcolor;
 		},
 		getQuesNumberColor: function(cell) {
-			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
+			return cell.isCmp() ? this.qcmpcolor : this.fontShadecolor;
 		}
 	},
 
