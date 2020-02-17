@@ -11,7 +11,7 @@
 })(["tents"], {
 	MouseEvent: {
 		use: true,
-		inputModes: { edit: ["number","mark-tree","mark-tent","unshade","clear"], play: ["mark-tent", "objblank","clear"] },
+		inputModes: { edit: ["number","mark-tree","mark-tent","unshade","clear"], play: ["mark-tent", "objblank","clear","subline"] },
 
 		mouseinput_other: function() {
 			switch (this.inputMode) {
@@ -154,6 +154,15 @@
 		minnum: 0
 	},
 
+	Border: {
+		prehook: {
+			qsub: function(num) {
+				if(!num) { return false; }
+				return this.sidecell[0].getNum() !== 1 && this.sidecell[1].getNum() !== 1;
+			}
+		}
+	},
+
 	Cell: {
 		numberAsObject: true,
 		disInputHatena: true,
@@ -258,6 +267,7 @@
 			this.drawDashes();
 
 			this.drawAnsNumbers();
+			this.drawBorderQsubs();
 
 			this.drawChassis();
 
@@ -329,6 +339,7 @@
 					}
 				}
 			});
+			this.decodeBorderAns();
 		},
 		encodeData: function() {
 			this.encodeCellExCell(function(obj) {
@@ -345,6 +356,7 @@
 				}
 				return ". ";
 			});
+			this.encodeBorderAns();
 		}
 	},
 
