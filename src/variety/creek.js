@@ -122,7 +122,8 @@
 			"checkShadeCellExist",
 			"checkShadeOverNum",
 			"checkConnectUnshade",
-			"checkShadeLessNum"
+			"checkShadeLessNum",
+			"doneShadingDecided"
 		],
 
 		checkShadeOverNum: function() {
