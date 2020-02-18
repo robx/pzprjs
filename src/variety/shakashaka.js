@@ -251,8 +251,8 @@
 				cell.setAnswer(ret);
 				this.inputData = ret;
 				this.mouseCell = cell;
-				cell.drawaround();
 			}
+			cell.drawaround();
 		},
 		inputDot: function() {
 			var cell = this.getcell();
@@ -266,7 +266,7 @@
 
 			cell.setAnswer(this.inputData);
 			this.mouseCell = cell;
-			cell.draw();
+			cell.drawaround();
 		},
 
 		inputTriangle_onebtn: function() {
@@ -345,6 +345,23 @@
 			if (!this.puzzle.execConfig("autocmp")) {
 				return false;
 			}
+
+			var ad = this.adjacent;
+			var list = new this.klass.CellList([
+				ad.top,
+				ad.right,
+				ad.bottom,
+				ad.left
+			]);
+			var is_empty = function(cell) {
+				return (
+					!cell.isnull && cell.qnum === -1 && cell.qans === 0 && cell.qsub === 0
+				);
+			};
+			if (list.some(is_empty)) {
+				return false;
+			}
+
 			var is_tri = function(cell) {
 				return cell.isTri();
 			};
