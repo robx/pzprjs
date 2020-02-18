@@ -97,7 +97,7 @@
 				0,
 				"バッグ",
 				"Cave",
-				"cave",
+				"kurodoko",
 				{ alias: "bag", alias2: "corral", alias3: "correl" }
 			],
 			barns: [1, 0, "バーンズ", "Barns"],

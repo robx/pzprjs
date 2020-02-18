@@ -7,15 +7,11 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kurodoko", "nurimisaki"], {
+})(["kurodoko", "nurimisaki", "cave"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
 		use: true,
-		inputModes: {
-			edit: ["number", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
-		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -42,6 +38,12 @@
 			play: ["shade", "unshade", "info-ublk"]
 		}
 	},
+	"MouseEvent@cave": {
+		inputModes: {
+			edit: ["number", "clear", "info-ublk"],
+			play: ["shade", "unshade", "peke", "info-ublk"]
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -63,8 +65,15 @@
 		cols: 9,
 		rows: 9
 	},
+	"Board@cave": {
+		hasborder: 1 // for pekes
+	},
 
 	AreaUnshadeGraph: {
+		enabled: true
+	},
+
+	"AreaShadeGraph@cave": {
 		enabled: true
 	},
 
@@ -90,6 +99,45 @@
 
 			this.drawChassis();
 
+			this.drawTarget();
+		}
+	},
+
+	"Graphic@cave": {
+		hideHatena: false,
+
+		gridcolor_type: "DLIGHT",
+		bgcellcolor_func: "error2",
+
+		qanscolor: "black",
+
+		drawTrialMarks: function() {
+			var g = this.vinc("cell_mark", "auto", true);
+			g.lineWidth = 1;
+
+			var dsize = Math.max(this.cw * 0.03, 2);
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_mark_" + cell.id;
+				if (cell.qsub === 1 && cell.trial) {
+					g.strokeStyle = this.trialcolor;
+					g.strokeCross(cell.bx * this.bw, cell.by * this.bh, 2 * dsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		paint: function() {
+			this.drawBGCells();
+			this.drawDashedGrid(false);
+			this.drawShadedCells();
+			this.drawDotCells();
+			this.drawTrialMarks();
+			this.drawQuesNumbers();
+			this.drawPekes();
 			this.drawTarget();
 		}
 	},
@@ -162,7 +210,8 @@
 			"check2x2ShadeCell@nurimisaki",
 			"checkAdjacentShadeCell@kurodoko",
 			"checkConnectUnshadeRB@kurodoko",
-			"checkConnectUnshade@nurimisaki",
+			"checkConnectUnshade@nurimisaki,cave",
+			"checkConnectShadeOutside@cave",
 			"checkViewOfNumber",
 			"check2x2UnshadeCell@nurimisaki",
 			"checkCirclePromontory@nurimisaki",
@@ -254,6 +303,29 @@
 		}
 	},
 
+	"AnsCheck@cave": {
+		checkConnectShadeOutside: function() {
+			var bd = this.board;
+			for (var r = 0; r < bd.sblkmgr.components.length; r++) {
+				var clist = bd.sblkmgr.components[r].clist;
+				var d = clist.getRectSize();
+				if (
+					d.x1 === bd.minbx + 1 ||
+					d.x2 === bd.maxbx - 1 ||
+					d.y1 === bd.minby + 1 ||
+					d.y2 === bd.maxby - 1
+				) {
+					continue;
+				}
+				this.failcode.add("csConnOut");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		}
+	},
+
 	FailCode: {
 		cu2x2: [
 			"2x2の白マスのかたまりがあります。",
@@ -266,6 +338,10 @@
 		nonCirclePromontory: [
 			"丸のないマスが岬になっています。",
 			"A dead end has no circle."
+		],
+		csConnOut: [
+			"盤面の外につながっていない黒マスがあります。",
+			"Some shaded cells are not connected to the outside."
 		]
 	}
 });
