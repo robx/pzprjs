@@ -1252,6 +1252,10 @@ pzpr.classmgr.makeCommon({
 		nmDivide: [
 			"タテヨコにつながっていない数字があります。",
 			"Numbers are divided."
+		],
+		nmSumViewNe: [
+			"数字と黒マスにぶつかるまでの4方向のマスの合計が違います。",
+			"A cell containing a clue number sees a different number of cells in the four orthogonal directions."
 		]
 	}
 });

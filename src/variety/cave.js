@@ -195,9 +195,5 @@
 			"盤面の外につながっていない黒マスがあります。",
 			"Some shaded cells are not connected to the outside."
 		],
-		nmSumViewNe: [
-			"数字と輪の内側になる4方向のマスの合計が違います。",
-			"The number and the sum of the inside cells of four direction is different."
-		]
 	}
 });
