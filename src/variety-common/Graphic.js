@@ -47,7 +47,7 @@ pzpr.classmgr.makeCommon({
 			this.drawCells_common("c_fulls_", this.getShadedCellColor);
 		},
 		getShadedCellColor: function(cell) {
-			if (!cell.isShade()) {
+			if (cell.qans !== 1) {
 				return null;
 			}
 			var info = cell.error || cell.qinfo;
