@@ -779,6 +779,56 @@
 
 				g.fillText(text, px, py, maxLength);
 			}
+		},
+
+		//---------------------------------------------------------
+		// ImageTile: Container for a tileset of images.
+		//---------------------------------------------------------
+		ImageTile: {
+			cols: 1,
+			rows: 1,
+			width: 0,
+			height: 0,
+
+			initialize: function() {
+				var puzzle = this.puzzle;
+				if (typeof Image !== "undefined") {
+					this.image_canvas = this.image_svg = new Image();
+					this.image_canvas.onload = function() {
+						puzzle.painter.paintAll();
+					};
+				} else {
+					this.image_canvas = !!puzzle.pzpr.Candle.Canvas
+						? new puzzle.pzpr.Candle.Canvas.Image()
+						: {};
+					this.image_svg = {};
+				}
+				this.image_canvas.src = this.image_svg.src = this.imgsrc_dataurl;
+				this.image_canvas.height = this.image_svg.height = this.height;
+				this.image_canvas.width = this.image_svg.width = this.width;
+
+				this.cwidth = this.image_canvas.width / this.cols;
+				this.cheight = this.image_canvas.height / this.rows;
+				this.loaded = true;
+			},
+
+			//---------------------------------------------------------
+			// imgTile.putImage: Draw one image from the tileset.
+			//---------------------------------------------------------
+			putImage: function(ctx, key, n, dx, dy, dw, dh) {
+				var img = ctx.use.canvas ? this.image_canvas : this.image_svg;
+				var sw = this.cwidth,
+					sh = this.cheight;
+				var sx = sw * (n % this.cols),
+					sy = sh * ((n / this.cols) | 0);
+				if (dw === void 0) {
+					dw = sw;
+					dh = sh;
+				}
+
+				ctx.vid = key;
+				ctx.drawImage(n !== null ? img : null, sx, sy, sw, sh, dx, dy, dw, dh);
+			}
 		}
 	});
 })();
