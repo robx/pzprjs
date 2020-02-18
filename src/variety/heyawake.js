@@ -112,12 +112,13 @@
 		gridcolor_type: "LIGHT",
 
 		enablebcolor: true,
-		bgcellcolor_func: "qsub1",
+		bgcellcolor_func: "error1",
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
 			this.drawShadedCells();
+			this.drawFatDotCells();
 
 			this.drawQuesNumbers();
 

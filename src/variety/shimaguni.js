@@ -217,7 +217,7 @@
 			this.drawBGCells();
 			this.drawGrid();
 			if (this.pid === "stostone") {
-				this.drawDotCells_stostone();
+				this.drawFatDotCells();
 			}
 			this.drawShadedCells();
 
@@ -246,24 +246,6 @@
 
 		minYdeg: 0.08,
 		maxYdeg: 0.5,
-
-		drawDotCells_stostone: function() {
-			var g = this.vinc("cell_dot", "auto", true);
-
-			var dsize = this.cw * 0.2;
-			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i];
-
-				g.vid = "c_dot_" + cell.id;
-				if (cell.qsub === 1) {
-					g.fillStyle = this.bcolor;
-					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
-				} else {
-					g.vhide();
-				}
-			}
-		},
 
 		drawNarrowBorders: function() {
 			this.vinc("border_narrow", "crispEdges", true);
