@@ -58,6 +58,25 @@
 		minnum: 0
 	},
 
+	Cell: {
+		isShadeDecided: function() {
+			if (this.isShade()) {
+				return true;
+			}
+			if (this.qsub > 0) {
+				return true;
+			}
+			if (
+				this.countDir4Cross(function(cross) {
+					return cross.qnum >= 0;
+				}) > 0
+			) {
+				return true;
+			}
+			return false;
+		}
+	},
+
 	AreaUnshadeGraph: {
 		enabled: true
 	},

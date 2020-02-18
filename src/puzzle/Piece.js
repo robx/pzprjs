@@ -625,6 +625,26 @@ pzpr.classmgr.makeCommon({
 			return cnt;
 		},
 
+		countDir4Cross: function(func) {
+			var crosses = [
+					this.relobj(-1, -1),
+					this.relobj(1, -1),
+					this.relobj(-1, 1),
+					this.relobj(1, 1)
+				],
+				cnt = 0;
+			for (var i = 0; i < crosses.length; i++) {
+				if (
+					crosses[i].group === "cross" &&
+					!crosses[i].isnull &&
+					func(crosses[i])
+				) {
+					cnt++;
+				}
+			}
+			return cnt;
+		},
+
 		//---------------------------------------------------------------------------
 		// cell.getdir4clist()   上下左右4方向の存在するセルを返す
 		// cell.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
