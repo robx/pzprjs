@@ -12,6 +12,10 @@
 	// マウス入力系
 	MouseEvent: {
 		use: true,
+		inputModes: {
+			edit: ["number", "clear", "info-blk"],
+			play: ["shade", "unshade", "info-blk"]
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -24,6 +28,7 @@
 			}
 		}
 	},
+
 	"MouseEvent@kurodoko": {
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
@@ -54,9 +59,6 @@
 		},
 		minnum: 2
 	},
-	"Cell@nurimisaki": {
-		qansUnshade: true
-	},
 	Board: {
 		cols: 9,
 		rows: 9
@@ -81,70 +83,14 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawShadedCells();
 			this.drawGrid();
+			this.drawShadedCells();
 
 			this.drawCircledNumbers();
-			if (this.pid === "nurimisaki") {
-				this.drawDotCells();
-			}
 
 			this.drawChassis();
 
 			this.drawTarget();
-		}
-	},
-	"Graphic@nurimisaki": {
-		undefcolor: "silver",
-		trialcolor: "rgb(120, 120, 120)",
-
-		getBGCellColor: function(cell) {
-			if (!cell.isUnshade()) {
-				return null;
-			}
-			var undef = this.puzzle.execConfig("undefcell");
-			var info = cell.error || cell.qinfo;
-			if (info === 1) {
-				return this.errbcolor1;
-			} else if (info === 2) {
-				return this.errbcolor2;
-			}
-			return undef ? null : this.qsubcolor1;
-		},
-		getShadedCellColor: function(cell) {
-			if (!cell.isShade()) {
-				return null;
-			}
-			var undef = this.puzzle.execConfig("undefcell");
-			var info = cell.error || cell.qinfo;
-			if (info === 1) {
-				return this.errcolor1;
-			} else if (info === 2) {
-				return this.errcolor2;
-			} else if (cell.qsub === 1) {
-				return cell.trial ? this.trialcolor : this.shadecolor;
-			} else if (undef) {
-				return this.undefcolor;
-			}
-			return null;
-		},
-		drawDotCells: function() {
-			var undef = this.puzzle.execConfig("undefcell");
-			var g = this.vinc("cell_dot", "auto", true);
-
-			var dsize = Math.max(this.cw * 0.06, 2);
-			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i];
-
-				g.vid = "c_dot_" + cell.id;
-				if (cell.isUnshade() && cell.qnum === -1 && !undef) {
-					g.fillStyle = !cell.trial ? this.qanscolor : this.trialcolor;
-					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
-				} else {
-					g.vhide();
-				}
-			}
 		}
 	},
 
@@ -213,7 +159,6 @@
 	AnsCheck: {
 		checklist: [
 			"checkShadeCellExist",
-			"checkNumUnshade@nurimisaki",
 			"check2x2ShadeCell@nurimisaki",
 			"checkAdjacentShadeCell@kurodoko",
 			"checkConnectUnshadeRB@kurodoko",
@@ -270,12 +215,6 @@
 	},
 
 	"AnsCheck@nurimisaki": {
-		checkNumUnshade: function() {
-			this.checkAllCell(function(cell) {
-				return cell.isNum() && !cell.isUnshade();
-			}, "nmShade");
-		},
-
 		check2x2UnshadeCell: function() {
 			this.check2x2Block(function(cell) {
 				return cell.isUnshade();
@@ -315,7 +254,6 @@
 	},
 
 	FailCode: {
-		nmShade: ["丸のマスが白マスになっていません。", "A clue is not unshaded."],
 		nmSumViewNe: [
 			"数字と黒マスにぶつかるまでの4方向のマスの合計が違います。",
 			"The number and the sum of the continuous unshaded cells of four direction is different."
