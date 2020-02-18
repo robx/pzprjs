@@ -75,7 +75,24 @@
 				}
 			}
 		},
-		minnum: 0
+		minnum: 0,
+
+		isShadeDecided: function() {
+			if (this.isShade()) {
+				return true;
+			}
+			if (this.qsub > 0) {
+				return true;
+			}
+			if (
+				this.countDir4Cell(function(cell) {
+					return cell.isShade();
+				}) > 0
+			) {
+				return true;
+			}
+			return false;
+		}
 	},
 	Board: {
 		hasborder: 1
