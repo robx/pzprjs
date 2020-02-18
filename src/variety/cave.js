@@ -120,7 +120,8 @@
 		checklist: [
 			"checkConnectUnshade",
 			"checkConnectShadeOutside",
-			"checkViewOfNumber"
+			"checkViewOfNumber",
+			"doneShadingDecided"
 		],
 
 		checkConnectShadeOutside: function() {

@@ -166,7 +166,8 @@
 			"checkViewOfNumber",
 			"check2x2UnshadeCell@nurimisaki",
 			"checkCirclePromontory@nurimisaki",
-			"checkNonCircleNotPromontory@nurimisaki"
+			"checkNonCircleNotPromontory@nurimisaki",
+			"doneShadingDecided"
 		],
 
 		checkViewOfNumber: function() {
