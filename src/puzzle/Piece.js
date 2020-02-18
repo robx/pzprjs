@@ -382,6 +382,20 @@ pzpr.classmgr.makeCommon({
 			return true;
 		},
 
+		// is cell shading status decided for the purpose of auto-answer check
+		isShadeDecided: function() {
+			if (this.isnull) {
+				return true;
+			}
+			if (this.isShade()) {
+				return true;
+			}
+			if (this.qsub > 0) {
+				return true;
+			}
+			return false;
+		},
+
 		//-----------------------------------------------------------------------
 		// cell.getNum()     該当するCellの数字を返す
 		// cell.setNum()     該当するCellに数字を設定する

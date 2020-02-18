@@ -267,7 +267,7 @@ pzpr.classmgr.makeCommon({
 			var bd = this.board;
 			if (
 				bd.cell.some(function(cell) {
-					return cell.qans === 0 && cell.qsub === 0;
+					return !cell.isShadeDecided();
 				})
 			) {
 				this.failcode.setUndecided();
