@@ -262,7 +262,8 @@ pzpr.classmgr.makeCommon({
 			this.failcode.add("brNoShade");
 		},
 
-		checkShadingDecided: function() {
+		// autocheck trigger: shading status of all cells explicitly decided
+		doneShadingDecided: function() {
 			var bd = this.board;
 			if (
 				bd.cell.some(function(cell) {
