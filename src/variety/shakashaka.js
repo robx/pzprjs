@@ -76,7 +76,7 @@
 
 			cell.setAnswer(this.inputData);
 			this.mouseCell = cell;
-			cell.drawaround();
+			cell.draw();
 		},
 		checkCornerData: function(cell) {
 			if (cell.isNum()) {
@@ -174,7 +174,7 @@
 				}
 				cell.setAnswer(this.inputData);
 			}
-			cell.drawaround();
+			cell.draw();
 		},
 		inputTriangle_pull_end: function() {
 			var dx = this.inputPoint.bx - this.firstPoint.bx;
@@ -184,7 +184,7 @@
 			if (Math.abs(dx) <= 0.1 && Math.abs(dy) <= 0.1) {
 				var cell = this.mouseCell;
 				cell.setAnswer(cell.qsub !== 1 ? -1 : 0);
-				cell.drawaround();
+				cell.draw();
 			}
 		},
 
@@ -252,7 +252,7 @@
 				this.inputData = ret;
 				this.mouseCell = cell;
 			}
-			cell.drawaround();
+			cell.draw();
 		},
 		inputDot: function() {
 			var cell = this.getcell();
@@ -266,7 +266,7 @@
 
 			cell.setAnswer(this.inputData);
 			this.mouseCell = cell;
-			cell.drawaround();
+			cell.draw();
 		},
 
 		inputTriangle_onebtn: function() {
@@ -283,7 +283,7 @@
 			}
 			cell.setAnswer(this.inputData);
 			this.mouseCell = cell;
-			cell.drawaround();
+			cell.draw();
 		},
 
 		inputqcmp: function() {
@@ -366,11 +366,42 @@
 				return cell.isTri();
 			};
 			return this.qnum === this.countDir4Cell(is_tri);
+		},
+
+		posthook: {
+			qnum: function() {
+				this.redrawAdjacent();
+			},
+			qans: function() {
+				this.redrawAdjacent();
+			},
+			qsub: function() {
+				this.redrawAdjacent();
+			}
+		},
+
+		redrawAdjacent: function() {
+			var ad = this.adjacent;
+			var cells = new this.klass.CellList([
+				ad.top,
+				ad.right,
+				ad.bottom,
+				ad.left
+			]);
+			this.board.redrawAffected(cells);
 		}
 	},
 	Board: {
 		addExtraInfo: function() {
 			this.wrectmgr = this.addInfoList(this.klass.AreaWrectGraph);
+		},
+		redrawAffected: function(cells) {
+			for (var i = 0; i < cells.length; i++) {
+				var c = cells[i];
+				if (!c.isnull && c.qnum !== -1 && c.qnum !== -2) {
+					c.draw();
+				}
+			}
 		}
 	},
 	BoardExec: {
