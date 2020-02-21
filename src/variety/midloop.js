@@ -263,11 +263,11 @@
 
 	FailCode: {
 		lnOnDot: [
-			"(please translate) A line doesn't go over a circle.",
+			"ループが通過していない黒丸があります。",
 			"A line doesn't go over a circle."
 		],
 		lnOnCenter: [
-			"(please translate) A circle is not the center point of a line.",
+			"線分の中点になっていない黒丸があります。",
 			"A circle is not the center point of a line."
 		]
 	}
