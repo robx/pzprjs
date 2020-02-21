@@ -34,7 +34,60 @@
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				this.inputcell_tents();
+				if(this.mousestart) {
+					this.placedTent = false;
+					this.firstPoint.reset();
+				}
+
+				var cell = this.getcell();
+
+				if(cell.isnull) { return; }
+				if (this.inputData === null && !this.firstPoint.oncell()) {
+					this.firstPoint.set(cell);
+				}
+
+				if(this.inputData === null && !this.firstPoint.equals(cell)){
+					var other = this.firstPoint.getc();
+					var border = cell.getnb(other);
+
+					var hastree = other.getNum()===1||cell.getNum()===1;
+					var hastent = other.getNum()===2||cell.getNum()===2;
+					var hasdot = other.getNum()===3||other.qsub===1||cell.getNum()===3||cell.qsub===1;
+					var hasempty = (other.getNum()===-1&&other.qsub===0)||(cell.getNum()===-1&&cell.qsub===0);
+
+					if(hastree && hastent) {
+						this.inputData = 1;
+					}
+
+					if(hastree && hasempty) {
+						if(!border.isnull && border.qsub === 1) {
+							this.inputData = 0;
+						} else {
+							this.inputData = this.btn === "left" ? 1 : 2;
+						}
+					}
+
+					if(hastree && hasdot) {
+						this.inputData = 2;
+					}
+
+					this.inputcell_tents(other);
+					if(!this.notInputted()) {
+						this.puzzle.opemgr.newOperation();
+					}
+
+					if(!border.isnull && this.inputData !== null) {
+						border.setQsub(this.inputData === 1 ? 1 - border.qsub : 0);
+						border.draw();
+						if(!this.notInputted()) {
+							this.puzzle.opemgr.newOperation();
+						}
+					}
+				}
+
+				if(this.inputData !== null || this.mouseend) {
+					this.inputcell_tents(cell);
+				}
 			} else if (this.puzzle.editmode) {
 				if (this.mouseend && this.notInputted()) {
 					this.inputqnum_excell();
@@ -45,8 +98,7 @@
 			}
 		},
 
-		inputcell_tents: function(value) {
-			var cell = this.getcell();
+		inputcell_tents: function(cell, value) {
 			if (cell.isnull || cell === this.mouseCell || cell.qnum !== -1) {
 				return;
 			}
@@ -64,15 +116,14 @@
 				}
 			}
 
+			if(this.inputData === 1 && this.placedTent) { return; }
+
 			cell.setAnum(this.inputData===1 ? 2 : -1);
 			cell.setQsub(this.inputData===2 ? 1 : 0);
 			cell.draw();
 
 			this.mouseCell = cell;
-
-			if (this.inputData === 1) {
-				this.mousereset();
-			}
+			this.placedTent = true;
 		},
 
 		inputqnum_excell: function() {
@@ -93,7 +144,7 @@
 		},
 
 		inputDot: function() {
-			this.inputcell_tents(2);
+			this.inputcell_tents(this.getcell(), 2);
 		}
 	},
 
