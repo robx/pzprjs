@@ -4,6 +4,7 @@
 * balance: New puzzle type Balance Loop (due to Giuliano Montelucci)
 * maxi: New puzzle type Maxi Loop (due to Giuliano Montelucci)
 * midloop: New puzzle type Mid-loop (due to Lennard Sprong)
+* simpleloop: New puzzle type Simple Loop
 
 #### Improvements
 
@@ -29,6 +30,7 @@
 
 * compass: Fix erasing clues.
 * doubleback: Prohibit drawing over black cells.
+* doubleback: Save empty cells to file.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
 * Correct display of color-each-line config option.
