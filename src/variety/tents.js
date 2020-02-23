@@ -572,8 +572,8 @@
 			"There are too many tents around a tree."
 		],
 		tentAround: [
-			"(please translate) Tents are adjacent.",
-			"Tents are adjacent."
+			"(please translate) Some tents touch.",
+			"Some tents touch."
 		],
 		exTentNe: [
 			"(please translate) The number of tents in the row or column is not correct.",
