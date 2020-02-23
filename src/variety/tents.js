@@ -11,7 +11,10 @@
 })(["tents"], {
 	MouseEvent: {
 		use: true,
-		inputModes: { edit: ["number","mark-tree","mark-tent","unshade","clear"], play: ["mark-tent", "objblank","clear","subline"] },
+		inputModes: {
+			edit: ["number", "mark-tree", "mark-tent", "unshade", "clear"],
+			play: ["mark-tent", "objblank", "clear", "subline"]
+		},
 
 		mouseinput_other: function() {
 			switch (this.inputMode) {
@@ -27,71 +30,79 @@
 		mouseinput_number: function() {
 			if (this.mousestart) {
 				this.inputqnum_excell();
-				if(this.notInputted) {
+				if (this.notInputted) {
 					this.inputqnum();
 				}
 			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if(this.mousestart) {
+				if (this.mousestart) {
 					this.placedTent = false;
 					this.firstPoint.reset();
 				}
 
 				var cell = this.getcell();
 
-				if(cell.isnull) { return; }
+				if (cell.isnull) {
+					return;
+				}
 				if (this.inputData === null && !this.firstPoint.oncell()) {
 					this.firstPoint.set(cell);
 				}
 
-				if(this.inputData === null && !this.firstPoint.equals(cell)){
+				if (this.inputData === null && !this.firstPoint.equals(cell)) {
 					var other = this.firstPoint.getc();
 					var border = cell.getnb(other);
 
-					var hastree = other.getNum()===1||cell.getNum()===1;
-					var hastent = other.getNum()===2||cell.getNum()===2;
-					var hasdot = other.getNum()===3||other.qsub===1||cell.getNum()===3||cell.qsub===1;
-					var hasempty = (other.getNum()===-1&&other.qsub===0)||(cell.getNum()===-1&&cell.qsub===0);
+					var hastree = other.getNum() === 1 || cell.getNum() === 1;
+					var hastent = other.getNum() === 2 || cell.getNum() === 2;
+					var hasdot =
+						other.getNum() === 3 ||
+						other.qsub === 1 ||
+						cell.getNum() === 3 ||
+						cell.qsub === 1;
+					var hasempty =
+						(other.getNum() === -1 && other.qsub === 0) ||
+						(cell.getNum() === -1 && cell.qsub === 0);
 
-					if(hastree && hastent) {
+					if (hastree && hastent) {
 						this.inputData = 1;
 					}
 
-					if(hastree && hasempty) {
-						if(!border.isnull && border.qsub === 1) {
+					if (hastree && hasempty) {
+						if (!border.isnull && border.qsub === 1) {
 							this.inputData = 0;
 						} else {
 							this.inputData = this.btn === "left" ? 1 : 2;
 						}
 					}
 
-					if(hastree && hasdot) {
+					if (hastree && hasdot) {
 						this.inputData = 2;
 					}
 
 					this.inputcell_tents(other);
-					if(!this.notInputted()) {
+					if (!this.notInputted()) {
 						this.puzzle.opemgr.newOperation();
 					}
 
-					if(!border.isnull && this.inputData !== null) {
+					if (!border.isnull && this.inputData !== null) {
 						border.setQsub(this.inputData === 1 ? 1 - border.qsub : 0);
 						border.draw();
-						if(!this.notInputted()) {
+						if (!this.notInputted()) {
 							this.puzzle.opemgr.newOperation();
 						}
 					}
 				}
 
-				if(this.inputData !== null || this.mouseend) {
+				if (this.inputData !== null || this.mouseend) {
 					this.inputcell_tents(cell);
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mouseend && this.notInputted()) {
 					this.inputqnum_excell();
-					if(this.notInputted) {
+					if (this.notInputted) {
 						this.inputqnum();
 					}
 				}
@@ -103,23 +114,25 @@
 				return;
 			}
 			if (this.inputData === null) {
-				var current = cell.anum===2 ? 1 : cell.qsub===1 ? 2 : 0;
+				var current = cell.anum === 2 ? 1 : cell.qsub === 1 ? 2 : 0;
 
-				if(!!value) {
+				if (!!value) {
 					this.inputData = current !== value ? value : 0;
-				} else if(this.puzzle.getConfig("use")===1){
+				} else if (this.puzzle.getConfig("use") === 1) {
 					var next = this.btn === "left" ? 1 : 2;
 					this.inputData = current !== next ? next : 0;
 				} else {
 					var next = current + (this.btn === "left" ? 1 : -1);
-					this.inputData = (next+3)%3;
+					this.inputData = (next + 3) % 3;
 				}
 			}
 
-			if(this.inputData === 1 && this.placedTent) { return; }
+			if (this.inputData === 1 && this.placedTent) {
+				return;
+			}
 
-			cell.setAnum(this.inputData===1 ? 2 : -1);
-			cell.setQsub(this.inputData===2 ? 1 : 0);
+			cell.setAnum(this.inputData === 1 ? 2 : -1);
+			cell.setQsub(this.inputData === 2 ? 1 : 0);
 			cell.draw();
 
 			this.mouseCell = cell;
@@ -208,8 +221,12 @@
 	Border: {
 		prehook: {
 			qsub: function(num) {
-				if(!num) { return false; }
-				return this.sidecell[0].getNum() !== 1 && this.sidecell[1].getNum() !== 1;
+				if (!num) {
+					return false;
+				}
+				return (
+					this.sidecell[0].getNum() !== 1 && this.sidecell[1].getNum() !== 1
+				);
 			}
 		}
 	},
@@ -220,8 +237,10 @@
 		maxnum: 3,
 
 		posthook: {
-			qnum: function(num) { 
-				if (num >= 0) { this.setQsub(0);}
+			qnum: function(num) {
+				if (num >= 0) {
+					this.setQsub(0);
+				}
 			}
 		}
 	},
@@ -279,20 +298,22 @@
 			nodeobj.campnodes = [];
 		},
 		isnodevalid: function(cell) {
-			return cell.getNum()===1||cell.getNum()===2;
+			return cell.getNum() === 1 || cell.getNum() === 2;
 		},
 		isedgevalidbynodeobj: function(cell1, cell2) {
-			return (cell1.getNum()===1&&cell2.getNum()===2) ||
-			(cell1.getNum()===2&&cell2.getNum()===1);
+			return (
+				(cell1.getNum() === 1 && cell2.getNum() === 2) ||
+				(cell1.getNum() === 2 && cell2.getNum() === 1)
+			);
 		},
 
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
-			component.counts = {tents:0, trees:0};
+			component.counts = { tents: 0, trees: 0 };
 
 			for (var i = 0; i < component.nodes.length; i++) {
 				var cell = component.nodes[i].obj;
-				switch(cell.getNum()) {
+				switch (cell.getNum()) {
 					case 1:
 						component.counts.trees++;
 						break;
@@ -376,7 +397,7 @@
 	ImageTile: {
 		imgsrc_dataurl:
 			"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABACAYAAADS1n9/AAABd0lEQVR42u3Z200DMRAF0IiSaIFK+KP/BowiJT8hEt7deDOPcyU3wD07HofLRURERERERE7K18/HuB5/icblAwAAAJ3LhwAAAAAAoHX5EAAAQPfyIQAAgoeM22lVfgcEM8WOh9Oq/MoAZostA2BP+ZURjIlyRxUAR8rvhOC/8gFoNAXKlO8a2D4FSpZvCZyfAr5+CJTf8fcA5UPg3W8ZVH47BOWugNUAqiEotwSeAaAKghZPwFUwuvwG4DUAgPK73ft2geb3fnoAlr8dAK6pgMALYGf592QGcNYTMCuCowCG4vNCmCo/4xR4Z/mZEEyXn20KRAAQHcHYCiDTFABgQfkVXgQAHASQ9UXgzn9R+XaBZotf1ing3l/09UefApa/E8qPPAWiAIiI4OUAIiKIBCASgiXlVwTw/fn3VECwpPyIu8DRYp4BOIqs7Ndf4T+FMwCeIdiCouzXD0DC596bDwAAACAASKbyIQAAAAAAAEBEREREZHV+AX7Uq4uJskjzAAAAAElFTkSuQmCC",
-		
+
 		cols: 2,
 		rows: 1,
 		width: 128,
@@ -402,11 +423,11 @@
 				} else if (obj.group === "excell" && !obj.isnull) {
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
-					if(+ca > 0) {
+					if (+ca > 0) {
 						obj.qnum = +ca;
-					} else if(ca === "A") {
+					} else if (ca === "A") {
 						obj.anum = 2;
-					} else if(ca === "-") {
+					} else if (ca === "-") {
 						obj.qsub = 1;
 					}
 				}
@@ -418,11 +439,11 @@
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
 					return obj.qnum + " ";
 				} else if (obj.group === "cell") {
-					if(obj.qnum !== -1) {
+					if (obj.qnum !== -1) {
 						return obj.qnum + " ";
-					} else if(obj.anum === 2) {
+					} else if (obj.anum === 2) {
 						return "A ";
-					} else if(obj.qsub === 1) {
+					} else if (obj.qsub === 1) {
 						return "- ";
 					}
 				}
@@ -446,7 +467,7 @@
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (cell.getNum()!==2) {
+				if (cell.getNum() !== 2) {
 					continue;
 				}
 				var target = null,
@@ -454,19 +475,19 @@
 				// 右・左下・下・右下だけチェック
 				clist.add(cell);
 				target = cell.relcell(2, 0);
-				if (target.getNum()===2) {
+				if (target.getNum() === 2) {
 					clist.add(target);
 				}
 				target = cell.relcell(0, 2);
-				if (target.getNum()===2) {
+				if (target.getNum() === 2) {
 					clist.add(target);
 				}
 				target = cell.relcell(-2, 2);
-				if (target.getNum()===2) {
+				if (target.getNum() === 2) {
 					clist.add(target);
 				}
 				target = cell.relcell(2, 2);
-				if (target.getNum()===2) {
+				if (target.getNum() === 2) {
 					clist.add(target);
 				}
 				if (clist.length <= 1) {
@@ -509,7 +530,9 @@
 			var rooms = this.board.campgraph.components;
 			for (var id = 0; id < rooms.length; id++) {
 				var area = rooms[id];
-				if (!area || !func(area)) { continue; }
+				if (!area || !func(area)) {
+					continue;
+				}
 
 				this.failcode.add(code);
 				if (this.checkOnly) {
@@ -527,7 +550,7 @@
 			var d = clist.getRectSize(),
 				bd = this.board;
 			var count = clist.filter(function(c) {
-				return c.getNum()===2;
+				return c.getNum() === 2;
 			}).length;
 
 			var result = true;
@@ -571,10 +594,7 @@
 			"(please translate) There are too many tents around a tree.",
 			"There are too many tents around a tree."
 		],
-		tentAround: [
-			"(please translate) Some tents touch.",
-			"Some tents touch."
-		],
+		tentAround: ["(please translate) Some tents touch.", "Some tents touch."],
 		exTentNe: [
 			"(please translate) The number of tents in the row or column is not correct.",
 			"The number of tents in the row or column is not correct."

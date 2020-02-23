@@ -774,7 +774,7 @@
 			rows: 1,
 			width: 0,
 			height: 0,
-	
+
 			initialize: function() {
 				var puzzle = this.puzzle;
 				if (typeof Image !== "undefined") {
@@ -791,12 +791,12 @@
 				this.image_canvas.src = this.image_svg.src = this.imgsrc_dataurl;
 				this.image_canvas.height = this.image_svg.height = this.height;
 				this.image_canvas.width = this.image_svg.width = this.width;
-	
+
 				this.cwidth = this.image_canvas.width / this.cols;
 				this.cheight = this.image_canvas.height / this.rows;
 				this.loaded = true;
 			},
-	
+
 			//---------------------------------------------------------
 			// imgTile.putImage: Draw one image from the tileset.
 			//---------------------------------------------------------
@@ -810,7 +810,7 @@
 					dw = sw;
 					dh = sh;
 				}
-	
+
 				ctx.vid = key;
 				ctx.drawImage(n !== null ? img : null, sx, sy, sw, sh, dx, dy, dw, dh);
 			}
