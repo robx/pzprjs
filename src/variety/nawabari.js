@@ -229,9 +229,7 @@
 		drawValidDashedGrid: function() {
 			var g = this.vinc("grid_waritai", "crispEdges", true);
 
-			var dotmax = this.cw / 10 + 3;
-			var dotCount = Math.max(this.cw / dotmax, 1);
-			var dotSize = this.cw / (dotCount * 2);
+			var dasharray = this.getDashArray();
 
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
@@ -244,9 +242,9 @@
 					var px = border.bx * this.bw,
 						py = border.by * this.bh;
 					if (border.isVert()) {
-						g.strokeDashedLine(px, py - this.bh, px, py + this.bh, [dotSize]);
+						g.strokeDashedLine(px, py - this.bh, px, py + this.bh, dasharray);
 					} else {
-						g.strokeDashedLine(px - this.bw, py, px + this.bw, py, [dotSize]);
+						g.strokeDashedLine(px - this.bw, py, px + this.bw, py, dasharray);
 					}
 				} else {
 					g.vhide();
