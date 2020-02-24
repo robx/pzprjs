@@ -234,7 +234,7 @@
 			var dotSize = this.cw / dotCount;
 
 			var dasharray = [dotSize * 0.9];
-			for(var i = 0; i < dotCount - 2; i++){
+			for (var i = 0; i < dotCount - 2; i++) {
 				dasharray.push(dotSize);
 			}
 			dasharray.push(dotSize * 0.9);
