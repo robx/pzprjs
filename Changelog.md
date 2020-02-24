@@ -2,6 +2,7 @@
 
 * araf: New puzzle type Araf (due to Giuliano Montelucci)
 * balance: New puzzle type Balance Loop (due to Giuliano Montelucci)
+* doppelblock: New puzzle type Doppelblock
 * maxi: New puzzle type Maxi Loop (due to Giuliano Montelucci)
 * midloop: New puzzle type Mid-loop (due to Lennard Sprong)
 * simpleloop: New puzzle type Simple Loop

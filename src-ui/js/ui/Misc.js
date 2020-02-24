@@ -116,6 +116,7 @@ function toBGimage(pid) {
 		"compass",
 		"curvedata",
 		"dbchoco",
+		"doppelblock",
 		"doubleback",
 		"easyasabc",
 		"geradeweg",
