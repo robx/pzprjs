@@ -26,6 +26,7 @@
 * Remove several options.
 * Allow specifying that a puzzle is a variant.
 * Don't start timer until puzzle is visible.
+* Center grid dashing.
 
 #### Bugfixes
 
