@@ -2036,8 +2036,16 @@ pzpr.classmgr.makeCommon({
 			x2 += ~x2 & 1;
 			y2 += ~y2 & 1; /* (x1,y1)-(x2,y2)を外側の奇数範囲まで広げる */
 
-			var dotCount = Math.max(this.cw / (this.cw / 10 + 3), 1) | 0;
-			var dotSize = this.cw / (dotCount * 2);
+			var dotPrecount = Math.max(this.cw / 5, 1);
+			var dotCount = Math.round(dotPrecount / 2) * 2 + 0.8;
+			var dotSize = this.cw / dotCount;
+
+			var dasharray = [dotSize * 0.9];
+			for(var i = 0; i < dotCount - 2; i++){
+				dasharray.push(dotSize);
+			}
+			dasharray.push(dotSize * 0.9);
+			dasharray.push(0);
 
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
@@ -2046,14 +2054,14 @@ pzpr.classmgr.makeCommon({
 					py1 = y1 * this.bh,
 					py2 = y2 * this.bh;
 				g.vid = "cliney_" + i;
-				g.strokeDashedLine(px, py1, px, py2, [dotSize]);
+				g.strokeDashedLine(px, py1, px, py2, dasharray);
 			}
 			for (var i = y1; i <= y2; i += 2) {
 				var py = i * this.bh,
 					px1 = x1 * this.bw,
 					px2 = x2 * this.bw;
 				g.vid = "clinex_" + i;
-				g.strokeDashedLine(px1, py, px2, py, [dotSize]);
+				g.strokeDashedLine(px1, py, px2, py, dasharray);
 			}
 		},
 
