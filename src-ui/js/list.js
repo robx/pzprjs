@@ -351,7 +351,8 @@
 			"araf",
 			"maxi",
 			"midloop",
-			"balance"
+			"balance",
+			"tents"
 		]
 	};
 	var tabstate = {
