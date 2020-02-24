@@ -24,22 +24,28 @@
 		// tm.start()      update()関数を200ms間隔で呼び出す
 		// tm.update()     200ms単位で呼び出される関数
 		//---------------------------------------------------------------------------
-		reset: function() {
+		init: function() {
 			this.worstACtime = 0;
 			this.timerEL = document.getElementById("timerpanel");
-			this.timerEL.innerHTML = this.label() + "00:00";
-
-			clearInterval(this.TID);
-			this.start();
+			this.showtime(0);
 		},
 		start: function() {
 			var self = this;
+			if (!!this.TID) {
+				return;
+			}
+			ui.puzzle.resetTime();
+			this.update();
 			this.TID = setInterval(function() {
 				self.update();
 			}, timerInterval);
 		},
 		stop: function() {
+			if (!this.TID) {
+				return;
+			}
 			clearInterval(this.TID);
+			this.TID = null;
 		},
 		update: function() {
 			this.current = pzpr.util.currentTime();
@@ -56,12 +62,7 @@
 		// tm.updatetime() 秒数の表示を行う
 		// tm.label()      経過時間に表示する文字列を返す
 		//---------------------------------------------------------------------------
-		updatetime: function() {
-			var seconds = (ui.puzzle.getTime() / 1000) | 0;
-			if (this.bseconds === seconds) {
-				return;
-			}
-
+		showtime: function(seconds) {
 			var hours = (seconds / 3600) | 0;
 			var minutes = ((seconds / 60) | 0) - hours * 60;
 			seconds = seconds - minutes * 60 - hours * 3600;
@@ -80,7 +81,13 @@
 				":",
 				seconds
 			].join("");
-
+		},
+		updatetime: function() {
+			var seconds = (ui.puzzle.getTime() / 1000) | 0;
+			if (this.bseconds === seconds) {
+				return;
+			}
+			this.showtime(seconds);
 			this.bseconds = seconds;
 		},
 		label: function() {

@@ -4,6 +4,7 @@
 * balance: New puzzle type Balance Loop (due to Giuliano Montelucci)
 * maxi: New puzzle type Maxi Loop (due to Giuliano Montelucci)
 * midloop: New puzzle type Mid-loop (due to Lennard Sprong)
+* simpleloop: New puzzle type Simple Loop
 
 #### Improvements
 
@@ -11,6 +12,9 @@
 * Change canonical names: bag becomes cave, building becomes skyscrapers.
 * cave: Allow switching mouse button mode like other shading puzzles.
 * creek, gokigen: Fix behavior of -,backspace in edit mode.
+* juosan: Fix error highlighting when there is no majority.
+* kurotto: Mark blank clues complete.
+* shakashaka: Autogray complete clues.
 * shwolf: Easier aux line input with right mouse button.
 * triplace: Shade clue background.
 * rules.html: Include player.
@@ -20,11 +24,13 @@
 * Several language fixes to menu items.
 * Remove several options.
 * Allow specifying that a puzzle is a variant.
+* Don't start timer until puzzle is visible.
 
 #### Bugfixes
 
 * compass: Fix erasing clues.
 * doubleback: Prohibit drawing over black cells.
+* doubleback: Save empty cells to file.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
 * Correct display of color-each-line config option.

@@ -251,8 +251,8 @@
 				cell.setAnswer(ret);
 				this.inputData = ret;
 				this.mouseCell = cell;
-				cell.draw();
 			}
+			cell.draw();
 		},
 		inputDot: function() {
 			var cell = this.getcell();
@@ -337,11 +337,71 @@
 		},
 		isWall: function() {
 			return this.isnull || this.isNum();
+		},
+		isCmp: function() {
+			if (this.qcmp === 1) {
+				return true;
+			}
+			if (!this.puzzle.execConfig("autocmp")) {
+				return false;
+			}
+
+			var ad = this.adjacent;
+			var list = new this.klass.CellList([
+				ad.top,
+				ad.right,
+				ad.bottom,
+				ad.left
+			]);
+			var is_empty = function(cell) {
+				return (
+					!cell.isnull && cell.qnum === -1 && cell.qans === 0 && cell.qsub === 0
+				);
+			};
+			if (list.some(is_empty)) {
+				return false;
+			}
+
+			var is_tri = function(cell) {
+				return cell.isTri();
+			};
+			return this.qnum === this.countDir4Cell(is_tri);
+		},
+
+		posthook: {
+			qnum: function() {
+				this.redrawAdjacent();
+			},
+			qans: function() {
+				this.redrawAdjacent();
+			},
+			qsub: function() {
+				this.redrawAdjacent();
+			}
+		},
+
+		redrawAdjacent: function() {
+			var ad = this.adjacent;
+			var cells = new this.klass.CellList([
+				ad.top,
+				ad.right,
+				ad.bottom,
+				ad.left
+			]);
+			this.board.redrawAffected(cells);
 		}
 	},
 	Board: {
 		addExtraInfo: function() {
 			this.wrectmgr = this.addInfoList(this.klass.AreaWrectGraph);
+		},
+		redrawAffected: function(cells) {
+			for (var i = 0; i < cells.length; i++) {
+				var c = cells[i];
+				if (!c.isnull && c.qnum !== -1 && c.qnum !== -2) {
+					c.draw();
+				}
+			}
 		}
 	},
 	BoardExec: {
@@ -408,7 +468,7 @@
 	// 画像表示系
 	Graphic: {
 		hideHatena: true,
-
+		autocmp: "number",
 		gridcolor_type: "LIGHT",
 
 		qanscolor: "black",
@@ -433,7 +493,7 @@
 			return !cell.trial ? this.shadecolor : this.trialcolor;
 		},
 		getQuesNumberColor: function(cell) {
-			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
+			return cell.isCmp() ? this.qcmpcolor : this.fontShadecolor;
 		}
 	},
 

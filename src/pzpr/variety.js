@@ -270,6 +270,7 @@
 			shimaguni: [1, 0, "島国", "Islands", "shimaguni"],
 			shugaku: [1, 0, "修学旅行の夜", "School Trip"],
 			shwolf: [0, 0, "ヤギとオオカミ", "Goats and Wolves", "kramma"],
+			simpleloop: [0, 0, "Simple Loop", "Simple Loop", "country"],
 			slalom: [1, 1, "スラローム", "Slalom", "", { alias: "suraromu" }],
 			slither: [
 				0,
