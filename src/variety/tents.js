@@ -12,7 +12,7 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["number", "mark-tree", "mark-tent", "unshade", "clear"],
+			edit: ["number", "mark-tree", "mark-tent", "shade", "clear"],
 			play: ["mark-tent", "objblank", "clear", "subline"]
 		},
 
@@ -341,13 +341,28 @@
 
 			this.drawTents();
 			this.drawNumbersExCell();
-			this.drawDashes();
 
 			this.drawBorderQsubs();
 
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getBGCellColor: function(cell) {
+			if (cell.qnum === 3) {
+				return this.shadecolor;
+			}
+			if (cell.error) {
+				return this.errbcolor1;
+			}
+			if (cell.qnum === 2) {
+				return "rgb(224, 224, 255)";
+			}
+			if (cell.trial && cell.getNum() === 2) {
+				return this.trialcolor;
+			}
+			return null;
 		},
 
 		drawTents: function() {
@@ -370,26 +385,6 @@
 					this.cw,
 					this.ch
 				);
-			}
-		},
-
-		drawDashes: function() {
-			var g = this.vinc("cell_dash", "auto", true);
-			g.lineWidth = 2;
-			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i],
-					px,
-					py;
-				g.vid = "c_dash_" + cell.id;
-				if (cell.qnum === 3) {
-					var px = cell.bx * this.bw,
-						py = cell.by * this.bh;
-					g.strokeStyle = this.quescolor;
-					g.strokeLine(px - 0.2 * this.bw, py, px + 0.2 * this.bw, py);
-				} else {
-					g.vhide();
-				}
 			}
 		}
 	},
