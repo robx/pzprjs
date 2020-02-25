@@ -213,11 +213,7 @@ pzpr.classmgr.makeCommon({
 			bd.enableInfo();
 		},
 
-		//------------------------------------------------------------------------------
-		// bd.exec.adjustEdge_1()
-		// bd.exec.adjustEdge_2()
-		//------------------------------------------------------------------------------
-		adjustEdge_1: function(key, d) {
+		adjustExCellTopLeft_1: function(key, d) {
 			var bx1 = d.x1 | 1,
 				by1 = d.y1 | 1;
 			this.qnumw = [];
@@ -231,7 +227,7 @@ pzpr.classmgr.makeCommon({
 				this.qnumh[bx] = bd.getex(bx, -1).qnum;
 			}
 		},
-		adjustEdge_2: function(key, d) {
+		adjustExCellTopLeft_2: function(key, d) {
 			var xx = d.x1 + d.x2,
 				yy = d.y1 + d.y2,
 				bx1 = d.x1 | 1,

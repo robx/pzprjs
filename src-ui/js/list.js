@@ -352,6 +352,7 @@
 			"maxi",
 			"midloop",
 			"balance",
+			"simpleloop",
 			"tents"
 		]
 	};
