@@ -359,6 +359,7 @@
 			this.drawGrid();
 
 			this.drawTents();
+			this.drawTrees();
 			this.drawNumbersExCell();
 
 			this.drawBorderQsubs();
@@ -375,16 +376,94 @@
 			if (cell.error) {
 				return this.errbcolor1;
 			}
-			if (cell.qnum === 2) {
-				return "rgb(224, 224, 255)";
-			}
-			if (cell.trial && cell.getNum() === 2) {
-				return this.trialcolor;
-			}
 			return null;
 		},
 
 		drawTents: function() {
+			var g = this.vinc("cell_tent", "auto");
+
+			var osize = this.cw * 0.25;
+			var isize = this.cw * 0.125;
+
+			var thsize = this.cw * 0.05;
+			var tvsize = this.cw * 0.1;
+			var fsize = this.cw * 0.325;
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				var px = cell.bx * this.bw,
+					py = (cell.by + 0.15) * this.bh;
+				switch (cell.getNum()) {
+					case 2:
+						g.vid = "c_tentouter_" + cell.id;
+						var color =
+							cell.qnum !== -1
+								? this.getQuesNumberColor(cell)
+								: this.getAnsNumberColor(cell);
+						g.fillStyle = color;
+						g.beginPath();
+						g.setOffsetLinePath(
+							px,
+							py,
+							0,
+							-osize,
+							-osize,
+							osize,
+							osize,
+							osize,
+							true
+						);
+						g.fill();
+
+						g.vid = "c_tentinner_" + cell.id;
+						g.fillStyle = "white";
+						g.beginPath();
+						g.setOffsetLinePath(
+							px,
+							py,
+							0,
+							0,
+							-isize,
+							osize,
+							isize,
+							osize,
+							true
+						);
+						g.fill();
+
+						g.vid = "c_tentline_" + cell.id;
+						g.lineWidth = Math.max(this.cw / 32, 2);
+						g.strokeStyle = color;
+						g.beginPath();
+
+						g.moveTo(px - fsize, py + osize);
+						g.lineTo(px + fsize, py + osize);
+
+						g.moveTo(px - osize, py + osize);
+						g.lineTo(px + thsize, py - (osize + tvsize));
+
+						g.moveTo(px + osize, py + osize);
+						g.lineTo(px - thsize, py - (osize + tvsize));
+
+						g.closePath();
+						g.stroke();
+
+						break;
+					default:
+						g.vid = "c_tentouter_" + cell.id;
+						g.vhide();
+						g.vid = "c_tentinner_" + cell.id;
+						g.vhide();
+						g.vid = "c_tentline_" + cell.id;
+						g.vhide();
+						break;
+				}
+			}
+		},
+
+		drawTrees: function() {
 			var g = this.vinc("cell_number_image", "auto");
 
 			var clist = this.range.cells;
@@ -398,7 +477,7 @@
 				this.imgtile.putImage(
 					g,
 					keyimg,
-					num === 1 ? 1 : num === 2 ? 0 : null,
+					num === 1 ? 1 : null,
 					rx,
 					ry,
 					this.cw,
