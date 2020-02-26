@@ -133,6 +133,7 @@
 
 			cell.setAnum(this.inputData === 1 ? 2 : -1);
 			cell.setQsub(this.inputData === 2 ? 1 : 0);
+			cell.removeAuxLines();
 			cell.draw();
 
 			this.mouseCell = cell;
@@ -240,6 +241,24 @@
 			qnum: function(num) {
 				if (num >= 0) {
 					this.setQsub(0);
+				}
+			}
+		},
+
+		removeAuxLines: function() {
+			var next = this.getNum() === 2 ? 1 : this.getNum() === 1 ? 2 : null;
+
+			for (var dir in this.adjacent) {
+				var other = this.adjacent[dir];
+				if (!other || other.isnull) {
+					continue;
+				}
+
+				if (other.getNum() !== next) {
+					var border = this.getnb(other);
+					if (!border.isnull) {
+						border.setQsub(0);
+					}
 				}
 			}
 		}

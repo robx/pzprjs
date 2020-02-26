@@ -67,9 +67,9 @@ ui.debug.addDebugData("tents", {
 		},
 
 		{
-			label: "Right-click to overwrite tent with dot",
+			label: "Right-click to overwrite tent with dot and remove line",
 			input: ["mouse,right,5,3"],
-			result: "pzprv3/tents/2/3/. . . . /. . . . /. A 1 - /0 0 /0 -1 /0 0 0 /"
+			result: "pzprv3/tents/2/3/. . . . /. . . . /. A 1 - /0 0 /0 0 /0 0 0 /"
 		},
 
 		{
