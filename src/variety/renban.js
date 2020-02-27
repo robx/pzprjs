@@ -249,15 +249,15 @@
 	FailCode: {
 		bkDupNum: [
 			"1つの部屋に同じ数字が複数入っています。",
-			"A room has two or more same numbers."
+			"A room has two or more equal numbers."
 		],
 		bkNotSeqNum: [
-			"部屋に入る数字が正しくありません。",
-			"The numbers in the room are wrong."
+			"部屋に入る数字が正しくありません。", // outdated, please translate
+			"The numbers in the room are not consecutive."
 		],
 		cbDiffLenNe: [
 			"数字の差がその間にある線の長さと等しくありません。",
-			"The differnece between two numbers is not equal to the length of the line between them."
+			"The difference between two numbers is not equal to the length of the line between them."
 		]
 	}
 });
