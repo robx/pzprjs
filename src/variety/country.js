@@ -1057,11 +1057,11 @@
 	},
 	"FailCode@maxi": {
 		blLineShort: [
-			"(Please translate) All lines in a room are shorter than the number.",
+			"枠内のどの線も、連続して通るマス数が数字よりも小さいです。",
 			"All lines in a room are shorter than the number."
 		],
 		blLineLong: [
-			"(Please translate) A line in a room is longer than the number.",
+			"枠内を連続して通るマス数が、数字よりも大きい線があります。",
 			"A line in a room is longer than the number."
 		]
 	}

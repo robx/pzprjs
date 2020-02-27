@@ -252,7 +252,7 @@
 			"A room has two or more equal numbers."
 		],
 		bkNotSeqNum: [
-			"部屋に入る数字が正しくありません。", // outdated, please translate
+			"数字が連番になっていない部屋があります。",
 			"The numbers in the room are not consecutive."
 		],
 		cbDiffLenNe: [
