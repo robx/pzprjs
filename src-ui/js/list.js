@@ -353,6 +353,7 @@
 			"midloop",
 			"balance",
 			"simpleloop",
+			"doppelblock",
 			"tents"
 		]
 	};

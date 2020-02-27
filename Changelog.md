@@ -35,6 +35,7 @@
 * doubleback: Save empty cells to file.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
+* yajilin: Fix interaction between edit mode and answer.
 * Correct display of color-each-line config option.
 
 ## Version 0.12.0

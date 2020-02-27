@@ -141,6 +141,15 @@
 					}
 				}
 				this.board.redrawAffected(cells);
+			},
+			qnum: function() {
+				this.setQsub(0);
+				this.setQans(0);
+				var adb = this.adjborder;
+				var bs = [adb.top, adb.bottom, adb.left, adb.right];
+				for (var i = 0; i < bs.length; i++) {
+					bs[i].line = 0;
+				}
 			}
 		}
 	},
