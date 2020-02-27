@@ -20,7 +20,7 @@
 			this.list = {};
 
 			/* 正解自動判定機能 */
-			this.add("autocheck", ui.puzzle.playeronly);
+			this.add("autocheck", true);
 			/* per-solve autocheck status, turned off when complete */
 			this.add("autocheck_once", ui.puzzle.playeronly, {
 				volatile: true
@@ -224,7 +224,7 @@
 						ui.puzzle.mouse.getInputModeList("edit").length > 1)
 				);
 			} else if (idname === "autocheck" || idname === "autocheck_once") {
-				return !ui.puzzle.getConfig("variant");
+				return ui.puzzle.playeronly && !ui.puzzle.getConfig("variant");
 			} else if (this.list[idname].puzzle) {
 				return ui.puzzle.validConfig(idname);
 			}
