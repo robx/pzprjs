@@ -352,7 +352,8 @@
 			"maxi",
 			"midloop",
 			"balance",
-			"simpleloop"
+			"simpleloop",
+			"doppelblock"
 		]
 	};
 	var tabstate = {
