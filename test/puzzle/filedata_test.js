@@ -63,5 +63,17 @@ pzpr.variety.each(function(pid) {
 				});
 			});
 		});
+		describe("encode PZL", function() {
+			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);
+			if (!pzpr.variety(pid).exists.pzl) {
+				return;
+			}
+			/* eslint-disable no-console */
+			console.log("testing pid:", pid);
+			it("PZL output", function() {
+				var out = puzzle.getFileData(pzpr.parser.FILE_PZL);
+				console.log("output:", out);
+			});
+		});
 	});
 });

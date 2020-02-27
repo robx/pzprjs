@@ -11,7 +11,8 @@
 		FILE_AUTO = 0,
 		FILE_PZPR = 1,
 		FILE_PBOX = 2,
-		FILE_PBOX_XML = 3;
+		FILE_PBOX_XML = 3,
+		FILE_PZL = 4;
 
 	var URLData, FileData, Parser;
 
@@ -38,6 +39,7 @@
 		FILE_PZPR: FILE_PZPR,
 		FILE_PBOX: FILE_PBOX,
 		FILE_PBOX_XML: FILE_PBOX_XML,
+		FILE_PZL: FILE_PZL,
 
 		/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
 		/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
@@ -451,6 +453,7 @@
 		FILE_PZPR: FILE_PZPR,
 		FILE_PBOX: FILE_PBOX,
 		FILE_PBOX_XML: FILE_PBOX_XML,
+		FILE_PZL: FILE_PZL,
 
 		parse: function() {
 			var result = this.parseFileType() && this.parseFileData();
@@ -651,6 +654,7 @@
 				puzzlenode.appendChild(
 					this.createXMLNode("size", { row: row, col: col })
 				);
+			} else if (pzl.type === FILE_PZL) {
 			} else if (pzl.type === FILE_PBOX && pzl.pid === "kakuro") {
 				out.push(row + 1);
 				out.push(col + 1);

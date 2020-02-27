@@ -66,8 +66,9 @@
 			this.en = datalist[3]; /* 英語パズル名 */
 			this.exists = {
 				pzprapp: !!datalist[0],
-				kanpen: !!datalist[1],
-				pencilbox: !!datalist[1]
+				kanpen: !!(datalist[1] & 1),
+				pencilbox: !!(datalist[1] & 1),
+				pzl: !!(datalist[1] & 2)
 			};
 			this.exists.pencilbox =
 				this.exists.pencilbox &&
@@ -117,7 +118,7 @@
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
-			compass: [0, 0, "Compass", "Compass", "compass"],
+			compass: [0, 2, "Compass", "Compass", "compass"],
 			country: [1, 0, "カントリーロード", "Country Road"],
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],

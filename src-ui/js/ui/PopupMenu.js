@@ -541,8 +541,10 @@ ui.popupmgr.addpopup("filesave", {
 	reset: function() {
 		/* ファイル形式選択オプション */
 		var ispencilbox = pzpr.variety(ui.puzzle.pid).exists.pencilbox;
+		var ispzl = pzpr.variety(ui.puzzle.pid).exists.pzl;
 		this.form.filetype.options[1].disabled = !ispencilbox;
 		this.form.filetype.options[2].disabled = !ispencilbox;
+		this.form.filetype.options[3].disabled = !ispzl;
 		var parser = pzpr.parser;
 		this.form.ta.value = ui.puzzle.getFileData(parser.FILE_PZPR, {});
 		this.form.ta2.value = this.form.ta.value.replace(/\n/g, "/");
@@ -569,7 +571,12 @@ ui.popupmgr.addpopup("filesave", {
 		var filename = this.form.filename.value
 			.replace(".xml", "")
 			.replace(".txt", "");
-		var ext = filetype !== "filesave4" ? ".txt" : ".xml";
+		var ext =
+			filetype === "filesave4"
+				? ".xml"
+				: filetype === "filesave5"
+				? ".pzl"
+				: ".txt";
 		var pinfo = pzpr.variety(filename);
 		if (pinfo.pid === ui.puzzle.pid) {
 			if (filetype === "filesave" || filetype === "filesave3") {
@@ -609,6 +616,9 @@ ui.popupmgr.addpopup("filesave", {
 			case "filesave3":
 				filetype = parser.FILE_PZPR;
 				option.history = true;
+				break;
+			case "filesave5":
+				filetype = parser.FILE_PZL;
 				break;
 		}
 

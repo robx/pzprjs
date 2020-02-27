@@ -250,6 +250,47 @@
 				}
 				return ". ";
 			});
+		},
+		encodePzl: function() {
+			this.writeLine("type: compass");
+			this.writeLine("puzzle:");
+
+			var x = 0,
+				a = "a".charCodeAt(0),
+				clues = [];
+
+			var encodeQnum = function(qnum) {
+				return qnum === -1 ? "." : "" + qnum;
+			};
+			var encodeClue = function(cell) {
+				if (cell.ques !== 51) {
+					return ".";
+				}
+				var key = String.fromCharCode(a + x);
+				x++;
+				clues.push(
+					encodeQnum(cell.qnum) +
+						" " +
+						encodeQnum(cell.qnum2) +
+						" " +
+						encodeQnum(cell.qnum3) +
+						" " +
+						encodeQnum(cell.qnum4)
+				);
+				return key;
+			};
+
+			var grid = this.encodeCellPzl(encodeClue);
+			this.writeLine("  grid: |");
+			for (var i = 0; i < grid.length; i++) {
+				this.writeLine("    " + grid[i]);
+			}
+
+			this.writeLine("  clues:");
+			for (var i = 0; i < clues.length; i++) {
+				var key = String.fromCharCode(a + i);
+				this.writeLine("    " + key + ": " + clues[i]);
+			}
 		}
 	},
 

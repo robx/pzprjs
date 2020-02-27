@@ -107,6 +107,10 @@
 						this.kanpenSaveXML();
 						break;
 
+					case pzl.FILE_PZL:
+						this.encodePzl();
+						break;
+
 					default:
 						throw "invalid filetype";
 				}
@@ -137,6 +141,7 @@
 			kanpenSave: throwNoImplementation,
 			kanpenOpenXML: throwNoImplementation,
 			kanpenSaveXML: throwNoImplementation,
+			encodePzl: throwNoImplementation,
 
 			//---------------------------------------------------------------------------
 			// fio.decodeTrial() 仮置きデータを復旧する
@@ -521,6 +526,29 @@
 					}
 				}
 				return node;
+			},
+
+			encodeObjPzl: function(func, group, startbx, startby, endbx, endby) {
+				var step = 2,
+					lines = [];
+				for (var by = startby; by <= endby; by += step) {
+					var data = "";
+					for (var bx = startbx; bx <= endbx; bx += step) {
+						data += func.call(this, this.board.getObjectPos(group, bx, by));
+					}
+					lines.push(data);
+				}
+				return lines;
+			},
+			encodeCellPzl: function(func) {
+				return this.encodeObjPzl(
+					func,
+					"cell",
+					1,
+					1,
+					2 * this.board.cols - 1,
+					2 * this.board.rows - 1
+				);
 			}
 		}
 	});
