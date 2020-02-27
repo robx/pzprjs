@@ -99,6 +99,24 @@ ui.debug.addDebugData("yajilin", {
 		{
 			input: ["mouse,left, 1,1, 5,1"],
 			result: "pzprv3/yajilin/1/4/. . . . /. # . . /0 0 0 /"
+		},
+		/* bug #133, clue on shaded cell */
+		{ input: ["newboard,4,1", "playmode"] },
+		{
+			input: ["cursor,1,1", "mouse,left, 1,1"],
+			result: "pzprv3/yajilin/1/4/. . . . /# . . . /0 0 0 /"
+		},
+		{
+			input: ["editmode", "mouse,left, 1,1"],
+			result: "pzprv3/yajilin/1/4/0,- . . . /. . . . /0 0 0 /"
+		},
+		{
+			input: ["playmode", "mouse,left, 3,1, 7,1"],
+			result: "pzprv3/yajilin/1/4/0,- . . . /. . . . /0 1 1 /"
+		},
+		{
+			input: ["editmode", "cursor,5,1", "mouse,left, 5,1"],
+			result: "pzprv3/yajilin/1/4/0,- . 0,- . /. . . . /0 0 0 /"
 		}
 	]
 });
