@@ -305,7 +305,7 @@
 			yajikazu: [1, 0, "やじさんかずさん", "Yajisan-Kazusan"],
 			yajilin: [
 				0,
-				1,
+				1 | 2,
 				"ヤジリン",
 				"Yajilin",
 				"",
