@@ -570,7 +570,8 @@ ui.popupmgr.addpopup("filesave", {
 		var filetype = this.form.filetype.value;
 		var filename = this.form.filename.value
 			.replace(".xml", "")
-			.replace(".txt", "");
+			.replace(".txt", "")
+			.replace(".pzl", "");
 		var ext =
 			filetype === "filesave4"
 				? ".xml"
