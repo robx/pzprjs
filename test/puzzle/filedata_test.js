@@ -68,11 +68,8 @@ pzpr.variety.each(function(pid) {
 			if (!pzpr.variety(pid).exists.pzl) {
 				return;
 			}
-			/* eslint-disable no-console */
-			console.log("testing pid:", pid);
 			it("PZL output", function() {
-				var out = puzzle.getFileData(pzpr.parser.FILE_PZL);
-				console.log("output:", out);
+				puzzle.getFileData(pzpr.parser.FILE_PZL);
 			});
 		});
 	});
