@@ -376,6 +376,16 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 		},
+		encodeAreaRoomPzl: function() {
+			var bd = this.board;
+			bd.roommgr.rebuild();
+			var rooms = bd.roommgr.components;
+			var a = "a".charCodeAt(0);
+			return this.encodeCellPzl(function(cell) {
+				var roomid = rooms.indexOf(cell.room);
+				return String.fromCharCode(a + roomid);
+			});
+		},
 		//---------------------------------------------------------------------------
 		// fio.rdata2Border() 入力された配列から境界線を入力する
 		//---------------------------------------------------------------------------

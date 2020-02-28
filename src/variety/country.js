@@ -491,6 +491,35 @@
 					return ". ";
 				}
 			});
+		},
+		encodePzl: function() {
+			if (this.pid !== "country" && this.pid !== "maxi") {
+				return this.throwNoImplementation();
+			}
+			switch (this.pid) {
+				case "country":
+					this.writeLine("type: country-road");
+					break;
+				case "maxi":
+					this.writeLine("type: maxiloop");
+					this.writeLine("render-as: country-road");
+					break;
+			}
+			this.writeLine("puzzle:");
+
+			this.writeLine("  rooms: |");
+			var rooms = this.encodeAreaRoomPzl();
+			for (var i = 0; i < rooms.length; i++) {
+				this.writeLine("    " + rooms[i]);
+			}
+
+			this.writeLine("  clues: |");
+			var clues = this.encodeCellPzl(function(cell) {
+				return cell.qnum >= 0 ? "" + cell.qnum : ".";
+			});
+			for (var i = 0; i < clues.length; i++) {
+				this.writeLine("    " + clues[i]);
+			}
 		}
 	},
 
