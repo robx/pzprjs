@@ -267,7 +267,7 @@
 				{ alias: "sato", kanpen: "satogaeri" }
 			],
 			scrin: [0, 0, "スクリン", "Scrin"],
-			shakashaka: [0, 1, "シャカシャカ", "Shakashaka"],
+			shakashaka: [0, 1 | 2, "シャカシャカ", "Shakashaka"],
 			shikaku: [0, 1, "四角に切れ", "Shikaku", "shikaku"],
 			shimaguni: [1, 0, "島国", "Islands", "shimaguni"],
 			shugaku: [1, 0, "修学旅行の夜", "School Trip"],
