@@ -208,7 +208,7 @@
 			makaro: [0, 0, "マカロ", "Makaro"],
 			mashu: [0, 1, "ましゅ", "Masyu", "", { kanpen: "masyu", alias: "pearl" }],
 			maxi: [0, 2, "Maxi Loop", "Maxi Loop", "country"],
-			meander: [0, 0, "にょろにょろナンバー", "Meandering Numbers", "ripple"],
+			meander: [0, 2, "にょろにょろナンバー", "Meandering Numbers", "ripple"],
 			mejilink: [0, 0, "メジリンク", "Mejilink"],
 			minarism: [1, 0, "マイナリズム", "Minarism"],
 			midloop: [0, 0, "ミッドループ", "Mid-loop"],
