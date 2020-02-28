@@ -238,6 +238,17 @@
 			this.encodeCell(function(cell) {
 				return cell.ques === 1 ? "1 " : "0 ";
 			});
+		},
+
+		encodePzl: function() {
+			this.writeLine("type: ringring");
+			this.writeLine("puzzle: |");
+			var lines = this.encodeCellPzl(function(cell) {
+				return cell.ques === 1 ? "X" : ".";
+			});
+			for (var i = 0; i < lines.length; i++) {
+				this.writeLine("  " + lines[i]);
+			}
 		}
 	},
 	//---------------------------------------------------------

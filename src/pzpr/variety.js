@@ -247,7 +247,7 @@
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
-			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
+			ringring: [0, 2, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
 				0,
 				1,
