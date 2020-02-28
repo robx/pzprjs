@@ -269,13 +269,13 @@
 				var key = String.fromCharCode(a + x);
 				x++;
 				clues.push(
-					encodeQnum(cell.qnum) +
+					encodeQnum(cell.qnum4) +
+						" " +
+						encodeQnum(cell.qnum) +
 						" " +
 						encodeQnum(cell.qnum2) +
 						" " +
-						encodeQnum(cell.qnum3) +
-						" " +
-						encodeQnum(cell.qnum4)
+						encodeQnum(cell.qnum3)
 				);
 				return key;
 			};
