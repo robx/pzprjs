@@ -358,11 +358,11 @@
 
 			this.drawGrid();
 
+			this.drawBorderQsubs();
+
 			this.drawTents();
 			this.drawTrees();
 			this.drawNumbersExCell();
-
-			this.drawBorderQsubs();
 
 			this.drawChassis();
 
@@ -464,37 +464,42 @@
 		},
 
 		drawTrees: function() {
-			var g = this.vinc("cell_number_image", "auto");
+			var g = this.vinc("cell_tree", "auto");
+
+			var radius = this.cw * 0.275;
+
+			var hsize = this.cw * 0.08;
+			var vsize = this.cw * 0.35;
 
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i],
-					keyimg = ["cell", cell.id, "symbol"].join("_");
-				var rx = (cell.bx - 1) * this.bw,
-					ry = (cell.by - 1) * this.bh;
+				var cell = clist[i];
 
-				var num = cell.getNum();
-				this.imgtile.putImage(
-					g,
-					keyimg,
-					num === 1 ? 1 : null,
-					rx,
-					ry,
-					this.cw,
-					this.ch
-				);
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				switch (cell.getNum()) {
+					case 1:
+						g.lineWidth = Math.max(this.cw / 32, 2);
+
+						g.vid = "c_treeroot_" + cell.id;
+						g.fillStyle = "rgb(76,39,2)";
+						g.fillRect(px - hsize, py, hsize * 2, vsize);
+
+						g.vid = "c_treetop_" + cell.id;
+						g.strokeStyle = "rgb(0,16,0)";
+						g.fillStyle = "rgb(0,48,0)";
+						g.shapeCircle(px, py - 0.15 * this.bh, radius);
+
+						break;
+					default:
+						g.vid = "c_treeroot_" + cell.id;
+						g.vhide();
+						g.vid = "c_treetop_" + cell.id;
+						g.vhide();
+						break;
+				}
 			}
 		}
-	},
-
-	ImageTile: {
-		imgsrc_dataurl:
-			"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABACAYAAADS1n9/AAABd0lEQVR42u3Z200DMRAF0IiSaIFK+KP/BowiJT8hEt7deDOPcyU3wD07HofLRURERERERE7K18/HuB5/icblAwAAAJ3LhwAAAAAAoHX5EAAAQPfyIQAAgoeM22lVfgcEM8WOh9Oq/MoAZostA2BP+ZURjIlyRxUAR8rvhOC/8gFoNAXKlO8a2D4FSpZvCZyfAr5+CJTf8fcA5UPg3W8ZVH47BOWugNUAqiEotwSeAaAKghZPwFUwuvwG4DUAgPK73ft2geb3fnoAlr8dAK6pgMALYGf592QGcNYTMCuCowCG4vNCmCo/4xR4Z/mZEEyXn20KRAAQHcHYCiDTFABgQfkVXgQAHASQ9UXgzn9R+XaBZotf1ing3l/09UefApa/E8qPPAWiAIiI4OUAIiKIBCASgiXlVwTw/fn3VECwpPyIu8DRYp4BOIqs7Ndf4T+FMwCeIdiCouzXD0DC596bDwAAACAASKbyIQAAAAAAAEBEREREZHV+AX7Uq4uJskjzAAAAAElFTkSuQmCC",
-
-		cols: 2,
-		rows: 1,
-		width: 128,
-		height: 64
 	},
 
 	Encode: {
