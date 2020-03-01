@@ -506,12 +506,12 @@
 						g.lineWidth = Math.max(this.cw / 32, 2);
 
 						g.vid = "c_treeroot_" + cell.id;
-						g.fillStyle = "rgb(76,39,2)";
+						g.fillStyle = "black";
 						g.fillRect(px - hsize, py, hsize * 2, vsize);
 
 						g.vid = "c_treetop_" + cell.id;
-						g.strokeStyle = "rgb(0,16,0)";
-						g.fillStyle = "rgb(0,48,0)";
+						g.strokeStyle = "black";
+						g.fillStyle = "rgb(212,251,121)";
 						g.shapeCircle(px, py - 0.15 * this.bh, radius);
 
 						break;
