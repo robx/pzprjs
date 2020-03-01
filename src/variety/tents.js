@@ -346,6 +346,7 @@
 
 	Graphic: {
 		enablebcolor: true,
+		qanscolor: "rgb(0, 127, 0)",
 
 		initialize: function() {
 			this.common.initialize.call(this);
