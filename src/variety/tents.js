@@ -369,6 +369,29 @@
 			this.drawTarget();
 		},
 
+		drawBorderQsubs: function() {
+			var g = this.vinc("border_qsub", "crispEdges", true);
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i];
+
+				g.vid = "b_qsub1_" + border.id;
+				if (border.qsub === 1) {
+					var px = border.bx * this.bw,
+						py = border.by * this.bh;
+					g.fillStyle = !border.trial ? this.pekecolor : this.trialcolor;
+					if (border.isHorz()) {
+						g.fillRectCenter(px, py, 1, this.bh);
+					} else {
+						g.fillRectCenter(px, py, this.bw, 1);
+					}
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
 		getBGCellColor: function(cell) {
 			if (cell.qnum === 3) {
 				return this.shadecolor;
