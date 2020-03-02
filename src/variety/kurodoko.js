@@ -107,7 +107,8 @@
 		hideHatena: false,
 
 		gridcolor_type: "DLIGHT",
-		bgcellcolor_func: "error2",
+		enablebcolor: true,
+		bgcellcolor_func: "qsub1",
 
 		qanscolor: "black",
 
@@ -134,7 +135,6 @@
 			this.drawBGCells();
 			this.drawDashedGrid(false);
 			this.drawShadedCells();
-			this.drawDotCells();
 			this.drawTrialMarks();
 			this.drawQuesNumbers();
 			this.drawPekes();
