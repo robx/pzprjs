@@ -173,7 +173,8 @@
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
-			"checkShootSingle"
+			"checkShootSingle",
+			"doneShadingDecided"
 		],
 
 		checkShootSingle: function() {

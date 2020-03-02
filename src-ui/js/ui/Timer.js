@@ -54,7 +54,8 @@
 				this.updatetime();
 			}
 			if (ui.menuconfig.get("autocheck_once")) {
-				this.autocheck();
+				var mode = ui.menuconfig.get("autocheck_mode");
+				this.autocheck(mode === "guarded");
 			}
 		},
 
@@ -97,7 +98,7 @@
 		//---------------------------------------------------------------------------
 		// tm.autocheck()    自動正解判定を呼び出す
 		//---------------------------------------------------------------------------
-		autocheck: function() {
+		autocheck: function(guarded) {
 			var puzzle = ui.puzzle;
 			if (
 				this.current > this.nextACtime &&
@@ -107,7 +108,7 @@
 				!puzzle.getConfig("variant")
 			) {
 				var check = puzzle.check(false);
-				if (!check.undecided && check.complete) {
+				if (check.complete && (!guarded || !check.undecided)) {
 					ui.timer.stop();
 					puzzle.mouse.mousereset();
 					ui.menuconfig.set("autocheck_once", false);

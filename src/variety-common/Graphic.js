@@ -47,7 +47,7 @@ pzpr.classmgr.makeCommon({
 			this.drawCells_common("c_fulls_", this.getShadedCellColor);
 		},
 		getShadedCellColor: function(cell) {
-			if (!cell.isShade()) {
+			if (cell.qans !== 1) {
 				return null;
 			}
 			var info = cell.error || cell.qinfo;
@@ -231,6 +231,24 @@ pzpr.classmgr.makeCommon({
 				g.vid = "c_dot_" + cell.id;
 				if (cell.isDot()) {
 					g.fillStyle = !cell.trial ? this.qanscolor : this.trialcolor;
+					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		drawFatDotCells: function() {
+			var g = this.vinc("cell_dot", "auto", true);
+
+			var dsize = this.cw * 0.2;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_dot_" + cell.id;
+				if (cell.qsub === 1) {
+					g.fillStyle = this.bcolor;
 					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
 				} else {
 					g.vhide();

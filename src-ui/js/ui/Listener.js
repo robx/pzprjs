@@ -54,7 +54,7 @@ ui.listener = {
 		ui.menuconfig.sync();
 		ui.menuconfig.set(
 			"autocheck_once",
-			ui.menuconfig.get("autocheck") && ui.puzzle.playeronly
+			ui.menuconfig.get("autocheck_mode") !== "off" && ui.puzzle.playeronly
 		);
 		ui.currentpid = puzzle.pid;
 

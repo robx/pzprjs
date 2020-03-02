@@ -28,6 +28,10 @@
 * Allow specifying that a puzzle is a variant.
 * Don't start timer until puzzle is visible.
 * Center grid dashing.
+* New autocheck modes: guarded (default) and unguarded.
+* Shading puzzles with connected unshaded cells: Guard autocheck by
+  requiring all cells to be decided.
+* cave, nurimisaki: Switch back to shading-first puzzles.
 
 #### Bugfixes
 

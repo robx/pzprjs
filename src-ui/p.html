@@ -80,7 +80,11 @@
      <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
      <li class="check" data-config="singlenum"><span>__領域に数字1つ__Single number in a region__</span></li>
      <li class="check" data-config="discolor"><span>__色分け無効化__Disable color__</span></li>
-     <li class="check" data-config="autocheck"><span>__正答自動判定__Automatic answer check__</span></li>
+     <li data-config="autocheck_mode"><span>__正答自動判定__Answer check__</span>&nbsp;-&gt;<menu label="__正答自動判定__Automatic answer check__">
+       <li class="child" data-value="off"><span>__Manual__Manual__</span></li>
+       <li class="child" data-value="guarded"><span>__Automatic (guarded)__Automatic (guarded)__</span></li>
+       <li class="child" data-value="simple"><span>__Automatic (always)__Automatic (always)__</span></li>
+     </menu></li>
      <hr>
      <li data-config="language"><span>言語/Language</span> -&gt;<menu label="言語/Language">
        <li class="child" data-value="ja"><span>日本語</span></li>

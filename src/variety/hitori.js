@@ -258,7 +258,8 @@
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
-			"checkRowsColsSameQuesNumber"
+			"checkRowsColsSameQuesNumber",
+			"doneShadingDecided"
 		],
 
 		checkRowsColsSameQuesNumber: function() {

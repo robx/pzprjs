@@ -36,10 +36,7 @@
 			}); /* bosanowa: 表示形式 */
 			this.add("snakebd", false); /* hebi: へびの境界線を表示する */
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
-			this.add(
-				"undefcell",
-				true
-			); /* shugaku, nurimisaki: 未確定マスはグレー表示にする */
+			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
 
 			this.add("squarecell", true); /* セルは正方形にする */
 
@@ -338,7 +335,7 @@
 					exec = pid === "yinyang";
 					break;
 				case "undefcell":
-					exec = pid === "shugaku" || pid === "nurimisaki";
+					exec = pid === "shugaku";
 					break;
 				case "autocmp":
 					exec = !!puzzle.painter.autocmp;

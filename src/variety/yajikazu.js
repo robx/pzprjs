@@ -121,7 +121,8 @@
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
-			"checkArrowNumber"
+			"checkArrowNumber",
+			"doneShadingDecided"
 		],
 
 		checkArrowNumber: function() {

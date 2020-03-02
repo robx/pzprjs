@@ -120,7 +120,8 @@
 			"checkSquareShade",
 			"checkConnectUnshade",
 			"checkSumOfSize",
-			"checkAtLeastOne"
+			"checkAtLeastOne",
+			"doneShadingDecided"
 		],
 
 		checkSquareShade: function() {

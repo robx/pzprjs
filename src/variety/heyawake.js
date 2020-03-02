@@ -75,7 +75,24 @@
 				}
 			}
 		},
-		minnum: 0
+		minnum: 0,
+
+		isShadeDecided: function() {
+			if (this.isShade()) {
+				return true;
+			}
+			if (this.qsub > 0) {
+				return true;
+			}
+			if (
+				this.countDir4Cell(function(cell) {
+					return cell.isShade();
+				}) > 0
+			) {
+				return true;
+			}
+			return false;
+		}
 	},
 	Board: {
 		hasborder: 1
@@ -95,12 +112,13 @@
 		gridcolor_type: "LIGHT",
 
 		enablebcolor: true,
-		bgcellcolor_func: "qsub1",
+		bgcellcolor_func: "error1",
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
 			this.drawShadedCells();
+			this.drawFatDotCells();
 
 			this.drawQuesNumbers();
 
@@ -310,7 +328,7 @@
 			"checkShadeCellCount",
 			"checkCountinuousUnshadeCell",
 			"checkRoomSymm@ayeheya",
-			"checkDone"
+			"doneShadingDecided"
 		],
 
 		checkFractal: function() {
@@ -398,10 +416,6 @@
 				clist.seterr(1);
 			}
 			return result;
-		},
-
-		checkDone: function() {
-			this.checkShadingDecided();
 		}
 	},
 
