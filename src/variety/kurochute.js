@@ -215,7 +215,7 @@
 	FailCode: {
 		nmShootShadeNe1: [
 			"数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。",
-			"The number of shaded cells at aparted cell by the number is not one."
+			"There is not exactly one shaded cell at the given distance from the number."
 		]
 	}
 });

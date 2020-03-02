@@ -56,7 +56,7 @@
 #### Improvement
 
 * all moving puzzles: Prevent drawing curves.
-* amibo, juosan, kusabi, mashu, shugaku, starbattle: Reword English error messages
+* amibo, juosan, kurochute, kusabi, mashu, shugaku, starbattle: Reword English error messages
 * ayeheya: Replace check for rectangular room by check for symmetric room
 * cbblock: Add error for dead-end walls
 * country: Add variant rule that allows empty areas
