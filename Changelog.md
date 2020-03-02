@@ -14,6 +14,7 @@
 * cave: Allow switching mouse button mode like other shading puzzles.
 * creek, gokigen: Fix behavior of -,backspace in edit mode.
 * juosan: Fix error highlighting when there is no majority.
+* kurochute: Don't allow putting dots on clues.
 * kurotto: Mark blank clues complete.
 * shakashaka: Autogray complete clues.
 * shwolf: Easier aux line input with right mouse button.

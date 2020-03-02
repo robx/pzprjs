@@ -23,8 +23,6 @@
 					this.inputcell_kurochute();
 				} else if (this.mousemove) {
 					this.inputcell();
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
@@ -36,7 +34,7 @@
 		inputcell_kurochute: function() {
 			var cell = this.getcell();
 			if (cell.isnull) {
-			} else if (cell.isNum() && this.btn === "left") {
+			} else if (cell.isNum()) {
 				this.inputqcmp();
 			} else {
 				this.inputcell();
@@ -68,6 +66,12 @@
 
 		maxnum: function() {
 			return Math.max(this.board.cols, this.board.rows) - 1;
+		},
+
+		prehook: {
+			qsub: function() {
+				return this.qnum !== -1;
+			}
 		}
 	},
 	Board: {

@@ -35,11 +35,11 @@ ui.debug.addDebugData("kurochute", {
 			result: "pzprv3/kurochute/1/5/1 . . . . /. . . . . /"
 		},
 		{
-			input: ["mouse,right, 1,1, 9,1"],
-			result: "pzprv3/kurochute/1/5/1 . . . . /+ + + + + /"
+			input: ["mouse,right, 3,1, 9,1"],
+			result: "pzprv3/kurochute/1/5/1 . . . . /. + + + + /"
 		},
 		{
-			input: ["mouse,right, 1,1, 9,1"],
+			input: ["mouse,right, 3,1, 9,1"],
 			result: "pzprv3/kurochute/1/5/1 . . . . /. . . . . /"
 		},
 		{ input: ["setconfig,use,2", "ansclear"] },
