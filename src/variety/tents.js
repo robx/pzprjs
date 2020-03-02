@@ -132,6 +132,10 @@
 				return;
 			}
 
+			if (this.inputData === 2 && this.placedTent && cell.anum === 2) {
+				return;
+			}
+
 			cell.setAnum(this.inputData === 1 ? 2 : -1);
 			cell.setQsub(this.inputData === 2 ? 1 : 0);
 			cell.removeAuxLines();
