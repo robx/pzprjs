@@ -206,7 +206,7 @@
 				if (this.checkOnly) {
 					break;
 				}
-				cell.seterr(4);
+				cell.seterr(1);
 				clist.seterr(1);
 			}
 		}
