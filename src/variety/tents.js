@@ -13,7 +13,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "mark-tree", "mark-tent", "shade", "clear"],
-			play: ["mark-tent", "objblank", "clear", "subline"]
+			play: ["mark-tent", "objblank", "clear", "subline", "peke"]
 		},
 
 		mouseinput_other: function() {
@@ -89,7 +89,11 @@
 					}
 
 					if (!border.isnull && this.inputData !== null) {
-						border.setQsub(this.inputData === 1 ? 1 - border.qsub : 0);
+						if (this.inputData === 1) {
+							border.setQsub(border.qsub !== 1 ? 1 : 0);
+						} else if (border.qsub === 1) {
+							border.setQsub(0);
+						}
 						border.draw();
 						if (!this.notInputted()) {
 							this.puzzle.opemgr.newOperation();
@@ -137,7 +141,11 @@
 			}
 
 			cell.setAnum(this.inputData === 1 ? 2 : -1);
-			cell.setQsub(this.inputData === 2 ? 1 : 0);
+			if (this.inputData === 2) {
+				cell.setQsub(1);
+			} else if (cell.qsub === 1) {
+				cell.setQsub(0);
+			}
 			cell.removeAuxLines();
 			cell.draw();
 
@@ -261,7 +269,7 @@
 
 				if (other.getNum() !== next) {
 					var border = this.getnb(other);
-					if (!border.isnull) {
+					if (!border.isnull && border.qsub === 1) {
 						border.setQsub(0);
 					}
 				}
@@ -365,6 +373,7 @@
 			this.drawGrid();
 
 			this.drawBorderQsubs();
+			this.drawPekes();
 
 			this.drawTents();
 			this.drawTrees();
