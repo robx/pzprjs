@@ -75,7 +75,7 @@ ui.debug.addDebugData("tents", {
 		{
 			label:
 				"Drag from a tree to a dot to erase the line, and continue with more dots",
-			input: ["mouse,left,3,3,5,3,5,1"],
+			input: ["setconfig,use,1", "mouse,left,3,3,5,3,5,1"],
 			result: "pzprv3/tents/2/3/. . . . /. . . - /. A 1 - /0 0 /0 0 /0 0 0 /"
 		},
 
