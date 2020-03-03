@@ -101,6 +101,11 @@
 					}
 				}
 
+				if (this.btn === "right" && this.inputData === null && this.mouseend) {
+					if (this.inputpeke_ifborder()) {
+						return;
+					}
+				}
 				if (this.inputData !== null || this.mouseend) {
 					this.inputcell_tents(cell);
 				}
