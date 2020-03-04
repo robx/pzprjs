@@ -10,7 +10,6 @@
 	//---------------------------------------------------------------------------
 	// ★boot() window.onload直後の処理
 	//---------------------------------------------------------------------------
-	/*
 	pzpr.on("load", function boot() {
 		if (importData()) {
 			startPuzzle();
@@ -18,7 +17,6 @@
 			setTimeout(boot, 0);
 		}
 	});
-*/
 
 	function importData() {
 		if (!onload_pzl) {

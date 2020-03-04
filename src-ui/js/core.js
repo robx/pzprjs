@@ -15,13 +15,4 @@ window.ui.undotimer = timer.undotimer
 window.ui.auxeditor = require('./ui/AuxEditor.js'); // changes popupmgr
 
 
-var boot = require('./ui/Boot.js');
-
-function load() {
-	if (boot.importData()) {
-		boot.startPuzzle();
-	} else {
-		setTimeout(load, 0);
-	}
-};
-window.onload = load;
+require('./ui/Boot.js');
