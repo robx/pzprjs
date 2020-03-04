@@ -84,8 +84,8 @@
 
 		gridcolor_type: "DLIGHT",
 
+		qanscolor: "black",
 		enablebcolor: true,
-		bgcellcolor_func: "qsub1",
 		numbercolor_func: "qnum",
 
 		circleratio: [0.45, 0.4],
@@ -94,6 +94,7 @@
 			this.drawBGCells();
 			this.drawGrid();
 			this.drawShadedCells();
+			this.drawDotCells();
 
 			this.drawCircledNumbers();
 
