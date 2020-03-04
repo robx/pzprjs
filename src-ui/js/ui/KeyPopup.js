@@ -1,11 +1,18 @@
 // KeyPopup.js v3.4.0
-/* global createEL:readonly, getEL:readonly */
+
+function createEL(tagName) {
+	return document.createElement(tagName);
+}
+
+function getEL(id) {
+	return document.getElementById(id);
+}
 
 //---------------------------------------------------------------------------
 // ★KeyPopupクラス マウスからキーボード入力する際のPopupウィンドウを管理する
 //---------------------------------------------------------------------------
 // キー入力用Popupウィンドウ
-ui.keypopup = {
+module.exports = {
 	/* メンバ変数 */
 	paneltype: { 1: 0, 3: 0 } /* パネルのタイプ */,
 	element: null /* キーポップアップのエレメント */,

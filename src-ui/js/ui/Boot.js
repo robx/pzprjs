@@ -1,6 +1,5 @@
 // Boot.js v3.4.0
 
-(function() {
 	/********************************/
 	/* 初期化時のみ使用するルーチン */
 	/********************************/
@@ -11,6 +10,7 @@
 	//---------------------------------------------------------------------------
 	// ★boot() window.onload直後の処理
 	//---------------------------------------------------------------------------
+	/*
 	pzpr.on("load", function boot() {
 		if (importData()) {
 			startPuzzle();
@@ -18,6 +18,7 @@
 			setTimeout(boot, 0);
 		}
 	});
+*/
 
 	function importData() {
 		if (!onload_pzl) {
@@ -142,4 +143,8 @@
 		str = sessionStorage[key2];
 		return typeof str === "string" ? str : null;
 	}
-})();
+
+module.exports = {
+	importData: importData,
+	startPuzzle: startPuzzle
+}

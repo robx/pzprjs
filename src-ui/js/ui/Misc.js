@@ -1,10 +1,9 @@
 // Misc.js v3.4.1
-/* global _doc:readonly */
 
 //---------------------------------------------------------------------------
 // ★Miscクラス html表示系 (Menu, Button以外)の制御を行う
 //---------------------------------------------------------------------------
-ui.misc = {
+module.exports = {
 	//---------------------------------------------------------------------------
 	// misc.displayDesign()  背景画像とかtitle・背景画像・html表示の設定
 	// misc.bgimage()        背景画像を返す
@@ -17,14 +16,14 @@ ui.misc = {
 			? " player"
 			: ui.selectStr(" エディタ", " editor");
 
-		_doc.title = title;
-		var titleEL = _doc.getElementById("title2");
+		document.title = title;
+		var titleEL = document.getElementById("title2");
 		titleEL.innerHTML = title;
 
 		if (ui.urlconfig.embed) {
-			_doc.body.style.background = "white";
+			document.body.style.background = "white";
 		} else {
-			_doc.body.style.backgroundImage = "url(" + this.bgimage(pid) + ")";
+			document.body.style.backgroundImage = "url(" + this.bgimage(pid) + ")";
 		}
 	},
 	bgimage: function(pid) {
@@ -35,7 +34,7 @@ ui.misc = {
 	// misc.modifyCSS()   スタイルシートの中身を変更する
 	//--------------------------------------------------------------------------------
 	modifyCSS: function(input) {
-		var sheet = _doc.styleSheets[0];
+		var sheet = document.styleSheets[0];
 		var rules = sheet.cssRules;
 		if (rules === null) {
 		} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします

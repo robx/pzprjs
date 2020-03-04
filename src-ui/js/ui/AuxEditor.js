@@ -1,5 +1,8 @@
 /* jshint devel:true */
-/* global ui:false, getEL:readonly */
+
+function getEL(id) {
+	return document.getElementById(id);
+}
 
 ui.popupmgr.addpopup("auxeditor", {
 	formname: "auxeditor",
@@ -50,7 +53,7 @@ ui.popupmgr.addpopup("auxeditor", {
 	}
 });
 
-ui.auxeditor = {
+module.exports = {
 	current: null,
 	cb: null,
 

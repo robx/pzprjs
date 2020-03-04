@@ -1,11 +1,10 @@
 // Event.js v3.4.0
-/* global _doc:readonly */
 
 //---------------------------------------------------------------------------
 // ★UIEventsクラス イベント設定の管理を行う
 //---------------------------------------------------------------------------
 // メニュー描画/取得/html表示系
-ui.event = {
+module.exports = {
 	resizetimer: null, // resizeタイマー
 	visibilitystate: null,
 
@@ -62,7 +61,7 @@ ui.event = {
 		}
 
 		// onBlurにイベントを割り当てる
-		this.addEvent(_doc, "blur", this, this.onblur_func);
+		this.addEvent(document, "blur", this, this.onblur_func);
 
 		// onresizeイベントを割り当てる
 		var evname = !pzpr.env.OS.iOS ? "resize" : "orientationchange";

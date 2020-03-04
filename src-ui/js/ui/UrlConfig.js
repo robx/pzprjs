@@ -1,5 +1,4 @@
-(function() {
-	ui.urlconfig = {
+module.exports = {
 		embed: false,
 
 		init: function(onload_option) {
@@ -8,4 +7,3 @@
 			}
 		}
 	};
-})();

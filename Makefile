@@ -1,4 +1,4 @@
-.PHONY: build test serve format
+.PHONY: build test serve format ui
 
 build:
 	npm run-script build
@@ -11,3 +11,6 @@ serve:
 
 format:
 	npm run-script format
+
+ui:
+	./node_modules/.bin/browserify ./src-ui/js/core.js > dist/js/ui.js

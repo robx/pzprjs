@@ -31,6 +31,7 @@
     "prepublishOnly": "npm test"
   },
   "devDependencies": {
+    "browserify": "^16.5.0",
     "del-cli": "^2.0.0",
     "eslint": "^5.16.0",
     "grunt": "^1.0.4",

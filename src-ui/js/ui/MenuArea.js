@@ -1,8 +1,11 @@
 // MenuArea.js v3.4.0
-/* global getEL:readonly, _doc:readonly */
+//
+function getEL(id) {
+	return document.getElementById(id);
+}
 
 // メニュー描画/取得/html表示系
-ui.menuarea = {
+module.exports = {
 	captions: [], // 言語指定を切り替えた際のキャプションを保持する
 	menuitem: null, // メニューの設定切り替え用エレメント等を保持する
 	nohover: false, // :hover擬似クラスを使用しないでhover表示する
@@ -152,7 +155,7 @@ ui.menuarea = {
 		if (!pzpr.env.OS.mobile || !getEL("menupanel").classList) {
 			return;
 		}
-		var sheet = _doc.styleSheets[0];
+		var sheet = document.styleSheets[0];
 		var rules = sheet.cssRules || sheet.rules;
 		if (rules === null) {
 		} // Chromeでローカルファイルを開くとおかしくなるので、とりあえず何もしないようにします

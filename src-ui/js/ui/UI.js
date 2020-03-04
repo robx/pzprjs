@@ -1,21 +1,15 @@
 // UI.js v3.4.0
 /* eslint-env browser */
-/* exported ui, _doc, getEL, createEL */
 
-/* ui.js Locals */
-var _doc = document;
 function getEL(id) {
-	return _doc.getElementById(id);
-}
-function createEL(tagName) {
-	return _doc.createElement(tagName);
+	return document.getElementById(id);
 }
 
 //---------------------------------------------------------------------------
 // ★uiオブジェクト UserInterface側のオブジェクト
 //---------------------------------------------------------------------------
 /* extern */
-window.ui = {
+module.exports = {
 	version: "<%= git.hash %>",
 
 	/* このサイトで使用するパズルのオブジェクト */
@@ -85,7 +79,7 @@ window.ui = {
 	windowWidth: function() {
 		return window.innerHeight !== void 0
 			? window.innerWidth
-			: _doc.body.clientWidth;
+			: document.body.clientWidth;
 	},
 
 	//---------------------------------------------------------------------------
@@ -234,11 +228,11 @@ window.ui = {
 	initImageSaveMethod: function(puzzle) {
 		if (
 			!!pzpr.Candle.enable.canvas &&
-			!!_doc.createElement("canvas").toDataURL
+			!!document.createElement("canvas").toDataURL
 		) {
 			this.enableImageType.png = true;
 
-			var canvas = _doc.createElement("canvas");
+			var canvas = document.createElement("canvas");
 			canvas.width = canvas.height = 1;
 			if (canvas.toDataURL("image/gif").match("image/gif")) {
 				this.enableImageType.gif = true;

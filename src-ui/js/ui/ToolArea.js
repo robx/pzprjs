@@ -1,9 +1,12 @@
 // ToolArea.js v3.4.0
-/* global getEL:readonly */
+//
+function getEL(id) {
+	return document.getElementById(id);
+}
 
 // メニュー描画/取得/html表示系
 // toolareaオブジェクト
-ui.toolarea = {
+module.exports = {
 	items: null, // ツールパネルのエレメント等を保持する
 	captions: [], // 言語指定を切り替えた際のキャプションを保持する
 

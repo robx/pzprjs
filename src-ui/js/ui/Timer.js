@@ -1,12 +1,11 @@
 // Timer.js v3.4.0
 
-(function() {
 	//---------------------------------------------------------------------------
 	// ★Timerクラス  一般タイマー(経過時間の表示/自動正答判定用)
 	//---------------------------------------------------------------------------
 	var timerInterval = 100; /* タイマー割り込み間隔 */
 
-	ui.timer = {
+	var timer = {
 		/* メンバ変数 */
 		TID: null /* タイマーID */,
 		current: 0 /* 現在のgetTime()取得値(ミリ秒) */,
@@ -109,7 +108,7 @@
 			) {
 				var check = puzzle.check(false);
 				if (check.complete && (!guarded || !check.undecided)) {
-					ui.timer.stop();
+					timer.stop();
 					puzzle.mouse.mousereset();
 					ui.menuconfig.set("autocheck_once", false);
 					if (ui.callbackComplete) {
@@ -138,7 +137,7 @@
 	var undoTimerInterval = 25 /* タイマー割り込み間隔 */,
 		execWaitTime = 300; /* 1回目にwaitを多く入れるための値 */
 
-	ui.undotimer = {
+	var undotimer = {
 		/* メンバ変数 */
 		TID: null /* タイマーID */,
 
@@ -241,4 +240,8 @@
 			return isenable;
 		}
 	};
-})();
+
+module.exports = {
+	timer: timer,
+	undotimer: undotimer,
+}

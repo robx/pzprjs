@@ -1,10 +1,13 @@
 // Menu.js v3.4.0
-/* global _doc:readonly, getEL:readonly */
+//
+function getEL(id) {
+	return document.getElementById(id);
+}
 
 //---------------------------------------------------------------------------
 // ★PopupManagerクラス ポップアップメニューを管理します
 //---------------------------------------------------------------------------
-ui.popupmgr = {
+var popupmgr = {
 	popup: null /* 表示中のポップアップメニュー */,
 
 	popups: {} /* 管理しているポップアップメニューのオブジェクト一覧 */,
@@ -28,8 +31,8 @@ ui.popupmgr = {
 	},
 
 	setEvents: function() {
-		ui.event.addEvent(_doc, "mousemove", this, this.titlebarmove);
-		ui.event.addEvent(_doc, "mouseup", this, this.titlebarup);
+		ui.event.addEvent(document, "mousemove", this, this.titlebarmove);
+		ui.event.addEvent(document, "mouseup", this, this.titlebarup);
 	},
 
 	//---------------------------------------------------------------------------
@@ -110,7 +113,7 @@ ui.popupmgr = {
 //---------------------------------------------------------------------------
 // ★PopupMenuクラス ポップアップメニューを作成表示するベースのオブジェクトです
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("template", {
+popupmgr.addpopup("template", {
 	formname: "",
 	multipopup: false,
 	pid: "",
@@ -232,7 +235,7 @@ ui.popupmgr.addpopup("template", {
 //---------------------------------------------------------------------------
 // ★Popup_NewBoardクラス 新規盤面作成のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("newboard", {
+popupmgr.addpopup("newboard", {
 	formname: "newboard",
 
 	reset: function() {
@@ -426,7 +429,7 @@ ui.popupmgr.addpopup("newboard", {
 //---------------------------------------------------------------------------
 // ★Popup_URLInputクラス URL入力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("urlinput", {
+popupmgr.addpopup("urlinput", {
 	formname: "urlinput",
 
 	//------------------------------------------------------------------------------
@@ -441,7 +444,7 @@ ui.popupmgr.addpopup("urlinput", {
 //---------------------------------------------------------------------------
 // ★Popup_URLOutputクラス URL出力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("urloutput", {
+popupmgr.addpopup("urloutput", {
 	formname: "urloutput",
 
 	init: function() {
@@ -495,7 +498,7 @@ ui.popupmgr.addpopup("urloutput", {
 //---------------------------------------------------------------------------
 // ★Popup_FileOpenクラス ファイル入力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("fileopen", {
+popupmgr.addpopup("fileopen", {
 	formname: "fileform",
 
 	init: function() {
@@ -527,7 +530,7 @@ ui.popupmgr.addpopup("fileopen", {
 //---------------------------------------------------------------------------
 // ★Popup_FileSaveクラス ファイル出力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("filesave", {
+popupmgr.addpopup("filesave", {
 	formname: "filesave",
 	anchor: null,
 	init: function() {
@@ -648,7 +651,7 @@ ui.popupmgr.addpopup("filesave", {
 //---------------------------------------------------------------------------
 // ★Popup_ImageSaveクラス 画像出力のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("imagesave", {
+popupmgr.addpopup("imagesave", {
 	formname: "imagesave",
 	anchor: null,
 	showsize: null,
@@ -704,7 +707,7 @@ ui.popupmgr.addpopup("imagesave", {
 		var width = (+cellsize * ui.puzzle.painter.getCanvasCols()) | 0;
 		var height = (+cellsize * ui.puzzle.painter.getCanvasRows()) | 0;
 		this.showsize.replaceChild(
-			_doc.createTextNode(width + " x " + height),
+			document.createTextNode(width + " x " + height),
 			this.showsize.firstChild
 		);
 	},
@@ -835,7 +838,7 @@ ui.popupmgr.addpopup("imagesave", {
 //---------------------------------------------------------------------------
 // ★Popup_Adjustクラス 盤面の調整のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("adjust", {
+popupmgr.addpopup("adjust", {
 	formname: "adjust",
 
 	adjust: function(e) {
@@ -846,7 +849,7 @@ ui.popupmgr.addpopup("adjust", {
 //---------------------------------------------------------------------------
 // ★Popup_TurnFlipクラス 回転・反転のポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("turnflip", {
+popupmgr.addpopup("turnflip", {
 	formname: "turnflip",
 
 	reset: function() {
@@ -862,7 +865,7 @@ ui.popupmgr.addpopup("turnflip", {
 //---------------------------------------------------------------------------
 // ★Popup_Metadataクラス メタデータの設定・表示を行うメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("metadata", {
+popupmgr.addpopup("metadata", {
 	formname: "metadata",
 
 	show: function(px, py) {
@@ -895,7 +898,7 @@ ui.popupmgr.addpopup("metadata", {
 //---------------------------------------------------------------------------
 // ★Popup_DispSizeクラス サイズの変更を行うポップアップメニューを作成したり表示します
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("dispsize", {
+popupmgr.addpopup("dispsize", {
 	formname: "dispsize",
 
 	show: function(px, py) {
@@ -920,6 +923,8 @@ ui.popupmgr.addpopup("dispsize", {
 //---------------------------------------------------------------------------
 // ★Popup_About
 //---------------------------------------------------------------------------
-ui.popupmgr.addpopup("about", {
+popupmgr.addpopup("about", {
 	formname: "about"
 });
+
+module.exports = popupmgr;
