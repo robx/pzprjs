@@ -393,6 +393,9 @@ pzpr.classmgr.makeCommon({
 			if (this.qsub > 0) {
 				return true;
 			}
+			if (!this.allowShade() || !this.allowUnshade()) {
+				return true;
+			}
 			return false;
 		},
 
