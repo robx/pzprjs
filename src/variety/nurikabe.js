@@ -113,7 +113,7 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 			if (this.pid === "nurikabe") {
-				this.drawDotCells(false);
+				this.drawDotCells();
 			}
 			this.drawGrid();
 

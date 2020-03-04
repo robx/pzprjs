@@ -91,7 +91,7 @@
 		enablebcolor: true,
 
 		paint: function() {
-			this.drawDotCells(false);
+			this.drawDotCells();
 			this.drawGrid();
 			this.drawShadedCells();
 

@@ -163,7 +163,7 @@
 			this.drawGrid();
 			this.drawQuesCells();
 
-			this.drawDotCells(false);
+			this.drawDotCells();
 			this.drawCircles();
 
 			this.drawBorders();
