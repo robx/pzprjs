@@ -1,6 +1,6 @@
 // Address.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//----------------------------------------------------------------------------
 	// ★Positionクラス Address, Pieceクラスのベースクラス
 	//---------------------------------------------------------------------------
@@ -271,4 +271,4 @@ pzpr.classmgr.makeCommon({
 			return new this.klass.Address(this.bx, this.by);
 		}
 	}
-});
+};

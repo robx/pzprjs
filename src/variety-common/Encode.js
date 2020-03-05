@@ -1,6 +1,6 @@
 // EncodeCommon.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	Encode: {
 		//---------------------------------------------------------------------------
@@ -913,4 +913,4 @@ pzpr.classmgr.makeCommon({
 			this.outbstr += cm;
 		}
 	}
-});
+};

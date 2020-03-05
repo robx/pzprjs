@@ -1,13 +1,12 @@
 // Config.js v3.4.1
 
-(function() {
 	//---------------------------------------------------------------------------
 	// ★Configクラス 設定値の値などを保持する
 	//---------------------------------------------------------------------------
-	var Config = (pzpr.Puzzle.prototype.Config = function(puzzle) {
+	var Config = function(puzzle) {
 		this.puzzle = puzzle;
 		this.init();
-	});
+	};
 	Config.prototype = {
 		list: null /* 設定値 */,
 
@@ -418,4 +417,5 @@
 			}
 		}
 	};
-})();
+
+module.exports = Config;

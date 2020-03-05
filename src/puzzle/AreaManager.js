@@ -1,6 +1,6 @@
 // AreaManager.js
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//--------------------------------------------------------------------------------
 	// ★AreaGraphBaseクラス セルの部屋情報などを保持するクラス
 	//   ※このクラスで管理しているroomsは左上からの順番に並ばないので
@@ -397,4 +397,4 @@ pzpr.classmgr.makeCommon({
 			return sides;
 		}
 	}
-});
+};

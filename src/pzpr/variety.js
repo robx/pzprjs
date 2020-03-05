@@ -1,6 +1,5 @@
 // Variety.js v3.4.1
 
-(function() {
 	var _info = {},
 		_list = [];
 	function toPID(name) {
@@ -20,9 +19,9 @@
 		return "";
 	}
 
-	var variety = (pzpr.variety = pzpr.genre = function(pid) {
+	var variety = function(pid) {
 		return _info[toPID(pid)] || { valid: false };
-	});
+	};
 	variety.extend = function(obj) {
 		for (var n in obj) {
 			this[n] = obj[n];
@@ -59,9 +58,10 @@
 		function Genre(pzprid, datalist) {
 			this.valid = true;
 			this.pid = pzprid; /* パズルID */
-			this.script = !!datalist[4]
-				? datalist[4]
-				: pzprid; /* スクリプトファイル(クラス) */
+			this.module = datalist[4]
+			// this.script = !!datalist[4]
+				// ? datalist[4]
+				// : pzprid; /* スクリプトファイル(クラス) */
 			this.ja = datalist[2]; /* 日本語パズル名 */
 			this.en = datalist[3]; /* 英語パズル名 */
 			this.exists = {
@@ -211,8 +211,8 @@
 			mejilink: [0, 0, "メジリンク", "Mejilink"],
 			minarism: [1, 0, "マイナリズム", "Minarism"],
 			midloop: [0, 0, "ミッドループ", "Mid-loop"],
-			mochikoro: [1, 0, "モチコロ", "Mochikoro", "nurikabe"],
-			mochinyoro: [1, 0, "モチにょろ", "Mochinyoro", "nurikabe"],
+			mochikoro: [1, 0, "モチコロ", "Mochikoro", require('../variety/nurikabe.js')],
+			mochinyoro: [1, 0, "モチにょろ", "Mochinyoro", require('../variety/nurikabe.js')],
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
 			nagare: [0, 0, "流れるループ", "Nagareru-Loop"],
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
@@ -228,8 +228,8 @@
 				"",
 				{ kanpen: "numberlink" }
 			],
-			nuribou: [1, 0, "ぬりぼう", "Nuribou", "nurikabe"],
-			nurikabe: [0, 1, "ぬりかべ", "Nurikabe", "nurikabe"],
+			nuribou: [1, 0, "ぬりぼう", "Nuribou", require('../variety/nurikabe.js')],
+			nurikabe: [0, 1, "ぬりかべ", "Nurikabe", "nurikabe", require('../variety/nurikabe.js')],
 			nurimaze: [0, 0, "ぬりめいず", "Nuri-Maze", "nurimaze"],
 			nurimisaki: [0, 0, "ぬりみさき", "Nurimisaki", "kurodoko"],
 			onsen: [0, 0, "温泉めぐり", "Onsen-meguri", "country"],
@@ -278,7 +278,7 @@
 				1,
 				"スリザーリンク",
 				"Slitherlink",
-				"",
+				require('../variety/slither.js'),
 				{ kanpen: "slitherlink" }
 			],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
@@ -323,4 +323,5 @@
 			yosenabe: [0, 0, "よせなべ", "Yosenabe"]
 		}
 	);
-})();
+
+module.exports = variety;

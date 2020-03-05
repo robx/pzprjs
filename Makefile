@@ -1,4 +1,4 @@
-.PHONY: build test serve format ui
+.PHONY: build test serve format browserify ui pzpr
 
 build:
 	npm run-script build
@@ -14,3 +14,6 @@ format:
 
 ui:
 	./node_modules/.bin/browserify ./src-ui/js/core.js > dist/js/ui.js
+
+pzpr:
+	./node_modules/.bin/browserify --exclude canvas ./src/pzpr.js > dist/js/pz.js

@@ -4,7 +4,7 @@
 // ★Boardクラス 盤面の情報を保持する。Cell, Cross, Borderのオブジェクトも保持する
 //---------------------------------------------------------------------------
 // Boardクラスの定義
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	Board: {
 		initialize: function() {
@@ -797,4 +797,4 @@ pzpr.classmgr.makeCommon({
 			return dlist;
 		}
 	}
-});
+};

@@ -1,6 +1,5 @@
 // BoardExec.js v3.4.1
 
-(function() {
 	// 拡大縮小・回転反転用定数
 	var UP = 0x01,
 		DN = 0x02,
@@ -11,7 +10,7 @@
 		TURN = 0x40,
 		FLIP = 0x80;
 
-	pzpr.classmgr.makeCommon({
+module.exports = {
 		//---------------------------------------------------------------------------
 		// ★BoardExecクラス 盤面の拡大縮小、反転回転等を行う (MenuExec.js, Board.jsから移動)
 		//---------------------------------------------------------------------------
@@ -442,5 +441,4 @@
 			adjustBoardData: function(key, d) {},
 			adjustBoardData2: function(key, d) {}
 		}
-	});
-})();
+	};

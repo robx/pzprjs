@@ -1,6 +1,6 @@
 // GraphicCommon.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	Graphic: {
 		paintPost: function() {
@@ -2342,4 +2342,4 @@ pzpr.classmgr.makeCommon({
 			}
 		}
 	}
-});
+};

@@ -4,7 +4,7 @@
 // ★GraphBaseクラス 線や領域情報を管理する
 //---------------------------------------------------------------------------
 // GraphBaseクラスの定義
-pzpr.classmgr.makeCommon({
+module.exports = {
 	GraphBase: {
 		enabled: false,
 		relation: {},
@@ -656,4 +656,4 @@ pzpr.classmgr.makeCommon({
 			this.component = null;
 		}
 	}
-});
+};

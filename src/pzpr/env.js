@@ -3,7 +3,6 @@
 /**************/
 /* 環境の取得 */
 /**************/
-pzpr.env = (function() {
 	var isbrowser = pzpr.Candle.env.browser;
 	var UA = isbrowser ? navigator.userAgent : "";
 
@@ -61,18 +60,10 @@ pzpr.env = (function() {
 			isbrowser && document.createElement("a").download !== void 0
 	};
 
-	return {
+module.exports = {
 		bz: bz,
 		OS: os,
 		API: api,
 		browser: isbrowser,
 		node: pzpr.Candle.env.node
-	};
-})();
-
-pzpr.lang = (function() {
-	var userlang = pzpr.env.node
-		? process.env.LANG
-		: navigator.browserLanguage || navigator.language || navigator.userLanguage;
-	return !userlang || userlang.substr(0, 2) === "ja" ? "ja" : "en";
-})();
+};

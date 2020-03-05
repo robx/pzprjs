@@ -1,41 +1,36 @@
-exports.files = [
-	"common/intro",
-	"pzpr/core",
-	"lib/candle-intro",
-	"../node_modules/pzpr-canvas/dist/candle",
-	"lib/candle-outro",
-	"pzpr/env",
-	"pzpr/event",
-	"pzpr/classmgr",
-	"pzpr/variety",
-	"pzpr/parser",
-	"pzpr/metadata",
-	"pzpr/util",
-	"puzzle/Puzzle",
-	"puzzle/Config",
-	"puzzle/Address",
-	"puzzle/Piece",
-	"puzzle/PieceList",
-	"puzzle/Board",
-	"puzzle/BoardExec",
-	"puzzle/GraphBase",
-	"puzzle/LineManager",
-	"puzzle/AreaManager",
-	"puzzle/Graphic",
-	"puzzle/MouseInput",
-	"puzzle/KeyInput",
-	"puzzle/Encode",
-	"puzzle/FileData",
-	"puzzle/Answer",
-	"puzzle/Operation",
-	"variety-common/Graphic",
-	"variety-common/KeyInput",
-	"variety-common/MouseInput",
-	"variety-common/Answer",
-	"variety-common/BoardExec",
-	"variety-common/Encode",
-	"variety-common/FileData",
-	"common/outro"
-].map(function(mod) {
-	return "src/" + mod + ".js";
-});
+window.pzpr = require('./pzpr/core.js');
+window.pzpr.Candle = require('../node_modules/pzpr-canvas/dist/candle.js');
+window.pzpr.env = require('./pzpr/env.js');
+window.pzpr.lang = require('./pzpr/lang.js');
+require('./pzpr/event.js');
+window.pzpr.common = {};
+window.pzpr.custom = { "": {} };
+window.pzpr.classmgr = require('./pzpr/classmgr.js');
+window.pzpr.variety = require('./pzpr/variety.js');
+window.pzpr.parser = require('./pzpr/parser.js');
+window.pzpr.MetaData = require('./pzpr/metadata.js');
+window.pzpr.util = require('./pzpr/util.js');
+window.pzpr.Puzzle = require('./puzzle/Puzzle.js');
+window.pzpr.Puzzle.prototype.Config = require('./puzzle/Config.js');
+window.pzpr.classmgr.makeCommon(require('./puzzle/Address.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/Piece.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/PieceList.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/Board.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/BoardExec.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/GraphBase.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/LineManager.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/AreaManager.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/Graphic.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/MouseInput.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/KeyInput.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/Encode.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/FileData.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/Answer.js'));
+window.pzpr.classmgr.makeCommon(require('./puzzle/Operation.js'));
+window.pzpr.classmgr.makeCommon(require('./variety-common/Graphic.js'));
+window.pzpr.classmgr.makeCommon(require('./variety-common/KeyInput.js'));
+window.pzpr.classmgr.makeCommon(require('./variety-common/MouseInput.js'));
+window.pzpr.classmgr.makeCommon(require('./variety-common/Answer.js'));
+window.pzpr.classmgr.makeCommon(require('./variety-common/BoardExec.js'));
+window.pzpr.classmgr.makeCommon(require('./variety-common/Encode.js'));
+window.pzpr.classmgr.makeCommon(require('./variety-common/FileData.js'));

@@ -1,6 +1,6 @@
 // KeyCommon.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	KeyEvent: {
 		//---------------------------------------------------------------------------
@@ -253,4 +253,4 @@ pzpr.classmgr.makeCommon({
 			return piece.getQnumDir(target);
 		}
 	}
-});
+};

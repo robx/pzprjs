@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	Encode: {
 		pflag: "",
@@ -168,4 +168,4 @@ pzpr.classmgr.makeCommon({
 			throw "no implementation";
 		}
 	}
-});
+};

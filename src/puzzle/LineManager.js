@@ -3,7 +3,7 @@
 //---------------------------------------------------------------------------
 // ★LineGraphクラス 主に線や色分けの情報を管理する
 //---------------------------------------------------------------------------
-pzpr.classmgr.makeCommon({
+module.exports = {
 	"LineGraph:GraphBase": {
 		initialize: function() {
 			if (this.moveline) {
@@ -403,4 +403,4 @@ pzpr.classmgr.makeCommon({
 			}
 		}
 	}
-});
+};

@@ -1,15 +1,8 @@
 // classmgr.js v3.6.0
-
-//---------------------------------------------------------------
-// クラス設定用関数など
-//---------------------------------------------------------------
-pzpr.common = {}; // CoreClass保存用
-pzpr.custom = { "": {} }; // パズル別クラス保存用
-
 //----------------------------------------------------------------------------
 // ★pzpr.classmgrオブジェクト (クラス作成関数等)
 //---------------------------------------------------------------------------
-pzpr.classmgr = {
+module.exports = {
 	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
@@ -144,6 +137,8 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile: function(pid) {
+		console.log("includeCustomFile!", pid);
+/*
 		var scriptid = pzpr.variety(pid).script;
 		if (this.includedFile[scriptid]) {
 			return;
@@ -160,6 +155,9 @@ pzpr.classmgr = {
 			var exporteddata = require(customfile);
 			this.makeCustom(exporteddata[0], exporteddata[1]);
 		}
+*/
+		var mod = pzpr.variety(pid).module;
+		this.makeCustom(mod[0], mod[1]);
 	},
 	includedFile: {},
 

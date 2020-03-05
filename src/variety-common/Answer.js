@@ -1,6 +1,6 @@
 // AnswerCommon.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	AnsCheck: {
 		//---------------------------------------------------------------------------
@@ -1259,4 +1259,4 @@ pzpr.classmgr.makeCommon({
 			"A cell containing a clue number sees a different number of cells in the four orthogonal directions."
 		]
 	}
-});
+};

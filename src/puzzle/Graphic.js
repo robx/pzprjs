@@ -1,6 +1,5 @@
 // Graphic.js v3.4.1
 
-(function() {
 	var CENTER = 1,
 		BOTTOMLEFT = 2,
 		BOTTOMRIGHT = 3,
@@ -16,7 +15,7 @@
 	//---------------------------------------------------------------------------
 	// パズル共通 Canvas/DOM制御部
 	// Graphicクラスの定義
-	pzpr.classmgr.makeCommon({
+module.exports = {
 		//---------------------------------------------------------
 		Graphic: {
 			initialize: function() {
@@ -765,5 +764,4 @@
 				g.fillText(text, px, py, maxLength);
 			}
 		}
-	});
-})();
+	};

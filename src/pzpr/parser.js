@@ -1,6 +1,5 @@
 // Parser.js v3.4.1
 
-(function() {
 	var URL_AUTO = 0,
 		URL_PZPRV3 = 1,
 		URL_PZPRAPP = 2,
@@ -15,7 +14,7 @@
 
 	var URLData, FileData, Parser;
 
-	Parser = pzpr.parser = function(data, variety) {
+	Parser = function(data, variety) {
 		return Parser.parse(data, variety);
 	};
 	Parser.extend = function(obj) {
@@ -73,13 +72,13 @@
 	//---------------------------------------------------------------------------
 	// ★ URLData() URLデータのencode/decodeのためのオブジェクト
 	//---------------------------------------------------------------------------
-	URLData = pzpr.parser.URLData = function(url, mode) {
+	URLData = Parser.URLData = function(url, mode) {
 		this.url = url;
 		if (mode !== void 0) {
 			this.mode = mode;
 		}
 	};
-	pzpr.parser.URLData.prototype = {
+	Parser.URLData.prototype = {
 		pid: "",
 		mode: "",
 		type: URL_AUTO /* ==0 */,
@@ -425,12 +424,12 @@
 	//---------------------------------------------------------------------------
 	// ★ FileData() ファイルデータのencode/decodeのためのオブジェクト
 	//---------------------------------------------------------------------------
-	FileData = pzpr.parser.FileData = function(fstr, variety) {
+	FileData = Parser.FileData = function(fstr, variety) {
 		this.pid = !!variety ? variety : "";
 		this.fstr = fstr;
 		this.metadata = new pzpr.MetaData();
 	};
-	pzpr.parser.FileData.prototype = {
+	Parser.FileData.prototype = {
 		pid: "",
 		type: FILE_AUTO /* == 0 */,
 		filever: 0,
@@ -792,4 +791,5 @@
 			}
 		}
 	};
-})();
+
+module.exports = Parser;

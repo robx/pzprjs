@@ -1,6 +1,6 @@
 // Piece.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------------------------
 	// ★BoardPieceクラス Cell, Cross, Border, ExCellクラスのベース
 	//---------------------------------------------------------------------------
@@ -972,4 +972,4 @@ pzpr.classmgr.makeCommon({
 			return false;
 		}
 	}
-});
+};

@@ -1,6 +1,6 @@
 // MouseCommon.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	MouseEvent: {
 		// 共通関数
@@ -974,4 +974,4 @@ pzpr.classmgr.makeCommon({
 			this.puzzle.redraw();
 		}
 	}
-});
+};

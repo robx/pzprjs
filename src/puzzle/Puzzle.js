@@ -1,10 +1,9 @@
 // Puzzle.js v3.6.0
 
-(function() {
 	//---------------------------------------------------------------------------
 	// ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 	//---------------------------------------------------------------------------
-	pzpr.Puzzle = function(canvas, option) {
+	Puzzle = function(canvas, option) {
 		this.pzpr = pzpr;
 
 		if (option === void 0 && (!canvas || !canvas.parentNode)) {
@@ -50,7 +49,7 @@
 		pzpr.classmgr.setClasses(this, "");
 		initObjects(this);
 	};
-	pzpr.Puzzle.prototype = {
+	Puzzle.prototype = {
 		pid: null, // パズルのID("creek"など)
 		info: {}, // VarietyInfoへの参照
 
@@ -669,4 +668,5 @@
 
 		return imageopt;
 	}
-})();
+
+module.exports = Puzzle

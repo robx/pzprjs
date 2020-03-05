@@ -6,7 +6,7 @@
 
 // 回答チェッククラス
 // AnsCheckクラス
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	AnsCheck: {
 		initialize: function() {
@@ -166,4 +166,4 @@ pzpr.classmgr.makeCommon({
 		complete: ["正解です！", "Complete!"],
 		invalid: ["不明なエラーです", "Invalid Error"]
 	}
-});
+};

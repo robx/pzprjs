@@ -3,13 +3,6 @@
 //----------------------------------------------------------------------------
 // ★pzprオブジェクト
 //---------------------------------------------------------------------------
-/* extern */
-var pzpr = {
+module.exports = {
 	version: "<%= git.hash %>"
 };
-
-if (typeof module === "object" && module.exports) {
-	module.exports = pzpr;
-} else {
-	this.pzpr = pzpr;
-}

@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // パズル共通 キーボード入力部
 // KeyEventクラスを定義
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	KeyEvent: {
 		initialize: function() {
@@ -689,4 +689,4 @@ pzpr.classmgr.makeCommon({
 			return this.board.getDot(this.bx, this.by);
 		}
 	}
-});
+};

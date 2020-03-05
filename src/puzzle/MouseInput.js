@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
-pzpr.classmgr.makeCommon({
+module.exports = {
 	//---------------------------------------------------------
 	MouseEvent: {
 		initialize: function() {
@@ -534,4 +534,4 @@ pzpr.classmgr.makeCommon({
 			pos.draw();
 		}
 	}
-});
+};
