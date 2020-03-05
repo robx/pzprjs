@@ -13,7 +13,7 @@ format:
 	npm run-script format
 
 ui:
-	./node_modules/.bin/browserify ./src-ui/js/core.js > dist/js/ui.js
+	./node_modules/.bin/browserify ./src-ui/js/core.js --plugin tinyify > dist/js/ui.js
 
 pzpr:
-	./node_modules/.bin/browserify --exclude canvas ./src/pzpr.js > dist/js/pz.js
+	./node_modules/.bin/browserify --exclude canvas ./src/pzpr.js --plugin tinyify > dist/js/pz.js

@@ -40,7 +40,8 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-newer": "^1.1.1",
     "mocha": "^6.1.4",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "tinyify": "^2.5.2"
   },
   "dependencies": {
     "pzpr-canvas": "^0.8.2",
