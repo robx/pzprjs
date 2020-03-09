@@ -2057,15 +2057,18 @@ pzpr.classmgr.makeCommon({
 		},
 
 		getDashArray: function() {
-			var dotPrecount = Math.max(this.cw / 5, 1);
-			var dotCount = Math.round(dotPrecount / 2) * 2 + 0.8;
-			var dotSize = this.cw / dotCount;
+			var precount = Math.max(this.cw / 5, 1);
+			var innerDashCount = Math.round(precount / 2) - 1;
+			var dotCountX = 2*innerDashCount + 2.8;
+			var innerDashSize = this.cw / dotCountX;
+			var endDashSize = (this.cw - (2*innerDashCount + 1) * innerDashSize) / 2;
 
-			var dasharray = [dotSize * 0.9];
-			for (var i = 0; i < dotCount - 2; i++) {
-				dasharray.push(dotSize);
+			var dasharray = [];
+			dasharray.push(endDashSize);
+			for (var i = 0; i < 2 * innerDashCount + 1; i++) {
+				dasharray.push(innerDashSize);
 			}
-			dasharray.push(dotSize * 0.9);
+			dasharray.push(endDashSize);
 			dasharray.push(0);
 			return dasharray;
 		},
