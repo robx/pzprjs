@@ -39,6 +39,7 @@
 * doubleback: Prohibit drawing over black cells.
 * doubleback: Save empty cells to file.
 * kurochute: Fix error highlighting.
+* renban: Fix consecutive number error check.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
 * yajilin: Fix interaction between edit mode and answer.
