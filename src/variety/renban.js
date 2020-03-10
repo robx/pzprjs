@@ -196,7 +196,7 @@
 					}
 				}
 				if (breakflag) {
-					break;
+					continue;
 				}
 
 				if (clist.length === max - min + 1) {
