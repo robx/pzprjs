@@ -648,7 +648,8 @@
 			"check2x2UnshadeCell++",
 			"checkUnshadeLoop",
 			"checkRouteCheckPoint",
-			"checkRouteNoDeadEnd"
+			"checkRouteNoDeadEnd",
+			"doneShadingDecided"
 		],
 
 		checkShadedObject: function() {

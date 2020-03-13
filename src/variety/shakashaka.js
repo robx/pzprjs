@@ -478,7 +478,7 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawDotCells(false);
+			this.drawDotCells();
 			this.drawDashedGrid();
 			this.drawQuesCells();
 			this.drawQuesNumbers();

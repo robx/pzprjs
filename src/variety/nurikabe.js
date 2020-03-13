@@ -113,7 +113,7 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 			if (this.pid === "nurikabe") {
-				this.drawDotCells(false);
+				this.drawDotCells();
 			}
 			this.drawGrid();
 
@@ -219,7 +219,8 @@
 			"checkNoNumberInUnshade",
 			"checkConnectShade",
 			"checkDoubleNumberInUnshade",
-			"checkNumberAndUnshadeSize"
+			"checkNumberAndUnshadeSize",
+			"doneShadingDecided"
 		]
 	},
 	"AnsCheck@nuribou#1": {
@@ -228,7 +229,8 @@
 			"checkCorners",
 			"checkNoNumberInUnshade",
 			"checkDoubleNumberInUnshade",
-			"checkNumberAndUnshadeSize"
+			"checkNumberAndUnshadeSize",
+			"doneShadingDecided"
 		]
 	},
 	"AnsCheck@mochikoro,mochinyoro#1": {
@@ -239,7 +241,8 @@
 			"checkUnshadeRect",
 			"checkDoubleNumberInUnshade",
 			"checkNumberAndUnshadeSize",
-			"checkShadeNotRect@mochinyoro"
+			"checkShadeNotRect@mochinyoro",
+			"doneShadingDecided"
 		]
 	},
 	AnsCheck: {

@@ -355,7 +355,7 @@
 			paint: function() {
 				this.drawBGCells();
 				this.drawShadedCells();
-				this.drawDotCells(false);
+				this.drawDotCells();
 				this.drawGrid();
 
 				this.drawTapaNumbers();

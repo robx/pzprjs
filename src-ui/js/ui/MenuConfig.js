@@ -20,7 +20,10 @@
 			this.list = {};
 
 			/* 正解自動判定機能 */
-			this.add("autocheck", true);
+			this.add("autocheck_mode", "guarded", {
+				option: ["off", "simple", "guarded"]
+			});
+
 			/* per-solve autocheck status, turned off when complete */
 			this.add("autocheck_once", ui.puzzle.playeronly, {
 				volatile: true
@@ -201,7 +204,7 @@
 			for (var key in setting) {
 				this.set(key, setting[key]);
 			}
-			this.list.autocheck_once.val = this.list.autocheck.val;
+			this.list.autocheck_once.val = this.list.autocheck_mode.val !== "off";
 		},
 
 		//---------------------------------------------------------------------------
@@ -223,7 +226,7 @@
 					(!ui.puzzle.playeronly &&
 						ui.puzzle.mouse.getInputModeList("edit").length > 1)
 				);
-			} else if (idname === "autocheck" || idname === "autocheck_once") {
+			} else if (idname === "autocheck_mode" || idname === "autocheck_once") {
 				return ui.puzzle.playeronly && !ui.puzzle.getConfig("variant");
 			} else if (this.list[idname].puzzle) {
 				return ui.puzzle.validConfig(idname);
@@ -250,8 +253,8 @@
 					ui.adjustcellsize();
 					break;
 
-				case "autocheck":
-					this.list.autocheck_once.val = newval;
+				case "autocheck_mode":
+					this.list.autocheck_once.val = newval !== "off";
 					break;
 
 				case "language":

@@ -47,7 +47,7 @@ pzpr.classmgr.makeCommon({
 			this.drawCells_common("c_fulls_", this.getShadedCellColor);
 		},
 		getShadedCellColor: function(cell) {
-			if (!cell.isShade()) {
+			if (cell.qans !== 1) {
 				return null;
 			}
 			var info = cell.error || cell.qinfo;
@@ -2057,15 +2057,17 @@ pzpr.classmgr.makeCommon({
 		},
 
 		getDashArray: function() {
-			var dotPrecount = Math.max(this.cw / 5, 1);
-			var dotCount = Math.round(dotPrecount / 2) * 2 + 0.8;
-			var dotSize = this.cw / dotCount;
+			var dashCount = Math.max(Math.round(this.cw / 10), 3);
+			var stepSize = this.cw / dashCount;
+			var lengthOn = (5 / 8) * stepSize;
+			var lengthOff = stepSize - lengthOn;
 
-			var dasharray = [dotSize * 0.9];
-			for (var i = 0; i < dotCount - 2; i++) {
-				dasharray.push(dotSize);
+			var dasharray = [];
+			dasharray.push(lengthOn / 2, lengthOff);
+			for (var i = 0; i < dashCount - 1; i++) {
+				dasharray.push(lengthOn, lengthOff);
 			}
-			dasharray.push(dotSize * 0.9);
+			dasharray.push(lengthOn / 2);
 			dasharray.push(0);
 			return dasharray;
 		},
@@ -2173,16 +2175,7 @@ pzpr.classmgr.makeCommon({
 			x2 += x2 & 1;
 			y2 += y2 & 1; /* (x1,y1)-(x2,y2)を外側の偶数範囲に移動する */
 
-			var dotPrecount = Math.max(this.cw / 5, 1);
-			var dotCount = Math.round(dotPrecount / 2) * 2 + 0.8;
-			var dotSize = this.cw / dotCount;
-
-			var dasharray = [dotSize * 0.9];
-			for (var i = 0; i < dotCount - 2; i++) {
-				dasharray.push(dotSize);
-			}
-			dasharray.push(dotSize * 0.9);
-			dasharray.push(0);
+			var dasharray = this.getDashArray();
 
 			var bs = haschassis !== false ? 2 : 0,
 				bw = this.bw,

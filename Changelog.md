@@ -14,6 +14,7 @@
 * cave: Allow switching mouse button mode like other shading puzzles.
 * creek, gokigen: Fix behavior of -,backspace in edit mode.
 * juosan: Fix error highlighting when there is no majority.
+* kurochute: Don't allow putting dots on clues.
 * kurotto: Mark blank clues complete.
 * shakashaka: Autogray complete clues.
 * shwolf: Easier aux line input with right mouse button.
@@ -27,12 +28,18 @@
 * Allow specifying that a puzzle is a variant.
 * Don't start timer until puzzle is visible.
 * Center grid dashing.
+* New autocheck modes: guarded (default) and unguarded.
+* Shading puzzles with connected unshaded cells: Guard autocheck by
+  requiring all cells to be decided.
+* cave, nurimisaki: Switch back to shading-first puzzles.
 
 #### Bugfixes
 
 * compass: Fix erasing clues.
 * doubleback: Prohibit drawing over black cells.
 * doubleback: Save empty cells to file.
+* kurochute: Fix error highlighting.
+* renban: Fix consecutive number error check.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
 * yajilin: Fix interaction between edit mode and answer.
@@ -55,7 +62,7 @@
 #### Improvement
 
 * all moving puzzles: Prevent drawing curves.
-* amibo, juosan, kusabi, mashu, shugaku, starbattle: Reword English error messages
+* amibo, juosan, kurochute, kusabi, mashu, shugaku, starbattle: Reword English error messages
 * ayeheya: Replace check for rectangular room by check for symmetric room
 * cbblock: Add error for dead-end walls
 * country: Add variant rule that allows empty areas

@@ -80,7 +80,11 @@
      <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
      <li class="check" data-config="singlenum"><span>__領域に数字1つ__Single number in a region__</span></li>
      <li class="check" data-config="discolor"><span>__色分け無効化__Disable color__</span></li>
-     <li class="check" data-config="autocheck"><span>__正答自動判定__Automatic answer check__</span></li>
+     <li data-config="autocheck_mode"><span>__正答自動判定__Answer check__</span>&nbsp;-&gt;<menu label="__正答自動判定__Automatic answer check__">
+       <li class="child" data-value="off"><span>__Manual__Manual__</span></li>
+       <li class="child" data-value="guarded"><span>__Automatic (guarded)__Automatic (guarded)__</span></li>
+       <li class="child" data-value="simple"><span>__Automatic (always)__Automatic (always)__</span></li>
+     </menu></li>
      <hr>
      <li data-config="language"><span>言語/Language</span> -&gt;<menu label="言語/Language">
        <li class="child" data-value="ja"><span>日本語</span></li>
@@ -138,7 +142,7 @@
       <div class="child" data-value="crossdot">__黒点__Shaded dots__</div>
       <div class="child" data-value="ineq">__不等号__Inequality marks__</div>
       <div class="child" data-value="move-clue">__図形の移動__Move clue__</div>
-      <div class="child" data-value="copy-answer">__(please translate) Copy answer__Copy answer__</div>
+      <div class="child" data-value="copy-answer">__解答モードから記号作成__Copy answer__</div>
       <div class="child" data-value="mark-circle">__丸記号__Circles__</div>
       <div class="child" data-value="mark-triangle">__三角形__Triangles__</div>
       <div class="child" data-value="mark-rect">__四角形__Rectangles__</div>
@@ -290,7 +294,7 @@
     <div class="config" data-config="dontpassallcell">
       <label>
         <input type="checkbox">
-        <span>__(please translate) Lines need not pass all crossings__Lines need not pass all crossings__</span>
+        <span>__線が全ての交差点を通過していない場合も正解とする__Lines need not pass all crossings__</span>
       </label>
     </div>
     <div class="config" data-config="aquarium_regions">
@@ -570,7 +574,7 @@
           <div><span>__入力モード__Input Mode__</span> | </div>
           <div>
             <div class="child" data-value="auto">__自動__Auto__</div>
-            <div class="child" data-value="slide">__(please translate) Slide__Slide__</div>
+            <div class="child" data-value="slide">__平行移動__Slide__</div>
           </div>
         </div>
       </div>
