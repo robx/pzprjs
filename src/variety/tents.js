@@ -12,8 +12,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["number", "mark-tree", "mark-tent", "shade", "clear"],
-			play: ["mark-tent", "objblank", "clear", "subline", "peke"]
+			edit: ["number", "mark-tree", "clear"],
+			play: ["mark-tent", "objblank", "subline", "peke"]
 		},
 
 		mouseinput_other: function() {
@@ -58,11 +58,7 @@
 
 					var hastree = other.getNum() === 1 || cell.getNum() === 1;
 					var hastent = other.getNum() === 2 || cell.getNum() === 2;
-					var hasdot =
-						other.getNum() === 3 ||
-						other.qsub === 1 ||
-						cell.getNum() === 3 ||
-						cell.qsub === 1;
+					var hasdot = other.qsub === 1 || cell.qsub === 1;
 					var hasempty =
 						(other.getNum() === -1 && other.qsub === 0) ||
 						(cell.getNum() === -1 && cell.qsub === 0);
@@ -171,10 +167,6 @@
 			}
 		},
 
-		inputShade: function() {
-			this.inputFixedNumber(3);
-		},
-
 		inputDot: function() {
 			this.inputcell_tents(this.getcell(), 2);
 		}
@@ -253,7 +245,9 @@
 	Cell: {
 		numberAsObject: true,
 		disInputHatena: true,
-		maxnum: 3,
+		maxnum: function() {
+			return this.puzzle.editmode ? 1 : 3;
+		},
 
 		posthook: {
 			qnum: function(num) {
@@ -364,6 +358,7 @@
 
 	Graphic: {
 		enablebcolor: true,
+		bgcellcolor_func: "error1",
 		qanscolor: "rgb(0, 127, 0)",
 
 		initialize: function() {
@@ -412,16 +407,6 @@
 			}
 		},
 
-		getBGCellColor: function(cell) {
-			if (cell.qnum === 3) {
-				return this.shadecolor;
-			}
-			if (cell.error) {
-				return this.errbcolor1;
-			}
-			return null;
-		},
-
 		drawTents: function() {
 			var g = this.vinc("cell_tent", "auto");
 
@@ -441,10 +426,7 @@
 				switch (cell.getNum()) {
 					case 2:
 						g.vid = "c_tentouter_" + cell.id;
-						var color =
-							cell.qnum !== -1
-								? this.getQuesNumberColor(cell)
-								: this.getAnsNumberColor(cell);
+						var color = this.getAnsNumberColor(cell);
 						g.fillStyle = color;
 						g.beginPath();
 						g.setOffsetLinePath(
