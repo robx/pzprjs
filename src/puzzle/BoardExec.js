@@ -235,6 +235,28 @@
 				}
 			},
 			isdel: function(key, piece) {
+				if (piece.group === "excell" && key & (this.EXPAND | this.REDUCE)) {
+					var bd = this.board,
+						oldcols = bd.cols,
+						oldrows = bd.rows;
+
+					if ((key & 7) === this.UP || (key & 7) === this.DN) {
+						oldrows--;
+					} else {
+						oldcols--;
+					}
+
+					var oldexcols = bd.excellCols(oldcols, oldrows);
+					var oldexrows = bd.excellRows(oldcols, oldrows);
+
+					var oldminx = oldexcols * -2 + 1;
+					var oldminy = oldexrows * -2 + 1;
+
+					if (piece.bx < oldminx || piece.by < oldminy) {
+						return true;
+					}
+				}
+
 				return !!this.insex[piece.group][this.distObj(key, piece)];
 			},
 
@@ -247,9 +269,11 @@
 					if (bd.hasexcell === 1 && key & this.FLIP) {
 						var d2 = { x1: d.x1, y1: d.y1, x2: d.x2, y2: d.y2 };
 						if (key === this.FLIPY) {
-							d2.x1 = d2.x2 = -1;
+							d2.x1 = bd.excellCols(bd.cols, bd.rows) * -2 + 1;
+							d2.x2 = -1;
 						} else if (key === this.FLIPX) {
-							d2.y1 = d2.y2 = -1;
+							d2.y1 = bd.excellRows(bd.cols, bd.rows) * -2 + 1;
+							d2.y2 = -1;
 						}
 						d = d2;
 					} else if (bd.hasexcell === 2) {

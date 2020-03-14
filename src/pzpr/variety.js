@@ -221,6 +221,7 @@
 			nanro: [0, 1, "ナンロー", "Nanro"],
 			nawabari: [1, 0, "なわばり", "Territory", "nawabari"],
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
+			nonogram: [0, 0, "ののぐらむ", "Nonogram"],
 			norinori: [0, 1, "のりのり", "Norinori", "lits"],
 			numlin: [
 				0,

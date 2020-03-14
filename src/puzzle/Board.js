@@ -82,6 +82,13 @@ pzpr.classmgr.makeCommon({
 		borderAsLine: false, // 境界線をlineとして扱う
 		disable_subclear: false, // "補助消去"ボタン不要
 
+		excellRows: function(cols, rows) {
+			return 1;
+		},
+		excellCols: function(cols, rows) {
+			return 1;
+		},
+
 		//---------------------------------------------------------------------------
 		// bd.initBoardSize() 指定されたサイズで盤面の初期化を行う
 		//---------------------------------------------------------------------------
@@ -171,6 +178,10 @@ pzpr.classmgr.makeCommon({
 				}
 			} else if (group === "excell") {
 				if (this.hasexcell === 1) {
+					var exrows = this.excellRows(col, row);
+					var excols = this.excellCols(col, row);
+					col *= exrows;
+					row *= excols;
 					return col + row + (this.emptyexcell.ques === 51 ? 1 : 0);
 				} /* 左上角のExCellを追加 */ else if (this.hasexcell === 2) {
 					return 2 * (col + row);
@@ -301,8 +312,10 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		setposExCells: function() {
-			var qc = this.cols,
-				qr = this.rows;
+			var exrows = this.excellRows(this.cols, this.rows),
+				excols = this.excellCols(this.cols, this.rows),
+				qc = this.cols * exrows,
+				qr = this.rows * excols;
 			for (var id = 0; id < this.excell.length; id++) {
 				var excell = this.excell[id],
 					i = id;
@@ -311,13 +324,13 @@ pzpr.classmgr.makeCommon({
 
 				if (this.hasexcell === 1) {
 					if (i >= 0 && i < qc) {
-						excell.bx = i * 2 + 1;
-						excell.by = -1;
+						excell.bx = ((i / exrows) | 0) * 2 + 1;
+						excell.by = (i % exrows) * -2 - 1;
 					}
 					i -= qc;
 					if (i >= 0 && i < qr) {
-						excell.bx = -1;
-						excell.by = i * 2 + 1;
+						excell.bx = (i % excols) * -2 - 1;
+						excell.by = ((i / excols) | 0) * 2 + 1;
 					}
 					i -= qr;
 					if (i === 0 && excell.ques === 51) {
@@ -358,8 +371,8 @@ pzpr.classmgr.makeCommon({
 		setminmax: function() {
 			var extUL = this.hasexcell > 0;
 			var extDR = this.hasexcell === 2;
-			this.minbx = !extUL ? 0 : -2;
-			this.minby = !extUL ? 0 : -2;
+			this.minbx = !extUL ? 0 : -2 * this.excellCols(this.cols, this.rows);
+			this.minby = !extUL ? 0 : -2 * this.excellRows(this.cols, this.rows);
 			this.maxbx = !extDR ? 2 * this.cols : 2 * this.cols + 2;
 			this.maxby = !extDR ? 2 * this.rows : 2 * this.rows + 2;
 
@@ -526,20 +539,19 @@ pzpr.classmgr.makeCommon({
 			return id !== null ? this.border[id] : this.emptyborder;
 		},
 		getex: function(bx, by) {
+			var xr = this.excellRows(this.cols, this.rows);
+			var xc = this.excellCols(this.cols, this.rows);
 			var id = null,
-				qc = this.cols,
-				qr = this.rows;
+				qc = this.cols * xr,
+				qr = this.rows * xc;
+
 			if (this.hasexcell === 1) {
 				if (this.emptyexcell.ques === 51 && bx === -1 && by === -1) {
 					id = qc + qr;
-				} /* 左上角のExCellを追加 */ else if (
-					by === -1 &&
-					bx > 0 &&
-					bx < 2 * qc
-				) {
-					id = bx >> 1;
-				} else if (bx === -1 && by > 0 && by < 2 * qr) {
-					id = qc + (by >> 1);
+				} /* 左上角のExCellを追加 */ else if (by < 0 && bx > 0 && bx < 2 * qc) {
+					id = (-by >> 1) + (bx >> 1) * xr;
+				} else if (bx < 0 && by > 0 && by < 2 * qr) {
+					id = (-bx >> 1) + qc + (by >> 1) * xc;
 				}
 			} else if (this.hasexcell === 2) {
 				if (by === -1 && bx > 0 && bx < 2 * qc) {
@@ -644,13 +656,10 @@ pzpr.classmgr.makeCommon({
 		excellinside: function(x1, y1, x2, y2) {
 			var exlist = new this.klass.ExCellList();
 			if (!!this.hasexcell) {
-				if (y1 < -1) {
-					y1 = -1;
-				}
 				for (var by = y1 | 1; by <= y2; by += 2) {
 					for (var bx = x1 | 1; bx <= x2; bx += 2) {
 						var excell = this.getex(bx, by);
-						if (!excell.isnull) {
+						if (excell && !excell.isnull) {
 							exlist.add(excell);
 						}
 					}
