@@ -149,6 +149,8 @@
 			bw: 18, // セルの横幅/2
 			bh: 18, // セルの縦幅/2
 
+			devicePixelRatio: 1,
+			gw: 1, // grid width
 			lw: 1, // LineWidth 境界線・Lineの太さ
 			lwmin: 3,
 			lm: 1, // LineMargin
@@ -294,6 +296,8 @@
 				var cw = (cwid / cols) | 0,
 					ch = (chgt / rows) | 0;
 
+				this.devicePixelRatio = window.devicePixelRatio || 1;
+
 				if (this.puzzle.getConfig("squarecell")) {
 					this.cw = this.ch = Math.min(cw, ch);
 				} else {
@@ -304,7 +308,15 @@
 				this.bw = this.cw / 2;
 				this.bh = this.ch / 2;
 
-				this.lw = Math.max(this.cw / this.lwratio, this.lwmin);
+				var gwmax = 1,
+					gwratio = 40;
+				var gw = Math.min(this.cw / gwratio, gwmax);
+				var pxSize = 1 / this.devicePixelRatio;
+				var gwdev = Math.max(1, Math.round(gw / pxSize));
+				this.gw = gwdev * pxSize;
+
+				var lwmin = this.lwmin / this.devicePixelRatio;
+				this.lw = Math.max(this.cw / this.lwratio, lwmin);
 				this.lm = this.lw / 2;
 			},
 			setOffset: function() {

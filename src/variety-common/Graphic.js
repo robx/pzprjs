@@ -2118,7 +2118,7 @@ pzpr.classmgr.makeCommon({
 				yb = Math.min(y2, maxy - bs);
 
 			// isdraw!==false: 指定無しかtrueのときは描画する
-			g.lineWidth = 1;
+			g.lineWidth = this.gw;
 			g.strokeStyle = this.gridcolor;
 			for (var i = xa; i <= xb; i += 2) {
 				g.vid = "bdy_" + i;
@@ -2185,7 +2185,7 @@ pzpr.classmgr.makeCommon({
 			var ya = Math.max(y1, miny + bs),
 				yb = Math.min(y2, maxy - bs);
 
-			g.lineWidth = 1;
+			g.lineWidth = this.gw;
 			g.strokeStyle = this.gridcolor;
 			for (var i = xa; i <= xb; i += 2) {
 				var px = i * bw,
