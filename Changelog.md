@@ -40,6 +40,7 @@
 * doubleback: Save empty cells to file.
 * kurochute: Fix error highlighting.
 * renban: Fix consecutive number error check.
+* shakashaka: Fix alignment of triangles to shaded cells.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
 * yajilin: Fix interaction between edit mode and answer.

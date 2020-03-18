@@ -1327,7 +1327,7 @@ pzpr.classmgr.makeCommon({
 		},
 		drawTriangle1: function(px, py, num) {
 			var g = this.context;
-			var mgn = this.pid === "reflect" ? 1 : 0,
+			var mgn = this.pid === "reflect" ? 1 : 0.5,
 				bw = this.bw + 1 - mgn,
 				bh = this.bh + 1 - mgn;
 			g.beginPath();
