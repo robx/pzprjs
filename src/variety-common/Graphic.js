@@ -1306,7 +1306,7 @@ pzpr.classmgr.makeCommon({
 		// pc.drawTriangle1()  三角形をCanvasに書き込む(1マスのみ)
 		//---------------------------------------------------------------------------
 		drawTriangle: function() {
-			var g = this.vinc("cell_triangle", "auto");
+			var g = this.vinc("cell_triangle", "crispEdges");
 
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
