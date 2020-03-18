@@ -296,7 +296,9 @@
 				var cw = (cwid / cols) | 0,
 					ch = (chgt / rows) | 0;
 
-				this.devicePixelRatio = window.devicePixelRatio || 1;
+				this.devicePixelRatio = this.puzzle.pzpr.env.browser
+					? window.devicePixelRatio || 1
+					: 1;
 
 				if (this.puzzle.getConfig("squarecell")) {
 					this.cw = this.ch = Math.min(cw, ch);
