@@ -2057,7 +2057,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		getDashArray: function() {
-			var dashCount = Math.max(Math.round(this.cw / 10), 3);
+			var dashCount = Math.max(Math.round(this.cw / 10), 4);
 			var stepSize = this.cw / dashCount;
 			var lengthOn = (5 / 8) * stepSize;
 			var lengthOff = stepSize - lengthOn;
