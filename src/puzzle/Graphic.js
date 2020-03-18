@@ -317,8 +317,9 @@
 				var gwdev = Math.max(1, Math.round(gw / pxSize));
 				this.gw = gwdev * pxSize;
 
-				var lwmin = this.lwmin / this.devicePixelRatio;
-				this.lw = Math.max(this.cw / this.lwratio, lwmin);
+				var lw = Math.max(this.cw / this.lwratio, this.lwmin);
+				var lwdev = Math.max(1, Math.round(lw / pxSize));
+				this.lw = lwdev * pxSize;
 				this.lm = this.lw / 2;
 			},
 			setOffset: function() {
