@@ -353,9 +353,6 @@ ui.menuarea = {
 		ui.menuconfig.set("toolarea", !ui.menuconfig.get("toolarea"));
 		ui.displayAll();
 	},
-	repaint: function() {
-		ui.puzzle.redraw(true);
-	},
 	disppopup: function(e) {
 		var el = e.target;
 		if (el.nodeName === "SPAN") {
