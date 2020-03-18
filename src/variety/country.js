@@ -1034,24 +1034,24 @@
 	"FailCode@onsen": {
 		blPassTwice: [
 			"ある線が１つの部屋を２回以上通っています。",
-			"A line passes a room twice or more."
+			"A line passes a room more than once."
 		],
 		blLineNe: [
 			"線が通過するマスの数が数字と違います。",
-			"The Length of the path in a room is different from the number of the loop."
+			"The length of the path in a room is different from the number of the loop."
 		],
 		blLineDiff: [
 			"各部屋で線が通過するマスの数が違います。",
-			"The Length of the path in a room is different in each room."
+			"The length of the path in a room is different in some rooms."
 		],
 		bkNoLine: ["線の通っていない部屋があります。", "A room remains blank."],
 		lnIsolate: [
 			"線の通っていない○があります。",
-			"Lines doesn't pass a circle."
+			"A circle doesn't have a line."
 		],
 		lpNumGt2: [
 			"数字が2つ以上含まれたループがあります。",
-			"A loop has plural numbers."
+			"A loop has more than one number."
 		],
 		lpNoNum: ["○を含んでいないループがあります。", "A loop has no numbers."]
 	},
