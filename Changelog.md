@@ -17,6 +17,7 @@
 * kurochute: Don't allow putting dots on clues.
 * kurotto: Mark blank clues complete.
 * shakashaka: Autogray complete clues.
+* shakashaka: Improve triangle edge alignment.
 * shwolf: Easier aux line input with right mouse button.
 * triplace: Shade clue background.
 * rules.html: Include player.
@@ -24,10 +25,12 @@
 * Several UI layout fixes (including menu styling, input mode buttons).
 * Split options between menu and tool area.
 * Several language fixes to menu items.
+* Several language fixes to answer error messages.
 * Remove several options.
 * Allow specifying that a puzzle is a variant.
 * Don't start timer until puzzle is visible.
 * Center grid dashing.
+* Thinner grid lines on high-DPI displays.
 * New autocheck modes: guarded (default) and unguarded.
 * Shading puzzles with connected unshaded cells: Guard autocheck by
   requiring all cells to be decided.
