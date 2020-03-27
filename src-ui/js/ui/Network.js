@@ -3,6 +3,7 @@
 		ws: null,
 		mode: "",
 		key: "",
+		maxSeen: -1,
 
 		configure: function(mode, key) {
 			this.mode = mode;
@@ -35,7 +36,12 @@
 		},
 
 		onmessage: function(event) {
-			ui.network.applyOp(event.data);
+			var msg = JSON.parse(event.data);
+			var id = msg.id;
+			if (id > ui.network.maxSeen) {
+				ui.network.maxSeen = id;
+				ui.network.applyOp(msg.operation);
+			}
 		},
 
 		applyOp: function(encOp) {
