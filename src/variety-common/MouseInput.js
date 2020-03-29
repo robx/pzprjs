@@ -47,6 +47,13 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 
+			var cell_already_assigned = cell.qans !== 0 || cell.qsub !== 0;
+			var clearing_cells = this.inputData === 0;
+			var in_starting_cell = cell === this.firstCell;
+			if (!in_starting_cell && !clearing_cells && cell_already_assigned) {
+				return;
+			}
+
 			cell.setQans(this.inputData === 1 ? 1 : 0);
 			cell.setQsub(this.inputData === 2 ? 1 : 0);
 
