@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["country", "moonsun", "onsen", "doubleback", "maxi"], {
+})(["country", "moonsun", "onsen", "doubleback", "maxi", "simpleloop"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@country,onsen": {
@@ -42,7 +42,15 @@
 		inputModes: {
 			edit: ["border", "clear", "info-line", "empty"],
 			play: ["line", "peke", "clear", "info-line"]
-		},
+		}
+	},
+	"MouseEvent@simpleloop": {
+		inputModes: {
+			edit: ["clear", "info-line", "empty"],
+			play: ["line", "peke", "clear", "info-line"]
+		}
+	},
+	"MouseEvent@doubleback,simpleloop": {
 		mouseinput_other: function() {
 			if (this.inputMode === "empty") {
 				this.inputempty();
@@ -71,13 +79,21 @@
 					} else if (this.btn === "right") {
 						this.inputpeke();
 					}
-				} else if (this.mouseend && this.notInputted()) {
+				} else if (
+					this.mouseend &&
+					this.notInputted() &&
+					this.pid !== "simpleloop"
+				) {
 					if (this.inputpeke_ifborder() || this.pid === "maxi") {
 						return;
 					}
 					this.inputMB();
 				}
 			} else if (this.puzzle.editmode) {
+				if (this.pid === "simpleloop") {
+					this.inputempty();
+					return;
+				}
 				if (this.mousestart || this.mousemove) {
 					this.inputborder();
 				} else if (this.mouseend && this.notInputted()) {
@@ -137,12 +153,12 @@
 			}
 		}
 	},
-	"Cell@doubleback": {
+	"Cell@doubleback,simpleloop": {
 		noLP: function(dir) {
 			return this.isEmpty();
 		}
 	},
-	"Border@doubleback": {
+	"Border@doubleback,simpleloop": {
 		enableLineNG: true
 	},
 	"Border@moonsun": {
@@ -363,7 +379,7 @@
 			}
 		}
 	},
-	"Graphic@doubleback": {
+	"Graphic@doubleback,simpleloop": {
 		getBGCellColor: function(cell) {
 			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
 		},
@@ -392,14 +408,16 @@
 			if (this.pid === "country") {
 				this.puzzle.setConfig("country_empty", this.checkpflag("e"));
 			}
-			this.decodeBorder();
+			if (this.pid !== "simpleloop") {
+				this.decodeBorder();
+			}
 			if (this.pid === "country" || this.pid === "maxi") {
 				this.decodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
 				this.decodeCircle();
 			} else if (this.pid === "onsen") {
 				this.decodeNumber16();
-			} else if (this.pid === "doubleback") {
+			} else if (this.pid === "doubleback" || this.pid === "simpleloop") {
 				this.decodeEmpty();
 			}
 		},
@@ -407,14 +425,16 @@
 			if (this.pid === "country") {
 				this.outpflag = this.puzzle.getConfig("country_empty") ? "e" : null;
 			}
-			this.encodeBorder();
+			if (this.pid !== "simpleloop") {
+				this.encodeBorder();
+			}
 			if (this.pid === "country" || this.pid === "maxi") {
 				this.encodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
 				this.encodeCircle();
 			} else if (this.pid === "onsen") {
 				this.encodeNumber16();
-			} else if (this.pid === "doubleback") {
+			} else if (this.pid === "doubleback" || this.pid === "simpleloop") {
 				this.encodeEmpty();
 			}
 		}
@@ -425,10 +445,16 @@
 			if (this.pid === "country" && this.filever >= 1) {
 				this.decodeFlags();
 			}
-			this.decodeAreaRoom();
-			this.decodeCellQnum();
+			if (this.pid !== "simpleloop") {
+				this.decodeAreaRoom();
+			}
+			if (this.pid === "doubleback" || this.pid === "simpleloop") {
+				this.decodeEmpty();
+			} else {
+				this.decodeCellQnum();
+			}
 			this.decodeBorderLine();
-			if (this.pid !== "onsen") {
+			if (this.pid !== "onsen" && this.pid !== "simpleloop") {
 				this.decodeCellQsub();
 			}
 		},
@@ -437,12 +463,34 @@
 				this.filever = 1;
 				this.encodeFlags(["country_empty"]);
 			}
-			this.encodeAreaRoom();
-			this.encodeCellQnum();
+			if (this.pid !== "simpleloop") {
+				this.encodeAreaRoom();
+			}
+			if (this.pid === "doubleback" || this.pid === "simpleloop") {
+				this.encodeEmpty();
+			} else {
+				this.encodeCellQnum();
+			}
 			this.encodeBorderLine();
-			if (this.pid !== "onsen") {
+			if (this.pid !== "onsen" && this.pid !== "simpleloop") {
 				this.encodeCellQsub();
 			}
+		},
+		decodeEmpty: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "*") {
+					cell.ques = 7;
+				}
+			});
+		},
+		encodeEmpty: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "* ";
+				} else {
+					return ". ";
+				}
+			});
 		}
 	},
 
@@ -471,6 +519,15 @@
 			"checkOneLoop",
 			"checkNoLine",
 			"checkRoomPassTwice"
+		]
+	},
+	"AnsCheck@simpleloop#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkDeadendLine+",
+			"checkOneLoop",
+			"checkNoLine"
 		]
 	},
 	"AnsCheck@moonsun#1": {
@@ -977,34 +1034,34 @@
 	"FailCode@onsen": {
 		blPassTwice: [
 			"ある線が１つの部屋を２回以上通っています。",
-			"A line passes a room twice or more."
+			"A line passes a room more than once."
 		],
 		blLineNe: [
 			"線が通過するマスの数が数字と違います。",
-			"The Length of the path in a room is different from the number of the loop."
+			"The length of the path in a room is different from the number of the loop."
 		],
 		blLineDiff: [
 			"各部屋で線が通過するマスの数が違います。",
-			"The Length of the path in a room is different in each room."
+			"The length of the path in a room is different in some rooms."
 		],
 		bkNoLine: ["線の通っていない部屋があります。", "A room remains blank."],
 		lnIsolate: [
 			"線の通っていない○があります。",
-			"Lines doesn't pass a circle."
+			"A circle doesn't have a line."
 		],
 		lpNumGt2: [
 			"数字が2つ以上含まれたループがあります。",
-			"A loop has plural numbers."
+			"A loop has more than one number."
 		],
 		lpNoNum: ["○を含んでいないループがあります。", "A loop has no numbers."]
 	},
 	"FailCode@maxi": {
 		blLineShort: [
-			"(Please translate) All lines in a room are shorter than the number.",
+			"枠内のどの線も、連続して通るマス数が数字よりも小さいです。",
 			"All lines in a room are shorter than the number."
 		],
 		blLineLong: [
-			"(Please translate) A line in a room is longer than the number.",
+			"枠内を連続して通るマス数が、数字よりも大きい線があります。",
 			"A line in a room is longer than the number."
 		]
 	}

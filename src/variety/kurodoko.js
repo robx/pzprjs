@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kurodoko", "nurimisaki"], {
+})(["kurodoko", "nurimisaki", "cave"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -24,6 +24,7 @@
 			}
 		}
 	},
+
 	"MouseEvent@kurodoko": {
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
@@ -35,6 +36,12 @@
 		inputModes: {
 			edit: ["number", "clear", "info-ublk"],
 			play: ["shade", "unshade", "info-ublk"]
+		}
+	},
+	"MouseEvent@cave": {
+		inputModes: {
+			edit: ["number", "clear", "info-ublk"],
+			play: ["shade", "unshade", "peke", "info-ublk"]
 		}
 	},
 
@@ -54,15 +61,19 @@
 		},
 		minnum: 2
 	},
-	"Cell@nurimisaki": {
-		qansUnshade: true
-	},
 	Board: {
 		cols: 9,
 		rows: 9
 	},
+	"Board@cave": {
+		hasborder: 1 // for pekes
+	},
 
 	AreaUnshadeGraph: {
+		enabled: true
+	},
+
+	"AreaShadeGraph@cave": {
 		enabled: true
 	},
 
@@ -73,78 +84,62 @@
 
 		gridcolor_type: "DLIGHT",
 
+		qanscolor: "black",
 		enablebcolor: true,
-		bgcellcolor_func: "qsub1",
 		numbercolor_func: "qnum",
 
 		circleratio: [0.45, 0.4],
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawShadedCells();
 			this.drawGrid();
+			this.drawShadedCells();
+			this.drawDotCells();
 
 			this.drawCircledNumbers();
-			if (this.pid === "nurimisaki") {
-				this.drawDotCells();
-			}
 
 			this.drawChassis();
 
 			this.drawTarget();
 		}
 	},
-	"Graphic@nurimisaki": {
-		undefcolor: "silver",
-		trialcolor: "rgb(120, 120, 120)",
 
-		getBGCellColor: function(cell) {
-			if (!cell.isUnshade()) {
-				return null;
-			}
-			var undef = this.puzzle.execConfig("undefcell");
-			var info = cell.error || cell.qinfo;
-			if (info === 1) {
-				return this.errbcolor1;
-			} else if (info === 2) {
-				return this.errbcolor2;
-			}
-			return undef ? null : this.qsubcolor1;
-		},
-		getShadedCellColor: function(cell) {
-			if (!cell.isShade()) {
-				return null;
-			}
-			var undef = this.puzzle.execConfig("undefcell");
-			var info = cell.error || cell.qinfo;
-			if (info === 1) {
-				return this.errcolor1;
-			} else if (info === 2) {
-				return this.errcolor2;
-			} else if (cell.qsub === 1) {
-				return cell.trial ? this.trialcolor : this.shadecolor;
-			} else if (undef) {
-				return this.undefcolor;
-			}
-			return null;
-		},
-		drawDotCells: function() {
-			var undef = this.puzzle.execConfig("undefcell");
-			var g = this.vinc("cell_dot", "auto", true);
+	"Graphic@cave": {
+		hideHatena: false,
 
-			var dsize = Math.max(this.cw * 0.06, 2);
+		gridcolor_type: "DLIGHT",
+		enablebcolor: true,
+		bgcellcolor_func: "qsub1",
+
+		qanscolor: "black",
+
+		drawTrialMarks: function() {
+			var g = this.vinc("cell_mark", "auto", true);
+			g.lineWidth = 1;
+
+			var dsize = Math.max(this.cw * 0.03, 2);
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
 
-				g.vid = "c_dot_" + cell.id;
-				if (cell.isUnshade() && cell.qnum === -1 && !undef) {
-					g.fillStyle = !cell.trial ? this.qanscolor : this.trialcolor;
-					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
+				g.vid = "c_mark_" + cell.id;
+				if (cell.qsub === 1 && cell.trial) {
+					g.strokeStyle = this.trialcolor;
+					g.strokeCross(cell.bx * this.bw, cell.by * this.bh, 2 * dsize);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+
+		paint: function() {
+			this.drawBGCells();
+			this.drawDashedGrid(false);
+			this.drawShadedCells();
+			this.drawTrialMarks();
+			this.drawQuesNumbers();
+			this.drawPekes();
+			this.drawTarget();
 		}
 	},
 
@@ -213,15 +208,16 @@
 	AnsCheck: {
 		checklist: [
 			"checkShadeCellExist",
-			"checkNumUnshade@nurimisaki",
 			"check2x2ShadeCell@nurimisaki",
 			"checkAdjacentShadeCell@kurodoko",
 			"checkConnectUnshadeRB@kurodoko",
-			"checkConnectUnshade@nurimisaki",
+			"checkConnectUnshade@nurimisaki,cave",
+			"checkConnectShadeOutside@cave",
 			"checkViewOfNumber",
 			"check2x2UnshadeCell@nurimisaki",
 			"checkCirclePromontory@nurimisaki",
-			"checkNonCircleNotPromontory@nurimisaki"
+			"checkNonCircleNotPromontory@nurimisaki",
+			"doneShadingDecided"
 		],
 
 		checkViewOfNumber: function() {
@@ -270,12 +266,6 @@
 	},
 
 	"AnsCheck@nurimisaki": {
-		checkNumUnshade: function() {
-			this.checkAllCell(function(cell) {
-				return cell.isNum() && !cell.isUnshade();
-			}, "nmShade");
-		},
-
 		check2x2UnshadeCell: function() {
 			this.check2x2Block(function(cell) {
 				return cell.isUnshade();
@@ -314,23 +304,45 @@
 		}
 	},
 
+	"AnsCheck@cave": {
+		checkConnectShadeOutside: function() {
+			var bd = this.board;
+			for (var r = 0; r < bd.sblkmgr.components.length; r++) {
+				var clist = bd.sblkmgr.components[r].clist;
+				var d = clist.getRectSize();
+				if (
+					d.x1 === bd.minbx + 1 ||
+					d.x2 === bd.maxbx - 1 ||
+					d.y1 === bd.minby + 1 ||
+					d.y2 === bd.maxby - 1
+				) {
+					continue;
+				}
+				this.failcode.add("csConnOut");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		}
+	},
+
 	FailCode: {
-		nmShade: ["丸のマスが白マスになっていません。", "A clue is not unshaded."],
-		nmSumViewNe: [
-			"数字と黒マスにぶつかるまでの4方向のマスの合計が違います。",
-			"The number and the sum of the continuous unshaded cells of four direction is different."
-		],
 		cu2x2: [
 			"2x2の白マスのかたまりがあります。",
 			"There is a 2x2 block of unshaded cells."
 		],
 		circleNotPromontory: [
 			"丸のマスが岬になっていません。",
-			"A circle has more than one unshaded neighbor."
+			"A circle is not a dead end."
 		],
 		nonCirclePromontory: [
 			"丸のないマスが岬になっています。",
-			"An unshaded uncircled cells has only one unshaded neighbor."
+			"A dead end has no circle."
+		],
+		csConnOut: [
+			"盤面の外につながっていない黒マスがあります。",
+			"Some shaded cells are not connected to the outside."
 		]
 	}
 });

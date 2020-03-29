@@ -196,7 +196,7 @@
 					}
 				}
 				if (breakflag) {
-					break;
+					continue;
 				}
 
 				if (clist.length === max - min + 1) {
@@ -249,15 +249,15 @@
 	FailCode: {
 		bkDupNum: [
 			"1つの部屋に同じ数字が複数入っています。",
-			"A room has two or more same numbers."
+			"A room has two or more equal numbers."
 		],
 		bkNotSeqNum: [
-			"部屋に入る数字が正しくありません。",
-			"The numbers in the room are wrong."
+			"数字が連番になっていない部屋があります。",
+			"The numbers in the room are not consecutive."
 		],
 		cbDiffLenNe: [
 			"数字の差がその間にある線の長さと等しくありません。",
-			"The differnece between two numbers is not equal to the length of the line between them."
+			"The difference between two numbers is not equal to the length of the line between them."
 		]
 	}
 });

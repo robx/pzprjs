@@ -318,7 +318,6 @@ pzpr.classmgr.makeCommon({
 		numberAsObject: false, // 数字以外でqnum/anumを使用する(同じ値を入力で消去できたり、回答で・が入力できる)
 		numberAsLetter: false, // 数字の代わりにアルファベットを入力する
 
-		qansUnshade: false, // qans === 1 means shade
 		numberRemainsUnshaded: false, // 数字のあるマスが黒マスにならないパズル
 		enableSubNumberArray: false, // 補助数字の配列を作るパズル
 
@@ -357,19 +356,16 @@ pzpr.classmgr.makeCommon({
 		// cell.clrShade()  該当するCellに白マスをセットする
 		//---------------------------------------------------------------------------
 		isShade: function() {
-			if (this.isnull) {
-				return false;
-			}
-			return this.qansUnshade ? this.qans !== 1 : this.qans === 1;
+			return !this.isnull && this.qans === 1;
 		},
 		isUnshade: function() {
-			return !this.isnull && !this.isShade();
+			return !this.isnull && this.qans !== 1;
 		},
 		setShade: function() {
-			this.setQans(this.qansUnshade ? 0 : 1);
+			this.setQans(1);
 		},
 		clrShade: function() {
-			this.setQans(this.qansUnshade ? 1 : 0);
+			this.setQans(0);
 		},
 
 		// disallow certain inputs
@@ -384,6 +380,23 @@ pzpr.classmgr.makeCommon({
 				return this.qnum === -1 || this.puzzle.painter.enablebcolor;
 			}
 			return true;
+		},
+
+		// is cell shading status decided for the purpose of auto-answer check
+		isShadeDecided: function() {
+			if (this.isnull) {
+				return true;
+			}
+			if (this.isShade()) {
+				return true;
+			}
+			if (this.qsub > 0) {
+				return true;
+			}
+			if (!this.allowShade() || !this.allowUnshade()) {
+				return true;
+			}
+			return false;
 		},
 
 		//-----------------------------------------------------------------------

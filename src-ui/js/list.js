@@ -351,7 +351,9 @@
 			"araf",
 			"maxi",
 			"midloop",
-			"balance"
+			"balance",
+			"simpleloop",
+			"doppelblock"
 		]
 	};
 	var tabstate = {

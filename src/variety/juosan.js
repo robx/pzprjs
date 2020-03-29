@@ -271,7 +271,7 @@
 				if (this.checkOnly) {
 					break;
 				}
-				if (vcount > hcount) {
+				if (vcount >= hcount) {
 					clist
 						.filter(function(cell) {
 							return cell.qans === 12;
@@ -306,7 +306,7 @@
 		],
 		bkMajorBarGt: [
 			"縦棒か横棒の多い方の数が部屋の数字より多いです。",
-			"The number of majority of vertical or horizonal bars is grater than the number of the area."
+			"The number of majority of vertical or horizonal bars is greater than the number of the area."
 		],
 		bkMajorBarLt: [
 			"縦棒か横棒の多い方の数が部屋の数字より少ないです。",

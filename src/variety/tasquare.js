@@ -58,7 +58,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			this.drawDotCells(false);
+			this.drawDotCells();
 			this.drawGrid();
 
 			this.drawCellSquare();
@@ -120,7 +120,8 @@
 			"checkSquareShade",
 			"checkConnectUnshade",
 			"checkSumOfSize",
-			"checkAtLeastOne"
+			"checkAtLeastOne",
+			"doneShadingDecided"
 		],
 
 		checkSquareShade: function() {

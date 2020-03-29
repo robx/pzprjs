@@ -381,7 +381,7 @@
 		],
 		nmAround: [
 			"同じ数字がタテヨコナナメに隣接しています。",
-			"Equal numbers are adjacent."
+			"Equal numbers touch."
 		],
 		nmNotConsecNeighbors: [
 			"連続する数字がタテヨコに隣り合っていません。",

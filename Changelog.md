@@ -2,8 +2,10 @@
 
 * araf: New puzzle type Araf (due to Giuliano Montelucci)
 * balance: New puzzle type Balance Loop (due to Giuliano Montelucci)
+* doppelblock: New puzzle type Doppelblock
 * maxi: New puzzle type Maxi Loop (due to Giuliano Montelucci)
 * midloop: New puzzle type Mid-loop (due to Lennard Sprong)
+* simpleloop: New puzzle type Simple Loop
 
 #### Improvements
 
@@ -11,7 +13,11 @@
 * Change canonical names: bag becomes cave, building becomes skyscrapers.
 * cave: Allow switching mouse button mode like other shading puzzles.
 * creek, gokigen: Fix behavior of -,backspace in edit mode.
+* juosan: Fix error highlighting when there is no majority.
+* kurochute: Don't allow putting dots on clues.
 * kurotto: Mark blank clues complete.
+* shakashaka: Autogray complete clues.
+* shakashaka: Improve triangle edge alignment.
 * shwolf: Easier aux line input with right mouse button.
 * triplace: Shade clue background.
 * rules.html: Include player.
@@ -19,16 +25,28 @@
 * Several UI layout fixes (including menu styling, input mode buttons).
 * Split options between menu and tool area.
 * Several language fixes to menu items.
+* Several language fixes to answer error messages.
 * Remove several options.
 * Allow specifying that a puzzle is a variant.
 * Don't start timer until puzzle is visible.
+* Center grid dashing.
+* Thinner grid lines on high-DPI displays.
+* New autocheck modes: guarded (default) and unguarded.
+* Shading puzzles with connected unshaded cells: Guard autocheck by
+  requiring all cells to be decided.
+* cave, nurimisaki: Switch back to shading-first puzzles.
 
 #### Bugfixes
 
 * compass: Fix erasing clues.
 * doubleback: Prohibit drawing over black cells.
+* doubleback: Save empty cells to file.
+* kurochute: Fix error highlighting.
+* renban: Fix consecutive number error check.
+* shakashaka: Fix alignment of triangles to shaded cells.
 * triplace: Don't allow drawing on clues.
 * walllogic: Fix redraw with autocompletion.
+* yajilin: Fix interaction between edit mode and answer.
 * Correct display of color-each-line config option.
 
 ## Version 0.12.0
@@ -48,7 +66,7 @@
 #### Improvement
 
 * all moving puzzles: Prevent drawing curves.
-* amibo, juosan, kusabi, mashu, shugaku, starbattle: Reword English error messages
+* amibo, juosan, kurochute, kusabi, mashu, shugaku, starbattle: Reword English error messages
 * ayeheya: Replace check for rectangular room by check for symmetric room
 * cbblock: Add error for dead-end walls
 * country: Add variant rule that allows empty areas

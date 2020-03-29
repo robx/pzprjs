@@ -363,7 +363,7 @@
 		bkNoNum: ["国に矢印が入っていません。", "A country has no arrow."],
 		bkNumGe2: [
 			"1つの国に2つ以上の矢印が入っています。",
-			"A country has plural arrows."
+			"A country has more than one arrow."
 		],
 		arAdjPair: [
 			"辺を共有する国にペアとなる矢印が入っています。",
@@ -371,7 +371,7 @@
 		],
 		arAlone: [
 			"矢印の先にペアとなる矢印がいません。",
-			"There is not paired arrow in the direction of an arrow."
+			"There is no paired arrow in the direction of an arrow."
 		]
 	}
 });
