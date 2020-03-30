@@ -445,6 +445,8 @@ pzpr.classmgr.makeCommon({
 			this.redoExec = false; // Redo中
 			this.reqReset = false; // Undo/Redo時に盤面回転等が入っていた時、resize,rebuildInfo関数のcallを要求する
 
+			this.enableNetwork = true;
+
 			var classes = this.klass;
 			this.operationlist = [
 				classes.ObjectOperation,
