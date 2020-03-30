@@ -1,0 +1,54 @@
+(function() {
+	ui.network = {
+		ws: null,
+		mode: "",
+		key: "",
+
+		configure: function(mode, key) {
+			this.mode = mode;
+			this.key = key;
+		},
+
+		start: function() {
+			if (!this.mode) {
+				return;
+			}
+
+			var loc = window.location;
+			var wsurl = "ws://";
+			if (document.location.protocol === "https:") {
+				wsurl = "wss://";
+			}
+			wsurl = wsurl + loc.host + "/game/" + this.key;
+
+			this.ws = new WebSocket(wsurl);
+			this.ws.onclose = this.onclose;
+			this.ws.onmessage = this.onmessage;
+		},
+
+		onCellOp: function(op) {
+			this.ws.send(op);
+		},
+
+		onclose: function(event) {
+			ui.network.start();
+		},
+
+		onmessage: function(event) {
+			ui.network.applyOp(event.data);
+		},
+
+		applyOp: function(encOp) {
+			var op = new ui.puzzle.klass.ObjectOperation();
+			op.decode(encOp.split(","));
+			op.external = true;
+
+			ui.puzzle.opemgr.disableRecord();
+			op.redo();
+			ui.puzzle.opemgr.enableRecord();
+
+			ui.puzzle.opemgr.newOperation();
+			ui.puzzle.opemgr.add(op);
+		}
+	};
+})();

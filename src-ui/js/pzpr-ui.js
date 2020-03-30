@@ -15,6 +15,7 @@ exports.files = [
 	"ui/KeyPopup",
 	"ui/Timer",
 	"ui/AuxEditor",
+	"ui/Network",
 	"common/outro"
 ].map(function(mod) {
 	return "src-ui/js/" + mod + ".js";
