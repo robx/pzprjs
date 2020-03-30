@@ -51,6 +51,8 @@
 
 ## Version 0.12.0
 
+Release date: 2019/12/24
+
 #### New puzzle
 
 * aquarium: Introduce new puzzle: Aquarium (due to Lennard Sprong)
