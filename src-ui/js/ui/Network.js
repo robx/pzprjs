@@ -29,7 +29,9 @@
 		},
 
 		onCellOp: function(op) {
-			this.ws.send(op);
+			if (!!this.ws) {
+				this.ws.send(op);
+			}
 		},
 
 		onclose: function(event) {
