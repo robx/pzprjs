@@ -204,25 +204,23 @@ ui.toolarea = {
 			getEL("btncheck").textContent = str;
 		}
 
+		var trial = ui.puzzle.board.trialstage > 0;
+		var net = ui.network.mode !== "";
+
 		if (idname === "operation") {
 			var opemgr = ui.puzzle.opemgr;
 			getEL("btnundo").disabled = !opemgr.enableUndo;
 			getEL("btnredo").disabled = !opemgr.enableRedo;
 			getEL("btntriale").disabled = opemgr.atStartOfTrial();
 		} else if (idname === "trialmode") {
-			var trialstage = ui.puzzle.board.trialstage;
-			getEL("btnclear").disabled = trialstage > 0;
-			getEL("btntrial").disabled = trialstage > 0;
-			getEL("btntrialarea").style.display = trialstage > 0 ? "block" : "none";
+			getEL("btnclear").disabled = trial;
+			getEL("btntrial").disabled = trial;
+			getEL("btntrialarea").style.display = (trial && !net) ? "block" : "none";
 		} else if (idname === "network") {
-			/* hide redo/undo and trial mode controls
-			   hide instead of disable not least to be orthogonal to "operation"/"trialmode"
-			   blocks above */
-			var net = ui.network.mode !== "";
 			getEL("btnundo").style.display = net ? "none" : "inline";
 			getEL("btnredo").style.display = net ? "none" : "inline";
 			getEL("btntrial").style.display = net ? "none" : "inline";
-			getEL("btntrialarea").style.display = net ? "none" : "block";
+			getEL("btntrialarea").style.display = (trial && !net) ? "block" : "none";
 		} else if (this.items === null || !this.items[idname]) {
 			/* DO NOTHING */
 		} else if (ui.menuconfig.valid(idname)) {
