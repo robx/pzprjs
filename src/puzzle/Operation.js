@@ -7,6 +7,8 @@ pzpr.classmgr.makeCommon({
 	// ★Operation(派生)クラス 単体の操作情報を保持する
 	//---------------------------------------------------------------------------
 	Operation: {
+		external: false,
+
 		initialize: function() {
 			this.manager = this.puzzle.opemgr;
 
@@ -133,6 +135,9 @@ pzpr.classmgr.makeCommon({
 			return [prefix, this.bx, this.by, this.old, this.num].join(",");
 		},
 		broadcast: function() {
+			if (this.external) {
+				return;
+			}
 			this.puzzle.emit("cellop", this.toJSON());
 		},
 
