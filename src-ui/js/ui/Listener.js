@@ -64,6 +64,8 @@ ui.listener = {
 		ui.event.addVisibilityCallback(function() {
 			ui.timer.start();
 		});
+
+		ui.network.start();
 	},
 
 	//---------------------------------------------------------------------------
