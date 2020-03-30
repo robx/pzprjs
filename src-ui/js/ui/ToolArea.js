@@ -215,12 +215,12 @@ ui.toolarea = {
 		} else if (idname === "trialmode") {
 			getEL("btnclear").disabled = trial;
 			getEL("btntrial").disabled = trial;
-			getEL("btntrialarea").style.display = (trial && !net) ? "block" : "none";
+			getEL("btntrialarea").style.display = trial && !net ? "block" : "none";
 		} else if (idname === "network") {
 			getEL("btnundo").style.display = net ? "none" : "inline";
 			getEL("btnredo").style.display = net ? "none" : "inline";
 			getEL("btntrial").style.display = net ? "none" : "inline";
-			getEL("btntrialarea").style.display = (trial && !net) ? "block" : "none";
+			getEL("btntrialarea").style.display = trial && !net ? "block" : "none";
 		} else if (this.items === null || !this.items[idname]) {
 			/* DO NOTHING */
 		} else if (ui.menuconfig.valid(idname)) {
