@@ -481,7 +481,7 @@ form#fileform2 {
 /* level1, level2+ submenus */
 #menupanel menu {
   left: 0px;
-  top: 1.7em;
+  top: 1.5em;
   min-width: 132px;
   z-index: 22;
 }
