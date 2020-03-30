@@ -8,6 +8,7 @@
 		configure: function(mode, key) {
 			this.mode = mode;
 			this.key = key;
+			ui.setdisplay("network");
 		},
 
 		start: function() {

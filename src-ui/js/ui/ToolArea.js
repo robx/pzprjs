@@ -152,6 +152,7 @@ ui.toolarea = {
 				? ""
 				: "none";
 		this.setdisplay("trialmode");
+		this.setdisplay("network");
 
 		/* 共通：キャプションの設定 */
 		/* --------------------- */
@@ -213,6 +214,15 @@ ui.toolarea = {
 			getEL("btnclear").disabled = trialstage > 0;
 			getEL("btntrial").disabled = trialstage > 0;
 			getEL("btntrialarea").style.display = trialstage > 0 ? "block" : "none";
+		} else if (idname === "network") {
+			/* hide redo/undo and trial mode controls
+			   hide instead of disable not least to be orthogonal to "operation"/"trialmode"
+			   blocks above */
+			var net = ui.network.mode !== "";
+			getEL("btnundo").style.display = net ? "none" : "inline";
+			getEL("btnredo").style.display = net ? "none" : "inline";
+			getEL("btntrial").style.display = net ? "none" : "inline";
+			getEL("btntrialarea").style.display = net ? "none" : "block";
 		} else if (this.items === null || !this.items[idname]) {
 			/* DO NOTHING */
 		} else if (ui.menuconfig.valid(idname)) {
