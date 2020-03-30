@@ -37,6 +37,7 @@ pzpr.classmgr.makeCommon({
 		toJSON: function() {
 			return this.toString();
 		},
+		broadcast: function() {},
 
 		//---------------------------------------------------------------------------
 		// ope.undo()  操作opeを一手前に戻す
@@ -130,6 +131,9 @@ pzpr.classmgr.makeCommon({
 				prefix += this.pos;
 			}
 			return [prefix, this.bx, this.by, this.old, this.num].join(",");
+		},
+		broadcast: function() {
+			this.puzzle.emit("cellop", this.toJSON());
 		},
 
 		//---------------------------------------------------------------------------
@@ -597,6 +601,8 @@ pzpr.classmgr.makeCommon({
 			if (!this.puzzle.ready || (!this.forceRecord && this.disrec > 0)) {
 				return;
 			}
+
+			newope.broadcast();
 
 			/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 			if (this.enableRedo) {
