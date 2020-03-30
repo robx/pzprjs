@@ -1,3 +1,7 @@
+## Version 0.13.0
+
+Release date: 2020/03/30
+
 #### New puzzle types
 
 * araf: New puzzle type Araf (due to Giuliano Montelucci)
