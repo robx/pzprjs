@@ -397,7 +397,7 @@ form#fileform2 {
   height: 100px;
 }
 
-#urlanchor {
+.urlanchor {
   display: block;
   padding: 5px;
   background: white;

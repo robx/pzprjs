@@ -1,3 +1,7 @@
+### 2020-03-30
+
+* Add cooperative network play (server side: github.com/robx/puzzld).
+
 ## Version 0.13.0
 
 Release date: 2020/03/30

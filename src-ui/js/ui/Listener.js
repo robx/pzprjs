@@ -20,6 +20,8 @@ ui.listener = {
 
 		puzzle.on("adjust", this.onAdjust);
 		puzzle.on("resize", this.onResize);
+
+		puzzle.on("cellop", this.onCellOp);
 	},
 
 	//---------------------------------------------------------------------------
@@ -64,6 +66,8 @@ ui.listener = {
 		ui.event.addVisibilityCallback(function() {
 			ui.timer.start();
 		});
+
+		ui.network.start();
 	},
 
 	//---------------------------------------------------------------------------
@@ -165,5 +169,9 @@ ui.listener = {
 		puzzle.canvas.parentNode.style.paddingTop = valTop + "px";
 
 		ui.keypopup.resizepanel();
+	},
+
+	onCellOp: function(puzzle, op) {
+		ui.network.onCellOp(op);
 	}
 };

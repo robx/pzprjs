@@ -923,3 +923,26 @@ ui.popupmgr.addpopup("dispsize", {
 ui.popupmgr.addpopup("about", {
 	formname: "about"
 });
+
+ui.popupmgr.addpopup("network", {
+	formname: "network", // just to fit in with how popup template works
+	urlanchor: null,
+	key: "",
+
+	init: function() {
+		ui.popupmgr.popups.template.init.call(this);
+		this.urlanchor = getEL("urlanchor_network");
+		this.key = Math.random()
+			.toString(36)
+			.substr(2, 8);
+	},
+
+	coop: function(px, py) {
+		var parser = pzpr.parser;
+		var url = ui.puzzle.getURL(parser.URL_PZPRV3);
+		url = url.replace("?", "?net=coop&key=" + this.key + "&");
+		this.urlanchor.href = this.urlanchor.textContent = url;
+		ui.network.configure("coop", this.key);
+		ui.network.start();
+	}
+});
