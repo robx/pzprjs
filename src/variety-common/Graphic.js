@@ -2232,20 +2232,20 @@ pzpr.classmgr.makeCommon({
 			var boardWidth = bd.cols * this.cw,
 				boardHeight = bd.rows * this.ch;
 			var lw = this.lw,
-				lm = this.lm;
+				lm = this.lw - this.gw;
 			if (this.pid === "bosanowa") {
 				lw = 1;
 				lm = 0.5;
 			}
 			g.fillStyle = this.quescolor;
 			g.vid = "chs1_";
-			g.fillRect(-lm, -lm, lw, boardHeight + lw);
+			g.fillRect(-lm, -lm, lw, boardHeight + 2 * lm);
 			g.vid = "chs2_";
-			g.fillRect(boardWidth - lm, -lm, lw, boardHeight + lw);
+			g.fillRect(boardWidth + lm, -lm, -lw, boardHeight + 2 * lm);
 			g.vid = "chs3_";
-			g.fillRect(-lm, -lm, boardWidth + lw, lw);
+			g.fillRect(-lm, -lm, boardWidth + 2 * lm, lw);
 			g.vid = "chs4_";
-			g.fillRect(-lm, boardHeight - lm, boardWidth + lw, lw);
+			g.fillRect(-lm, boardHeight + lm, boardWidth + 2 * lm, -lw);
 		},
 		drawChassis_ex1: function(boldflag) {
 			var g = this.vinc("chassis_ex1", "crispEdges", true),
