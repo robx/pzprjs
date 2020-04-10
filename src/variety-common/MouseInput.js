@@ -50,7 +50,15 @@ pzpr.classmgr.makeCommon({
 			var cell_already_assigned = cell.qans !== 0 || cell.qsub !== 0;
 			var clearing_cells = this.inputData === 0;
 			var in_starting_cell = cell === this.firstCell;
-			if (!in_starting_cell && !clearing_cells && cell_already_assigned) {
+			var auto_input_mode = this.inputMode === "auto";
+			var one_button_input = this.puzzle.getConfig("use") === 2;
+			if (
+				auto_input_mode &&
+				one_button_input &&
+				!in_starting_cell &&
+				!clearing_cells &&
+				cell_already_assigned
+			) {
 				return;
 			}
 
