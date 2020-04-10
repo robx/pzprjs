@@ -95,7 +95,8 @@ ui.keypopup = {
 		loopsp: [111, 0],
 		tatamibari: [112, 0],
 		hakoiri: [113, 113],
-		kusabi: [114, 0]
+		kusabi: [114, 0],
+		doppelblock: [10, 115]
 	},
 
 	//---------------------------------------------------------------------------
@@ -205,6 +206,8 @@ ui.keypopup = {
 			this.generate_hakoiri(mode);
 		} else if (type === 114) {
 			this.generate_kusabi(mode);
+		} else if (type === 115) {
+			this.generate_doppelblock();
 		}
 	},
 	gentable4: function(mode) {
@@ -457,6 +460,26 @@ ui.keypopup = {
 		this.generate_main(
 			[["1", "同"], ["2", "短"], ["3", "長"], ["-", "○"], " "],
 			3
+		);
+	},
+	generate_doppelblock: function() {
+		this.generate_main(
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
+				["q", "⋅"],
+				["w", "■"],
+				" "
+			],
+			5
 		);
 	},
 

@@ -23,8 +23,8 @@ pzpr.classmgr.makeCommon({
 			this.mouseCell = cell;
 			this.initFirstCell(cell);
 
-			var shade = cell.qansUnshade ? 2 : 1,
-				unshade = cell.qansUnshade ? 1 : 2;
+			var shade = 1,
+				unshade = 2;
 			if (this.inputData === shade && !cell.allowShade()) {
 				return;
 			}
@@ -32,7 +32,7 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 
-			if (this.RBShadeCell && this.inputData === 1) {
+			if (this.RBShadeCell && this.inputData === shade) {
 				var cell0 = this.firstCell;
 				if (
 					((cell0.bx & 2) ^ (cell0.by & 2)) !==
@@ -41,7 +41,7 @@ pzpr.classmgr.makeCommon({
 					return;
 				}
 			}
-			if (this.RBShadeCell && this.inputData !== 1) {
+			if (this.RBShadeCell && this.inputData !== shade) {
 				if (this.firstState !== 1 && cell.qans === 1 && this.btn === "right") {
 					return;
 				}
@@ -62,8 +62,8 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 
-			cell.setQans(this.inputData === 1 ? 1 : 0);
-			cell.setQsub(this.inputData === 2 ? 1 : 0);
+			cell.setQans(this.inputData === shade ? 1 : 0);
+			cell.setQsub(this.inputData === unshade ? 1 : 0);
 
 			cell.draw();
 		},
@@ -75,11 +75,9 @@ pzpr.classmgr.makeCommon({
 			this.firstState = cell.qans;
 		},
 		decIC: function(cell) {
-			var ans = cell.qansUnshade ? "unshade" : "shade";
-			var sub = cell.qansUnshade ? "shade" : "unshade";
-			if (this.inputMode === ans) {
+			if (this.inputMode === "shade") {
 				this.inputData = cell.qans !== 1 ? 1 : 0;
-			} else if (this.inputMode === sub) {
+			} else if (this.inputMode === "unshade") {
 				this.inputData = cell.qsub !== 1 ? 2 : 0;
 			} else if (this.puzzle.getConfig("use") === 1) {
 				if (this.btn === "left") {
@@ -89,11 +87,7 @@ pzpr.classmgr.makeCommon({
 				}
 			} else if (this.puzzle.getConfig("use") === 2) {
 				if (cell.numberRemainsUnshaded && cell.qnum !== -1) {
-					if (ans === "shade") {
-						this.inputData = cell.qsub !== 1 ? 2 : 0;
-					} else {
-						this.inputData = cell.qans !== 1 ? 1 : 0;
-					}
+					this.inputData = cell.qsub !== 1 ? 2 : 0;
 				} else if (this.btn === "left") {
 					if (cell.qans === 1) {
 						this.inputData = 2;

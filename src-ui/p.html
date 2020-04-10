@@ -57,7 +57,7 @@
      <li class="check" data-config="dispqnumbg"><span>__問題背景描画__Paint background of clue circles__</span></li>
      <li class="check" data-config="undefcell"><span>__未確定領域背景描画__Paint uninputted cells__</span></li>
      <li class="check" data-config="cursor"><span>__カーソルの表示__Show cursor__</span></li>
-     <li class="check" data-config="trialmarker"><span>__(please translate) Show trial markers__Show trial markers__</li>
+     <li class="check" data-config="trialmarker"><span>__仮置きマーカーの表示__Show trial markers__</li>
      <li class="check" data-config="adjsize"><span>__自動横幅調節__Auto size adjust__</span></li>
      <li class="check" data-config="fullwidth"><span>__横幅最大拡張__Expand canvas width__</span></li>
      <hr>
@@ -80,7 +80,11 @@
      <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
      <li class="check" data-config="singlenum"><span>__領域に数字1つ__Single number in a region__</span></li>
      <li class="check" data-config="discolor"><span>__色分け無効化__Disable color__</span></li>
-     <li class="check" data-config="autocheck"><span>__正答自動判定__Automatic answer check__</span></li>
+     <li data-config="autocheck_mode"><span>__正答自動判定__Answer check__</span>&nbsp;-&gt;<menu label="__正答自動判定__Automatic answer check__">
+       <li class="child" data-value="off"><span>__Manual__Manual__</span></li>
+       <li class="child" data-value="guarded"><span>__Automatic (guarded)__Automatic (guarded)__</span></li>
+       <li class="child" data-value="simple"><span>__Automatic (always)__Automatic (always)__</span></li>
+     </menu></li>
      <hr>
      <li data-config="language"><span>言語/Language</span> -&gt;<menu label="言語/Language">
        <li class="child" data-value="ja"><span>日本語</span></li>
@@ -90,7 +94,7 @@
    <li id="menu_help"><span>__ヘルプ__Help__</span><menu label="__ヘルプ__Help__">
      <li class="link" data-pidlink="rules.html?"><a target="_blank">__ルール__Rules__</a></li>
      <hr>
-     <li data-popup="about"><span>__について__About__</span></li>
+     <li data-popup="about"><span>__puzz.linkについて__About__</span></li>
      <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__バグレポートと機能リクエスト__Bug reports and feature requests__</a></li>
    </menu></li>
   </menu>
@@ -137,8 +141,8 @@
       <div class="child" data-value="nabe">__鍋__Crocks__</div>
       <div class="child" data-value="crossdot">__黒点__Shaded dots__</div>
       <div class="child" data-value="ineq">__不等号__Inequality marks__</div>
-      <div class="child" data-value="move-clue">__(please translate) Move clue__Move clue__</div>
-      <div class="child" data-value="copy-answer">__(please translate) Copy answer__Copy answer__</div>
+      <div class="child" data-value="move-clue">__図形の移動__Move clue__</div>
+      <div class="child" data-value="copy-answer">__解答モードから記号作成__Copy answer__</div>
       <div class="child" data-value="mark-circle">__丸記号__Circles__</div>
       <div class="child" data-value="mark-triangle">__三角形__Triangles__</div>
       <div class="child" data-value="mark-rect">__四角形__Rectangles__</div>
@@ -288,7 +292,7 @@
     <div class="config" data-config="dontpassallcell">
       <label>
         <input type="checkbox">
-        <span>__(please translate) Lines need not pass all crossings__Lines need not pass all crossings__</span>
+        <span>__線が全ての交差点を通過していない場合も正解とする__Lines need not pass all crossings__</span>
       </label>
     </div>
     <div class="config" data-config="aquarium_regions">
@@ -552,7 +556,7 @@
   </div>
 
   <div class="popup" id="about">
-    <div class="titlebar">__について__About__</div>
+    <div class="titlebar">__puzz.linkについて__About__</div>
     <form name="about">
       <p><a href="https://github.com/robx/pzprjs">github.com/robx/pzprjs</a> version <%= git.hash %></p>
       <p>based on <span>__ぱずぷれv3__PUZ-PRE v3__</span> by <span>__は はっぱ/連続発破__happa__</span></p>
@@ -568,7 +572,7 @@
           <div><span>__入力モード__Input Mode__</span> | </div>
           <div>
             <div class="child" data-value="auto">__自動__Auto__</div>
-            <div class="child" data-value="slide">__(please translate) Slide__Slide__</div>
+            <div class="child" data-value="slide">__平行移動__Slide__</div>
           </div>
         </div>
       </div>

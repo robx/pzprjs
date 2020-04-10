@@ -262,11 +262,12 @@ pzpr.classmgr.makeCommon({
 			this.failcode.add("brNoShade");
 		},
 
-		checkShadingDecided: function() {
+		// autocheck trigger: shading status of all cells explicitly decided
+		doneShadingDecided: function() {
 			var bd = this.board;
 			if (
 				bd.cell.some(function(cell) {
-					return cell.qans === 0 && cell.qsub === 0;
+					return !cell.isShadeDecided();
 				})
 			) {
 				this.failcode.setUndecided();
@@ -1252,6 +1253,10 @@ pzpr.classmgr.makeCommon({
 		nmDivide: [
 			"タテヨコにつながっていない数字があります。",
 			"Numbers are divided."
+		],
+		nmSumViewNe: [
+			"数字と黒マスにぶつかるまでの4方向のマスの合計が違います。",
+			"A cell containing a clue number sees a different number of cells in the four orthogonal directions."
 		]
 	}
 });

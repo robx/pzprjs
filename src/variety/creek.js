@@ -75,7 +75,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			this.drawDotCells(false);
+			this.drawDotCells();
 			this.drawGrid();
 
 			this.drawChassis();
@@ -122,7 +122,8 @@
 			"checkShadeCellExist",
 			"checkShadeOverNum",
 			"checkConnectUnshade",
-			"checkShadeLessNum"
+			"checkShadeLessNum",
+			"doneShadingDecided"
 		],
 
 		checkShadeOverNum: function() {

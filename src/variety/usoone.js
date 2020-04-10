@@ -269,7 +269,8 @@
 		checklist: [
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
-			"checkLiarCell"
+			"checkLiarCell",
+			"doneShadingDecided"
 		],
 
 		checkLiarCell: function(code) {

@@ -23,8 +23,6 @@
 					this.inputcell_kurochute();
 				} else if (this.mousemove) {
 					this.inputcell();
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
@@ -36,7 +34,7 @@
 		inputcell_kurochute: function() {
 			var cell = this.getcell();
 			if (cell.isnull) {
-			} else if (cell.isNum() && this.btn === "left") {
+			} else if (cell.isNum()) {
 				this.inputqcmp();
 			} else {
 				this.inputcell();
@@ -68,6 +66,12 @@
 
 		maxnum: function() {
 			return Math.max(this.board.cols, this.board.rows) - 1;
+		},
+
+		prehook: {
+			qsub: function() {
+				return this.qnum !== -1;
+			}
 		}
 	},
 	Board: {
@@ -87,7 +91,7 @@
 		enablebcolor: true,
 
 		paint: function() {
-			this.drawDotCells(false);
+			this.drawDotCells();
 			this.drawGrid();
 			this.drawShadedCells();
 
@@ -169,7 +173,8 @@
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
-			"checkShootSingle"
+			"checkShootSingle",
+			"doneShadingDecided"
 		],
 
 		checkShootSingle: function() {
@@ -206,7 +211,7 @@
 				if (this.checkOnly) {
 					break;
 				}
-				cell.seterr(4);
+				cell.seterr(1);
 				clist.seterr(1);
 			}
 		}
@@ -215,7 +220,7 @@
 	FailCode: {
 		nmShootShadeNe1: [
 			"数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。",
-			"The number of shaded cells at aparted cell by the number is not one."
+			"There is not exactly one shaded cell at the given distance from the number."
 		]
 	}
 });

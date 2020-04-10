@@ -310,7 +310,7 @@
 			"checkShadeCellCount",
 			"checkCountinuousUnshadeCell",
 			"checkRoomSymm@ayeheya",
-			"checkDone"
+			"doneShadingDecided"
 		],
 
 		checkFractal: function() {
@@ -398,10 +398,6 @@
 				clist.seterr(1);
 			}
 			return result;
-		},
-
-		checkDone: function() {
-			this.checkShadingDecided();
 		}
 	},
 

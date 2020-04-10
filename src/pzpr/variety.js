@@ -97,7 +97,7 @@
 				0,
 				"バッグ",
 				"Cave",
-				"cave",
+				"kurodoko",
 				{ alias: "bag", alias2: "corral", alias3: "correl" }
 			],
 			barns: [1, 0, "バーンズ", "Barns"],
@@ -121,8 +121,9 @@
 			country: [1, 0, "カントリーロード", "Country Road"],
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
-			"curvedata-aux": [0, 0, "(please translate) Edit shape", "Edit shape"],
+			"curvedata-aux": [0, 0, "図形の編集", "Edit shape"],
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
+			doppelblock: [0, 0, "Doppelblock", "Doppelblock", "doppelblock"],
 			dosufuwa: [0, 0, "ドッスンフワリ", "Dosun-Fuwari"],
 			doubleback: [0, 0, "引き返す", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
@@ -270,6 +271,7 @@
 			shimaguni: [1, 0, "島国", "Islands", "shimaguni"],
 			shugaku: [1, 0, "修学旅行の夜", "School Trip"],
 			shwolf: [0, 0, "ヤギとオオカミ", "Goats and Wolves", "kramma"],
+			simpleloop: [0, 0, "Simple Loop", "Simple Loop", "country"],
 			slalom: [1, 1, "スラローム", "Slalom", "", { alias: "suraromu" }],
 			slither: [
 				0,

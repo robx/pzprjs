@@ -4,7 +4,7 @@ ui.debug.addDebugData("tateyoko", {
 	url: "5/5/i23i3ono2i25i22pnqi33i2",
 	failcheck: [
 		[
-			"nmConnBarGt",
+			"nmConnBarWrong",
 			"pzprv3/tateyoko/5/5/. . 3 . . /. e . e 2 /. . 5 . . /2 a . b . /. . 3 . . /0 0 0 0 0 /2 . 2 . 2 /0 0 0 0 0 /0 . 0 . 0 /0 0 0 0 0 /"
 		],
 		[
@@ -16,7 +16,7 @@ ui.debug.addDebugData("tateyoko", {
 			"pzprv3/tateyoko/5/5/. . 3 . . /. e . e 2 /. . 5 . . /2 a . b . /. . 3 . . /0 0 0 0 0 /0 . 0 . 0 /0 2 2 2 2 /0 . 0 . 0 /0 0 0 0 0 /"
 		],
 		[
-			"nmConnBarLt",
+			"nmConnBarWrong",
 			"pzprv3/tateyoko/5/5/. . 3 . . /. e . e 2 /. . 5 . . /2 a . b . /. . 3 . . /0 0 0 0 0 /0 . 0 . 0 /2 2 2 2 2 /0 . 0 . 0 /0 0 0 0 0 /"
 		],
 		[
