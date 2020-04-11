@@ -1,6 +1,6 @@
 // test/load_testdata.js
 
-var pzpr = require("../dist/js/pzpr.js");
+var pzpr = require("../dist/js/bundle.js");
 
 // Load test data
 var testdata = {};
@@ -12,8 +12,8 @@ global.ui = {
 		}
 	}
 };
-pzpr.variety.each(function(pid) {
-	require("./script/" + pid + ".js");
-});
+// pzpr.variety.each(function(pid) {
+	// require("./script/" + pid + ".js");
+// });
 
-module.exports = testdata;
+export default testdata;

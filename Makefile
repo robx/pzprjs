@@ -50,20 +50,8 @@ bundle:
 		src/footer.js \
 	> src/bundle.js
 
-	
-subbundle:
-	# -l tinyify \
-	./node_modules/.bin/browserify \
-   		--exclude=pzpr-canvas \
-   		--exclude=pzpr-ui \
-		--standalone=pzpr \
-		--extension=mjs \
-   		src/bundle.mjs \
-	> dist/js/bundle.js
-
 rollup:
 	./node_modules/.bin/rollup -c
-
 
 candle:
 	cp ./node_modules/pzpr-canvas/dist/candle.js ./dist/js/candle.js

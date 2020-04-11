@@ -1,10 +1,10 @@
 // test/answer_test.js
 
-var assert = require("assert");
+import assert from "assert";
 
-var pzpr = require("../../dist/js/pzpr.js");
+import pzpr from "../../src/bundle.js";
 
-var testdata = require("../load_testdata.js");
+import testdata from "../load_testdata.js";
 
 pzpr.variety.each(function(pid) {
 	describe(pid + " answer test", function() {
