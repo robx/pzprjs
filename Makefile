@@ -18,10 +18,7 @@ bundle:
 	cat \
 		src/header.js \
     	src/pzpr/event.js \
-    	src/pzpr/util.js \
-    	src/puzzle/Puzzle.js \
     	src/puzzle/Config.js \
-    	src/puzzle/Address.js \
     	src/puzzle/Piece.js \
     	src/puzzle/PieceList.js \
     	src/puzzle/Board.js \
