@@ -61,7 +61,7 @@ ui.debug.addDebugData("lightup", {
 		},
 		{
 			input: ["mouse,left, 1,1, 3,1, 3,3, 5,3"],
-			result: "pzprv3/lightup/2/3/+ + . /+ + + /"
+			result: "pzprv3/lightup/2/3/+ + . /+ # + /"
 		},
 		{
 			input: ["mouse,left, 1,1, 3,1, 3,3, 5,3"],

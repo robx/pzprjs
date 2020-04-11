@@ -49,7 +49,7 @@ ui.debug.addDebugData("kurochute", {
 		},
 		{
 			input: ["mouse,left, 3,1, 9,1"],
-			result: "pzprv3/kurochute/1/5/1 . . . . /. + + + + /"
+			result: "pzprv3/kurochute/1/5/1 . . . . /. + + 1 + /"
 		},
 		{
 			input: ["mouse,left, 3,1, 9,1"],
@@ -61,7 +61,7 @@ ui.debug.addDebugData("kurochute", {
 		},
 		{
 			input: ["mouse,right, 3,1, 9,1"],
-			result: "pzprv3/kurochute/1/5/1 . . . . /. 1 + 1 + /"
+			result: "pzprv3/kurochute/1/5/1 . . . . /. 1 + + + /"
 		},
 		{
 			input: ["mouse,right, 3,1, 9,1"],
