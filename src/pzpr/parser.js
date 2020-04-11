@@ -1,5 +1,7 @@
 // Parser.js v3.4.1
 
+import MetaData from "./pzpr/metadata.js";
+
 (function() {
 	var URL_AUTO = 0,
 		URL_PZPRV3 = 1,
@@ -428,7 +430,7 @@
 	FileData = pzpr.parser.FileData = function(fstr, variety) {
 		this.pid = !!variety ? variety : "";
 		this.fstr = fstr;
-		this.metadata = new pzpr.MetaData();
+		this.metadata = new MetaData();
 	};
 	pzpr.parser.FileData.prototype = {
 		pid: "",

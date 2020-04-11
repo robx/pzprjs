@@ -1,5 +1,7 @@
 // Puzzle.js v3.6.0
 
+// import MetaData from "./pzpr/metadata.js";
+
 (function() {
 	//---------------------------------------------------------------------------
 	// ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
@@ -30,7 +32,7 @@
 
 		this.listeners = {};
 
-		this.metadata = new pzpr.MetaData();
+		this.metadata = new MetaData();
 
 		this.config = new this.Config(this);
 		if (option.config !== void 0) {

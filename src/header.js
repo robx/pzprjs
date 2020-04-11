@@ -1,7 +1,9 @@
 var pzpr = {};
 export default pzpr;
 
-pzpr.Candle = require("pzpr-canvas");
+import Candle from "pzpr-canvas";
+
+pzpr.Candle = Candle;
 console.log("hi!", pzpr.Candle);
 
 

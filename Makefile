@@ -1,5 +1,7 @@
 .PHONY: build test serve format
 
+all: candle bundle rollup
+
 build:
 	npm run-script build
 
@@ -20,7 +22,6 @@ bundle:
     	src/pzpr/classmgr.js \
     	src/pzpr/variety.js \
     	src/pzpr/parser.js \
-    	src/pzpr/metadata.js \
     	src/pzpr/util.js \
     	src/puzzle/Puzzle.js \
     	src/puzzle/Config.js \
@@ -61,15 +62,8 @@ subbundle:
 	> dist/js/bundle.js
 
 rollup:
-	./node_modules/.bin/rollup \
-		src/bundle.js \
-		--file dist/js/bundle.js \
-		--name pzpr \
-		--format iife
+	./node_modules/.bin/rollup -c
 
 
 candle:
-	./node_modules/.bin/browserify \
-		-i canvas \
-		-r pzpr-canvas \
-	> dist/js/candle.js
+	cp ./node_modules/pzpr-canvas/dist/candle.js ./dist/js/candle.js
