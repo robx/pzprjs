@@ -20,7 +20,6 @@ bundle:
     	src/pzpr/env.js \
     	src/pzpr/event.js \
     	src/pzpr/classmgr.js \
-    	src/pzpr/variety.js \
     	src/pzpr/parser.js \
     	src/pzpr/util.js \
     	src/puzzle/Puzzle.js \

@@ -1,8 +1,7 @@
 // Variety.js v3.4.1
 
-import mod_skyscrapers from "./variety/skyscrapers.js";
+import mod_skyscrapers from "../variety/skyscrapers.js";
 
-(function() {
 	var _info = {},
 		_list = [];
 	function toPID(name) {
@@ -22,9 +21,9 @@ import mod_skyscrapers from "./variety/skyscrapers.js";
 		return "";
 	}
 
-	var variety = (pzpr.variety = pzpr.genre = function(pid) {
+	var variety = function(pid) {
 		return _info[toPID(pid)] || { valid: false };
-	});
+	};
 	variety.extend = function(obj) {
 		for (var n in obj) {
 			this[n] = obj[n];
@@ -328,4 +327,5 @@ import mod_skyscrapers from "./variety/skyscrapers.js";
 			yosenabe: [0, 0, "よせなべ", "Yosenabe"]
 		}
 	);
-})();
+
+export default variety;

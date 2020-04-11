@@ -1,5 +1,7 @@
 // classmgr.js v3.6.0
 
+// import variety from './pzpr/variety.js';
+
 //---------------------------------------------------------------
 // クラス設定用関数など
 //---------------------------------------------------------------
@@ -144,11 +146,11 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile: function(pid) {
-		var module = pzpr.variety(pid).module;
+		var module = variety(pid).module;
 		console.log("includeCustomFile", pid, module);
 		this.makeCustom(module[0], module[1]);
 		/*
-		var scriptid = pzpr.variety(pid).script;
+		var scriptid = variety(pid).script;
 		if (this.includedFile[scriptid]) {
 			return;
 		}
@@ -172,7 +174,7 @@ pzpr.classmgr = {
 	// 新しくパズルのファイルを開く時の処理
 	//---------------------------------------------------------------------------
 	setPuzzleClass: function(puzzle, newpid, callback) {
-		if (!pzpr.variety(newpid).valid) {
+		if (!variety(newpid).valid) {
 			puzzle.emit("fail-open");
 			throw "Invalid Puzzle Variety Selected";
 		}
@@ -226,7 +228,7 @@ pzpr.classmgr = {
 		this.setPrototypeRef(puzzle, "klass", puzzle.klass);
 
 		puzzle.pid = pid;
-		puzzle.info = pzpr.variety(pid);
+		puzzle.info = variety(pid);
 	},
 
 	//---------------------------------------------------------------------------

@@ -1,5 +1,7 @@
 // Config.js v3.4.1
 
+// import variety from './pzpr/variety.js';
+
 (function() {
 	//---------------------------------------------------------------------------
 	// ★Configクラス 設定値の値などを保持する
@@ -143,7 +145,7 @@
 			if (argname.match(/\@/)) {
 				var splitted = argname.split(/\@/);
 				info.name = splitted[0];
-				var pid = pzpr.variety.toPID(splitted[1]);
+				var pid = variety.toPID(splitted[1]);
 				if (!!pid) {
 					info.pid = pid;
 				}
