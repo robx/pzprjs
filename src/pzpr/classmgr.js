@@ -144,6 +144,10 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile: function(pid) {
+		var module = pzpr.variety(pid).module;
+		console.log("includeCustomFile", pid, module);
+		this.makeCustom(module[0], module[1]);
+		/*
 		var scriptid = pzpr.variety(pid).script;
 		if (this.includedFile[scriptid]) {
 			return;
@@ -160,6 +164,7 @@ pzpr.classmgr = {
 			var exporteddata = require(customfile);
 			this.makeCustom(exporteddata[0], exporteddata[1]);
 		}
+		*/
 	},
 	includedFile: {},
 

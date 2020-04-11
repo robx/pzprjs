@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "pzpr-canvas": "^0.8.2",
+    "rollup": "^2.6.0",
     "source-map-support": "^0.5.12"
   }
 }

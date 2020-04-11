@@ -72,7 +72,7 @@ pzpr.env = (function() {
 
 pzpr.lang = (function() {
 	var userlang = pzpr.env.node
-		? process.env.LANG
+		? "XXX" // process.env.LANG
 		: navigator.browserLanguage || navigator.language || navigator.userLanguage;
 	return !userlang || userlang.substr(0, 2) === "ja" ? "ja" : "en";
 })();

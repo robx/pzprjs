@@ -1,5 +1,7 @@
 // Variety.js v3.4.1
 
+import mod_skyscrapers from "./variety/skyscrapers.js";
+
 (function() {
 	var _info = {},
 		_list = [];
@@ -45,6 +47,8 @@
 	});
 	delete variety.extend;
 
+
+
 	(function(Genre, obj) {
 		for (var pzprid in obj) {
 			_info[pzprid] = new Genre(pzprid, obj[pzprid]);
@@ -59,9 +63,10 @@
 		function Genre(pzprid, datalist) {
 			this.valid = true;
 			this.pid = pzprid; /* パズルID */
-			this.script = !!datalist[4]
-				? datalist[4]
-				: pzprid; /* スクリプトファイル(クラス) */
+			this.module = datalist[4];
+			// this.script = !!datalist[4]
+				// ? datalist[4]
+				// : pzprid; /* スクリプトファイル(クラス) */
 			this.ja = datalist[2]; /* 日本語パズル名 */
 			this.en = datalist[3]; /* 英語パズル名 */
 			this.exists = {
@@ -110,7 +115,7 @@
 				0,
 				"ビルディングパズル",
 				"Skyscrapers",
-				"",
+				mod_skyscrapers,
 				{ alias: "building", alias2: "skyscraper" }
 			],
 			castle: [0, 0, "Castle Wall", "Castle Wall"],
