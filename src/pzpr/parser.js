@@ -1,8 +1,9 @@
 // Parser.js v3.4.1
 
-import MetaData from "./pzpr/metadata.js";
+import MetaData from "./metadata.js";
+import variety from "./variety.js";
+import { env } from "./env.js";
 
-(function() {
 	var URL_AUTO = 0,
 		URL_PZPRV3 = 1,
 		URL_PZPRAPP = 2,
@@ -17,8 +18,8 @@ import MetaData from "./pzpr/metadata.js";
 
 	var URLData, FileData, Parser;
 
-	Parser = pzpr.parser = function(data, variety) {
-		return Parser.parse(data, variety);
+	var Parser = function(data, l_variety) {
+		return Parser.parse(data, l_variety);
 	};
 	Parser.extend = function(obj) {
 		for (var n in obj) {
@@ -43,12 +44,12 @@ import MetaData from "./pzpr/metadata.js";
 
 		/* 入力された文字列を、URLおよびファイルデータとして解析し返します        */
 		/* ただし最初から解析済みのデータが渡された場合は、それをそのまま返します */
-		parse: function(data, variety) {
+		parse: function(data, l_variety) {
 			if (data instanceof URLData || data instanceof FileData) {
 				return data;
 			}
 
-			return this.parseFile(data, variety) || this.parseURL(data);
+			return this.parseFile(data, l_variety) || this.parseURL(data);
 		},
 
 		parseURL: function(url) {
@@ -59,7 +60,7 @@ import MetaData from "./pzpr/metadata.js";
 			url = url.replace(/(\r|\n)/g, ""); // textarea上の改行が実際の改行扱いになるUAに対応(Operaとか)
 			return new URLData(url).parse();
 		},
-		parseFile: function(fstr, variety) {
+		parseFile: function(fstr, l_variety) {
 			if (fstr instanceof FileData) {
 				return fstr;
 			}
@@ -67,7 +68,7 @@ import MetaData from "./pzpr/metadata.js";
 			if (!fstr.match(/^\<\?xml/)) {
 				fstr = fstr.replace(/[\t\r]*\n/g, "\n").replace(/\//g, "\n");
 			}
-			return new FileData(fstr, variety).parse();
+			return new FileData(fstr, l_variety).parse();
 		}
 	});
 	delete Parser.extend;
@@ -75,13 +76,13 @@ import MetaData from "./pzpr/metadata.js";
 	//---------------------------------------------------------------------------
 	// ★ URLData() URLデータのencode/decodeのためのオブジェクト
 	//---------------------------------------------------------------------------
-	URLData = pzpr.parser.URLData = function(url, mode) {
+	URLData = Parser.URLData = function(url, mode) {
 		this.url = url;
 		if (mode !== void 0) {
 			this.mode = mode;
 		}
 	};
-	pzpr.parser.URLData.prototype = {
+	Parser.URLData.prototype = {
 		pid: "",
 		mode: "",
 		type: URL_AUTO /* ==0 */,
@@ -190,7 +191,7 @@ import MetaData from "./pzpr/metadata.js";
 					this.type = URL_PZPRV3;
 				}
 			}
-			this.pid = pzpr.variety.toPID(this.pid);
+			this.pid = variety.toPID(this.pid);
 		},
 
 		//---------------------------------------------------------------------------
@@ -198,7 +199,7 @@ import MetaData from "./pzpr/metadata.js";
 		//---------------------------------------------------------------------------
 		outputURLType: function() {
 			var url = "";
-			if (pzpr.env.node) {
+			if (env.node) {
 				url = "http://pzv.jp/p.html";
 			} else {
 				url = location.protocol + "//" + location.host + location.pathname;
@@ -236,8 +237,8 @@ import MetaData from "./pzpr/metadata.js";
 				url = url + typ;
 			}
 			return url
-				.replace("%PID%", pzpr.variety(pid).urlid)
-				.replace("%KID%", pzpr.variety(this.pid).kanpenid);
+				.replace("%PID%", variety(pid).urlid)
+				.replace("%KID%", variety(this.pid).kanpenid);
 		},
 
 		//---------------------------------------------------------------------------
@@ -427,12 +428,12 @@ import MetaData from "./pzpr/metadata.js";
 	//---------------------------------------------------------------------------
 	// ★ FileData() ファイルデータのencode/decodeのためのオブジェクト
 	//---------------------------------------------------------------------------
-	FileData = pzpr.parser.FileData = function(fstr, variety) {
-		this.pid = !!variety ? variety : "";
+	FileData = Parser.FileData = function(fstr, l_variety) {
+		this.pid = !!l_variety ? l_variety : "";
 		this.fstr = fstr;
 		this.metadata = new MetaData();
 	};
-	pzpr.parser.FileData.prototype = {
+	Parser.FileData.prototype = {
 		pid: "",
 		type: FILE_AUTO /* == 0 */,
 		filever: 0,
@@ -499,7 +500,7 @@ import MetaData from "./pzpr/metadata.js";
 			} else {
 				this.pid = "";
 			}
-			this.pid = pzpr.variety.toPID(this.pid);
+			this.pid = variety.toPID(this.pid);
 
 			return !!this.pid;
 		},
@@ -518,7 +519,7 @@ import MetaData from "./pzpr/metadata.js";
 			} else if (this.type === FILE_PBOX_XML) {
 				this.body
 					.querySelector("puzzle")
-					.setAttribute("type", pzpr.variety(this.pid).kanpenid);
+					.setAttribute("type", variety(this.pid).kanpenid);
 			}
 			return "";
 		},
@@ -794,4 +795,5 @@ import MetaData from "./pzpr/metadata.js";
 			}
 		}
 	};
-})();
+
+export default Parser;

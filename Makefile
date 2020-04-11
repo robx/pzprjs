@@ -17,9 +17,7 @@ format:
 bundle:
 	cat \
 		src/header.js \
-    	src/pzpr/env.js \
     	src/pzpr/event.js \
-    	src/pzpr/parser.js \
     	src/pzpr/util.js \
     	src/puzzle/Puzzle.js \
     	src/puzzle/Config.js \

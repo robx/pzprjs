@@ -1,5 +1,7 @@
 // MouseInput.js v3.5.2
 
+// import env from '../pzpr/env.js';
+
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
 //---------------------------------------------------------------------------
@@ -167,9 +169,9 @@ pzpr.classmgr.makeCommon({
 				return pix;
 			}
 			if (
-				!pzpr.env.API.touchevent ||
-				pzpr.env.API.pointerevent ||
-				pzpr.env.OS.iOS
+				!env.API.touchevent ||
+				env.API.pointerevent ||
+				env.OS.iOS
 			) {
 				if (!isNaN(e.offsetX)) {
 					pix = { px: e.offsetX, py: e.offsetY };

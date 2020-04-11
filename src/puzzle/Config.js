@@ -1,6 +1,7 @@
 // Config.js v3.4.1
 
-// import variety from './pzpr/variety.js';
+// import variety from '../pzpr/variety.js';
+// import env from '../pzpr/env.js';
 
 (function() {
 	//---------------------------------------------------------------------------
@@ -43,7 +44,7 @@
 			this.add("squarecell", true); /* セルは正方形にする */
 
 			/* 入力方法設定 */
-			this.add("use", !pzpr.env.API.touchevent ? 1 : 2, {
+			this.add("use", !env.API.touchevent ? 1 : 2, {
 				option: [1, 2]
 			}); /* 黒マスの入力方法 */
 			this.add("use_tri", 1, {
@@ -57,7 +58,7 @@
 			this.add("bgcolor", false); /* slither 背景色入力 */
 			this.add(
 				"singlenum",
-				!pzpr.env.API.touchevent
+				!env.API.touchevent
 			); /* hanare: 部屋に回答数字を一つだけ入力 */
 			this.add("enline", true); /* kouchoku: 線は点の間のみ引ける */
 			this.add("lattice", true); /* kouchoku: 格子点チェック */
