@@ -32,13 +32,14 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 
+			var inputData = this.inputData;
 			if (this.RBShadeCell && this.inputData === shade) {
 				var cell0 = this.firstCell;
 				if (
 					((cell0.bx & 2) ^ (cell0.by & 2)) !==
 					((cell.bx & 2) ^ (cell.by & 2))
 				) {
-					return;
+					inputData = unshade;
 				}
 			}
 			if (this.RBShadeCell && this.inputData !== shade) {
@@ -47,8 +48,8 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 
-			cell.setQans(this.inputData === shade ? 1 : 0);
-			cell.setQsub(this.inputData === unshade ? 1 : 0);
+			cell.setQans(inputData === shade ? 1 : 0);
+			cell.setQsub(inputData === unshade ? 1 : 0);
 
 			cell.draw();
 		},
