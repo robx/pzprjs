@@ -17,8 +17,6 @@ format:
 bundle:
 	cat \
 		src/header.js \
-    	src/pzpr/event.js \
-    	src/puzzle/Config.js \
 	> src/bundle.js
 
 rollup:

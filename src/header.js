@@ -1,10 +1,11 @@
-var pzpr = {};
+import pzpr from './pzpr/core.js';
 export default pzpr;
 
 import Candle from 'pzpr-canvas';
 pzpr.Candle = Candle;
 import {env, lang} from "./pzpr/env.js";
 pzpr.env = env;
+import './pzpr/event.js';
 pzpr.lang = lang;
 import {common, custom, classmgr} from './pzpr/classmgr.js';
 pzpr.common = common;
@@ -19,8 +20,8 @@ pzpr.util = util;
 
 import Puzzle from "./puzzle/Puzzle.js";
 pzpr.Puzzle = Puzzle;
+import "./puzzle/Config.js"; // modifies Puzzle
 import "./puzzle/Address.js";
-
 import "./puzzle/Piece.js";
 import "./puzzle/PieceList.js";
 import "./puzzle/Board.js";

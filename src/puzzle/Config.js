@@ -1,13 +1,13 @@
 // Config.js v3.4.1
 
-// import variety from '../pzpr/variety.js';
-// import env from '../pzpr/env.js';
+import variety from '../pzpr/variety.js';
+import { env } from '../pzpr/env.js';
+import Puzzle from './Puzzle.js';
 
-(function() {
 	//---------------------------------------------------------------------------
 	// ★Configクラス 設定値の値などを保持する
 	//---------------------------------------------------------------------------
-	var Config = (pzpr.Puzzle.prototype.Config = function(puzzle) {
+	var Config = (Puzzle.prototype.Config = function(puzzle) {
 		this.puzzle = puzzle;
 		this.init();
 	});
@@ -421,4 +421,3 @@
 			}
 		}
 	};
-})();

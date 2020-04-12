@@ -1,6 +1,9 @@
 // event.js v3.4.1
 
-(function() {
+import util from './util.js';
+import { env } from './env.js';
+import pzpr from './core.js';
+
 	//---------------------------------------------------------------
 	// 起動時関連関数
 	//---------------------------------------------------------------
@@ -29,7 +32,7 @@
 		}
 	}
 
-	if (!pzpr.env.browser) {
+	if (!env.browser) {
 	} else if (document.readyState === "complete") {
 		setTimeout(postload, 10);
 	} else {
@@ -54,8 +57,8 @@
 	}
 	pzpr.on("load", function addKeyEvents() {
 		// キー入力イベントの設定
-		pzpr.util.addEvent(document, "keydown", pzpr, execKeyDown);
-		pzpr.util.addEvent(document, "keyup", pzpr, execKeyUp);
+		util.addEvent(document, "keydown", pzpr, execKeyDown);
+		util.addEvent(document, "keyup", pzpr, execKeyUp);
 	});
 
 	//---------------------------------------------------------------------------
@@ -64,4 +67,3 @@
 	pzpr.connectKeyEvents = function(puzzle) {
 		keytarget = puzzle;
 	};
-})();
