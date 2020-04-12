@@ -1,6 +1,7 @@
 //
 // パズル固有スクリプト部 快刀乱麻・新・快刀乱麻・ヤギとオオカミ版 kramma.js
 //
+import Candle from 'pzpr-canvas';
 var pidlist = ["kramma", "kramman", "shwolf"];
 var classbase = {
 	//---------------------------------------------------------
@@ -482,8 +483,8 @@ var classbase = {
 					puzzle.painter.paintAll();
 				};
 			} else {
-				this.image_canvas = !!puzzle.pzpr.Candle.Canvas
-					? new puzzle.pzpr.Candle.Canvas.Image()
+				this.image_canvas = !!Candle.Canvas
+					? new Candle.Canvas.Image()
 					: {};
 				this.image_svg = {};
 			}

@@ -1,6 +1,6 @@
 var assert = require("assert");
 
-var pzpr = require("../../");
+import pzpr from "../../src/pzpr.js";
 
 var puzzle = new pzpr.Puzzle();
 
