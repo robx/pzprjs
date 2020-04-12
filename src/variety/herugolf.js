@@ -319,7 +319,9 @@ var classbase = {
 			var cell = component.departure,
 				num = cell.qnum;
 			num = num >= 0 ? num : this.board.cell.length;
-			cell.distance = ((num + 1) * num) / 2;
+			if (! Object.isFrozen(cell)) {
+				cell.distance = ((num + 1) * num) / 2;
+			}
 			if (cell.lcnt === 0) {
 				return;
 			}

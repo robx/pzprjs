@@ -103,7 +103,9 @@ classmgr.makeCommon({
 				return;
 			}
 			for (var i = 0; i < this.length; i++) {
-				this[i].error = num;
+				if (! Object.isFrozen(this[i])) {
+					this[i].error = num;
+				}
 			}
 		},
 		setnoerr: function() {

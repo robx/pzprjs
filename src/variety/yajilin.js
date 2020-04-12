@@ -143,7 +143,9 @@ var classbase = {
 				var adb = this.adjborder;
 				var bs = [adb.top, adb.bottom, adb.left, adb.right];
 				for (var i = 0; i < bs.length; i++) {
-					bs[i].line = 0;
+					if (! Object.isFrozen(bs[i])) {
+						bs[i].line = 0;
+					}
 				}
 			}
 		}
