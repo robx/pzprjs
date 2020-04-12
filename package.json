@@ -27,7 +27,7 @@
     "format": "prettier --write '{src,src-ui,test}/**/*.{js,css}'",
     "check-format": "prettier --check '{src,src-ui,test}/**/*.{js,css}'",
     "lint": "eslint src src-ui test sample",
-    "test": "eslint --quiet src src-ui test sample && mocha -r source-map-support/register -R progress --recursive test",
+    "test": "mocha -r esm -r pzpr-canvas -r source-map-support/register -R progress --recursive test",
     "prepublishOnly": "npm test"
   },
   "devDependencies": {
@@ -42,6 +42,7 @@
     "prettier": "^1.19.1"
   },
   "dependencies": {
+    "esm": "^3.2.25",
     "pzpr-canvas": "^0.8.2",
     "rollup": "^2.6.0",
     "source-map-support": "^0.5.12"
