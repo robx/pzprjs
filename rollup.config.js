@@ -15,6 +15,7 @@ export default {
 			"pzpr-canvas": "Candle"
 		}
 	},
+	context: "window",
 	plugins: [
 		production && terser() // minify, but only in production
 	]
