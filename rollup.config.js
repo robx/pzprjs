@@ -9,7 +9,7 @@ const production = !process.env.ROLLUP_WATCH;
 export default {
 	input: 'src/pzpr.js',
 	output: {
-		file: 'dist/js/bundle.js',
+		file: 'dist/js/pzpr.js',
 		name: 'pzpr',
 		format: 'iife',
 		sourcemap: true,

@@ -1,6 +1,4 @@
-.PHONY: build test serve format
-
-all: candle rollup
+.PHONY: build test serve format lint rollup candle
 
 build:
 	npm run-script build
@@ -13,6 +11,11 @@ serve:
 
 format:
 	npm run-script format
+
+lint:
+	npm run-script lint
+
+new: candle rollup
 
 rollup:
 	./node_modules/.bin/rollup -c

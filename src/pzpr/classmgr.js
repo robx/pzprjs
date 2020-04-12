@@ -147,26 +147,7 @@ var classmgr = {
 	//---------------------------------------------------------------
 	includeCustomFile: function(pid) {
 		var module = variety(pid).module;
-		console.log("includeCustomFile", pid, module);
 		this.makeCustom(module[0], module[1]);
-		/*
-		var scriptid = variety(pid).script;
-		if (this.includedFile[scriptid]) {
-			return;
-		}
-		this.includedFile[scriptid] = true;
-
-		var customfile = pzpr.util.getpath() + "./pzpr-variety/" + scriptid + ".js";
-		if (pzpr.env.browser && !pzpr.env.node) {
-			var _script = document.createElement("script");
-			_script.type = "text/javascript";
-			_script.src = customfile + "?" + pzpr.version;
-			document.getElementsByTagName("head")[0].appendChild(_script);
-		} else {
-			var exporteddata = require(customfile);
-			this.makeCustom(exporteddata[0], exporteddata[1]);
-		}
-		*/
 	},
 	includedFile: {},
 
