@@ -1,6 +1,6 @@
 .PHONY: build test serve format
 
-all: candle bundle rollup
+all: candle rollup
 
 build:
 	npm run-script build
@@ -13,11 +13,6 @@ serve:
 
 format:
 	npm run-script format
-
-bundle:
-	cat \
-		src/header.js \
-	> src/bundle.js
 
 rollup:
 	./node_modules/.bin/rollup -c

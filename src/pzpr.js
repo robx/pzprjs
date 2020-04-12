@@ -1,41 +1,45 @@
-exports.files = [
-	"common/intro",
-	"pzpr/core",
-	"lib/candle-intro",
-	"../node_modules/pzpr-canvas/dist/candle",
-	"lib/candle-outro",
-	"pzpr/env",
-	"pzpr/event",
-	"pzpr/classmgr",
-	"pzpr/variety",
-	"pzpr/parser",
-	"pzpr/metadata",
-	"pzpr/util",
-	"puzzle/Puzzle",
-	"puzzle/Config",
-	"puzzle/Address",
-	"puzzle/Piece",
-	"puzzle/PieceList",
-	"puzzle/Board",
-	"puzzle/BoardExec",
-	"puzzle/GraphBase",
-	"puzzle/LineManager",
-	"puzzle/AreaManager",
-	"puzzle/Graphic",
-	"puzzle/MouseInput",
-	"puzzle/KeyInput",
-	"puzzle/Encode",
-	"puzzle/FileData",
-	"puzzle/Answer",
-	"puzzle/Operation",
-	"variety-common/Graphic",
-	"variety-common/KeyInput",
-	"variety-common/MouseInput",
-	"variety-common/Answer",
-	"variety-common/BoardExec",
-	"variety-common/Encode",
-	"variety-common/FileData",
-	"common/outro"
-].map(function(mod) {
-	return "src/" + mod + ".js";
-});
+import pzpr from './pzpr/core.js';
+export default pzpr;
+
+import Candle from 'pzpr-canvas';
+pzpr.Candle = Candle;
+import {env, lang} from "./pzpr/env.js";
+pzpr.env = env;
+import './pzpr/event.js';
+pzpr.lang = lang;
+import {common, custom, classmgr} from './pzpr/classmgr.js';
+pzpr.common = common;
+pzpr.custom = custom;
+pzpr.classmgr = classmgr;
+import variety from "./pzpr/variety.js";
+pzpr.variety = variety;
+import Parser from "./pzpr/parser.js";
+pzpr.parser = Parser;
+import util from "./pzpr/util.js";
+pzpr.util = util;
+
+import Puzzle from "./puzzle/Puzzle.js";
+pzpr.Puzzle = Puzzle;
+import "./puzzle/Config.js"; // modifies Puzzle
+import "./puzzle/Address.js";
+import "./puzzle/Piece.js";
+import "./puzzle/PieceList.js";
+import "./puzzle/Board.js";
+import "./puzzle/BoardExec.js";
+import "./puzzle/GraphBase.js";
+import "./puzzle/LineManager.js";
+import "./puzzle/AreaManager.js";
+import "./puzzle/Graphic.js";
+import "./puzzle/MouseInput.js";
+import "./puzzle/KeyInput.js";
+import "./puzzle/Encode.js";
+import "./puzzle/FileData.js";
+import "./puzzle/Answer.js";
+import "./puzzle/Operation.js";
+import "./variety-common/Graphic.js";
+import "./variety-common/KeyInput.js";
+import "./variety-common/MouseInput.js";
+import "./variety-common/Answer.js";
+import "./variety-common/BoardExec.js";
+import "./variety-common/Encode.js";
+import "./variety-common/FileData.js";
