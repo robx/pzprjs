@@ -1,6 +1,8 @@
 // AnswerCommon.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+import { classmgr } from '../pzpr/classmgr.js';
+
+classmgr.makeCommon({
 	//---------------------------------------------------------
 	AnsCheck: {
 		//---------------------------------------------------------------------------

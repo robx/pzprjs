@@ -19,13 +19,6 @@ bundle:
 		src/header.js \
     	src/pzpr/event.js \
     	src/puzzle/Config.js \
-    	src/variety-common/Graphic.js \
-    	src/variety-common/KeyInput.js \
-    	src/variety-common/MouseInput.js \
-    	src/variety-common/Answer.js \
-    	src/variety-common/BoardExec.js \
-    	src/variety-common/Encode.js \
-    	src/variety-common/FileData.js \
 	> src/bundle.js
 
 rollup:
