@@ -1,8 +1,10 @@
 // Operation.js v3.4.1
 
+import { classmgr } from '../pzpr/classmgr.js';
+
 // 入力情報管理クラス
 // Operationクラス
-pzpr.classmgr.makeCommon({
+classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// ★Operation(派生)クラス 単体の操作情報を保持する
 	//---------------------------------------------------------------------------

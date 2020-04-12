@@ -1,13 +1,15 @@
 // MouseInput.js v3.5.2
 
-// import env from '../pzpr/env.js';
+import { env } from '../pzpr/env.js';
+import util from '../pzpr/util.js';
+import { classmgr } from '../pzpr/classmgr.js';
 
 //---------------------------------------------------------------------------
 // ★MouseEventクラス マウス入力に関する情報の保持とイベント処理を扱う
 //---------------------------------------------------------------------------
 // パズル共通 マウス入力部
 // MouseEventクラスを定義
-pzpr.classmgr.makeCommon({
+classmgr.makeCommon({
 	//---------------------------------------------------------
 	MouseEvent: {
 		initialize: function() {
@@ -144,7 +146,7 @@ pzpr.classmgr.makeCommon({
 		// mv.getBoardAddress() イベントが起こったcanvas内の座標を取得する
 		//---------------------------------------------------------------------------
 		setMouseButton: function(e) {
-			this.btn = pzpr.util.getMouseButton(e);
+			this.btn = util.getMouseButton(e);
 
 			// SHIFTキー/Commandキーを押している時は左右ボタン反転
 			var kc = this.puzzle.key;
@@ -179,8 +181,8 @@ pzpr.classmgr.makeCommon({
 					pix = { px: e.layerX, py: e.layerY };
 				} // Firefox 39以前, iOSはこちら
 			} else {
-				var pagePos = pzpr.util.getPagePos(e),
-					rect = pzpr.util.getRect(pc.context.child);
+				var pagePos = util.getPagePos(e),
+					rect = util.getRect(pc.context.child);
 				pix = { px: pagePos.px - rect.left, py: pagePos.py - rect.top };
 			}
 			return { bx: (pix.px - pc.x0) / pc.bw, by: (pix.py - pc.y0) / pc.bh };

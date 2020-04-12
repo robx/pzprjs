@@ -1,12 +1,16 @@
 // Answer.js v3.4.1
 
+import { classmgr } from '../pzpr/classmgr.js';
+import util from '../pzpr/util.js';
+import { lang } from '../pzpr/env.js';
+
 //---------------------------------------------------------------------------
 // ★AnsCheckクラス 答えチェック関連の関数を扱う
 //---------------------------------------------------------------------------
 
 // 回答チェッククラス
 // AnsCheckクラス
-pzpr.classmgr.makeCommon({
+classmgr.makeCommon({
 	//---------------------------------------------------------
 	AnsCheck: {
 		initialize: function() {
@@ -32,7 +36,7 @@ pzpr.classmgr.makeCommon({
 					isexist = true,
 					prio = 0;
 				if (item.match("@")) {
-					isexist = pzpr.util.checkpid(
+					isexist = util.checkpid(
 						item.substr(item.indexOf("@") + 1),
 						this.puzzle.pid
 					);
@@ -139,11 +143,11 @@ pzpr.classmgr.makeCommon({
 			}
 			this.complete = false;
 		},
-		gettext: function(lang) {
+		gettext: function(l_lang) {
 			var puzzle = this.puzzle,
 				textlist = puzzle.faillist,
 				texts = [];
-			var langcode = (lang || pzpr.lang) === "ja" ? 0 : 1;
+			var langcode = (l_lang || lang) === "ja" ? 0 : 1;
 			if (this.length === 0) {
 				return textlist.complete[langcode];
 			}

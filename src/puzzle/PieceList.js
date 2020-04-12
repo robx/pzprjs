@@ -1,6 +1,8 @@
 // PieceList.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+import { classmgr } from '../pzpr/classmgr.js';
+
+classmgr.makeCommon({
 	//----------------------------------------------------------------------------
 	// ★PieceListクラス オブジェクトの配列を扱う
 	//---------------------------------------------------------------------------

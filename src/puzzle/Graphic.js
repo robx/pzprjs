@@ -1,8 +1,9 @@
 // Graphic.js v3.4.1
 
-// import env from '../pzpr/env.js';
+import { env } from '../pzpr/env.js';
+import util from '../pzpr/util.js';
+import { common, classmgr } from '../pzpr/classmgr.js';
 
-(function() {
 	var CENTER = 1,
 		BOTTOMLEFT = 2,
 		BOTTOMRIGHT = 3,
@@ -18,7 +19,7 @@
 	//---------------------------------------------------------------------------
 	// パズル共通 Canvas/DOM制御部
 	// Graphicクラスの定義
-	pzpr.classmgr.makeCommon({
+	classmgr.makeCommon({
 		//---------------------------------------------------------
 		Graphic: {
 			initialize: function() {
@@ -34,7 +35,7 @@
 					["getCircleFillColor", this.circlefillcolor_func],
 					["getCircleStrokeColor", this.circlestrokecolor_func]
 				].forEach(function(item) {
-					if (pc[item[0]] !== pzpr.common.Graphic.prototype[item[0]]) {
+					if (pc[item[0]] !== common.Graphic.prototype[item[0]]) {
 						return;
 					} // パズル個別の関数が定義されている場合はそのまま使用
 					pc[item[0]] = pc[item[0] + "_" + item[1]] || pc[item[0]];
@@ -204,7 +205,7 @@
 				}
 
 				if (this.canvasWidth === null || this.canvasHeight === null) {
-					var rect = pzpr.util.getRect(puzzle.canvas);
+					var rect = util.getRect(puzzle.canvas);
 					this.resizeCanvas(rect.width, rect.height);
 				}
 
@@ -350,7 +351,7 @@
 
 				// CanvasのOffset位置変更 (SVGの時、小数点以下の端数調整を行う)
 				if (!g.use.canvas) {
-					var rect = pzpr.util.getRect(g.canvas);
+					var rect = util.getRect(g.canvas);
 					g.translate(x0 - (rect.left % 1), y0 - (rect.top % 1));
 				} else {
 					g.translate(x0, y0);
@@ -783,4 +784,3 @@
 			}
 		}
 	});
-})();

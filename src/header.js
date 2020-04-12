@@ -20,3 +20,18 @@ pzpr.util = util;
 import Puzzle from "./puzzle/Puzzle.js";
 pzpr.Puzzle = Puzzle;
 import "./puzzle/Address.js";
+
+import "./puzzle/Piece.js";
+import "./puzzle/PieceList.js";
+import "./puzzle/Board.js";
+import "./puzzle/BoardExec.js";
+import "./puzzle/GraphBase.js";
+import "./puzzle/LineManager.js";
+import "./puzzle/AreaManager.js";
+import "./puzzle/Graphic.js";
+import "./puzzle/MouseInput.js";
+import "./puzzle/KeyInput.js";
+import "./puzzle/Encode.js";
+import "./puzzle/FileData.js";
+import "./puzzle/Answer.js";
+import "./puzzle/Operation.js";
