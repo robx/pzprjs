@@ -1,6 +1,7 @@
 // Variety.js v3.4.1
 
 import mod_skyscrapers from "../variety/skyscrapers.js";
+import mod_shikaku from "../variety/shikaku.js";
 
 	var _info = {},
 		_list = [];
@@ -86,8 +87,10 @@ import mod_skyscrapers from "../variety/skyscrapers.js";
 			this.kanpenid = !!datalist[1] ? this.alias.kanpen || pzprid : "";
 			_list.push(pzprid);
 		},
+		// Entries are:
+		// 	 id: [?, ?, "name jp", "name en", module, aliases]
 		{
-			aho: [0, 0, "アホになり切れ", "Aho-ni-Narikire", "shikaku"],
+			aho: [0, 0, "アホになり切れ", "Aho-ni-Narikire", mod_shikaku],
 			amibo: [0, 0, "あみぼー", "Amibo", "amibo"],
 			angleloop: [0, 0, "鋭直鈍ループ", "Angle Loop", "kouchoku"],
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],
@@ -271,7 +274,7 @@ import mod_skyscrapers from "../variety/skyscrapers.js";
 			],
 			scrin: [0, 0, "スクリン", "Scrin"],
 			shakashaka: [0, 1, "シャカシャカ", "Shakashaka"],
-			shikaku: [0, 1, "四角に切れ", "Shikaku", "shikaku"],
+			shikaku: [0, 1, "四角に切れ", "Shikaku", mod_shikaku],
 			shimaguni: [1, 0, "島国", "Islands", "shimaguni"],
 			shugaku: [1, 0, "修学旅行の夜", "School Trip"],
 			shwolf: [0, 0, "ヤギとオオカミ", "Goats and Wolves", "kramma"],

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 四角に切れ・アホになり切れ版 shikaku.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["shikaku", "aho"], {
+var pidlist = ["shikaku", "aho"]
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -306,4 +301,6 @@
 			"An area whose size is a multiple of three is not L-shaped."
 		]
 	}
-});
+};
+
+export default [pidlist, classbase];
