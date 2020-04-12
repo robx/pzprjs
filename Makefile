@@ -20,7 +20,7 @@ lint:
 new: candle rollup
 
 rollup:
-	./node_modules/.bin/rollup -c
+	npx rollup -c
 
 candle:
 	cp ./node_modules/pzpr-canvas/dist/candle.js ./dist/js/candle.js
