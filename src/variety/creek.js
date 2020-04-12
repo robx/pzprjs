@@ -1,6 +1,9 @@
 //
 // パズル固有スクリプト部 クリーク版 creek.js
 //
+
+import Parser from "../pzpr/parser.js";
+
 var pidlist = ["creek"];
 var classbase = {
 	//---------------------------------------------------------
@@ -84,7 +87,7 @@ var classbase = {
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var oldflag =
 				(type === parser.URL_PZPRV3 && this.checkpflag("d")) ||
 				(type === parser.URL_PZPRAPP && !this.checkpflag("c"));

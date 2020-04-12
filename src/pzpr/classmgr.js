@@ -167,7 +167,7 @@ var classmgr = {
 				if (!custom[newpid]) {
 					/* Customファイルが読み込みできるまで待つ */
 					setTimeout(function() {
-						pzpr.classmgr.setPuzzleClass(puzzle, newpid, callback);
+						classmgr.setPuzzleClass(puzzle, newpid, callback);
 					}, 10);
 					return;
 				}

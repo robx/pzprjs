@@ -5,6 +5,7 @@ import MetaData from "../pzpr/metadata.js";
 import { classmgr } from "../pzpr/classmgr.js";
 import util from "../pzpr/util.js";
 import parser from "../pzpr/parser.js";
+import { document } from "../pzpr/globals.js";
 
 	//---------------------------------------------------------------------------
 	// ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う

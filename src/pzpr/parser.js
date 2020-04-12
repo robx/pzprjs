@@ -1,6 +1,7 @@
 // Parser.js v3.4.1
 
 import MetaData from "./metadata.js";
+import { DOMParser, XMLSerializer } from "./globals.js";
 import variety from "./variety.js";
 import { env } from "./env.js";
 

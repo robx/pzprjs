@@ -1,6 +1,9 @@
 //
 // パズル固有スクリプト部 スラローム版 slalom.js
 //
+
+import Parser from "../pzpr/parser.js";
+
 var pidlist = ["slalom"];
 var classbase = {
 	//---------------------------------------------------------
@@ -774,7 +777,7 @@ var classbase = {
 			this.decodeSlalom(urlver);
 		},
 		encodePzpr: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			if (type === parser.URL_PZPRV3) {
 				this.outpflag = "d";
 			}

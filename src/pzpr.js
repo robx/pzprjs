@@ -3,6 +3,7 @@ export default pzpr;
 
 import Candle from 'pzpr-canvas';
 pzpr.Candle = Candle;
+
 import {env, lang} from "./pzpr/env.js";
 pzpr.env = env;
 import './pzpr/event.js';

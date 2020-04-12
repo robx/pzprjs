@@ -1,6 +1,9 @@
 //
 // パズル固有スクリプト部 マイナリズム・Kropki版 minarism.js
 //
+
+import Parser from "../pzpr/parser.js";
+
 var pidlist = ["minarism", "kropki"];
 var classbase = {
 	//---------------------------------------------------------
@@ -502,7 +505,7 @@ var classbase = {
 
 		decodeMinarism: function(type) {
 			// 盤面外数字のデコード
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var id = 0,
 				a = 0,
 				mgn = 0,
@@ -557,7 +560,7 @@ var classbase = {
 			this.outbstr = bstr.substr(a);
 		},
 		encodeMinarism: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var cm = "",
 				count = 0,
 				bd = this.board;

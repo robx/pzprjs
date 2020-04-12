@@ -1,6 +1,9 @@
 //
 // パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js
 //
+
+import Parser from "../pzpr/parser.js";
+
 var pidlist = ["icebarn", "icelom", "icelom2"];
 var classbase = {
 	//---------------------------------------------------------
@@ -866,7 +869,7 @@ var classbase = {
 	// URLエンコード/デコード処理
 	"Encode@icebarn": {
 		decodePzpr: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var urlver =
 				type === parser.URL_PZPRV3 ? 3 : this.checkpflag("c") ? 2 : 1;
 
@@ -892,7 +895,7 @@ var classbase = {
 			this.decodeInOut();
 		},
 		encodePzpr: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var urlver = type === parser.URL_PZPRV3 ? 3 : 1;
 
 			if (urlver === 3) {
