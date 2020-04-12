@@ -1,4 +1,6 @@
-.PHONY: build test serve format lint rollup candle
+.PHONY: release build test serve format lint rollup candle
+
+release: candle rollup build
 
 build:
 	npm run-script build

@@ -1,5 +1,3 @@
-// import resolve from '@rollup/plugin-node-resolve';
-// import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 
 // `npm run build` -> `production` is true
@@ -18,8 +16,6 @@ export default {
 		}
 	},
 	plugins: [
-		// resolve(), // use node_modules
-		// commonjs(), // converts node modules to ES modules
 		production && terser() // minify, but only in production
 	]
 };
