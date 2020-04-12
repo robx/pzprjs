@@ -1,7 +1,7 @@
 // FileData.js
 
 import { classmgr } from '../pzpr/classmgr.js';
-import { DOMParser, XMLSerializer } from '../pzpr/globals.js';
+import { DOMParser } from '../pzpr/globals.js';
 import Parser from '../pzpr/parser.js';
 
 	function throwNoImplementation() {

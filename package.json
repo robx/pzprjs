@@ -39,13 +39,13 @@
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-newer": "^1.1.1",
     "mocha": "^6.1.4",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "rollup": "^2.6.0",
+    "rollup-plugin-terser": "^5.3.0"
   },
   "dependencies": {
     "esm": "^3.2.25",
     "pzpr-canvas": "^0.8.2",
-    "rollup": "^2.6.0",
-    "rollup-plugin-terser": "^5.3.0",
     "source-map-support": "^0.5.12"
   }
 }
