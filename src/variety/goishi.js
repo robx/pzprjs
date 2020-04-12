@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 碁石ひろい版 goishi.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["goishi"], {
+var pidlist = ["goishi"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -466,4 +461,6 @@
 			"There is remaining Goishi."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

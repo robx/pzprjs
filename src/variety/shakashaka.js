@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 シャカシャカ版 shakashaka.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["shakashaka"], {
+var pidlist = ["shakashaka"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -716,4 +711,6 @@
 			"The number of triangles in four adjacent cells is smaller than it."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

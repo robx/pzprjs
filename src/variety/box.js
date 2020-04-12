@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ボックス版 box.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["box"], {
+var pidlist = ["box"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -391,4 +386,6 @@
 			"A number is not equal to the sum of the number of shaded cells."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

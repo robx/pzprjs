@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ヘルゴルフ版 herugolf.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["herugolf"], {
+var pidlist = ["herugolf"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -816,4 +811,6 @@
 			"There is a Hole without a ball."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

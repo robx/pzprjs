@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 クサビリンク版 kusabi.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kusabi"], {
+var pidlist = ["kusabi"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -227,4 +222,6 @@
 			"A circle is not connected another object."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

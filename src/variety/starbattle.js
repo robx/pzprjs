@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 スターバトル版 starbattle.js
 //
-(function() {
+
 	// 星を描画するときの頂点の位置
 	var starXOffset = [
 		0,
@@ -28,13 +28,8 @@
 		-0.309
 	];
 
-	(function(pidlist, classbase) {
-		if (typeof module === "object" && module.exports) {
-			module.exports = [pidlist, classbase];
-		} else {
-			pzpr.classmgr.makeCustom(pidlist, classbase);
-		}
-	})(["starbattle"], {
+var pidlist = ["starbattle"];
+var classbase = {
 		//---------------------------------------------------------
 		// マウス入力系
 		MouseEvent: {
@@ -641,5 +636,6 @@
 				"The number of stars in a line is wrong."
 			]
 		}
-	});
-})();
+	};
+
+export default [pidlist, classbase];

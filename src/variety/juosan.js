@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 縦横さん版 juosan.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["juosan"], {
+var pidlist = ["juosan"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -313,4 +308,6 @@
 			"The number of majority of vertical or horizonal bars is less than the number of the area."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

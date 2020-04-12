@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 クリーク版 creek.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["creek"], {
+var pidlist = ["creek"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -170,4 +165,6 @@
 			"The number of shaded cells around a number on crossing is small."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

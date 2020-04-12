@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク・環状線スペシャル版 pipelink.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["pipelink", "pipelinkr", "loopsp"], {
+var pidlist = ["pipelink", "pipelinkr", "loopsp"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@pipelink": {
@@ -735,4 +730,6 @@
 		],
 		lpNoNum: ["○を含んでいないループがあります。", "A loop has no numbers."]
 	}
-});
+}
+
+export default [pidlist, classbase];

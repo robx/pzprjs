@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 なげなわ・リングリング版 nagenawa.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["nagenawa", "ringring"], {
+var pidlist = ["nagenawa", "ringring"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@nagenawa": {
@@ -352,4 +347,6 @@
 			"There is no line on the unshaded cell."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // pencils.js: Implementation of Pencils puzzle type.
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["pencils"], {
+var pidlist = ["pencils"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -1057,4 +1052,6 @@
 		],
 		unusedCell: ["何も書かれていないマスがあります。", "A cell is unused."]
 	}
-});
+}
+
+export default [pidlist, classbase];

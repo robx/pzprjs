@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 マイナリズム・Kropki版 minarism.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["minarism", "kropki"], {
+var pidlist = ["minarism", "kropki"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@minarism#1": {
@@ -808,4 +803,6 @@
 			"The number is double the other between two adjacent cells without shaded circle."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

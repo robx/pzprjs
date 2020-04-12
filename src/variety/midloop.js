@@ -1,13 +1,8 @@
 //
 // midloop.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["midloop"], {
+var pidlist = ["midloop"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -271,4 +266,6 @@
 			"A circle is not the center point of a line."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

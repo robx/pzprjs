@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 しろまるくろまる版 yinyang.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["yinyang"], {
+var pidlist = ["yinyang"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -261,4 +256,6 @@
 			"Unshaded circles are divided."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

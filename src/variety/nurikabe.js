@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ぬりかべ・ぬりぼう・モチコロ・モチにょろ版 nurikabe.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["nurikabe", "nuribou", "mochikoro", "mochinyoro"], {
+var pidlist = ["nurikabe", "nuribou", "mochikoro", "mochinyoro"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -395,4 +390,6 @@
 			"The unshaded cells are divided."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

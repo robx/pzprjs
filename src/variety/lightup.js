@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 美術館版 lightup.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["lightup"], {
+var pidlist = ["lightup"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -446,4 +441,6 @@
 		],
 		ceDark: ["照明に照らされていないセルがあります。", "A cell is not shined."]
 	}
-});
+}
+
+export default [pidlist, classbase];

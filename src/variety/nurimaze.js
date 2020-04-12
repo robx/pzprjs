@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ぬりめいず版 nurimaze.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["nurimaze"], {
+var pidlist = ["nurimaze"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -860,4 +855,6 @@
 		],
 		objShaded: ["オブジェクトが黒マスになっています。", "An object is shaded."]
 	}
-});
+}
+
+export default [pidlist, classbase];

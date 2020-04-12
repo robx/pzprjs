@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 アイスバーン・アイスローム・アイスローム２版 icebarn.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["icebarn", "icelom", "icelom2"], {
+var pidlist = ["icebarn", "icelom", "icelom2"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@icebarn": {
@@ -1593,4 +1588,6 @@
 			"The line doesn't pass all of the non-icy cell."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

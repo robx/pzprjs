@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 へやわけ・∀人∃ＨＥＹＡ版 heyawake.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["heyawake", "ayeheya"], {
+var pidlist = ["heyawake", "ayeheya"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -415,4 +410,6 @@
 			"The room is not point symmetric."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

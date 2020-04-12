@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 遠い誓い版 toichika.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["toichika"], {
+var pidlist = ["toichika"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -374,4 +369,6 @@
 			"There is no paired arrow in the direction of an arrow."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

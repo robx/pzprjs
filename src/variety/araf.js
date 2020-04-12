@@ -1,13 +1,8 @@
 //
 //  araf.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["araf"], {
+var pidlist = ["araf"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -244,4 +239,6 @@
 			"An area has more than two numbers."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

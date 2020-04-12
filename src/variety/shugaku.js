@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 修学旅行の夜版 shugaku.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["shugaku"], {
+var pidlist = ["shugaku"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -728,4 +723,6 @@
 			"There is an empty cell."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

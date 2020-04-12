@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 イチマガ・磁石イチマガ・一回曲がって交差もするの版 ichimaga.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["ichimaga", "ichimagam", "ichimagax"], {
+var pidlist = ["ichimaga", "ichimagam", "ichimagax"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -172,4 +167,6 @@
 			"The number of curves is twice or more."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

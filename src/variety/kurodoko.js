@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 黒マスはどこだ版 kurodoko.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kurodoko", "nurimisaki", "cave"], {
+var pidlist = ["kurodoko", "nurimisaki", "cave"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -345,4 +340,6 @@
 			"Some shaded cells are not connected to the outside."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 シロクロリンク版 wblink.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["wblink"], {
+var pidlist = ["wblink"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -324,4 +319,6 @@
 		],
 		nmNoLine: ["○から線が出ていません。", "A circle doesn't start any line."]
 	}
-});
+}
+
+export default [pidlist, classbase];

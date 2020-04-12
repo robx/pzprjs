@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 交差は直角に限る版 kouchoku.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kouchoku", "angleloop"], {
+var pidlist = ["kouchoku", "angleloop"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -1583,4 +1578,6 @@
 		],
 		brNoLine: ["線が存在していません。", "There is no segment."]
 	}
-});
+}
+
+export default [pidlist, classbase];

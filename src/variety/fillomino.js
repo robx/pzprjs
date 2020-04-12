@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 フィルオミノ版 fillomino.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["fillomino"], {
+var pidlist = ["fillomino"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -412,4 +407,6 @@
 			"Adjacent blocks have the same number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

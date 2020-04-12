@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 流れるループ版 nagare.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["nagare"], {
+var pidlist = ["nagare"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -961,4 +956,6 @@
 			"The line passes against an arrow."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

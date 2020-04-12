@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["lits", "norinori"], {
+var pidlist = ["lits", "norinori"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -484,4 +479,6 @@
 			"A room has three or mode shaded cells."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

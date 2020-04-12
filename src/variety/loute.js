@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 エルート・さしがね版 loute.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["loute", "sashigane"], {
+var pidlist = ["loute", "sashigane"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@loute": {
@@ -695,4 +690,6 @@
 			"A circle is out of the corner."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 天体ショー版 tentaisho.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["tentaisho"], {
+var pidlist = ["tentaisho"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -548,4 +543,6 @@
 			"A block has two or more stars."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

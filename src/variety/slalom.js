@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 スラローム版 slalom.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["slalom"], {
+var pidlist = ["slalom"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -1359,4 +1354,6 @@
 			"Start/goal circle doesn't have two lines."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

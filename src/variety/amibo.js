@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 あみぼー版 amibo.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["amibo"], {
+var pidlist = ["amibo"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -771,4 +766,6 @@
 			"No bar connects to a white circle."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

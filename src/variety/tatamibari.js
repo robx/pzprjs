@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 タタミバリ版 tatamibari.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["tatamibari"], {
+var pidlist = ["tatamibari"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -319,4 +314,6 @@
 			"A tatami is not a vertically long rectangle."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

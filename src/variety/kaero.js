@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 お家に帰ろう・ぐんたいあり版 kaero.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kaero", "armyants"], {
+var pidlist = ["kaero", "armyants"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -579,4 +574,6 @@
 			"A number is greater than the size of the ant."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

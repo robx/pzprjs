@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ごきげんななめ、ごきげんななめ・輪切版 gokigen.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["gokigen", "wagiri"], {
+var pidlist = ["gokigen", "wagiri"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -563,4 +558,6 @@
 		],
 		ceNoSlash: ["斜線がないマスがあります。", "There is an empty cell."]
 	}
-});
+}
+
+export default [pidlist, classbase];

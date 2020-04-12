@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 因子の部屋版 factors.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["factors"], {
+var pidlist = ["factors"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -193,4 +188,6 @@
 			"A number of room is not equal to the product of these numbers."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

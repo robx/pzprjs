@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ましゅ版 mashu.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["mashu"], {
+var pidlist = ["mashu"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -359,4 +354,6 @@
 			"Lines turn next to a black pearl."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

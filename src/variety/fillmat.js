@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 フィルマット・ウソタタミ版 fillmat.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["fillmat", "usotatami"], {
+var pidlist = ["fillmat", "usotatami"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -197,4 +192,6 @@
 			"Tatamis of the same size are adjacent."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ABCプレース版 easyasabc.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["doppelblock"], {
+var pidlist = ["doppelblock"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -382,4 +377,6 @@
 			"There are more than two blocks in a row."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 スリザーリンク・バッグ版 slither.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["slither"], {
+var pidlist = ["slither"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -275,4 +270,6 @@
 			"The number is not equal to the number of lines around it."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

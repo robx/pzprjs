@@ -1,10 +1,5 @@
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["compass"], {
+var pidlist = ["compass"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -326,4 +321,6 @@
 			"There is an area with more than one clue."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

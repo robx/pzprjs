@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 へびいちご版 hebi.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["hebi"], {
+var pidlist = ["hebi"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -517,4 +512,6 @@
 			"A snake can see another snake."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

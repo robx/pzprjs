@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 連番窓口版 renban.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["renban"], {
+var pidlist = ["renban"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -260,4 +255,6 @@
 			"The difference between two numbers is not equal to the length of the line between them."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

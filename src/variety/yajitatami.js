@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ヤジタタミ版 yajitatami.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["yajitatami"], {
+var pidlist = ["yajitatami"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -241,4 +236,6 @@
 			"There is no border in front of the arrowed number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];
