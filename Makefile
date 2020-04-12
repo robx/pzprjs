@@ -23,4 +23,5 @@ rollup:
 	npx rollup -c
 
 candle:
+	mkdir -p ./dist/js/
 	cp ./node_modules/pzpr-canvas/dist/candle.js ./dist/js/candle.js
