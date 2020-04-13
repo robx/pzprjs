@@ -256,6 +256,8 @@
 				{ kanpen: "hakyukoka" }
 			],
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
+			news: [0, 0, "NEWS", "NEWS", ""],
+			newnews: [0, 0, "New NEWS", "New NEWS", "news"],
 			sashigane: [0, 0, "さしがね", "Sashigane", "loute"],
 			satogaeri: [
 				0,

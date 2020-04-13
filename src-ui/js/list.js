@@ -316,6 +316,8 @@
 			"shugaku",
 			"hakoiri",
 			"roma",
+			"news",
+			"newnews",
 			"toichika",
 			"cbblock",
 			"nondango",
