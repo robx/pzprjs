@@ -41,6 +41,9 @@
 					this.placedTent = false;
 					this.firstPoint.reset();
 				}
+				if (this.mouseend) {
+					this.board.cell.setinfo(0);
+				}
 
 				var cell = this.getcell();
 
@@ -63,6 +66,11 @@
 					(cell.getNum() === -1 && cell.qsub === 0);
 
 				if (this.inputData === null && this.firstPoint.equals(cell)) {
+					if (hasempty && this.btn === "left") {
+						cell.setinfo(2);
+						cell.draw();
+					}
+
 					if (hasempty && this.btn === "right") {
 						var border = this.getpos(0.22).getb();
 						if (border.group !== "border" || border.isnull) {
@@ -432,7 +440,12 @@
 
 				var px = cell.bx * this.bw,
 					py = (cell.by + 0.15) * this.bh;
-				switch (cell.getNum()) {
+
+				var num = cell.getNum();
+				if (num === -1) {
+					num = cell.qinfo;
+				}
+				switch (num) {
 					case 2:
 						g.vid = "c_tentouter_" + cell.id;
 						var color = this.getAnsNumberColor(cell);
