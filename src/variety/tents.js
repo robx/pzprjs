@@ -51,18 +51,27 @@
 					this.firstPoint.set(cell);
 				}
 
+				var other = this.firstPoint.getc();
+				var border = cell.getnb(other);
+				var single = this.puzzle.getConfig("use") === 1;
+
+				var hastree = other.getNum() === 1 || cell.getNum() === 1;
+				var hastent = other.getNum() === 2 || cell.getNum() === 2;
+				var hasdot = other.qsub === 1 || cell.qsub === 1;
+				var hasempty =
+					(other.getNum() === -1 && other.qsub === 0) ||
+					(cell.getNum() === -1 && cell.qsub === 0);
+
+				if (this.inputData === null && this.firstPoint.equals(cell)) {
+					if (hasempty && this.btn === "right") {
+						var border = this.getpos(0.22).getb();
+						if (border.group !== "border" || border.isnull) {
+							this.inputData = 2;
+						}
+					}
+				}
+
 				if (this.inputData === null && !this.firstPoint.equals(cell)) {
-					var other = this.firstPoint.getc();
-					var border = cell.getnb(other);
-					var single = this.puzzle.getConfig("use") === 1;
-
-					var hastree = other.getNum() === 1 || cell.getNum() === 1;
-					var hastent = other.getNum() === 2 || cell.getNum() === 2;
-					var hasdot = other.qsub === 1 || cell.qsub === 1;
-					var hasempty =
-						(other.getNum() === -1 && other.qsub === 0) ||
-						(cell.getNum() === -1 && cell.qsub === 0);
-
 					if (hastree && hastent) {
 						this.inputData = 1;
 					}
