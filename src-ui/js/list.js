@@ -233,6 +233,7 @@
 			"kakuro",
 			"sudoku",
 			"fillomino",
+			"symmarea",
 			"ripple",
 			"akari",
 			"shakashaka"
