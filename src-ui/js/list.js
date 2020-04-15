@@ -365,7 +365,8 @@
 			"mines",
 			"interbd",
 			"toichika2",
-			"aqre"
+			"aqre",
+			"tapaloop"
 		]
 	};
 	var tabstate = {

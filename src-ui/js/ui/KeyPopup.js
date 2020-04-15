@@ -41,6 +41,7 @@ ui.keypopup = {
 		tawa: [6, 0],
 		hashikake: [8, 0],
 		tapa: [8, 0],
+		tapaloop: [8, 0],
 		amibo: [10, 0],
 		cave: [10, 0],
 		bdblock: [10, 0],
@@ -333,7 +334,7 @@ ui.keypopup = {
 		this.generate_main(["1", "2", "3", "4", "5", "6", "0", " ", ["-", "?"]], 3);
 	},
 	gentable8: function(mode) {
-		if (ui.puzzle.pid !== "tapa") {
+		if (ui.puzzle.pid !== "tapa" && ui.puzzle.pid !== "tapaloop" ) {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4

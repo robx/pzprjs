@@ -136,6 +136,7 @@ function toBGimage(pid) {
 		"snake",
 		"starbattle",
 		"symmarea",
+		"tapaloop",
 		"tents",
 		"walllogic",
 		"yinyang"

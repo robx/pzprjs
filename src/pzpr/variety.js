@@ -297,6 +297,7 @@
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
 			symmarea: [0, 0, "シンメトリーエリア", "Symmetry Area", "fillomino"],
 			tapa: [0, 0, "Tapa", "Tapa"],
+			tapaloop: [0, 0, "Tapa-Like Loop", "Tapa-Like Loop"],
 			tasquare: [0, 0, "たすくえあ", "Tasquare"],
 			tatamibari: [1, 0, "タタミバリ", "Tatamibari"],
 			tateyoko: [1, 0, "タテボーヨコボー", "Tatebo-Yokobo"],

@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 Tapa版 tapa.js
+// Tapa-Like Loop / tapaloop.js
 //
 (function() {
 	function sameArray(array1, array2) {
@@ -20,70 +20,36 @@
 		} else {
 			pzpr.classmgr.makeCustom(pidlist, classbase);
 		}
-	})(["tapa"], {
+	})(["tapaloop"], {
 		//---------------------------------------------------------
 		// マウス入力系
 		MouseEvent: {
-			use: true,
 			inputModes: {
-				edit: ["number", "clear", "info-blk"],
-				play: ["shade", "unshade", "info-blk"]
+				edit: [],
+				play: ["line", "peke", "subcircle", "subcross", "info-line"]
 			},
-			mouseinput: function() {
-				// オーバーライド
+			mouseinput_auto: function() {
 				if (this.puzzle.playmode) {
-					if (this.mousestart || this.mousemove) {
-						this.inputcell();
+					if (this.btn === "left") {
+						if (this.mousestart || this.mousemove) {
+							this.inputLine();
+						} else if (this.mouseend && this.notInputted()) {
+							if (!this.inputpeke_ifborder()) {
+								this.inputMB();
+							}
+						}
+					} else if (this.btn === "right") {
+						if (this.mousestart || this.mousemove) {
+							this.inputpeke();
+						} else if (this.mouseend && this.notInputted()) {
+							if (!this.inputpeke_ifborder()) {
+								this.inputMB();
+							}
+						}
 					}
-				} else if (this.puzzle.editmode) {
-					if (this.mousestart) {
-						this.inputqnum_tapa();
-					}
+				} else if (this.puzzle.editmode && this.mousestart) {
+					this.setcursor(this.getcell());
 				}
-			},
-
-			inputqnum_tapa: function() {
-				var cell = this.getcell();
-				if (cell.isnull || cell === this.mouseCell) {
-					return;
-				}
-
-				if (cell !== this.cursor.getc()) {
-					this.setcursor(cell);
-				} else {
-					this.inputqnum_tapa_main(cell);
-				}
-				this.mouseCell = cell;
-			},
-			inputqnum_tapa_main: function(cell) {
-				var states = cell.qnum_states,
-					state = 0;
-				for (var i = 0; i < states.length; i++) {
-					if (sameArray(cell.qnums, states[i])) {
-						state = i;
-						break;
-					}
-				}
-
-				var isinc =
-					this.inputMode === "number" ||
-					(this.inputMode === "auto" && this.btn === "left");
-				if (isinc) {
-					if (state < states.length - 1) {
-						state++;
-					} else {
-						state = 0;
-					}
-				} else {
-					if (state > 0) {
-						state--;
-					} else {
-						state = states.length - 1;
-					}
-				}
-				cell.setNums(states[state]);
-
-				cell.draw();
 			}
 		},
 
@@ -93,9 +59,9 @@
 			enablemake: true,
 
 			keyinput: function(ca) {
-				this.key_inputqnum_tapa(ca);
+				this.key_inputqnum_tapaloop(ca);
 			},
-			key_inputqnum_tapa: function(ca) {
+			key_inputqnum_tapaloop: function(ca) {
 				var cell = this.cursor.getc(),
 					nums = cell.qnums,
 					val = [];
@@ -113,7 +79,7 @@
 						for (var i = 0; i < val.length; i++) {
 							sum += val[i] >= 0 ? val[i] : 1;
 						}
-						if (val.length + sum > 8) {
+						if (sum > 8) {
 							val = [num];
 						} else {
 							for (var i = 0; i < val.length; i++) {
@@ -146,47 +112,9 @@
 		//---------------------------------------------------------
 		// 盤面管理系
 		Cell: {
-			minnum: 0,
-			qnums: null, // Array型
-			qnum_states: (function() {
-				var states = [[], [-2], [0], [1], [2], [3], [4], [5], [6], [7], [8]],
-					sum = 0;
-				for (var n1 = 0; n1 <= 5; n1++) {
-					for (var n2 = 0; n2 <= 5; n2++) {
-						sum = (n1 > 0 ? n1 : 1) + (n2 > 0 ? n2 : 1);
-						if (sum <= 6) {
-							states.push([n1 > 0 ? n1 : -2, n2 > 0 ? n2 : -2]);
-						}
-					}
-				}
-				for (var n1 = 0; n1 <= 3; n1++) {
-					for (var n2 = 0; n2 <= 3; n2++) {
-						for (var n3 = 0; n3 <= 3; n3++) {
-							sum = (n1 > 0 ? n1 : 1) + (n2 > 0 ? n2 : 1) + (n3 > 0 ? n3 : 1);
-							if (sum <= 5) {
-								states.push([
-									n1 > 0 ? n1 : -2,
-									n2 > 0 ? n2 : -2,
-									n3 > 0 ? n3 : -2
-								]);
-							}
-						}
-					}
-				}
-				states.push([1, 1, 1, 1]);
-				return states;
-			})(),
-
-			allowUnshade: function() {
-				return this.qnums.length === 0;
-			},
-			allowShade: function() {
-				return this.qnums.length === 0;
-			},
-
-			initialize: function() {
-				this.common.initialize.call(this);
-				this.qnums = [];
+			qnums: [],
+			noLP: function(dir) {
+				return this.qnums.length === 0 ? false : true;
 			},
 			setNums: function(val) {
 				this.setQnums(val);
@@ -206,11 +134,10 @@
 				}
 				this.puzzle.opemgr.add(new this.klass.ObjectOperation2(this, old, val));
 			},
-
-			getShadedLength: function() {
-				var result = [],
-					shaded = "";
-				var addrs = [
+			getSegmentLengths: function() {
+				var segs = [];
+				var current = 0;
+				var cellrel = [
 					[-2, -2],
 					[0, -2],
 					[2, -2],
@@ -220,33 +147,45 @@
 					[-2, 2],
 					[-2, 0]
 				];
-				for (var k = 0; k < addrs.length; k++) {
-					var cell = this.relcell(addrs[k][0], addrs[k][1]);
-					shaded += "" + (!cell.isnull && cell.isShade() ? 1 : 0);
+				var borderrel = [
+					[-1, -2],
+					[1, -2],
+					[2, -1],
+					[2, 1],
+					[1, 2],
+					[-1, 2],
+					[-2, 1],
+					[-2, -1]
+				];
+
+				for (var i = 0; i < 8; i++) {
+					if (current === 0) {
+						var cell = this.relcell(cellrel[i][0], cellrel[i][1]);
+						if (!!cell && cell.lcnt > 0) {
+							current = 1;
+						} else {
+							continue;
+						}
+					}
+					var border = this.relbd(borderrel[i][0], borderrel[i][1]);
+					if (!!border && border.isLine()) {
+						current++;
+					} else {
+						segs.push(current);
+						current = 0;
+					}
 				}
-				var shades = shaded.split(/0+/);
-				if (shades.length > 0) {
-					if (shades[0].length === 0) {
-						shades.shift();
-					}
-					if (shades[shades.length - 1].length === 0) {
-						shades.pop();
-					}
-					if (
-						shades.length > 1 &&
-						shaded.charAt(0) === "1" &&
-						shaded.charAt(7) === "1"
-					) {
-						shades[0] += shades.pop();
-					}
-					for (var i = 0; i < shades.length; i++) {
-						result.push(shades[i].length);
-					}
+				if (current > 0) {
+					segs.push(current);
 				}
-				if (result.length === 0) {
-					result = [0];
+				if (segs.length === 0) {
+					segs.push(0);
+				} else if (this.relbd(-2, -1).isLine()) {
+					segs[0] += segs[segs.length - 1] - 1;
+					segs.pop();
 				}
-				return result;
+
+				return segs;
 			}
 		},
 		CellList: {
@@ -342,26 +281,34 @@
 				this.operationlist.push(this.klass.ObjectOperation2);
 			}
 		},
-
-		AreaShadeGraph: {
+		Border: {
+			enableLineNG: true
+		},
+		Board: {
+			hasborder: 1
+		},
+		LineGraph: {
 			enabled: true
 		},
 
 		//---------------------------------------------------------
 		// 画像表示系
 		Graphic: {
-			qanscolor: "black",
+			irowake: true,
+
+			gridcolor_type: "SLIGHT",
 
 			paint: function() {
 				this.drawBGCells();
-				this.drawShadedCells();
-				this.drawDotCells();
 				this.drawGrid();
 
 				this.drawTapaNumbers();
 
-				this.drawChassis();
+				this.drawMBs();
+				this.drawPekes();
+				this.drawLines();
 
+				this.drawChassis();
 				this.drawTarget();
 			}
 		},
@@ -370,13 +317,12 @@
 		// URLエンコード/デコード処理
 		Encode: {
 			decodePzpr: function(type) {
-				this.decodeNumber_tapa();
+				this.decodeNumber_tapaloop();
 			},
 			encodePzpr: function(type) {
-				this.encodeNumber_tapa();
+				this.encodeNumber_tapaloop();
 			},
-
-			decodeNumber_tapa: function() {
+			decodeNumber_tapaloop: function() {
 				var c = 0,
 					i = 0,
 					bstr = this.outbstr,
@@ -387,37 +333,17 @@
 
 					if (this.include(ca, "0", "8")) {
 						cell.qnums = [parseInt(ca, 10)];
-					} else if (ca === "9") {
-						cell.qnums = [1, 1, 1, 1];
 					} else if (ca === ".") {
 						cell.qnums = [-2];
 					} else if (this.include(ca, "a", "f")) {
 						var num = parseInt(bstr.substr(i, 2), 36),
 							val = [];
-						if (num >= 360 && num < 396) {
+						if (num >= 360) {
 							num -= 360;
 							val = [0, 0];
-							val[0] = (num / 6) | 0;
-							num -= val[0] * 6;
-							val[1] = num;
-						} else if (num >= 396 && num < 460) {
-							num -= 396;
-							val = [0, 0, 0];
-							val[0] = (num / 16) | 0;
-							num -= val[0] * 16;
-							val[1] = (num / 4) | 0;
-							num -= val[1] * 4;
-							val[2] = num;
-						} else if (num >= 460 && num < 476) {
-							num -= 460;
-							val = [0, 0, 0, 0];
 							val[0] = (num / 8) | 0;
 							num -= val[0] * 8;
-							val[1] = (num / 4) | 0;
-							num -= val[1] * 4;
-							val[2] = (num / 2) | 0;
-							num -= val[2] * 2;
-							val[3] = num;
+							val[1] = num;
 						}
 						for (var k = 0; k < 4; k++) {
 							if (val[k] === 0) {
@@ -426,6 +352,38 @@
 						}
 						cell.qnums = val;
 						i++;
+					} else if (ca === "+") {
+						var num = parseInt(bstr.substr(i + 1, 2), 36) - 36,
+							val = [0, 0, 0];
+						val[0] = (num / 49) | 0;
+						num -= val[0] * 49;
+						val[1] = (num / 7) | 0;
+						num -= val[1] * 7;
+						val[2] = num;
+						for (var k = 0; k < 4; k++) {
+							if (val[k] === 0) {
+								val[k] = -2;
+							}
+						}
+						cell.qnums = val;
+						i = i + 2;
+					} else if (ca === "-") {
+						var num = parseInt(bstr.substr(i + 1, 2), 36) - 36,
+							val = [0, 0, 0, 0];
+						val[0] = (num / 216) | 0;
+						num -= val[0] * 216;
+						val[1] = (num / 36) | 0;
+						num -= val[1] * 36;
+						val[2] = (num / 6) | 0;
+						num -= val[2] * 6;
+						val[3] = num;
+						for (var k = 0; k < 4; k++) {
+							if (val[k] === 0) {
+								val[k] = -2;
+							}
+						}
+						cell.qnums = val;
+						i = i + 2;
 					} else if (ca >= "g" && ca <= "z") {
 						c += parseInt(ca, 36) - 16;
 					}
@@ -437,7 +395,7 @@
 				}
 				this.outbstr = bstr.substr(i + 1);
 			},
-			encodeNumber_tapa: function() {
+			encodeNumber_tapaloop: function() {
 				var count = 0,
 					cm = "",
 					bd = this.board;
@@ -453,29 +411,29 @@
 						}
 					} else if (qn.length === 2) {
 						pstr = (
-							(qn[0] > 0 ? qn[0] : 0) * 6 +
+							(qn[0] > 0 ? qn[0] : 0) * 8 +
 							(qn[1] > 0 ? qn[1] : 0) +
 							360
 						).toString(36);
 					} else if (qn.length === 3) {
-						pstr = (
-							(qn[0] > 0 ? qn[0] : 0) * 16 +
-							(qn[1] > 0 ? qn[1] : 0) * 4 +
-							(qn[2] > 0 ? qn[2] : 0) +
-							396
-						).toString(36);
-					} else if (qn.length === 4) {
-						if (sameArray(qn, [1, 1, 1, 1])) {
-							pstr = "9";
-						} else {
-							pstr = (
-								(qn[0] > 0 ? 1 : 0) * 8 +
-								(qn[1] > 0 ? 1 : 0) * 4 +
-								(qn[2] > 0 ? 1 : 0) * 2 +
-								(qn[3] > 0 ? 1 : 0) +
-								460
+						pstr =
+							"+" +
+							(
+								(qn[0] > 0 ? qn[0] : 0) * 49 +
+								(qn[1] > 0 ? qn[1] : 0) * 7 +
+								(qn[2] > 0 ? qn[2] : 0) +
+								36
 							).toString(36);
-						}
+					} else if (qn.length === 4) {
+						pstr =
+							"-" +
+							(
+								(qn[0] > 0 ? qn[0] : 0) * 216 +
+								(qn[1] > 0 ? qn[1] : 0) * 36 +
+								(qn[2] > 0 ? qn[2] : 0) * 6 +
+								(qn[3] > 0 ? qn[3] : 0) +
+								36
+							).toString(36);
 					} else {
 						count++;
 					}
@@ -497,19 +455,16 @@
 		//---------------------------------------------------------
 		FileIO: {
 			decodeData: function() {
-				this.decodeCellQnumAns_tapa();
+				this.decodeQnums_tapaloop();
+				this.decodeBorderLine();
 			},
 			encodeData: function() {
-				this.encodeCellQnumAns_tapa();
+				this.encodeQnums_tapaloop();
+				this.encodeBorderLine();
 			},
-
-			decodeCellQnumAns_tapa: function() {
+			decodeQnums_tapaloop: function() {
 				this.decodeCell(function(cell, ca) {
-					if (ca === "#") {
-						cell.qans = 1;
-					} else if (ca === "+") {
-						cell.qsub = 1;
-					} else if (ca !== ".") {
+					if (ca !== ".") {
 						cell.qnums = [];
 						var array = ca.split(/,/);
 						for (var i = 0; i < array.length; i++) {
@@ -518,7 +473,7 @@
 					}
 				});
 			},
-			encodeCellQnumAns_tapa: function() {
+			encodeQnums_tapaloop: function() {
 				this.encodeCell(function(cell) {
 					if (cell.qnums.length > 0) {
 						var array = [];
@@ -526,10 +481,6 @@
 							array.push(cell.qnums[i] >= 0 ? "" + cell.qnums[i] : "-");
 						}
 						return array.join(",") + " ";
-					} else if (cell.qans === 1) {
-						return "# ";
-					} else if (cell.qsub === 1) {
-						return "+ ";
 					} else {
 						return ". ";
 					}
@@ -541,20 +492,20 @@
 		// 正解判定処理実行部
 		AnsCheck: {
 			checklist: [
-				"checkShadeCellExist+",
-				"check2x2ShadeCell",
-				"checkCountOfClueCell",
-				"checkConnectShade+"
+				"checkBranchLine",
+				"checkCrossLine",
+				"checkTapaloop",
+				"checkDeadendLine+",
+				"checkOneLoop"
 			],
 
-			checkCountOfClueCell: function() {
+			checkTapaloop: function() {
 				this.checkAllCell(function(cell) {
-					// trueになるマスがエラー扱い
 					if (cell.qnums.length === 0) {
 						return false;
 					}
-					var shades = cell.getShadedLength(); // 順番の考慮は不要
-					if (cell.qnums.length !== shades.length) {
+					var segs = cell.getSegmentLengths();
+					if (cell.qnums.length !== segs.length) {
 						return true;
 					}
 					for (var i = 0; i < cell.qnums.length; i++) {
@@ -562,21 +513,20 @@
 						if (num === -2) {
 							continue;
 						}
-						var idx = shades.indexOf(num);
+						var idx = segs.indexOf(num);
 						if (idx < 0) {
 							return true;
 						}
-						shades.splice(idx, 1);
+						segs.splice(idx, 1);
 					}
-					return false;
-				}, "ceTapaNe");
+				}, "tapaloopError");
 			}
 		},
 
 		FailCode: {
-			ceTapaNe: [
-				"数字と周囲の黒マスの長さが異なっています。",
-				"The number is not equal to the length of surrounding shaded cells."
+			tapaloopError: [
+				"(please translate) The segments around a clue are not the same length as the numbers.",
+				"The segments around a clue are not the same length as the numbers."
 			]
 		}
 	});
