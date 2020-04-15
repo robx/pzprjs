@@ -9,5 +9,8 @@ test:
 serve:
 	cd dist && python3 -m http.server -b localhost
 
+serve-all:
+	cd dist && python3 -m http.server
+
 format:
 	npm run-script format
