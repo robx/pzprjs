@@ -857,6 +857,7 @@
 	OperationManager: {
 		addExtraOperation: function() {
 			this.operationlist.push(this.klass.SegmentOperation);
+			this.enableNetwork = false;
 		}
 	},
 

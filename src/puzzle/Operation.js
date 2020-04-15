@@ -7,6 +7,8 @@ pzpr.classmgr.makeCommon({
 	// ★Operation(派生)クラス 単体の操作情報を保持する
 	//---------------------------------------------------------------------------
 	Operation: {
+		external: false,
+
 		initialize: function() {
 			this.manager = this.puzzle.opemgr;
 
@@ -37,6 +39,7 @@ pzpr.classmgr.makeCommon({
 		toJSON: function() {
 			return this.toString();
 		},
+		broadcast: function() {},
 
 		//---------------------------------------------------------------------------
 		// ope.undo()  操作opeを一手前に戻す
@@ -130,6 +133,12 @@ pzpr.classmgr.makeCommon({
 				prefix += this.pos;
 			}
 			return [prefix, this.bx, this.by, this.old, this.num].join(",");
+		},
+		broadcast: function() {
+			if (this.external) {
+				return;
+			}
+			this.puzzle.emit("cellop", this.toJSON());
 		},
 
 		//---------------------------------------------------------------------------
@@ -436,6 +445,8 @@ pzpr.classmgr.makeCommon({
 			this.redoExec = false; // Redo中
 			this.reqReset = false; // Undo/Redo時に盤面回転等が入っていた時、resize,rebuildInfo関数のcallを要求する
 
+			this.enableNetwork = true;
+
 			var classes = this.klass;
 			this.operationlist = [
 				classes.ObjectOperation,
@@ -597,6 +608,8 @@ pzpr.classmgr.makeCommon({
 			if (!this.puzzle.ready || (!this.forceRecord && this.disrec > 0)) {
 				return;
 			}
+
+			newope.broadcast();
 
 			/* Undoした場所で以降の操作がある時に操作追加された場合、以降の操作は消去する */
 			if (this.enableRedo) {

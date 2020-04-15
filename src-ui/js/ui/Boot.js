@@ -77,6 +77,10 @@
 
 		puzzle.on("request-aux-editor", ui.auxeditor.open);
 
+		if (!!onload_option.net) {
+			ui.network.configure(onload_option.net, onload_option.key);
+		}
+
 		return true;
 	}
 

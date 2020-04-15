@@ -34,6 +34,8 @@
      <li class="link" data-linktype="duplicate" id="menu_duplicate"><a target="_blank">__盤面の複製__Duplicate the board__</a></li>
      <hr>
      <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
+     <hr>
+     <li data-popup="network" id="menu_network"><span>__Network play (please translate)__Network play__</span></li>
    </menu></li>
    <li id="menu_edit"><span>__編集__Edit__</span><menu label="__編集__Edit__">
      <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the board__</span></li>
@@ -423,7 +425,7 @@
   <div class="popup">
     <div class="titlebar">__URL出力__Export URL__</div>
     <form name="urloutput">
-      <a id="urlanchor" target="_blank"></a>
+      <a id="urlanchor" class="urlanchor" target="_blank"></a>
       <br>
       <button type="button" class="btn" data-button-exec="urloutput" name="kanpen" >__カンペンのURLを出力する__Change to Kanpen URL__</button><br>
       <button type="button" class="btn" data-button-exec="urloutput" name="heyaapp">__へやわけアプレットのURLを出力する__Change to Heyawake-Applet URL__</button><br>
@@ -589,6 +591,17 @@
     <div class="panelbase" id="panelbase3"></div>
   </div>
 
+  <div class="popup">
+    <div class="titlebar">__Network play (please translate)__Network play__</div>
+    <form name="network">
+    <button type="button" class="btn" data-button-exec="coop">Start</button>
+    <br>
+    Share this link to play with someone: <br>
+    <a id="urlanchor_network" class="urlanchor" target="_blank"></a>
+    <br>
+    <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    </form>
+  </div>
 </div>
 
 <!-- 隠し要素 -->

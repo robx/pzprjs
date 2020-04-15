@@ -1306,7 +1306,7 @@ pzpr.classmgr.makeCommon({
 		// pc.drawTriangle1()  三角形をCanvasに書き込む(1マスのみ)
 		//---------------------------------------------------------------------------
 		drawTriangle: function() {
-			var g = this.vinc("cell_triangle", "auto");
+			var g = this.vinc("cell_triangle", "crispEdges");
 
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
@@ -1327,7 +1327,7 @@ pzpr.classmgr.makeCommon({
 		},
 		drawTriangle1: function(px, py, num) {
 			var g = this.context;
-			var mgn = this.pid === "reflect" ? 1 : 0,
+			var mgn = this.pid === "reflect" ? 1 : 0.5,
 				bw = this.bw + 1 - mgn,
 				bh = this.bh + 1 - mgn;
 			g.beginPath();
@@ -2057,7 +2057,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		getDashArray: function() {
-			var dashCount = Math.max(Math.round(this.cw / 10), 3);
+			var dashCount = Math.max(Math.round(this.cw / 10), 4);
 			var stepSize = this.cw / dashCount;
 			var lengthOn = (5 / 8) * stepSize;
 			var lengthOff = stepSize - lengthOn;
@@ -2118,7 +2118,7 @@ pzpr.classmgr.makeCommon({
 				yb = Math.min(y2, maxy - bs);
 
 			// isdraw!==false: 指定無しかtrueのときは描画する
-			g.lineWidth = 1;
+			g.lineWidth = this.gw;
 			g.strokeStyle = this.gridcolor;
 			for (var i = xa; i <= xb; i += 2) {
 				g.vid = "bdy_" + i;
@@ -2185,7 +2185,7 @@ pzpr.classmgr.makeCommon({
 			var ya = Math.max(y1, miny + bs),
 				yb = Math.min(y2, maxy - bs);
 
-			g.lineWidth = 1;
+			g.lineWidth = this.gw;
 			g.strokeStyle = this.gridcolor;
 			for (var i = xa; i <= xb; i += 2) {
 				var px = i * bw,

@@ -73,6 +73,11 @@ ui.event = {
 
 		// onunloadイベントを割り当てる
 		this.addEvent(window, "unload", this, this.onunload_func);
+
+		if (!!matchMedia) {
+			var mqString = "(resolution: 1dppx)";
+			matchMedia(mqString).addListener(this.onpixelratiochange_func);
+		}
 	},
 
 	setDocumentEvents: function() {
@@ -145,5 +150,9 @@ ui.event = {
 				this.visibilityCallbacks = [];
 			}
 		}
+	},
+
+	onpixelratiochange_func: function(e) {
+		ui.puzzle.redraw(true);
 	}
 };

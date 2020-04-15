@@ -273,7 +273,7 @@
 		bkNoNum: ["数字の入っていない部屋があります。", "A room has no numbers."],
 		bkNumGe2: [
 			"1つの部屋に2つ以上の数字が入っています。",
-			"A room has plural numbers."
+			"A room has more than one number."
 		],
 		bkSizeNe: [
 			"数字と部屋の大きさが違います。",
@@ -281,7 +281,7 @@
 		],
 		nmDiffDistNe: [
 			"２つの数字の差とその間隔が正しくありません。",
-			"The distance of the paired numbers is not equal to the diff of them."
+			"The distance of the paired numbers is not equal to their difference."
 		]
 	}
 });

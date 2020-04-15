@@ -491,7 +491,7 @@
 		bkNoNum: ["数字の入っていない部屋があります。", "A room has no numbers."],
 		bkNumGe2: [
 			"1つの部屋に2つ以上の数字が入っています。",
-			"A room has plural numbers."
+			"A room has more than one number."
 		],
 		bkSizeLt3: [
 			"サイズが3マスより小さいブロックがあります。",

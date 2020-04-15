@@ -316,23 +316,23 @@
 	FailCode: {
 		bkDupNum: [
 			"1つのハコに同じ記号が複数入っています。",
-			"A box has same plural marks."
+			"A box has duplicate shapes."
 		],
 		bkNumGt3: [
 			"1つのハコに4つ以上の記号が入っています。",
-			"A box has four or more marks."
+			"A box has more than three shapes."
 		],
 		bkNumLt3: [
 			"1つのハコに2つ以下の記号しか入っていません。",
-			"A box has tow or less marks."
+			"A box has less than three shapes."
 		],
 		nmDivide: [
 			"タテヨコにつながっていない記号があります。",
-			"Marks are divided."
+			"The shapes are divided."
 		],
 		nmAround: [
 			"同じ記号がタテヨコナナメに隣接しています。",
-			"Same marks are adjacent."
+			"Equal shapes touch."
 		]
 	}
 });

@@ -178,23 +178,23 @@
 		],
 		bkNumGe2: [
 			"1つのタタミに2つ以上の数字が入っています。",
-			"A tatami has plural numbers."
+			"A tatami has more than one number."
 		],
 		bkSizeNe: [
 			"数字とタタミの大きさが違います。",
-			"The size of tatami and the number written in Tatami is different."
+			"The number is different from the size of the tatami."
 		],
 		bkSizeEq: [
 			"数字とタタミの大きさが同じです。",
-			"The size of tatami and the number is the same."
+			"The number is equal to the size of the tatami."
 		],
 		bkLenGt4: [
 			"「幅１マス、長さ１～４マス」ではないタタミがあります。",
-			"The width of Tatami is over 1 or the length is over 4."
+			"The width of the tatami is more than one, or the length is more than four."
 		],
 		bsSizeEq: [
 			"隣り合うタタミの大きさが同じです。",
-			"The same size Tatami are adjacent."
+			"Tatamis of the same size are adjacent."
 		]
 	}
 });
