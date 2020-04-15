@@ -378,11 +378,6 @@
 		bgcellcolor_func: "error1",
 		qanscolor: "rgb(0, 127, 0)",
 
-		initialize: function() {
-			this.common.initialize.call(this);
-			this.imgtile = new this.klass.ImageTile();
-		},
-
 		paint: function() {
 			this.drawBGCells();
 			this.drawDotCells();
