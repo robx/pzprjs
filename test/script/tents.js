@@ -1,7 +1,7 @@
 /* tents.js */
 
 ui.debug.addDebugData("tents", {
-	url: "5/5/2g0h1i1hblbbgbbg",
+	url: "5/5/2g0h1i1j82323",
 	failcheck: [
 		[
 			"nmTentNone",

@@ -552,11 +552,11 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
-			this.decode4Cell();
+			this.decode1Cell(1);
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16ExCell();
-			this.encode4Cell();
+			this.encode1Cell(1);
 		}
 	},
 
