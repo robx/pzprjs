@@ -82,6 +82,71 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//---------------------------------------------------------------------------
+		// enc.decode1Cell()  compact variants of encode4Cell for sparse single ques value
+		// enc.encode1Cell()
+		//---------------------------------------------------------------------------
+		decode1Cell: function(val) {
+			var c = 0,
+				i = 0,
+				bstr = this.outbstr,
+				bd = this.board;
+			for (i = 0; i < bstr.length; i++) {
+				var cell = bd.cell[c],
+					ca = bstr.charAt(i);
+				if (this.include(ca, "0", "h")) {
+					cell.qnum = val;
+					c += parseInt(ca, 36);
+				} else {
+					c += parseInt(ca, 36) - 18;
+				}
+				c++;
+				if (!bd.cell[c]) {
+					break;
+				}
+			}
+			this.outbstr = bstr.substr(i + 1);
+		},
+		encode1Cell: function(val) {
+			var count = -1,
+				have = false,
+				cm = "",
+				bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				if (bd.cell[c].qnum === val) {
+					if (count >= 0) {
+						if (have) {
+							cm += count.toString(36);
+						} else {
+							cm += (count + 18).toString(36);
+						}
+					}
+					have = true;
+					count = 0;
+					continue;
+				}
+				count++;
+				if (count === 17) {
+					if (have) {
+						cm += count.toString(36);
+					} else {
+						cm += (count + 18).toString(36);
+					}
+					have = false;
+					count = -1;
+				}
+			}
+			if (count >= 0) {
+				if (have) {
+					cm += count.toString(36);
+				} else {
+					cm += (count + 18).toString(36);
+				}
+			}
+
+			this.outbstr += cm;
+		},
+
+		//---------------------------------------------------------------------------
 		// enc.decode4Cross()  quesが0～4までの場合、デコードする
 		// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
 		//---------------------------------------------------------------------------
