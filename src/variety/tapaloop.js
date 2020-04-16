@@ -13,7 +13,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: [],
-			play: ["line", "peke", "info-line"]
+			play: ["line", "peke", "subcircle", "subcross", "info-line"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -21,11 +21,17 @@
 					if (this.mousestart || this.mousemove) {
 						this.inputLine();
 					} else if (this.mouseend && this.notInputted()) {
-						this.inputpeke();
+						if(!this.inputpeke_ifborder()){
+							this.inputMB();
+						}
 					}
 				} else if (this.btn === "right") {
 					if (this.mousestart || this.mousemove) {
 						this.inputpeke();
+					} else if (this.mouseend && this.notInputted()) {
+						if(!this.inputpeke_ifborder()){
+							this.inputMB();
+						}
 					}
 				}
 			}
@@ -171,11 +177,11 @@
 
 			this.drawTapaNumbers();
 
+			this.drawMBs();
 			this.drawPekes();
 			this.drawLines();
 
 			this.drawChassis();
-
 			this.drawTarget();
 		},
 
