@@ -41,9 +41,6 @@
 					this.placedTent = false;
 					this.firstPoint.reset();
 				}
-				if (this.mouseend) {
-					this.board.cell.setinfo(0);
-				}
 
 				var cell = this.getcell();
 
@@ -68,6 +65,7 @@
 				if (this.inputData === null && this.firstPoint.equals(cell)) {
 					if (hasempty && this.btn === "left") {
 						cell.setinfo(2);
+						this.board.hasinfo = true;
 						cell.draw();
 					}
 
