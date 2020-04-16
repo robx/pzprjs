@@ -437,7 +437,7 @@
 					py = (cell.by + 0.15) * this.bh;
 
 				var num = cell.getNum();
-				if (num === -1) {
+				if (num === -1 && !cell.isDot()) {
 					num = cell.qinfo;
 				}
 				switch (num) {
