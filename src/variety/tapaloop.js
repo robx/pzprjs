@@ -97,6 +97,11 @@
 		qnums: [],
 		noLP: function(dir) {
 			return (this.qnums.length === 0 ? false : true);
+		},
+
+		getSegmentLengths: function(){
+			// var lengths = [];
+
 		}
 	},
 	Border: {
@@ -226,16 +231,6 @@
 						val[1] = (num / 6) | 0;
 						num -= val[1] * 6;
 						val[2] = num;
-					} else if (num >= 635 && num < 1260) {
-						num -= 635;
-						val = [0, 0, 0, 0];
-						val[0] = (num / 125) | 0;
-						num -= val[0] * 125;
-						val[1] = (num / 25) | 0;
-						num -= val[1] * 25;
-						val[2] = (num / 5) | 0;
-						num -= val[2] * 5;
-						val[3] = num;
 					}
 					for (var k = 0; k < 4; k++) {
 						if (val[k] === 0) {
@@ -244,6 +239,21 @@
 					}
 					cell.qnums = val;
 					i++;
+				} else if (ca === "+"){
+					var num = parseInt(bstr.substr(i+1, 2), 36) - 360,
+						val = [0,0,0];
+					val[0] = (num / 36) | 0;
+					num -= val[0] * 36;
+					val[1] = (num / 6) | 0;
+					num -= val[1] * 6;
+					val[2] = num;
+					for (var k = 0; k < 4; k++) {
+						if (val[k] === 0) {
+							val[k] = -2;
+						}
+					}
+					cell.qnums = val;
+					i = i+2;
 				} else if (ca === "-"){
 					var num = parseInt(bstr.substr(i+1, 2), 36) - 360,
 						val = [0,0,0,0];
@@ -293,18 +303,19 @@
 						360
 					).toString(36);
 				} else if (qn.length === 3) {
-					pstr = (
+					pstr = "+"+(
 						(qn[0] > 0 ? qn[0] : 0) * 36 +
 						(qn[1] > 0 ? qn[1] : 0) * 6 +
 						(qn[2] > 0 ? qn[2] : 0) +
-						409
+						360
 					).toString(36);
 				} else if (qn.length === 4) {
 					pstr = "-"+(
 						(qn[0] > 0 ? qn[0] : 0) * 125 +
 						(qn[1] > 0 ? qn[1] : 0) * 25 +
 						(qn[2] > 0 ? qn[2] : 0) * 5 +
-						(qn[3] > 0 ? qn[3] : 0) + 360
+						(qn[3] > 0 ? qn[3] : 0) +
+						360
 					).toString(36);
 				} else {
 					count++;
@@ -364,9 +375,44 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-		]
+			"checkBranchLine",
+			"checkCrossLine",
+			// "checkTapaloop",
+			"checkDeadendLine+",
+			"checkOneLoop"
+		],
+
+		checkTapaloop: function(){
+			this.checkAllCell(
+				function(cell){
+					if(cell.qnums.length === 0){return false;}
+
+					var segs = cell.getSegmentLengths();
+					if (cell.qnums.length !== segs.length) {
+						cell.getAllSegments().seterr(1);
+						return true;
+					}
+					for (var i = 0; i < cell.qnums.length; i++) {
+						var num = cell.qnums[i];
+						if (num === -2) {
+							continue;
+						}
+						var idx = segs.indexOf(num);
+						if (idx < 0) {
+							return true;
+						}
+						segs.splice(idx, 1);
+					}
+
+				}
+
+			);
+		}
 	},
 
 	FailCode: {
+		"tapaloopError" : [
+		"(please translate) The segments around a clue are not the same length as the numbers.",
+		"The segments around a clue are not the same length as the numbers."]
 	}
 });
