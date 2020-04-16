@@ -276,7 +276,7 @@
 					cell.qnums = val;
 					i++;
 				} else if (ca === "+"){
-					var num = parseInt(bstr.substr(i+1, 2), 36) - 360,
+					var num = parseInt(bstr.substr(i+1, 2), 36) - 36,
 						val = [0,0,0];
 					val[0] = (num / 49) | 0;
 					num -= val[0] * 49;
@@ -291,7 +291,7 @@
 					cell.qnums = val;
 					i = i+2;
 				} else if (ca === "-"){
-					var num = parseInt(bstr.substr(i+1, 2), 36) - 360,
+					var num = parseInt(bstr.substr(i+1, 2), 36) - 36,
 						val = [0,0,0,0];
 					val[0] = (num / 216) | 0;
 					num -= val[0] * 216;
@@ -343,7 +343,7 @@
 						(qn[0] > 0 ? qn[0] : 0) * 49 +
 						(qn[1] > 0 ? qn[1] : 0) * 7 +
 						(qn[2] > 0 ? qn[2] : 0) +
-						360
+						36
 					).toString(36);
 				} else if (qn.length === 4) {
 					pstr = "-"+(
@@ -351,7 +351,7 @@
 						(qn[1] > 0 ? qn[1] : 0) * 36 +
 						(qn[2] > 0 ? qn[2] : 0) * 6 +
 						(qn[3] > 0 ? qn[3] : 0) +
-						360
+						36
 					).toString(36);
 				} else {
 					count++;
