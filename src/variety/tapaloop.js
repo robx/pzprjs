@@ -261,20 +261,12 @@
 				} else if (this.include(ca, "a", "f")) {
 					var num = parseInt(bstr.substr(i, 2), 36),
 						val = [];
-					if (num >= 360 && num < 409) {
+					if (num >= 360) {
 						num -= 360;
 						val = [0, 0];
-						val[0] = (num / 7) | 0;
-						num -= val[0] * 7;
+						val[0] = (num / 8) | 0;
+						num -= val[0] * 8;
 						val[1] = num;
-					} else if (num >= 409 && num < 635) {
-						num -= 409;
-						val = [0, 0, 0];
-						val[0] = (num / 36) | 0;
-						num -= val[0] * 36;
-						val[1] = (num / 6) | 0;
-						num -= val[1] * 6;
-						val[2] = num;
 					}
 					for (var k = 0; k < 4; k++) {
 						if (val[k] === 0) {
@@ -286,10 +278,10 @@
 				} else if (ca === "+"){
 					var num = parseInt(bstr.substr(i+1, 2), 36) - 360,
 						val = [0,0,0];
-					val[0] = (num / 36) | 0;
-					num -= val[0] * 36;
-					val[1] = (num / 6) | 0;
-					num -= val[1] * 6;
+					val[0] = (num / 49) | 0;
+					num -= val[0] * 49;
+					val[1] = (num / 7) | 0;
+					num -= val[1] * 7;
 					val[2] = num;
 					for (var k = 0; k < 4; k++) {
 						if (val[k] === 0) {
@@ -301,12 +293,12 @@
 				} else if (ca === "-"){
 					var num = parseInt(bstr.substr(i+1, 2), 36) - 360,
 						val = [0,0,0,0];
-					val[0] = (num / 125) | 0;
-					num -= val[0] * 125;
-					val[1] = (num / 25) | 0;
-					num -= val[1] * 25;
-					val[2] = (num / 5) | 0;
-					num -= val[2] * 5;
+					val[0] = (num / 216) | 0;
+					num -= val[0] * 216;
+					val[1] = (num / 36) | 0;
+					num -= val[1] * 36;
+					val[2] = (num / 6) | 0;
+					num -= val[2] * 6;
 					val[3] = num;
 					for (var k = 0; k < 4; k++) {
 						if (val[k] === 0) {
@@ -342,22 +334,22 @@
 					}
 				} else if (qn.length === 2) {
 					pstr = (
-						(qn[0] > 0 ? qn[0] : 0) * 7 +
+						(qn[0] > 0 ? qn[0] : 0) * 8 +
 						(qn[1] > 0 ? qn[1] : 0) +
 						360
 					).toString(36);
 				} else if (qn.length === 3) {
 					pstr = "+"+(
-						(qn[0] > 0 ? qn[0] : 0) * 36 +
-						(qn[1] > 0 ? qn[1] : 0) * 6 +
+						(qn[0] > 0 ? qn[0] : 0) * 49 +
+						(qn[1] > 0 ? qn[1] : 0) * 7 +
 						(qn[2] > 0 ? qn[2] : 0) +
 						360
 					).toString(36);
 				} else if (qn.length === 4) {
 					pstr = "-"+(
-						(qn[0] > 0 ? qn[0] : 0) * 125 +
-						(qn[1] > 0 ? qn[1] : 0) * 25 +
-						(qn[2] > 0 ? qn[2] : 0) * 5 +
+						(qn[0] > 0 ? qn[0] : 0) * 216 +
+						(qn[1] > 0 ? qn[1] : 0) * 36 +
+						(qn[2] > 0 ? qn[2] : 0) * 6 +
 						(qn[3] > 0 ? qn[3] : 0) +
 						360
 					).toString(36);
