@@ -353,7 +353,8 @@
 			"midloop",
 			"balance",
 			"simpleloop",
-			"doppelblock"
+			"doppelblock",
+			"tapaloop"
 		]
 	};
 	var tabstate = {
