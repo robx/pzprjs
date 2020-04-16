@@ -327,8 +327,36 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeQnums_tapaloop();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeQnums_tapaloop();
+			this.encodeBorderLine();
+		},
+		decodeQnums_tapaloop: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca !== ".") {
+					cell.qnums = [];
+					var array = ca.split(/,/);
+					for (var i = 0; i < array.length; i++) {
+						cell.qnums.push(array[i] !== "-" ? +array[i] : -2);
+					}
+				}
+			});
+		},
+		encodeQnums_tapaloop: function(){
+			this.encodeCell(function(cell) {
+				if (cell.qnums.length > 0) {
+					var array = [];
+					for (var i = 0; i < cell.qnums.length; i++) {
+						array.push(cell.qnums[i] >= 0 ? "" + cell.qnums[i] : "-");
+					}
+					return array.join(",") + " ";
+				} else {
+					return ". ";
+				}
+			});
 		}
 	},
 
