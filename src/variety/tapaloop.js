@@ -100,7 +100,51 @@
 		},
 
 		getSegmentLengths: function(){
-			// var lengths = [];
+			 var segs = [];
+			 var current = 0;
+			 var cellrel = [ [-2,-2],
+			 			  [ 0,-2],
+			 			  [ 2,-2],
+			 			  [ 2, 0],
+			 			  [ 2, 2],
+			 			  [ 0, 2],
+			 			  [-2, 2],
+			 			  [-2, 0]];
+			 var borderrel = [[-1,-2],
+			 			[ 1,-2],
+			 			[ 2,-1],
+			 			[ 2, 1],
+			 			[ 1, 2],
+			 			[-1, 2],
+			 			[-2, 1],
+			 			[-2,-1]
+			 			];
+
+			 for(var i=0; i<8; i++){
+			 	if(current===0){
+			 		var cell = this.relcell(cellrel[i][0],cellrel[i][1])
+			 		if(!!cell && cell.lcnt>0){
+			 			current = 1;
+			 		} else {continue;}
+			 	}
+			 	var border = this.relbd(borderrel[i][0],borderrel[i][1])
+			 	if(!!border && border.isLine()){
+			 		current++;
+		 		}
+		 		else {
+		 			segs.push(current);
+		 			current = 0;
+		 		}
+			 }
+			 if(current > 0) { segs.push(current);}
+			 if(segs.length === 0){ segs.push(0);}
+			 else if(this.relbd(-2,-1).isLine()){
+			 	segs[0] += segs[segs.length - 1] - 1;
+			 	segs.pop();
+			 }
+
+			 return segs;
+
 
 		}
 	},
@@ -377,7 +421,7 @@
 		checklist: [
 			"checkBranchLine",
 			"checkCrossLine",
-			// "checkTapaloop",
+			"checkTapaloop",
 			"checkDeadendLine+",
 			"checkOneLoop"
 		],
@@ -386,10 +430,8 @@
 			this.checkAllCell(
 				function(cell){
 					if(cell.qnums.length === 0){return false;}
-
 					var segs = cell.getSegmentLengths();
 					if (cell.qnums.length !== segs.length) {
-						cell.getAllSegments().seterr(1);
 						return true;
 					}
 					for (var i = 0; i < cell.qnums.length; i++) {
@@ -404,7 +446,7 @@
 						segs.splice(idx, 1);
 					}
 
-				}
+				}, "tapaloopError"
 
 			);
 		}
