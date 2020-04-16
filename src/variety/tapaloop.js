@@ -191,8 +191,137 @@
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
+			this.decodeNumber_tapaloop();
 		},
 		encodePzpr: function(type) {
+			this.encodeNumber_tapaloop();
+		},
+		decodeNumber_tapaloop: function() {
+			var c = 0,
+				i = 0,
+				bstr = this.outbstr,
+				bd = this.board;
+			for (i = 0; i < bstr.length; i++) {
+				var cell = bd.cell[c],
+					ca = bstr.charAt(i);
+
+				if (this.include(ca, "0", "8")) {
+					cell.qnums = [parseInt(ca, 10)];
+				} else if (ca === ".") {
+					cell.qnums = [-2];
+				} else if (this.include(ca, "a", "f")) {
+					var num = parseInt(bstr.substr(i, 2), 36),
+						val = [];
+					if (num >= 360 && num < 409) {
+						num -= 360;
+						val = [0, 0];
+						val[0] = (num / 7) | 0;
+						num -= val[0] * 7;
+						val[1] = num;
+					} else if (num >= 409 && num < 635) {
+						num -= 409;
+						val = [0, 0, 0];
+						val[0] = (num / 36) | 0;
+						num -= val[0] * 36;
+						val[1] = (num / 6) | 0;
+						num -= val[1] * 6;
+						val[2] = num;
+					} else if (num >= 635 && num < 1260) {
+						num -= 635;
+						val = [0, 0, 0, 0];
+						val[0] = (num / 125) | 0;
+						num -= val[0] * 125;
+						val[1] = (num / 25) | 0;
+						num -= val[1] * 25;
+						val[2] = (num / 5) | 0;
+						num -= val[2] * 5;
+						val[3] = num;
+					}
+					for (var k = 0; k < 4; k++) {
+						if (val[k] === 0) {
+							val[k] = -2;
+						}
+					}
+					cell.qnums = val;
+					i++;
+				} else if (ca === "-"){
+					var num = parseInt(bstr.substr(i+1, 2), 36) - 360,
+						val = [0,0,0,0];
+					val[0] = (num / 125) | 0;
+					num -= val[0] * 125;
+					val[1] = (num / 25) | 0;
+					num -= val[1] * 25;
+					val[2] = (num / 5) | 0;
+					num -= val[2] * 5;
+					val[3] = num;
+					for (var k = 0; k < 4; k++) {
+						if (val[k] === 0) {
+							val[k] = -2;
+						}
+					}
+					cell.qnums = val;
+					i = i+2;
+				} else if (ca >= "g" && ca <= "z") {
+					c += parseInt(ca, 36) - 16;
+				}
+
+				c++;
+				if (!bd.cell[c]) {
+					break;
+				}
+			}
+			this.outbstr = bstr.substr(i + 1);
+		},
+		encodeNumber_tapaloop: function() {
+			var count = 0,
+				cm = "",
+				bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var pstr = "",
+					qn = bd.cell[c].qnums;
+
+				if (qn.length === 1) {
+					if (qn[0] === -2) {
+						pstr = ".";
+					} else {
+						pstr = qn[0].toString(10);
+					}
+				} else if (qn.length === 2) {
+					pstr = (
+						(qn[0] > 0 ? qn[0] : 0) * 7 +
+						(qn[1] > 0 ? qn[1] : 0) +
+						360
+					).toString(36);
+				} else if (qn.length === 3) {
+					pstr = (
+						(qn[0] > 0 ? qn[0] : 0) * 36 +
+						(qn[1] > 0 ? qn[1] : 0) * 6 +
+						(qn[2] > 0 ? qn[2] : 0) +
+						409
+					).toString(36);
+				} else if (qn.length === 4) {
+					pstr = "-"+(
+						(qn[0] > 0 ? qn[0] : 0) * 125 +
+						(qn[1] > 0 ? qn[1] : 0) * 25 +
+						(qn[2] > 0 ? qn[2] : 0) * 5 +
+						(qn[3] > 0 ? qn[3] : 0) + 360
+					).toString(36);
+				} else {
+					count++;
+				}
+
+				if (count === 0) {
+					cm += pstr;
+				} else if (pstr || count === 20) {
+					cm += (15 + count).toString(36) + pstr;
+					count = 0;
+				}
+			}
+			if (count > 0) {
+				cm += (15 + count).toString(36);
+			}
+
+			this.outbstr += cm;
 		}
 	},
 	//---------------------------------------------------------
