@@ -423,7 +423,7 @@
 		],
 		bkMixedNum: [
 			"1つのブロックに2種類以上の数字が入っています。",
-			"A room has two or more kinds of numbers."
+			"A block has two or more kinds of numbers."
 		],
 		bsSameNum: [
 			"同じ数字のブロックが辺を共有しています。",
@@ -431,7 +431,7 @@
 		],
 		bkNotSymmRoom: [
 			"部屋の形が点対称ではありません。",
-			"The room is not point symmetric."
+			"The block is not point symmetric."
 		]
 	}
 });
