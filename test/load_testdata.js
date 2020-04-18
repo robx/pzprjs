@@ -1,6 +1,6 @@
 // test/load_testdata.js
 
-var pzpr = require("../dist/js/pzpr.js");
+import pzpr from "../dist/js/pzpr.concat.js";
 
 // Load test data
 var testdata = {};
@@ -16,4 +16,4 @@ pzpr.variety.each(function(pid) {
 	require("./script/" + pid + ".js");
 });
 
-module.exports = testdata;
+export default testdata;

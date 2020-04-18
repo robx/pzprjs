@@ -1,6 +1,6 @@
 var assert = require("assert");
 
-var pzpr = require("../../");
+import pzpr from "../../dist/js/pzpr.concat.js";
 
 var puzzle = new pzpr.Puzzle();
 

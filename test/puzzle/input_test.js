@@ -2,9 +2,9 @@
 
 var assert = require("assert");
 
-var pzpr = require("../../dist/js/pzpr.js");
+import pzpr from "../../dist/js/pzpr.concat.js";
 
-var testdata = require("../load_testdata.js");
+import testdata from "../load_testdata.js";
 
 function execmouse(puzzle, strs) {
 	var matches = (strs[1].match(/(left|right)(.*)/)[2] || "").match(/x([0-9]+)/);

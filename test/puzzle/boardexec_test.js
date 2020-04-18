@@ -2,9 +2,9 @@
 
 var assert = require("assert");
 
-var pzpr = require("../../dist/js/pzpr.js");
+import pzpr from "../../dist/js/pzpr.concat.js";
 
-var testdata = require("../load_testdata.js");
+import testdata from "../load_testdata.js";
 
 function assert_equal_board(bd1, bd2) {
 	bd1.compareData(bd2, function(group, c, a) {
