@@ -131,6 +131,7 @@ function toBGimage(pid) {
 		"satogaeri",
 		"scrin",
 		"starbattle",
+		"tapaloop",
 		"walllogic",
 		"yinyang"
 	];
