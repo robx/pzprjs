@@ -46,9 +46,7 @@
 					}
 				}
 			} else {
-				return (
-					require("path").dirname(__filename) + "/"
-				);
+				return require("path").dirname(__filename) + "/";
 			}
 			return "";
 		},
