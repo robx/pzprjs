@@ -1,8 +1,8 @@
-.PHONY: default build test serve serve-all format install lint candle bundle rollup
+.PHONY: default build test serve serve-all format install lint candle bundle rollup githash
 
 default: lint test
 
-build: candle rollup
+build: candle rollup githash
 	npm run-script build
 
 test: bundle
@@ -67,3 +67,7 @@ bundle:
 rollup: bundle
 	mkdir -p ./dist/js/
 	npx rollup -c ./rollup.config.js
+
+HASH=$(shell git rev-parse --short HEAD)
+githash:
+	sed -i s'/<%= git.hash %>/${HASH}/g' ./dist/js/pzpr.js
