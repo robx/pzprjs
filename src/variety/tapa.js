@@ -1,7 +1,6 @@
 //
 // パズル固有スクリプト部 Tapa版 tapa.js
 //
-(function() {
 	function sameArray(array1, array2) {
 		if (array1.length !== array2.length) {
 			return false;
@@ -14,13 +13,8 @@
 		return true;
 	}
 
-	(function(pidlist, classbase) {
-		if (typeof module === "object" && module.exports) {
-			module.exports = [pidlist, classbase];
-		} else {
-			pzpr.classmgr.makeCustom(pidlist, classbase);
-		}
-	})(["tapa"], {
+var pidlist = ["tapa"];
+var classbase = {
 		//---------------------------------------------------------
 		// マウス入力系
 		MouseEvent: {
@@ -635,5 +629,6 @@
 				"The number is not equal to the length of surrounding shaded cells."
 			]
 		}
-	});
-})();
+	};
+
+export default [pidlist, classbase];

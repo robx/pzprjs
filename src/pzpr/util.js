@@ -1,13 +1,13 @@
 // util.js v3.4.0
 
-(function() {
-	var api = pzpr.env.API,
+import { env } from './env.js';
+	var api = env.API,
 		eventMouseDown = ["mousedown"],
 		eventMouseMove = ["mousemove"],
 		eventMouseUp = ["mouseup"],
 		eventMouseCancel = [""];
 
-	if (pzpr.env.bz.AndroidBrowser) {
+	if (env.bz.AndroidBrowser) {
 		eventMouseDown = [""];
 		eventMouseMove = [""];
 		eventMouseUp = [""];
@@ -33,11 +33,11 @@
 	//----------------------------------------------------------------------
 	// EventやDOM関連のツール的関数群
 	//----------------------------------------------------------------------
-	pzpr.util = {
+	var util = {
 		//---------------------------------------------------------------
 		// pzpr.jsが読み込まれているスクリプトのパスを取得する
 		getpath: function() {
-			if (pzpr.env.browser) {
+			if (env.browser) {
 				var srcs = document.getElementsByTagName("script");
 				for (var i = 0; i < srcs.length; i++) {
 					var result = srcs[i].src.match(/^(.*\/)pzpr\.js(?:\?.*)?$/);
@@ -160,7 +160,7 @@
 		// pzpr.util.getRect()   エレメントの四辺の座標を返す
 		//--------------------------------------------------------------------------------
 		getRect: function(el) {
-			if (!pzpr.env.browser) {
+			if (!env.browser) {
 				return { top: 0, bottom: 0, left: 0, right: 0, height: 0, width: 0 };
 			}
 			var rect = el.getBoundingClientRect(),
@@ -210,4 +210,5 @@
 			return isdisp;
 		}
 	};
-})();
+
+export default util;

@@ -1,6 +1,8 @@
 // PieceList.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+import { classmgr } from '../pzpr/classmgr.js';
+
+classmgr.makeCommon({
 	//----------------------------------------------------------------------------
 	// ★PieceListクラス オブジェクトの配列を扱う
 	//---------------------------------------------------------------------------
@@ -101,7 +103,9 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			for (var i = 0; i < this.length; i++) {
-				this[i].error = num;
+				if (! Object.isFrozen(this[i])) {
+					this[i].error = num;
+				}
 			}
 		},
 		setnoerr: function() {

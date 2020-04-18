@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 島国・チョコナ・ストストーン版 shimaguni.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["shimaguni", "chocona", "stostone"], {
+var pidlist = ["shimaguni", "chocona", "stostone"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -533,4 +528,6 @@
 			"Unshaded cells exist in the lower half of the board after the blocks have fallen."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

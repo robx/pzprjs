@@ -1,6 +1,8 @@
 // Piece.js v3.4.1
 
-pzpr.classmgr.makeCommon({
+import { classmgr } from '../pzpr/classmgr.js';
+
+classmgr.makeCommon({
 	//---------------------------------------------------------------------------
 	// ★BoardPieceクラス Cell, Cross, Border, ExCellクラスのベース
 	//---------------------------------------------------------------------------
@@ -158,7 +160,9 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.addOpe(prop, this[prop], num);
-			this[prop] = num;
+			if (! Object.isFrozen(this)) {
+				this[prop] = num;
+			}
 
 			var trialstage = this.board.trialstage;
 			if (trialstage > 0) {
@@ -292,7 +296,9 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		seterr: function(num) {
 			if (this.board.isenableSetError()) {
-				this.error = num;
+				if (! Object.isFrozen(this)) {
+					this.error = num;
+				}
 			}
 		},
 		setinfo: function(num) {

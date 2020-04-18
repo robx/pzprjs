@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ひとりにしてくれ hitori.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["hitori"], {
+var pidlist = ["hitori"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -274,4 +269,6 @@
 			});
 		}
 	}
-});
+}
+
+export default [pidlist, classbase];

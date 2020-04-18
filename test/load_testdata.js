@@ -1,7 +1,5 @@
 // test/load_testdata.js
 
-var pzpr = require("../dist/js/pzpr.js");
-
 // Load test data
 var testdata = {};
 global.ui = {
@@ -12,8 +10,11 @@ global.ui = {
 		}
 	}
 };
-pzpr.variety.each(function(pid) {
+import variety from "../src/pzpr/variety.js";
+
+variety.each(function(pid) {
 	require("./script/" + pid + ".js");
 });
 
-module.exports = testdata;
+export default testdata;
+

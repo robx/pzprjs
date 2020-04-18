@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 なわばり・フォーセルズ・ファイブセルズ版 nawabari.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["nawabari", "fourcells", "fivecells", "heteromino"], {
+var pidlist = ["nawabari", "fourcells", "fivecells", "heteromino"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -522,4 +517,6 @@
 			"Two areas of the same shape and orientation area adjacent."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

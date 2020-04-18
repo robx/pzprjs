@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 数独版 sudoku.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["sudoku"], {
+var pidlist = ["sudoku"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -140,4 +135,6 @@
 			"checkNoNumCell+"
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

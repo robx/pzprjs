@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 タテボーヨコボー版 tateyoko.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["tateyoko"], {
+var pidlist = ["tateyoko"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -461,4 +456,6 @@
 			"The number of lines connected to a shaded cell is wrong."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

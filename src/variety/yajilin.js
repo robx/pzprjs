@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ヤジリン版 yajilin.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["yajilin", "yajilin-regions"], {
+var pidlist = ["yajilin", "yajilin-regions"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -148,7 +143,9 @@
 				var adb = this.adjborder;
 				var bs = [adb.top, adb.bottom, adb.left, adb.right];
 				for (var i = 0; i < bs.length; i++) {
-					bs[i].line = 0;
+					if (! Object.isFrozen(bs[i])) {
+						bs[i].line = 0;
+					}
 				}
 			}
 		}
@@ -653,4 +650,6 @@
 			"There is an empty cell."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,10 +1,12 @@
 // GraphBase.js
 
+import { classmgr } from '../pzpr/classmgr.js';
+
 //---------------------------------------------------------------------------
 // ★GraphBaseクラス 線や領域情報を管理する
 //---------------------------------------------------------------------------
 // GraphBaseクラスの定義
-pzpr.classmgr.makeCommon({
+classmgr.makeCommon({
 	GraphBase: {
 		enabled: false,
 		relation: {},

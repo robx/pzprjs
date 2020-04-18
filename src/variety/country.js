@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 カントリーロード・月か太陽・温泉めぐり版 country.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["country", "moonsun", "onsen", "doubleback", "maxi", "simpleloop"], {
+var pidlist = ["country", "moonsun", "onsen", "doubleback", "maxi", "simpleloop"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@country,onsen": {
@@ -1065,4 +1060,6 @@
 			"A line in a room is longer than the number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

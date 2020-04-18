@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 よせなべ版 yosenabe.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["yosenabe"], {
+var pidlist = ["yosenabe"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -638,4 +633,6 @@
 		],
 		bkNoNum: ["具材のない鍋があります。", "A crock has no circle."]
 	}
-});
+}
+
+export default [pidlist, classbase];

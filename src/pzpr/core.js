@@ -8,8 +8,4 @@ var pzpr = {
 	version: "<%= git.hash %>"
 };
 
-if (typeof module === "object" && module.exports) {
-	module.exports = pzpr;
-} else {
-	this.pzpr = pzpr;
-}
+export default pzpr;

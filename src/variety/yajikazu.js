@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 やじさんかずさん版 yajikazu.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["yajikazu"], {
+var pidlist = ["yajikazu"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -161,4 +156,6 @@
 			}
 		}
 	}
-});
+}
+
+export default [pidlist, classbase];

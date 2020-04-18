@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 クロット版 kurotto.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kurotto"], {
+var pidlist = ["kurotto"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -174,4 +169,6 @@
 			"The number is not equal to sum of adjacent masses of shaded cells."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

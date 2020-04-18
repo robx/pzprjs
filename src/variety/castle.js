@@ -1,10 +1,5 @@
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["castle"], {
+var pidlist = ["castle"];
+var classbase = {
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "direc", "shade", "clear", "info-line"],
@@ -538,4 +533,6 @@
 			"An unshaded cell is outside of the loop."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

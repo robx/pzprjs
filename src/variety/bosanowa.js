@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ボサノワ版 bosanowa.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["bosanowa"], {
+var pidlist = ["bosanowa"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -730,4 +725,6 @@
 			"Sum of the differences between the number and adjacent numbers is not equal to the number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

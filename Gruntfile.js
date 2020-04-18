@@ -33,14 +33,6 @@ module.exports = function(grunt){
         banner: banner_full,
         process: true,
 	  },
-      pzpr: {
-        options: {
-          sourceMap: !PRODUCTION
-        },
-        files: [
-          { src: require('./src/pzpr.js').files, dest: 'dist/js/pzpr.concat.js' }
-        ]
-      },
       ui: {
         options:{
           sourceMap: !PRODUCTION
@@ -55,24 +47,6 @@ module.exports = function(grunt){
       options: {
         banner: banner_min,
         report: 'min'
-      },
-      pzpr:{
-        options: (PRODUCTION ? {} : {
-          sourceMap : 'dist/js/pzpr.js.map',
-          sourceMapIn : 'dist/js/pzpr.concat.js.map',
-          sourceMapIncludeSources : true
-        }),
-        files: [
-          { src: 'dist/js/pzpr.concat.js', dest: 'dist/js/pzpr.js'}
-        ]
-      },
-      variety:{
-        options: (PRODUCTION ? {} : {
-          sourceMap : function(filename){ return filename+'.map';}
-        }),
-        files: [
-          { expand: true, cwd: 'src/variety', src: ['*.js'], dest: 'dist/js/pzpr-variety' }
-        ]
       },
       samples:{
         options: (PRODUCTION ? {} : {
@@ -98,9 +72,7 @@ module.exports = function(grunt){
   
   grunt.registerTask('default', ['build']);
   grunt.registerTask('release', ['build']);
-  grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);
-  grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
+  grunt.registerTask('build',        ['build:samples', 'build:ui']);
   grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);
-  grunt.registerTask('build:variety',['newer:uglify:variety']);
   grunt.registerTask('build:samples',['newer:uglify:samples']);
 };

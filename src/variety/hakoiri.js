@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 はこいり○△□版 hakoiri.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["hakoiri"], {
+var pidlist = ["hakoiri"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -335,4 +330,6 @@
 			"Equal shapes touch."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

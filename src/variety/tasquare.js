@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 たすくえあ版 tasquare.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["tasquare"], {
+var pidlist = ["tasquare"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -185,4 +180,6 @@
 			"No shaded cells are adjacent to square marks."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

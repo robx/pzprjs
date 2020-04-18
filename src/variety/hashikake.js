@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 橋をかけろ版 hashikake.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["hashikake"], {
+var pidlist = ["hashikake"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -460,4 +455,6 @@
 			"The number of connecting bridges to a number is not correct."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

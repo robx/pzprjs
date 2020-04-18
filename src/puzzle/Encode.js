@@ -1,11 +1,14 @@
 // Encode.js v3.4.1
 
+import { classmgr } from '../pzpr/classmgr.js';
+import Parser from '../pzpr/parser.js';
+
 //---------------------------------------------------------------------------
 // ★Encodeクラス URLのエンコード/デコードを扱う
 //---------------------------------------------------------------------------
 // URLエンコード/デコード
 // Encodeクラス
-pzpr.classmgr.makeCommon({
+classmgr.makeCommon({
 	//---------------------------------------------------------
 	Encode: {
 		pflag: "",
@@ -39,7 +42,7 @@ pzpr.classmgr.makeCommon({
 		// enc.encodePzpr()  各パズルのURL出力用(オーバーライド用)
 		//---------------------------------------------------------------------------
 		decodeURL: function(url) {
-			var pzl = pzpr.parser.parseURL(url),
+			var pzl = Parser.parseURL(url),
 				puzzle = this.puzzle,
 				bd = puzzle.board;
 
@@ -83,7 +86,7 @@ pzpr.classmgr.makeCommon({
 			var puzzle = this.puzzle,
 				pid = puzzle.pid,
 				bd = puzzle.board;
-			var pzl = new pzpr.parser.URLData("", mode);
+			var pzl = new Parser.URLData("", mode);
 
 			type =
 				type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */

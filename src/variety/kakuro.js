@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 カックロ版 kakuro.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kakuro"], {
+var pidlist = ["kakuro"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -524,4 +519,6 @@
 		],
 		ceNoNum: ["すべてのマスに数字が入っていません。", "There is an empty cell."]
 	}
-});
+}
+
+export default [pidlist, classbase];

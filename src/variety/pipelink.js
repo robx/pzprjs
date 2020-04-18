@@ -1,13 +1,10 @@
 //
 // パズル固有スクリプト部 パイプリンク・帰ってきたパイプリンク・環状線スペシャル版 pipelink.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["pipelink", "pipelinkr", "loopsp"], {
+import Parser from "../pzpr/parser.js";
+import { lang } from "../pzpr/env.js";
+var pidlist = ["pipelink", "pipelinkr", "loopsp"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@pipelink": {
@@ -409,7 +406,7 @@
 			this.outbstr = bstr.substr(i);
 		},
 		encodePipelink: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var count,
 				cm = "",
 				bd = this.board;
@@ -616,10 +613,10 @@
 		}
 	},
 	"CheckInfo@pipelinkr": {
-		text: function(lang) {
+		text: function(l_lang) {
 			var puzzle = this.puzzle,
 				texts = [];
-			var langcode = (lang || this.puzzle.pzpr.lang) === "ja" ? 0 : 1;
+			var langcode = (l_lang || lang) === "ja" ? 0 : 1;
 			if (this.length === 0) {
 				return puzzle.faillist.complete[langcode];
 			}
@@ -735,4 +732,6 @@
 		],
 		lpNoNum: ["○を含んでいないループがあります。", "A loop has no numbers."]
 	}
-});
+}
+
+export default [pidlist, classbase];

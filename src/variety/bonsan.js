@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ぼんさん・へやぼん・四角スライダー版 bonsan.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["bonsan", "heyabon", "rectslider", "satogaeri"], {
+var pidlist = ["bonsan", "heyabon", "rectslider", "satogaeri"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@bonsan,heyabon": {
@@ -306,7 +301,9 @@
 			var cell = component.departure,
 				num = cell.qnum;
 			num = num >= 0 ? num : this.board.cell.length;
-			cell.distance = num;
+			if (! Object.isFrozen(cell)) {
+				cell.distance = num;
+			}
 			if (cell.lcnt === 0) {
 				return;
 			}
@@ -750,4 +747,6 @@
 			"A shaded cell doesn't start any line."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

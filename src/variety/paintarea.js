@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ペイントエリア版 paintarea.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["paintarea"], {
+var pidlist = ["paintarea"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -150,4 +145,6 @@
 			"The number is not equal to the number of shaded cells in four adjacent cells."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

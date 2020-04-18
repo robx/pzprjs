@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 メジリンク版 mejilink.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["mejilink"], {
+var pidlist = ["mejilink"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -302,4 +297,6 @@
 			"The size of the tile is not equal to the total of length of lines that is remained dotted around the tile."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

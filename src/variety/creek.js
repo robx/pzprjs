@@ -1,13 +1,11 @@
 //
 // パズル固有スクリプト部 クリーク版 creek.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["creek"], {
+
+import Parser from "../pzpr/parser.js";
+
+var pidlist = ["creek"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -89,7 +87,7 @@
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var oldflag =
 				(type === parser.URL_PZPRV3 && this.checkpflag("d")) ||
 				(type === parser.URL_PZPRAPP && !this.checkpflag("c"));
@@ -170,4 +168,6 @@
 			"The number of shaded cells around a number on crossing is small."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

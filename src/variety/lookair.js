@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 るっくえあ版 lookair.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["lookair"], {
+var pidlist = ["lookair"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -195,4 +190,6 @@
 			"A mass of shaded cells can looks other same size mass of shaded cells."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

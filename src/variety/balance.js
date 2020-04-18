@@ -1,10 +1,5 @@
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["balance"], {
+var pidlist = ["balance"];
+var classbase = {
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "shade", "clear"],
@@ -435,4 +430,6 @@
 			"A circle has no line."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

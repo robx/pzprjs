@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ウソワン版 usoone.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["usoone"], {
+var pidlist = ["usoone"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -293,4 +288,6 @@
 			"The number of liars in a room is not one."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

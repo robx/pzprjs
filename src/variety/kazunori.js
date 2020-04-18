@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 かずのりのへや版 kazunori.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kazunori"], {
+var pidlist = ["kazunori"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -504,4 +499,6 @@
 			"The size of the room is not even."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

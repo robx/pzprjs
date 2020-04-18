@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 カックル版 kakuru.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kakuru"], {
+var pidlist = ["kakuru"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -444,4 +439,6 @@
 			"A sum of numbers around the pre-numbered cell is incorrect."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

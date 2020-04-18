@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ホタルビーム版 firefly.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["firefly"], {
+var pidlist = ["firefly"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -251,4 +246,6 @@
 			"The number of curves is different from a firefly's number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

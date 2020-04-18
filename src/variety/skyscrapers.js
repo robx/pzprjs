@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ビルディングパズル版 skyscrapers.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["skyscrapers"], {
+var pidlist = ["skyscrapers"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -431,4 +426,6 @@
 			"The number of visible buildings is wrong."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

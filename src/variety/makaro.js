@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 マカロ版 makaro.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["makaro"], {
+var pidlist = ["makaro"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -453,4 +448,6 @@
 			"An arrow doesn't point out biggest number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

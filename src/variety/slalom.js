@@ -1,13 +1,11 @@
 //
 // パズル固有スクリプト部 スラローム版 slalom.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["slalom"], {
+
+import Parser from "../pzpr/parser.js";
+
+var pidlist = ["slalom"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -779,7 +777,7 @@
 			this.decodeSlalom(urlver);
 		},
 		encodePzpr: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			if (type === parser.URL_PZPRV3) {
 				this.outpflag = "d";
 			}
@@ -1359,4 +1357,6 @@
 			"Start/goal circle doesn't have two lines."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,15 +1,17 @@
 // classmgr.js v3.6.0
 
+import variety from './variety.js';
+
 //---------------------------------------------------------------
 // クラス設定用関数など
 //---------------------------------------------------------------
-pzpr.common = {}; // CoreClass保存用
-pzpr.custom = { "": {} }; // パズル別クラス保存用
+var common = {}; // CoreClass保存用
+var custom = { "": {} }; // パズル別クラス保存用
 
 //----------------------------------------------------------------------------
 // ★pzpr.classmgrオブジェクト (クラス作成関数等)
 //---------------------------------------------------------------------------
-pzpr.classmgr = {
+var classmgr = {
 	//---------------------------------------------------------------
 	// 共通クラス・パズル別クラスに継承させる親クラスを生成する
 	//---------------------------------------------------------------
@@ -19,14 +21,14 @@ pzpr.classmgr = {
 	createCommon: function(commonbase) {
 		for (var key in commonbase) {
 			var names = this.searchName(key),
-				NewClass = pzpr.common[names.real];
+				NewClass = common[names.real];
 			if (!NewClass) {
-				NewClass = this.createClass(pzpr.common[names.base]);
+				NewClass = this.createClass(common[names.base]);
 				NewClass.prototype.common = NewClass.prototype;
 				NewClass.prototype.pid = "";
 			}
 			this.extendPrototype(NewClass.prototype, commonbase[key]);
-			pzpr.common[names.real] = pzpr.custom[""][names.real] = NewClass;
+			common[names.real] = custom[""][names.real] = NewClass;
 		}
 	},
 
@@ -36,7 +38,7 @@ pzpr.classmgr = {
 	makeCustom: function(pidlist, custombase) {
 		for (var i = 0; i < pidlist.length; i++) {
 			var pid = pidlist[i];
-			pzpr.custom[pid] = this.createCustom(pid, custombase);
+			custom[pid] = this.createCustom(pid, custombase);
 		}
 	},
 	getExtension: function(pid, custombase) {
@@ -72,32 +74,32 @@ pzpr.classmgr = {
 		return extension;
 	},
 	createCustom: function(pid, custombase) {
-		var custom = {};
+		var local_custom = {};
 		var extension = this.getExtension(pid, custombase);
 
 		// 追加プロパティが指定されているクラスを作成する
 		for (var key in extension) {
 			var names = this.searchName(key),
-				NewClass = custom[names.real];
+				NewClass = local_custom[names.real];
 			if (!NewClass) {
 				NewClass = this.createClass(
-					custom[names.base] || pzpr.common[names.base]
+					local_custom[names.base] || common[names.base]
 				);
 				NewClass.prototype.pid = pid;
 			}
 			this.extendPrototype(NewClass.prototype, extension[key]);
-			custom[names.real] = NewClass;
+			local_custom[names.real] = NewClass;
 		}
 
 		// 指定がなかった残りの共通クラスを作成(コピー)する
-		for (var classname in pzpr.common) {
-			if (!custom[classname]) {
-				custom[classname] = this.createClass(pzpr.common[classname]);
-				custom[classname].prototype.pid = pid;
+		for (var classname in common) {
+			if (!local_custom[classname]) {
+				local_custom[classname] = this.createClass(common[classname]);
+				local_custom[classname].prototype.pid = pid;
 			}
 		}
 
-		return custom;
+		return local_custom;
 	},
 
 	//---------------------------------------------------------------
@@ -144,22 +146,8 @@ pzpr.classmgr = {
 	// idを取得して、ファイルを読み込み
 	//---------------------------------------------------------------
 	includeCustomFile: function(pid) {
-		var scriptid = pzpr.variety(pid).script;
-		if (this.includedFile[scriptid]) {
-			return;
-		}
-		this.includedFile[scriptid] = true;
-
-		var customfile = pzpr.util.getpath() + "./pzpr-variety/" + scriptid + ".js";
-		if (pzpr.env.browser && !pzpr.env.node) {
-			var _script = document.createElement("script");
-			_script.type = "text/javascript";
-			_script.src = customfile + "?" + pzpr.version;
-			document.getElementsByTagName("head")[0].appendChild(_script);
-		} else {
-			var exporteddata = require(customfile);
-			this.makeCustom(exporteddata[0], exporteddata[1]);
-		}
+		var module = variety(pid).module;
+		this.makeCustom(module[0], module[1]);
 	},
 	includedFile: {},
 
@@ -167,19 +155,19 @@ pzpr.classmgr = {
 	// 新しくパズルのファイルを開く時の処理
 	//---------------------------------------------------------------------------
 	setPuzzleClass: function(puzzle, newpid, callback) {
-		if (!pzpr.variety(newpid).valid) {
+		if (!variety(newpid).valid) {
 			puzzle.emit("fail-open");
 			throw "Invalid Puzzle Variety Selected";
 		}
 
 		/* 今のパズルと別idの時 */
 		if (puzzle.pid !== newpid) {
-			if (!pzpr.custom[newpid]) {
+			if (!custom[newpid]) {
 				this.includeCustomFile(newpid);
-				if (!pzpr.custom[newpid]) {
+				if (!custom[newpid]) {
 					/* Customファイルが読み込みできるまで待つ */
 					setTimeout(function() {
-						pzpr.classmgr.setPuzzleClass(puzzle, newpid, callback);
+						classmgr.setPuzzleClass(puzzle, newpid, callback);
 					}, 10);
 					return;
 				}
@@ -203,15 +191,15 @@ pzpr.classmgr = {
 		/* 現在のクラスを消去する */
 		puzzle.klass = {};
 
-		var custom = pzpr.custom[pid];
-		for (var classname in custom) {
+		var local_custom = custom[pid];
+		for (var classname in local_custom) {
 			var PuzzleClass = (puzzle.klass[classname] = function() {
 				var args = Array.prototype.slice.apply(arguments);
 				if (!!this.initialize) {
 					this.initialize.apply(this, args);
 				}
 			});
-			var CustomProto = custom[classname].prototype;
+			var CustomProto = local_custom[classname].prototype;
 			for (var name in CustomProto) {
 				PuzzleClass.prototype[name] = CustomProto[name];
 			}
@@ -221,7 +209,7 @@ pzpr.classmgr = {
 		this.setPrototypeRef(puzzle, "klass", puzzle.klass);
 
 		puzzle.pid = pid;
-		puzzle.info = pzpr.variety(pid);
+		puzzle.info = variety(pid);
 	},
 
 	//---------------------------------------------------------------------------
@@ -233,3 +221,5 @@ pzpr.classmgr = {
 		}
 	}
 };
+
+export {common, custom, classmgr};

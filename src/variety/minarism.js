@@ -1,13 +1,11 @@
 //
 // パズル固有スクリプト部 マイナリズム・Kropki版 minarism.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["minarism", "kropki"], {
+
+import Parser from "../pzpr/parser.js";
+
+var pidlist = ["minarism", "kropki"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@minarism#1": {
@@ -507,7 +505,7 @@
 
 		decodeMinarism: function(type) {
 			// 盤面外数字のデコード
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var id = 0,
 				a = 0,
 				mgn = 0,
@@ -562,7 +560,7 @@
 			this.outbstr = bstr.substr(a);
 		},
 		encodeMinarism: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var cm = "",
 				count = 0,
 				bd = this.board;
@@ -808,4 +806,6 @@
 			"The number is double the other between two adjacent cells without shaded circle."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

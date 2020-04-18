@@ -1,13 +1,11 @@
 //
 // パズル固有スクリプト部 ＬＩＴＳ・のりのり版 lits.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["lits", "norinori"], {
+
+import Parser from "../pzpr/parser.js";
+
+var pidlist = ["lits", "norinori"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -213,7 +211,7 @@
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
-			var parser = this.puzzle.pzpr.parser;
+			var parser = Parser;
 			var oldflag =
 				(type === parser.URL_PZPRV3 && this.checkpflag("d")) ||
 				(type === parser.URL_PZPRAPP && !this.checkpflag("c"));
@@ -224,7 +222,7 @@
 			}
 		},
 		encodePzpr: function(type) {
-			if (type === this.puzzle.pzpr.parser.URL_PZPRAPP && this.pid === "lits") {
+			if (type === Parser.URL_PZPRAPP && this.pid === "lits") {
 				this.outpflag = "c";
 			}
 			this.encodeBorder();
@@ -484,4 +482,6 @@
 			"A room has three or mode shaded cells."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

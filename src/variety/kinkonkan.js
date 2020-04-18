@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 キンコンカン版 kinkonkan.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["kinkonkan"], {
+var pidlist = ["kinkonkan"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -768,4 +763,6 @@
 			"The number of reflections is wrong."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

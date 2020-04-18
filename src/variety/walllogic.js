@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ウォールロジック版 walllogic.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["walllogic"], {
+var pidlist = ["walllogic"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -718,4 +713,6 @@
 			"A line doesn't connect to any number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

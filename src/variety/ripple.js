@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 波及効果・コージュン版 ripple.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["ripple", "cojun", "meander"], {
+var pidlist = ["ripple", "cojun", "meander"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -388,4 +383,6 @@
 			"A number is not the neighbor of its consecutive numbers."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

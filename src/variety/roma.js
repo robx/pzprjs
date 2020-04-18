@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ろーま版 roma.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["roma"], {
+var pidlist = ["roma"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -345,4 +340,6 @@
 			"A cell cannot reach a goal."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

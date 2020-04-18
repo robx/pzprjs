@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 トリプレイス版 triplace.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["triplace"], {
+var pidlist = ["triplace"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -460,4 +455,6 @@
 			"The number of straight blocks underward or rightward is not correct."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

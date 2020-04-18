@@ -1,9 +1,11 @@
 // LineManager.js
 
+import { common, classmgr } from '../pzpr/classmgr.js';
+
 //---------------------------------------------------------------------------
 // ★LineGraphクラス 主に線や色分けの情報を管理する
 //---------------------------------------------------------------------------
-pzpr.classmgr.makeCommon({
+classmgr.makeCommon({
 	"LineGraph:GraphBase": {
 		initialize: function() {
 			if (this.moveline) {
@@ -71,13 +73,13 @@ pzpr.classmgr.makeCommon({
 			if (this.board.borderAsLine) {
 				this.pointgroup = "cross";
 			}
-			pzpr.common.GraphBase.prototype.rebuild.call(this);
+			common.GraphBase.prototype.rebuild.call(this);
 		},
 		rebuild2: function() {
 			if (!!this.incdecLineCount) {
 				this.resetLineCount();
 			}
-			pzpr.common.GraphBase.prototype.rebuild2.call(this);
+			common.GraphBase.prototype.rebuild2.call(this);
 		},
 
 		//---------------------------------------------------------------------------

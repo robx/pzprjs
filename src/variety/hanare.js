@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 はなれ組版 hanare.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["hanare"], {
+var pidlist = ["hanare"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -284,4 +279,6 @@
 			"The distance of the paired numbers is not equal to their difference."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

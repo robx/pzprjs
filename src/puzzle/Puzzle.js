@@ -1,11 +1,16 @@
 // Puzzle.js v3.6.0
 
-(function() {
+import Candle from 'pzpr-canvas';
+import MetaData from "../pzpr/metadata.js";
+import { classmgr } from "../pzpr/classmgr.js";
+import util from "../pzpr/util.js";
+import parser from "../pzpr/parser.js";
+import { document } from "../pzpr/globals.js";
+
 	//---------------------------------------------------------------------------
 	// ★Puzzleクラス ぱずぷれv3のベース処理やその他の処理を行う
 	//---------------------------------------------------------------------------
-	pzpr.Puzzle = function(canvas, option) {
-		this.pzpr = pzpr;
+	var Puzzle = function(canvas, option) {
 
 		if (option === void 0 && (!canvas || !canvas.parentNode)) {
 			option = canvas;
@@ -30,7 +35,7 @@
 
 		this.listeners = {};
 
-		this.metadata = new pzpr.MetaData();
+		this.metadata = new MetaData();
 
 		this.config = new this.Config(this);
 		if (option.config !== void 0) {
@@ -47,10 +52,10 @@
 			this.setCanvas(canvas);
 		}
 
-		pzpr.classmgr.setClasses(this, "");
+		classmgr.setClasses(this, "");
 		initObjects(this);
 	};
-	pzpr.Puzzle.prototype = {
+	Puzzle.prototype = {
 		pid: null, // パズルのID("creek"など)
 		info: {}, // VarietyInfoへの参照
 
@@ -128,7 +133,7 @@
 				return;
 			}
 
-			var rect = pzpr.util.getRect(el);
+			var rect = util.getRect(el);
 			var _div = document.createElement("div");
 			_div.style.width = rect.width + "px";
 			_div.style.height = rect.height + "px";
@@ -231,10 +236,10 @@
 		// owner.getTime()        開始からの時間をミリ秒単位で取得する
 		//---------------------------------------------------------------------------
 		resetTime: function() {
-			this.starttime = pzpr.util.currentTime();
+			this.starttime = util.currentTime();
 		},
 		getTime: function() {
-			return pzpr.util.currentTime() - this.starttime;
+			return util.currentTime() - this.starttime;
 		},
 
 		//---------------------------------------------------------------------------
@@ -406,9 +411,9 @@
 
 		var classes = puzzle.klass;
 		var Board = !!classes && !!classes.Board ? classes.Board : null;
-		var pzl = pzpr.parser(data, variety || puzzle.pid);
+		var pzl = parser(data, variety || puzzle.pid);
 
-		pzpr.classmgr.setPuzzleClass(puzzle, pzl.pid, function() {
+		classmgr.setPuzzleClass(puzzle, pzl.pid, function() {
 			/* パズルの種類が変わっていればオブジェクトを設定しなおす */
 			if (Board !== puzzle.klass.Board) {
 				initObjects(puzzle);
@@ -452,7 +457,7 @@
 
 		// クラス初期化
 		puzzle.board = new classes.Board(); // 盤面オブジェクト
-		pzpr.classmgr.setPrototypeRef(puzzle, "board", puzzle.board);
+		classmgr.setPrototypeRef(puzzle, "board", puzzle.board);
 
 		puzzle.checker = new classes.AnsCheck(); // 正解判定オブジェクト
 		puzzle.painter = new classes.Graphic(); // 描画系オブジェクト
@@ -474,14 +479,14 @@
 		/* fillTextが使えない場合は強制的にSVG描画に変更する */
 		if (
 			type === "canvas" &&
-			!!pzpr.Candle.enable.canvas &&
+			!!Candle.enable.canvas &&
 			!CanvasRenderingContext2D.prototype.fillText
 		) {
 			type = "svg";
 		}
 
-		pzpr.Candle.start(puzzle.canvas, type, function(g) {
-			pzpr.util.unselectable(g.canvas);
+		Candle.start(puzzle.canvas, type, function(g) {
+			util.unselectable(g.canvas);
 			g.child.style.pointerEvents = "none";
 			if (g.use.canvas && !puzzle.subcanvas) {
 				var canvas = (puzzle.subcanvas = createSubCanvas("canvas"));
@@ -500,11 +505,11 @@
 		});
 	}
 	function createSubCanvas(type) {
-		if (!pzpr.Candle.enable[type]) {
+		if (!Candle.enable[type]) {
 			return null;
 		}
 		var el = document.createElement("div");
-		pzpr.Candle.start(el, type);
+		Candle.start(el, type);
 		return el;
 	}
 
@@ -540,7 +545,7 @@
 	//---------------------------------------------------------------------------
 	function setCanvasEvents(puzzle) {
 		function ae(type, func) {
-			pzpr.util.addEvent(puzzle.canvas, type, puzzle, func);
+			util.addEvent(puzzle.canvas, type, puzzle, func);
 		}
 
 		// マウス入力イベントの設定
@@ -623,7 +628,7 @@
 	function parseImageOption() {
 		// (type,quality,option)のはず
 		var imageopt = {};
-		var type = pzpr.Candle.current;
+		var type = Candle.current;
 		var cellsize = null,
 			bgcolor = null,
 			quality = null;
@@ -651,7 +656,7 @@
 			}
 		}
 
-		imageopt.type = (type || pzpr.Candle.current).match(/svg/)
+		imageopt.type = (type || Candle.current).match(/svg/)
 			? "svg"
 			: "canvas";
 		imageopt.mimetype =
@@ -669,4 +674,5 @@
 
 		return imageopt;
 	}
-})();
+
+export default Puzzle;

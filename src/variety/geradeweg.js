@@ -1,10 +1,5 @@
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["geradeweg"], {
+var pidlist = ["geradeweg"];
+var classbase = {
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear", "info-line"],
@@ -266,4 +261,6 @@
 		],
 		numNoLine: ["線の通っていない数字があります。", "A number has no line."]
 	}
-});
+}
+
+export default [pidlist, classbase];

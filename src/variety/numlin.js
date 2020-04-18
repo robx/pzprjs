@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ナンバーリンク、アルコネ版 numlin.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["numlin", "arukone"], {
+var pidlist = ["numlin", "arukone"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -393,4 +388,6 @@
 			"A crossing is left blank."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

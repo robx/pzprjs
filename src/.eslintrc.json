@@ -4,7 +4,8 @@
     "node": true                        // Allow to use node defined variable (require, process etc.)
   },
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 5,
+    "sourceType": "module"
   },
   "globals": {
     "pzpr": "readonly"

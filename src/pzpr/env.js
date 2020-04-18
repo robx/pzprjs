@@ -1,10 +1,11 @@
 // env.js v3.4.0
+//
+import Candle from 'pzpr-canvas';
 
 /**************/
 /* 環境の取得 */
 /**************/
-pzpr.env = (function() {
-	var isbrowser = pzpr.Candle.env.browser;
+	var isbrowser = Candle.env.browser;
 	var UA = isbrowser ? navigator.userAgent : "";
 
 	var ios = UA.indexOf("like Mac OS X") > -1;
@@ -61,18 +62,17 @@ pzpr.env = (function() {
 			isbrowser && document.createElement("a").download !== void 0
 	};
 
-	return {
+	var env = {
 		bz: bz,
 		OS: os,
 		API: api,
 		browser: isbrowser,
-		node: pzpr.Candle.env.node
+		node: Candle.env.node
 	};
-})();
 
-pzpr.lang = (function() {
-	var userlang = pzpr.env.node
-		? process.env.LANG
+	var userlang = env.node
+		? "XXX" // process.env.LANG
 		: navigator.browserLanguage || navigator.language || navigator.userLanguage;
-	return !userlang || userlang.substr(0, 2) === "ja" ? "ja" : "en";
-})();
+	var lang = !userlang || userlang.substr(0, 2) === "ja" ? "ja" : "en";
+
+export { env, lang }

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ナンロー版 nanro.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["nanro"], {
+var pidlist = ["nanro"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -322,4 +317,6 @@
 			"There is a cell that is not filled in number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

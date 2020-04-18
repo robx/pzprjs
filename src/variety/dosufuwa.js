@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ドッスンフワリ版 dosufuwa.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["dosufuwa"], {
+var pidlist = ["dosufuwa"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -423,4 +418,6 @@
 			"An iron ball is not on the bottom of the row or on another iron ball."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

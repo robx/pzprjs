@@ -1,6 +1,9 @@
 // Graphic.js v3.4.1
 
-(function() {
+import { env } from '../pzpr/env.js';
+import util from '../pzpr/util.js';
+import { common, classmgr } from '../pzpr/classmgr.js';
+
 	var CENTER = 1,
 		BOTTOMLEFT = 2,
 		BOTTOMRIGHT = 3,
@@ -16,7 +19,7 @@
 	//---------------------------------------------------------------------------
 	// パズル共通 Canvas/DOM制御部
 	// Graphicクラスの定義
-	pzpr.classmgr.makeCommon({
+	classmgr.makeCommon({
 		//---------------------------------------------------------
 		Graphic: {
 			initialize: function() {
@@ -32,7 +35,7 @@
 					["getCircleFillColor", this.circlefillcolor_func],
 					["getCircleStrokeColor", this.circlestrokecolor_func]
 				].forEach(function(item) {
-					if (pc[item[0]] !== pzpr.common.Graphic.prototype[item[0]]) {
+					if (pc[item[0]] !== common.Graphic.prototype[item[0]]) {
 						return;
 					} // パズル個別の関数が定義されている場合はそのまま使用
 					pc[item[0]] = pc[item[0] + "_" + item[1]] || pc[item[0]];
@@ -202,7 +205,7 @@
 				}
 
 				if (this.canvasWidth === null || this.canvasHeight === null) {
-					var rect = pzpr.util.getRect(puzzle.canvas);
+					var rect = util.getRect(puzzle.canvas);
 					this.resizeCanvas(rect.width, rect.height);
 				}
 
@@ -218,7 +221,7 @@
 			//---------------------------------------------------------------------------
 			initFont: function() {
 				var isgothic = this.puzzle.getConfig("font") === 1;
-				if (this.puzzle.pzpr.env.OS.Android) {
+				if (env.OS.Android) {
 					this.fontfamily = isgothic
 						? "Helvetica, Verdana, Arial, "
 						: '"Times New Roman", ';
@@ -296,7 +299,7 @@
 				var cw = (cwid / cols) | 0,
 					ch = (chgt / rows) | 0;
 
-				this.devicePixelRatio = this.puzzle.pzpr.env.browser
+				this.devicePixelRatio = env.browser
 					? window.devicePixelRatio || 1
 					: 1;
 
@@ -348,7 +351,7 @@
 
 				// CanvasのOffset位置変更 (SVGの時、小数点以下の端数調整を行う)
 				if (!g.use.canvas) {
-					var rect = pzpr.util.getRect(g.canvas);
+					var rect = util.getRect(g.canvas);
 					g.translate(x0 - (rect.left % 1), y0 - (rect.top % 1));
 				} else {
 					g.translate(x0, y0);
@@ -438,8 +441,8 @@
 				}
 
 				this.isSupportMaxWidth =
-					(this.context.use.svg && pzpr.env.API.svgTextLength) ||
-					(this.context.use.canvas && pzpr.env.API.maxWidth);
+					(this.context.use.svg && env.API.svgTextLength) ||
+					(this.context.use.canvas && env.API.maxWidth);
 
 				var bd = this.board,
 					bm = 2 * this.margin,
@@ -781,4 +784,3 @@
 			}
 		}
 	});
-})();

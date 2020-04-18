@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 たわむれんが版 tawa.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["tawa"], {
+var pidlist = ["tawa"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -600,4 +595,6 @@
 			"There are no shaded cells under a shaded cell."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

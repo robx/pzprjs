@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 バーンズ版 barns.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["barns"], {
+var pidlist = ["barns"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -179,4 +174,6 @@
 			}, "lnCrossExIce");
 		}
 	}
-});
+}
+
+export default [pidlist, classbase];

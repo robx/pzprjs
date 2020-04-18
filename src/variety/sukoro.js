@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 数コロ・ヴィウ・数コロ部屋版 sukoro.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["sukoro", "view", "sukororoom"], {
+var pidlist = ["sukoro", "view", "sukororoom"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@sukoro,view": {
@@ -282,4 +277,6 @@
 			"There is a cell that is not filled in number."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

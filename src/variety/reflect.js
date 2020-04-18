@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 リフレクトリンク版 reflect.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["reflect"], {
+var pidlist = ["reflect"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -529,4 +524,6 @@
 			"The lines passing a triangle are too short."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

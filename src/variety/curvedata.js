@@ -4,13 +4,8 @@
 
 /* global Set:false */
 
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["curvedata", "curvedata-aux"], {
+var pidlist = ["curvedata", "curvedata-aux"];
+var classbase = {
 	// In this puzzle, clue numbers are not stable. They can be changed on the entire board
 	// by a call to `compressShapes()`. Operations which change qnum directly are not permitted.
 	// Use CurveDataOperation for all changes to clues on the grid.
@@ -1511,4 +1506,6 @@
 			"A shape does not match the clue."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ボーダーブロック版 bdblock.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["bdblock"], {
+var pidlist = ["bdblock"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -194,4 +189,6 @@
 		],
 		bdIgnoreBP: ["黒点上を線が通過していません。", "A point has no line."]
 	}
-});
+}
+
+export default [pidlist, classbase];

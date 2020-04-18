@@ -2,13 +2,8 @@
 // aquarium.js
 //
 
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["aquarium"], {
+var pidlist = ["aquarium"];
+var classbase = {
 	MouseEvent: {
 		use: true,
 		inputModes: { edit: ["border", "number"], play: ["shade", "unshade"] },
@@ -433,4 +428,6 @@
 			"The number of shaded cells in the row or column is not correct."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 コンビブロック版 cbblock.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["cbblock", "dbchoco"], {
+var pidlist = ["cbblock", "dbchoco"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@cbblock": {
@@ -661,4 +656,6 @@
 			"The two shapes inside a block are different."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,10 +1,5 @@
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["scrin"], {
+var pidlist = ["scrin"];
+var classbase = {
 	MouseEvent: {
 		inputModes: { edit: ["number", "clear"], play: ["shade", "unshade"] },
 		mouseinput_auto: function() {
@@ -468,4 +463,6 @@
 			"A rectangle is not part of the solution."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ノンダンゴ版 nondango.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["nondango"], {
+var pidlist = ["nondango"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -350,4 +345,6 @@
 			"There are three or more unshaded circles in a row."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];

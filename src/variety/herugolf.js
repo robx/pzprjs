@@ -1,13 +1,8 @@
 //
 // パズル固有スクリプト部 ヘルゴルフ版 herugolf.js
 //
-(function(pidlist, classbase) {
-	if (typeof module === "object" && module.exports) {
-		module.exports = [pidlist, classbase];
-	} else {
-		pzpr.classmgr.makeCustom(pidlist, classbase);
-	}
-})(["herugolf"], {
+var pidlist = ["herugolf"];
+var classbase = {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -324,7 +319,9 @@
 			var cell = component.departure,
 				num = cell.qnum;
 			num = num >= 0 ? num : this.board.cell.length;
-			cell.distance = ((num + 1) * num) / 2;
+			if (! Object.isFrozen(cell)) {
+				cell.distance = ((num + 1) * num) / 2;
+			}
 			if (cell.lcnt === 0) {
 				return;
 			}
@@ -816,4 +813,6 @@
 			"There is a Hole without a ball."
 		]
 	}
-});
+}
+
+export default [pidlist, classbase];
