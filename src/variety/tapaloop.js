@@ -183,6 +183,21 @@
 			 return segs;
 		}
 	},
+	CellList: {
+		allclear: function(isrec) {
+			this.common.allclear.call(this, isrec);
+
+			for (var i = 0; i < this.length; i++) {
+				var cell = this[i];
+				if (cell.qnums.length > 0) {
+					if (isrec) {
+						cell.addOpeQnums(cell.qnums, []);
+					}
+					cell.qnums = [];
+				}
+			}
+		}
+	},
 	"ObjectOperation2:Operation": {
 		setData: function(cell, old, val) {
 			this.bx = cell.bx;
