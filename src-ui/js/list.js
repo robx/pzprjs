@@ -356,7 +356,8 @@
 			"simpleloop",
 			"doppelblock",
 			"tents",
-			"detour"
+			"detour",
+			"snake"
 		]
 	};
 	var tabstate = {
