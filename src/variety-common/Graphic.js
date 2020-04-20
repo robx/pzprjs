@@ -789,6 +789,65 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//---------------------------------------------------------------------------
+		// pc.drawTapaNumbers() draw Tapa-like clues
+		//---------------------------------------------------------------------------
+		drawTapaNumbers: function() {
+			var g = this.vinc("cell_tapanum", "auto");
+			var bw = this.bw,
+				bh = this.bh;
+			var opts = [
+				{ option: {}, pos: [{ x: 0, y: 0 }] },
+				{
+					option: { ratio: 0.56 },
+					pos: [
+						{ x: -0.4, y: -0.4 },
+						{ x: 0.4, y: 0.4 }
+					]
+				},
+				{
+					option: { ratio: 0.48 },
+					pos: [
+						{ x: -0.5, y: -0.4 },
+						{ x: 0, y: 0.4 },
+						{ x: 0.5, y: -0.4 }
+					]
+				},
+				{
+					option: { ratio: 0.4 },
+					pos: [
+						{ x: 0, y: -0.5 },
+						{ x: 0.55, y: 0 },
+						{ x: 0, y: 0.5 },
+						{ x: -0.55, y: 0 }
+					]
+				}
+			];
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					bx = cell.bx,
+					by = cell.by;
+				var nums = cell.qnums,
+					n = nums.length;
+
+				g.fillStyle = this.getQuesNumberColor(cell);
+				for (var k = 0; k < 4; k++) {
+					g.vid = "cell_text_" + cell.id + "_" + k;
+					if (k < n && nums[k] !== -1) {
+						var opt = opts[n - 1],
+							px = (bx + opt.pos[k].x) * bw,
+							py = (by + opt.pos[k].y) * bh;
+						var text = nums[k] >= 0 ? "" + nums[k] : "?";
+						this.disptext(text, px, py, opt.option);
+					} else {
+						g.vhide();
+					}
+				}
+			}
+		},
+
+		//---------------------------------------------------------------------------
 		// pc.drawCrosses()    Crossの丸数字をCanvasに書き込む
 		// pc.drawCrossMarks() Cross上の黒点をCanvasに書き込む
 		//---------------------------------------------------------------------------
