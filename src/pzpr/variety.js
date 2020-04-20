@@ -281,6 +281,7 @@
 				"",
 				{ kanpen: "slitherlink" }
 			],
+			snake: [0, 0, "Snake", "Snake"],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],
 			sudoku: [0, 1, "数独", "Sudoku"],
