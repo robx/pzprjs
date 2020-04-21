@@ -1108,7 +1108,7 @@
 		]
 	},
 	"FailCode@detour": {
-		blLineShort: [
+		blWrongTurns: [
 			"The room has the wrong number of turns.",
 			"The room has the wrong number of turns."
 		]
