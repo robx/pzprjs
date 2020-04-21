@@ -292,9 +292,9 @@
 				this.drawCircledNumbers();
 			}
 
-			if (this.pid === "country" || this.pid === "detour") {
+			if (this.pid === "country") {
 				this.drawGrid();
-			} else if (this.pid !== "country" && this.pid !== "detour") {
+			} else if (this.pid !== "country") {
 				this.drawDashedGrid();
 			}
 			this.drawBorders();
@@ -397,7 +397,7 @@
 			return this.getBorderColor_ques(border);
 		}
 	},
-	"Graphic@maxi": {
+	"Graphic@maxi,detour": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
 
