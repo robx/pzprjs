@@ -176,7 +176,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@onsen,maxi": {
+	"Board@onsen,maxi,detour": {
 		cols: 8,
 		rows: 8,
 
@@ -188,10 +188,10 @@
 	LineGraph: {
 		enabled: true
 	},
-	"LineGraph@onsen,maxi": {
+	"LineGraph@onsen,maxi,detour": {
 		makeClist: true
 	},
-	"LineBlockGraph:LineGraph@onsen,maxi": {
+	"LineBlockGraph:LineGraph@onsen,maxi,detour": {
 		enabled: true,
 		relation: { "border.line": "link", "border.ques": "separator" },
 		makeClist: true,
