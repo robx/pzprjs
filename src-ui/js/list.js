@@ -354,7 +354,8 @@
 			"balance",
 			"simpleloop",
 			"doppelblock",
-			"tents"
+			"tents",
+			"detour"
 		]
 	};
 	var tabstate = {
