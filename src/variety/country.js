@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["country", "moonsun", "onsen", "doubleback", "maxi", "simpleloop"], {
+})(["country", "moonsun", "onsen", "doubleback", "maxi", "simpleloop", "detour"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@country,onsen": {
