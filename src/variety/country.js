@@ -1,7 +1,7 @@
 //
 // パズル固有スクリプト部 カントリーロード・月か太陽・温泉めぐり版 country.js
 //
-(function (pidlist, classbase) {
+(function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
@@ -29,7 +29,7 @@
 				edit: ["border", "moon", "sun", "clear", "info-line"],
 				play: ["line", "peke", "lineblank", "clear", "info-line"]
 			},
-			mouseinput_other: function () {
+			mouseinput_other: function() {
 				switch (this.inputMode) {
 					case "moon":
 						this.inputFixedNumber(1);
@@ -53,12 +53,12 @@
 			}
 		},
 		"MouseEvent@doubleback,simpleloop": {
-			mouseinput_other: function () {
+			mouseinput_other: function() {
 				if (this.inputMode === "empty") {
 					this.inputempty();
 				}
 			},
-			inputempty: function () {
+			inputempty: function() {
 				var cell = this.getcell();
 				if (cell.isnull || cell === this.mouseCell) {
 					return;
@@ -73,7 +73,7 @@
 			}
 		},
 		MouseEvent: {
-			mouseinput_auto: function () {
+			mouseinput_auto: function() {
 				if (this.puzzle.playmode) {
 					if (this.mousestart || this.mousemove) {
 						if (this.btn === "left") {
@@ -110,12 +110,12 @@
 		},
 		"MouseEvent@moonsun#2": {
 			// オーバーライド
-			inputMB: function () {
+			inputMB: function() {
 				var cell = this.getcell();
 				if (cell.isnull || cell.qnum === -1) {
 					return;
 				}
-				var clist = cell.room.clist.filter(function (cell2) {
+				var clist = cell.room.clist.filter(function(cell2) {
 					return cell.qnum === cell2.qnum;
 				});
 				var val = cell.qsub === 0 ? 2 : 0;
@@ -135,12 +135,12 @@
 		//---------------------------------------------------------
 		// 盤面管理系
 		"Cell@country,onsen,maxi,detour": {
-			maxnum: function () {
+			maxnum: function() {
 				return Math.min(999, this.room.clist.length);
 			}
 		},
 		"Cell@country": {
-			minnum: function () {
+			minnum: function() {
 				return this.puzzle.getConfig("country_empty") ? 0 : 1;
 			}
 		},
@@ -154,13 +154,13 @@
 			maxnum: 2,
 
 			posthook: {
-				qnum: function (num) {
+				qnum: function(num) {
 					this.room.countMarkAndLine();
 				}
 			}
 		},
 		"Cell@doubleback,simpleloop": {
-			noLP: function (dir) {
+			noLP: function(dir) {
 				return this.isEmpty();
 			}
 		},
@@ -169,7 +169,7 @@
 		},
 		"Border@moonsun": {
 			posthook: {
-				line: function (num) {
+				line: function(num) {
 					var room1 = this.sidecell[0].room,
 						room2 = this.sidecell[1].room;
 					room1.countMarkAndLine();
@@ -186,7 +186,7 @@
 			cols: 8,
 			rows: 8,
 
-			addExtraInfo: function () {
+			addExtraInfo: function() {
 				this.lineblkgraph = this.addInfoList(this.klass.LineBlockGraph);
 			}
 		},
@@ -203,25 +203,25 @@
 			makeClist: true,
 			coloring: false,
 
-			setComponentRefs: function (obj, component) {
+			setComponentRefs: function(obj, component) {
 				obj.lpath = component;
 			},
-			getObjNodeList: function (nodeobj) {
+			getObjNodeList: function(nodeobj) {
 				return nodeobj.lpathnodes;
 			},
-			resetObjNodeList: function (nodeobj) {
+			resetObjNodeList: function(nodeobj) {
 				nodeobj.lpathnodes = [];
 			},
 
 			incdecLineCount: null,
-			isedgevalidbylinkobj: function (border) {
+			isedgevalidbylinkobj: function(border) {
 				return border.isLine() && !border.isBorder();
 			},
-			isedgeexistsbylinkobj: function (border) {
+			isedgeexistsbylinkobj: function(border) {
 				return border.lpath !== null;
 			},
 
-			setEdgeByLinkObj: function (linkobj) {
+			setEdgeByLinkObj: function(linkobj) {
 				var isset = this.isedgevalidbylinkobj(linkobj);
 				if (isset === this.isedgeexistsbylinkobj(linkobj)) {
 					var cells = this.getSideObjByLinkObj(linkobj);
@@ -251,13 +251,13 @@
 			hastop: true
 		},
 		"AreaRoomGraph@moonsun": {
-			setExtraData: function (component) {
+			setExtraData: function(component) {
 				this.common.setExtraData.call(this, component);
 				component.countMarkAndLine();
 			}
 		},
 		"GraphComponent@moonsun": {
-			countMarkAndLine: function () {
+			countMarkAndLine: function() {
 				var count = (this.count = {
 					moon: { exists: 0, passed: 0 },
 					sun: { exists: 0, passed: 0 }
@@ -288,7 +288,7 @@
 
 			gridcolor_type: "SLIGHT",
 
-			paint: function () {
+			paint: function() {
 				this.drawBGCells();
 				if (
 					this.pid === "country" ||
@@ -325,7 +325,7 @@
 			circleratio: [0.4, 0.37],
 			gridcolor_type: "LIGHT",
 
-			repaintParts: function (blist) {
+			repaintParts: function(blist) {
 				this.range.cells = blist.cellinside();
 
 				this.drawCircledNumbers();
@@ -337,7 +337,7 @@
 
 			gridcolor_type: "LIGHT",
 
-			drawMarks: function () {
+			drawMarks: function() {
 				var g = this.vinc("cell_mark", "auto", true);
 
 				g.lineWidth = Math.max(this.cw / 36, 1);
@@ -390,10 +390,10 @@
 			}
 		},
 		"Graphic@doubleback,simpleloop": {
-			getBGCellColor: function (cell) {
+			getBGCellColor: function(cell) {
 				return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
 			},
-			getBorderColor: function (border) {
+			getBorderColor: function(border) {
 				var cell1 = border.sidecell[0],
 					cell2 = border.sidecell[1];
 				if (
@@ -414,7 +414,7 @@
 		//---------------------------------------------------------
 		// URLエンコード/デコード処理
 		Encode: {
-			decodePzpr: function (type) {
+			decodePzpr: function(type) {
 				if (this.pid === "country") {
 					this.puzzle.setConfig("country_empty", this.checkpflag("e"));
 				}
@@ -435,7 +435,7 @@
 					this.decodeEmpty();
 				}
 			},
-			encodePzpr: function (type) {
+			encodePzpr: function(type) {
 				if (this.pid === "country") {
 					this.outpflag = this.puzzle.getConfig("country_empty") ? "e" : null;
 				}
@@ -459,7 +459,7 @@
 		},
 		//---------------------------------------------------------
 		FileIO: {
-			decodeData: function () {
+			decodeData: function() {
 				if (this.pid === "country" && this.filever >= 1) {
 					this.decodeFlags();
 				}
@@ -476,7 +476,7 @@
 					this.decodeCellQsub();
 				}
 			},
-			encodeData: function () {
+			encodeData: function() {
 				if (this.pid === "country") {
 					this.filever = 1;
 					this.encodeFlags(["country_empty"]);
@@ -494,15 +494,15 @@
 					this.encodeCellQsub();
 				}
 			},
-			decodeEmpty: function () {
-				this.decodeCell(function (cell, ca) {
+			decodeEmpty: function() {
+				this.decodeCell(function(cell, ca) {
 					if (ca === "*") {
 						cell.ques = 7;
 					}
 				});
 			},
-			encodeEmpty: function () {
-				this.encodeCell(function (cell) {
+			encodeEmpty: function() {
+				this.encodeCell(function(cell) {
 					if (cell.ques === 7) {
 						return "* ";
 					} else {
@@ -613,19 +613,19 @@
 			]
 		},
 		AnsCheck: {
-			checkNoRoadCountry: function () {
+			checkNoRoadCountry: function() {
 				if (this.puzzle.getConfig("country_empty")) {
 					return;
 				}
 				this.checkLinesInArea(
 					this.board.roommgr,
-					function (w, h, a, n) {
+					function(w, h, a, n) {
 						return a !== 0;
 					},
 					"bkNoLine"
 				);
 			},
-			checkRoomPassOnce: function () {
+			checkRoomPassOnce: function() {
 				var rooms = this.board.roommgr.components;
 				for (var r = 0; r < rooms.length; r++) {
 					var cnt = 0,
@@ -662,7 +662,7 @@
 					clist.seterr(1);
 				}
 			},
-			checkRoomPassTwice: function () {
+			checkRoomPassTwice: function() {
 				var rooms = this.board.roommgr.components;
 				for (var r = 0; r < rooms.length; r++) {
 					var cnt = 0,
@@ -701,18 +701,18 @@
 			}
 		},
 		"AnsCheck@country": {
-			checkRoadCount: function () {
+			checkRoadCount: function() {
 				this.checkLinesInArea(
 					this.board.roommgr,
-					function (w, h, a, n) {
+					function(w, h, a, n) {
 						return n <= 0 || n === a;
 					},
 					"bkLineNe"
 				);
 			},
-			checkSideAreaGrass: function () {
+			checkSideAreaGrass: function() {
 				this.checkSideAreaCell(
-					function (cell1, cell2) {
+					function(cell1, cell2) {
 						return cell1.lcnt === 0 && cell2.lcnt === 0;
 					},
 					false,
@@ -721,55 +721,55 @@
 			}
 		},
 		"AnsCheck@moonsun": {
-			checkPassesSingleMarks: function () {
+			checkPassesSingleMarks: function() {
 				this.checkAllRoom(
-					function (count) {
+					function(count) {
 						return count.moon.passed === 0 || count.sun.passed === 0;
 					},
-					function (cell) {
+					function(cell) {
 						return cell.qnum !== -1 && cell.lcnt > 0;
 					},
 					"bkBothMarksPassed"
 				);
 			},
-			checkPassesAnyMarks: function () {
+			checkPassesAnyMarks: function() {
 				this.checkAllRoom(
-					function (count) {
+					function(count) {
 						return count.moon.passed > 0 || count.sun.passed > 0;
 					},
-					function (cell) {
+					function(cell) {
 						return cell.qnum !== -1;
 					},
 					"bkNoMarksPassed"
 				);
 			},
-			checkAllMoonPassed: function () {
+			checkAllMoonPassed: function() {
 				this.checkAllRoom(
-					function (count) {
+					function(count) {
 						return (
 							count.moon.passed === 0 || count.moon.exists === count.moon.passed
 						);
 					},
-					function (cell) {
+					function(cell) {
 						return cell.qnum === 2 && cell.lcnt === 0;
 					},
 					"bkNotAllMSPassed"
 				);
 			},
-			checkAllSunPassed: function () {
+			checkAllSunPassed: function() {
 				this.checkAllRoom(
-					function (count) {
+					function(count) {
 						return (
 							count.sun.passed === 0 || count.sun.exists === count.sun.passed
 						);
 					},
-					function (cell) {
+					function(cell) {
 						return cell.qnum === 1 && cell.lcnt === 0;
 					},
 					"bkNotAllMUPassed"
 				);
 			},
-			checkAllRoom: function (cond, errfilter, code) {
+			checkAllRoom: function(cond, errfilter, code) {
 				var rooms = this.board.roommgr.components;
 				for (var id = 0; id < rooms.length; id++) {
 					var room = rooms[id],
@@ -786,17 +786,17 @@
 				}
 			},
 
-			checkNextRoomIsNotMoon: function () {
-				this.checkNextRoom(function (room1, room2) {
+			checkNextRoomIsNotMoon: function() {
+				this.checkNextRoom(function(room1, room2) {
 					return room1.count.moon.passed === 0 || room2.count.moon.passed === 0;
 				}, "bkMSPassedGt2");
 			},
-			checkNextRoomIsNotSun: function () {
-				this.checkNextRoom(function (room1, room2) {
+			checkNextRoomIsNotSun: function() {
+				this.checkNextRoom(function(room1, room2) {
 					return room1.count.sun.passed === 0 || room2.count.sun.passed === 0;
 				}, "bkMUPassedGt2");
 			},
-			checkNextRoom: function (cond, code) {
+			checkNextRoom: function(cond, code) {
 				var borders = this.board.border;
 				for (var id = 0; id < borders.length; id++) {
 					var border = borders[id];
@@ -824,7 +824,7 @@
 			}
 		},
 		"AnsCheck@onsen": {
-			checkLineRoomPassOnce: function () {
+			checkLineRoomPassOnce: function() {
 				var bd = this.board;
 				var paths = bd.linegraph.components;
 				var rooms = bd.roommgr.components;
@@ -846,7 +846,7 @@
 					}
 				}
 			},
-			checkLineRoomLength: function () {
+			checkLineRoomLength: function() {
 				var bd = this.board;
 				var paths = bd.linegraph.components;
 				var lpaths = bd.lineblkgraph.components;
@@ -869,7 +869,7 @@
 					lpaths[r].clist.seterr(1);
 				}
 			},
-			checkLineLengthInEachRoom: function () {
+			checkLineLengthInEachRoom: function() {
 				// 数字が入っている場合はcheckLineRoomLengthで判定されるので、数字が入っていないのまるのループのみ判定します
 				var bd = this.board;
 				var paths = bd.linegraph.components;
@@ -903,29 +903,29 @@
 					}
 				}
 			},
-			checkIsolatedCircle: function () {
-				this.checkAllCell(function (cell) {
+			checkIsolatedCircle: function() {
+				this.checkAllCell(function(cell) {
 					return cell.lcnt === 0 && cell.isNum();
 				}, "lnIsolate");
 			},
 
-			checkSingleNumberInLoop: function () {
-				this.checkNumbersInLoop(function (cnt) {
+			checkSingleNumberInLoop: function() {
+				this.checkNumbersInLoop(function(cnt) {
 					return cnt <= 1;
 				}, "lpNumGt2");
 			},
-			checkNumberExistsInLoop: function () {
-				this.checkNumbersInLoop(function (cnt) {
+			checkNumberExistsInLoop: function() {
+				this.checkNumbersInLoop(function(cnt) {
 					return cnt > 0;
 				}, "lpNoNum");
 			},
-			checkNumbersInLoop: function (func, code) {
+			checkNumbersInLoop: function(func, code) {
 				var result = true;
 				var paths = this.board.linegraph.components;
 				for (var r = 0; r < paths.length; r++) {
 					if (
 						func(
-							paths[r].clist.filter(function (cell) {
+							paths[r].clist.filter(function(cell) {
 								return cell.isNum();
 							}).length
 						)
@@ -948,7 +948,7 @@
 			}
 		},
 		"AnsCheck@detour": {
-			checkTurnsInRoom: function () {
+			checkTurnsInRoom: function() {
 				var rooms = this.board.roommgr.components;
 				for (var r = 0; r < rooms.length; r++) {
 					var room = rooms[r];
@@ -978,12 +978,12 @@
 			}
 		},
 		"AnsCheck@maxi": {
-			checkShortLineInRoom: function () {
+			checkShortLineInRoom: function() {
 				var rooms = this.board.roommgr.components;
 				for (var r = 0; r < rooms.length; r++) {
 					var room = rooms[r];
 					if (
-						room.clist.filter(function (cell) {
+						room.clist.filter(function(cell) {
 							return cell.lcnt < 2;
 						}).length > 0
 					) {
@@ -1009,7 +1009,7 @@
 					}
 				}
 			},
-			checkLongLineInRoom: function () {
+			checkLongLineInRoom: function() {
 				var rooms = this.board.roommgr.components;
 				for (var r = 0; r < rooms.length; r++) {
 					var room = rooms[r];
@@ -1020,7 +1020,7 @@
 					if (qnumcell.qnum < 0) {
 						continue;
 					}
-					var visited = room.clist.filter(function (cell) {
+					var visited = room.clist.filter(function(cell) {
 						return cell.lcnt > 0;
 					});
 					for (var c = 0; c < visited.length; c++) {
