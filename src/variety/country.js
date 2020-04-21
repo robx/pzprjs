@@ -1,16 +1,25 @@
 //
 // パズル固有スクリプト部 カントリーロード・月か太陽・温泉めぐり版 country.js
 //
-(function(pidlist, classbase) {
+(function(classbase) {
+	var pidlist = [
+		"country",
+		"moonsun",
+		"onsen",
+		"doubleback",
+		"maxi",
+		"simpleloop",
+		"detour"
+	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["country", "moonsun", "onsen", "doubleback", "maxi", "simpleloop"], {
+})({
 	//---------------------------------------------------------
 	// マウス入力系
-	"MouseEvent@country,onsen": {
+	"MouseEvent@country,onsen,detour": {
 		inputModes: {
 			edit: ["border", "number", "clear", "info-line"],
 			play: ["line", "peke", "subcircle", "subcross", "clear", "info-line"]
@@ -128,7 +137,7 @@
 
 	//---------------------------------------------------------
 	// 盤面管理系
-	"Cell@country,onsen,maxi": {
+	"Cell@country,onsen,maxi,detour": {
 		maxnum: function() {
 			return Math.min(999, this.room.clist.length);
 		}
@@ -176,7 +185,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@onsen,maxi": {
+	"Board@onsen,maxi,detour": {
 		cols: 8,
 		rows: 8,
 
@@ -188,10 +197,10 @@
 	LineGraph: {
 		enabled: true
 	},
-	"LineGraph@onsen,maxi": {
+	"LineGraph@onsen,maxi,detour": {
 		makeClist: true
 	},
-	"LineBlockGraph:LineGraph@onsen,maxi": {
+	"LineBlockGraph:LineGraph@onsen,maxi,detour": {
 		enabled: true,
 		relation: { "border.line": "link", "border.ques": "separator" },
 		makeClist: true,
@@ -241,7 +250,7 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
-	"AreaRoomGraph@country,maxi": {
+	"AreaRoomGraph@country,maxi,detour": {
 		hastop: true
 	},
 	"AreaRoomGraph@moonsun": {
@@ -284,7 +293,11 @@
 
 		paint: function() {
 			this.drawBGCells();
-			if (this.pid === "country" || this.pid === "maxi") {
+			if (
+				this.pid === "country" ||
+				this.pid === "maxi" ||
+				this.pid === "detour"
+			) {
 				this.drawQuesNumbers();
 			} else if (this.pid === "moonsun") {
 				this.drawMarks();
@@ -397,7 +410,7 @@
 			return this.getBorderColor_ques(border);
 		}
 	},
-	"Graphic@maxi": {
+	"Graphic@maxi,detour": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
 
@@ -411,7 +424,11 @@
 			if (this.pid !== "simpleloop") {
 				this.decodeBorder();
 			}
-			if (this.pid === "country" || this.pid === "maxi") {
+			if (
+				this.pid === "country" ||
+				this.pid === "maxi" ||
+				this.pid === "detour"
+			) {
 				this.decodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
 				this.decodeCircle();
@@ -428,7 +445,11 @@
 			if (this.pid !== "simpleloop") {
 				this.encodeBorder();
 			}
-			if (this.pid === "country" || this.pid === "maxi") {
+			if (
+				this.pid === "country" ||
+				this.pid === "maxi" ||
+				this.pid === "detour"
+			) {
 				this.encodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
 				this.encodeCircle();
@@ -576,6 +597,18 @@
 
 			"checkShortLineInRoom",
 			"checkLongLineInRoom",
+
+			"checkDeadendLine+",
+			"checkOneLoop",
+			"checkNoLine"
+		]
+	},
+	"AnsCheck@detour#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkTurnsInRoom",
 
 			"checkDeadendLine+",
 			"checkOneLoop",
@@ -917,6 +950,36 @@
 			}
 		}
 	},
+	"AnsCheck@detour": {
+		checkTurnsInRoom: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var clist = room.clist;
+				var cnt = 0;
+				var qnumcell = room.clist.getQnumCell();
+				if (qnumcell.isnull) {
+					continue;
+				}
+				if (qnumcell.qnum < 0) {
+					continue;
+				}
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					if (cell.isLineCurve()) {
+						cnt++;
+					}
+				}
+				if (cnt !== qnumcell.qnum) {
+					this.failcode.add("blWrongTurns");
+					if (this.checkOnly) {
+						break;
+					}
+					room.clist.seterr(1);
+				}
+			}
+		}
+	},
 	"AnsCheck@maxi": {
 		checkShortLineInRoom: function() {
 			var rooms = this.board.roommgr.components;
@@ -1063,6 +1126,12 @@
 		blLineLong: [
 			"枠内を連続して通るマス数が、数字よりも大きい線があります。",
 			"A line in a room is longer than the number."
+		]
+	},
+	"FailCode@detour": {
+		blWrongTurns: [
+			"A room has the wrong number of turns.",
+			"A room has the wrong number of turns."
 		]
 	}
 });
