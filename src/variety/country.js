@@ -84,7 +84,7 @@
 					this.notInputted() &&
 					this.pid !== "simpleloop"
 				) {
-					if (this.inputpeke_ifborder() || this.pid === "maxi") {
+					if (this.inputpeke_ifborder() || this.pid === "maxi" || this.pid === "detour") {
 						return;
 					}
 					this.inputMB();
