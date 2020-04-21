@@ -957,7 +957,7 @@
 					room.clist.seterr(1);
 				}
 			}
-		},
+		}
 	},
 	"AnsCheck@maxi": {
 		checkShortLineInRoom: function() {
