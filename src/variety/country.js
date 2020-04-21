@@ -16,7 +16,7 @@
 			play: ["line", "peke", "subcircle", "subcross", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@maxi": {
+	"MouseEvent@maxi,detour": {
 		inputModes: {
 			edit: ["border", "number", "clear", "info-line"],
 			play: ["line", "peke", "clear", "info-line"]
@@ -128,7 +128,7 @@
 
 	//---------------------------------------------------------
 	// 盤面管理系
-	"Cell@country,onsen,maxi": {
+	"Cell@country,onsen,maxi,detour": {
 		maxnum: function() {
 			return Math.min(999, this.room.clist.length);
 		}
@@ -241,7 +241,7 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
-	"AreaRoomGraph@country,maxi": {
+	"AreaRoomGraph@country,maxi,detour": {
 		hastop: true
 	},
 	"AreaRoomGraph@moonsun": {
@@ -284,7 +284,7 @@
 
 		paint: function() {
 			this.drawBGCells();
-			if (this.pid === "country" || this.pid === "maxi") {
+			if (this.pid === "country" || this.pid === "maxi" || this.pid === "detour") {
 				this.drawQuesNumbers();
 			} else if (this.pid === "moonsun") {
 				this.drawMarks();
@@ -292,9 +292,9 @@
 				this.drawCircledNumbers();
 			}
 
-			if (this.pid === "country") {
+			if (this.pid === "country" || this.pid === "detour") {
 				this.drawGrid();
-			} else if (this.pid !== "country") {
+			} else if (this.pid !== "country" && this.pid !== "detour") {
 				this.drawDashedGrid();
 			}
 			this.drawBorders();
@@ -411,7 +411,7 @@
 			if (this.pid !== "simpleloop") {
 				this.decodeBorder();
 			}
-			if (this.pid === "country" || this.pid === "maxi") {
+			if (this.pid === "country" || this.pid === "maxi" || this.pid === "detour") {
 				this.decodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
 				this.decodeCircle();
@@ -428,7 +428,7 @@
 			if (this.pid !== "simpleloop") {
 				this.encodeBorder();
 			}
-			if (this.pid === "country" || this.pid === "maxi") {
+			if (this.pid === "country" || this.pid === "maxi" || this.pid === "detour") {
 				this.encodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
 				this.encodeCircle();
@@ -576,6 +576,18 @@
 
 			"checkShortLineInRoom",
 			"checkLongLineInRoom",
+
+			"checkDeadendLine+",
+			"checkOneLoop",
+			"checkNoLine"
+		]
+	},
+	"AnsCheck@detour#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkTurnsInRoom",
 
 			"checkDeadendLine+",
 			"checkOneLoop",
@@ -917,6 +929,36 @@
 			}
 		}
 	},
+	"AnsCheck@detour": {
+		checkTurnsInRoom: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var clist = room.clist;
+				var cnt = 0;
+				var qnumcell = room.clist.getQnumCell();
+				if (qnumcell.isnull) {
+					continue;
+				}
+				if (qnumcell.qnum < 0) {
+					continue;
+				}
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					if (cell.isLineCurve()) {
+						cnt++;
+					}
+				}
+				if (cnt !== qnumcell.qnum) {
+					this.failcode.add("blWrongTurns");
+					if (this.checkOnly) {
+						break;
+					}
+					room.clist.seterr(1);
+				}
+			}
+		},
+	},
 	"AnsCheck@maxi": {
 		checkShortLineInRoom: function() {
 			var rooms = this.board.roommgr.components;
@@ -1064,5 +1106,12 @@
 			"枠内を連続して通るマス数が、数字よりも大きい線があります。",
 			"A line in a room is longer than the number."
 		]
+	},
+	"FailCode@detour": {
+		blLineShort: [
+			"The room has the wrong number of turns.",
+			"The room has the wrong number of turns."
+		]
 	}
 });
+
