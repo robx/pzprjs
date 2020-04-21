@@ -123,7 +123,7 @@
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
 			"curvedata-aux": [0, 0, "図形の編集", "Edit shape"],
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
-			detour: [1, 0, "Detour", "Detour", "detour"],
+			detour: [1, 0, "Detour", "Detour", "country"],
 			doppelblock: [0, 0, "Doppelblock", "Doppelblock", "doppelblock"],
 			dosufuwa: [0, 0, "ドッスンフワリ", "Dosun-Fuwari"],
 			doubleback: [0, 0, "引き返す", "Double Back", "country"],
