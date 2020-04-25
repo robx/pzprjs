@@ -48,10 +48,10 @@ serve-all:
 	cd dist && python3 -m http.server
 
 format:
-	npx prettier --write "{src,src-ui,test}/**/*.{js,css}"
+	npx prettier --write "{src,src-ui,test}/**/*.{js,json,css}"
 
 check-format:
-	npx prettier --check "{src,src-ui,test}/**/*.{js,css}"
+	npx prettier --check "{src,src-ui,test}/**/*.{js,json,css}"
 
 npm-install:
 	npm install
