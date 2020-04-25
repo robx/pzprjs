@@ -1,4 +1,4 @@
-.PHONY: default build test serve serve-all format npm-install lint candle bundle rollup githash
+.PHONY: default build test serve serve-all format check-format npm-install lint candle bundle rollup githash
 
 BUNDLEFILES=./src/header.js \
 			./src/pzpr/env.js \
@@ -48,7 +48,10 @@ serve-all:
 	cd dist && python3 -m http.server
 
 format:
-	npm run-script format
+	npx prettier --write "{src,src-ui,test}/**/*.{js,css}"
+
+check-format:
+	npx prettier --check "{src,src-ui,test}/**/*.{js,css}"
 
 npm-install:
 	npm install
