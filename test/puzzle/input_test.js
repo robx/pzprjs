@@ -78,7 +78,8 @@ pzpr.variety.each(function(pid) {
 				testcount = 0;
 			inps.forEach(function(data) {
 				testcount++;
-				it("execinput " + testcount, function() {
+				var label = data.label || "execinput " + testcount;
+				it(label, function() {
 					var action = data.input || [];
 					action.forEach(a => execinput(puzzle, a));
 					if (!!data.result) {

@@ -292,6 +292,7 @@
 			tateyoko: [1, 0, "タテボーヨコボー", "Tatebo-Yokobo"],
 			tawa: [0, 0, "たわむれんが", "Tawamurenga"],
 			tentaisho: [0, 0, "天体ショー", "Tentaisho"],
+			tents: [0, 0, "Tents", "Tents", "tents"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
