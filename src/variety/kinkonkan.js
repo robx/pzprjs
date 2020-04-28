@@ -189,10 +189,7 @@
 		key_inputexcell: function(ca) {
 			var excell = this.cursor.getex(),
 				bd = this.board;
-			if (
-				(excell.bx === bd.minbx + 1 || excell.bx === bd.maxbx - 1) &&
-				(excell.by === bd.minby + 1 || excell.by === bd.maxby - 1)
-			) {
+			if (excell.isnull) {
 				return;
 			}
 
