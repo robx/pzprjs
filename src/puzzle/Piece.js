@@ -158,9 +158,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.addOpe(prop, this[prop], num);
-			if (!Object.isFrozen(this)) {
-				this[prop] = num;
-			}
+			this[prop] = num;
 
 			var trialstage = this.board.trialstage;
 			if (trialstage > 0) {
@@ -294,9 +292,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		seterr: function(num) {
 			if (this.board.isenableSetError()) {
-				if (!Object.isFrozen(this)) {
-					this.error = num;
-				}
+				this.error = num;
 			}
 		},
 		setinfo: function(num) {
