@@ -953,10 +953,10 @@ pzpr.classmgr.makeCommon({
 					break;
 				}
 				var cells = pathseg.cells;
-				if (!!cells[0] && cells[0] !== null) {
+				if (!!cells[0] && !cells[0].isnull) {
 					cells[0].seterr(1);
 				}
-				if (!!cells[1] && cells[1] !== null) {
+				if (!!cells[1] && !cells[1].isnull) {
 					cells[1].seterr(1);
 				}
 				pathseg.objs.seterr(1);

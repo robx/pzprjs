@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["fillomino"], {
+})(["fillomino", "symmarea"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -336,6 +336,7 @@
 			"checkSideAreaNumberSize",
 			"checkLargeArea",
 			"checkNumKinds",
+			"checkRoomSymm@symmarea",
 			"checkNoNumArea",
 			"checkNoNumCell_fillomino+"
 		],
@@ -369,6 +370,23 @@
 			this.checkAllErrorRoom(function(area) {
 				return area.numkind >= 1;
 			}, "bkNoNum");
+		},
+		checkRoomSymm: function() {
+			var board = this.board;
+			this.checkAllErrorRoom(function(area) {
+				var clist = area.clist,
+					d = clist.getRectSize();
+				var sx = d.x1 + d.x2,
+					sy = d.y1 + d.y2;
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i],
+						cell2 = board.getc(sx - cell.bx, sy - cell.by);
+					if (cell2.nblk !== area) {
+						return false;
+					}
+				}
+				return true;
+			}, "bkNotSymmRoom");
 		},
 		checkAllErrorRoom: function(evalfunc, code) {
 			var rooms = this.board.numblkgraph.components;
@@ -405,11 +423,15 @@
 		],
 		bkMixedNum: [
 			"1つのブロックに2種類以上の数字が入っています。",
-			"A room has two or more kinds of numbers."
+			"A block has two or more kinds of numbers."
 		],
 		bsSameNum: [
 			"同じ数字のブロックが辺を共有しています。",
 			"Adjacent blocks have the same number."
+		],
+		bkNotSymmRoom: [
+			"部屋の形が点対称ではありません。",
+			"The block is not point symmetric."
 		]
 	}
 });

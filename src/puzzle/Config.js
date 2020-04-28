@@ -357,7 +357,7 @@
 					exec = pid === "mashu";
 					break;
 				case "forceallcell":
-					exec = pid === "fillomino";
+					exec = pid === "fillomino" || pid === "symmarea";
 					break;
 				case "dontpassallcell":
 					exec = pid === "arukone";
