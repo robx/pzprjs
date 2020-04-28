@@ -32,7 +32,15 @@ module.exports = function(grunt){
       options: {
         banner: banner_full,
         process: true,
-	  },
+      },
+      pzpr: {
+        options:{
+          sourceMap: !PRODUCTION
+        },
+        files: [
+          { src: require('./src/pzpr.js').files, dest: 'dist/js/pzpr.concat.js' }
+        ]
+      },
       ui: {
         options:{
           sourceMap: !PRODUCTION
