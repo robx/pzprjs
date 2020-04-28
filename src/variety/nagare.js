@@ -28,26 +28,26 @@
 		mouseinput_other: function() {
 			if (this.inputMode === "diraux") {
 				if (this.mousestart || this.mousemove) {
-					this.inputmark_mousemove();
+					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
-					this.clickmark();
+					this.clickdiraux();
 				}
 			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode && this.btn === "right") {
 				if (this.mousestart) {
-					this.inputmark_mousedown();
+					this.inputdiraux_mousedown();
 				} else if (this.inputData === 2 || this.inputData === 3) {
 					this.inputpeke();
 				} else if (this.mousemove) {
-					this.inputmark_mousemove();
+					this.inputdiraux_mousemove();
 				}
 			} else if (this.puzzle.playmode && this.btn === "left") {
 				if (this.mousestart || this.mousemove) {
 					this.inputLine();
 				} else if (this.mouseend && this.notInputted()) {
-					this.clickmark();
+					this.clickdiraux();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -57,73 +57,6 @@
 				}
 			}
 		},
-
-		clickmark: function() {
-			var pos = this.getpos(0.22);
-			if (this.prevPos.equals(pos)) {
-				return;
-			}
-
-			var border = pos.getb();
-			if (border.isnull) {
-				return;
-			}
-
-			var trans = { 0: 2, 2: 0 },
-				qs = border.qsub;
-			if (!border.isvert) {
-				trans =
-					this.btn === "left"
-						? { 0: 2, 2: 11, 11: 12, 12: 0 }
-						: { 0: 12, 12: 11, 11: 2, 2: 0 };
-			} else {
-				trans =
-					this.btn === "left"
-						? { 0: 2, 2: 13, 13: 14, 14: 0 }
-						: { 0: 14, 14: 13, 13: 2, 2: 0 };
-			}
-			qs = trans[qs] || 0;
-			if (this.inputMode === "diraux" && qs === 2) {
-				qs = trans[qs] || 0;
-			}
-
-			border.setQsub(qs);
-			border.draw();
-		},
-		inputmark_mousedown: function() {
-			var pos = this.getpos(0.22),
-				border = pos.getb();
-			if (!border.isnull) {
-				this.inputData = border.isnull || border.qsub !== 2 ? 2 : 3;
-				this.inputpeke();
-			}
-		},
-		inputmark_mousemove: function() {
-			var pos = this.getpos(0);
-			if (pos.getc().isnull) {
-				return;
-			}
-
-			var border = this.prevPos.getnb(pos);
-			if (!border.isnull) {
-				var newval = null,
-					dir = this.prevPos.getdir(pos, 2);
-				if (this.inputData === null) {
-					this.inputData = border.qsub !== 10 + dir ? 11 : 0;
-				}
-				if (this.inputData === 11) {
-					newval = 10 + dir;
-				} else if (this.inputData === 0 && border.qsub === 10 + dir) {
-					newval = 0;
-				}
-				if (newval !== null) {
-					border.setQsub(newval);
-					border.draw();
-				}
-			}
-			this.prevPos = pos;
-		},
-
 		// オーバーライド
 		inputarrow_cell_main: function(cell, dir) {
 			cell.setQdir(cell.qdir !== dir ? dir : 0);

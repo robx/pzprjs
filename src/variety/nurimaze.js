@@ -281,120 +281,11 @@
 			}
 		}
 	},
-
-	"StartGoalAddress:Address": {
-		type: "",
-		partner: null,
-
-		init: function(bx, by) {
-			this.bx = bx;
-			this.by = by;
-			return this;
-		},
-
-		input: function(cell) {
-			if (!this.partner.equals(cell)) {
-				if (!this.equals(cell)) {
-					this.set(cell);
-				} else {
-					this.draw();
-				}
-			} else {
-				this.board.exchangestartgoal();
-			}
-		},
-		set: function(pos) {
-			var pos0 = this.getaddr();
-			this.addOpe(pos.bx, pos.by);
-
-			this.bx = pos.bx;
-			this.by = pos.by;
-
-			pos0.draw();
-			this.draw();
-		},
-
-		addOpe: function(bx, by) {
-			if (this.bx === bx && this.by === by) {
-				return;
-			}
-			this.puzzle.opemgr.add(
-				new this.klass.StartGoalOperation(this.type, this.bx, this.by, bx, by)
-			);
-		}
-	},
-	"StartAddress:StartGoalAddress": {
-		type: "start"
-	},
-	"GoalAddress:StartGoalAddress": {
-		type: "goal"
-	},
-
-	"StartGoalOperation:Operation": {
-		setData: function(x1, y1, x2, y2) {
-			this.bx1 = x1;
-			this.by1 = y1;
-			this.bx2 = x2;
-			this.by2 = y2;
-		},
-		decode: function(strs) {
-			if (strs[0] !== "PS" && strs[0] !== "PG") {
-				return false;
-			}
-			this.property = strs[0] === "PS" ? "start" : "goal";
-			this.bx1 = +strs[1];
-			this.by1 = +strs[2];
-			this.bx2 = +strs[3];
-			this.by2 = +strs[4];
-			return true;
-		},
-		toString: function() {
-			return [
-				this.property === "start" ? "PS" : "PG",
-				this.bx1,
-				this.by1,
-				this.bx2,
-				this.by2
-			].join(",");
-		},
-
-		isModify: function(lastope) {
-			// 1回の入力でstartpos, goalposが連続して更新されているなら前回の更新のみ
-			if (
-				this.manager.changeflag &&
-				lastope.bx2 === this.bx1 &&
-				lastope.by2 === this.by1 &&
-				lastope.property === this.property
-			) {
-				lastope.bx2 = this.bx2;
-				lastope.by2 = this.by2;
-				return true;
-			}
-			return false;
-		},
-
-		undo: function() {
-			this.exec(this.bx1, this.by1);
-		},
-		redo: function() {
-			this.exec(this.bx2, this.by2);
-		},
-		exec: function(bx, by) {
-			var bd = this.board,
-				cell = bd.getc(bx, by);
-			if (this.property === "start") {
-				bd.startpos.set(cell);
-			} else if (this.property === "goal") {
-				bd.goalpos.set(cell);
-			}
-		}
-	},
 	OperationManager: {
 		addExtraOperation: function() {
 			this.operationlist.push(this.klass.StartGoalOperation);
 		}
 	},
-
 	AreaUnshadeGraph: {
 		enabled: true
 	},
@@ -425,54 +316,6 @@
 			this.drawBoxBorders(true);
 
 			this.drawTarget();
-		},
-
-		drawStartGoal: function() {
-			var g = this.vinc("cell_sg", "auto");
-			var bd = this.board,
-				d = this.range;
-
-			g.vid = "text_stpos";
-			var cell = bd.startpos.getc();
-			if (
-				cell.bx >= d.x1 &&
-				d.x2 >= cell.bx &&
-				cell.by >= d.y1 &&
-				d.y2 >= cell.by
-			) {
-				if (!cell.isnull) {
-					g.fillStyle =
-						this.puzzle.mouse.inputData === 10
-							? "red"
-							: cell.qans === 1
-							? this.fontShadecolor
-							: this.quescolor;
-					this.disptext("S", cell.bx * this.bw, cell.by * this.bh);
-				} else {
-					g.vhide();
-				}
-			}
-
-			g.vid = "text_glpos";
-			cell = bd.goalpos.getc();
-			if (
-				cell.bx >= d.x1 &&
-				d.x2 >= cell.bx &&
-				cell.by >= d.y1 &&
-				d.y2 >= cell.by
-			) {
-				if (!cell.isnull) {
-					g.fillStyle =
-						this.puzzle.mouse.inputData === 11
-							? "red"
-							: cell.qans === 1
-							? this.fontShadecolor
-							: this.quescolor;
-					this.disptext("G", cell.bx * this.bw, cell.by * this.bh);
-				} else {
-					g.vhide();
-				}
-			}
 		},
 
 		drawQuesMarks: function() {

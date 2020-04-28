@@ -34,9 +34,9 @@
 		mouseinput_other: function() {
 			if (this.inputMode === "diraux") {
 				if (this.mousestart || this.mousemove) {
-					this.inputmark_mousemove();
+					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
-					this.clickmark();
+					this.clickdiraux();
 				}
 			}
 		},
@@ -46,11 +46,15 @@
 					if (this.mousestart || this.mousemove) {
 						this.inputLine();
 					} else if (this.mouseend && this.notInputted()) {
-						this.inputpeke();
+						this.clickdiraux();
 					}
 				} else if (this.btn === "right") {
-					if (this.mousestart || this.mousemove) {
+					if (this.mousestart) {
+						this.inputdiraux_mousedown();
+					} else if (this.inputData === 2 || this.inputData === 3) {
 						this.inputpeke();
+					} else if (this.mousemove) {
+						this.inputdiraux_mousemove();
 					}
 				}
 			} else if (this.puzzle.editmode) {
@@ -135,64 +139,6 @@
 				return 2;
 			}
 			return 0;
-		},
-
-		inputmark_mousemove: function() {
-			var pos = this.getpos(0);
-			if (pos.getc().isnull) {
-				return;
-			}
-
-			var border = this.prevPos.getnb(pos);
-			if (!border.isnull) {
-				var newval = null,
-					dir = this.prevPos.getdir(pos, 2);
-				if (this.inputData === null) {
-					this.inputData = border.qsub !== 10 + dir ? 11 : 0;
-				}
-				if (this.inputData === 11) {
-					newval = 10 + dir;
-				} else if (this.inputData === 0 && border.qsub === 10 + dir) {
-					newval = 0;
-				}
-				if (newval !== null) {
-					border.setQsub(newval);
-					border.draw();
-				}
-			}
-			this.prevPos = pos;
-		},
-		clickmark: function() {
-			var pos = this.getpos(0.22);
-			if (this.prevPos.equals(pos)) {
-				return;
-			}
-
-			var border = pos.getb();
-			if (border.isnull) {
-				return;
-			}
-
-			var trans = { 0: 2, 2: 0 },
-				qs = border.qsub;
-			if (!border.isvert) {
-				trans =
-					this.btn === "left"
-						? { 0: 2, 2: 11, 11: 12, 12: 0 }
-						: { 0: 12, 12: 11, 11: 2, 2: 0 };
-			} else {
-				trans =
-					this.btn === "left"
-						? { 0: 2, 2: 13, 13: 14, 14: 0 }
-						: { 0: 14, 14: 13, 13: 2, 2: 0 };
-			}
-			qs = trans[qs] || 0;
-			if (this.inputMode === "diraux" && qs === 2) {
-				qs = trans[qs] || 0;
-			}
-
-			border.setQsub(qs);
-			border.draw();
 		}
 	},
 
@@ -235,6 +181,22 @@
 		},
 		isArrow: function() {
 			return this.qdir > 0;
+		},
+		setLine: function(id) {
+			this.setLineVal(1);
+			if (this.qsub === 2) {
+				this.setQsub(0);
+			}
+		},
+		removeLine: function(id) {
+			this.setLineVal(0);
+			if (this.qsub === 2) {
+				this.setQsub(0);
+			}
+		},
+		removePeke: function(id) {
+			this.setLineVal(0);
+			this.setQsub(0);
 		}
 	},
 
@@ -785,85 +747,6 @@
 			this.range.borders = blist;
 
 			this.drawBorderArrows();
-		},
-
-		drawBorderAuxDir: function() {
-			var g = this.vinc("border_dirsub", "crispEdges");
-			var ssize = this.cw * 0.1;
-
-			g.lineWidth = this.cw * 0.1;
-
-			var blist = this.range.borders;
-			for (var i = 0; i < blist.length; i++) {
-				var border = blist[i],
-					px = border.bx * this.bw,
-					py = border.by * this.bh,
-					dir = border.qsub - 10;
-
-				// 向き補助記号の描画
-				g.vid = "b_daux_" + border.id;
-				if (dir >= 1 && dir <= 8) {
-					g.strokeStyle = !border.trial ? "rgb(64,64,64)" : this.trialcolor;
-					g.beginPath();
-					switch (dir) {
-						case border.UP:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize * 2,
-								+ssize,
-								0,
-								-ssize,
-								+ssize * 2,
-								+ssize,
-								false
-							);
-							break;
-						case border.DN:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize * 2,
-								-ssize,
-								0,
-								+ssize,
-								+ssize * 2,
-								-ssize,
-								false
-							);
-							break;
-						case border.LT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								+ssize,
-								-ssize * 2,
-								-ssize,
-								0,
-								+ssize,
-								+ssize * 2,
-								false
-							);
-							break;
-						case border.RT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize,
-								-ssize * 2,
-								+ssize,
-								0,
-								-ssize,
-								+ssize * 2,
-								false
-							);
-							break;
-					}
-					g.stroke();
-				} else {
-					g.vhide();
-				}
-			}
 		}
 	},
 

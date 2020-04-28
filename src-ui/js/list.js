@@ -358,7 +358,8 @@
 			"tents",
 			"detour",
 			"snake",
-			"putteria"
+			"putteria",
+			"haisu"
 		]
 	};
 	var tabstate = {
