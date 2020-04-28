@@ -875,6 +875,7 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			this.disableRecord();
+			this.board.errclear();
 			if (rejectall || this.trialpos.length === 1) {
 				var pos = this.trialpos[0];
 				this.board.trialclear();

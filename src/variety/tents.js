@@ -442,6 +442,9 @@
 					case 2:
 						g.vid = "c_tentouter_" + cell.id;
 						var color = this.getAnsNumberColor(cell);
+						if (cell.getNum() === -1 && this.board.trialstage > 0) {
+							color = this.trialcolor;
+						}
 						g.fillStyle = color;
 						g.beginPath();
 						g.setOffsetLinePath(
