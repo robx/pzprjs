@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりめいず版 nurimaze.js
+// Haisu / haisu.js
 //
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
@@ -13,16 +13,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["border"],
+			edit: ["border", "number"],
 			play: ["line", "peke", "diraux", "info-line"]
-		},
-		mouseinput: function() {
-			// オーバーライド
-			if (this.inputMode === "shade" || this.inputMode === "unshade") {
-				this.inputtile_nurimaze();
-			} else {
-				this.common.mouseinput.call(this);
-			}
 		},
 		mouseinput_other: function() {
 			if (this.inputMode === "diraux") {
@@ -45,10 +37,7 @@
 					this.mouseend &&
 					this.notInputted()
 				) {
-					!this.inputpeke_ifborder()
-					// if(!this.inputpeke_ifborder()){
-					// 	this.inputqnum();
-					// }
+					this.inputpeke_ifborder()
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -484,10 +473,6 @@ BoardExec: {
 		}
 	},
 
-	AreaUnshadeGraph: {
-		enabled: true
-	},
-
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -497,7 +482,6 @@ BoardExec: {
 
 		paint: function() {
 			this.drawBGCells();
-			// this.drawTargetSubNumber();
 			this.drawShadedCells();
 			this.drawGrid();
 			this.drawBorders();
@@ -508,9 +492,6 @@ BoardExec: {
 			this.drawLines();
 			this.drawPekes();
 			this.drawBorderAuxDir();
-
-			// this.drawSubNumbers();
-
 
 			this.drawChassis();
 
@@ -561,49 +542,6 @@ BoardExec: {
 							? this.fontShadecolor
 							: this.quescolor;
 					this.disptext("G", cell.bx * this.bw, cell.by * this.bh);
-				} else {
-					g.vhide();
-				}
-			}
-		},
-
-		drawQuesMarks: function() {
-			var g = this.vinc("cell_mark", "auto", true);
-
-			var rsize = this.cw * 0.3,
-				tsize = this.cw * 0.26;
-			g.lineWidth = 2;
-
-			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i],
-					num = cell.ques;
-				var px = cell.bx * this.bw,
-					py = cell.by * this.bh;
-				g.strokeStyle = this.getQuesNumberColor(cell);
-
-				g.vid = "c_mk1_" + cell.id;
-				if (num === 41) {
-					g.strokeCircle(px, py, rsize);
-				} else {
-					g.vhide();
-				}
-
-				g.vid = "c_mk2_" + cell.id;
-				if (num === 42) {
-					g.beginPath();
-					g.setOffsetLinePath(
-						px,
-						py,
-						0,
-						-tsize,
-						-rsize,
-						tsize,
-						rsize,
-						tsize,
-						true
-					);
-					g.stroke();
 				} else {
 					g.vhide();
 				}
@@ -694,121 +632,72 @@ BoardExec: {
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
+			this.decodeSG();
 			this.decodeBorder();
 			this.decodeNumber16();
-			this.decodeCell_nurimaze();
 		},
 		encodePzpr: function(type) {
+			this.encodeSG();
 			this.encodeBorder();
 			this.encodeNumber16();
-			this.encodeCell_nurimaze();
 		},
-
-		decodeCell_nurimaze: function() {
+		decodeSG: function(){
 			var c = 0,
 				i = 0,
 				bstr = this.outbstr,
-				bd = this.board;
-			for (i = 0; i < bstr.length; i++) {
-				var ca = bstr.charAt(i),
-					cell = bd.cell[c];
-
-				if (ca === "1") {
-					bd.startpos.set(cell);
-				} else if (ca === "2") {
-					bd.goalpos.set(cell);
-				} else if (ca === "3") {
-					cell.ques = 41;
-				} else if (ca === "4") {
-					cell.ques = 42;
-				} else if (this.include(ca, "5", "9") || this.include(ca, "a", "z")) {
-					c += parseInt(ca, 36) - 5;
-				}
-
-				c++;
-				if (!bd.cell[c]) {
-					break;
-				}
+				arr = [];
+			while (c < 4) {
+				var res = this.readNumber16(bstr, i);
+				if (res[0] !== -1) {
+					arr.push(res[0]);
+					i += res[1];
+					c++;
+				} 
 			}
-			this.outbstr = bstr.substr(i + 1);
+			this.board.startpos.bx = arr[0];
+			this.board.startpos.by = arr[1];
+			this.board.goalpos.bx = arr[2];
+			this.board.goalpos.by = arr[3];
+
+			this.outbstr = bstr.substr(i);
+
 		},
-		encodeCell_nurimaze: function() {
-			var cm = "",
-				count = 0,
-				bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var pstr = "",
-					cell = bd.cell[c];
-				if (bd.startpos.equals(cell)) {
-					pstr = "1";
-				} else if (bd.goalpos.equals(cell)) {
-					pstr = "2";
-				} else if (cell.ques === 41) {
-					pstr = "3";
-				} else if (cell.ques === 42) {
-					pstr = "4";
-				} else {
-					count++;
-				}
-
-				if (count === 0) {
-					cm += pstr;
-				} else if (pstr || count === 31) {
-					cm += (4 + count).toString(36) + pstr;
-					count = 0;
-				}
-			}
-			if (count > 0) {
-				cm += (4 + count).toString(36);
-			}
-
-			this.outbstr += cm;
+		encodeSG: function(){
+			this.outbstr += this.writeNumber16(this.board.startpos.bx);
+			this.outbstr += this.writeNumber16(this.board.startpos.by);
+			this.outbstr += this.writeNumber16(this.board.goalpos.bx);
+			this.outbstr += this.writeNumber16(this.board.goalpos.by);
 		}
+
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			this.decodeAreaRoom();
+			this.decodeSG();
+			this.decodeBorderQues();
 			this.decodeCellQnum();
 			this.decodeBorderLine();
-			this.decodeCellAns();
 		},
 		encodeData: function() {
-			this.encodeAreaRoom();
+			this.encodeSG();
+			this.encodeBorderQues();
 			this.encodeCellQnum();
 			this.encodeBorderLine();
-			this.encodeCellAns();
 		},
-
-		decodeCellQues_nurimaze: function() {
-			var bd = this.board;
-			this.decodeCell(function(cell, ca) {
-				if (ca === "s") {
-					bd.startpos.set(cell);
-				} else if (ca === "g") {
-					bd.goalpos.set(cell);
-				} else if (ca === "o") {
-					cell.ques = 41;
-				} else if (ca === "t") {
-					cell.ques = 42;
-				}
-			});
+		decodeSG: function(){
+			var str = this.readLine();
+			var arr = str.split(" ");
+			this.board.startpos.bx = parseInt(arr[0]);
+			this.board.startpos.by = parseInt(arr[1]);
+			this.board.goalpos.bx = parseInt(arr[2]);
+			this.board.goalpos.by = parseInt(arr[3]);
 		},
-		encodeCellQues_nurimaze: function() {
-			var bd = this.board;
-			this.encodeCell(function(cell) {
-				if (bd.startpos.equals(cell)) {
-					return "s ";
-				} else if (bd.goalpos.equals(cell)) {
-					return "g ";
-				} else if (cell.ques === 41) {
-					return "o ";
-				} else if (cell.ques === 42) {
-					return "t ";
-				} else {
-					return ". ";
-				}
-			});
+		encodeSG: function(){
+			this.writeLine("" +
+				this.board.startpos.bx + " " +
+				this.board.startpos.by + " " +
+				this.board.goalpos.bx + " " +
+				this.board.goalpos.by);
 		}
 	},
 
