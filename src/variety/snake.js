@@ -242,14 +242,15 @@
 	AnsCheck: {
 		checklist: [
 			"checkShadeCellExist+",
+			"check2x2ShadeCell",
 			"checkShadeBranch",
-			"checkShadeLoop",
 			"checkShadeOnCircle",
 			"checkCircleEndpoint",
 			"checkCircleMidpoint",
 			"checkShadeDiagonal",
 			"checkShadeCount+",
-			"checkConnectShade"
+			"checkConnectShade",
+			"checkShadeLoop"
 		],
 
 		checkShadeBranch: function() {
@@ -375,6 +376,10 @@
 	},
 
 	FailCode: {
+		cs2x2: [
+			"(please translate) The snake loops back on itself.",
+			"The snake loops back on itself."
+		],
 		shBranch: [
 			"(please translate) The snake branches off.",
 			"The snake branches off."
