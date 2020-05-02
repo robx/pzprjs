@@ -1,3 +1,7 @@
+### 2020-05-02
+
+* detour: New puzzle type Detour (due to Boboquack)
+
 ### 2020-04-28
 
 * symmarea: New puzzle type Symmetry Area (due to Taus)
