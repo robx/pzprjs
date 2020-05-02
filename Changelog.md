@@ -1,6 +1,7 @@
 ### 2020-05-02
 
 * detour: New puzzle type Detour (due to Boboquack)
+* snake: New puzzle type Snake (due to Lennard Sprong)
 
 ### 2020-04-28
 
