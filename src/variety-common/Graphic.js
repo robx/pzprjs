@@ -1956,6 +1956,57 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//--------------------------------------------------------------------------
+		// pc.drawStartGoal()  draw Start and Goal symbols
+		//--------------------------------------------------------------------------
+		drawStartGoal: function() {
+			var g = this.vinc("cell_sg", "auto");
+			var bd = this.board,
+				d = this.range;
+
+			g.vid = "text_stpos";
+			var cell = bd.startpos.getc();
+			if (
+				cell.bx >= d.x1 &&
+				d.x2 >= cell.bx &&
+				cell.by >= d.y1 &&
+				d.y2 >= cell.by
+			) {
+				if (!cell.isnull) {
+					g.fillStyle =
+						this.puzzle.mouse.inputData === 10
+							? "red"
+							: cell.qans === 1
+							? this.fontShadecolor
+							: this.quescolor;
+					this.disptext("S", cell.bx * this.bw, cell.by * this.bh);
+				} else {
+					g.vhide();
+				}
+			}
+
+			g.vid = "text_glpos";
+			cell = bd.goalpos.getc();
+			if (
+				cell.bx >= d.x1 &&
+				d.x2 >= cell.bx &&
+				cell.by >= d.y1 &&
+				d.y2 >= cell.by
+			) {
+				if (!cell.isnull) {
+					g.fillStyle =
+						this.puzzle.mouse.inputData === 11
+							? "red"
+							: cell.qans === 1
+							? this.fontShadecolor
+							: this.quescolor;
+					this.disptext("G", cell.bx * this.bw, cell.by * this.bh);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		//--------------------------------------------------------------------------
 		// pc.getDotFillColor()  The circle fill color, or null for no fill.
 		// pc.getDotOutlineColor()  The circle outline color, or null for no outline.
 		// pc.getDotRadius()  The circle radius, as a fraction.
