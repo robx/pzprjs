@@ -47,44 +47,6 @@
 				}
 			}
 		},
-
-		inputtile_nurimaze: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-			if (this.inputData === null) {
-				this.decIC(cell);
-			}
-
-			var bd = this.board,
-				clist = cell.room.clist;
-			if (this.inputData === 1) {
-				for (var i = 0; i < clist.length; i++) {
-					if (
-						clist[i].ques !== 0 ||
-						bd.startpos.equals(clist[i]) ||
-						bd.goalpos.equals(clist[i])
-					) {
-						if (this.mousestart) {
-							this.inputData = cell.qsub !== 1 ? 2 : 0;
-							break;
-						} else {
-							return;
-						}
-					}
-				}
-			}
-
-			this.mouseCell = cell;
-			for (var i = 0; i < clist.length; i++) {
-				var cell2 = clist[i];
-				(this.inputData === 1 ? cell2.setShade : cell2.clrShade).call(cell2);
-				cell2.setQsub(this.inputData === 2 ? 1 : 0);
-			}
-			clist.draw();
-		},
-
 		inputEdit: function() {
 			var cell = this.getcell();
 			if (cell.isnull) {
@@ -145,39 +107,6 @@
 			}
 		},
 
-		inputmarks: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-
-			this.inputQuesMark(cell);
-
-			this.mouseCell = cell;
-		},
-		inputQuesMark: function(cell) {
-			var bd = this.board,
-				newques = -1;
-			if (this.inputMode === "mark-circle") {
-				newques = cell.ques !== 41 ? 41 : 0;
-			} else if (this.inputMode === "mark-triangle") {
-				newques = cell.ques !== 42 ? 42 : 0;
-			} else if (this.btn === "left") {
-				newques = { 0: 41, 41: 42, 42: 0 }[cell.ques];
-			} else if (this.btn === "right") {
-				newques = { 0: 42, 42: 41, 41: 0 }[cell.ques];
-			} else {
-				return;
-			}
-
-			if (
-				newques === 0 ||
-				(!bd.startpos.equals(cell) && !bd.goalpos.equals(cell))
-			) {
-				cell.setQues(newques);
-				cell.draw();
-			}
-		},
 		inputmark_mousemove: function() {
 			var pos = this.getpos(0);
 			if (pos.getc().isnull) {
@@ -245,10 +174,10 @@
 
 		keyinput: function(ca) {
 			if (this.keydown && this.puzzle.editmode) {
-				this.key_inputqnum_nurimaze(ca);
+				this.key_inputqnum_haisu(ca);
 			}
 		},
-		key_inputqnum_nurimaze: function(ca) {
+		key_inputqnum_haisu: function(ca) {
 			var cell = this.cursor.getc(),
 				bd = this.board;
 
@@ -310,13 +239,6 @@
 			this.goalpos.draw();
 		}
 	},
-
-/*
-	Cell:{
-		enableSubNumberArray: true
-	},
-*/
-
 	LineGraph: {
 		enabled: true,
 		makeClist: true
@@ -329,7 +251,7 @@
 		visit: 0
 	},
 
-BoardExec: {
+	BoardExec: {
 		posinfo: {},
 		adjustBoardData: function(key, d) {
 			var bd = this.board;
@@ -356,114 +278,6 @@ BoardExec: {
 			bd.goalpos.set(info2.pos.getc());
 			if (isrec) {
 				opemgr.forceRecord = false;
-			}
-		}
-	},
-
-	"StartGoalAddress:Address": {
-		type: "",
-		partner: null,
-
-		init: function(bx, by) {
-			this.bx = bx;
-			this.by = by;
-			return this;
-		},
-
-		input: function(cell) {
-			if (!this.partner.equals(cell)) {
-				if (!this.equals(cell)) {
-					this.set(cell);
-				} else {
-					this.draw();
-				}
-			} else {
-				this.board.exchangestartgoal();
-			}
-		},
-		set: function(pos) {
-			var pos0 = this.getaddr();
-			this.addOpe(pos.bx, pos.by);
-
-			this.bx = pos.bx;
-			this.by = pos.by;
-
-			pos0.draw();
-			this.draw();
-		},
-
-		addOpe: function(bx, by) {
-			if (this.bx === bx && this.by === by) {
-				return;
-			}
-			this.puzzle.opemgr.add(
-				new this.klass.StartGoalOperation(this.type, this.bx, this.by, bx, by)
-			);
-		}
-	},
-	"StartAddress:StartGoalAddress": {
-		type: "start"
-	},
-	"GoalAddress:StartGoalAddress": {
-		type: "goal"
-	},
-
-	"StartGoalOperation:Operation": {
-		setData: function(x1, y1, x2, y2) {
-			this.bx1 = x1;
-			this.by1 = y1;
-			this.bx2 = x2;
-			this.by2 = y2;
-		},
-		decode: function(strs) {
-			if (strs[0] !== "PS" && strs[0] !== "PG") {
-				return false;
-			}
-			this.property = strs[0] === "PS" ? "start" : "goal";
-			this.bx1 = +strs[1];
-			this.by1 = +strs[2];
-			this.bx2 = +strs[3];
-			this.by2 = +strs[4];
-			return true;
-		},
-		toString: function() {
-			return [
-				this.property === "start" ? "PS" : "PG",
-				this.bx1,
-				this.by1,
-				this.bx2,
-				this.by2
-			].join(",");
-		},
-
-		isModify: function(lastope) {
-			// 1回の入力でstartpos, goalposが連続して更新されているなら前回の更新のみ
-			if (
-				this.manager.changeflag &&
-				lastope.bx2 === this.bx1 &&
-				lastope.by2 === this.by1 &&
-				lastope.property === this.property
-			) {
-				lastope.bx2 = this.bx2;
-				lastope.by2 = this.by2;
-				return true;
-			}
-			return false;
-		},
-
-		undo: function() {
-			this.exec(this.bx1, this.by1);
-		},
-		redo: function() {
-			this.exec(this.bx2, this.by2);
-		},
-		exec: function(bx, by) {
-			var bd = this.board,
-				cell = bd.getc(bx, by);
-			if (this.property === "start") {
-				bd.startpos.set(cell);
-			} else if (this.property === "goal") {
-				bd.goalpos.set(cell);
 			}
 		}
 	},
