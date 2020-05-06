@@ -1,3 +1,16 @@
+### 2020-05-02
+
+* detour: New puzzle type Detour (due to Boboquack)
+* snake: New puzzle type Snake (due to Lennard Sprong)
+
+### 2020-04-28
+
+* symmarea: New puzzle type Symmetry Area (due to Taus)
+
+### 2020-04-18
+
+* tents: new puzzle tyep Tents (due to Lennard Sprong)
+
 ### 2020-03-30
 
 * Add cooperative network play (server side: github.com/robx/puzzld).

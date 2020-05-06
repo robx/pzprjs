@@ -233,6 +233,7 @@
 			"kakuro",
 			"sudoku",
 			"fillomino",
+			"symmarea",
 			"ripple",
 			"akari",
 			"shakashaka"
@@ -354,7 +355,9 @@
 			"balance",
 			"simpleloop",
 			"doppelblock",
-			"tents"
+			"tents",
+			"detour",
+			"snake"
 		]
 	};
 	var tabstate = {

@@ -73,6 +73,7 @@ ui.keypopup = {
 		tateyoko: [10, 0],
 		factors: [10, 10],
 		fillomino: [10, 10],
+		symmarea: [10, 10],
 		renban: [10, 10],
 		ripple: [10, 10],
 		cojun: [10, 10],
