@@ -73,4 +73,4 @@ rollup: bundle
 
 HASH=$(shell git rev-parse --short HEAD)
 githash:
-	sed -i s'/<%= git.hash %>/${HASH}/g' ./dist/js/pzpr.js
+	sed -i '' s'/<%= git.hash %>/${HASH}/g' ./dist/js/pzpr.js
