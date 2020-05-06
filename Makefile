@@ -1,4 +1,4 @@
-.PHONY: default build test serve serve-all format check-format npm-install lint bundle rollup git-hash clean
+.PHONY: default build test serve serve-all format check-format lint bundle rollup git-hash clean
 
 default: build
 
@@ -38,6 +38,3 @@ format:
 
 check-format:
 	npx prettier --check "{src,src-ui,test}/**/*.{js,json,css}"
-
-npm-install:
-	npm install
