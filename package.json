@@ -2,7 +2,6 @@
   "name": "pzpr",
   "version": "0.12.0",
   "description": "Scripts for handling puzzle objects",
-  "main": "./index.js",
   "keywords": [
     "puzzle",
     "HTML5"
