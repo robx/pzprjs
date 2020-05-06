@@ -86,8 +86,6 @@ module.exports = function(grunt){
     }
   });
   
-  grunt.registerTask('default', ['build']);
-  grunt.registerTask('release', ['build']);
   grunt.registerTask('build',        ['build:variety', 'build:samples', 'build:ui']);
   grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);
   grunt.registerTask('build:variety',['newer:uglify:variety']);

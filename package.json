@@ -20,13 +20,6 @@
   "engines": {
     "node": ">= 5.6.0"
   },
-  "scripts": {
-    "build": "./git-hash.sh && grunt default",
-    "release": "npm run clean && eslint --cache --quiet src && grunt release",
-    "clean": "del dist/* pzpr-*.{zip,tar.gz,tar.bz2,tgz}",
-    "test": "mocha -r esm -r pzpr-canvas -r source-map-support/register -R progress --recursive test",
-    "prepublishOnly": "npm test"
-  },
   "devDependencies": {
     "del-cli": "^2.0.0",
     "eslint": "^5.16.0",
