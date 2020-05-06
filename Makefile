@@ -1,6 +1,6 @@
 .PHONY: default build test serve serve-all format check-format npm-install lint candle bundle rollup githash
 
-default: lint test
+default: build
 
 build: candle rollup githash
 	npm run-script build
