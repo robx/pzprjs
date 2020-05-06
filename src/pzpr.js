@@ -1,9 +1,5 @@
 exports.files = [
-	"common/intro",
-	"pzpr/core",
-	"lib/candle-intro",
-	"../node_modules/pzpr-canvas/dist/candle",
-	"lib/candle-outro",
+	"header",
 	"pzpr/env",
 	"pzpr/event",
 	"pzpr/classmgr",
@@ -34,8 +30,7 @@ exports.files = [
 	"variety-common/Answer",
 	"variety-common/BoardExec",
 	"variety-common/Encode",
-	"variety-common/FileData",
-	"common/outro"
+	"variety-common/FileData"
 ].map(function(mod) {
 	return "src/" + mod + ".js";
 });

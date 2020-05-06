@@ -2,7 +2,7 @@
 
 var assert = require("assert");
 
-var pzpr = require("../../dist/js/pzpr.js");
+import pzpr from "../../dist/js/pzpr.concat.js";
 
 describe("Trial mode test", function() {
 	it("Enter test", function() {

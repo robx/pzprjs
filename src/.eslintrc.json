@@ -1,34 +1,35 @@
 {
   "env": {
-    "browser": true,                    // Allow to use browser defined variable (not console, alert etc.)
-    "node": true                        // Allow to use node defined variable (require, process etc.)
+    "browser": true, // Allow to use browser defined variable (not console, alert etc.)
+    "node": true // Allow to use node defined variable (require, process etc.)
   },
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 5,
+    "sourceType": "module"
   },
   "globals": {
     "pzpr": "readonly"
   },
-  "extends": "eslint:recommended",      // Implement recommended rules
+  "extends": "eslint:recommended", // Implement recommended rules
   "rules": {
-    "curly": ["error", "all"],          // Error for no curly brancket in loop or conditions
-    "no-unused-vars":                   // Error for unused variables, not detect arguments
-        ["error", {"args": "none"}],
-    "no-undef": "error",                // Error for unused variable (that will become global variable)
-    "new-cap": "error",                 // Error for lowercase first letter or constructor call as function
-    "eqeqeq": ["error", "always"],      // Error for ==, != to compare
-    "no-use-before-define":             // Error for using variable before definition
-        ["error", {"functions":false, "classes":false}],
+    "curly": ["error", "all"], // Error for no curly brancket in loop or conditions
+    // Error for unused variables, not detect arguments
+    "no-unused-vars": ["error", { "args": "none" }],
+    "no-undef": "error", // Error for unused variable (that will become global variable)
+    "new-cap": "error", // Error for lowercase first letter or constructor call as function
+    "eqeqeq": ["error", "always"], // Error for ==, != to compare
+    // Error for using variable before definition
+    "no-use-before-define": ["error", { "functions": false, "classes": false }],
     "comma-dangle": ["error", "never"], // Error for trailing comma
-    "no-redeclare": "warn",             // Warn redefine variable (TODO: make this rule error)
+    "no-redeclare": "warn", // Warn redefine variable (TODO: make this rule error)
     //"block-scoped-var": "warn",       // Warn var declaration inside block scope
-    "no-empty": "off",                  // Allow empty block statements
-    "no-constant-condition":            // Allow constant condition in conditions
-        ["error", {"checkLoops": false}],
-    "no-useless-escape": "off",         // Allow unnessesary escape charactors
-    "no-extra-boolean-cast": "off",     // Allow to use boolean cast for boolean value
-    "no-mixed-spaces-and-tabs": "off",  // Allow to use spaces and tabs for indent
-    "dot-notation": "off",              // Allow object access via obj["name"]
-    "no-loop-func": "off"               // Allow function definition in loop
+    "no-empty": "off", // Allow empty block statements
+    // Allow constant condition in conditions
+    "no-constant-condition": ["error", { "checkLoops": false }],
+    "no-useless-escape": "off", // Allow unnessesary escape charactors
+    "no-extra-boolean-cast": "off", // Allow to use boolean cast for boolean value
+    "no-mixed-spaces-and-tabs": "off", // Allow to use spaces and tabs for indent
+    "dot-notation": "off", // Allow object access via obj["name"]
+    "no-loop-func": "off" // Allow function definition in loop
   }
 }

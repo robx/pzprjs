@@ -3,9 +3,6 @@
   "version": "0.12.0",
   "description": "Scripts for handling puzzle objects",
   "main": "./index.js",
-  "directories": {
-    "test": "test"
-  },
   "keywords": [
     "puzzle",
     "HTML5"
@@ -14,35 +11,24 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sabo2/pzprjs"
+    "url": "https://github.com/robx/pzprjs"
   },
-  "homepage": "https://github.com/sabo2/pzprjs",
-  "engines": {
-    "node": ">= 5.6.0"
-  },
-  "scripts": {
-    "build": "eslint --cache --quiet src src-ui && \"./git-hash.sh\" && grunt default",
-    "release": "npm run clean && eslint --cache --quiet src && grunt release",
-    "clean": "del dist/* pzpr-*.{zip,tar.gz,tar.bz2,tgz}",
-    "format": "prettier --write \"{src,src-ui,test}/**/*.{js,css}\"",
-    "check-format": "prettier --check \"{src,src-ui,test}/**/*.{js,css}\"",
-    "lint": "eslint src src-ui test sample",
-    "test": "eslint --quiet src src-ui test sample && mocha -r source-map-support/register -R progress --recursive test",
-    "prepublishOnly": "npm test"
-  },
+  "homepage": "https://puzz.link",
   "devDependencies": {
-    "del-cli": "^2.0.0",
     "eslint": "^5.16.0",
+    "esm": "^3.2.25",
     "grunt": "^1.1.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
     "grunt-newer": "^1.1.1",
     "mocha": "^6.2.3",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "rollup": "^2.8.0",
+    "rollup-plugin-terser": "^5.3.0"
   },
   "dependencies": {
     "pzpr-canvas": "^0.8.2",
-    "source-map-support": "^0.5.17"
+    "source-map-support": "^0.5.19"
   }
 }

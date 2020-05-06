@@ -46,11 +46,7 @@
 					}
 				}
 			} else {
-				return (
-					require("path").dirname(__filename) +
-					"/" +
-					(__filename.match("pzpr.js") ? "" : "../")
-				);
+				return require("path").dirname(__filename) + "/";
 			}
 			return "";
 		},
