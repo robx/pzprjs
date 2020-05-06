@@ -101,9 +101,7 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			for (var i = 0; i < this.length; i++) {
-				if (!Object.isFrozen(this[i])) {
-					this[i].error = num;
-				}
+				this[i].error = num;
 			}
 		},
 		setnoerr: function() {
