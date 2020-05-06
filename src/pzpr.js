@@ -1,5 +1,5 @@
 exports.files = [
-        "header",
+	"header",
 	"pzpr/env",
 	"pzpr/event",
 	"pzpr/classmgr",
