@@ -84,7 +84,20 @@
 		numberRemainsUnshaded: true,
 
 		maxnum: 6,
-		minnum: 0
+		minnum: 0,
+
+		adjCells: function() {
+			var clist = new this.klass.CellList();
+			clist.add(this.relcell(-1, -2));
+			clist.add(this.relcell(1, -2));
+			clist.add(this.relcell(-2, 0));
+			clist.add(this.relcell(2, 0));
+			clist.add(this.relcell(-1, 2));
+			clist.add(this.relcell(1, 2));
+			return clist.filter(function(c) {
+				return !c.isnull;
+			});
+		}
 	},
 	Board: {
 		cols: 6, // ※本スクリプトでは一番上の段のマスの数を表すこととする.
@@ -541,13 +554,7 @@
 				if (!cell.isValidNum()) {
 					continue;
 				}
-				var clist = new this.klass.CellList();
-				clist.add(cell.relcell(-1, -2));
-				clist.add(cell.relcell(1, -2));
-				clist.add(cell.relcell(-2, 0));
-				clist.add(cell.relcell(2, 0));
-				clist.add(cell.relcell(-1, 2));
-				clist.add(cell.relcell(1, 2));
+				var clist = cell.adjCells();
 				if (
 					cell.qnum ===
 					clist.filter(function(cell) {
