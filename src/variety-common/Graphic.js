@@ -2340,27 +2340,12 @@ pzpr.classmgr.makeCommon({
 		// pc.drawChassis()     外枠をCanvasに書き込む
 		// pc.drawChassis_ex1() bd.hasexcell==1の時の外枠をCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawChassis: function() {
+		drawChassis: function(withexcell) {
 			var g = this.vinc("chassis", "crispEdges", true),
 				bd = this.board;
 
-			// ex===0とex===2で同じ場所に描画するので、maxbxとか使いません
-			var x1 = this.range.x1,
-				y1 = this.range.y1,
-				x2 = this.range.x2,
-				y2 = this.range.y2;
-			if (x1 < 0) {
-				x1 = 0;
-			}
-			if (x2 > 2 * bd.cols) {
-				x2 = 2 * bd.cols;
-			}
-			if (y1 < 0) {
-				y1 = 0;
-			}
-			if (y2 > 2 * bd.rows) {
-				y2 = 2 * bd.rows;
-			}
+			var exWidth = withexcell ? bd.minbx * -0.5 * this.cw : 0;
+			var exHeight = withexcell ? bd.minby * -0.5 * this.ch : 0;
 
 			var boardWidth = bd.cols * this.cw,
 				boardHeight = bd.rows * this.ch;
@@ -2372,13 +2357,23 @@ pzpr.classmgr.makeCommon({
 			}
 			g.fillStyle = this.quescolor;
 			g.vid = "chs1_";
-			g.fillRect(-lm, -lm, lw, boardHeight + lw);
+			g.fillRect(-lm, -exHeight - lm, lw, boardHeight + exHeight + lw);
 			g.vid = "chs2_";
-			g.fillRect(boardWidth - lm, -lm, lw, boardHeight + lw);
+			g.fillRect(
+				boardWidth - lm,
+				-exHeight - lm,
+				lw,
+				boardHeight + exHeight + lw
+			);
 			g.vid = "chs3_";
-			g.fillRect(-lm, -lm, boardWidth + lw, lw);
+			g.fillRect(-exWidth - lm, -lm, boardWidth + exWidth + lw, lw);
 			g.vid = "chs4_";
-			g.fillRect(-lm, boardHeight - lm, boardWidth + lw, lw);
+			g.fillRect(
+				-exWidth - lm,
+				boardHeight - lm,
+				boardWidth + exWidth + lw,
+				lw
+			);
 		},
 		drawChassis_ex1: function(boldflag) {
 			var g = this.vinc("chassis_ex1", "crispEdges", true),

@@ -197,7 +197,7 @@ function sameArray(array1, array2) {
 
 			this.drawNumbersExCell();
 
-			this.drawChassis();
+			this.drawChassis(true);
 
 			this.drawTarget();
 		}
