@@ -48,7 +48,6 @@
 			}
 		},
 
-// common to nurimaze
 		inputEdit: function() {
 			var cell = this.getcell();
 			if (cell.isnull) {
