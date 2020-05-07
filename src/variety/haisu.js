@@ -33,11 +33,8 @@
 					} else if (this.btn === "right") {
 						this.inputpeke();
 					}
-				} else if (
-					this.mouseend &&
-					this.notInputted()
-				) {
-					this.inputpeke_ifborder()
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputpeke_ifborder();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -189,7 +186,7 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
-	GraphComponent:{
+	GraphComponent: {
 		visit: 0
 	},
 
@@ -270,7 +267,7 @@
 			this.encodeBorder();
 			this.encodeNumber16();
 		},
-		decodeSG: function(){
+		decodeSG: function() {
 			var c = 0,
 				i = 0,
 				bstr = this.outbstr,
@@ -281,7 +278,7 @@
 					arr.push(res[0]);
 					i += res[1];
 					c++;
-				} 
+				}
 			}
 			this.board.startpos.bx = arr[0];
 			this.board.startpos.by = arr[1];
@@ -289,15 +286,13 @@
 			this.board.goalpos.by = arr[3];
 
 			this.outbstr = bstr.substr(i);
-
 		},
-		encodeSG: function(){
+		encodeSG: function() {
 			this.outbstr += this.writeNumber16(this.board.startpos.bx);
 			this.outbstr += this.writeNumber16(this.board.startpos.by);
 			this.outbstr += this.writeNumber16(this.board.goalpos.bx);
 			this.outbstr += this.writeNumber16(this.board.goalpos.by);
 		}
-
 	},
 	//---------------------------------------------------------
 	FileIO: {
@@ -313,7 +308,7 @@
 			this.encodeCellQnum();
 			this.encodeBorderLine();
 		},
-		decodeSG: function(){
+		decodeSG: function() {
 			var str = this.readLine();
 			var arr = str.split(" ");
 			this.board.startpos.bx = parseInt(arr[0]);
@@ -321,12 +316,17 @@
 			this.board.goalpos.bx = parseInt(arr[2]);
 			this.board.goalpos.by = parseInt(arr[3]);
 		},
-		encodeSG: function(){
-			this.writeLine("" +
-				this.board.startpos.bx + " " +
-				this.board.startpos.by + " " +
-				this.board.goalpos.bx + " " +
-				this.board.goalpos.by);
+		encodeSG: function() {
+			this.writeLine(
+				"" +
+					this.board.startpos.bx +
+					" " +
+					this.board.startpos.by +
+					" " +
+					this.board.goalpos.bx +
+					" " +
+					this.board.goalpos.by
+			);
 		}
 	},
 
@@ -345,26 +345,38 @@
 			"checkNoLine"
 		],
 
-		haisuPassThroughSG : function(){
+		haisuPassThroughSG: function() {
 			var bd = this.board;
-			var start = bd.getc(bd.startpos.bx,bd.startpos.by);
-			var goal = bd.getc(bd.goalpos.bx,bd.goalpos.by);
+			var start = bd.getc(bd.startpos.bx, bd.startpos.by);
+			var goal = bd.getc(bd.goalpos.bx, bd.goalpos.by);
 			var err = false;
-			if(start.lcnt > 1) {start.seterr(1); start.draw(); err = true;}
-			if(goal.lcnt > 1) {goal.seterr(1); start.draw(); err = true;}
-			if(err){this.failcode.add("haisuSG");}
+			if (start.lcnt > 1) {
+				start.seterr(1);
+				start.draw();
+				err = true;
+			}
+			if (goal.lcnt > 1) {
+				goal.seterr(1);
+				start.draw();
+				err = true;
+			}
+			if (err) {
+				this.failcode.add("haisuSG");
+			}
 		},
 
-		haisuWalk : function(){
+		haisuWalk: function() {
 			var bd = this.board;
-			var start = bd.getc(bd.startpos.bx,bd.startpos.by);
+			var start = bd.getc(bd.startpos.bx, bd.startpos.by);
 			var err = false;
 
-			if(start.lcnt !== 1){ return; }
+			if (start.lcnt !== 1) {
+				return;
+			}
 
 			var rooms = bd.roommgr.components;
 
-			for(var r = 0; r<rooms.length; r++){
+			for (var r = 0; r < rooms.length; r++) {
 				rooms[r].visit = 0;
 			}
 
@@ -373,47 +385,59 @@
 			var oldCell = null;
 			var curCell = start;
 
-			while(curCell === start || curCell.lcnt === 2){
+			while (curCell === start || curCell.lcnt === 2) {
 				curRoom = curCell.room;
-				if(oldRoom !== curRoom){
+				if (oldRoom !== curRoom) {
 					curRoom.visit++;
 					oldRoom = curRoom;
 				}
-				if(curCell.qnum > 0 && curCell.qnum !== curRoom.visit){
+				if (curCell.qnum > 0 && curCell.qnum !== curRoom.visit) {
 					curCell.seterr(1);
 					err = true;
 				}
 
 				var adj = [];
-				if(curCell.relbd(-1, 0).isLine()){adj.push(curCell.relcell(-2, 0));}
-				if(curCell.relbd( 0,-1).isLine()){adj.push(curCell.relcell( 0,-2));}
-				if(curCell.relbd( 1, 0).isLine()){adj.push(curCell.relcell( 2, 0));}
-				if(curCell.relbd( 0, 1).isLine()){adj.push(curCell.relcell( 0, 2));}
+				if (curCell.relbd(-1, 0).isLine()) {
+					adj.push(curCell.relcell(-2, 0));
+				}
+				if (curCell.relbd(0, -1).isLine()) {
+					adj.push(curCell.relcell(0, -2));
+				}
+				if (curCell.relbd(1, 0).isLine()) {
+					adj.push(curCell.relcell(2, 0));
+				}
+				if (curCell.relbd(0, 1).isLine()) {
+					adj.push(curCell.relcell(0, 2));
+				}
 
-				if(adj.length === 1){ oldCell = curCell; curCell = adj[0];}
-				else if(adj[0] === oldCell) { oldCell = curCell; curCell = adj[1];}
-				else { oldCell = curCell; curCell = adj[0];}
+				if (adj.length === 1) {
+					oldCell = curCell;
+					curCell = adj[0];
+				} else if (adj[0] === oldCell) {
+					oldCell = curCell;
+					curCell = adj[1];
+				} else {
+					oldCell = curCell;
+					curCell = adj[0];
+				}
 			}
 
-			if(err){
+			if (err) {
 				this.failcode.add("haisuError");
 			}
-
 		},
 
-		haisuDeadendOutOfSG : function(){
+		haisuDeadendOutOfSG: function() {
 			var bd = this.board;
-			var start = bd.getc(bd.startpos.bx,bd.startpos.by);
-			var goal = bd.getc(bd.goalpos.bx,bd.goalpos.by);
-			this.checkAllCell(
-				function(cell){
-					if(cell === start || cell === goal) {return false;}
-					return cell.lcnt === 1;
-				}, "lnDeadEnd"
-			);
+			var start = bd.getc(bd.startpos.bx, bd.startpos.by);
+			var goal = bd.getc(bd.goalpos.bx, bd.goalpos.by);
+			this.checkAllCell(function(cell) {
+				if (cell === start || cell === goal) {
+					return false;
+				}
+				return cell.lcnt === 1;
+			}, "lnDeadEnd");
 		}
-
-
 	},
 
 	FailCode: {
