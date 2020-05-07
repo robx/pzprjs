@@ -341,7 +341,6 @@
 			"haisuWalk",
 			"haisuDeadendOutOfSG",
 
-			"checkOneLoop",
 			"checkNoLine"
 		],
 
