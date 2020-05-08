@@ -9,7 +9,8 @@
 		"doubleback",
 		"maxi",
 		"simpleloop",
-		"detour"
+		"detour",
+		"nback"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -59,7 +60,13 @@
 			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@doubleback,simpleloop": {
+	"MouseEvent@nback": {
+		inputModes: {
+			edit: ["border", "number", "clear", "info-line", "empty"],
+			play: ["line", "peke", "clear", "info-line"]
+		}
+	},
+	"MouseEvent@doubleback,simpleloop,nback": {
 		mouseinput_other: function() {
 			if (this.inputMode === "empty") {
 				this.inputempty();
@@ -137,9 +144,15 @@
 
 	//---------------------------------------------------------
 	// 盤面管理系
-	"Cell@country,onsen,maxi,detour": {
+	"Cell@country,onsen,maxi,detour,nback": {
 		maxnum: function() {
 			return Math.min(999, this.room.clist.length);
+		}
+	},
+	"Cell@nback": {
+		maxnum: function() {
+			var d = this.room.clist.getRectSize();
+			return Math.min(999, d.cols + d.rows);
 		}
 	},
 	"Cell@country": {
@@ -185,7 +198,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@onsen,maxi,detour": {
+	"Board@onsen,maxi,detour,nback": {
 		cols: 8,
 		rows: 8,
 
@@ -197,10 +210,10 @@
 	LineGraph: {
 		enabled: true
 	},
-	"LineGraph@onsen,maxi,detour": {
+	"LineGraph@onsen,maxi,detour,nback": {
 		makeClist: true
 	},
-	"LineBlockGraph:LineGraph@onsen,maxi,detour": {
+	"LineBlockGraph:LineGraph@onsen,maxi,detour,nback": {
 		enabled: true,
 		relation: { "border.line": "link", "border.ques": "separator" },
 		makeClist: true,
@@ -250,7 +263,7 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
-	"AreaRoomGraph@country,maxi,detour": {
+	"AreaRoomGraph@country,maxi,detour,nback": {
 		hastop: true
 	},
 	"AreaRoomGraph@moonsun": {
@@ -296,7 +309,8 @@
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
-				this.pid === "detour"
+				this.pid === "detour" ||
+				this.pid === "nback"
 			) {
 				this.drawQuesNumbers();
 			} else if (this.pid === "moonsun") {
@@ -410,7 +424,7 @@
 			return this.getBorderColor_ques(border);
 		}
 	},
-	"Graphic@maxi,detour": {
+	"Graphic@maxi,detour,nback": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
 
@@ -427,7 +441,8 @@
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
-				this.pid === "detour"
+				this.pid === "detour" ||
+				this.pid === "nback"
 			) {
 				this.decodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
@@ -448,7 +463,8 @@
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
-				this.pid === "detour"
+				this.pid === "detour" ||
+				this.pid === "nback"
 			) {
 				this.encodeRoomNumber16();
 			} else if (this.pid === "moonsun") {
@@ -609,6 +625,18 @@
 			"checkCrossLine",
 
 			"checkTurnsInRoom",
+
+			"checkDeadendLine+",
+			"checkOneLoop",
+			"checkNoLine"
+		]
+	},
+	"AnsCheck@nback#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkRoomPassN",
 
 			"checkDeadendLine+",
 			"checkOneLoop",
@@ -1035,6 +1063,53 @@
 			}
 		}
 	},
+	"AnsCheck@nback": {
+		checkRoomPassN: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var clist = room.clist;
+				var cnt = 0;
+				var qnumcell = room.clist.getQnumCell();
+				if (qnumcell.isnull) {
+					continue;
+				}
+				if (qnumcell.qnum < 0) {
+					continue;
+				}
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i],
+						adb = cell.adjborder,
+						border;
+					border = adb.top;
+					if (border.ques === 1 && border.line === 1) {
+						cnt++;
+					}
+					border = adb.bottom;
+					if (border.ques === 1 && border.line === 1) {
+						cnt++;
+					}
+					border = adb.left;
+					if (border.ques === 1 && border.line === 1) {
+						cnt++;
+					}
+					border = adb.right;
+					if (border.ques === 1 && border.line === 1) {
+						cnt++;
+					}
+				}
+				if (cnt === 2*qnumcell.qnum) {
+					continue;
+				}
+
+				this.failcode.add("blWrongPass");
+				if (this.checkOnly) {
+					break;
+				}
+				room.clist.seterr(1);
+			}
+		}
+	},
 
 	"FailCode@country": {
 		bkPassTwice: [
@@ -1132,6 +1207,12 @@
 		blWrongTurns: [
 			"A room has the wrong number of turns.",
 			"A room has the wrong number of turns."
+		]
+	},
+	"FailCode@nback": {
+		blWrongPass: [
+			"A room is passed the wrong number of times.",
+			"A room is passed the wrong number of times."
 		]
 	}
 });
