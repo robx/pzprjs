@@ -125,6 +125,7 @@ function toBGimage(pid) {
 		"maxi",
 		"midloop",
 		"moonsun",
+		"nback",
 		"nondango",
 		"nurimisaki",
 		"pencils",
