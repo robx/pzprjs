@@ -1102,7 +1102,12 @@
 					continue;
 				}
 
-				this.failcode.add("blWrongPass");
+				if (cnt < 2*qnumcell.qnum) {
+					this.failcode.add("blPassLt");
+				} else {
+					this.failcode.add("blPassGt");
+				}
+
 				if (this.checkOnly) {
 					break;
 				}
@@ -1210,9 +1215,13 @@
 		]
 	},
 	"FailCode@nback": {
-		blWrongPass: [
-			"A room is passed the wrong number of times.",
-			"A room is passed the wrong number of times."
+		blPassLt: [
+			"A room isn't passed enough times.",
+			"A room isn't passed enough times."
+		],
+		blPassGt: [
+			"A room is passed too many times.",
+			"A room is passed too many times."
 		]
 	}
 });
