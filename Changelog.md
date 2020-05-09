@@ -1,3 +1,7 @@
+### 2020-05-09
+
+* New background images (due to Tiralmo)
+
 ### 2020-05-02
 
 * detour: New puzzle type Detour (due to Boboquack)
