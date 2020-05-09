@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["hanare"], {
+})(["hanare", "putteria"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -197,7 +197,9 @@
 		checklist: [
 			"checkDoubleNumber",
 			"checkAnsNumberAndSize",
-			"checkDiffNumber",
+			"checkDiffNumber@hanare",
+			"checkAdjacentNumber@putteria",
+			"checkDifferentNumberInLine@putteria",
 			"checkNoNumber"
 		],
 
@@ -266,6 +268,12 @@
 				}
 				clist.seterr(1);
 			}
+		},
+
+		checkAdjacentNumber: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				return cell1.isNum() && cell2.isNum();
+			}, "nmAdjacent");
 		}
 	},
 
@@ -282,6 +290,10 @@
 		nmDiffDistNe: [
 			"２つの数字の差とその間隔が正しくありません。",
 			"The distance of the paired numbers is not equal to their difference."
+		],
+		nmAdjacent: [
+			"数字がタテヨコに連続しています。",
+			"Some numbers are adjacent."
 		]
 	}
 });
