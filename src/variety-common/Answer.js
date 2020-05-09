@@ -1248,7 +1248,7 @@ pzpr.classmgr.makeCommon({
 		],
 		nmDupRow: [
 			"同じ列に同じ数字が入っています。",
-			"There are equal numbers in a row."
+			"There are equal numbers in a row or column."
 		],
 		nmDivide: [
 			"タテヨコにつながっていない数字があります。",
