@@ -1,3 +1,7 @@
+### 2020-05-10
+
+* putteria: New puzzle type Putteria
+
 ### 2020-05-09
 
 * New background images (due to Tiralmo)
