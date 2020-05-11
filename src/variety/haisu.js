@@ -275,30 +275,16 @@
 			this.encodeNumber16();
 		},
 		decodeSG: function() {
-			var c = 0,
-				i = 0,
-				bstr = this.outbstr,
-				arr = [];
-			while (c < 4) {
-				var res = this.readNumber16(bstr, i);
-				if (res[0] !== -1) {
-					arr.push(res[0]);
-					i += res[1];
-					c++;
-				}
-			}
-			this.board.startpos.bx = arr[0] * 2 - 1;
-			this.board.startpos.by = arr[1] * 2 - 1;
-			this.board.goalpos.bx =  arr[2] * 2 - 1;
-			this.board.goalpos.by =  arr[3] * 2 - 1;
-
-			this.outbstr = bstr.substr(i);
+			this.board.startpos.bx = 2 * this.decodeOneNumber16() - 1;
+			this.board.startpos.by = 2 * this.decodeOneNumber16() - 1;
+			this.board.goalpos.bx = 2 * this.decodeOneNumber16() - 1;
+			this.board.goalpos.by = 2 * this.decodeOneNumber16() - 1;
 		},
 		encodeSG: function() {
-			this.outbstr += this.writeNumber16((this.board.startpos.bx+1)/2);
-			this.outbstr += this.writeNumber16((this.board.startpos.by+1)/2);
-			this.outbstr += this.writeNumber16((this.board.goalpos.bx+1)/2);
-			this.outbstr += this.writeNumber16((this.board.goalpos.by+1)/2);
+			this.outbstr += this.writeNumber16((this.board.startpos.bx + 1) / 2);
+			this.outbstr += this.writeNumber16((this.board.startpos.by + 1) / 2);
+			this.outbstr += this.writeNumber16((this.board.goalpos.bx + 1) / 2);
+			this.outbstr += this.writeNumber16((this.board.goalpos.by + 1) / 2);
 		}
 	},
 	//---------------------------------------------------------
