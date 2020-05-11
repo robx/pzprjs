@@ -28,26 +28,26 @@
 		mouseinput_other: function() {
 			if (this.inputMode === "diraux") {
 				if (this.mousestart || this.mousemove) {
-					this.inputmark_mousemove();
+					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
-					this.clickmark();
+					this.clickdiraux();
 				}
 			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode && this.btn === "right") {
 				if (this.mousestart) {
-					this.inputmark_mousedown();
+					this.inputdiraux_mousedown();
 				} else if (this.inputData === 2 || this.inputData === 3) {
 					this.inputpeke();
 				} else if (this.mousemove) {
-					this.inputmark_mousemove();
+					this.inputdiraux_mousemove();
 				}
 			} else if (this.puzzle.playmode && this.btn === "left") {
 				if (this.mousestart || this.mousemove) {
 					this.inputLine();
 				} else if (this.mouseend && this.notInputted()) {
-					this.clickmark();
+					this.clickdiraux();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -57,7 +57,7 @@
 				}
 			}
 		},
-
+/*
 		clickmark: function() {
 			var pos = this.getpos(0.22);
 			if (this.prevPos.equals(pos)) {
@@ -123,7 +123,7 @@
 			}
 			this.prevPos = pos;
 		},
-
+*/
 		// オーバーライド
 		inputarrow_cell_main: function(cell, dir) {
 			cell.setQdir(cell.qdir !== dir ? dir : 0);

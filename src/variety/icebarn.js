@@ -46,11 +46,15 @@
 					if (this.mousestart || this.mousemove) {
 						this.inputLine();
 					} else if (this.mouseend && this.notInputted()) {
-						this.inputpeke();
+						this.clickdiraux();
 					}
 				} else if (this.btn === "right") {
-					if (this.mousestart || this.mousemove) {
+					if (this.mousestart) {
+						this.inputdiraux_mousedown();
+					} else if (this.inputData === 2 || this.inputData === 3) {
 						this.inputpeke();
+					} else if (this.mousemove) {
+						this.inputdiraux_mousemove();
 					}
 				}
 			} else if (this.puzzle.editmode) {

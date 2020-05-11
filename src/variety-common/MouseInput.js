@@ -809,9 +809,18 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//---------------------------------------------------------------------------
-		// mv.inputdiraux_mousemove()   input directional aux marks when mouse moves
-		// mv.clickdiraux()   input directional aux marks/pekes on click
+		// mv.inputdiraux_mousedown()   input lines/pekes/dir aux marks: mousedown
+		// mv.inputdiraux_mousemove()                                    mousemove
+		// mv.clickdiraux()                                              click
 		//---------------------------------------------------------------------------
+		inputdiraux_mousedown: function() {
+			var pos = this.getpos(0.22),
+				border = pos.getb();
+			if (!border.isnull) {
+				this.inputData = border.isnull || border.qsub !== 2 ? 2 : 3;
+				this.inputpeke();
+			}
+		},
 		inputdiraux_mousemove: function() {
 			var pos = this.getpos(0);
 			if (pos.getc().isnull) {
