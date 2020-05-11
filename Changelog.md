@@ -1,3 +1,7 @@
+### 2020-05-11
+
+* haisu: New puzzle type Haisu (due to Giuliano Montelucci)
+
 ### 2020-05-10
 
 * putteria: New puzzle type Putteria
