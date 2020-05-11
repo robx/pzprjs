@@ -783,7 +783,7 @@ pzpr.classmgr.makeCommon({
 			var border = pos.getb();
 			if (!border.isnull) {
 				if (this.inputData === null) {
-					this.inputData = border.qsub === 0 ? 2 : 3;
+					this.inputData = border.qsub !== 2 ? 2 : 3;
 				}
 				if (
 					this.inputData === 2 &&
@@ -793,7 +793,7 @@ pzpr.classmgr.makeCommon({
 				} else if (this.inputData === 2) {
 					border.setPeke();
 				} else if (this.inputData === 3) {
-					border.removePeke();
+					border.removeLine();
 				}
 				border.draw();
 			}

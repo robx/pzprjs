@@ -343,24 +343,7 @@
 		wind: 0 /* 逆に進んでいないか判定するためのパラメータ (qdir値とは別) */,
 		/* 0:風なし 1:下から上へ 2:上から下へ 3:上下両方 4:右から左へ 8:左から右へ 12:左右両方 */
 
-		enableLineNG: true,
-
-		setLine: function(id) {
-			this.setLineVal(1);
-			if (this.qsub === 2) {
-				this.setQsub(0);
-			}
-		},
-		removeLine: function(id) {
-			this.setLineVal(0);
-			if (this.qsub === 2) {
-				this.setQsub(0);
-			}
-		},
-		removePeke: function(id) {
-			this.setLineVal(0);
-			this.setQsub(0);
-		}
+		enableLineNG: true
 	},
 	Board: {
 		hasborder: 1,
