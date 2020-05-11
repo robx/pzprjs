@@ -822,14 +822,15 @@ pzpr.classmgr.makeCommon({
 		// border.setLine()     該当するBorderに線を引く
 		// border.setPeke()     該当するBorderに×印をつける
 		// border.removeLine()  該当するBorderから線を消す
-		// border.removePeke()  allow separate override
 		//-----------------------------------------------------------------------
 		isLine: function() {
 			return this.line > 0;
 		},
 		setLine: function(id) {
 			this.setLineVal(1);
-			this.setQsub(0);
+			if (this.qsub === 2) {
+				this.setQsub(0);
+			}
 		},
 		setPeke: function(id) {
 			this.setLineVal(0);
@@ -837,10 +838,9 @@ pzpr.classmgr.makeCommon({
 		},
 		removeLine: function(id) {
 			this.setLineVal(0);
-			this.setQsub(0);
-		},
-		removePeke: function(id) {
-			this.removeLine(id);
+			if (this.qsub === 2) {
+				this.setQsub(0);
+			}
 		},
 
 		//---------------------------------------------------------------------------
