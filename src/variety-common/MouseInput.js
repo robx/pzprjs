@@ -793,7 +793,7 @@ pzpr.classmgr.makeCommon({
 				} else if (this.inputData === 2) {
 					border.setPeke();
 				} else if (this.inputData === 3) {
-					border.removeLine();
+					border.removeLineAndQsub();
 				}
 				border.draw();
 			}
