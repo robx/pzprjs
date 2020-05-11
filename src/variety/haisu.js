@@ -284,18 +284,18 @@
 					c++;
 				}
 			}
-			this.board.startpos.bx = arr[0];
-			this.board.startpos.by = arr[1];
-			this.board.goalpos.bx = arr[2];
-			this.board.goalpos.by = arr[3];
+			this.board.startpos.bx = arr[0] * 2 - 1;
+			this.board.startpos.by = arr[1] * 2 - 1;
+			this.board.goalpos.bx =  arr[2] * 2 - 1;
+			this.board.goalpos.by =  arr[3] * 2 - 1;
 
 			this.outbstr = bstr.substr(i);
 		},
 		encodeSG: function() {
-			this.outbstr += this.writeNumber16(this.board.startpos.bx);
-			this.outbstr += this.writeNumber16(this.board.startpos.by);
-			this.outbstr += this.writeNumber16(this.board.goalpos.bx);
-			this.outbstr += this.writeNumber16(this.board.goalpos.by);
+			this.outbstr += this.writeNumber16((this.board.startpos.bx+1)/2);
+			this.outbstr += this.writeNumber16((this.board.startpos.by+1)/2);
+			this.outbstr += this.writeNumber16((this.board.goalpos.bx+1)/2);
+			this.outbstr += this.writeNumber16((this.board.goalpos.by+1)/2);
 		}
 	},
 	//---------------------------------------------------------
