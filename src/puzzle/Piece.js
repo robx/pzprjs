@@ -822,6 +822,7 @@ pzpr.classmgr.makeCommon({
 		// border.setLine()     該当するBorderに線を引く
 		// border.setPeke()     該当するBorderに×印をつける
 		// border.removeLine()  該当するBorderから線を消す
+		// border.removeLineAndQsub()  removes line and qsub
 		//-----------------------------------------------------------------------
 		isLine: function() {
 			return this.line > 0;
@@ -841,6 +842,10 @@ pzpr.classmgr.makeCommon({
 			if (this.qsub === 2) {
 				this.setQsub(0);
 			}
+		},
+		removeLineAndQsub: function(id) {
+			this.setLineVal(0);
+			this.setQsub(0);
 		},
 
 		//---------------------------------------------------------------------------
