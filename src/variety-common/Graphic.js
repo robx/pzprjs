@@ -2055,6 +2055,7 @@ pzpr.classmgr.makeCommon({
 			) {
 				if (!cell.isnull) {
 					g.fillStyle =
+						this.puzzle.mouse.draggingSG &&
 						this.puzzle.mouse.inputData === 10
 							? "red"
 							: cell.qans === 1
@@ -2076,6 +2077,7 @@ pzpr.classmgr.makeCommon({
 			) {
 				if (!cell.isnull) {
 					g.fillStyle =
+						this.puzzle.mouse.draggingSG &&
 						this.puzzle.mouse.inputData === 11
 							? "red"
 							: cell.qans === 1

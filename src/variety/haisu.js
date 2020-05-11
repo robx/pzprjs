@@ -11,6 +11,7 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
+		draggingSG: false,
 		use: true,
 		inputModes: {
 			edit: ["border", "number"],
@@ -19,7 +20,7 @@
 		mouseinput_other: function() {
 			if (this.inputMode === "diraux") {
 				if (this.mousestart || this.mousemove) {
-					this.inputmark_mousemove();
+					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
 					this.clickmark();
 				}
@@ -61,11 +62,11 @@
 			}
 
 			// startposの入力中の場合
-			if (this.inputData === 10) {
+			if (this.draggingSG && this.inputData === 10) {
 				this.board.startpos.input(cell);
 			}
 			// goalposの入力中の場合
-			else if (this.inputData === 11) {
+			else if (this.draggingSG && this.inputData === 11) {
 				this.board.goalpos.input(cell);
 			}
 			// 境界線の入力中の場合
@@ -79,10 +80,12 @@
 			// startposの上ならstartpos移動ルーチンへ移行
 			if (bd.startpos.equals(pos)) {
 				this.inputData = 10;
+				this.draggingSG = true;
 			}
 			// goalposの上ならgoalpos移動ルーチンへ移行
 			else if (bd.goalpos.equals(pos)) {
 				this.inputData = 11;
+				this.draggingSG = true;
 			}
 			// その他は境界線の入力へ
 			else {
@@ -96,8 +99,8 @@
 				return;
 			}
 
-			if (this.inputData === 10 || this.inputData === 11) {
-				this.inputData = null;
+			if (this.draggingSG) {
+				this.draggingSG = false;
 				cell.draw();
 			} else if (this.notInputted()) {
 				if (cell !== this.cursor.getc()) {
