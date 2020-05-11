@@ -22,7 +22,7 @@
 				if (this.mousestart || this.mousemove) {
 					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
-					this.clickmark();
+					this.clickdiraux();
 				}
 			}
 		},
