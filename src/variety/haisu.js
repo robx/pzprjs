@@ -26,15 +26,19 @@
 			}
 		},
 		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
+			if (this.puzzle.playmode && this.btn === "right") {
+				if (this.mousestart) {
+					this.inputdiraux_mousedown();
+				} else if (this.inputData === 2 || this.inputData === 3) {
+					this.inputpeke();
+				} else if (this.mousemove) {
+					this.inputdiraux_mousemove();
+				}
+			} else if (this.puzzle.playmode && this.btn === "left") {
 				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left") {
-						this.inputLine();
-					} else if (this.btn === "right") {
-						this.inputpeke();
-					}
+					this.inputLine();
 				} else if (this.mouseend && this.notInputted()) {
-					this.inputpeke_ifborder();
+					this.clickdiraux();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
