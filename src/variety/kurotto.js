@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 クロット版 kurotto.js
+// パズル固有スクリプト部 クロット・マインスイーパ版 kurotto.js
 //
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kurotto"], {
+})(["kurotto", "mines"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -37,11 +37,13 @@
 	Cell: {
 		numberRemainsUnshaded: true,
 
+		minnum: 0
+	},
+	"Cell@kurotto": {
 		maxnum: function() {
 			var max = this.board.cell.length - 1;
 			return max <= 999 ? max : 999;
 		},
-		minnum: 0,
 
 		checkComplete: function() {
 			if (!this.isValidNum()) {
@@ -69,22 +71,44 @@
 			return this.qnum === cnt;
 		}
 	},
+	"Cell@mines": {
+		maxnum: 8,
 
-	AreaShadeGraph: {
+		checkComplete: function() {
+			if (!this.isValidNum()) {
+				return true;
+			}
+
+			var cnt = 0;
+			var cells = [
+				this.relcell(-2, -2),
+				this.relcell(0, -2),
+				this.relcell(2, -2),
+				this.relcell(-2, 0),
+				this.relcell(2, 0),
+				this.relcell(-2, 2),
+				this.relcell(0, 2),
+				this.relcell(2, 2)
+			];
+			for (var i = 0; i < 8; i++) {
+				if (cells[i].group === "cell" && !cells[i].isnull && cells[i].isShade()) {
+					cnt++;
+				}
+			}
+			return this.qnum === cnt;
+		}
+	},
+
+	"AreaShadeGraph@kurotto": {
 		enabled: true
 	},
 
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
-		hideHatena: true,
-
 		autocmp: "number",
 
 		qanscolor: "black",
-		numbercolor_func: "qnum",
-
-		circleratio: [0.45, 0.4],
 
 		// オーバーライド
 		setRange: function(x1, y1, x2, y2) {
@@ -98,7 +122,14 @@
 			}
 
 			this.common.setRange.call(this, x1, y1, x2, y2);
-		},
+		}
+	},
+	"Graphic@kurotto": {
+		hideHatena: true,
+		
+		numbercolor_func: "qnum",
+
+		circleratio: [0.45, 0.4],
 
 		paint: function() {
 			this.drawBGCells();
@@ -121,6 +152,35 @@
 				return cell.checkComplete() ? this.qcmpcolor : this.circlebasecolor;
 			}
 			return null;
+		}
+	},
+	"Graphic@mines": {
+		qcmpcolor: "rgb(127,127,127)",
+
+		paint: function() {
+			this.drawBGCells();
+			this.drawShadedCells();
+			this.drawDotCells();
+			this.drawGrid();
+
+			this.drawQuesNumbers();
+
+			this.drawChassis();
+
+			this.drawTarget();
+		},
+
+		getQuesNumberColor: function(cell) {
+			var qnum_color = this.getQuesNumberColor_qnum(cell);
+			if ((cell.error || cell.qinfo) === 1) {
+				return qnum_color;
+			} else if (
+				this.puzzle.execConfig("autocmp") &&
+				(cell.qnum === -2 || cell.isValidNum())
+			) {
+				return cell.checkComplete() ? this.qcmpcolor : qnum_color;
+			}
+			return qnum_color;
 		}
 	},
 
@@ -148,10 +208,8 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
-		checklist: ["checkShadeCellExist", "checkCellNumber_kurotto"],
-
-		checkCellNumber_kurotto: function() {
+	"AnsCheck": {
+		checkCellNumber: function(code) {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
@@ -159,7 +217,7 @@
 					continue;
 				}
 
-				this.failcode.add("nmSumSizeNe");
+				this.failcode.add(code);
 				if (this.checkOnly) {
 					break;
 				}
@@ -167,11 +225,31 @@
 			}
 		}
 	},
+	"AnsCheck@kurotto": {
+		checklist: ["checkShadeCellExist", "checkCellNumber_kurotto"],
 
-	FailCode: {
+		checkCellNumber_kurotto: function() {
+			this.checkCellNumber("nmSumSizeNe");
+		}
+	},
+	"AnsCheck@mines": {
+		checklist: ["checkCellNumber_mines"],
+
+		checkCellNumber_mines: function() {
+			this.checkCellNumber("nmShadedNe");
+		}
+	},
+
+	"FailCode@kurotto": {
 		nmSumSizeNe: [
 			"隣り合う黒マスの個数の合計が数字と違います。",
 			"The number is not equal to sum of adjacent masses of shaded cells."
+		]
+	},
+	"FailCode@mines": {
+		nmShadedNe: [
+			"(please translate) The number of adjacent shaded cells is not equal to the number.",
+			"The number of adjacent shaded cells is not equal to the number."
 		]
 	}
 });
