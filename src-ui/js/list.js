@@ -356,7 +356,10 @@
 			"simpleloop",
 			"doppelblock",
 			"tents",
-			"detour"
+			"detour",
+			"snake",
+			"putteria",
+			"haisu"
 		]
 	};
 	var tabstate = {

@@ -1405,6 +1405,88 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//---------------------------------------------------------------------------
+		// pc.drawBorderAuxDir()    directional aux marks
+		//---------------------------------------------------------------------------
+		drawBorderAuxDir: function() {
+			var g = this.vinc("border_dirsub", "crispEdges");
+			var ssize = this.cw * 0.1;
+
+			g.lineWidth = this.cw * 0.1;
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i],
+					px = border.bx * this.bw,
+					py = border.by * this.bh,
+					dir = border.qsub - 10;
+
+				// 向き補助記号の描画
+				g.vid = "b_daux_" + border.id;
+				if (dir >= 1 && dir <= 8) {
+					g.strokeStyle = !border.trial ? "rgb(64,64,64)" : this.trialcolor;
+					g.beginPath();
+					switch (dir) {
+						case border.UP:
+							g.setOffsetLinePath(
+								px,
+								py,
+								-ssize * 2,
+								+ssize,
+								0,
+								-ssize,
+								+ssize * 2,
+								+ssize,
+								false
+							);
+							break;
+						case border.DN:
+							g.setOffsetLinePath(
+								px,
+								py,
+								-ssize * 2,
+								-ssize,
+								0,
+								+ssize,
+								+ssize * 2,
+								-ssize,
+								false
+							);
+							break;
+						case border.LT:
+							g.setOffsetLinePath(
+								px,
+								py,
+								+ssize,
+								-ssize * 2,
+								-ssize,
+								0,
+								+ssize,
+								+ssize * 2,
+								false
+							);
+							break;
+						case border.RT:
+							g.setOffsetLinePath(
+								px,
+								py,
+								-ssize,
+								-ssize * 2,
+								+ssize,
+								0,
+								-ssize,
+								+ssize * 2,
+								false
+							);
+							break;
+					}
+					g.stroke();
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		//---------------------------------------------------------------------------
 		// pc.drawCircles()          数字や白丸黒丸等を表すCellの丸を書き込む
 		// pc.getCircleStrokeColor() 描画する円の線の色を設定する
 		// pc.getCircleFillColor()   描画する円の背景色を設定する
@@ -1952,6 +2034,57 @@ pzpr.classmgr.makeCommon({
 				}
 			} else {
 				g.vhide();
+			}
+		},
+
+		//--------------------------------------------------------------------------
+		// pc.drawStartGoal()  draw Start and Goal symbols
+		//--------------------------------------------------------------------------
+		drawStartGoal: function() {
+			var g = this.vinc("cell_sg", "auto");
+			var bd = this.board,
+				d = this.range;
+
+			g.vid = "text_stpos";
+			var cell = bd.startpos.getc();
+			if (
+				cell.bx >= d.x1 &&
+				d.x2 >= cell.bx &&
+				cell.by >= d.y1 &&
+				d.y2 >= cell.by
+			) {
+				if (!cell.isnull) {
+					g.fillStyle =
+						this.puzzle.mouse.draggingSG && this.puzzle.mouse.inputData === 10
+							? "red"
+							: cell.qans === 1
+							? this.fontShadecolor
+							: this.quescolor;
+					this.disptext("S", cell.bx * this.bw, cell.by * this.bh);
+				} else {
+					g.vhide();
+				}
+			}
+
+			g.vid = "text_glpos";
+			cell = bd.goalpos.getc();
+			if (
+				cell.bx >= d.x1 &&
+				d.x2 >= cell.bx &&
+				cell.by >= d.y1 &&
+				d.y2 >= cell.by
+			) {
+				if (!cell.isnull) {
+					g.fillStyle =
+						this.puzzle.mouse.draggingSG && this.puzzle.mouse.inputData === 11
+							? "red"
+							: cell.qans === 1
+							? this.fontShadecolor
+							: this.quescolor;
+					this.disptext("G", cell.bx * this.bw, cell.by * this.bh);
+				} else {
+					g.vhide();
+				}
 			}
 		},
 

@@ -1,3 +1,20 @@
+### 2020-05-11
+
+* haisu: New puzzle type Haisu (due to Giuliano Montelucci)
+
+### 2020-05-10
+
+* putteria: New puzzle type Putteria
+
+### 2020-05-09
+
+* New background images (due to Tiralmo)
+
+### 2020-05-02
+
+* detour: New puzzle type Detour (due to Boboquack)
+* snake: New puzzle type Snake (due to Lennard Sprong)
+
 ### 2020-04-28
 
 * symmarea: New puzzle type Symmetry Area (due to Taus)

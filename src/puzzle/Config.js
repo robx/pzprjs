@@ -344,7 +344,7 @@
 					exec = pid === "hitori" || pid === "gokigen" || pid === "wagiri";
 					break;
 				case "singlenum":
-					exec = pid === "hanare";
+					exec = pid === "hanare" || pid === "putteria";
 					break;
 				case "enline":
 				case "lattice":

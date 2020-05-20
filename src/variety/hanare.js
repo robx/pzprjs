@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["hanare"], {
+})(["hanare", "putteria"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -69,6 +69,32 @@
 		}
 	},
 
+	"MouseEvent@putteria": {
+		inputModes: { edit: ["border", "number", "empty"], play: ["objblank"] },
+
+		mouseinput_other: function() {
+			if (this.inputMode === "empty") {
+				this.inputempty();
+			}
+		},
+		inputempty: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = cell.isEmpty() ? -1 : -2;
+			}
+
+			cell.setQnum(this.inputData);
+			cell.setAnum(-1);
+			cell.setQsub(0);
+			this.mouseCell = cell;
+			cell.draw();
+		}
+	},
+
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
@@ -90,7 +116,7 @@
 				var clist = this.room.clist,
 					cell2 = null;
 				for (var i = 0; i < clist.length; i++) {
-					if (clist[i].qnum !== -1) {
+					if (clist[i].qnum > 0) {
 						cell2 = clist[i];
 						break;
 					}
@@ -102,7 +128,7 @@
 				if (this === cell2) {
 					val = puzzle.playmode ? -2 : -1;
 				} else if (cell2 !== null) {
-					if (puzzle.playmode && cell2.qnum !== -1) {
+					if (puzzle.playmode && cell2.qnum > 0) {
 						return null;
 					}
 					if (puzzle.editmode || issingleansnum) {
@@ -120,6 +146,14 @@
 			}
 			this.setNum(val);
 			return val;
+		}
+	},
+	"Cell@putteria": {
+		isNum: function() {
+			return this.qnum > 0 || this.anum > 0;
+		},
+		isEmpty: function() {
+			return this.qnum === -2;
 		}
 	},
 	CellList: {
@@ -156,12 +190,45 @@
 			this.drawGrid();
 
 			this.drawDotCells();
+			if (this.pid === "putteria") {
+				this.drawXCells();
+			}
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
 
 			this.drawBorders();
 
 			this.drawChassis();
+		}
+	},
+
+	"Graphic@putteria": {
+		getQuesNumberText: function(cell) {
+			if (cell.qnum === -2) {
+				return "";
+			}
+			return this.getNumberText(cell, cell.qnum);
+		},
+
+		drawXCells: function() {
+			var g = this.vinc("cell_x", "auto", true);
+
+			var rsize = this.cw * 0.2;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_x_" + cell.id;
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				if (cell.isEmpty()) {
+					g.strokeStyle = this.quescolor;
+					g.lineWidth = 2;
+					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 
@@ -197,7 +264,9 @@
 		checklist: [
 			"checkDoubleNumber",
 			"checkAnsNumberAndSize",
-			"checkDiffNumber",
+			"checkDiffNumber@hanare",
+			"checkAdjacentNumber@putteria",
+			"checkDifferentNumberInLine@putteria",
 			"checkNoNumber"
 		],
 
@@ -266,6 +335,12 @@
 				}
 				clist.seterr(1);
 			}
+		},
+
+		checkAdjacentNumber: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				return cell1.isNum() && cell2.isNum();
+			}, "nmAdjacent");
 		}
 	},
 
@@ -282,6 +357,10 @@
 		nmDiffDistNe: [
 			"２つの数字の差とその間隔が正しくありません。",
 			"The distance of the paired numbers is not equal to their difference."
+		],
+		nmAdjacent: [
+			"数字がタテヨコに連続しています。",
+			"Some numbers are adjacent."
 		]
 	}
 });
