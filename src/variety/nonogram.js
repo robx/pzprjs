@@ -159,6 +159,12 @@ function sameArray(array1, array2) {
 				return 0;
 			}
 			return by === -1 ? this.board.rows : this.board.cols;
+		},
+
+		posthook: {
+			qnum: function(num) {
+				this.puzzle.board.excellOffsets = null;
+			}
 		}
 	},
 
@@ -173,6 +179,34 @@ function sameArray(array1, array2) {
 		},
 		excellCols: function(cols, rows) {
 			return (cols + 1) >> 1;
+		},
+
+		excellOffsets: null,
+		getOffsets: function() {
+			if (this.excellOffsets !== null) {
+				return this.excellOffsets;
+			}
+			this.excellOffsets = [this.minbx / -2, this.minby / -2];
+
+			for (var bx = this.minbx + 1; bx < 0; bx += 2) {
+				for (var by = 1; by < this.maxby; by += 2) {
+					if (this.getex(bx, by).qnum !== -1) {
+						this.excellOffsets[0] = (this.minbx + 1 - bx) / -2;
+						bx = 0;
+					}
+				}
+			}
+
+			for (var by = this.minby + 1; by < 0; by += 2) {
+				for (var bx = 1; bx < this.maxbx; bx += 2) {
+					if (this.getex(bx, by).qnum !== -1) {
+						this.excellOffsets[1] = (this.minby + 1 - by) / -2;
+						by = 0;
+					}
+				}
+			}
+
+			return this.excellOffsets;
 		}
 	},
 
@@ -200,6 +234,26 @@ function sameArray(array1, array2) {
 			this.drawChassis(true);
 
 			this.drawTarget();
+		},
+
+		getBoardCols: function() {
+			return this.getOffsetCols() + this.board.maxbx / 2;
+		},
+		getBoardRows: function() {
+			return this.getOffsetRows() + this.board.maxby / 2;
+		},
+
+		getOffsetCols: function() {
+			var bd = this.board;
+			var offset =
+				this.puzzle.playeronly || this.outputImage ? bd.getOffsets()[0] : 0;
+			return (0 - bd.minbx) / 2 - offset;
+		},
+		getOffsetRows: function() {
+			var bd = this.board;
+			var offset =
+				this.puzzle.playeronly || this.outputImage ? bd.getOffsets()[1] : 0;
+			return (0 - bd.minby) / 2 - offset;
 		}
 	},
 
