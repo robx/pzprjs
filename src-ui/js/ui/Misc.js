@@ -116,6 +116,7 @@ function toBGimage(pid) {
 		"compass",
 		"curvedata",
 		"dbchoco",
+		"detour",
 		"doppelblock",
 		"doubleback",
 		"easyasabc",
@@ -130,7 +131,11 @@ function toBGimage(pid) {
 		"pencils",
 		"satogaeri",
 		"scrin",
+		"simpleloop",
+		"snake",
 		"starbattle",
+		"symmarea",
+		"tents",
 		"walllogic",
 		"yinyang"
 	];

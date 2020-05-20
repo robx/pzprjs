@@ -302,6 +302,11 @@ pzpr.classmgr.makeCommon({
 				return [-1, 0];
 			}
 		},
+		decodeOneNumber16: function() {
+			var res = this.readNumber16(this.outbstr, 0);
+			this.outbstr = this.outbstr.substr(res[1]);
+			return res[0];
+		},
 		decodeNumber16: function() {
 			var c = 0,
 				i = 0,

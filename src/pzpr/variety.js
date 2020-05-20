@@ -144,6 +144,7 @@
 			geradeweg: [0, 0, "グラーデヴェグ", "Geradeweg"],
 			goishi: [0, 1, "碁石ひろい", "Goishi"],
 			gokigen: [1, 0, "ごきげんななめ", "Slant", "gokigen"],
+			haisu: [0, 0, "Haisu", "Haisu"],
 			hakoiri: [1, 0, "はこいり○△□", "Hokoiri-masashi"],
 			hanare: [0, 0, "はなれ組", "Hanare-gumi", "hanare"],
 			hashikake: [
@@ -244,6 +245,7 @@
 				"Pipelink Returns",
 				"pipelink"
 			],
+			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
@@ -282,6 +284,7 @@
 				"",
 				{ kanpen: "slitherlink" }
 			],
+			snake: [0, 0, "Snake", "Snake"],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],
 			sudoku: [0, 1, "数独", "Sudoku"],
