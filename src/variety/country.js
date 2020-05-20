@@ -150,6 +150,9 @@
 	"Cell@maxi": {
 		minnum: 1
 	},
+	"Cell@detour": {
+		minnum: 0
+	},
 	"Cell@moonsun": {
 		disInputHatena: true,
 		numberAsObject: true,
