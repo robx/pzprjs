@@ -358,6 +358,7 @@
 			"tents",
 			"detour",
 			"snake",
+			"nonogram",
 			"putteria",
 			"haisu"
 		]
