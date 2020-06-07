@@ -421,7 +421,7 @@
 			"A water cell is next to or above an empty cell."
 		],
 		csNoLevel: [
-			"一繋がりの水のマスの水位が等しくなっていません。",
+			"一つながりの水のマスの水位が等しくなっていません。",
 			"A body of water has different surface levels."
 		],
 		bkNoLevel: [
@@ -429,7 +429,7 @@
 			"A region has different water surface levels."
 		],
 		exShadeNe: [
-			"行・列内にある水のマスの数と外の数字が異なります。",
+			"行または列内にある水のマスの数と外の数字が異なります。",
 			"The number of shaded cells in the row or column is not correct."
 		]
 	}

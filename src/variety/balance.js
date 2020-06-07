@@ -414,25 +414,16 @@
 		}
 	},
 	FailCode: {
-		segShort: [
-			"(please translate) A segment is too short.",
-			"A segment is too short."
-		],
-		segLong: [
-			"(please translate) A segment is too long.",
-			"A segment is too long."
-		],
+		segShort: ["線の長さの和が数字より小さいです。", "A segment is too short."],
+		segLong: ["線の長さの和が数字より大きいです。", "A segment is too long."],
 		segWhiteUneq: [
-			"(please translate) Segments through a white circle are different.",
+			"白丸から線の端までの長さが異なっています。",
 			"Segments through a white circle are different."
 		],
 		segBlackEq: [
-			"(please translate) Segments through a black circle are equal.",
+			"黒丸から線の端までの長さが同じになっています。",
 			"Segments through a black circle are equal."
 		],
-		circNoLine: [
-			"(please translate) A circle has no line.",
-			"A circle has no line."
-		]
+		circNoLine: ["線が通っていない丸があります。", "A circle has no line."]
 	}
 });

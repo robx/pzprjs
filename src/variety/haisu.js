@@ -438,7 +438,7 @@
 			"The line goes through S/G"
 		],
 		haisuError: [
-			"(please translate) A number is not passed on the right visit",
+			"数字を正しい回数目で通過していません。",
 			"A number is not passed on the right visit"
 		]
 	}

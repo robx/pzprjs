@@ -377,33 +377,24 @@
 
 	FailCode: {
 		cs2x2: [
-			"(please translate) The snake loops back on itself.",
+			"スネークが自分自身とタテヨコナナメに接しています。",
 			"The snake loops back on itself."
 		],
-		shBranch: [
-			"(please translate) The snake branches off.",
-			"The snake branches off."
-		],
-		shLoop: [
-			"(please translate) The snake has no head or tail.",
-			"The snake has no head or tail."
-		],
+		shBranch: ["スネークが分岐しています。", "The snake branches off."],
+		shLoop: ["頭または尾がありません。", "The snake has no head or tail."],
 		shEndpoint: [
-			"(please translate) A black circle is not on an endpoint.",
+			"頭または尾になっていない黒丸があります。",
 			"A black circle is not on an endpoint."
 		],
 		shMidpoint: [
-			"(please translate) A white circle is not a middle.",
+			"胴体になっていない白丸があります。",
 			"A white circle is not a middle."
 		],
 		shDiag: [
-			"(please translate) The snake touches itself diagonally.",
+			"スネークが自分自身とタテヨコナナメに接しています。",
 			"The snake touches itself diagonally."
 		],
-		circleUnshade: [
-			"(please translate) A circle is not shaded.",
-			"A circle is not shaded."
-		],
+		circleUnshade: ["塗られていない丸があります。", "A circle is not shaded."],
 		exShadeNe: [
 			"行・列内にある水のマスの数と外の数字が異なります。",
 			"The number of shaded cells in the row or column is not correct."
