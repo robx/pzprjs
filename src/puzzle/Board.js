@@ -79,6 +79,7 @@ pzpr.classmgr.makeCommon({
 		hascross: 2, // 1:盤面内側のCrossが操作可能なパズル 2:外枠上を含めてCrossが操作可能なパズル (どちらもCrossは外枠上に存在します)
 		hasborder: 0, // 1:Border/Lineが操作可能なパズル 2:外枠上も操作可能なパズル
 		hasexcell: 0, // 1:上・左側にセルを用意するパズル 2:四方にセルを用意するパズル
+		hasflush: 0,
 		borderAsLine: false, // 境界線をlineとして扱う
 		disable_subclear: false, // "補助消去"ボタン不要
 
@@ -589,6 +590,35 @@ pzpr.classmgr.makeCommon({
 				throw "board operations are not possible in trial mode";
 			}
 			this.exec.execadjust(type);
+		},
+
+		flushexcell: function() {
+			var exrows = this.excellRows(this.cols, this.rows),
+				excols = this.excellCols(this.cols, this.rows),
+				qc = this.cols * exrows,
+				qr = this.rows * excols,
+				dest = 0;
+
+			for (var id = 0; id < qc + qr; id++) {
+				if (this.excell[id].qnum !== -1) {
+					if (id !== dest - 1) {
+						this.excell[dest].setQnum(this.excell[id].qnum);
+					}
+					dest++;
+				}
+
+				if (
+					(id < qc && id % exrows === exrows - 1) ||
+					(id >= qc && id % excols === excols - 1)
+				) {
+					for (var b = dest; b <= id; b++) {
+						this.excell[b].setQnum(-1);
+					}
+					dest = id + 1;
+				}
+			}
+
+			this.puzzle.redraw();
 		},
 
 		//---------------------------------------------------------------------------

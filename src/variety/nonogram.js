@@ -170,6 +170,7 @@ function sameArray(array1, array2) {
 
 	Board: {
 		hasexcell: 1,
+		hasflush: 1,
 
 		cols: 10,
 		rows: 10,
