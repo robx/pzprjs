@@ -396,7 +396,7 @@
 		],
 		circleUnshade: ["塗られていない丸があります。", "A circle is not shaded."],
 		exShadeNe: [
-			"行・列内にある水のマスの数と外の数字が異なります。",
+			"行または列内にあるスネークのマスの数と外の数字が異なります。",
 			"The number of shaded cells in the row or column is not correct."
 		]
 	}

@@ -484,7 +484,7 @@
 
 	FailCode: {
 		nmSame2x2: [
-			"同じ数字が2x2のかたまりになっています。",
+			"同じ数字が2x2のカタマリになっています。",
 			"There is a 2x2 block of the same number."
 		],
 		nmSumNe: [

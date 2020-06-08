@@ -421,7 +421,7 @@
 			"A water cell is next to or above an empty cell."
 		],
 		csNoLevel: [
-			"一つながりの水のマスの水位が等しくなっていません。",
+			"ひとつながりの水のマスの水位が等しくなっていません。",
 			"A body of water has different surface levels."
 		],
 		bkNoLevel: [

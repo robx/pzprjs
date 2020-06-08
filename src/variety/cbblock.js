@@ -645,19 +645,19 @@
 			"A block contains a single color."
 		],
 		bkSubGt2: [
-			"同じ色のマスのかたまりが3個以上入っているブロックがあります。",
+			"同じ色のマスのカタマリが3個以上入っているブロックがあります。",
 			"A block has three or more shapes."
 		],
 		bkSizeLt: [
-			"同じ色のマスのかたまりの大きさより数字が大きいです。",
+			"同じ色のマスのカタマリの大きさより数字が大きいです。",
 			"A number is bigger than the size of the shape."
 		],
 		bkSizeGt: [
-			"同じ色のマスのかたまりの大きさより数字が小さいです。",
+			"同じ色のマスのカタマリの大きさより数字が小さいです。",
 			"A number is smaller than the size of the shape."
 		],
 		bkDifferentShape: [
-			"同じ形でないマスの塊を含むブロックがあります。",
+			"同じ形でないマスのカタマリを含むブロックがあります。",
 			"The two shapes inside a block are different."
 		]
 	}

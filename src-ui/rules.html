@@ -94,7 +94,7 @@ pzpr.on("load", function(){
     render(player, url, 'player', function(puzzle){});
 
     heading = document.createElement('h1');
-    heading.textContent = "Example errors / エラー例";
+    heading.textContent = "Example errors / 誤答例";
     body.appendChild(heading);
     failcheck.forEach(function(data){
       if(data.length>2&&data[2].skiprules){ return;}

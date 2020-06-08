@@ -302,7 +302,7 @@
 			"A block has no number."
 		],
 		nm2x2: [
-			"数字が2x2のかたまりになっています。",
+			"数字が2x2のカタマリになっています。",
 			"There is a 2x2 block of numbers."
 		],
 		cbSameNum: [
