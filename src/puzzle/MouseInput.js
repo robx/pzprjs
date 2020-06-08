@@ -441,14 +441,18 @@ pzpr.classmgr.makeCommon({
 		getpos: function(spc) {
 			var addr = this.inputPoint,
 				m1 = 2 * spc,
-				m2 = 2 * (1 - spc);
-			// 符号反転の影響なく計算したいので、+4して-4する
-			var bx = addr.bx + 4,
-				by = addr.by + 4,
+				m2 = 2 * (1 - spc),
+				minaxis = Math.min(this.board.minbx, this.board.minby);
+
+			// Add a constant to ensure all intermediate values aren't negative
+			var extra = 4 + (minaxis >= 0 ? 0 : -minaxis & ~1);
+
+			var bx = addr.bx + extra,
+				by = addr.by + extra,
 				dx = bx % 2,
 				dy = by % 2;
-			bx = (bx & ~1) + +(dx >= m1) + +(dx >= m2) - 4;
-			by = (by & ~1) + +(dy >= m1) + +(dy >= m2) - 4;
+			bx = (bx & ~1) + +(dx >= m1) + +(dx >= m2) - extra;
+			by = (by & ~1) + +(dy >= m1) + +(dy >= m2) - extra;
 			return new this.klass.Address(bx, by);
 		},
 
