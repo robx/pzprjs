@@ -116,19 +116,20 @@ function sameArray(array1, array2) {
 		key_inputexcell: function(ca) {
 			var excell = this.cursor.getex(),
 				qn = excell.qnum;
-			var max = excell.getmaxnum();
+			var max = excell.getmaxnum(),
+				min = excell.getminnum();
 
 			if ("0" <= ca && ca <= "9") {
 				var num = +ca;
 
 				if (qn <= 0 || this.prev !== excell) {
-					if (num <= max) {
+					if (num <= max && num >= min) {
 						excell.setQnum(num);
 					}
 				} else {
 					if (qn * 10 + num <= max) {
 						excell.setQnum(qn * 10 + num);
-					} else if (num <= max) {
+					} else if (num <= max && num >= min) {
 						excell.setQnum(num);
 					}
 				}
