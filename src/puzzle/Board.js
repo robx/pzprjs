@@ -548,10 +548,10 @@ pzpr.classmgr.makeCommon({
 
 			if (this.hasexcell === 1) {
 				if (this.emptyexcell.ques === 51 && bx === -1 && by === -1) {
-					id = qc + qr;
-				} /* 左上角のExCellを追加 */ else if (by < 0 && bx > 0 && bx < 2 * qc) {
+					id = qc + qr; /* 左上角のExCellを追加 */
+				} else if (by >= this.minby && by < 0 && bx > 0 && bx < 2 * qc) {
 					id = (-by >> 1) + (bx >> 1) * xr;
-				} else if (bx < 0 && by > 0 && by < 2 * qr) {
+				} else if (bx >= this.minbx && bx < 0 && by > 0 && by < 2 * qr) {
 					id = (-bx >> 1) + qc + (by >> 1) * xc;
 				}
 			} else if (this.hasexcell === 2) {
