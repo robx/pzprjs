@@ -594,17 +594,33 @@ pzpr.classmgr.makeCommon({
 
 		flushexcell: function() {
 			this.puzzle.opemgr.newOperation();
+			var cols = this.cols,
+				rows = this.rows,
+				excell = this.excell;
+			this.genericFlush(
+				this.excellCols(cols, rows),
+				this.excellRows(cols, rows),
+				cols,
+				rows,
+				function(i) {
+					return excell[i].qnum;
+				},
+				function(i, num) {
+					excell[i].setQnum(num);
+				}
+			);
+			this.puzzle.redraw();
+		},
 
-			var exrows = this.excellRows(this.cols, this.rows),
-				excols = this.excellCols(this.cols, this.rows),
-				qc = this.cols * exrows,
-				qr = this.rows * excols,
+		genericFlush: function(excols, exrows, cols, rows, get_func, set_func) {
+			var qc = cols * exrows,
+				qr = rows * excols,
 				dest = 0;
 
 			for (var id = 0; id < qc + qr; id++) {
-				if (this.excell[id].qnum !== -1) {
+				if (get_func(id) !== -1) {
 					if (id !== dest - 1) {
-						this.excell[dest].setQnum(this.excell[id].qnum);
+						set_func(dest, get_func(id));
 					}
 					dest++;
 				}
@@ -614,13 +630,11 @@ pzpr.classmgr.makeCommon({
 					(id >= qc && id % excols === excols - 1)
 				) {
 					for (var b = dest; b <= id; b++) {
-						this.excell[b].setQnum(-1);
+						set_func(b, -1);
 					}
 					dest = id + 1;
 				}
 			}
-
-			this.puzzle.redraw();
 		},
 
 		//---------------------------------------------------------------------------

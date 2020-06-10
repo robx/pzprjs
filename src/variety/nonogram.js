@@ -264,7 +264,7 @@ function sameArray(array1, array2) {
 			this.decodeNumber16ExCell();
 		},
 		encodePzpr: function(type) {
-			this.encodeNumber16ExCell();
+			this.encodeNumber16ExCellFlushed();
 		}
 	},
 
