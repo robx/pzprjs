@@ -593,6 +593,8 @@ pzpr.classmgr.makeCommon({
 		},
 
 		flushexcell: function() {
+			this.puzzle.opemgr.newOperation();
+
 			var exrows = this.excellRows(this.cols, this.rows),
 				excols = this.excellCols(this.cols, this.rows),
 				qc = this.cols * exrows,
