@@ -726,7 +726,8 @@
 			"checkIdenticalShapes",
 			"checkIdenticalPositions",
 			"checkUniqueShapes",
-			"checkDoubleNumber"
+			"checkDoubleNumber",
+			"checkBorderDeadend"
 		],
 
 		checkIdenticalShapes: function() {

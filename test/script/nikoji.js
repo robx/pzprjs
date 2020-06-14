@@ -24,6 +24,11 @@ ui.debug.addDebugData("nikoji", {
 			"pzprv3/nikoji/4/4/. . 1 . /2 . . 3 /. . 2 . /. 4 3 . /0 0 0 /0 1 1 /1 1 0 /0 1 1 /1 1 0 1 /1 0 1 1 /0 1 1 0 /"
 		],
 		[
+			"bdDeadEnd",
+			"pzprv3/nikoji/2/4/. . . . /. 1 . 1 /0 1 0 /0 1 0 /1 0 0 0 /",
+			{ skiprules: true }
+		],
+		[
 			null,
 			"pzprv3/nikoji/4/4/. . 1 . /2 . . 3 /. . 2 . /. 4 3 . /1 0 0 /0 1 1 /1 1 0 /0 1 1 /0 1 1 1 /1 0 0 1 /0 1 1 0 /"
 		]
