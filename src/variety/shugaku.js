@@ -705,7 +705,7 @@
 	},
 
 	FailCode: {
-		csDivide: ["通路が分断されています。", "Tha aisle is divided."],
+		csDivide: ["通路が分断されています。", "The aisle is divided."],
 		nmPillowGt: [
 			"柱のまわりにある枕の数が間違っています。",
 			"The number of pillows around the number is wrong."
