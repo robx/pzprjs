@@ -159,7 +159,7 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawShadedCells();
+			this.drawCircles();
 			this.drawDotCells();
 			this.drawGrid();
 
@@ -168,6 +168,14 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getCircleFillColor: function(cell) {
+			return this.getShadedCellColor(cell);
+		},
+
+		getCircleStrokeColor: function(cell) {
+			return this.getShadedCellColor(cell);
 		},
 
 		getQuesNumberColor: function(cell) {
