@@ -235,8 +235,7 @@
 			"checkNumCountOver",
 			"checkConnectNumber",
 			"checkNumCountLack",
-			"checkNoEmptyArea",
-			"checkNoSuspendCell"
+			"checkNoEmptyArea"
 		],
 
 		check2x2NumberCell: function() {
@@ -253,12 +252,6 @@
 				"cbSameNum"
 			);
 		},
-		checkNoSuspendCell: function() {
-			this.checkAllCell(function(cell) {
-				return cell.qsub === 1;
-			}, "ceSuspend");
-		},
-
 		checkNotMultiNum: function() {
 			this.checkAllErrorRoom(function(area) {
 				return !(area.numkind > 1);
@@ -299,7 +292,7 @@
 	FailCode: {
 		bkNoNum: [
 			"数字が含まれていないブロックがあります。",
-			"A block has no number."
+			"There is an empty room."
 		],
 		nm2x2: [
 			"数字が2x2のカタマリになっています。",
@@ -311,15 +304,11 @@
 		],
 		nmCountGt: [
 			"入っている数字の数が数字より多いです。",
-			"A number is bigger than the size of block."
+			"A number is bigger than the count."
 		],
 		nmCountLt: [
 			"入っている数字の数が数字より少ないです。",
-			"A number is smaller than the size of block."
-		],
-		ceSuspend: [
-			"数字の入っていないマスがあります。",
-			"There is a cell that is not filled in number."
+			"A number is smaller than the count."
 		]
 	}
 });
