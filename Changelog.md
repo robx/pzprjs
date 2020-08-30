@@ -1,3 +1,13 @@
+### 2020-08-30
+
+* mines: New puzzle type Minesweeper (due to CJ Quines)
+* nikoji: New puzzle type NIKOJI (due to Lennard Sprong)
+* nonogram: New puzzle type Nonogram (due to Lennard Sprong)
+* Update Japanese translations
+* Reword some error mesages
+* detour (editor): Support inputting 0
+* haisu (editor): Set sensible maxnum
+
 ### 2020-05-11
 
 * haisu: New puzzle type Haisu (due to Giuliano Montelucci)
@@ -21,7 +31,7 @@
 
 ### 2020-04-18
 
-* tents: new puzzle tyep Tents (due to Lennard Sprong)
+* tents: new puzzle type Tents (due to Lennard Sprong)
 
 ### 2020-03-30
 
