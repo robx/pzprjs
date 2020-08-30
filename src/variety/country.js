@@ -150,6 +150,9 @@
 	"Cell@maxi": {
 		minnum: 1
 	},
+	"Cell@detour": {
+		minnum: 0
+	},
 	"Cell@moonsun": {
 		disInputHatena: true,
 		numberAsObject: true,
@@ -1130,7 +1133,7 @@
 	},
 	"FailCode@detour": {
 		blWrongTurns: [
-			"A room has the wrong number of turns.",
+			"線の曲がった回数が数字と違っています。",
 			"A room has the wrong number of turns."
 		]
 	}

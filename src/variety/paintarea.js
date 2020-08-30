@@ -142,7 +142,7 @@
 
 	FailCode: {
 		cu2x2: [
-			"2x2の白マスのかたまりがあります。",
+			"2x2の白マスのカタマリがあります。",
 			"There is a 2x2 block of unshaded cells."
 		],
 		nmShadeNe: [

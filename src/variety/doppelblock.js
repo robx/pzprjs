@@ -379,7 +379,7 @@
 		],
 		ceTooManyBlocks: [
 			"3つ以上の黒マスがある行または列があります。",
-			"There are more than two blocks in a row."
+			"There are more than two blocks in a row or column."
 		]
 	}
 });

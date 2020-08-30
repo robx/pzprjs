@@ -35,6 +35,8 @@ exports.files = [
 	"variety-common/BoardExec",
 	"variety-common/Encode",
 	"variety-common/FileData",
+	"variety-common/Operation",
+	"variety-common/Piece",
 	"common/outro"
 ].map(function(mod) {
 	return "src/" + mod + ".js";

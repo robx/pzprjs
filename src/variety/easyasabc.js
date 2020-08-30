@@ -584,11 +584,11 @@
 	FailCode: {
 		nmDupRow: [
 			"同じ列に同じアルファベットが入っています。",
-			"There are same letters in a row."
+			"There are equal letters in a row or column."
 		],
 		nmMissRow: [
 			"列に入っていないアルファベットがあります。",
-			"There are missing letters in a row."
+			"There are missing letters in a row or column."
 		],
 		nmSightNe: [
 			"アルファベットが最も手前にありません。",

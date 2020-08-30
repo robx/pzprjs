@@ -245,11 +245,11 @@
 	FailCode: {
 		ceNoNum: ["まるの入っていないマスがあります。", "There is an empty cell."],
 		ms2x2: [
-			"2x2のくろまるのかたまりがあります。",
+			"2x2のくろまるのカタマリがあります。",
 			"There is a 2x2 block of shaded circles."
 		],
 		mu2x2: [
-			"2x2のしろまるのかたまりがあります。",
+			"2x2のしろまるのカタマリがあります。",
 			"There is a 2x2 block of unshaded circles."
 		],
 		msDivide: [

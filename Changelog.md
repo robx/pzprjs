@@ -1,3 +1,15 @@
+### 2020-05-11
+
+* haisu: New puzzle type Haisu (due to Giuliano Montelucci)
+
+### 2020-05-10
+
+* putteria: New puzzle type Putteria
+
+### 2020-05-09
+
+* New background images (due to Tiralmo)
+
 ### 2020-05-02
 
 * detour: New puzzle type Detour (due to Boboquack)

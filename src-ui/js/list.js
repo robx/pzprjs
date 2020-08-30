@@ -358,7 +358,11 @@
 			"tents",
 			"detour",
 			"snake",
-			"mines"
+			"putteria",
+			"haisu",
+			"nikoji",
+      "mines"
+
 		]
 	};
 	var tabstate = {
