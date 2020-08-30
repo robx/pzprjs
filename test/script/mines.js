@@ -56,7 +56,7 @@ ui.debug.addDebugData("mines", {
 				"mouse,leftx6, 9,1",
 				"mouse,rightx2, 11,1"
 			],
-			result: "pzprv3/mines/1/6/- 0 1 2 3 5 /. . . . . . /"
+			result: "pzprv3/mines/1/6/- 0 1 2 3 8 /. . . . . . /"
 		}
 	]
 });
