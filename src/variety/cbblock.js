@@ -724,6 +724,7 @@
 		checklist: [
 			"checkNoNumber",
 			"checkIdenticalShapes",
+			"checkIdenticalOrientation",
 			"checkIdenticalPositions",
 			"checkUniqueShapes",
 			"checkDoubleNumber",
@@ -738,38 +739,68 @@
 			var rooms = this.board.roommgr.components;
 			for (var nn = 0; nn < this.board.nums.length; nn++) {
 				var n = this.board.nums[nn];
+				var first = null;
+				for (var r = 0; r < rooms.length; r++) {
+					var room = rooms[r];
+					if (room.num !== n) {
+						continue;
+					}
+
+					if (!first) {
+						first = room;
+						continue;
+					}
+					if (!this.isDifferentShapeBlock(first, room)) {
+						continue;
+					}
+					this.failcode.add("bkDifferentShape");
+					if (this.checkOnly) {
+						return;
+					}
+					first.clist.seterr(1);
+					room.clist.seterr(1);
+				}
+			}
+		},
+
+		checkIdenticalOrientation: function() {
+			if (!this.board.nums) {
+				this.board.recountNumbers();
+			}
+
+			var rooms = this.board.roommgr.components;
+			for (var nn = 0; nn < this.board.nums.length; nn++) {
+				var n = this.board.nums[nn];
 
 				var first = null;
 				var firstshape = null;
 
 				for (var r = 0; r < rooms.length; r++) {
 					var room = rooms[r];
-
 					if (room.num !== n) {
 						continue;
 					}
-
 					if (!first) {
 						first = room.clist;
 						firstshape = room.clist.getBlockShapes();
-					} else {
-						var second = room.clist;
-						var secondshape = room.clist.getBlockShapes();
-						if (
-							firstshape.rows === secondshape.rows &&
-							firstshape.cols === secondshape.cols &&
-							firstshape.data[0] === secondshape.data[0]
-						) {
-							continue;
-						}
-						this.failcode.add("bkDifferentShape");
-
-						if (this.checkOnly) {
-							return;
-						}
-						first.seterr(1);
-						second.seterr(1);
+						continue;
 					}
+
+					var second = room.clist;
+					var secondshape = room.clist.getBlockShapes();
+					if (
+						firstshape.rows === secondshape.rows &&
+						firstshape.cols === secondshape.cols &&
+						firstshape.data[0] === secondshape.data[0]
+					) {
+						continue;
+					}
+					this.failcode.add("bkDifferentOrientation");
+					if (this.checkOnly) {
+						return;
+					}
+					first.seterr(1);
+					second.seterr(1);
 				}
 			}
 		},
@@ -923,6 +954,10 @@
 		bkDifferentShape: [
 			"(please translate) Two areas with equal letters have different shapes.",
 			"Two areas with equal letters have different shapes."
+		],
+		bkDifferentOrientation: [
+			"(please translate) Two areas with equal letters have different orientation.",
+			"Two areas with equal letters have different orientation."
 		],
 		bkDifferentPosition: [
 			"(please translate) Two areas with equal letters have the letter in different positions.",

@@ -16,6 +16,14 @@ ui.debug.addDebugData("nikoji", {
 			"pzprv3/nikoji/4/4/. . 1 . /2 . . 3 /. . 2 . /. 4 3 . /1 0 0 /0 1 1 /0 1 0 /0 1 0 /0 1 1 1 /1 1 0 1 /0 0 1 1 /"
 		],
 		[
+			"bkDifferentShape",
+			"pzprv3/nikoji/4/4/. . 1 . /2 . . 3 /. . 2 . /. 4 3 . /1 0 0 /1 0 1 /1 1 0 /0 1 1 /0 1 1 1 /0 0 1 1 /1 0 1 0 /"
+		],
+		[
+			"bkDifferentOrientation",
+			"pzprv3/nikoji/4/4/. . 1 . /2 . . 3 /. . 2 . /. 4 3 . /0 0 0 /1 0 1 /0 1 1 /0 1 0 /1 0 0 1 /1 1 1 0 /0 0 1 1 /"
+		],
+		[
 			"bkDifferentPosition",
 			"pzprv3/nikoji/4/4/. . 1 . /2 . . 3 /. . 2 . /. 4 3 . /0 0 1 /1 1 0 /0 1 1 /0 1 0 /1 1 1 0 /1 0 1 1 /0 0 1 0 /"
 		],
