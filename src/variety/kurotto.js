@@ -282,9 +282,9 @@
 		]
 	},
 	"FailCode@mines": {
-		nmShadedNe: [
-			"(please translate) The number of adjacent shaded cells is not equal to the number.",
-			"The number of adjacent shaded cells is not equal to the number."
+		nmMinesNe: [
+			"(please translate) The number of mines in the surrounding cells is not equal to the number.",
+			"The number of mines in the surrounding cells is not equal to the number."
 		]
 	}
 });
