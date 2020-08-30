@@ -126,7 +126,7 @@
 			detour: [0, 0, "Detour", "Detour", "country"],
 			doppelblock: [0, 0, "Doppelblock", "Doppelblock", "doppelblock"],
 			dosufuwa: [0, 0, "ドッスンフワリ", "Dosun-Fuwari"],
-			doubleback: [0, 0, "引き返す", "Double Back", "country"],
+			doubleback: [0, 0, "Double Back", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
 			fillmat: [1, 0, "フィルマット", "Fillmat", "fillmat"],
@@ -220,6 +220,7 @@
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanro: [0, 1, "ナンロー", "Nanro"],
 			nawabari: [1, 0, "なわばり", "Territory", "nawabari"],
+			nikoji: [0, 0, "NIKOJI", "NIKOJI", "cbblock"],
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
 			nonogram: [0, 0, "ののぐらむ", "Nonogram"],
 			norinori: [0, 1, "のりのり", "Norinori", "lits"],
@@ -320,7 +321,7 @@
 			"yajilin-regions": [
 				0,
 				0,
-				"ヤジリン",
+				"ヘヤジリン",
 				"Regional Yajilin",
 				"yajilin",
 				{ alias: "yajirin-regions" }

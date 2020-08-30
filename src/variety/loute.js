@@ -680,19 +680,19 @@
 	FailCode: {
 		bkNotLshape: [
 			"ブロックが幅1のL字型になっていません。",
-			"A block is not L-shape or whose width is not one."
+			"An area is not L-shaped or its width is not 1."
 		],
 		arBlkEdge: [
 			"矢印がブロックの端にありません。",
-			"An arrow is not at the edge of the block."
+			"An arrow is not at the edge of the area."
 		],
 		arNotPtCnr: [
 			"矢印の先にブロックの角がありません。",
-			"An arrow doesn't indicate the corner of a block."
+			"An arrow doesn't point at the corner of an area."
 		],
 		ciNotOnCnr: [
 			"白丸がブロックの角にありません。",
-			"A circle is out of the corner."
+			"A circle is not at the corner of an area."
 		]
 	}
 });

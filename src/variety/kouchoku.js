@@ -1556,10 +1556,13 @@
 
 	FailCode: {
 		lnIsolate: [
-			"線が丸のないところから出ています。",
+			"線がマークのないところから出ています。",
 			"A segment starts outside a clue."
 		],
-		lnPassOver: ["線が丸を通過しています。", "A segment passes over a clue."],
+		lnPassOver: [
+			"線がマークを通過しています。",
+			"A segment passes over a clue."
+		],
 		lnOverlap: ["線が同一直線上で重なっています。", "Some segments overlap."],
 		lnRightAngle: [
 			"線が直角に交差していません。",

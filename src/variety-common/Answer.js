@@ -1082,7 +1082,7 @@ pzpr.classmgr.makeCommon({
 	FailCode: {
 		/* ** 黒マス ** */
 		cs2x2: [
-			"2x2の黒マスのかたまりがあります。",
+			"2x2の黒マスのカタマリがあります。",
 			"There is a 2x2 block of shaded cells."
 		],
 		csNotSquare: [
@@ -1191,7 +1191,7 @@ pzpr.classmgr.makeCommon({
 		/* ** 線でつなぐ系 ** */
 		lcDeadEnd: ["線が途中で途切れています。", "There is a dead-end line."],
 		lcDivided: [
-			"線が全体で一つながりになっていません。",
+			"線が全体でひとつながりになっていません。",
 			"All lines and numbers are not connected to each other."
 		],
 		lcTripleNum: [
@@ -1248,7 +1248,7 @@ pzpr.classmgr.makeCommon({
 		],
 		nmDupRow: [
 			"同じ列に同じ数字が入っています。",
-			"There are equal numbers in a row."
+			"There are equal numbers in a row or column."
 		],
 		nmDivide: [
 			"タテヨコにつながっていない数字があります。",

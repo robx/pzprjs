@@ -193,6 +193,11 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
+	Cell: {
+		maxnum: function() {
+			return this.room.clist.length;
+		}
+	},
 	GraphComponent: {
 		visit: 0
 	},
