@@ -593,7 +593,7 @@
 		],
 		csConsecGt3: [
 			"黒マスが横に3マス以上続いています。",
-			"There or more shaded cells continue horizonally."
+			"Three or more shaded cells continue horizonally."
 		],
 		csNotOnShade: [
 			"黒マスの下に黒マスがありません。",
