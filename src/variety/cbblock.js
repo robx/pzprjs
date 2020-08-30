@@ -1,13 +1,16 @@
 //
 // パズル固有スクリプト部 コンビブロック版 cbblock.js
 //
+
+/* global Set:false */
+
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["cbblock", "dbchoco"], {
+})(["cbblock", "dbchoco", "nikoji"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@cbblock": {
@@ -80,6 +83,29 @@
 		}
 	},
 
+	"MouseEvent@nikoji": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["border", "subline"]
+		},
+
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left" && this.isBorderMode()) {
+						this.inputborder();
+					} else {
+						this.inputQsubLine();
+					}
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputqnum();
+				}
+			}
+		}
+	},
+
 	"KeyEvent@dbchoco": {
 		enablemake: true,
 
@@ -93,6 +119,10 @@
 				this.key_inputqnum(ca);
 			}
 		}
+	},
+
+	"KeyEvent@nikoji": {
+		enablemake: true
 	},
 
 	//---------------------------------------------------------
@@ -125,10 +155,37 @@
 		}
 	},
 
+	"Board@nikoji": {
+		recountNumbers: function() {
+			var set = new Set();
+			this.cell.each(function(cell) {
+				if (cell.qnum >= 0) {
+					set.add(cell.qnum);
+				}
+			});
+			this.nums = Array.from(set);
+		},
+
+		addExtraInfo: function() {}
+	},
+
 	"Cell@dbchoco": {
 		maxnum: function() {
 			var bd = this.board;
 			return (bd.cols * bd.rows) >> 1;
+		}
+	},
+
+	"Cell@nikoji": {
+		maxnum: 52,
+		numberAsLetter: true,
+		disInputHatena: true,
+
+		posthook: {
+			qnum: function() {
+				this.board.roommgr.setExtraData(this.room);
+				this.board.recountNumbers();
+			}
 		}
 	},
 
@@ -229,6 +286,22 @@
 		}
 	},
 
+	"AreaRoomGraph@nikoji": {
+		enabled: true,
+
+		setExtraData: function(component) {
+			var clist = (component.clist = new this.klass.CellList(
+				component.getnodeobjs()
+			));
+			var numlist = clist.filter(function(cell) {
+				return cell.qnum !== -1;
+			});
+
+			component.numcell = numlist.length === 1 ? numlist[0] : null;
+			component.num = component.numcell ? component.numcell.qnum : null;
+		}
+	},
+
 	CellList: {
 		getBlockShapes: function() {
 			if (!!this.shape) {
@@ -281,7 +354,7 @@
 
 			this.drawPekes();
 
-			if (this.pid === "dbchoco") {
+			if (this.pid === "dbchoco" || this.pid === "nikoji") {
 				this.drawQuesNumbers();
 				this.drawTarget();
 			}
@@ -311,6 +384,10 @@
 		bgcellcolor_func: "icebarn",
 		icecolor: "rgb(204,204,204)",
 
+		bordercolor_func: "qans"
+	},
+
+	"Graphic@nikoji": {
 		bordercolor_func: "qans"
 	},
 
@@ -381,6 +458,15 @@
 		},
 		encodeDBChoco: function() {
 			this.encodeIce();
+			this.encodeNumber16();
+		}
+	},
+
+	"Encode@nikoji": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
 			this.encodeNumber16();
 		}
 	},
@@ -462,6 +548,17 @@
 				}
 				return ca + " ";
 			});
+			this.encodeBorderAns();
+		}
+	},
+
+	"FileIO@nikoji": {
+		decodeData: function() {
+			this.decodeCellQnum();
+			this.decodeBorderAns();
+		},
+		encodeData: function() {
+			this.encodeCellQnum();
 			this.encodeBorderAns();
 		}
 	},
@@ -623,6 +720,189 @@
 		}
 	},
 
+	"AnsCheck@nikoji": {
+		checklist: [
+			"checkNoNumber",
+			"checkIdenticalShapes",
+			"checkIdenticalOrientation",
+			"checkIdenticalPositions",
+			"checkUniqueShapes",
+			"checkDoubleNumber",
+			"checkBorderDeadend"
+		],
+
+		checkIdenticalShapes: function() {
+			if (!this.board.nums) {
+				this.board.recountNumbers();
+			}
+
+			var rooms = this.board.roommgr.components;
+			for (var nn = 0; nn < this.board.nums.length; nn++) {
+				var n = this.board.nums[nn];
+				var first = null;
+				for (var r = 0; r < rooms.length; r++) {
+					var room = rooms[r];
+					if (room.num !== n) {
+						continue;
+					}
+
+					if (!first) {
+						first = room;
+						continue;
+					}
+					if (!this.isDifferentShapeBlock(first, room)) {
+						continue;
+					}
+					this.failcode.add("bkDifferentShape");
+					if (this.checkOnly) {
+						return;
+					}
+					first.clist.seterr(1);
+					room.clist.seterr(1);
+				}
+			}
+		},
+
+		checkIdenticalOrientation: function() {
+			if (!this.board.nums) {
+				this.board.recountNumbers();
+			}
+
+			var rooms = this.board.roommgr.components;
+			for (var nn = 0; nn < this.board.nums.length; nn++) {
+				var n = this.board.nums[nn];
+
+				var first = null;
+				var firstshape = null;
+
+				for (var r = 0; r < rooms.length; r++) {
+					var room = rooms[r];
+					if (room.num !== n) {
+						continue;
+					}
+					if (!first) {
+						first = room.clist;
+						firstshape = room.clist.getBlockShapes();
+						continue;
+					}
+
+					var second = room.clist;
+					var secondshape = room.clist.getBlockShapes();
+					if (
+						firstshape.rows === secondshape.rows &&
+						firstshape.cols === secondshape.cols &&
+						firstshape.data[0] === secondshape.data[0]
+					) {
+						continue;
+					}
+					this.failcode.add("bkDifferentOrientation");
+					if (this.checkOnly) {
+						return;
+					}
+					first.seterr(1);
+					second.seterr(1);
+				}
+			}
+		},
+
+		checkIdenticalPositions: function() {
+			if (!this.board.nums) {
+				this.board.recountNumbers();
+			}
+
+			var rooms = this.board.roommgr.components;
+			for (var nn = 0; nn < this.board.nums.length; nn++) {
+				var n = this.board.nums[nn];
+
+				var first = null;
+				var firstsize = null;
+
+				for (var r = 0; r < rooms.length; r++) {
+					var room = rooms[r];
+
+					if (room.num !== n) {
+						continue;
+					}
+
+					if (!first) {
+						first = room;
+						firstsize = room.clist.getRectSize();
+					} else {
+						var second = room;
+						var secondsize = room.clist.getRectSize();
+
+						// Will be marked as bkDifferentShape
+						if (
+							firstsize.rows !== secondsize.rows ||
+							firstsize.cols !== secondsize.cols
+						) {
+							continue;
+						}
+
+						if (
+							first.numcell.bx - firstsize.x1 ===
+								second.numcell.bx - secondsize.x1 &&
+							first.numcell.by - firstsize.y1 ===
+								second.numcell.by - secondsize.y1
+						) {
+							continue;
+						}
+
+						this.failcode.add("bkDifferentPosition");
+
+						if (this.checkOnly) {
+							return;
+						}
+						first.clist.seterr(1);
+						second.clist.seterr(1);
+					}
+				}
+			}
+		},
+
+		checkUniqueShapes: function() {
+			if (!this.board.nums) {
+				this.board.recountNumbers();
+			}
+			var rooms = this.board.roommgr.components;
+
+			var shapeMap = {};
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+
+				if (room.num === null) {
+					continue;
+				}
+				var key = room.num + "";
+				if (!(key in shapeMap)) {
+					shapeMap[key] = room;
+				}
+			}
+
+			var shapes = [];
+			for (var nn = 0; nn < this.board.nums.length; nn++) {
+				var n = this.board.nums[nn];
+				if (n in shapeMap) {
+					shapes.push(shapeMap[n]);
+				}
+			}
+
+			for (var nna = 0; nna < shapes.length; nna++) {
+				for (var nnb = nna + 1; nnb < shapes.length; nnb++) {
+					if (!this.isDifferentShapeBlock(shapes[nna], shapes[nnb])) {
+						this.failcode.add("bkDifferentLetters");
+
+						if (this.checkOnly) {
+							return;
+						}
+						shapes[nna].clist.seterr(1);
+						shapes[nnb].clist.seterr(1);
+					}
+				}
+			}
+		}
+	},
+
 	"FailCode@cbblock": {
 		bkRect: ["ブロックが四角形になっています。", "A block is rectangle."],
 		bsSameShape: [
@@ -659,6 +939,33 @@
 		bkDifferentShape: [
 			"同じ形でないマスのカタマリを含むブロックがあります。",
 			"The two shapes inside a block are different."
+		]
+	},
+
+	"FailCode@nikoji": {
+		bkNoNum: [
+			"(please translate) An area has no letter.",
+			"An area has no letter."
+		],
+		bkNumGe2: [
+			"(please translate) An area has multiple letters.",
+			"An area has multiple letters."
+		],
+		bkDifferentShape: [
+			"(please translate) Two areas with equal letters have different shapes.",
+			"Two areas with equal letters have different shapes."
+		],
+		bkDifferentOrientation: [
+			"(please translate) Two areas with equal letters have different orientation.",
+			"Two areas with equal letters have different orientation."
+		],
+		bkDifferentPosition: [
+			"(please translate) Two areas with equal letters have the letter in different positions.",
+			"Two areas with equal letters have the letter in different positions."
+		],
+		bkDifferentLetters: [
+			"(please translate) Two areas with different letters have the same shape.",
+			"Two areas with different letters have the same shape."
 		]
 	}
 });
