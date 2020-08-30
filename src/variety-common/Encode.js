@@ -347,11 +347,16 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		encodeNumber16: function() {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				return bd.cell[c].qnum;
+			});
+		},
+		genericEncodeNumber16: function(length, get_func) {
 			var count = 0,
-				cm = "",
-				bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var qn = bd.cell[c].qnum;
+				cm = "";
+			for (var c = 0; c < length; c++) {
+				var qn = get_func(c);
 				var pstr = this.writeNumber16(qn);
 				if (pstr === "") {
 					count++;
@@ -428,36 +433,36 @@ pzpr.classmgr.makeCommon({
 			this.outbstr = bstr.substr(i + 1);
 		},
 		encodeNumber16ExCell: function() {
-			// 盤面外数字のエンコード
-			var count = 0,
-				cm = "",
-				bd = this.board;
-			for (var ec = 0; ec < bd.excell.length; ec++) {
-				var pstr = "",
-					qn = bd.excell[ec].qnum;
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.excell.length, function(c) {
+				return bd.excell[c].qnum;
+			});
+		},
 
-				if (qn === -2) {
-					pstr = ".";
-				} else if (qn >= 0 && qn < 16) {
-					pstr = qn.toString(16);
-				} else if (qn >= 16 && qn < 256) {
-					pstr = "-" + qn.toString(16);
-				} else {
-					count++;
+		encodeNumber16ExCellFlushed: function() {
+			var bd = this.board,
+				cols = bd.cols,
+				rows = bd.rows;
+			var nums = bd.excell.map(function(ex) {
+				return ex.qnum;
+			});
+
+			bd.genericFlush(
+				bd.excellCols(cols, rows),
+				bd.excellRows(cols, rows),
+				cols,
+				rows,
+				function(i) {
+					return nums[i];
+				},
+				function(i, num) {
+					nums[i] = num;
 				}
+			);
 
-				if (count === 0) {
-					cm += pstr;
-				} else if (pstr || count === 20) {
-					cm += (15 + count).toString(36) + pstr;
-					count = 0;
-				}
-			}
-			if (count > 0) {
-				cm += (15 + count).toString(36);
-			}
-
-			this.outbstr += cm;
+			this.genericEncodeNumber16(nums.length, function(c) {
+				return nums[c];
+			});
 		},
 
 		//---------------------------------------------------------------------------

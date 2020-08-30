@@ -305,8 +305,8 @@
 				this.decodeObj(
 					func,
 					"obj",
-					-1,
-					-1,
+					this.board.minbx + 1,
+					this.board.minby + 1,
 					this.board.maxbx - 1,
 					this.board.maxby - 1
 				);
@@ -385,8 +385,8 @@
 				this.encodeObj(
 					func,
 					"obj",
-					-1,
-					-1,
+					this.board.minbx + 1,
+					this.board.minby + 1,
 					this.board.maxbx - 1,
 					this.board.maxby - 1
 				);

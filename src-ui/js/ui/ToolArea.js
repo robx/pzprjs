@@ -144,6 +144,8 @@ ui.toolarea = {
 			: "none";
 		getEL("btncolor").style.display =
 			ui.puzzle.pid === "tentaisho" ? "" : "none";
+		getEL("btnflush").style.display =
+			ui.puzzle.board.hasflush && !ui.puzzle.playeronly ? "" : "none";
 		/* ボタンエリアの色分けボタンは、ツールパネル領域が消えている時に表示 */
 		getEL("btnirowake").style.display =
 			ui.puzzle.painter.irowake && !ui.menuconfig.get("toolarea") ? "" : "none";
@@ -330,6 +332,9 @@ ui.toolarea = {
 	},
 	resetblocks: function() {
 		ui.puzzle.board.operate("resetpos");
+	},
+	flushexcell: function() {
+		ui.puzzle.board.flushexcell();
 	},
 	enterTrial: function() {
 		if (ui.puzzle.board.trialstage === 0) {

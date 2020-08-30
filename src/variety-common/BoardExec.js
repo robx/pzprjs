@@ -220,48 +220,83 @@ pzpr.classmgr.makeCommon({
 			this.qnumh = [];
 
 			var bd = this.board;
+			var rowmin = bd.excellRows(bd.cols, bd.rows) * -2 + 1;
+			var colmin = bd.excellCols(bd.cols, bd.rows) * -2 + 1;
 			for (var by = by1; by <= d.y2; by += 2) {
-				this.qnumw[by] = bd.getex(-1, by).qnum;
+				this.qnumw[by] = [];
+				for (var bx = colmin; bx <= -1; bx += 2) {
+					this.qnumw[by].push(bd.getex(bx, by).qnum);
+				}
 			}
 			for (var bx = bx1; bx <= d.x2; bx += 2) {
-				this.qnumh[bx] = bd.getex(bx, -1).qnum;
+				this.qnumh[bx] = [];
+				for (var by = rowmin; by <= -1; by += 2) {
+					this.qnumh[bx].push(bd.getex(bx, by).qnum);
+				}
 			}
 		},
-		adjustExCellTopLeft_2: function(key, d) {
+		adjustExCellTopLeft_2: function(key, d, preserve) {
 			var xx = d.x1 + d.x2,
 				yy = d.y1 + d.y2,
 				bx1 = d.x1 | 1,
 				by1 = d.y1 | 1;
 
+			if (!preserve) {
+				if (key === this.FLIPX || key === this.TURNL) {
+					for (var id in this.qnumw) {
+						this.qnumw[id].reverse();
+					}
+				}
+				if (key === this.FLIPY || key === this.TURNR) {
+					for (var id in this.qnumh) {
+						this.qnumh[id].reverse();
+					}
+				}
+			}
+
 			var bd = this.board;
+			var rowmin = bd.excellRows(bd.cols, bd.rows) * -2 + 1;
+			var colmin = bd.excellCols(bd.cols, bd.rows) * -2 + 1;
 			switch (key) {
 				case this.FLIPY: // 上下反転
 					for (var bx = bx1; bx <= d.x2; bx += 2) {
-						bd.getex(bx, -1).setQnum(this.qnumh[bx]);
+						for (var by = -1; by >= rowmin; by -= 2) {
+							bd.getex(bx, by).setQnum(this.qnumh[bx].pop());
+						}
 					}
 					break;
 
 				case this.FLIPX: // 左右反転
 					for (var by = by1; by <= d.y2; by += 2) {
-						bd.getex(-1, by).setQnum(this.qnumw[by]);
+						for (var bx = -1; bx >= colmin; bx -= 2) {
+							bd.getex(bx, by).setQnum(this.qnumw[by].pop());
+						}
 					}
 					break;
 
 				case this.TURNR: // 右90°反転
 					for (var by = by1; by <= d.y2; by += 2) {
-						bd.getex(-1, by).setQnum(this.qnumh[by]);
+						for (var bx = -1; bx >= colmin; bx -= 2) {
+							bd.getex(bx, by).setQnum(this.qnumh[by].pop());
+						}
 					}
 					for (var bx = bx1; bx <= d.x2; bx += 2) {
-						bd.getex(bx, -1).setQnum(this.qnumw[xx - bx]);
+						for (var by = -1; by >= rowmin; by -= 2) {
+							bd.getex(bx, by).setQnum(this.qnumw[xx - bx].pop());
+						}
 					}
 					break;
 
 				case this.TURNL: // 左90°反転
 					for (var by = by1; by <= d.y2; by += 2) {
-						bd.getex(-1, by).setQnum(this.qnumh[yy - by]);
+						for (var bx = -1; bx >= colmin; bx -= 2) {
+							bd.getex(bx, by).setQnum(this.qnumh[yy - by].pop());
+						}
 					}
 					for (var bx = bx1; bx <= d.x2; bx += 2) {
-						bd.getex(bx, -1).setQnum(this.qnumw[bx]);
+						for (var by = -1; by >= rowmin; by -= 2) {
+							bd.getex(bx, by).setQnum(this.qnumw[bx].pop());
+						}
 					}
 					break;
 			}
