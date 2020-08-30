@@ -23,5 +23,15 @@ ui.debug.addDebugData("nonogram", {
 			"pzprv3/nonogram/6/6/. . . . 1 . 1 . . /. . . 2 1 . 1 2 . /. . . 1 1 1 1 1 . /. 2 1 # # . # . . /. 1 1 # . . . # . /. 1 2 . # . # # . /. . . . . . . . . /. 1 1 # . . . # . /. . 3 . # # # . . /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{ input: ["newboard,5,1"] },
+		{
+			input: ["cursor,0,0", "mouse,leftx2, -5,1"],
+			result: "pzprv3/nonogram/1/5/. . . . . . . . /1 . . . . . . . /"
+		},
+		{
+			input: ["flushexcell"],
+			result: "pzprv3/nonogram/1/5/. . . . . . . . /. . 1 . . . . . /"
+		}
+	]
 });

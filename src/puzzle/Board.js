@@ -627,7 +627,7 @@ pzpr.classmgr.makeCommon({
 
 				if (
 					(id < qc && id % exrows === exrows - 1) ||
-					(id >= qc && id % excols === excols - 1)
+					(id >= qc && (id - qc) % excols === excols - 1)
 				) {
 					for (var b = dest; b <= id; b++) {
 						set_func(b, -1);

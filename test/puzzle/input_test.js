@@ -64,6 +64,9 @@ function execinput(puzzle, str) {
 		case "mouse":
 			execmouse(puzzle, strs);
 			break;
+		case "flushexcell":
+			puzzle.board.flushexcell();
+			break;
 	}
 }
 
