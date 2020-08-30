@@ -449,15 +449,15 @@
 	FailCode: {
 		bkSizeLt3: [
 			"サイズが3マスより小さいブロックがあります。",
-			"The size of block is smaller than three."
+			"The size of an area is smaller than three."
 		],
 		bkSizeGt3: [
 			"サイズが3マスより大きいブロックがあります。",
-			"The size of block is larger than three."
+			"The size of an area is larger than three."
 		],
 		asLblockNe: [
 			"数字の下か右にあるまっすぐのブロックの数が間違っています。",
-			"The number of straight blocks underward or rightward is not correct."
+			"The number of straight areas below or to the right is not correct."
 		]
 	}
 });
