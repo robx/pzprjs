@@ -1093,7 +1093,7 @@ pzpr.classmgr.makeCommon({
 			"黒マスがタテヨコに連続しています。",
 			"Some shaded cells are adjacent."
 		],
-		csDivide: ["黒マスが分断されています。", "The shaded cells are divided,"],
+		csDivide: ["黒マスが分断されています。", "The shaded cells are divided."],
 		cuDivide: ["白マスが分断されています。", "The unshaded cells are divided."],
 		cuDivideRB: [
 			"白マスが分断されています。",
