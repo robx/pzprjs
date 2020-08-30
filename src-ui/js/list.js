@@ -360,7 +360,8 @@
 			"snake",
 			"putteria",
 			"haisu",
-			"nikoji"
+			"nikoji",
+			"mines"
 		]
 	};
 	var tabstate = {
