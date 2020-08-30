@@ -158,7 +158,7 @@
 	},
 	"Graphic@kurotto": {
 		hideHatena: true,
-		
+
 		numbercolor_func: "qnum",
 
 		circleratio: [0.45, 0.4],
@@ -243,7 +243,7 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	"AnsCheck": {
+	AnsCheck: {
 		checkCellNumber: function(code) {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
