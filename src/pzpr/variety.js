@@ -145,7 +145,7 @@
 			goishi: [0, 1, "碁石ひろい", "Goishi"],
 			gokigen: [1, 0, "ごきげんななめ", "Slant", "gokigen"],
 			haisu: [0, 0, "Haisu", "Haisu"],
-			hakoiri: [1, 0, "はこいり○△□", "Hokoiri-masashi"],
+			hakoiri: [1, 0, "はこいり○△□", "Hakoiri-masashi"],
 			hanare: [0, 0, "はなれ組", "Hanare-gumi", "hanare"],
 			hashikake: [
 				0,
