@@ -18,11 +18,26 @@
 				if (this.mousestart || this.mousemove) {
 					this.inputcell();
 				}
+				if (this.mouseend && this.notInputted()) {
+					this.inputqcmp();
+				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
 					this.inputqnum();
 				}
 			}
+		},
+
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell.noNum()) {
+				return;
+			}
+
+			cell.setQcmp(+!cell.qcmp);
+			cell.draw();
+
+			this.mousereset();
 		}
 	},
 
@@ -37,7 +52,20 @@
 	Cell: {
 		numberRemainsUnshaded: true,
 
-		minnum: 0
+		minnum: 0,
+
+		isCmp: function() {
+			if (!(this.qnum === -2 || this.isValidNum())) {
+				return false;
+			}
+			if (this.qcmp === 1) {
+				return true;
+			}
+			if (!this.puzzle.execConfig("autocmp")) {
+				return false;
+			}
+			return this.checkComplete();
+		}
 	},
 	"Cell@kurotto": {
 		maxnum: function() {
@@ -91,7 +119,11 @@
 				this.relcell(2, 2)
 			];
 			for (var i = 0; i < 8; i++) {
-				if (cells[i].group === "cell" && !cells[i].isnull && cells[i].isShade()) {
+				if (
+					cells[i].group === "cell" &&
+					!cells[i].isnull &&
+					cells[i].isShade()
+				) {
 					cnt++;
 				}
 			}
@@ -145,11 +177,8 @@
 		},
 
 		getCircleFillColor: function(cell) {
-			if (
-				this.puzzle.execConfig("autocmp") &&
-				(cell.qnum === -2 || cell.isValidNum())
-			) {
-				return cell.checkComplete() ? this.qcmpcolor : this.circlebasecolor;
+			if (cell.isCmp()) {
+				return this.qcmpcolor;
 			}
 			return null;
 		}
@@ -182,11 +211,9 @@
 			var qnum_color = this.getQuesNumberColor_qnum(cell);
 			if ((cell.error || cell.qinfo) === 1) {
 				return qnum_color;
-			} else if (
-				this.puzzle.execConfig("autocmp") &&
-				(cell.qnum === -2 || cell.isValidNum())
-			) {
-				return cell.checkComplete() ? this.qcmpcolor : qnum_color;
+			}
+			if (cell.isCmp()) {
+				return this.qcmpcolor;
 			}
 			return qnum_color;
 		}
