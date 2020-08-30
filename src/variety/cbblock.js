@@ -913,24 +913,24 @@
 
 	"FailCode@nikoji": {
 		bkNoNum: [
-			"(please translate) A block has no letter.",
-			"A block has no letter."
+			"(please translate) An area has no letter.",
+			"An area has no letter."
 		],
 		bkNumGe2: [
-			"(please translate) A block has multiple letters.",
-			"A block has multiple letters."
+			"(please translate) An area has multiple letters.",
+			"An area has multiple letters."
 		],
 		bkDifferentShape: [
-			"(please translate) Two blocks with equal letters have different shapes.",
-			"Two blocks with equal letters have different shapes."
+			"(please translate) Two areas with equal letters have different shapes.",
+			"Two areas with equal letters have different shapes."
 		],
 		bkDifferentPosition: [
-			"(please translate) Two blocks with equal letters have the letter in different positions.",
-			"Two blocks with equal letters have the letter in different positions."
+			"(please translate) Two areas with equal letters have the letter in different positions.",
+			"Two areas with equal letters have the letter in different positions."
 		],
 		bkDifferentLetters: [
-			"(please translate) Two blocks with different letters have the same shape.",
-			"Two blocks with different letters have the same shape."
+			"(please translate) Two areas with different letters have the same shape.",
+			"Two areas with different letters have the same shape."
 		]
 	}
 });
