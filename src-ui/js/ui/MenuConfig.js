@@ -87,6 +87,9 @@
 				case "bosanowa":
 					idname = "disptype_bosanowa";
 					break;
+				case "interbd":
+					idname = "disptype_interbd";
+					break;
 				case "arukone":
 					idname = "dontpassallcell";
 					break;
