@@ -70,7 +70,7 @@ ui.debug.addDebugData("interbd", {
 		},
 		{
 			label: "Add question mark when clicking empty space",
-			input: ["key,BS","mouse,left,1,1"],
+			input: ["key,BS", "mouse,left,1,1"],
 			result: "pzprv3/interbd/1/2/0 . /"
 		},
 
@@ -91,18 +91,85 @@ ui.debug.addDebugData("interbd", {
 			result: "pzprv3/interbd/1/2/64 . /"
 		},
 		{
-			label: "Right-click on number 0 cycles through to question mark with color",
-			input: ["key,BS,0","mouse,right,1,1"],
+			label: "Right-click on number 0 cycles to question mark with color",
+			input: ["key,BS,0", "mouse,right,1,1"],
 			result: "pzprv3/interbd/1/2/60 . /"
 		},
 		{
 			label: "Right-click on question mark clears space",
-			input: ["key,BS,-","mouse,right,1,1"],
+			input: ["key,BS,-", "mouse,right,1,1"],
 			result: "pzprv3/interbd/1/2/. . /"
+		},
+
+		// Test Number input
+		{
+			label: "Click empty space to add question mark",
+			input: ["newboard,2,1", "editmode,number", "mouse,left,1,1"],
+			result: "pzprv3/interbd/1/2/0 . /"
+		},
+		{
+			label: "Click question mark to add 0",
+			input: ["mouse,left,1,1"],
+			result: "pzprv3/interbd/1/2/1 . /"
+		},
+		{
+			label: "Click 0 to add 1",
+			input: ["mouse,left,1,1"],
+			result: "pzprv3/interbd/1/2/2 . /"
+		},
+		{
+			label: "Max number is 4",
+			input: ["mouse,leftx3,1,1"],
+			result: "pzprv3/interbd/1/2/5 . /"
+		},
+		{
+			label: "Click 4 to clear space",
+			input: ["mouse,left,1,1"],
+			result: "pzprv3/interbd/1/2/. . /"
+		},
+		{
+			label: "Click number with color to add 1",
+			input: ["key,q,1", "mouse,left,1,1"],
+			result: "pzprv3/interbd/1/2/13 . /"
+		},
+		{
+			label: "Cycle numbers without removing color",
+			input: ["mouse,leftx5,1,1"],
+			result: "pzprv3/interbd/1/2/12 . /"
+		},
+
+		// Test Reverse number input
+		{
+			label: "Click empty space to add 4",
+			input: ["newboard,2,1", "editmode,number", "mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/5 . /"
+		},
+		{
+			label: "Click 4 to subtract 1",
+			input: ["mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/4 . /"
+		},
+		{
+			label: "Cycle down to question mark",
+			input: ["mouse,rightx4,1,1"],
+			result: "pzprv3/interbd/1/2/0 . /"
+		},
+		{
+			label: "Click question mark to clear space",
+			input: ["mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/. . /"
+		},
+		{
+			label: "Click color to add 4",
+			input: ["key,e", "mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/35 . /"
+		},
+		{
+			label: "Cycle numbers backwards without removing color",
+			input: ["mouse,rightx7,1,1"],
+			result: "pzprv3/interbd/1/2/34 . /"
 		}
 
-		// TODO test Number input
-		// TODO test reverse Number input
 		// TODO test Color input
 		// TODO test reverse Color input
 		// TODO test play input
