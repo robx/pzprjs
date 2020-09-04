@@ -205,6 +205,11 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		// qnum: Number clue. -2 is question mark, -1 is empty, 0..4 is regular clue.
+		// ques: Color clue. 0 for no color, 1..6 for clue. When value is non-zero, qnum cannot be empty.
+		// qans: Answer. 0 for empty, 1 for black cell.
+		// qsub: Mark. 0 for empty, 1 for dot.
+
 		numberRemainsUnshaded: true,
 
 		minnum: 0,
