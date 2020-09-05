@@ -271,7 +271,7 @@
 		checklist: ["checkCellNumber_mines"],
 
 		checkCellNumber_mines: function() {
-			this.checkCellNumber("nmShadedNe");
+			this.checkCellNumber("nmMinesNe");
 		}
 	},
 

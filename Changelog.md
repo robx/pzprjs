@@ -1,3 +1,7 @@
+### 2020-09-05
+
+* mines: Fix "Invalid error"
+
 ### 2020-08-30
 
 * mines: New puzzle type Minesweeper (due to CJ Quines)

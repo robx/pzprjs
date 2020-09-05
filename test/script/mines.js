@@ -4,11 +4,11 @@ ui.debug.addDebugData("mines", {
 	url: "5/5/g2m13l13g0j",
 	failcheck: [
 		[
-			"nmShadedNe",
+			"nmMinesNe",
 			"pzprv3/mines/5/5/. 2 . . . /. . . . 1 /3 . . . . /. . 1 3 . /0 . . . . /. . . . # /# # . . . /. . . . . /# . . . # /. . . # # /"
 		],
 		[
-			"nmShadedNe",
+			"nmMinesNe",
 			"pzprv3/mines/5/5/. 2 . . . /. . . . 1 /3 . . . . /. . 1 3 . /0 . . . . /. . . . . /# # . . . /. . # . # /. . . . . /. . . . # /"
 		],
 		[
