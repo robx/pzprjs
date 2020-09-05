@@ -165,10 +165,26 @@
 		enablemake: true,
 
 		keyinput: function(ca) {
-			this.key_interbd(ca);
+			if (ca === "-") {
+				this.key_undef();
+			} else {
+				this.key_interbd(ca);
+			}
 		},
 
 		keyrows: ["qwerty", "asdfgh", "zxcvbn"],
+
+		key_undef: function() {
+			var cell = this.cursor.getc();
+			if (cell.qnum !== -2) {
+				cell.setQnum(-2);
+			} else if (cell.ques !== 0) {
+				cell.setQues(0);
+			} else {
+				cell.setQnum(-1);
+			}
+			cell.draw();
+		},
 
 		key_interbd: function(ca) {
 			var cell = this.cursor.getc();
