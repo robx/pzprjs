@@ -1,5 +1,6 @@
 ### 2020-09-05
 
+* easyasabc: Fix "undefined"
 * mines: Fix "Invalid error"
 
 ### 2020-08-30

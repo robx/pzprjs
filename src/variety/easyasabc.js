@@ -229,6 +229,7 @@
 		count: 3,
 		rect: null,
 		numberAsLetter: true,
+		qnum: -1 /* no text for drawNumbersExcell() */,
 		initialize: function(val) {
 			if (!!val) {
 				this.count = val;
