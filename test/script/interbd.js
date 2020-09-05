@@ -41,7 +41,55 @@ ui.debug.addDebugData("interbd", {
 		]
 	],
 	inputs: [
-		// TODO test key input
+		// Key input
+		{
+			input: ["newboard,2,1"],
+			result: "pzprv3/interbd/1/2/. . /"
+		},
+		{
+			label: "Press letter to input color",
+			input: ["key,r"],
+			result: "pzprv3/interbd/1/2/40 . /"
+		},
+		{
+			label: "Press number to add number to color",
+			input: ["key,2"],
+			result: "pzprv3/interbd/1/2/43 . /"
+		},
+		{
+			label: "Press letter to toggle color",
+			input: ["key,r"],
+			result: "pzprv3/interbd/1/2/3 . /"
+		},
+		{
+			input: ["key,w"],
+			result: "pzprv3/interbd/1/2/23 . /"
+		},
+		{
+			label: "Backspace clears both number and color",
+			input: ["key,BS"],
+			result: "pzprv3/interbd/1/2/. . /"
+		},
+		{
+			label: "Press minus on empty cell to input question mark",
+			input: ["key,-"],
+			result: "pzprv3/interbd/1/2/0 . /"
+		},
+		{
+			label: "Press minus on number with color to remove number",
+			input: ["key,q,4,-"],
+			result: "pzprv3/interbd/1/2/10 . /"
+		},
+		{
+			label: "Press minus on color to input question mark",
+			input: ["key,-"],
+			result: "pzprv3/interbd/1/2/0 . /"
+		},
+		{
+			label: "Press minus on question mark to clear cell",
+			input: ["key,-"],
+			result: "pzprv3/interbd/1/2/. . /"
+		},
 
 		// Input mode Auto with Left click
 		{
