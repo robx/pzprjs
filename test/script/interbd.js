@@ -216,10 +216,81 @@ ui.debug.addDebugData("interbd", {
 			label: "Cycle numbers backwards without removing color",
 			input: ["mouse,rightx7,1,1"],
 			result: "pzprv3/interbd/1/2/34 . /"
-		}
+		},
 
-		// TODO test Color input
-		// TODO test reverse Color input
-		// TODO test play input
+		// Test Color input
+		{
+			label: "Click empty cell to add color",
+			input: ["newboard,2,1", "editmode,color", "mouse,leftx2,1,1"],
+			result: "pzprv3/interbd/1/2/10 . /"
+		},
+		{
+			label: "Click color to increase",
+			input: ["mouse,left,1,1"],
+			result: "pzprv3/interbd/1/2/20 . /"
+		},
+		{
+			label: "Cycle colors",
+			input: ["mouse,leftx5,1,1"],
+			result: "pzprv3/interbd/1/2/. . /"
+		},
+		{
+			label: "Add color to number",
+			input: ["key,3", "mouse,leftx3,1,1"],
+			result: "pzprv3/interbd/1/2/34 . /"
+		},
+		{
+			label: "Remove color from number",
+			input: ["mouse,leftx4,1,1"],
+			result: "pzprv3/interbd/1/2/4 . /"
+		},
+
+		// Test reverse Color input
+		{
+			label: "Click empty cell to add max color",
+			input: ["newboard,2,1", "editmode,color", "mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/60 . /"
+		},
+		{
+			label: "Click color to decrease",
+			input: ["mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/50 . /"
+		},
+		{
+			label: "Cycle down to question mark",
+			input: ["mouse,rightx5,1,1"],
+			result: "pzprv3/interbd/1/2/0 . /"
+		},
+		{
+			label: "Remove question mark color",
+			input: ["mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/. . /"
+		},
+		{
+			label: "Add max color to number",
+			input: ["key,4", "mouse,right,1,1"],
+			result: "pzprv3/interbd/1/2/65 . /"
+		},
+		{
+			label: "Cycle color backwards without removing number",
+			input: ["mouse,rightx8,1,1"],
+			result: "pzprv3/interbd/1/2/55 . /"
+		},
+
+		// Test play input
+		{
+			input: ["newboard,3,1", "editmode", "cursor,3,1", "key,w"],
+			result: "pzprv3/interbd/1/3/. 20 . /"
+		},
+		{
+			label: "Don't draw over colors",
+			input: ["playmode", "mouse,left,1,1,5,1"],
+			result: "pzprv3/interbd/1/3/# 20 # /"
+		},
+		{
+			label: "Don't place marks over colors",
+			input: ["mouse,right,1,1,5,1"],
+			result: "pzprv3/interbd/1/3/+ 20 + /"
+		}
 	]
 });
