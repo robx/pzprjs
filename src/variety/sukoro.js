@@ -104,15 +104,16 @@
 		minnum: 0
 	},
 
+	Board: {
+		hasborder: 1
+	},
 	"Board@view": {
 		cols: 8,
 		rows: 8
 	},
 	"Board@sukororoom": {
 		cols: 8,
-		rows: 8,
-
-		hasborder: 1
+		rows: 8
 	},
 
 	AreaNumberGraph: {
@@ -130,6 +131,7 @@
 			if (this.pid === "view") {
 				this.drawTargetSubNumber();
 			}
+			this.drawSkeleton();
 			this.drawGrid();
 
 			if (this.pid === "sukororoom") {
@@ -146,6 +148,50 @@
 			this.drawChassis();
 
 			this.drawCursor();
+		},
+
+		drawSkeleton: function() {
+			this.drawSkeletonDots();
+			this.drawSkeletonEdges();
+		},
+		drawSkeletonDots: function() {
+			var g = this.vinc("cell_skel_dot", "auto", true);
+
+			var dsize = this.cw * 0.2;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_dot_" + cell.id;
+				if (cell.isNumberObj()) {
+					g.fillStyle = this.bcolor;
+					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		drawSkeletonEdges: function() {
+			var g = this.vinc("cell_skel_edge", "auto", true);
+
+			var dsize = this.cw * 0.2;
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var b = blist[i];
+
+				g.vid = "b_skel_" + b.id;
+				var isedgevalid =
+					this.board.nblkmgr.isnodevalid(b.sidecell[0]) &&
+					this.board.nblkmgr.isnodevalid(b.sidecell[1]);
+				if (isedgevalid) {
+					var w = b.isvert ? this.bh : dsize;
+					var h = b.isvert ? dsize : this.bw;
+					g.fillStyle = this.bcolor;
+					g.fillRectCenter(b.bx * this.bw, b.by * this.bh, w, h);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 	"Graphic@view": {
