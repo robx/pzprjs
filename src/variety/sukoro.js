@@ -150,6 +150,52 @@
 			this.drawCursor();
 		},
 
+		getAnsNumberText: function(cell) {
+			if (cell.anum >= 0) {
+				return this.getNumberText(cell, cell.anum);
+			}
+			if (cell.qsub === 1) {
+				var c = cell.countDir4Cell(function(cell) {
+					return cell.isNumberObj();
+				});
+				return this.getNumberText(cell, c);
+			}
+			return "";
+		},
+		getAnsNumberColor: function(cell) {
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errcolor1;
+			}
+			if (cell.qsub === 1) {
+				return this.qcmpcolor;
+			}
+			return !cell.trial ? this.qanscolor : this.trialcolor;
+		},
+
+		drawMBs: function() {
+			var g = this.vinc("cell_mb", "auto", true);
+			g.lineWidth = 1;
+
+			var rsize = this.cw * 0.35;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					px,
+					py;
+				if (cell.qsub > 0) {
+					px = cell.bx * this.bw;
+					py = cell.by * this.bh;
+					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
+				}
+
+				g.vid = "c_MB2_" + cell.id;
+				if (cell.qsub === 2) {
+					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
 		drawSkeleton: function() {
 			this.drawSkeletonDots();
 			this.drawSkeletonEdges();
