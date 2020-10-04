@@ -366,42 +366,11 @@
 				return cell.isTri();
 			};
 			return this.qnum === this.countDir4Cell(is_tri);
-		},
-
-		posthook: {
-			qnum: function() {
-				this.redrawAdjacent();
-			},
-			qans: function() {
-				this.redrawAdjacent();
-			},
-			qsub: function() {
-				this.redrawAdjacent();
-			}
-		},
-
-		redrawAdjacent: function() {
-			var ad = this.adjacent;
-			var cells = new this.klass.CellList([
-				ad.top,
-				ad.right,
-				ad.bottom,
-				ad.left
-			]);
-			this.board.redrawAffected(cells);
 		}
 	},
 	Board: {
 		addExtraInfo: function() {
 			this.wrectmgr = this.addInfoList(this.klass.AreaWrectGraph);
-		},
-		redrawAffected: function(cells) {
-			for (var i = 0; i < cells.length; i++) {
-				var c = cells[i];
-				if (!c.isnull && c.qnum !== -1 && c.qnum !== -2) {
-					c.draw();
-				}
-			}
 		}
 	},
 	BoardExec: {
@@ -475,6 +444,19 @@
 		fgcellcolor_func: "qnum",
 		fontShadecolor: "white",
 		qcmpcolor: "rgb(127,127,127)",
+
+		setRange: function(x1, y1, x2, y2) {
+			var puzzle = this.puzzle,
+				bd = puzzle.board;
+			if (puzzle.execConfig("autocmp")) {
+				x1 = bd.minbx - 2;
+				y1 = bd.minby - 2;
+				x2 = bd.maxbx + 2;
+				y2 = bd.maxby + 2;
+			}
+
+			this.common.setRange.call(this, x1, y1, x2, y2);
+		},
 
 		paint: function() {
 			this.drawBGCells();
