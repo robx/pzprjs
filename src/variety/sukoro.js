@@ -126,6 +126,23 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
+		autocmp: "skeleton",
+		skelcolor: "rgb(160, 255, 160)", // bcolor
+		qcmpcolor: "darkgray",
+
+		setRange: function(x1, y1, x2, y2) {
+			var puzzle = this.puzzle,
+				bd = puzzle.board;
+			if (puzzle.execConfig("autocmp")) {
+				x1 = bd.minbx - 2;
+				y1 = bd.minby - 2;
+				x2 = bd.maxbx + 2;
+				y2 = bd.maxby + 2;
+			}
+
+			this.common.setRange.call(this, x1, y1, x2, y2);
+		},
+
 		paint: function() {
 			this.drawBGCells();
 			if (this.pid === "view") {
@@ -188,6 +205,13 @@
 					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
 				}
 
+				g.vid = "c_MB1_" + cell.id;
+				if (cell.qsub === 1 && !this.puzzle.execConfig("autocmp")) {
+					g.strokeCircle(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+
 				g.vid = "c_MB2_" + cell.id;
 				if (cell.qsub === 2) {
 					g.strokeCross(px, py, rsize);
@@ -202,6 +226,7 @@
 		},
 		drawSkeletonDots: function() {
 			var g = this.vinc("cell_skel_dot", "auto", true);
+			var autocmp = this.puzzle.execConfig("autocmp");
 
 			var dsize = this.cw * 0.2;
 			var clist = this.range.cells;
@@ -209,8 +234,8 @@
 				var cell = clist[i];
 
 				g.vid = "c_dot_" + cell.id;
-				if (cell.isNumberObj()) {
-					g.fillStyle = this.bcolor;
+				if (autocmp && cell.isNumberObj()) {
+					g.fillStyle = this.skelcolor;
 					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
 				} else {
 					g.vhide();
@@ -219,10 +244,15 @@
 		},
 		drawSkeletonEdges: function() {
 			var g = this.vinc("cell_skel_edge", "auto", true);
+			var autocmp = this.puzzle.execConfig("autocmp");
 
 			var dsize = this.cw * 0.2;
 			var blist = this.range.borders;
 			for (var i = 0; i < blist.length; i++) {
+				if (!autocmp) {
+					g.vhide();
+					continue;
+				}
 				var b = blist[i];
 
 				g.vid = "b_skel_" + b.id;
@@ -232,7 +262,7 @@
 				if (isedgevalid) {
 					var w = b.isvert ? this.bh : dsize;
 					var h = b.isvert ? dsize : this.bw;
-					g.fillStyle = this.bcolor;
+					g.fillStyle = this.skelcolor;
 					g.fillRectCenter(b.bx * this.bw, b.by * this.bh, w, h);
 				} else {
 					g.vhide();
