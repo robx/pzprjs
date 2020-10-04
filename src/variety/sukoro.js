@@ -10,6 +10,65 @@
 })(["sukoro", "view", "sukororoom"], {
 	//---------------------------------------------------------
 	// マウス入力系
+	MouseEvent: {
+		// like normal, except we sort qsub=1 to the front
+		getNewNumber: function(cell, num) {
+			var puzzle = this.puzzle;
+			var max = cell.getmaxnum(),
+				min = cell.getminnum(),
+				val = -1,
+				qs = cell.qsub;
+
+			var subtype = 0;
+			if (puzzle.editmode) {
+				subtype = -1;
+			} else {
+				subtype = 2;
+				qs = cell.qsub;
+			}
+
+			// playmode: subtypeは0以上、 qsにqsub値が入る
+			// editmode: subtypeは-1固定、qsは常に0が入る
+			if (this.btn === "left") {
+				if (num >= max) {
+					val = subtype >= 1 ? -3 : -1;
+				} else if (qs === 1) {
+					val = min;
+				} else if (qs === 2) {
+					val = -1;
+				} else if (num === -1) {
+					val = -2;
+				} else if (num < min) {
+					val = min;
+				} else {
+					val = num + 1;
+				}
+			} else if (this.btn === "right") {
+				if (qs === 1) {
+					val = -1;
+				} else if (qs === 2) {
+					val = max;
+				} else if (num === -1) {
+					if (subtype === 1) {
+						val = -2;
+					} else if (subtype === 2) {
+						val = -3;
+					} else {
+						val = max;
+					}
+				} else if (num > max) {
+					val = max;
+				} else if (num <= min) {
+					val = -2;
+				} else if (num === -2) {
+					val = -1;
+				} else {
+					val = num - 1;
+				}
+			}
+			return val;
+		}
+	},
 	"MouseEvent@sukoro,view": {
 		inputModes: {
 			edit: ["number", "clear"],
