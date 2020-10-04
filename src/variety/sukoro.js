@@ -11,6 +11,20 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
+		dragnumber_sukoro: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.mouseCell.isnull) {
+				this.inputData = cell.isNumberObj() ? -2 : -3;
+				this.mouseCell = cell;
+			} else if (cell.qnum === -1) {
+				cell.setNum(this.inputData);
+				this.mouseCell = cell;
+				cell.draw();
+			}
+		},
 		// like normal, except we sort qsub=1 to the front
 		getNewNumber: function(cell, num) {
 			var puzzle = this.puzzle;
@@ -75,7 +89,16 @@
 			play: ["number", "numexist", "numblank", "clear"]
 		},
 		mouseinput_auto: function() {
-			if (this.mousestart) {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left") {
+						this.dragnumber_sukoro();
+					}
+				} else if (this.mouseend && this.notInputted()) {
+					this.mouseCell = this.board.emptycell;
+					this.inputqnum();
+				}
+			} else if (this.puzzle.editmode) {
 				this.inputqnum();
 			}
 		}
