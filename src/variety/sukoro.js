@@ -161,15 +161,25 @@
 			}
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
+			this.drawCmpNumbers();
 
 			this.drawChassis();
 
 			this.drawCursor();
 		},
 
-		getAnsNumberText: function(cell) {
-			if (cell.anum >= 0) {
-				return this.getNumberText(cell, cell.anum);
+		drawCmpNumbers: function() {
+			this.vinc("cell_cmp_number", "auto");
+			this.drawNumbers_com(
+				this.getCmpNumberText,
+				this.getCmpNumberColor,
+				"cell_cmp_text_",
+				{ ratio: 0.45 }
+			);
+		},
+		getCmpNumberText: function(cell) {
+			if (cell.anum >= 0 || cell.qnum >= 0) {
+				return "";
 			}
 			if (cell.qsub === 1) {
 				var c = cell.countDir4Cell(function(cell) {
@@ -179,14 +189,11 @@
 			}
 			return "";
 		},
-		getAnsNumberColor: function(cell) {
+		getCmpNumberColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errcolor1;
 			}
-			if (cell.qsub === 1) {
-				return this.qcmpcolor;
-			}
-			return !cell.trial ? this.qanscolor : this.trialcolor;
+			return this.qcmpcolor;
 		},
 
 		drawMBs: function() {
