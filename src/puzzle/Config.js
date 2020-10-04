@@ -120,17 +120,13 @@
 		// config.getCurrentName() 以前のconfig名から現在使用している名称を取得する
 		// config.getNormalizedName() Config名が@付きだった場合varietyのpidを返す
 		//---------------------------------------------------------------------------
+		// this seems to be about migrating settings from old to new name
 		getCurrentName: function(name) {
 			switch (name) {
 				case "color_qanscolor":
 					name = "color_shadecolor";
 					break;
 				case "autocmp_area":
-					if (this.getexec("autocmp")) {
-						name = "autocmp";
-					}
-					break;
-				case "autocmp_border":
 					if (this.getexec("autocmp")) {
 						name = "autocmp";
 					}
