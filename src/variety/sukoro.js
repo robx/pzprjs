@@ -237,7 +237,11 @@
 			);
 		},
 		getCmpNumberText: function(cell) {
-			if (cell.anum >= 0 || cell.qnum >= 0) {
+			if (
+				!this.puzzle.execConfig("autocmp") ||
+				cell.anum >= 0 ||
+				cell.qnum >= 0
+			) {
 				return "";
 			}
 			if (cell.qsub === 1) {
@@ -315,17 +319,13 @@
 			var dsize = this.cw * 0.2;
 			var blist = this.range.borders;
 			for (var i = 0; i < blist.length; i++) {
-				if (!autocmp) {
-					g.vhide();
-					continue;
-				}
 				var b = blist[i];
 
 				g.vid = "b_skel_" + b.id;
 				var isedgevalid =
 					this.board.nblkmgr.isnodevalid(b.sidecell[0]) &&
 					this.board.nblkmgr.isnodevalid(b.sidecell[1]);
-				if (isedgevalid) {
+				if (autocmp && isedgevalid) {
 					var w = b.isvert ? this.bh : dsize;
 					var h = b.isvert ? dsize : this.bw;
 					g.fillStyle = this.skelcolor;
