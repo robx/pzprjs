@@ -1192,10 +1192,7 @@ pzpr.classmgr.makeCommon({
 			"A line is crossed outside of ice."
 		],
 		lnCurveOnIce: ["氷の部分で線が曲がっています。", "A line turns on ice."],
-		lnPlLine: [
-			"(please translate) There are multiple lines.",
-			"There are multiple lines."
-		],
+		lnPlLine: ["線がひとつながりではありません。", "There are multiple lines."],
 		lnPlLoop: ["輪っかが一つではありません。", "There are multiple loops."],
 		lnOnShade: [
 			"黒マスの上に線が引かれています。",
