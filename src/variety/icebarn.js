@@ -1259,7 +1259,7 @@
 			"checkFollowArrow@icebarn",
 			"checkNumberOrder@!icebarn",
 
-			"checkOneLoop",
+			"checkOneLine",
 
 			"checkUnreachedUnshadeCell@icelom",
 			"checkIgnoreIcebarn@!icelom",
@@ -1434,10 +1434,6 @@
 		bkNoLine: [
 			"すべてのアイスバーンを通っていません。",
 			"A icebarn is not gone through."
-		],
-		lnPlLoop: [
-			"線がひとつながりではありません。",
-			"Lines are not countinuous."
 		],
 		arNoLine: [
 			"線が通っていない矢印があります。",

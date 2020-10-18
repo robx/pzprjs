@@ -276,12 +276,22 @@ pzpr.classmgr.makeCommon({
 
 		//---------------------------------------------------------------------------
 		// ans.checkOneLoop()  盤面に引かれているループが一つに繋がっていることを判定する
+		// ans.checkOneLine()  check if there are multiple lines
+		// ans.checkOneLineBase()
 		//---------------------------------------------------------------------------
 		checkOneLoop: function() {
+			this.checkOneLineBase("lnPlLoop");
+		},
+
+		checkOneLine: function() {
+			this.checkOneLineBase("lnPlLine");
+		},
+
+		checkOneLineBase: function(code) {
 			var bd = this.board,
 				paths = bd.linegraph.components;
 			if (paths.length > 1) {
-				this.failcode.add("lnPlLoop");
+				this.failcode.add(code);
 				bd.border.setnoerr();
 				paths[0].setedgeerr(1);
 			}
@@ -1182,6 +1192,7 @@ pzpr.classmgr.makeCommon({
 			"A line is crossed outside of ice."
 		],
 		lnCurveOnIce: ["氷の部分で線が曲がっています。", "A line turns on ice."],
+		lnPlLine: ["線がひとつながりではありません。", "There are multiple lines."],
 		lnPlLoop: ["輪っかが一つではありません。", "There are multiple loops."],
 		lnOnShade: [
 			"黒マスの上に線が引かれています。",

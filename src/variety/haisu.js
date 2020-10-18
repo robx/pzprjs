@@ -339,7 +339,8 @@
 			"haisuWalk",
 			"haisuDeadendOutOfSG",
 
-			"checkNoLine"
+			"checkNoLine",
+			"checkOneLine"
 		],
 
 		haisuPassThroughSG: function() {
