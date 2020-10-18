@@ -303,6 +303,7 @@
 			tents: [0, 0, "Tents", "Tents", "tents"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
+			toichika2: [0, 0, "遠い誓い２", "Toichika2", "toichika"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],

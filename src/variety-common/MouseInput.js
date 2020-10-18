@@ -144,7 +144,7 @@ pzpr.classmgr.makeCommon({
 			if (
 				puzzle.playmode &&
 				cell.qnum !== puzzle.klass.Cell.prototype.qnum &&
-				puzzle.pid !== "factors"
+				!puzzle.klass.Cell.prototype.supportQnumAnum
 			) {
 				return;
 			}

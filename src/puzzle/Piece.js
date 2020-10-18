@@ -320,6 +320,7 @@ pzpr.classmgr.makeCommon({
 
 		numberRemainsUnshaded: false, // 数字のあるマスが黒マスにならないパズル
 		enableSubNumberArray: false, // 補助数字の配列を作るパズル
+		supportQnumAnum: false, // True if qnum and anum can appear at the same time.
 
 		adjacent: {}, // 四方向に隣接するセルを保持する
 		adjborder: {}, // 四方向に隣接する境界線を保持する
