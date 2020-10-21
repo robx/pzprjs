@@ -161,6 +161,14 @@
 			this.key_inputqnum(ca);
 		}
 	},
+	"KeyEvent@toichika2": {
+		keyinput: function(ca) {
+			if (ca === "q" || ca === "-") {
+				ca = "s1";
+			}
+			this.key_inputqnum(ca);
+		}
+	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
@@ -297,6 +305,7 @@
 		}
 	},
 	"Graphic@toichika2": {
+		hideHatena: true,
 		textoption: { ratio: 0.45, position: 5 }
 	},
 
