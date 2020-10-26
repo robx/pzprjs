@@ -312,7 +312,10 @@
 		},
 
 		getQuesNumberColor: function(cell) {
-			if (this.puzzle.getConfig("disptype_interbd") === 2) {
+			if (
+				this.puzzle.getConfig("disptype_interbd") === 2 ||
+				(this.puzzle.getConfig("disptype_interbd") === 3 && cell.ques === 0)
+			) {
 				return this.quescolor;
 			}
 			return this.colors[cell.ques];
