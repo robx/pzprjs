@@ -364,7 +364,8 @@
 			"nikoji",
 			"mines",
 			"interbd",
-			"toichika2"
+			"toichika2",
+			"aqre"
 		]
 	};
 	var tabstate = {
