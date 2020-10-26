@@ -34,7 +34,7 @@
 			this.add("disptype_bosanowa", 1, {
 				option: [1, 2, 3]
 			}); /* bosanowa: 表示形式 */
-			this.add("disptype_interbd", 1, {
+			this.add("disptype_interbd", 3, {
 				option: [1, 2, 3]
 			}); /* interbd: Clue display mode */
 			this.add("snakebd", false); /* hebi: へびの境界線を表示する */
