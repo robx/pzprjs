@@ -1,3 +1,5 @@
+* New background image for nonogram (due to Lennard Sprong)
+
 ### 2020-09-05
 
 * easyasabc: Fix "undefined"
