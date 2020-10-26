@@ -320,7 +320,7 @@
 
 		getNumberVerticalOffset: function(cell) {
 			this.fontsizeratio =
-				this.puzzle.getConfig("disptype_interbd") === 1 || cell.ques === 0
+				this.puzzle.getConfig("disptype_interbd") === 1
 					? 0.65
 					: 0.45;
 
