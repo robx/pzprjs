@@ -362,7 +362,8 @@
 			"putteria",
 			"haisu",
 			"nikoji",
-			"mines"
+			"mines",
+			"aqre"
 		]
 	};
 	var tabstate = {
