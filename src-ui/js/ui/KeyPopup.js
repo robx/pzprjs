@@ -497,7 +497,7 @@ ui.keypopup = {
 				["-", { text: "?", color: "gray" }],
 				["q", { text: "●", color: "red" }],
 				["w", { text: "◆", color: "blue" }],
-				["e", { text: "▼", color: "green" }],
+				["e", { text: "▲", color: "green" }],
 				["r", { text: "■", color: "#c000c0" }],
 				["t", { text: "⬟", color: "#ff8000" }],
 				["y", { text: "⬣", color: "#00c0c0" }],

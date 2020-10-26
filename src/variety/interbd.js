@@ -320,12 +320,10 @@
 
 		getNumberVerticalOffset: function(cell) {
 			this.fontsizeratio =
-				this.puzzle.getConfig("disptype_interbd") === 1
-					? 0.65
-					: 0.45;
+				this.puzzle.getConfig("disptype_interbd") === 1 ? 0.65 : 0.45;
 
 			if (this.puzzle.getConfig("disptype_interbd") !== 1 && cell.ques === 3) {
-				return this.cw * -0.1;
+				return this.cw * 0.1;
 			}
 			return 0;
 		},
@@ -387,11 +385,11 @@
 							px,
 							py,
 							0,
-							triy,
+							-triy,
 							-trix,
-							-triy,
+							triy,
 							trix,
-							-triy,
+							triy,
 							true
 						);
 						g.stroke();
