@@ -1,4 +1,6 @@
 * aqre: New puzzle type Aqre
+* interbd: New puzzle type International Borders (due to Lennard Sprong)
+* toichika2: New puzzle type Toichika 2 (due to Lennard Sprong)
 * New background image for nonogram (due to Lennard Sprong)
 
 ### 2020-09-05
