@@ -334,7 +334,7 @@ ui.keypopup = {
 		this.generate_main(["1", "2", "3", "4", "5", "6", "0", " ", ["-", "?"]], 3);
 	},
 	gentable8: function(mode) {
-		if (ui.puzzle.pid !== "tapa" && ui.puzzle.pid !== "tapaloop" ) {
+		if (ui.puzzle.pid !== "tapa" && ui.puzzle.pid !== "tapaloop") {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4
