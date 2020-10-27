@@ -44,6 +44,7 @@
 	Cell: {
 		disInputHatena: true,
 		enableSubNumberArray: true,
+		supportQnumAnum: true,
 
 		maxnum: function() {
 			return this.puzzle.editmode

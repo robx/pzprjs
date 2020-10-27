@@ -98,7 +98,8 @@ ui.keypopup = {
 		hakoiri: [113, 113],
 		kusabi: [114, 0],
 		doppelblock: [10, 115],
-		interbd: [116, 0]
+		interbd: [116, 0],
+		toichika2: [10, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -262,6 +263,9 @@ ui.keypopup = {
 		}
 
 		itemlist.push("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+		if (mode === 3 && pid === "toichika2") {
+			itemlist.push(["-", { text: "・", color: "rgb(255, 96, 191)" }]);
+		}
 		itemlist.push(
 			mode === 1 || !ui.puzzle.klass.Cell.prototype.numberWithMB ? " " : null
 		);
