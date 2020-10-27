@@ -494,11 +494,17 @@ pzpr.classmgr.makeCommon({
 				g.vid = header + cell.id;
 				if (!!text) {
 					g.fillStyle = colorfunc.call(this, cell);
-					this.disptext(text, cell.bx * this.bw, cell.by * this.bh, textoption);
+					var x = cell.bx * this.bw;
+					var y = cell.by * this.bh + this.getNumberVerticalOffset(cell);
+					this.disptext(text, x, y, textoption);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+
+		getNumberVerticalOffset: function(cell) {
+			return 0;
 		},
 
 		getQuesNumberText: function(cell) {

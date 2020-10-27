@@ -98,6 +98,7 @@ ui.keypopup = {
 		hakoiri: [113, 113],
 		kusabi: [114, 0],
 		doppelblock: [10, 115],
+		interbd: [116, 0],
 		toichika2: [10, 10]
 	},
 
@@ -210,6 +211,8 @@ ui.keypopup = {
 			this.generate_kusabi(mode);
 		} else if (type === 115) {
 			this.generate_doppelblock();
+		} else if (type === 116) {
+			this.generate_interbd();
 		}
 	},
 	gentable4: function(mode) {
@@ -485,6 +488,26 @@ ui.keypopup = {
 				" "
 			],
 			5
+		);
+	},
+	generate_interbd: function() {
+		this.generate_main(
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"0",
+				["-", { text: "?", color: "gray" }],
+				["q", { text: "●", color: "red" }],
+				["w", { text: "◆", color: "blue" }],
+				["e", { text: "▲", color: "green" }],
+				["r", { text: "■", color: "#c000c0" }],
+				["t", { text: "⬟", color: "#ff8000" }],
+				["y", { text: "⬣", color: "#00c0c0" }],
+				" "
+			],
+			4
 		);
 	},
 

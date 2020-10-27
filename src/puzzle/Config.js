@@ -34,6 +34,9 @@
 			this.add("disptype_bosanowa", 1, {
 				option: [1, 2, 3]
 			}); /* bosanowa: 表示形式 */
+			this.add("disptype_interbd", 3, {
+				option: [1, 2, 3]
+			}); /* interbd: Clue display mode */
 			this.add("snakebd", false); /* hebi: へびの境界線を表示する */
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
 			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
@@ -319,6 +322,9 @@
 				case "disptype_yajilin":
 					exec = pid === "yajilin";
 					break;
+				case "disptype_interbd":
+					exec = pid === "interbd";
+					break;
 				case "bgcolor":
 					exec = pid === "slither";
 					break;
@@ -394,6 +400,7 @@
 				case "aquarium_regions":
 				case "snakebd":
 				case "disptype_yajilin":
+				case "disptype_interbd":
 				case "dispqnumbg":
 					puzzle.redraw();
 					break;

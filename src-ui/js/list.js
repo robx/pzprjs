@@ -363,6 +363,7 @@
 			"haisu",
 			"nikoji",
 			"mines",
+			"interbd",
 			"toichika2"
 		]
 	};
