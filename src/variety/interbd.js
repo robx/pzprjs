@@ -598,16 +598,13 @@
 		checkSurrounded: function() {
 			for (var c = 0; c < this.board.cell.length; c++) {
 				var cell = this.board.cell[c];
-				if (cell.qans !== 1) {
+				if (!cell.isShade()) {
 					continue;
 				}
-				var list = cell.getdir4clist();
-				var shaded = list.filter(function(pair) {
-					return pair[0].isShade();
-				}).length;
-				var border = 4 - list.length;
-
-				if (shaded + border < 3) {
+				var unshaded = cell.countDir4Cell(function(c) {
+					return !c.isShade();
+				});
+				if (unshaded >= 2) {
 					continue;
 				}
 
