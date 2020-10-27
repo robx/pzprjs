@@ -171,7 +171,7 @@
 			hitori: [0, 1, "ひとりにしてくれ", "Hitori"],
 			icebarn: [1, 0, "アイスバーン", "Icebarn", "icebarn"],
 			icelom: [0, 0, "アイスローム", "Icelom", "icebarn"],
-			icelom2: [0, 0, "アイスローム２", "Icelom2", "icebarn"],
+			icelom2: [0, 0, "アイスローム２", "Icelom 2", "icebarn"],
 			ichimaga: [0, 0, "イチマガ", "Ichimaga", "ichimaga"],
 			ichimagam: [0, 0, "磁石イチマガ", "Magnetic Ichimaga", "ichimaga"],
 			ichimagax: [
@@ -305,7 +305,7 @@
 			tents: [0, 0, "Tents", "Tents", "tents"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
-			toichika2: [0, 0, "遠い誓い２", "Toichika2", "toichika"],
+			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],
