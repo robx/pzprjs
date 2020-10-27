@@ -1,5 +1,6 @@
 * aqre: New puzzle type Aqre
 * interbd: New puzzle type International Borders (due to Lennard Sprong)
+* tapaloop: New puzzle type Tapa-Like Loop (due to Giuliano Montelucci)
 * toichika2: New puzzle type Toichika 2 (due to Lennard Sprong)
 * New background image for nonogram (due to Lennard Sprong)
 
