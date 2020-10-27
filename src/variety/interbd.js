@@ -668,6 +668,10 @@
 					return !pair[0].isShade();
 				});
 
+				if (list.length < 2) {
+					continue;
+				}
+
 				var set = new Set();
 				list.forEach(function(pair) {
 					set.add(pair[0].ublk);
