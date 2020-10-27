@@ -2,8 +2,6 @@
 // interbd.js: Implementation of International Borders puzzle type.
 //
 
-/* global Set:false */
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -667,17 +665,18 @@
 				var list = cell.getdir4clist().filter(function(pair) {
 					return !pair[0].isShade();
 				});
-
 				if (list.length < 2) {
 					continue;
 				}
-
-				var set = new Set();
-				list.forEach(function(pair) {
-					set.add(pair[0].ublk);
-				});
-
-				if (set.size > 1) {
+				var ublk = list[0][0].ublk,
+					found = false;
+				for (var i = 1; i < list.length; i++) {
+					if (list[i][0].ublk !== ublk) {
+						found = true;
+						break;
+					}
+				}
+				if (found) {
 					continue;
 				}
 
