@@ -51,15 +51,15 @@
 	},
 
 	Graphic: {
-		gridcolor_type: "LIGHT",
+		gridcolor_type: "DARK",
 
 		enablebcolor: true,
 		bgcellcolor_func: "qsub1",
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawGrid();
 			this.drawShadedCells();
+			this.drawGrid();
 
 			this.drawQuesNumbers();
 
