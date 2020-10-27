@@ -707,8 +707,8 @@
 			"One kind of color is included in different countries."
 		],
 		shSurrounded: [
-			"(please translate) A shaded cell does not divide two or more countries.",
-			"A shaded cell does not divide two or more countries."
+			"(please translate) A shaded cell cannot divide two or more countries.",
+			"A shaded cell cannot divide two or more countries."
 		],
 		shNoDivide: [
 			"(please translate) A shaded cell does not divide two or more countries.",
