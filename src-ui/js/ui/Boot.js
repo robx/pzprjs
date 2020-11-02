@@ -5,6 +5,7 @@
 	/* 初期化時のみ使用するルーチン */
 	/********************************/
 
+	var onload_pzv = null;
 	var onload_pzl = null;
 	var onload_option = {};
 
@@ -23,7 +24,7 @@
 		if (!onload_pzl) {
 			/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
 			/* 2) URL(?以降)をチェック */
-			onload_pzl = importFileData() || importURL();
+			onload_pzl = importURL();
 
 			/* 指定されたパズルがない場合はさようなら～ */
 			if (!onload_pzl || !onload_pzl.pid) {
@@ -43,11 +44,11 @@
 			title2.innerHTML = "Fail to import puzzle data or URL.";
 		}
 		document.getElementById("menupanel").innerHTML = "";
-		//throw new Error("No Include Puzzle Data Exception");
 	}
 
 	function startPuzzle() {
 		var pzl = onload_pzl;
+		ui.pzv = onload_pzv; // for the puzz.link callback
 
 		/* IE SVGのtextLengthがうまく指定できていないので回避策を追加 */
 		if (
@@ -88,11 +89,8 @@
 	// ★importURL() 初期化時にURLを解析し、パズルの種類・エディタ/player判定を行う
 	//---------------------------------------------------------------------------
 	function importURL() {
-		/* index.htmlからURLが入力されたかチェック */
-		var search = getStorageData("pzprv3_urldata", "urldata");
-
 		/* index.htmlからURLが入力されていない場合は現在のURLの?以降をとってくる */
-		search = search || location.search;
+		var search = location.search;
 		if (!search) {
 			return null;
 		}
@@ -107,43 +105,11 @@
 			search = RegExp.$3;
 		}
 
+		onload_pzv = search;
 		var pzl = pzpr.parser.parseURL(search);
 		var startmode = pzl.mode || (!pzl.body ? "editor" : "player");
 		onload_option.type = onload_option.type || startmode;
 
 		return pzl;
-	}
-
-	//---------------------------------------------------------------------------
-	// ★importFileData() 初期化時にファイルデータの読み込みを行う
-	//---------------------------------------------------------------------------
-	function importFileData() {
-		/* index.htmlや盤面の複製等でファイルorブラウザ保存データが入力されたかチェック */
-		var fstr = getStorageData("pzprv3_filedata", "filedata");
-		if (!fstr) {
-			return null;
-		}
-
-		var pzl = pzpr.parser.parseFile(fstr, "");
-		if (!pzl) {
-			return null;
-		}
-
-		return pzl;
-	}
-
-	//---------------------------------------------------------------------------
-	// ★getStorageData() localStorageやsesseionStorageのデータを読み込む
-	//---------------------------------------------------------------------------
-	function getStorageData(key, key2) {
-		// 移し変える処理
-		var str = localStorage[key];
-		if (typeof str === "string") {
-			delete localStorage[key];
-			sessionStorage[key2] = str;
-		}
-
-		str = sessionStorage[key2];
-		return typeof str === "string" ? str : null;
 	}
 })();
