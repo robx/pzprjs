@@ -265,11 +265,6 @@
 				}
 			});
 			this.common.rebuildInfo.call(this);
-		},
-
-		subclear: function() {
-			this.common.subclear.call(this);
-			this.rebuildInfo();
 		}
 	},
 	BoardExec: {

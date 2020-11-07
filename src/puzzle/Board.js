@@ -418,6 +418,7 @@ pzpr.classmgr.makeCommon({
 			this.cross.subclear();
 			this.border.subclear();
 			this.excell.subclear();
+			this.rebuildInfo();
 		},
 
 		errclear: function() {
