@@ -194,6 +194,13 @@
 		}
 	},
 	Border: {
+		posthook: {
+			qans: function(num) {
+				this.sidecell[0].rebuildAroundCell();
+				this.sidecell[1].rebuildAroundCell();
+			}
+		},
+
 		updateGhostBorder: function() {
 			var c0 = this.sidecell[0],
 				c1 = this.sidecell[1];
