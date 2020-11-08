@@ -298,13 +298,18 @@
 			this.decodeSG();
 			this.decodeBorderQues();
 			this.decodeCellQnum();
-			this.decodeBorderLine();
+			if (this.filever >= 1) {
+				this.decodeBorderArrowAns();
+			} else {
+				this.decodeBorderLine();
+			}
 		},
 		encodeData: function() {
+			this.filever = 1;
 			this.encodeSG();
 			this.encodeBorderQues();
 			this.encodeCellQnum();
-			this.encodeBorderLine();
+			this.encodeBorderArrowAns();
 		},
 		decodeSG: function() {
 			var str = this.readLine();
