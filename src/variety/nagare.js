@@ -509,30 +509,7 @@
 					cell.qdir = val % 5;
 				}
 			});
-			this.decodeBorder(function(border, ca) {
-				var lca = ca.charAt(ca.length - 1);
-				if (lca >= "a" && lca <= "z") {
-					if (lca === "u") {
-						border.qsub = 11;
-					} else if (lca === "d") {
-						border.qsub = 12;
-					} else if (lca === "l") {
-						border.qsub = 13;
-					} else if (lca === "r") {
-						border.qsub = 14;
-					}
-					ca = ca.substr(0, ca.length - 1);
-				}
-
-				if (ca !== "" && ca !== "0") {
-					if (ca.charAt(0) === "-") {
-						border.line = -ca - 1;
-						border.qsub = 2;
-					} else {
-						border.line = +ca;
-					}
-				}
-			});
+			this.decodeBorderArrowAns();
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
@@ -545,20 +522,7 @@
 					return ". ";
 				}
 			});
-			this.encodeBorder(function(border) {
-				var ca = "";
-				if (border.qsub === 2) {
-					ca += "" + (-1 - border.line);
-				} else if (border.line > 0) {
-					ca += "" + border.line;
-				}
-
-				if (border.qsub >= 11) {
-					ca += ["u", "d", "l", "r"][border.qsub - 11];
-				}
-
-				return ca !== "" ? ca + " " : "0 ";
-			});
+			this.encodeBorderArrowAns();
 		}
 	},
 	//---------------------------------------------------------

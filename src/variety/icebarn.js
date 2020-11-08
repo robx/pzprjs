@@ -1110,7 +1110,7 @@
 				}
 			});
 			this.decodeBorderArrow();
-			this.decodeBorderLine_icebarn();
+			this.decodeBorderArrowAns();
 		},
 		encodeData: function() {
 			var bd = this.board;
@@ -1120,7 +1120,7 @@
 				return cell.ques === 6 ? "1 " : "0 ";
 			});
 			this.encodeBorderArrow();
-			this.encodeBorderLine_icebarn();
+			this.encodeBorderArrowAns();
 		},
 
 		decodeBorderArrow: function() {
@@ -1176,7 +1176,7 @@
 					cell.qnum = ca !== "?" ? +ca : -2;
 				}
 			});
-			this.decodeBorderLine_icebarn();
+			this.decodeBorderArrowAns();
 		},
 		encodeData: function() {
 			var bd = this.board;
@@ -1196,51 +1196,7 @@
 				}
 				return istr + qstr;
 			});
-			this.encodeBorderLine_icebarn();
-		}
-	},
-	FileIO: {
-		decodeBorderLine_icebarn: function() {
-			this.decodeBorder(function(border, ca) {
-				var lca = ca.charAt(ca.length - 1);
-				if (lca >= "a" && lca <= "z") {
-					if (lca === "u") {
-						border.qsub = 11;
-					} else if (lca === "d") {
-						border.qsub = 12;
-					} else if (lca === "l") {
-						border.qsub = 13;
-					} else if (lca === "r") {
-						border.qsub = 14;
-					}
-					ca = ca.substr(0, ca.length - 1);
-				}
-
-				if (ca !== "" && ca !== "0") {
-					if (ca.charAt(0) === "-") {
-						border.line = -ca - 1;
-						border.qsub = 2;
-					} else {
-						border.line = +ca;
-					}
-				}
-			});
-		},
-		encodeBorderLine_icebarn: function() {
-			this.encodeBorder(function(border) {
-				var ca = "";
-				if (border.qsub === 2) {
-					ca += "" + (-1 - border.line);
-				} else if (border.line > 0) {
-					ca += "" + border.line;
-				}
-
-				if (border.qsub >= 11) {
-					ca += ["u", "d", "l", "r"][border.qsub - 11];
-				}
-
-				return ca !== "" ? ca + " " : "0 ";
-			});
+			this.encodeBorderArrowAns();
 		}
 	},
 
