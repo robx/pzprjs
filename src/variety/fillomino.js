@@ -335,7 +335,8 @@
 				--numkind;
 			}
 			component.numkind = numkind;
-			component.number = numkind === 1 ? filled : -1;
+			component.number =
+				numkind === 1 ? filled : numkind === 0 ? clist.length : -1;
 		},
 
 		getComponentRefs: function(cell) {
@@ -454,7 +455,6 @@
 			"checkLargeArea",
 			"checkNumKinds",
 			"checkRoomSymm@symmarea",
-			"checkNoNumArea",
 			"checkNoNumCell_fillomino+"
 		],
 
@@ -482,11 +482,6 @@
 			this.checkAllErrorRoom(function(area) {
 				return area.numkind <= 1;
 			}, "bkMixedNum");
-		},
-		checkNoNumArea: function() {
-			this.checkAllErrorRoom(function(area) {
-				return area.numkind >= 1;
-			}, "bkNoNum");
 		},
 		checkRoomSymm: function() {
 			var board = this.board;
