@@ -9,7 +9,8 @@
 		"doubleback",
 		"maxi",
 		"simpleloop",
-		"detour"
+		"detour",
+		"dotchi"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -79,6 +80,12 @@
 			this.mouseCell = cell;
 		}
 	},
+	"MouseEvent@dotchi": {
+		inputModes: {
+			edit: ["border", "circle-shade", "circle-unshade", "clear", "info-line"],
+			play: ["line", "peke", "lineblank", "clear", "info-line"]
+		}
+	},
 	MouseEvent: {
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -93,7 +100,11 @@
 					this.notInputted() &&
 					this.pid !== "simpleloop"
 				) {
-					if (this.inputpeke_ifborder() || this.pid === "maxi") {
+					if (
+						this.inputpeke_ifborder() ||
+						this.pid === "maxi" ||
+						this.pid === "dotchi"
+					) {
 						return;
 					}
 					this.inputMB();
@@ -153,7 +164,7 @@
 	"Cell@detour": {
 		minnum: 0
 	},
-	"Cell@moonsun": {
+	"Cell@moonsun,dotchi": {
 		disInputHatena: true,
 		numberAsObject: true,
 
@@ -165,15 +176,20 @@
 			}
 		}
 	},
+	"Cell@dotchi#1": {
+		noLP: function(dir) {
+			return this.qnum === 2;
+		}
+	},
 	"Cell@doubleback,simpleloop": {
 		noLP: function(dir) {
 			return this.isEmpty();
 		}
 	},
-	"Border@doubleback,simpleloop": {
+	"Border@doubleback,simpleloop,dotchi": {
 		enableLineNG: true
 	},
-	"Border@moonsun": {
+	"Border@moonsun,dotchi#1": {
 		posthook: {
 			line: function(num) {
 				var room1 = this.sidecell[0].room,
@@ -256,7 +272,7 @@
 	"AreaRoomGraph@country,maxi,detour": {
 		hastop: true
 	},
-	"AreaRoomGraph@moonsun": {
+	"AreaRoomGraph@moonsun,dotchi": {
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
 			component.countMarkAndLine();
@@ -285,6 +301,26 @@
 			}
 		}
 	},
+	"GraphComponent@dotchi": {
+		countMarkAndLine: function() {
+			var count = (this.count = {
+				curve: 0,
+				straight: 0
+			});
+			var clist = this.clist;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				if (cell.qnum !== 1 || cell.lcnt !== 2) {
+					continue;
+				}
+				if (cell.isLineStraight()) {
+					count.straight++;
+				} else {
+					count.curve++;
+				}
+			}
+		}
+	},
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -306,6 +342,8 @@
 				this.drawMarks();
 			} else if (this.pid === "onsen") {
 				this.drawCircledNumbers();
+			} else if (this.pid === "dotchi") {
+				this.drawCircles();
 			}
 
 			if (this.pid === "country") {
@@ -416,6 +454,10 @@
 	"Graphic@maxi,detour": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
+	"Graphic@dotchi": {
+		circlefillcolor_func: "qnum2",
+		circlestrokecolor_func: "qnum2"
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -433,7 +475,7 @@
 				this.pid === "detour"
 			) {
 				this.decodeRoomNumber16();
-			} else if (this.pid === "moonsun") {
+			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
 				this.decodeCircle();
 			} else if (this.pid === "onsen") {
 				this.decodeNumber16();
@@ -454,7 +496,7 @@
 				this.pid === "detour"
 			) {
 				this.encodeRoomNumber16();
-			} else if (this.pid === "moonsun") {
+			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
 				this.encodeCircle();
 			} else if (this.pid === "onsen") {
 				this.encodeNumber16();
@@ -616,6 +658,18 @@
 			"checkDeadendLine+",
 			"checkOneLoop",
 			"checkNoLine"
+		]
+	},
+	"AnsCheck@dotchi#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkCircleEqual",
+			"checkAllCirclePassed",
+
+			"checkDeadendLine+",
+			"checkOneLoop"
 		]
 	},
 	AnsCheck: {
@@ -1038,6 +1092,33 @@
 			}
 		}
 	},
+	"AnsCheck@dotchi": {
+		checkAllCirclePassed: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.qnum === 1;
+			}, "lnIsolate");
+		},
+
+		checkCircleEqual: function() {
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var room = rooms[id];
+				if (room.count.curve === 0 || room.count.straight === 0) {
+					continue;
+				}
+
+				this.failcode.add("bkNoMatch");
+				if (this.checkOnly) {
+					break;
+				}
+				room.clist
+					.filter(function(cell) {
+						return cell.qnum === 1;
+					})
+					.seterr(1);
+			}
+		}
+	},
 
 	"FailCode@country": {
 		bkPassTwice: [
@@ -1135,6 +1216,16 @@
 		blWrongTurns: [
 			"線の曲がった回数が数字と違っています。",
 			"A room has the wrong number of turns."
+		]
+	},
+	"FailCode@dotchi": {
+		lnIsolate: [
+			"線の通っていない○があります。",
+			"A circle doesn't have a line."
+		],
+		bkNoMatch: [
+			"(please translate) Circles in a region contain both curves and straight lines.",
+			"Circles in a region contain both curves and straight lines."
 		]
 	}
 });
