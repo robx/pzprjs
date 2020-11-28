@@ -153,6 +153,7 @@
 						bd.cols--;
 					}
 				}
+				bd.setminmax();
 				bd.setposAll();
 
 				if (bd.hasdots === 1) {
