@@ -156,10 +156,10 @@ function sameArray(array1, array2) {
 		maxnum: function() {
 			var bx = this.bx,
 				by = this.by;
-			if (bx === -1 && by === -1) {
+			if (bx < 0 && by < 0) {
 				return 0;
 			}
-			return by === -1 ? this.board.rows : this.board.cols;
+			return by < 0 ? this.board.rows : this.board.cols;
 		},
 
 		posthook: {
