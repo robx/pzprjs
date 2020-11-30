@@ -311,10 +311,13 @@ pzpr.classmgr.makeCommon({
 			var d0 = this.area,
 				d = { x1: d0.x1, y1: d0.y1, x2: d0.x2, y2: d0.y2 };
 			var key_undo = this.board.exec.boardtype[this.old][0];
-			if (key_undo & this.TURN) {
+			if (key_undo & this.board.exec.TURN) {
 				var tmp = d.x1;
 				d.x1 = d.y1;
 				d.y1 = tmp;
+				tmp = d.x2;
+				d.x2 = d.y2;
+				d.y2 = tmp;
 			}
 			this.exec(key_undo, d);
 		},
