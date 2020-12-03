@@ -64,58 +64,60 @@
 			return list;
 		}
 	},
-	"Cell@canal":{
+	"Cell@canal": {
 		maxnum: function() {
 			return this.board.cols + this.board.rows - 2;
 		},
-		minnum : 0,
+		minnum: 0,
 
 		updated: false,
 		viewclist: null,
-		getShadeViewClistDir: function(dx,dy){
+		getShadeViewClistDir: function(dx, dy) {
 			var clist = new this.klass.CellList();
-			var c = this.relcell(dx,dy);
-			while(!!c && c.isShade()){
+			var c = this.relcell(dx, dy);
+			while (!!c && c.isShade()) {
 				clist.add(c);
-				c = c.relcell(dx,dy);
+				c = c.relcell(dx, dy);
 			}
 			return clist;
 		},
-		updateViewClist: function(){
-			if(this.qnum === -1){return;}
+		updateViewClist: function() {
+			if (this.qnum === -1) {
+				return;
+			}
 			var clist = new this.klass.CellList();
 			clist.extend(this.getShadeViewClistDir(-2, 0));
-			clist.extend(this.getShadeViewClistDir( 0,-2));
-			clist.extend(this.getShadeViewClistDir( 2, 0));
-			clist.extend(this.getShadeViewClistDir( 0, 2));
+			clist.extend(this.getShadeViewClistDir(0, -2));
+			clist.extend(this.getShadeViewClistDir(2, 0));
+			clist.extend(this.getShadeViewClistDir(0, 2));
 			this.viewclist = clist;
 			this.updated = true;
 		},
-		updateCluesDir: function(dx,dy){
-			var c = this.relcell(dx,dy);
-			while(!!c && !c.isnull){
-				if(c.qnum !== -1){
+		updateCluesDir: function(dx, dy) {
+			var c = this.relcell(dx, dy);
+			while (!!c && !c.isnull) {
+				if (c.qnum !== -1) {
 					c.updateViewClist();
 					return;
+				} else if (c.isShade()) {
+					c = c.relcell(dx, dy);
+				} else {
+					return;
 				}
-				else if(c.isShade()){
-					c = c.relcell(dx,dy);
-				}
-				else {return;}
 			}
 		},
-		updateClues: function(){
+		updateClues: function() {
 			this.updateCluesDir(-2, 0);
-			this.updateCluesDir( 0,-2);
-			this.updateCluesDir( 2, 0);
-			this.updateCluesDir( 0, 2);
+			this.updateCluesDir(0, -2);
+			this.updateCluesDir(2, 0);
+			this.updateCluesDir(0, 2);
 		},
 		posthook: {
-			qans: function(num){
+			qans: function(num) {
 				this.updateClues();
 			},
-			qnum: function(num){
-				if (num !== -1){
+			qnum: function(num) {
+				if (num !== -1) {
 					this.updateViewClist();
 					this.updateClues();
 				}
@@ -168,7 +170,7 @@
 			return cells;
 		}
 	},
-	"AreaUnshadeGraph@canal":{
+	"AreaUnshadeGraph@canal": {
 		enabled: false
 	},
 
@@ -317,7 +319,7 @@
 			"doneShadingDecided"
 		]
 	},
-	"AnsCheck@canal#1":{
+	"AnsCheck@canal#1": {
 		checklist: [
 			"check2x2ShadeCell",
 			"checkConnectShade",
@@ -437,19 +439,20 @@
 	},
 	"AnsCheck@canal": {
 		checkNumberAndShadeView: function() {
-			var clues = this.board.cell.filter(function(cell){
+			var clues = this.board.cell.filter(function(cell) {
 				return cell.qnum !== -1;
 			});
-			for(var i = 0; i < clues.length; i++){
+			for (var i = 0; i < clues.length; i++) {
 				var c = clues[i];
-				if(!c.updated){ c.updateViewClist();}
-				if(c.qnum !== -2 && c.qnum !== c.viewclist.length){
+				if (!c.updated) {
+					c.updateViewClist();
+				}
+				if (c.qnum !== -2 && c.qnum !== c.viewclist.length) {
 					this.failcode.add("nmShadeViewNe");
 					c.seterr(1);
 					c.viewclist.seterr(1);
 				}
 			}
-
 		}
 	},
 
@@ -493,8 +496,8 @@
 		]
 	},
 
-	"FailCode@canal":{
-		nmShadeViewNe : [
+	"FailCode@canal": {
+		nmShadeViewNe: [
 			"(please translate) A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions.",
 			"A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions."
 		]
