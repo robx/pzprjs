@@ -89,6 +89,7 @@
 			clist.extend(this.getShadeViewClistDir( 2, 0));
 			clist.extend(this.getShadeViewClistDir( 0, 2));
 			this.viewclist = clist;
+			this.updated = true;
 		},
 		updateCluesDir: function(dx,dy){
 			var c = this.relcell(dx,dy);
@@ -111,9 +112,7 @@
 		},
 		posthook: {
 			qans: function(num){
-				if (num === 1){
-					this.updateClues();
-				}
+				this.updateClues();
 			},
 			qnum: function(num){
 				if (num !== -1){
@@ -126,6 +125,14 @@
 	"Board@mochikoro,mochinyoro": {
 		addExtraInfo: function() {
 			this.ublk8mgr = this.addInfoList(this.klass.AreaUnshade8Graph);
+		}
+	},
+	"Board@canal": {
+		rebuildInfo: function() {
+			this.cell.each(function(cell) {
+				cell.updated = false;
+			});
+			this.common.rebuildInfo.call(this);
 		}
 	},
 
