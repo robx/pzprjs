@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nurikabe", "nuribou", "mochikoro", "mochinyoro"], {
+})(["nurikabe", "nuribou", "mochikoro", "mochinyoro", "canal"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -25,7 +25,7 @@
 			}
 		}
 	},
-	"MouseEvent@nurikabe": {
+	"MouseEvent@nurikabe,canal": {
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
@@ -62,6 +62,65 @@
 				} /* i+1==dir */
 			}
 			return list;
+		}
+	},
+	"Cell@canal":{
+		maxnum: function() {
+			return this.board.cols + this.board.rows - 2;
+		},
+		minnum : 0,
+
+		updated: false,
+		viewclist: null,
+		getShadeViewClistDir: function(dx,dy){
+			var clist = new this.klass.CellList();
+			var c = this.relcell(dx,dy);
+			while(!!c && c.isShade()){
+				clist.add(c);
+				c = c.relcell(dx,dy);
+			}
+			return clist;
+		},
+		updateViewClist: function(){
+			if(this.qnum === -1){return;}
+			var clist = new this.klass.CellList();
+			clist.extend(this.getShadeViewClistDir(-2, 0));
+			clist.extend(this.getShadeViewClistDir( 0,-2));
+			clist.extend(this.getShadeViewClistDir( 2, 0));
+			clist.extend(this.getShadeViewClistDir( 0, 2));
+			this.viewclist = clist;
+		},
+		updateCluesDir: function(dx,dy){
+			var c = this.relcell(dx,dy);
+			while(!!c && !c.isnull){
+				if(c.qnum !== -1){
+					c.updateViewClist();
+					return;
+				}
+				else if(c.isShade()){
+					c = c.relcell(dx,dy);
+				}
+				else {return;}
+			}
+		},
+		updateClues: function(){
+			this.updateCluesDir(-2, 0);
+			this.updateCluesDir( 0,-2);
+			this.updateCluesDir( 2, 0);
+			this.updateCluesDir( 0, 2);
+		},
+		posthook: {
+			qans: function(num){
+				if (num === 1){
+					this.updateClues();
+				}
+			},
+			qnum: function(num){
+				if (num !== -1){
+					this.updateViewClist();
+					this.updateClues();
+				}
+			}
 		}
 	},
 	"Board@mochikoro,mochinyoro": {
@@ -102,6 +161,9 @@
 			return cells;
 		}
 	},
+	"AreaUnshadeGraph@canal":{
+		enabled: false
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -112,7 +174,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			if (this.pid === "nurikabe") {
+			if (this.pid === "nurikabe" || this.pid === "canal") {
 				this.drawDotCells();
 			}
 			this.drawGrid();
@@ -127,6 +189,9 @@
 	"Graphic@nuribou,mochikoro,mochinyoro": {
 		bgcellcolor_func: "qsub1",
 		enablebcolor: true
+	},
+	"Graphic@canal": {
+		gridcolor_type: "DARK"
 	},
 
 	//---------------------------------------------------------
@@ -245,6 +310,14 @@
 			"doneShadingDecided"
 		]
 	},
+	"AnsCheck@canal#1":{
+		checklist: [
+			"check2x2ShadeCell",
+			"checkConnectShade",
+			"checkNumberAndShadeView",
+			"doneShadingDecided"
+		]
+	},
 	AnsCheck: {
 		checkDoubleNumberInUnshade: function() {
 			this.checkAllBlock(
@@ -355,6 +428,23 @@
 			);
 		}
 	},
+	"AnsCheck@canal": {
+		checkNumberAndShadeView: function() {
+			var clues = this.board.cell.filter(function(cell){
+				return cell.qnum !== -1;
+			});
+			for(var i = 0; i < clues.length; i++){
+				var c = clues[i];
+				if(!c.updated){ c.updateViewClist();}
+				if(c.qnum !== -2 && c.qnum !== c.viewclist.length){
+					this.failcode.add("nmShadeViewNe");
+					c.seterr(1);
+					c.viewclist.seterr(1);
+				}
+			}
+
+		}
+	},
 
 	FailCode: {
 		bkNoNum: [
@@ -393,6 +483,13 @@
 		csDivide8: [
 			"孤立した白マスのブロックがあります。",
 			"The unshaded cells are divided."
+		]
+	},
+
+	"FailCode@canal":{
+		nmShadeViewNe : [
+			"(please translate) A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions.",
+			"A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions."
 		]
 	}
 });
