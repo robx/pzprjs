@@ -240,6 +240,7 @@
 			nurikabe: [0, 1, "ぬりかべ", "Nurikabe", "nurikabe"],
 			nurimaze: [0, 0, "ぬりめいず", "Nuri-Maze", "nurimaze"],
 			nurimisaki: [0, 0, "ぬりみさき", "Nurimisaki", "kurodoko"],
+			ovotovata: [0, 0, "Ovotovata", "Ovotovata", "country"],
 			onsen: [0, 0, "温泉めぐり", "Onsen-meguri", "country"],
 			paintarea: [1, 0, "ペイントエリア", "Paintarea"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],

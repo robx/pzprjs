@@ -367,7 +367,8 @@
 			"toichika2",
 			"aqre",
 			"tapaloop",
-			"dotchi"
+			"dotchi",
+			"ovotovata"
 		]
 	};
 	var tabstate = {
