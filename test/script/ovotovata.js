@@ -1,7 +1,7 @@
 /* ovotovata.js */
 
 ui.debug.addDebugData("ovotovata", {
-	url: "5/5/ikr6u460g6200.1h22",
+	url: "5/5/ikr6u4605800dc",
 	failcheck: [
 		[
 			"lnBranch",

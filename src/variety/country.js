@@ -546,9 +546,6 @@
 			if (this.pid !== "simpleloop") {
 				this.decodeBorder();
 			}
-			if (this.pid === "ovotovata") {
-				this.decodeIce();
-			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
@@ -571,9 +568,6 @@
 			if (this.pid !== "simpleloop") {
 				this.encodeBorder();
 			}
-			if (this.pid === "ovotovata") {
-				this.encodeIce();
-			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
@@ -588,6 +582,40 @@
 			} else if (this.pid === "doubleback" || this.pid === "simpleloop") {
 				this.encodeEmpty();
 			}
+		}
+	},
+	"Encode@ovotovata": {
+		decodeRoomNumber16: function() {
+			var bd = this.board;
+			bd.roommgr.rebuild();
+			var rooms = bd.roommgr.components;
+
+			this.genericDecodeNumber16(rooms.length, function(r, val) {
+				if (val & 1) {
+					rooms[r].clist.each(function(cell) {
+						cell.ques = 6;
+					});
+				}
+				val >>= 2;
+
+				rooms[r].top.qnum = val === 1 ? -2 : val - 1;
+			});
+		},
+		encodeRoomNumber16: function() {
+			var bd = this.board;
+			bd.roommgr.rebuild();
+			var rooms = bd.roommgr.components;
+
+			this.genericEncodeNumber16(rooms.length, function(r) {
+				var cell = rooms[r].top;
+				var val = cell.qnum === -2 ? 1 : cell.qnum + 1;
+				val <<= 2;
+				if (cell.ques === 6) {
+					val |= 1;
+				}
+
+				return val;
+			});
 		}
 	},
 	//---------------------------------------------------------
