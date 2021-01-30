@@ -156,8 +156,8 @@
 				bd.setminmax();
 				bd.setposAll();
 
-				if (bd.hasdots === 1) {
-					bd.initDots(bd.cols, bd.rows);
+				if (bd.hasdots) {
+					bd.initDots(bd.cols, bd.rows, bd.hasdots === 2);
 				}
 
 				this.adjustBoardData2(key, d);
