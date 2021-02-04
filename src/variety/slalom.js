@@ -13,7 +13,16 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "direc", "clear", "info-line"],
-			play: ["line", "peke", "info-line"]
+			play: ["line", "peke", "diraux", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				if (this.mousestart || this.mousemove) {
+					this.inputdiraux_mousemove();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -21,11 +30,15 @@
 					if (this.mousestart || this.mousemove) {
 						this.inputLine();
 					} else if (this.mouseend && this.notInputted()) {
-						this.inputpeke();
+						this.clickdiraux();
 					}
 				} else if (this.btn === "right") {
-					if (this.mousestart || this.mousemove) {
+					if (this.mousestart) {
+						this.inputdiraux_mousedown();
+					} else if (this.inputData === 2 || this.inputData === 3) {
 						this.inputpeke();
+					} else if (this.mousemove) {
+						this.inputdiraux_mousemove();
 					}
 				}
 			} else if (this.puzzle.editmode) {
@@ -669,6 +682,7 @@
 
 			this.drawPekes();
 			this.drawLines();
+			this.drawBorderAuxDir();
 
 			this.drawStartpos();
 
@@ -996,19 +1010,24 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			if (this.filever === 2) {
+			if (this.filever >= 2) {
 				this.decodeBoard_pzpr2();
 			} else if (this.filever === 1) {
 				this.decodeBoard_pzpr1();
 			} else if (this.filever === 0) {
 				this.decodeBoard_old();
 			}
-			this.decodeBorderLine();
+
+			if (this.filever === 3) {
+				this.decodeBorderArrowAns();
+			} else {
+				this.decodeBorderLine();
+			}
 		},
 		encodeData: function() {
-			this.filever = 2;
+			this.filever = 3;
 			this.encodeBoard_pzpr2();
-			this.encodeBorderLine();
+			this.encodeBorderArrowAns();
 		},
 
 		kanpenOpen: function() {
