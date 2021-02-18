@@ -255,6 +255,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			var bd = this.board;
+			bd.disableInfo();
 			var rowmin = bd.excellRows(bd.cols, bd.rows) * -2 + 1;
 			var colmin = bd.excellCols(bd.cols, bd.rows) * -2 + 1;
 			switch (key) {
@@ -300,6 +301,8 @@ pzpr.classmgr.makeCommon({
 					}
 					break;
 			}
+
+			bd.enableInfo();
 		},
 
 		//------------------------------------------------------------------------------

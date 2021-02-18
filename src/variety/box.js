@@ -138,7 +138,7 @@
 			if (bx === -1 && by === -1) {
 				return 0;
 			}
-			var size = bx === -1 ? this.board.rows : this.board.cols;
+			var size = bx === -1 ? this.board.cols : this.board.rows;
 			return ((size * (size + 1)) / 2) | 0;
 		},
 		minnum: 0

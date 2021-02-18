@@ -156,10 +156,10 @@ function sameArray(array1, array2) {
 		maxnum: function() {
 			var bx = this.bx,
 				by = this.by;
-			if (bx === -1 && by === -1) {
+			if (bx < 0 && by < 0) {
 				return 0;
 			}
-			return by === -1 ? this.board.rows : this.board.cols;
+			return by < 0 ? this.board.rows : this.board.cols;
 		},
 
 		posthook: {
@@ -313,8 +313,8 @@ function sameArray(array1, array2) {
 
 			var excells =
 				d.x1 === d.x2
-					? bd.excellinside(d.x1, bd.minbx, d.x1, -1)
-					: bd.excellinside(bd.minby, d.y1, -1, d.y1);
+					? bd.excellinside(d.x1, bd.minby, d.x1, -1)
+					: bd.excellinside(bd.minbx, d.y1, -1, d.y1);
 
 			var nums = [];
 			for (var i = 0; i < excells.length; i++) {

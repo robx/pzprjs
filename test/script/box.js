@@ -15,7 +15,7 @@ ui.debug.addDebugData("box", {
 	],
 	inputs: [
 		/* 回答入力はnurikabeと同じなので省略 */
-		{ input: ["editmode", "newboard,5,1"] },
+		{ input: ["editmode", "newboard,5,5"] },
 		{
 			input: [
 				"cursor,1,-1",
@@ -30,7 +30,8 @@ ui.debug.addDebugData("box", {
 				"key,1",
 				"key,0"
 			],
-			result: "pzprv3/box/1/5/. 0 0 1 2 10 /0 . . . . . /"
+			result:
+				"pzprv3/box/5/5/. 0 0 1 2 10 /0 . . . . . /0 . . . . . /0 . . . . . /0 . . . . . /0 . . . . . /"
 		},
 		{
 			input: [
@@ -42,9 +43,10 @@ ui.debug.addDebugData("box", {
 				"key,-",
 				"key,-"
 			],
-			result: "pzprv3/box/1/5/. 0 0 0 2 10 /0 . . . . . /"
+			result:
+				"pzprv3/box/5/5/. 0 0 0 2 10 /0 . . . . . /0 . . . . . /0 . . . . . /0 . . . . . /0 . . . . . /"
 		},
-		{ input: ["newboard,6,1"] },
+		{ input: ["newboard,6,6"] },
 		{
 			input: [
 				"cursor,0,0",
@@ -56,7 +58,8 @@ ui.debug.addDebugData("box", {
 				"mouse,leftx6, 9,-1",
 				"mouse,rightx3, 11,-1"
 			],
-			result: "pzprv3/box/1/6/. 1 2 3 4 5 21 /0 . . . . . . /"
+			result:
+				"pzprv3/box/6/6/. 1 2 3 4 5 21 /0 . . . . . . /0 . . . . . . /0 . . . . . . /0 . . . . . . /0 . . . . . . /0 . . . . . . /"
 		}
 	]
 });
