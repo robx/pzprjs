@@ -179,9 +179,9 @@
 
 				if (qn === -2) {
 					pstr = "%";
-				} else if (qn >= 0 && qn < 16) {
+				} else if (qn >= 0 && qn < 36) {
 					pstr = qn.toString(36);
-				} else if (qn >= 16 && qn < 256) {
+				} else if (qn >= 36 && qn < 1296) {
 					pstr = "-" + qn.toString(36);
 				} else {
 					count++;
