@@ -170,6 +170,7 @@ function sameArray(array1, array2) {
 	},
 
 	Board: {
+		hasborder: 1,
 		hasexcell: 1,
 		hasflush: 1,
 
@@ -223,6 +224,7 @@ function sameArray(array1, array2) {
 
 	Graphic: {
 		enablebcolor: true,
+		shadecolor: "#444444",
 
 		paint: function() {
 			this.drawBGCells();
@@ -234,8 +236,15 @@ function sameArray(array1, array2) {
 			this.drawNumbersExCell();
 
 			this.drawChassis(true);
+			this.drawBorders();
 
 			this.drawTarget();
+		},
+
+		getBorderColor: function(border) {
+			return border.bx % 10 === 0 || border.by % 10 === 0
+				? this.quescolor
+				: null;
 		},
 
 		getBoardCols: function() {
