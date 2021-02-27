@@ -323,6 +323,9 @@ pzpr.classmgr.makeCommon({
 				case "arrow":
 					this.inputarrow_cell();
 					break;
+				case "news":
+					this.inputarrow_cell();
+					break;
 				case "crossdot":
 					if (this.mousestart) {
 						this.inputcrossMark();
