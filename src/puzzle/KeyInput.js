@@ -56,6 +56,14 @@ pzpr.classmgr.makeCommon({
 			var c = this.getchar(e);
 			if (!this.enableKey) {
 				if (c === "BS" || c === " ") {
+					var el = document.activeElement;
+					if (
+						(el.tagName === "INPUT" &&
+							(el.type === "number" || el.type === "text")) ||
+						el.tagName === "TEXTAREA"
+					) {
+						return;
+					}
 					e.stopPropagation();
 					e.preventDefault();
 				}
