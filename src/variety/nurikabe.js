@@ -322,8 +322,8 @@
 	"AnsCheck@canal#1": {
 		checklist: [
 			"check2x2ShadeCell",
-			"checkConnectShade",
 			"checkNumberAndShadeView",
+			"checkConnectShade",
 			"doneShadingDecided"
 		]
 	},
@@ -440,14 +440,14 @@
 	"AnsCheck@canal": {
 		checkNumberAndShadeView: function() {
 			var clues = this.board.cell.filter(function(cell) {
-				return cell.qnum !== -1;
+				return cell.qnum >= 0;
 			});
 			for (var i = 0; i < clues.length; i++) {
 				var c = clues[i];
 				if (!c.updated) {
 					c.updateViewClist();
 				}
-				if (c.qnum !== -2 && c.qnum !== c.viewclist.length) {
+				if (c.qnum !== c.viewclist.length) {
 					this.failcode.add("nmShadeViewNe");
 					c.seterr(1);
 					c.viewclist.seterr(1);
