@@ -114,6 +114,7 @@
 				"",
 				{ alias: "building", alias2: "skyscraper" }
 			],
+			canal: [0, 0, "Canal View", "Canal View", "nurikabe"],
 			castle: [0, 0, "Castle Wall", "Castle Wall"],
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
