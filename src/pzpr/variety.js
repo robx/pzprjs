@@ -205,6 +205,7 @@
 				{ pzprurl: "akari", kanpen: "bijutsukan" }
 			],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
+			lohkous: [0, 0, "Lohkous", "Lohkous"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],
