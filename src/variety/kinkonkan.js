@@ -412,6 +412,7 @@
 		errcolor2: "black", // drawSlashes関係 quescolorと同じ
 
 		lightcolor: "rgb(255, 255, 127)",
+		linecolor: "black",
 
 		paint: function() {
 			this.drawBGCells_kinkonkan();

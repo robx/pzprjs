@@ -386,64 +386,76 @@ pzpr.classmgr.makeCommon({
 			var irowake = this.puzzle.execConfig("irowake");
 
 			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i];
-				g.vid = "c_slash_" + cell.id;
-				if (cell.qans !== 0) {
-					var info = cell.error || cell.qinfo,
-						addwidth = 0,
-						color;
-					if (this.pid === "gokigen" || this.pid === "wagiri") {
+			for (var slash = 0; slash <= 1; slash++) {
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					g.vid = "c_slash_" + slash + "_" + cell.id;
+					if (cell.qans === 33 || cell.qans === (slash ? 32 : 31)) {
+						var info = cell.qinfo || cell.error,
+							addwidth = 0,
+							color;
 						if (cell.trial && this.puzzle.execConfig("irowake")) {
 							addwidth = -basewidth / 2;
-						} else if (info === 1 || info === 3) {
+						} else if (
+							(this.pid === "gokigen" || this.pid === "wagiri") &&
+							(info === 1 || info === 3)
+						) {
 							addwidth = basewidth / 2;
 						}
-					}
 
-					if (info === 1) {
-						color = this.errcolor1;
-					} else if (info === 2) {
-						color = this.errcolor2;
-					} else if (info === -1) {
-						color = this.noerrcolor;
-					} else if (irowake && cell.path.color) {
-						color = cell.path.color;
-					} else if (cell.trial) {
-						color = this.trialcolor;
+						if (info > 0) {
+							if (info & (slash ? 4 : 8)) {
+								color = this.noerrcolor;
+							} else if (info & 1) {
+								color = this.errcolor1;
+							} else if (info & 2) {
+								color = this.errcolor2;
+							}
+						} else if (info === -1) {
+							color = this.noerrcolor;
+						} else if (irowake && cell.qans === 33) {
+							color =
+								!!slash === cell.parity() ? cell.path.color : cell.path2.color;
+						} else if (irowake && cell.path && cell.path.color) {
+							color = cell.path.color;
+						} else if (irowake && cell.path2 && cell.path2.color) {
+							color = cell.path2.color;
+						} else if (cell.trial) {
+							color = this.trialcolor;
+						} else {
+							color = this.linecolor;
+						}
+
+						g.lineWidth = basewidth + addwidth;
+						g.strokeStyle = color;
+						g.beginPath();
+						var px = cell.bx * this.bw,
+							py = cell.by * this.bh;
+						if (!slash) {
+							g.setOffsetLinePath(
+								px,
+								py,
+								-this.bw,
+								-this.bh,
+								this.bw,
+								this.bh,
+								true
+							);
+						} else {
+							g.setOffsetLinePath(
+								px,
+								py,
+								this.bw,
+								-this.bh,
+								-this.bw,
+								this.bh,
+								true
+							);
+						}
+						g.stroke();
 					} else {
-						color = "black";
+						g.vhide();
 					}
-
-					g.lineWidth = basewidth + addwidth;
-					g.strokeStyle = color;
-					g.beginPath();
-					var px = cell.bx * this.bw,
-						py = cell.by * this.bh;
-					if (cell.qans === 31) {
-						g.setOffsetLinePath(
-							px,
-							py,
-							-this.bw,
-							-this.bh,
-							this.bw,
-							this.bh,
-							true
-						);
-					} else if (cell.qans === 32) {
-						g.setOffsetLinePath(
-							px,
-							py,
-							this.bw,
-							-this.bh,
-							-this.bw,
-							this.bh,
-							true
-						);
-					}
-					g.stroke();
-				} else {
-					g.vhide();
 				}
 			}
 		},
@@ -761,7 +773,7 @@ pzpr.classmgr.makeCommon({
 				// 数字の描画
 				g.vid = "cell_arnum_" + cell.id;
 				if (!!text) {
-					var option = { ratio: 0.8 };
+					var option = { ratio: this.fontsizeratio };
 					if (dir !== cell.NDIR) {
 						option.ratio = 0.7;
 					}

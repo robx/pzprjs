@@ -16,6 +16,7 @@ pzpr.classmgr.makeCommon({
 
 		pointgroup: "cell",
 		linkgroup: "border",
+		countprop: "lcnt",
 
 		isLineCross: false, // 線が交差するパズル
 
@@ -54,7 +55,7 @@ pzpr.classmgr.makeCommon({
 		// linegraph.iscrossing()            そのセルで交差するかどうか返す
 		//--------------------------------------------------------------------------------
 		isnodevalid: function(cell) {
-			return cell.lcnt > 0 || (this.moveline && cell.isNum());
+			return cell[this.countprop] > 0 || (this.moveline && cell.isNum());
 		},
 		isedgevalidbylinkobj: function(border) {
 			return border.isLine();
@@ -89,7 +90,7 @@ pzpr.classmgr.makeCommon({
 				borders = this.board[this.linkgroup];
 			this.ltotal = [cells.length];
 			for (var c = 0; c < cells.length; c++) {
-				cells[c].lcnt = 0;
+				cells[c][this.countprop] = 0;
 			}
 			for (var id = 0; id < borders.length; id++) {
 				if (this.isedgevalidbylinkobj(borders[id])) {
@@ -104,13 +105,14 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < 2; i++) {
 				var cell = border.sideobj[i];
 				if (!cell.isnull) {
-					this.ltotal[cell.lcnt]--;
+					this.ltotal[cell[this.countprop]]--;
 					if (isset) {
-						cell.lcnt++;
+						cell[this.countprop]++;
 					} else {
-						cell.lcnt--;
+						cell[this.countprop]--;
 					}
-					this.ltotal[cell.lcnt] = (this.ltotal[cell.lcnt] || 0) + 1;
+					this.ltotal[cell[this.countprop]] =
+						(this.ltotal[cell[this.countprop]] || 0) + 1;
 				}
 			}
 		},
@@ -162,13 +164,13 @@ pzpr.classmgr.makeCommon({
 				node1 = sidenodes[0],
 				node2 = sidenodes[1];
 			if (
-				node1.obj.lcnt === 1 &&
+				node1.obj[this.countprop] === 1 &&
 				node1.component === null &&
 				node2.component !== null
 			) {
 				attachnodes = [sidenodes[0], sidenodes[1]];
 			} else if (
-				node2.obj.lcnt === 1 &&
+				node2.obj[this.countprop] === 1 &&
 				node2.component === null &&
 				node1.component !== null
 			) {
@@ -201,8 +203,8 @@ pzpr.classmgr.makeCommon({
 			var detachnodes = null,
 				node1 = sidenodes[0],
 				node2 = sidenodes[1];
-			var lcnt1 = node1.obj.lcnt,
-				lcnt2 = node2.obj.lcnt;
+			var lcnt1 = node1.obj[this.countprop],
+				lcnt2 = node2.obj[this.countprop];
 			if (
 				lcnt1 === 0 &&
 				(lcnt2 === 1 || (!this.isLineCross && lcnt2 > 1)) &&
@@ -385,7 +387,7 @@ pzpr.classmgr.makeCommon({
 			} else {
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i];
-					if (cell.lcnt === 1) {
+					if (cell[this.countprop] === 1) {
 						point++;
 						if (cell.isNum()) {
 							before = cell;

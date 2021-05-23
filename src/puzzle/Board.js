@@ -111,8 +111,8 @@ pzpr.classmgr.makeCommon({
 			this.setminmax();
 			this.setposAll();
 
-			if (this.hasdots === 1) {
-				this.initDots(this.cols, this.rows);
+			if (this.hasdots) {
+				this.initDots(this.cols, this.rows, this.hasdots === 2);
 			}
 
 			this.initExtraObject(col, row);
@@ -812,16 +812,18 @@ pzpr.classmgr.makeCommon({
 		dots: [],
 
 		//---------------------------------------------------------------------------
-		initDots: function(col, row) {
-			this.dotsmax = (2 * col - 1) * (2 * row - 1);
+		initDots: function(col, row, outer) {
+			var width = 2 * col + (outer ? 1 : -1);
+			var height = 2 * row + (outer ? 1 : -1);
+			this.dotsmax = width * height;
 			this.dots = [];
 			for (var id = 0; id < this.dotsmax; id++) {
 				this.dots[id] = new this.klass.Dot();
 				var dot = this.dots[id];
 				dot.id = id;
 
-				dot.bx = (id % (2 * col - 1)) + 1;
-				dot.by = ((id / (2 * col - 1)) | 0) + 1;
+				dot.bx = (id % width) + (outer ? 0 : 1);
+				dot.by = ((id / width) | 0) + (outer ? 0 : 1);
 
 				dot.isnull = false;
 				dot.piece = dot.getaddr().getobj();
@@ -830,11 +832,24 @@ pzpr.classmgr.makeCommon({
 
 		getDot: function(bx, by) {
 			var qc = this.cols,
-				qr = this.rows;
-			if (bx <= 0 || bx >= qc << 1 || by <= 0 || by >= qr << 1) {
+				qr = this.rows,
+				id = -1;
+
+			if (this.hasdots === 1) {
+				if (bx <= 0 || bx >= qc << 1 || by <= 0 || by >= qr << 1) {
+					return null;
+				}
+				id = bx - 1 + (by - 1) * (2 * qc - 1);
+			}
+			if (this.hasdots === 2) {
+				if (bx < 0 || bx > qc << 1 || by < 0 || by > qr << 1) {
+					return null;
+				}
+				id = bx + by * (2 * qc + 1);
+			}
+			if (id === -1) {
 				return null;
 			}
-			var id = bx - 1 + (by - 1) * (2 * qc - 1);
 			var dot = this.dots[id];
 			return dot.isnull ? null : dot;
 		},
