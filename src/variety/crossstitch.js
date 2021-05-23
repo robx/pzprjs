@@ -42,6 +42,19 @@
 			}
 		},
 
+		inputqnum_main: function(cell) {
+			if (
+				(cell.qnum === -1 && this.btn === "left") ||
+				(cell.qnum === -2 && this.btn === "right")
+			) {
+				this.inputFixedNumber(-3);
+			} else if (cell.qnum === -3) {
+				this.inputFixedNumber(this.btn === "left" ? -2 : -1);
+			} else {
+				this.common.inputqnum_main.call(this, cell);
+			}
+		},
+
 		inputLine: function() {
 			if (this.mousestart || this.mousemove) {
 				this.inputslash();
