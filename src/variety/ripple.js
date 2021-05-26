@@ -218,7 +218,29 @@
 			this.encodeCellAnum_XMLAnswer();
 		},
 
-		UNDECIDED_NUM_XML: 0
+		UNDECIDED_NUM_XML: 0,
+
+		encodePzl: function() {
+			if (this.pid === "meander") {
+				this.writeLine("type: meanderingnumbers");
+			} else {
+				this.writeLine("type: " + this.pid);
+				this.writeLine("render-as: meanderingnumbers");
+			}
+			this.writeLine("puzzle:");
+			this.writeLine("  regions: |");
+			var rooms = this.encodeAreaRoomPzl();
+			for (var i = 0; i < rooms.length; i++) {
+				this.writeLine("    " + rooms[i]);
+			}
+			this.writeLine("  clues: |");
+			var clues = this.encodeCellPzl(function(cell) {
+				return cell.qnum > 0 ? "" + cell.qnum : ".";
+			});
+			for (var i = 0; i < clues.length; i++) {
+				this.writeLine("    " + clues[i]);
+			}
+		}
 	},
 
 	//---------------------------------------------------------

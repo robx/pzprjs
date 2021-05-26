@@ -541,11 +541,11 @@ ui.popupmgr.addpopup("filesave", {
 	reset: function() {
 		/* ファイル形式選択オプション */
 		var ispencilbox = pzpr.variety(ui.puzzle.pid).exists.pencilbox;
+		var ispzl = pzpr.variety(ui.puzzle.pid).exists.pzl;
 		this.form.filetype.options[1].disabled = !ispencilbox;
 		this.form.filetype.options[2].disabled = !ispencilbox;
-		var parser = pzpr.parser;
-		this.form.ta.value = ui.puzzle.getFileData(parser.FILE_PZPR, {});
-		this.form.ta2.value = this.form.ta.value.replace(/\n/g, "/");
+		this.form.filetype.options[3].disabled = !ispzl;
+		this.changefiletype();
 	},
 	/* オーバーライド */
 	show: function(px, py) {
@@ -553,7 +553,6 @@ ui.popupmgr.addpopup("filesave", {
 		this.reset();
 
 		this.form.filename.value = ui.puzzle.pid + ".txt";
-		this.changefilename();
 
 		ui.puzzle.key.enableKey = false;
 	},
@@ -564,12 +563,23 @@ ui.popupmgr.addpopup("filesave", {
 
 		ui.popupmgr.popups.template.close.call(this);
 	},
+	changefiletype: function() {
+		this.form.ta.value = ui.puzzle.getFileData(this.getfiletype(), {});
+		this.form.ta2.value = this.form.ta.value.replace(/\n/g, "/");
+		this.changefilename();
+	},
 	changefilename: function() {
 		var filetype = this.form.filetype.value;
 		var filename = this.form.filename.value
 			.replace(".xml", "")
-			.replace(".txt", "");
-		var ext = filetype !== "filesave4" ? ".txt" : ".xml";
+			.replace(".txt", "")
+			.replace(".pzl", "");
+		var ext =
+			filetype === "filesave4"
+				? ".xml"
+				: filetype === "filesave5"
+				? ".pzl"
+				: ".txt";
 		var pinfo = pzpr.variety(filename);
 		if (pinfo.pid === ui.puzzle.pid) {
 			if (filetype === "filesave" || filetype === "filesave3") {
@@ -585,6 +595,21 @@ ui.popupmgr.addpopup("filesave", {
 	// filesave()  ファイルを保存する
 	//------------------------------------------------------------------------------
 	filesaveurl: null,
+	getfiletype: function() {
+		var form = this.form,
+			parser = pzpr.parser;
+		switch (form.filetype.value) {
+			case "filesave2":
+				return parser.FILE_PBOX;
+			case "filesave4":
+				return parser.FILE_PBOX_XML;
+			case "filesave3":
+				return parser.FILE_PZPR;
+			case "filesave5":
+				return parser.FILE_PZL;
+		}
+		return parser.FILE_PZPR;
+	},
 	filesave: function() {
 		var form = this.form;
 		var filename = form.filename.value;
@@ -597,19 +622,10 @@ ui.popupmgr.addpopup("filesave", {
 		}
 
 		var parser = pzpr.parser,
-			filetype = parser.FILE_PZPR,
+			filetype = this.getfiletype(),
 			option = {};
-		switch (form.filetype.value) {
-			case "filesave2":
-				filetype = parser.FILE_PBOX;
-				break;
-			case "filesave4":
-				filetype = parser.FILE_PBOX_XML;
-				break;
-			case "filesave3":
-				filetype = parser.FILE_PZPR;
-				option.history = true;
-				break;
+		if (filetype === parser.FILE_PZPR) {
+			option.history = true;
 		}
 
 		var blob = null,

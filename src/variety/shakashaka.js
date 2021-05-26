@@ -616,6 +616,24 @@
 				}
 				return "u";
 			});
+		},
+
+		encodePzl: function() {
+			this.writeLine("type: shakashaka");
+			this.writeLine("puzzle: |");
+			var lines = this.encodeCellPzl(function(cell) {
+				switch (cell.qnum) {
+					case -1:
+						return ".";
+					case -2:
+						return "X";
+					default:
+						return "" + cell.qnum;
+				}
+			});
+			for (var i = 0; i < lines.length; i++) {
+				this.writeLine("  " + lines[i]);
+			}
 		}
 	},
 

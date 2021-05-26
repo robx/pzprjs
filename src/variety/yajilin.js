@@ -583,6 +583,49 @@
 				}
 				return val;
 			});
+		},
+
+		encodePzl: function() {
+			this.writeLine("type: yajilin");
+			this.writeLine("puzzle:");
+
+			var x = 0,
+				a = "a".charCodeAt(0),
+				clues = [];
+			var encodeDir = function(qdir) {
+				switch (qdir) {
+					case 1:
+						return "up";
+					case 2:
+						return "down";
+					case 3:
+						return "left";
+					case 4:
+						return "right";
+				}
+				return "";
+			};
+			var encodeClue = function(cell) {
+				if (cell.qnum === -1) {
+					return ".";
+				}
+				var key = String.fromCharCode(a + x);
+				x++;
+				clues.push("" + cell.qnum + " " + encodeDir(cell.qdir));
+				return key;
+			};
+
+			var grid = this.encodeCellPzl(encodeClue);
+			this.writeLine("  grid: |");
+			for (var i = 0; i < grid.length; i++) {
+				this.writeLine("    " + grid[i]);
+			}
+
+			this.writeLine("  clues:");
+			for (var i = 0; i < clues.length; i++) {
+				var key = String.fromCharCode(a + i);
+				this.writeLine("    " + key + ": " + clues[i]);
+			}
 		}
 	},
 	"FileIO@yajilin-regions": {

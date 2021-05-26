@@ -66,8 +66,9 @@
 			this.en = datalist[3]; /* 英語パズル名 */
 			this.exists = {
 				pzprapp: !!datalist[0],
-				kanpen: !!datalist[1],
-				pencilbox: !!datalist[1]
+				kanpen: !!(datalist[1] & 1),
+				pencilbox: !!(datalist[1] & 1),
+				pzl: !!(datalist[1] & 2)
 			};
 			this.exists.pencilbox =
 				this.exists.pencilbox &&
@@ -118,8 +119,8 @@
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
-			compass: [0, 0, "Compass", "Compass", "compass"],
-			country: [1, 0, "カントリーロード", "Country Road"],
+			compass: [0, 2, "Compass", "Compass", "compass"],
+			country: [1, 2, "カントリーロード", "Country Road"],
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
 			"curvedata-aux": [0, 0, "図形の編集", "Edit shape"],
@@ -210,8 +211,8 @@
 			loute: [0, 0, "エルート", "L-route"],
 			makaro: [0, 0, "マカロ", "Makaro"],
 			mashu: [0, 1, "ましゅ", "Masyu", "", { kanpen: "masyu", alias: "pearl" }],
-			maxi: [0, 0, "Maxi Loop", "Maxi Loop", "country"],
-			meander: [0, 0, "にょろにょろナンバー", "Meandering Numbers", "ripple"],
+			maxi: [0, 2, "Maxi Loop", "Maxi Loop", "country"],
+			meander: [0, 2, "にょろにょろナンバー", "Meandering Numbers", "ripple"],
 			mejilink: [0, 0, "メジリンク", "Mejilink"],
 			minarism: [1, 0, "マイナリズム", "Minarism"],
 			mines: [0, 0, "マインスイーパ", "Minesweeper", "kurotto"],
@@ -254,7 +255,7 @@
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
-			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
+			ringring: [0, 2, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
 				0,
 				1,
@@ -274,7 +275,7 @@
 				{ alias: "sato", kanpen: "satogaeri" }
 			],
 			scrin: [0, 0, "スクリン", "Scrin"],
-			shakashaka: [0, 1, "シャカシャカ", "Shakashaka"],
+			shakashaka: [0, 1 | 2, "シャカシャカ", "Shakashaka"],
 			shikaku: [0, 1, "四角に切れ", "Shikaku", "shikaku"],
 			shimaguni: [1, 0, "島国", "Islands", "shimaguni"],
 			shugaku: [1, 0, "修学旅行の夜", "School Trip"],
@@ -317,7 +318,7 @@
 			yajikazu: [1, 0, "やじさんかずさん", "Yajisan-Kazusan"],
 			yajilin: [
 				0,
-				1,
+				1 | 2,
 				"ヤジリン",
 				"Yajilin",
 				"",
