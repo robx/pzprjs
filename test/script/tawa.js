@@ -57,7 +57,7 @@ ui.debug.addDebugData("tawa", {
 		{
 			input: ["mouse,left, 1.5,1, 1.5,9"],
 			result:
-				"pzprv3/tawa/5/5/0/+ . . . . /+ . . . /+ . . . . /+ . . . /+ . . . . /"
+				"pzprv3/tawa/5/5/0/+ . . . . /# . . . /# . . . . /# . . . /# . . . . /"
 		},
 		{
 			input: ["mouse,left, 1.5,1, 1.5,9"],
@@ -72,7 +72,7 @@ ui.debug.addDebugData("tawa", {
 		{
 			input: ["mouse,right, 1.5,1, 1.5,9"],
 			result:
-				"pzprv3/tawa/5/5/0/# . . . . /# . . . /# . . . . /# . . . /# . . . . /"
+				"pzprv3/tawa/5/5/0/# . . . . /+ . . . /+ . . . . /+ . . . /+ . . . . /"
 		},
 		{
 			input: ["mouse,right, 1.5,1, 1.5,9"],
