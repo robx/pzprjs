@@ -9,7 +9,9 @@
 		"doubleback",
 		"maxi",
 		"simpleloop",
-		"detour"
+		"detour",
+		"dotchi",
+		"ovotovata"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -79,6 +81,35 @@
 			this.mouseCell = cell;
 		}
 	},
+	"MouseEvent@dotchi": {
+		inputModes: {
+			edit: ["border", "circle-shade", "circle-unshade", "clear", "info-line"],
+			play: ["line", "peke", "lineblank", "clear", "info-line"]
+		}
+	},
+	"MouseEvent@ovotovata": {
+		inputModes: {
+			edit: ["border", "number", "shade", "clear", "info-line"],
+			play: ["line", "peke", "subcircle", "subcross", "clear", "info-line"]
+		},
+
+		inputShade: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.inputData === null) {
+				this.inputData = cell.ice() ? 0 : 6;
+			}
+
+			var clist = cell.room.clist;
+			for (var i = 0; i < clist.length; i++) {
+				clist[i].setQues(this.inputData);
+			}
+			clist.draw();
+			this.mouseCell = cell;
+		}
+	},
 	MouseEvent: {
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -93,7 +124,11 @@
 					this.notInputted() &&
 					this.pid !== "simpleloop"
 				) {
-					if (this.inputpeke_ifborder() || this.pid === "maxi") {
+					if (
+						this.inputpeke_ifborder() ||
+						this.pid === "maxi" ||
+						this.pid === "dotchi"
+					) {
 						return;
 					}
 					this.inputMB();
@@ -134,6 +169,22 @@
 	KeyEvent: {
 		enablemake: true
 	},
+	"KeyEvent@ovotovata": {
+		keyinput: function(ca) {
+			if (ca === "q") {
+				var cell = this.cursor.getc();
+				var clist = cell.room.clist;
+				var ques = cell.ice() ? 0 : 6;
+				for (var i = 0; i < clist.length; i++) {
+					clist[i].setQues(ques);
+				}
+				clist.draw();
+				this.prev = cell;
+			} else {
+				this.key_inputqnum(ca);
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
@@ -153,7 +204,7 @@
 	"Cell@detour": {
 		minnum: 0
 	},
-	"Cell@moonsun": {
+	"Cell@moonsun,dotchi": {
 		disInputHatena: true,
 		numberAsObject: true,
 
@@ -165,15 +216,25 @@
 			}
 		}
 	},
+	"Cell@dotchi#1": {
+		noLP: function(dir) {
+			return this.qnum === 2;
+		}
+	},
 	"Cell@doubleback,simpleloop": {
 		noLP: function(dir) {
 			return this.isEmpty();
 		}
 	},
-	"Border@doubleback,simpleloop": {
+	"Cell@ovotovata": {
+		maxnum: function() {
+			return Math.max(this.board.cols, this.board.rows) - 1;
+		}
+	},
+	"Border@doubleback,simpleloop,dotchi": {
 		enableLineNG: true
 	},
-	"Border@moonsun": {
+	"Border@moonsun,dotchi#1": {
 		posthook: {
 			line: function(num) {
 				var room1 = this.sidecell[0].room,
@@ -196,7 +257,12 @@
 			this.lineblkgraph = this.addInfoList(this.klass.LineBlockGraph);
 		}
 	},
-
+	CellList: {
+		getOverlappingBorders: function() {
+			var d = this.getRectSize();
+			return this.board.borderinside(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1);
+		}
+	},
 	LineGraph: {
 		enabled: true
 	},
@@ -256,7 +322,28 @@
 	"AreaRoomGraph@country,maxi,detour": {
 		hastop: true
 	},
-	"AreaRoomGraph@moonsun": {
+	"AreaRoomGraph@ovotovata": {
+		hastop: true,
+		setTopOfRoom_combine: function(cell1, cell2) {
+			this.common.setTopOfRoom_combine.call(this, cell1, cell2);
+
+			if (cell1.ques !== cell2.ques) {
+				var clist1 = cell1.room.clist;
+				var clist2 = cell2.room.clist;
+
+				var ques = clist1.length >= clist2.length ? cell1.ques : cell2.ques;
+				for (var i = 0; i < clist1.length; i++) {
+					clist1[i].setQues(ques);
+				}
+				for (var i = 0; i < clist2.length; i++) {
+					clist2[i].setQues(ques);
+				}
+				clist1.draw();
+				clist2.draw();
+			}
+		}
+	},
+	"AreaRoomGraph@moonsun,dotchi": {
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
 			component.countMarkAndLine();
@@ -285,6 +372,26 @@
 			}
 		}
 	},
+	"GraphComponent@dotchi": {
+		countMarkAndLine: function() {
+			var count = (this.count = {
+				curve: 0,
+				straight: 0
+			});
+			var clist = this.clist;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				if (cell.qnum !== 1 || cell.lcnt !== 2) {
+					continue;
+				}
+				if (cell.isLineStraight()) {
+					count.straight++;
+				} else {
+					count.curve++;
+				}
+			}
+		}
+	},
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -299,18 +406,21 @@
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
-				this.pid === "detour"
+				this.pid === "detour" ||
+				this.pid === "ovotovata"
 			) {
 				this.drawQuesNumbers();
 			} else if (this.pid === "moonsun") {
 				this.drawMarks();
 			} else if (this.pid === "onsen") {
 				this.drawCircledNumbers();
+			} else if (this.pid === "dotchi") {
+				this.drawCircles();
 			}
 
-			if (this.pid === "country") {
+			if (this.pid === "country" || this.pid === "ovotovata") {
 				this.drawGrid();
-			} else if (this.pid !== "country") {
+			} else {
 				this.drawDashedGrid();
 			}
 			this.drawBorders();
@@ -416,6 +526,15 @@
 	"Graphic@maxi,detour": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
+	"Graphic@dotchi": {
+		circlefillcolor_func: "qnum2",
+		circlestrokecolor_func: "qnum2"
+	},
+	"Graphic@ovotovata": {
+		gridcolor_type: "LIGHT",
+		bgcellcolor_func: "icebarn",
+		icecolor: "rgb(204,204,204)"
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -430,10 +549,11 @@
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
-				this.pid === "detour"
+				this.pid === "detour" ||
+				this.pid === "ovotovata"
 			) {
 				this.decodeRoomNumber16();
-			} else if (this.pid === "moonsun") {
+			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
 				this.decodeCircle();
 			} else if (this.pid === "onsen") {
 				this.decodeNumber16();
@@ -451,16 +571,51 @@
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
-				this.pid === "detour"
+				this.pid === "detour" ||
+				this.pid === "ovotovata"
 			) {
 				this.encodeRoomNumber16();
-			} else if (this.pid === "moonsun") {
+			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
 				this.encodeCircle();
 			} else if (this.pid === "onsen") {
 				this.encodeNumber16();
 			} else if (this.pid === "doubleback" || this.pid === "simpleloop") {
 				this.encodeEmpty();
 			}
+		}
+	},
+	"Encode@ovotovata": {
+		decodeRoomNumber16: function() {
+			var bd = this.board;
+			bd.roommgr.rebuild();
+			var rooms = bd.roommgr.components;
+
+			this.genericDecodeNumber16(rooms.length, function(r, val) {
+				if (val & 1) {
+					rooms[r].clist.each(function(cell) {
+						cell.ques = 6;
+					});
+				}
+				val >>= 2;
+
+				rooms[r].top.qnum = val === 1 ? -2 : val - 1;
+			});
+		},
+		encodeRoomNumber16: function() {
+			var bd = this.board;
+			bd.roommgr.rebuild();
+			var rooms = bd.roommgr.components;
+
+			this.genericEncodeNumber16(rooms.length, function(r) {
+				var cell = rooms[r].top;
+				var val = cell.qnum === -2 ? 1 : cell.qnum + 1;
+				val <<= 2;
+				if (cell.ques === 6) {
+					val |= 1;
+				}
+
+				return val;
+			});
 		}
 	},
 	//---------------------------------------------------------
@@ -514,6 +669,41 @@
 				} else {
 					return ". ";
 				}
+			});
+		}
+	},
+	"FileIO@ovotovata": {
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca.charAt(0) === "-") {
+					cell.ques = 6;
+					ca = ca.substr(1);
+				}
+
+				if (ca === "0") {
+					cell.qnum = -2;
+				} else if (ca !== "." && +ca > 0) {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				var ca = "";
+				if (cell.ques === 6) {
+					ca += "-";
+				}
+
+				if (cell.qnum === -2) {
+					ca += "0";
+				} else if (cell.qnum !== -1) {
+					ca += cell.qnum.toString();
+				}
+
+				if (ca === "") {
+					ca = ".";
+				}
+				return ca + " ";
 			});
 		}
 	},
@@ -616,6 +806,31 @@
 			"checkDeadendLine+",
 			"checkOneLoop",
 			"checkNoLine"
+		]
+	},
+	"AnsCheck@dotchi#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkCircleEqual",
+			"checkAllCirclePassed",
+
+			"checkDeadendLine+",
+			"checkOneLoop"
+		]
+	},
+	"AnsCheck@ovotovata#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkShadedRegions",
+			"checkNumberExit",
+			"checkHatenaExit",
+
+			"checkDeadendLine+",
+			"checkOneLoop"
 		]
 	},
 	AnsCheck: {
@@ -1038,6 +1253,192 @@
 			}
 		}
 	},
+	"AnsCheck@dotchi": {
+		checkAllCirclePassed: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.qnum === 1;
+			}, "lnIsolate");
+		},
+
+		checkCircleEqual: function() {
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var room = rooms[id];
+				if (room.count.curve === 0 || room.count.straight === 0) {
+					continue;
+				}
+
+				this.failcode.add("bkNoMatch");
+				if (this.checkOnly) {
+					break;
+				}
+				room.clist
+					.filter(function(cell) {
+						return cell.qnum === 1;
+					})
+					.seterr(1);
+			}
+		}
+	},
+	"AnsCheck@ovotovata": {
+		checkShadedRegions: function() {
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var room = rooms[id];
+				if (room.top.ques === 0) {
+					continue;
+				}
+
+				if (
+					room.clist.some(function(cell) {
+						return cell.lcnt > 0;
+					})
+				) {
+					continue;
+				}
+
+				this.failcode.add("bkNoLine");
+				if (this.checkOnly) {
+					break;
+				}
+				room.clist.seterr(1);
+			}
+		},
+		checkNumberExit: function() {
+			var allExits = this.getExitDistances();
+
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var room = rooms[id];
+				if (room.top.qnum < 0) {
+					continue;
+				}
+
+				var exits = allExits["" + room.top.id];
+				if (!exits) {
+					continue;
+				}
+
+				if (exits.max <= room.top.qnum && exits.minValid === room.top.qnum) {
+					continue;
+				}
+
+				this.failcode.add("blNoNumber");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				room.clist.seterr(1);
+
+				for (var eid = 0; eid < exits.lists.length; eid++) {
+					var list = exits.lists[eid];
+
+					if (
+						list.length > room.top.qnum ||
+						(list.length < room.top.qnum && list[0].isLineCurve())
+					) {
+						list.getOverlappingBorders().seterr(1);
+					}
+				}
+			}
+		},
+		checkHatenaExit: function() {
+			var allExits = this.getExitDistances();
+
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var room = rooms[id];
+				if (room.top.qnum !== -2) {
+					continue;
+				}
+
+				var exits = allExits["" + room.top.id];
+				if (!exits) {
+					continue;
+				}
+
+				if (exits.max <= exits.minValid) {
+					continue;
+				}
+				this.failcode.add("blNoHatena");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				room.clist.seterr(1);
+
+				for (var eid = 0; eid < exits.lists.length; eid++) {
+					var list = exits.lists[eid];
+
+					if (list.length > exits.minValid || list[0].isLineCurve()) {
+						list.getOverlappingBorders().seterr(1);
+					}
+				}
+			}
+		},
+
+		getExitDistances: function() {
+			if (this._info.exits) {
+				return this._info.exits;
+			}
+			var largeNum = this.board.cell.length;
+			var exits = {};
+
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (border.isnull || !border.ques || !border.line) {
+					continue;
+				}
+
+				for (var sc = 0; sc <= 1; sc++) {
+					var inside = border.sidecell[sc];
+					var outside = border.sidecell[1 - sc];
+
+					if (inside.room.top.qnum === -1 || inside.room === outside.room) {
+						continue;
+					}
+
+					var key = "" + inside.room.top.id;
+					if (!(key in exits)) {
+						exits[key] = { minValid: largeNum, max: 0, lists: [] };
+					}
+
+					var dir = (border.isvert
+						? [border.RT, border.LT]
+						: [border.DN, border.UP])[sc];
+					exits[key].lists.unshift(this.scanExit(outside, dir));
+				}
+			}
+
+			for (var key in exits) {
+				var exit = exits[key];
+				exit.lists.forEach(function(list) {
+					if (list.length > exit.max) {
+						exit.max = list.length;
+					}
+					if (list[0].isLineCurve() && list.length < exit.minValid) {
+						exit.minValid = list.length;
+					}
+				});
+			}
+
+			return (this._info.exits = exits);
+		},
+
+		scanExit: function(cell, dir) {
+			var elist = [cell];
+			var pos = cell.getaddr();
+
+			while (cell && !cell.isnull && cell.isLineStraight()) {
+				pos.movedir(dir, 2);
+				cell = pos.getc();
+				elist.unshift(cell);
+			}
+
+			return new this.klass.CellList(elist);
+		}
+	},
 
 	"FailCode@country": {
 		bkPassTwice: [
@@ -1135,6 +1536,30 @@
 		blWrongTurns: [
 			"線の曲がった回数が数字と違っています。",
 			"A room has the wrong number of turns."
+		]
+	},
+	"FailCode@dotchi": {
+		lnIsolate: [
+			"線の通っていない○があります。",
+			"A circle doesn't have a line."
+		],
+		bkNoMatch: [
+			"(please translate) Circles in a region contain both curves and straight lines.",
+			"Circles in a region contain both curves and straight lines."
+		]
+	},
+	"FailCode@ovotovata": {
+		blNoNumber: [
+			"(please translate) A line that exits a numbered region turns at the wrong position.",
+			"A line that exits a numbered region turns at the wrong position."
+		],
+		blNoHatena: [
+			'(please translate) Lines that exit a "?" region turn at different positions.',
+			'Lines that exit a "?" region turn at different positions.'
+		],
+		bkNoLine: [
+			"(please translate) A line doesn't pass a shaded country.",
+			"A line doesn't pass a shaded country."
 		]
 	}
 });
