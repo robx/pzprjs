@@ -38,6 +38,9 @@
 			cell.blk8.clist.setinfo(1);
 			this.board.hasinfo = true;
 			this.puzzle.redraw();
+		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
 		}
 	},
 
@@ -48,11 +51,9 @@
 	},
 
 	AreaShadeGraph: {
-		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true
 	},
 	"AreaShade8Graph:AreaShadeGraph": {
-		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true,
 		setComponentRefs: function(obj, component) {
 			obj.blk8 = component;
@@ -80,10 +81,28 @@
 	Board: {
 		addExtraInfo: function() {
 			this.sblk8mgr = this.addInfoList(this.klass.AreaShade8Graph);
+		},
+
+		reapplyShades: function () {
+			this.cell.each(function(cell) {
+				if (cell.qnum !== -1) {
+					cell.setQans(1);
+				}
+			});
+		},
+
+		ansclear: function() {
+			this.common.ansclear.call(this);
+			this.reapplyShades();
 		}
 	},
 
 	Cell: {
+		maxnum: function() {
+			var bd = this.board;
+			return (bd.cols * bd.rows) - 3;
+		},
+
 		isShade: function() {
 			return !this.isnull && (this.qans === 1 || this.qnum !== -1);
 		},
@@ -93,13 +112,13 @@
 				return !ans && this.qnum !== -1;
 			}
 		},
-		posthook: {
-			qnum: function(num) {
-				if (num === -1) {
-					this.setQans(0);
-				} else {
-					this.setQans(1);
-				}
+
+		setQnum: function(val) {
+			this.setdata("qnum", val);
+			if (val === -1) {
+				this.setQans(0);
+			} else {
+				this.setQans(1);
 			}
 		},
 
@@ -187,11 +206,7 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
-			this.board.cell.each(function(cell) {
-				if (cell.qnum !== -1) {
-					cell.setQans(1);
-				}
-			});
+			this.board.reapplyShades();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16();
@@ -201,11 +216,7 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnumAns();
-			this.board.cell.each(function(cell) {
-				if (cell.qnum !== -1) {
-					cell.setQans(1);
-				}
-			});
+			this.board.reapplyShades();
 		},
 		encodeData: function() {
 			this.encodeCellQnumAns();
