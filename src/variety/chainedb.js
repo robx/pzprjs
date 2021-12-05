@@ -83,7 +83,7 @@
 			this.sblk8mgr = this.addInfoList(this.klass.AreaShade8Graph);
 		},
 
-		reapplyShades: function () {
+		reapplyShades: function() {
 			this.cell.each(function(cell) {
 				if (cell.qnum !== -1) {
 					cell.setQans(1);
@@ -100,7 +100,7 @@
 	Cell: {
 		maxnum: function() {
 			var bd = this.board;
-			return (bd.cols * bd.rows) - 3;
+			return bd.cols * bd.rows - 3;
 		},
 
 		isShade: function() {
