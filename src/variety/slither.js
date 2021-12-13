@@ -126,10 +126,13 @@
 		},
 
 		getBorderColor: function(border) {
-			if (this.puzzle.execConfig("altline") && !border.isLine() && border.qsub !== 2) {
+			if (
+				this.puzzle.execConfig("altline") &&
+				!border.isLine() &&
+				border.qsub !== 2
+			) {
 				return "rgb(220,220,200)";
-			}
-			else {
+			} else {
 				return null;
 			}
 		}
