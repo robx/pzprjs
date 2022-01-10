@@ -31,6 +31,10 @@ export function sendPage(res: VercelResponse, host: string, url: string) {
 	}
 	try {
 		const p = pzvdetails(qargs.pzv);
+
+		if(!p.title)
+			throw new Error("Unknown puzzle type");
+
 		var size = "";
 		if (!isNaN(p.cols) && !isNaN(p.rows)) {
 			size = "" + p.rows + "×" + p.cols;

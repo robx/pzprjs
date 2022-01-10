@@ -31,7 +31,11 @@ module.exports = function(grunt){
       p: {
         src: 'dist/p.html',
         dest: 'dist/p.template',
-      }
+      },
+      list: {
+        src: 'dist/list.html',
+        dest: 'dist/list.template',
+      },
     },
 
     concat: {
@@ -104,7 +108,7 @@ module.exports = function(grunt){
   
   grunt.registerTask('default', ['build']);
   grunt.registerTask('release', ['build']);
-  grunt.registerTask('vercel', ['build', 'move:p']);
+  grunt.registerTask('vercel', ['build', 'move']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);
   grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
   grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);
