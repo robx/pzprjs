@@ -27,6 +27,12 @@ module.exports = function(grunt){
         ]
       }
     },
+    move: {
+      p: {
+        src: 'dist/p.html',
+        dest: 'dist/p.template',
+      }
+    },
 
     concat: {
       options: {
@@ -98,6 +104,7 @@ module.exports = function(grunt){
   
   grunt.registerTask('default', ['build']);
   grunt.registerTask('release', ['build']);
+  grunt.registerTask('vercel', ['build', 'move:p']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);
   grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
   grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);

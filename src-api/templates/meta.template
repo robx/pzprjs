@@ -1,0 +1,9 @@
+<title>%%TITLE%%</title>
+<meta name="description" content="%%DESCRIPTION%%">
+<meta property="og:title" content="%%TITLE%%">
+<meta property="og:description" content="%%DESCRIPTION%%">
+<meta property="og:type" content="website">
+<meta property="og:url" content="%%CANONICAL_URL%%">
+<meta property="og:image" content="%%PREVIEW_IMG%%">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">

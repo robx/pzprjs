@@ -1,0 +1,56 @@
+<script type="text/javascript">
+var token = localStorage.getItem("token");
+var userid = localStorage.getItem("user_id");
+var called = false;
+ui.callbackComplete = function(puzzle, check){
+	if(called){
+		// only record the first solve
+		return;
+	}
+	called = true;
+
+	var pzv = ui.pzv;
+	if(!pzv){
+		// no boot pzv saved
+		return;
+	}
+	if(!puzzle.playeronly){
+		// don't record times in edit mode
+		return;
+	}
+	if(puzzle.getConfig("variant")){
+		// completion makes no sense for variants currently
+		return;
+	}
+	if(ui.network.mode !== ""){
+		// don't record times when network play is active
+		return;
+	}
+	var xmlhttp = false;
+	if(typeof ActiveXObject !== "undefined"){
+		try { xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");}
+		catch (e) { xmlhttp = false;}
+	}
+	if(!xmlhttp && typeof XMLHttpRequest !== "undefined") {
+		xmlhttp = new XMLHttpRequest();
+	}
+	if(!xmlhttp) {
+		return;
+	}
+	var data = {
+                pzv: pzv,
+                time: puzzle.getTime()
+        }
+	if (token && userid) {
+		data.user_id = userid;
+		xmlhttp.open("POST", "/db/api/pzv_solves");
+		xmlhttp.setRequestHeader("Authorization", "Bearer " + token);
+	} else {
+		xmlhttp.open("POST", "/db/api/pzv_solves_anon");
+	}
+	xmlhttp.onreadystatechange = function(){};
+	xmlhttp.setRequestHeader("Content-Type", "application/json");
+	xmlhttp.setRequestHeader("Prefer", "return=minimal"); // anon auth error otherwise
+	xmlhttp.send(JSON.stringify(data));
+};
+</script>

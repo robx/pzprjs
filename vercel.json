@@ -1,0 +1,21 @@
+{
+	"functions": {
+		"api/pv.ts": {
+			"includeFiles": "dist/js/**"
+		}
+	},
+	"rewrites": [
+		{
+			"source": "/p.html:match*",
+			"destination": "/api/clean:match*"
+		},
+		{
+			"source": "/p:match*",
+			"destination": "/api/p:match*"
+		},
+		{
+			"source": "/pv:match*",
+			"destination": "/api/pv:match*"
+		}
+	]
+}
