@@ -279,6 +279,42 @@ pzpr.classmgr.makeCommon({
 		draw: function() {
 			var d = this.getRectSize();
 			this.puzzle.painter.paintRange(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1);
+		},
+
+		//---------------------------------------------------------------------------
+		// clist.getBlockShapes() Encode the block shape into a string,
+		//     and return an array with each orientation
+		//---------------------------------------------------------------------------
+		getBlockShapes: function() {
+			if (!!this.shape) {
+				return this.shape;
+			}
+
+			var bd = this.board;
+			var d = this.getRectSize();
+			var data = [[], [], [], [], [], [], [], []];
+			var shapes = { cols: d.cols, rows: d.rows, data: [] };
+
+			for (var by = 0; by < 2 * d.rows; by += 2) {
+				for (var bx = 0; bx < 2 * d.cols; bx += 2) {
+					data[0].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
+					data[1].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
+				}
+			}
+			for (var bx = 0; bx < 2 * d.cols; bx += 2) {
+				for (var by = 0; by < 2 * d.rows; by += 2) {
+					data[4].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
+					data[5].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
+				}
+			}
+			data[2] = data[1].concat().reverse();
+			data[3] = data[0].concat().reverse();
+			data[6] = data[5].concat().reverse();
+			data[7] = data[4].concat().reverse();
+			for (var i = 0; i < 8; i++) {
+				shapes.data[i] = data[i].join("");
+			}
+			return (this.shape = shapes);
 		}
 	},
 

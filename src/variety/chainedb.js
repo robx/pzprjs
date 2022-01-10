@@ -143,41 +143,6 @@
 		}
 	},
 
-	CellList: {
-		getBlockShapes: function() {
-			// TODO move this function to utility class
-			if (!!this.shape) {
-				return this.shape;
-			}
-
-			var bd = this.board;
-			var d = this.getRectSize();
-			var data = [[], [], [], [], [], [], [], []];
-			var shapes = { cols: d.cols, rows: d.rows, data: [] };
-
-			for (var by = 0; by < 2 * d.rows; by += 2) {
-				for (var bx = 0; bx < 2 * d.cols; bx += 2) {
-					data[0].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
-					data[1].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
-				}
-			}
-			for (var bx = 0; bx < 2 * d.cols; bx += 2) {
-				for (var by = 0; by < 2 * d.rows; by += 2) {
-					data[4].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
-					data[5].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
-				}
-			}
-			data[2] = data[1].concat().reverse();
-			data[3] = data[0].concat().reverse();
-			data[6] = data[5].concat().reverse();
-			data[7] = data[4].concat().reverse();
-			for (var i = 0; i < 8; i++) {
-				shapes.data[i] = data[i].join("");
-			}
-			return (this.shape = shapes);
-		}
-	},
-
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -323,23 +288,6 @@
 					}
 				}
 			}
-		},
-
-		isDifferentShapeBlock: function(area1, area2) {
-			// TODO move this function to utility class
-			if (area1.size !== area2.size) {
-				return true;
-			}
-			var s1 = area1.clist.getBlockShapes(),
-				s2 = area2.clist.getBlockShapes();
-			var t1 = s1.cols === s2.cols && s1.rows === s2.rows ? 0 : 4;
-			var t2 = s1.cols === s2.rows && s1.rows === s2.cols ? 8 : 4;
-			for (var t = t1; t < t2; t++) {
-				if (s2.data[0] === s1.data[t]) {
-					return false;
-				}
-			}
-			return true;
 		}
 	},
 
