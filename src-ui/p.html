@@ -4,11 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 
-<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
-<link rel="manifest" href="./site.webmanifest">
-<link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
 <link rel="stylesheet" href="./css/ui.css?<%= git.hash %>" type="text/css">
 <script type="text/javascript" src="./js/pzpr.js?<%= git.hash %>"></script>
 <script type="text/javascript" src="./js/pzpr-ui.js?<%= git.hash %>"></script>
@@ -95,8 +90,8 @@
    <li id="menu_help"><span>__ヘルプ__Help__</span><menu label="__ヘルプ__Help__">
      <li class="link" data-pidlink="rules.html?"><a target="_blank">__ルール__Rules__</a></li>
      <hr>
-     <li data-popup="about"><span>__puzz.linkについて__About__</span></li>
-     <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__バグレポートと機能リクエスト__Bug reports and feature requests__</a></li>
+     <li data-popup="about"><span>__pzprxsについて__About pzprxs__</span></li>
+     <li class="link"><a target="_blank" href="https://github.com/x-sheep/pzprjs/issues">__バグレポートと機能リクエスト__Bug reports and feature requests__</a></li>
    </menu></li>
   </menu>
   <div id="usepanel" style="display:none;">
@@ -570,9 +565,9 @@
   </div>
 
   <div class="popup" id="about">
-    <div class="titlebar">__puzz.linkについて__About__</div>
+    <div class="titlebar">__pzprxsについて__About pzprxs__</div>
     <form name="about">
-      <p><a href="https://github.com/robx/pzprjs">github.com/robx/pzprjs</a> version <%= git.hash %></p>
+      <p><a href="https://github.com/x-sheep/pzprjs">github.com/x-sheep/pzprjs</a> version <%= git.hash %></p>
       <p>based on <span>__ぱずぷれv3__PUZ-PRE v3__</span> by <span>__は はっぱ/連続発破__happa__</span></p>
       <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
     </form>
