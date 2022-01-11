@@ -296,6 +296,10 @@ pzpr.classmgr.makeCommon({
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 4096, 4];
 			} else if (ca === "%") {
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 8192, 4];
+			} else if (ca === "*") {
+				return [parseInt(bstr.substr(i + 1, 4), 16) + 12240, 5];
+			} else if (ca === "$") {
+				return [parseInt(bstr.substr(i + 1, 5), 16) + 77776, 6];
 			} else if (ca === ".") {
 				return [-2, 1];
 			} else {
@@ -308,16 +312,20 @@ pzpr.classmgr.makeCommon({
 			return res[0];
 		},
 		decodeNumber16: function() {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				bd.cell[c].qnum = val;
+			});
+		},
+		genericDecodeNumber16: function(length, set_func) {
 			var c = 0,
 				i = 0,
-				bstr = this.outbstr,
-				bd = this.board;
-			while (i < bstr.length && bd.cell[c]) {
-				var cell = bd.cell[c],
-					ca = bstr.charAt(i);
+				bstr = this.outbstr;
+			while (i < bstr.length && c < length) {
+				var ca = bstr.charAt(i);
 				var res = this.readNumber16(bstr, i);
 				if (res[0] !== -1) {
-					cell.qnum = res[0];
+					set_func(c, res[0]);
 					i += res[1];
 					c++;
 				} else if (ca >= "g" && ca <= "z") {
@@ -340,9 +348,14 @@ pzpr.classmgr.makeCommon({
 				return "+" + qn.toString(16);
 			} else if (qn >= 4096 && qn < 8192) {
 				return "=" + (qn - 4096).toString(16);
-			} else if (qn >= 8192) {
+			} else if (qn >= 8192 && qn < 12240) {
 				return "%" + (qn - 8192).toString(16);
+			} else if (qn >= 12240 && qn < 77776) {
+				return "*" + (qn - 12240).toString(16);
+			} else if (qn >= 77776) {
+				return "$" + (qn - 77776).toString(16);
 			} else {
+				// 最大1126352
 				return "";
 			}
 		},
@@ -470,86 +483,21 @@ pzpr.classmgr.makeCommon({
 		// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 		//---------------------------------------------------------------------------
 		decodeRoomNumber16: function() {
-			var r = 0,
-				i = 0,
-				bstr = this.outbstr,
-				bd = this.board;
+			var bd = this.board;
 			bd.roommgr.rebuild();
-			for (i = 0; i < bstr.length; i++) {
-				var ca = bstr.charAt(i),
-					top = bd.roommgr.components[r].top;
+			var rooms = bd.roommgr.components;
 
-				if (this.include(ca, "0", "9") || this.include(ca, "a", "f")) {
-					top.qnum = parseInt(ca, 16);
-				} else if (ca === "-") {
-					top.qnum = parseInt(bstr.substr(i + 1, 2), 16);
-					i += 2;
-				} else if (ca === "+") {
-					top.qnum = parseInt(bstr.substr(i + 1, 3), 16);
-					i += 3;
-				} else if (ca === "=") {
-					top.qnum = parseInt(bstr.substr(i + 1, 3), 16) + 4096;
-					i += 3;
-				} else if (ca === "%") {
-					top.qnum = parseInt(bstr.substr(i + 1, 3), 16) + 8192;
-					i += 3;
-				} else if (ca === "*") {
-					top.qnum = parseInt(bstr.substr(i + 1, 4), 16) + 12240;
-					i += 4;
-				} else if (ca === "$") {
-					top.qnum = parseInt(bstr.substr(i + 1, 5), 16) + 77776;
-					i += 5;
-				} else if (ca >= "g" && ca <= "z") {
-					r += parseInt(ca, 36) - 16;
-				}
-
-				r++;
-				if (r >= bd.roommgr.components.length) {
-					break;
-				}
-			}
-			this.outbstr = bstr.substr(i + 1);
+			this.genericDecodeNumber16(rooms.length, function(r, val) {
+				rooms[r].top.qnum = val;
+			});
 		},
 		encodeRoomNumber16: function() {
-			var count = 0,
-				cm = "",
-				bd = this.board;
+			var bd = this.board;
 			bd.roommgr.rebuild();
-			for (var r = 0; r < bd.roommgr.components.length; r++) {
-				var pstr = "",
-					qn = bd.roommgr.components[r].top.qnum;
 
-				if (qn >= 0 && qn < 16) {
-					pstr = qn.toString(16);
-				} else if (qn >= 16 && qn < 256) {
-					pstr = "-" + qn.toString(16);
-				} else if (qn >= 256 && qn < 4096) {
-					pstr = "+" + qn.toString(16);
-				} else if (qn >= 4096 && qn < 8192) {
-					pstr = "=" + (qn - 4096).toString(16);
-				} else if (qn >= 8192 && qn < 12240) {
-					pstr = "%" + (qn - 8192).toString(16);
-				} else if (qn >= 12240 && qn < 77776) {
-					pstr = "*" + (qn - 12240).toString(16);
-				} else if (qn >= 77776) {
-					pstr = "$" + (qn - 77776).toString(16);
-				} // 最大1126352
-				else {
-					count++;
-				}
-
-				if (count === 0) {
-					cm += pstr;
-				} else if (pstr || count === 20) {
-					cm += (15 + count).toString(36) + pstr;
-					count = 0;
-				}
-			}
-			if (count > 0) {
-				cm += (15 + count).toString(36);
-			}
-
-			this.outbstr += cm;
+			this.genericEncodeNumber16(bd.roommgr.components.length, function(r) {
+				return bd.roommgr.components[r].top.qnum;
+			});
 		},
 
 		//---------------------------------------------------------------------------

@@ -366,7 +366,9 @@
 			"interbd",
 			"toichika2",
 			"aqre",
-			"tapaloop"
+			"tapaloop",
+			"dotchi",
+			"ovotovata"
 		]
 	};
 	var tabstate = {
