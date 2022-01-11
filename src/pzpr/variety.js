@@ -127,6 +127,7 @@
 				"kurodoko",
 				{ alias: "bag", alias2: "corral", alias3: "correl" }
 			],
+			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			barns: [1, 0, "バーンズ", "Barns"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
 			bonsan: [1, 0, "ぼんさん", "Bonsan", "bonsan"],

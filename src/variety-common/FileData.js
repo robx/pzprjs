@@ -89,7 +89,10 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		decodeCellDirecQnum: function() {
 			this.decodeCell(function(cell, ca) {
-				if (ca !== ".") {
+				if (ca === "#") {
+					cell.qdir = 0;
+					cell.qnum = -3;
+				} else if (ca !== ".") {
 					var inp = ca.split(",");
 					cell.qdir = inp[0] !== "0" ? +inp[0] : 0;
 					cell.qnum = inp[1] !== "-" ? +inp[1] : -2;
@@ -98,7 +101,9 @@ pzpr.classmgr.makeCommon({
 		},
 		encodeCellDirecQnum: function() {
 			this.encodeCell(function(cell) {
-				if (cell.qnum !== -1) {
+				if (cell.qnum === -3) {
+					return "# ";
+				} else if (cell.qnum !== -1) {
 					var ca1 = cell.qdir !== 0 ? "" + cell.qdir : "0";
 					var ca2 = cell.qnum !== -2 ? "" + cell.qnum : "-";
 					return [ca1, ",", ca2, " "].join("");

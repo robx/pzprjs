@@ -368,7 +368,8 @@
 			"aqre",
 			"tapaloop",
 			"dotchi",
-			"ovotovata"
+			"ovotovata",
+			"crossstitch"
 		]
 	};
 	var tabstate = {

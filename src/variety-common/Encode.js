@@ -513,7 +513,10 @@ pzpr.classmgr.makeCommon({
 				var ca = bstr.charAt(i),
 					cell = bd.cell[c];
 
-				if (this.include(ca, "0", "4")) {
+				if (ca === "+") {
+					cell.qdir = 0;
+					cell.qnum = -3;
+				} else if (this.include(ca, "0", "4")) {
 					var ca1 = bstr.charAt(i + 1);
 					cell.qdir = parseInt(ca, 16);
 					cell.qnum = ca1 !== "." ? parseInt(ca1, 16) : -2;
@@ -547,6 +550,8 @@ pzpr.classmgr.makeCommon({
 					qn = bd.cell[c].qnum;
 				if (qn === -2) {
 					pstr = dir + ".";
+				} else if (qn === -3) {
+					pstr = "+";
 				} else if (qn >= 0 && qn < 16) {
 					pstr = dir + qn.toString(16);
 				} else if (qn >= 16 && qn < 256) {

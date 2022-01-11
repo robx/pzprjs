@@ -345,6 +345,8 @@
 
 		errcolor1: "red",
 
+		linecolor: "black",
+
 		crosssize: 0.33,
 
 		// オーバーライド
