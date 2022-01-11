@@ -143,6 +143,7 @@
 			],
 			castle: [0, 0, "Castle Wall", "Castle Wall"],
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
+			chainedb: [0, 0, "チェンブロ", "Chained Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
 			compass: [0, 0, "Compass", "Compass", "compass"],

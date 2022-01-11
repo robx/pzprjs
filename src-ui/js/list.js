@@ -369,7 +369,8 @@
 			"tapaloop",
 			"dotchi",
 			"ovotovata",
-			"crossstitch"
+			"crossstitch",
+			"chainedb"
 		]
 	};
 	var tabstate = {
