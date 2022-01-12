@@ -370,7 +370,8 @@
 			"dotchi",
 			"ovotovata",
 			"crossstitch",
-			"chainedb"
+			"chainedb",
+			"canal"
 		]
 	};
 	var tabstate = {
