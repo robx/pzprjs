@@ -65,7 +65,8 @@
 		"crossstitch",
 		"ovotovata",
 		"lohkous",
-		"chainedb"
+		"chainedb",
+		"canal"
 	]);
 
 	(function(Genre, obj) {
