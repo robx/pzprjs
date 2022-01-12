@@ -813,6 +813,7 @@
 			"checkBranchLine",
 			"checkCrossLine",
 
+			"checkLineOnShadedCircle",
 			"checkCircleEqual",
 			"checkAllCirclePassed",
 
@@ -1260,6 +1261,12 @@
 			}, "lnIsolate");
 		},
 
+		checkLineOnShadedCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.noLP() && cell.lcnt > 0;
+			}, "lnOnShade");
+		},
+
 		checkCircleEqual: function() {
 			var rooms = this.board.roommgr.components;
 			for (var id = 0; id < rooms.length; id++) {
@@ -1542,6 +1549,10 @@
 		lnIsolate: [
 			"線の通っていない○があります。",
 			"A circle doesn't have a line."
+		],
+		lnOnShade: [
+			"(please translate) A line goes over a shaded circle.",
+			"A line goes over a shaded circle."
 		],
 		bkNoMatch: [
 			"(please translate) Circles in a region contain both curves and straight lines.",
