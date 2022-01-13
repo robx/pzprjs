@@ -218,7 +218,6 @@ ui.menuarea = {
 		this.setdisplay("operation");
 		this.setdisplay("trialmode");
 		this.setdisplay("toolarea");
-		this.setdisplay("networkplay");
 
 		/* キャプションの設定 */
 		for (var i = 0; i < this.captions.length; i++) {
@@ -245,10 +244,6 @@ ui.menuarea = {
 				str = ui.selectStr("ツールエリアを隠す", "Hide tool area");
 			}
 			getEL("menu_toolarea").textContent = str;
-		} else if (idname === "networkplay") {
-			getEL("menu_network").className = ui.puzzle.opemgr.enableNetwork
-				? ""
-				: "disabled";
 		} else if (this.menuitem === null || !this.menuitem[idname]) {
 			/* DO NOTHING */
 		} else if (ui.menuconfig.valid(idname)) {
