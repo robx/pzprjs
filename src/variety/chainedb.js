@@ -14,6 +14,7 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
+		use: true,
 		inputModes: {
 			edit: ["number", "undef", "clear", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
