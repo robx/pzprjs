@@ -55,7 +55,7 @@ pzpr.classmgr.makeCommon({
 		e_keydown: function(e) {
 			var c = this.getchar(e);
 			if (!this.enableKey) {
-				if (c === "BS" || c === " ") {
+				if (e.target === document.body && (c === "BS" || c === " ")) {
 					e.stopPropagation();
 					e.preventDefault();
 				}
@@ -75,7 +75,7 @@ pzpr.classmgr.makeCommon({
 		e_keyup: function(e) {
 			var c = this.getchar(e);
 			if (!this.enableKey) {
-				if (c === "BS" || c === " ") {
+				if (e.target === document.body && (c === "BS" || c === " ")) {
 					e.stopPropagation();
 					e.preventDefault();
 				}
