@@ -66,7 +66,8 @@
 		"ovotovata",
 		"lohkous",
 		"chainedb",
-		"canal"
+		"canal",
+		"cbanana"
 	]);
 
 	(function(Genre, obj) {
