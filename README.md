@@ -1,6 +1,6 @@
 ## About pzprxs
 
-pzprxs is a fork of [robx/pzprjs](puzz.link), which is itself a fork of [sabo2/pzprjs]. See [the original README](https://github.com/robx/pzprjs/blob/main/README.md) for more information.
+pzprxs is a fork of [puzz.link](https://github.com/robx/pzprjs), which is itself a fork of [sabo2/pzprjs](https://github.com/sabo2/pzprjs). See [the original README](https://github.com/robx/pzprjs/blob/main/README.md) for more information.
 
 This fork contains serverless functions to generate Open Graph metadata (for link previews on Twitter, Discord etc.) and for generating thumbnail images.
 
