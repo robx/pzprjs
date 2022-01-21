@@ -1,12 +1,17 @@
 import pzpr from "../dist/js/pzpr.js"
 
+export function decode_vercel_query(url: string): string {
+	const decoded = decodeURIComponent(url);
+	return decoded.replace(/\s/g, "+");
+}
+
 export function parse_query(url: string) {
 	const query = url.split("?", 2)[1];
 
 	if(!query)
 		return null;
 
-	const parts = decodeURIComponent(query).split('&');
+	const parts = decode_vercel_query(query).split('&');
 	var args = {
 		thumb: false,
 		frame: 0,
