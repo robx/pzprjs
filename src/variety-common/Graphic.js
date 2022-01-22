@@ -2191,7 +2191,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		drawDots: function() {
-			var g = this.vinc("dot", "auto", true);
+			var g = this.vinc("dot", "auto");
 
 			g.lineWidth = Math.max(this.cw * 0.04, 1);
 			var d = this.range;
