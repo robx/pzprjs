@@ -112,6 +112,7 @@ function toBGimage(pid) {
 		"araf",
 		"skyscrapers",
 		"balance",
+		"bdwalk",
 		"castle",
 		"compass",
 		"curvedata",

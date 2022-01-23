@@ -101,7 +101,8 @@ ui.keypopup = {
 		doppelblock: [10, 115],
 		interbd: [116, 0],
 		toichika2: [10, 10],
-		lohkous: [10, 0]
+		lohkous: [10, 0],
+		bdwalk: [117, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -215,6 +216,8 @@ ui.keypopup = {
 			this.generate_doppelblock();
 		} else if (type === 116) {
 			this.generate_interbd();
+		} else if (type === 117) {
+			this.generate_bdwalk();
 		}
 	},
 	gentable4: function(mode) {
@@ -507,6 +510,27 @@ ui.keypopup = {
 				["r", { text: "■", color: "#c000c0" }],
 				["t", { text: "⬟", color: "#ff8000" }],
 				["y", { text: "⬣", color: "#00c0c0" }],
+				" "
+			],
+			4
+		);
+	},
+	generate_bdwalk: function() {
+		this.generate_main(
+			[
+				["-", { text: "■", color: "gray" }],
+				["u", { text: "▲" }],
+				["d", { text: "▼" }],
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
 				" "
 			],
 			4

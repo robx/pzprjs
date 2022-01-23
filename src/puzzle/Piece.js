@@ -297,6 +297,16 @@ pzpr.classmgr.makeCommon({
 		},
 		setinfo: function(num) {
 			this.qinfo = num;
+		},
+
+		//---------------------------------------------------------------------------
+		// setCrossBorderError() 交点とその周り四方向のBorderにエラーフラグを設定する
+		//---------------------------------------------------------------------------
+		setCrossBorderError: function() {
+			this.seterr(1);
+			this.board
+				.borderinside(this.bx - 1, this.by - 1, this.bx + 1, this.by + 1)
+				.seterr(1);
 		}
 	},
 
@@ -724,16 +734,6 @@ pzpr.classmgr.makeCommon({
 		},
 		noNum: function() {
 			return !this.isnull && this.qnum === -1;
-		},
-
-		//---------------------------------------------------------------------------
-		// cross.setCrossBorderError() 交点とその周り四方向のBorderにエラーフラグを設定する
-		//---------------------------------------------------------------------------
-		setCrossBorderError: function() {
-			this.seterr(1);
-			this.board
-				.borderinside(this.bx - 1, this.by - 1, this.bx + 1, this.by + 1)
-				.seterr(1);
 		}
 	},
 

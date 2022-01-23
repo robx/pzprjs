@@ -138,6 +138,8 @@ pzpr.classmgr.makeCommon({
 				val = -2;
 			} else if (ca === "s2") {
 				val = -3;
+			} else if (ca === "s3") {
+				val = -4;
 			} else {
 				val = null;
 			}

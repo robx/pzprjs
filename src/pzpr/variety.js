@@ -48,7 +48,7 @@
 
 	/*
 	 * To avoid fragmentation, I'm disabling all old genres for the time being,
-	 * to try to avoid have 3 websites to choose from (puzz.link, pzv.jp and this one).
+	 * to try to avoid having 3 websites to choose from (puzz.link, pzv.jp and this one).
 	 *
 	 * To remove the inhibitor, delete all references to `inhibited` and `allowedGenres`.
 	 *
@@ -67,7 +67,8 @@
 		"lohkous",
 		"chainedb",
 		"canal",
-		"cbanana"
+		"cbanana",
+		"bdwalk"
 	]);
 
 	(function(Genre, obj) {
@@ -133,6 +134,7 @@
 			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			barns: [1, 0, "バーンズ", "Barns"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
+			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
 			bonsan: [1, 0, "ぼんさん", "Bonsan", "bonsan"],
 			bosanowa: [1, 0, "ボサノワ", "Bosanowa", "", { alias: "bossanova" }],
 			box: [0, 0, "ボックス", "Box"],
