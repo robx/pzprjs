@@ -716,6 +716,7 @@
 			// Note that two unknown elevators never count as equal.
 			var elevators = [ec];
 			var elevatordirs = [ec.NDIR];
+			var elevatortype = -1;
 
 			while (true) {
 				if (this.checkonly && ret.length > 0) {
@@ -728,8 +729,20 @@
 					if (
 						cell.qnum === -2 ||
 						!currentfloorcell.isnull ||
-						cell.qnum !== elevators[0].qnum
+						cell.qnum !== elevatortype
 					) {
+						// If we went down to the ground floor before hitting an unknown elevator,
+						// we must go up here. Override the elevatortype variable.
+						if (
+							cell.qnum === -2 &&
+							elevatortype === -4 &&
+							previousfloorcell.qnum - elevators.length === 1
+						) {
+							elevatortype = -3;
+						} else {
+							elevatortype = cell.qnum;
+						}
+
 						previouselevatorcell = elevators[0];
 						previouselevatordir =
 							elevatordirs.length > 0 ? elevatordirs[0] : ec.NDIR;
@@ -764,7 +777,7 @@
 					if (
 						!previousfloorcell.isnull &&
 						cell.qnum > previousfloorcell.qnum &&
-						elevators[0].qnum === -4
+						elevatortype === -4
 					) {
 						ret.push({
 							code: "bdwInvalidUp",
@@ -776,7 +789,7 @@
 					} else if (
 						!previousfloorcell.isnull &&
 						cell.qnum < previousfloorcell.qnum &&
-						elevators[0].qnum === -3
+						elevatortype === -3
 					) {
 						ret.push({
 							code: "bdwInvalidDown",
@@ -814,7 +827,7 @@
 					}
 
 					// Check if we went up one or more times, then found a number that is too low.
-					if (elevators[0].qnum === -3 && cell.qnum - elevators.length < 1) {
+					if (elevatortype === -3 && cell.qnum - elevators.length < 1) {
 						ret.push({
 							code: "bdwGroundFloor",
 							list: [previouselevatorcell],
