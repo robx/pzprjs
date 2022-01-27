@@ -1,0 +1,113 @@
+bdwalk:
+  You're given a top-down view of a building of unknown height. Grey cells represent elevators.
+
+  1. Draw a path from S to G that doesn't branch off or overlap itself at any cell.
+
+  2. The path must visit every number and elevator.
+
+  3. The path goes up one or more floors at an Up arrow, and goes down one or more floors at a Down arrow.
+
+  4. The path must change floors at an elevator without an arrow, but this can be in either direction.
+
+  5. A number indicates the floor that the path should be on when passing through it.
+
+  6. At no point does the path go below the 1st floor.
+
+  This genre first appeared in Puzzle Communication Nikoli vol. 174.
+
+
+canal:
+  Shade some cells on the board.
+
+  1. The number on a cell indicates how many cells are shaded in a continuous line starting from the cell. These lines are in the four cardinal directions (up, down, left, right).
+
+  2. You cannot shade a cell with a number.
+  
+  3. The shaded cells cannot form a 2x2 square.
+  
+  4. All shaded cells form an orthogonally contiguous area.
+
+  This genre is invented by Prasanna Seshadri.
+
+
+cbanana:
+  Shade some cells on the board.
+
+  1. A group of shaded cells must form a rectangle or square.
+
+  2. A group of unshaded cells must not form a rectangle or square.
+
+  3. A number indicates the size of the (shaded or unshaded) group that overlaps it. A group can contain one or more numbers, or none at all.
+
+  This genre first appeared in Puzzle Communication Nikoli vol. 176.
+
+
+chainedb:
+  Shade some cells on the board to form blocks of any shape.
+
+  1. Each block must contain exactly one number or a question mark.
+
+  2. A number indicates the size of the block that contains it.
+
+  3. Diagonally adjacent blocks form a chain. A chain cannot contain two identically shaped blocks, counting rotations and reflections as the same.
+
+  4. All blocks must be diagonally adjacent to at least one other block.
+
+
+crossstitch:
+  Draw diagonal lines to make two loops.
+
+  1. A shaded cell is not part of any loop.
+
+  2. Loops cannot branch off or cross themselves, but they can cross each other.
+
+  3. Two cells where the loops intersect cannot be horizontally or vertically adjacent.
+
+  4. A circled number indicates how many of that cell's corner points touch a loop.
+
+  5. A number with an arrow indicates how many cells in that direction contain an intersection, up to the next shaded cell.
+
+  6. A question mark can be replaced with any number except 0.
+
+  This genre is invented by Arvi Teikari a.k.a. Hempuli.
+
+
+dotchi:
+  Draw lines through orthogonally adjacent cells to form a loop.
+
+  1. The loop cannot branch off or cross itself.
+
+  2. The loop goes through all unshaded circles.
+
+  3. Within a region, all unshaded circles contain either a corner or a straight line.
+
+  4. The loop cannot go through a shaded circle.
+
+
+lohkous:
+  Draw lines over the dotted lines to divide the board into several blocks.
+
+  1. Each block must contain exactly one square with one or more numbers on it.
+
+  2. All lines must be used to divide two regions, there can not be any dead-ends.
+
+  3. When dividing a block into horizontal segments, each segment must have a length specified by one of the clue numbers. The same applies when dividing the block into vertical segments.
+
+  4. Each number must be represented at least once by a horizontal or vertical segment in the same block.
+
+  5. A question mark can replace any number, as long as no number is repeated in that cell.
+
+  This genre is invented by Arvi Teikari a.k.a. Hempuli.
+
+
+ovotovata:
+  Draw lines through orthogonally adjacent cells to form a loop.
+
+  1. When the loop exits a numbered region in any direction, it must travel in a straight line for the indicated number of cells, and then turn. e.g. A number 1 means that the loop must turn immediately after leaving that region.
+
+  2. A question mark can be replaced with any number.
+
+  3. All shaded regions must be visited at least once.
+
+  This genre is invented by Eric Fox.
+
