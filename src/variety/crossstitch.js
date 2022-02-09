@@ -601,6 +601,7 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkLineOnShadeCell",
 			"checkNumberHasArrow",
 			"checkBranchLine",
 			"checkCrossLine",
@@ -611,9 +612,15 @@
 			"checkArrowNumber",
 			"checkArrowHatena",
 
-			"checkDeadendLine",
+			"checkDeadendLine+",
 			"checkTwoLoops"
 		],
+
+		checkLineOnShadeCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum !== -1 && cell.qans > 30;
+			}, "lnOnShade");
+		},
 
 		checkLineCount: function(target, code) {
 			var bd = this.board;
