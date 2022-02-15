@@ -33,6 +33,11 @@ ui.debug.addDebugData("bdwalk", {
 			{ skiprules: true }
 		],
 		[
+			"bdwSkipElevator",
+			"pzprv3/bdwalk/1/5/1 1 9 1/1 - . U 2 /1 1 1 1 /",
+			{ skiprules: true }
+		],
+		[
 			"bdwInvalidUp",
 			"pzprv3/bdwalk/4/4/1 1 7 3/. . U . /1 . . 1 /2 2 D . /- . . D /0 0 0 /1 1 0 /1 1 0 /1 1 1 /1 0 0 0 /0 0 1 1 /1 0 0 1 /"
 		],

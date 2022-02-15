@@ -731,13 +731,16 @@
 						!currentfloorcell.isnull ||
 						cell.qnum !== elevatortype
 					) {
+						var lowestfloor =
+							elevatortype === -1
+								? currentfloorcell.qnum
+								: elevatortype === -4
+								? previousfloorcell.qnum - elevators.length
+								: -1;
+
 						// If we went down to the ground floor before hitting an unknown elevator,
 						// we must go up here. Override the elevatortype variable.
-						if (
-							cell.qnum === -2 &&
-							elevatortype === -4 &&
-							previousfloorcell.qnum - elevators.length === 1
-						) {
+						if (cell.qnum === -2 && lowestfloor === 1) {
 							elevatortype = -3;
 						} else {
 							elevatortype = cell.qnum;
