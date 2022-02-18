@@ -732,7 +732,7 @@
 						cell.qnum !== elevatortype
 					) {
 						var lowestfloor =
-							elevatortype === -1
+							currentfloorcell.qnum !== -1
 								? currentfloorcell.qnum
 								: elevatortype === -4
 								? previousfloorcell.qnum - elevators.length
