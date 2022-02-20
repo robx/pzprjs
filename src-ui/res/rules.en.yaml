@@ -111,3 +111,16 @@ ovotovata:
 
   This genre is invented by Eric Fox.
 
+
+voxas:
+  Draw lines over the dotted lines to divide the board into several areas. Some lines are given.
+  
+  1. All areas must be rectangular in shape, and must be 2 or 3 cells in size.
+
+  2. Two rectangles divided by a white circle must have the same size and orientation.
+
+  3. Two rectangles divided by a grey circle must have the same size or the same orientation, but not both.
+
+  4. Two rectangles divided by a black circles must have different size and different orientation.
+
+  This genre is invented by Eric Fox.

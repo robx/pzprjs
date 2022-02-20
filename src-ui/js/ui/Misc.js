@@ -139,6 +139,7 @@ function toBGimage(pid) {
 		"symmarea",
 		"tapaloop",
 		"tents",
+		"voxas",
 		"walllogic",
 		"yinyang"
 	];
