@@ -151,6 +151,7 @@
 		shadecolor: "#222222",
 		numbercolor_func: "fixed_shaded",
 		fontShadecolor: "white",
+		noerrcolor: "#666666",
 		enablebcolor: true,
 		bgcellcolor_func: "qsub1",
 
@@ -164,6 +165,13 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getShadedCellColor: function(cell) {
+			if (cell.qans === 1 && !cell.trial && cell.error === -1) {
+				return this.noerrcolor;
+			}
+			return this.common.getShadedCellColor.call(this, cell);
 		}
 	},
 
@@ -250,6 +258,7 @@
 
 		checkUniqueShapes: function() {
 			var chains = this.board.sblk8mgr.components;
+			var valid = true;
 
 			for (var r = 0; r < chains.length; r++) {
 				var chain = chains[r];
@@ -283,6 +292,18 @@
 							if (this.checkOnly) {
 								return;
 							}
+
+							if (valid) {
+								this.board.cell.setnoerr();
+								valid = false;
+							}
+
+							chain.clist.each(function(cell) {
+								if (cell.error === -1) {
+									cell.seterr(0);
+								}
+							});
+
 							shapes[nna].clist.seterr(1);
 							shapes[nnb].clist.seterr(1);
 						}
