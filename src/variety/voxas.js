@@ -266,8 +266,11 @@
 				}
 			}
 			this.outbstr = bstr.substr(i + 1);
+			this.puzzle.setConfig("voxas_tatami", this.checkpflag("t"));
 		},
 		encodePzpr: function() {
+			this.outpflag = this.puzzle.getConfig("voxas_tatami") ? "t" : null;
+
 			var count = 0,
 				cm = "",
 				bd = this.board;
@@ -306,6 +309,7 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfig();
 			this.decodeBorder(function(border, ca) {
 				if (ca === "-0") {
 					border.qsub = 1;
@@ -327,6 +331,7 @@
 			});
 		},
 		encodeData: function() {
+			this.encodeConfig();
 			this.encodeBorder(function(border) {
 				if (border.ques === 0 && border.qans === 0) {
 					return border.qsub ? "-0 " : "0 ";
@@ -334,6 +339,21 @@
 				var n = border.qans ? 5 : border.ques;
 				return (border.qsub ? -n : n) + " ";
 			});
+		},
+
+		decodeConfig: function() {
+			if (this.dataarray[this.lineseek] === "t") {
+				this.puzzle.setConfig("voxas_tatami", true);
+				this.readLine();
+			} else {
+				this.puzzle.setConfig("voxas_tatami", false);
+			}
+		},
+
+		encodeConfig: function() {
+			if (this.puzzle.getConfig("voxas_tatami")) {
+				this.writeLine("t");
+			}
 		}
 	},
 
@@ -341,6 +361,7 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkBorderCross_voxas",
 			"checkValueSmall",
 			"checkValueWide",
 			"checkVoxasBlack",
@@ -348,6 +369,12 @@
 			"checkVoxasWhite",
 			"checkValueLarge"
 		],
+
+		checkBorderCross_voxas: function() {
+			if (this.puzzle.getConfig("voxas_tatami")) {
+				this.checkBorderCross();
+			}
+		},
 
 		checkValueSmall: function() {
 			this.checkRegionValue(this.board.roommgr.ERROR_SMALL, "bkSize1");

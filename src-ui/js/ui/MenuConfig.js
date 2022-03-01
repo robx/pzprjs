@@ -99,6 +99,9 @@
 				case "country":
 					idname = "country_empty";
 					break;
+				case "voxas":
+					idname = "voxas_tatami";
+					break;
 			}
 			if (!!idname) {
 				this.set(idname, ui.puzzle.getConfig(idname));

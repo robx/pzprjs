@@ -88,6 +88,10 @@
 				volatile: true
 			}); /* aquarium: Rule variation for disconnected cells in one region */
 			this.add("country_empty", false, { variant: true, volatile: true });
+			this.add("voxas_tatami", false, {
+				variant: true,
+				volatile: true
+			}); /* voxas: Rule variation for disallowing crossing borders */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -373,6 +377,9 @@
 					break;
 				case "country_empty":
 					exec = pid === "country";
+					break;
+				case "voxas_tatami":
+					exec = pid === "voxas";
 					break;
 				default:
 					exec = !!this.list[name];
