@@ -100,6 +100,22 @@ lohkous:
   This genre is invented by Arvi Teikari a.k.a. Hempuli.
 
 
+oneroom:
+  You're given a board divided into rooms. Shade some cells on the board.
+
+  1. Shaded cells cannot be horizontally or vertically adjacent.
+
+  2. A number inside a room indicates how many cells inside the room are shaded.
+
+  3. Two unshaded cells across different rooms form a door. There can be no more than one door between any two rooms.
+
+  4. All unshaded cells within a room form an orthogonally connected area. Some rooms have no unshaded cells.
+
+  5. All unshaded cells on the board from an orthogonally connected area.
+
+  This genre first appeared in Puzzle Communication Nikoli vol. 169.
+
+
 ovotovata:
   Draw lines through orthogonally adjacent cells to form a loop.
 

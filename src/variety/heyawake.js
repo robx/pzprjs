@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["heyawake", "ayeheya"], {
+})(["heyawake", "ayeheya", "oneroom"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -80,13 +80,83 @@
 	Board: {
 		hasborder: 1
 	},
+	"Board@oneroom": {
+		addExtraInfo: function() {
+			this.unshrgraph = this.addInfoList(this.klass.AreaUnshadeRoomGraph);
+		}
+	},
 
 	AreaUnshadeGraph: {
 		enabled: true
 	},
 	AreaRoomGraph: {
 		enabled: true,
-		hastop: true
+		hastop: true,
+
+		allborderlist: null,
+
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			this.allborderlist = null;
+		},
+
+		getAllBorders: function() {
+			if (!!this.allborderlist) {
+				return this.allborderlist;
+			}
+
+			var thiz = this;
+			var len = this.components.length;
+
+			for (var r = 0; r < len; r++) {
+				this.components[r].id = r;
+			}
+
+			var borders = {};
+
+			this.board.border.each(function(b) {
+				if (!b || b.isnull || !b.isBorder()) {
+					return;
+				}
+
+				var room1 = thiz.getComponentRefs(b.sidecell[0]);
+				var room2 = thiz.getComponentRefs(b.sidecell[1]);
+
+				if (!room1 || !room2) {
+					return;
+				}
+
+				var key =
+					"" +
+					(room1.id < room2.id
+						? room1.id * len + room2.id
+						: room2.id * len + room1.id);
+
+				if (!(key in borders)) {
+					borders[key] = new thiz.klass.BorderList();
+				}
+				borders[key].add(b);
+			});
+
+			return (this.allborderlist = borders);
+		}
+	},
+	"AreaUnshadeRoomGraph:AreaUnshadeGraph@oneroom": {
+		enabled: true,
+		relation: { "cell.qans": "node", "border.ques": "separator" },
+		setComponentRefs: function(obj, component) {
+			obj.unshr = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.unshrnodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.unshrnodes = [];
+		},
+
+		isedgevalidbylinkobj: function(border) {
+			return !border.isBorder();
+		}
 	},
 
 	//---------------------------------------------------------
@@ -111,6 +181,13 @@
 			this.drawBoxBorders(false);
 
 			this.drawTarget();
+		},
+
+		getBorderColor: function(border) {
+			if (border.ques) {
+				return border.error === 1 ? this.errcolor1 : this.quescolor;
+			}
+			return null;
 		}
 	},
 
@@ -306,9 +383,11 @@
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
+			"checkRegionDivided@oneroom",
 			"checkFractal@ayeheya",
 			"checkShadeCellCount",
-			"checkCountinuousUnshadeCell",
+			"checkOneDoor@oneroom",
+			"checkCountinuousUnshadeCell@!oneroom",
 			"checkRoomSymm@ayeheya",
 			"doneShadingDecided"
 		],
@@ -400,6 +479,62 @@
 			return result;
 		}
 	},
+	"AnsCheck@oneroom": {
+		checkRegionDivided: function() {
+			var rooms = this.board.roommgr.components;
+			var unshrs = this.board.unshrgraph.components;
+			for (var r = 0; r < rooms.length; r++) {
+				rooms[r].unshrcount = 0;
+			}
+
+			for (var r = 0; r < unshrs.length; r++) {
+				unshrs[r].clist[0].room.unshrcount++;
+			}
+
+			for (var r = 0; r < rooms.length; r++) {
+				if (rooms[r].unshrcount <= 1) {
+					continue;
+				}
+
+				this.failcode.add("bkSubdivided");
+				if (this.checkOnly) {
+					break;
+				}
+				rooms[r].clist
+					.filter(function(c) {
+						return !c.isShade();
+					})
+					.seterr(1);
+			}
+		},
+
+		checkOneDoor: function() {
+			var bdss = this.board.roommgr.getAllBorders();
+
+			for (var b in bdss) {
+				var bds = bdss[b];
+
+				var doors = bds.filter(function(border) {
+					return !border.sidecell[0].isShade() && !border.sidecell[1].isShade();
+				});
+
+				if (doors.length <= 1) {
+					continue;
+				}
+
+				this.failcode.add("bdDoorsGt");
+				if (this.checkOnly) {
+					break;
+				}
+
+				doors.each(function(border) {
+					border.seterr(1);
+					border.sidecell[0].seterr(1);
+					border.sidecell[1].seterr(1);
+				});
+			}
+		}
+	},
 
 	FailCode: {
 		bkUnshadeConsecGt3: [
@@ -413,6 +548,14 @@
 		bkNotSymRoom: [
 			"部屋の形が点対称ではありません。",
 			"The room is not point symmetric."
+		],
+		bkSubdivided: [
+			"(please translate) A room is divided internally by shaded cells.",
+			"A room is divided internally by shaded cells."
+		],
+		bdDoorsGt: [
+			"(please translate) Two rooms have more than one door between them.",
+			"Two rooms have more than one door between them."
 		]
 	}
 });

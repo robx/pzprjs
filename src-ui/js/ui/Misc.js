@@ -133,6 +133,7 @@ function toBGimage(pid) {
 		"nondango",
 		"nonogram",
 		"nurimisaki",
+		"oneroom",
 		"pencils",
 		"satogaeri",
 		"scrin",
