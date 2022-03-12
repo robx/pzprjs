@@ -108,6 +108,7 @@ ui.keypopup = {
 		canal: [10, 0],
 		cbanana: [10, 0],
 		bdwalk: [117, 0],
+		voxas: [118, 0],
 		oneroom: [10, 0]
 	},
 
@@ -224,6 +225,8 @@ ui.keypopup = {
 			this.generate_interbd();
 		} else if (type === 117) {
 			this.generate_bdwalk();
+		} else if (type === 118) {
+			this.generate_voxas();
 		}
 	},
 	gentable4: function(mode) {
@@ -552,6 +555,18 @@ ui.keypopup = {
 				" "
 			],
 			4
+		);
+	},
+	generate_voxas: function() {
+		this.generate_main(
+			[
+				["2", { text: "●" }],
+				["3", { text: "●", color: "gray" }],
+				["4", { text: "○" }],
+				["1", { text: "━" }],
+				" "
+			],
+			3
 		);
 	},
 
