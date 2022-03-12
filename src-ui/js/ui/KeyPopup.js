@@ -101,8 +101,13 @@ ui.keypopup = {
 		doppelblock: [10, 115],
 		interbd: [116, 0],
 		toichika2: [10, 10],
+		ovotovata: [10, 0],
 		lohkous: [10, 0],
-		bdwalk: [117, 0]
+		chainedb: [10, 0],
+		canal: [10, 0],
+		cbanana: [10, 0],
+		bdwalk: [117, 0],
+		oneroom: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
