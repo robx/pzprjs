@@ -119,11 +119,13 @@ oneroom:
 ovotovata:
   Draw lines through orthogonally adjacent cells to form a loop.
 
-  1. When the loop exits a numbered region in any direction, it must travel in a straight line for the indicated number of cells, and then turn. e.g. A number 1 means that the loop must turn immediately after leaving that region.
+  1. The loop cannot branch off or cross itself.
 
-  2. A question mark can be replaced with any number.
+  2. When the loop exits a numbered region in any direction, it must travel in a straight line for the indicated number of cells, and then turn. e.g. A number 1 means that the loop must turn immediately after leaving that region.
 
-  3. All shaded regions must be visited at least once.
+  3. A question mark can be replaced with any number.
+
+  4. All shaded regions must be visited at least once.
 
   This genre is invented by Eric Fox.
 
