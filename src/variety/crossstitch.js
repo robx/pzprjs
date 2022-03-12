@@ -223,13 +223,16 @@
 			if (this.key_inputdirec(ca)) {
 				return;
 			}
-			if (ca === "q") {
-				var cell = this.cursor.getc();
+			var cell = this.cursor.getc();
+			if (ca === "q" || ca === "q1") {
 				cell.setQnum(cell.qnum !== -3 ? -3 : -1);
-
 				this.prev = cell;
 				cell.draw();
 				return;
+			} else if (ca === "w2") {
+				cell.setQdir(cell.NDIR);
+				this.prev = cell;
+				cell.draw();
 			} else {
 				this.key_inputqnum(ca);
 			}
