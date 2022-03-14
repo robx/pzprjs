@@ -605,42 +605,9 @@
 		],
 
 		checkAroundTents: function() {
-			var bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var cell = bd.cell[c];
-				if (cell.getNum() !== 2) {
-					continue;
-				}
-				var target = null,
-					clist = new this.klass.CellList();
-				// 右・左下・下・右下だけチェック
-				clist.add(cell);
-				target = cell.relcell(2, 0);
-				if (target.getNum() === 2) {
-					clist.add(target);
-				}
-				target = cell.relcell(0, 2);
-				if (target.getNum() === 2) {
-					clist.add(target);
-				}
-				target = cell.relcell(-2, 2);
-				if (target.getNum() === 2) {
-					clist.add(target);
-				}
-				target = cell.relcell(2, 2);
-				if (target.getNum() === 2) {
-					clist.add(target);
-				}
-				if (clist.length <= 1) {
-					continue;
-				}
-
-				this.failcode.add("tentAround");
-				if (this.checkOnly) {
-					break;
-				}
-				clist.seterr(1);
-			}
+			this.checkAroundCell(function(cell1, cell2) {
+				return cell1.getNum() === 2 && cell2.getNum() === 2;
+			}, "tentAround");
 		},
 
 		checkTentNone: function() {

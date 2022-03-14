@@ -11,7 +11,8 @@
 		"simpleloop",
 		"detour",
 		"dotchi",
-		"ovotovata"
+		"ovotovata",
+		"rassi"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -61,7 +62,7 @@
 			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@doubleback,simpleloop": {
+	"MouseEvent@doubleback,simpleloop,rassi": {
 		mouseinput_other: function() {
 			if (this.inputMode === "empty") {
 				this.inputempty();
@@ -108,6 +109,12 @@
 			}
 			clist.draw();
 			this.mouseCell = cell;
+		}
+	},
+	"MouseEvent@rassi": {
+		inputModes: {
+			edit: ["border", "clear", "info-line", "empty"],
+			play: ["line", "peke", "subcircle", "subcross", "clear", "info-line"]
 		}
 	},
 	MouseEvent: {
@@ -166,7 +173,7 @@
 
 	//---------------------------------------------------------
 	// キーボード入力系
-	KeyEvent: {
+	"KeyEvent@!rassi": {
 		enablemake: true
 	},
 	"KeyEvent@ovotovata": {
@@ -221,7 +228,7 @@
 			return this.qnum === 2;
 		}
 	},
-	"Cell@doubleback,simpleloop": {
+	"Cell@doubleback,simpleloop,rassi": {
 		noLP: function(dir) {
 			return this.isEmpty();
 		}
@@ -246,6 +253,11 @@
 			}
 		}
 	},
+	"Border@rassi": {
+		checkStableLine: function(num) {
+			return num !== 0 && (this.isLineNG() || this.isBorder());
+		}
+	},
 	Board: {
 		hasborder: 1
 	},
@@ -266,7 +278,7 @@
 	LineGraph: {
 		enabled: true
 	},
-	"LineGraph@onsen,maxi,detour": {
+	"LineGraph@onsen,maxi,detour,rassi": {
 		makeClist: true
 	},
 	"LineBlockGraph:LineGraph@onsen,maxi,detour": {
@@ -433,7 +445,9 @@
 
 			this.drawChassis();
 
-			this.drawTarget();
+			if (this.pid !== "rassi") {
+				this.drawTarget();
+			}
 		}
 	},
 	"Graphic@onsen": {
@@ -505,7 +519,7 @@
 			}
 		}
 	},
-	"Graphic@doubleback,simpleloop": {
+	"Graphic@doubleback,simpleloop,rassi": {
 		getBGCellColor: function(cell) {
 			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
 		},
@@ -557,7 +571,11 @@
 				this.decodeCircle();
 			} else if (this.pid === "onsen") {
 				this.decodeNumber16();
-			} else if (this.pid === "doubleback" || this.pid === "simpleloop") {
+			} else if (
+				this.pid === "doubleback" ||
+				this.pid === "simpleloop" ||
+				this.pid === "rassi"
+			) {
 				this.decodeEmpty();
 			}
 		},
@@ -579,7 +597,11 @@
 				this.encodeCircle();
 			} else if (this.pid === "onsen") {
 				this.encodeNumber16();
-			} else if (this.pid === "doubleback" || this.pid === "simpleloop") {
+			} else if (
+				this.pid === "doubleback" ||
+				this.pid === "simpleloop" ||
+				this.pid === "rassi"
+			) {
 				this.encodeEmpty();
 			}
 		}
@@ -627,7 +649,11 @@
 			if (this.pid !== "simpleloop") {
 				this.decodeAreaRoom();
 			}
-			if (this.pid === "doubleback" || this.pid === "simpleloop") {
+			if (
+				this.pid === "doubleback" ||
+				this.pid === "simpleloop" ||
+				this.pid === "rassi"
+			) {
 				this.decodeEmpty();
 			} else {
 				this.decodeCellQnum();
@@ -645,7 +671,11 @@
 			if (this.pid !== "simpleloop") {
 				this.encodeAreaRoom();
 			}
-			if (this.pid === "doubleback" || this.pid === "simpleloop") {
+			if (
+				this.pid === "doubleback" ||
+				this.pid === "simpleloop" ||
+				this.pid === "rassi"
+			) {
 				this.encodeEmpty();
 			} else {
 				this.encodeCellQnum();
@@ -832,6 +862,16 @@
 
 			"checkDeadendLine+",
 			"checkOneLoop"
+		]
+	},
+	"AnsCheck@rassi#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkLineOverBorder",
+			"checkLinesInRoom",
+			"checkAroundEnd",
+			"checkNoLine"
 		]
 	},
 	AnsCheck: {
@@ -1446,6 +1486,52 @@
 			return new this.klass.CellList(elist);
 		}
 	},
+	"AnsCheck@rassi": {
+		checkLineOverBorder: function() {
+			var bd = this.board,
+				result = true;
+			for (var id = 0; id < bd.border.length; id++) {
+				var border = bd.border[id];
+				if (!border.checkStableLine(border.line)) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				border.seterr(1);
+			}
+			if (!result) {
+				this.failcode.add("laOnBorder");
+				bd.border.setnoerr();
+			}
+		},
+		checkAroundEnd: function() {
+			this.checkAroundCell(function(cell1, cell2) {
+				return cell1.lcnt === 1 && cell2.lcnt === 1;
+			}, "lnDeadEndAround");
+		},
+		checkLinesInRoom: function() {
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			var rooms = bd.roommgr.components;
+			var lpaths = [];
+			for (var r = 0; r < paths.length; r++) {
+				var roomid = rooms.indexOf(paths[r].clist[0].room);
+				if (!lpaths[roomid]) {
+					lpaths[roomid] = paths[r];
+				} else {
+					this.failcode.add("blPassTwice");
+					if (this.checkOnly) {
+						break;
+					}
+					this.board.border.setnoerr();
+					paths[r].setedgeerr(1);
+				}
+			}
+		}
+	},
 
 	"FailCode@country": {
 		bkPassTwice: [
@@ -1571,6 +1657,20 @@
 		bkNoLine: [
 			"(please translate) A line doesn't pass a shaded country.",
 			"A line doesn't pass a shaded country."
+		]
+	},
+	"FailCode@rassi": {
+		laOnBorder: [
+			"線が境界線をまたいでいます。",
+			"There is a line across a border."
+		],
+		lnDeadEndAround: [
+			"(please translate) Two line ends are adjacent.",
+			"Two line ends are adjacent."
+		],
+		blPassTwice: [
+			"(please translate) A room has more than one line.",
+			"A room has more than one line."
 		]
 	}
 });

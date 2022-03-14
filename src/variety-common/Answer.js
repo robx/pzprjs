@@ -101,6 +101,7 @@ pzpr.classmgr.makeCommon({
 		// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 		// ans.checkAdjacentShadeCell()  黒マスが隣接している時、エラーを設定する
 		// ans.checkAdjacentDiffNumber() 同じ数字が隣接している時、エラーを設定する
+		// ans.checkAroundCell()  Same as checkSideCell, but also checks diagonally adjacent cells
 		//---------------------------------------------------------------------------
 		checkSideCell: function(func, code) {
 			var result = true,
@@ -139,6 +140,41 @@ pzpr.classmgr.makeCommon({
 			this.checkSideCell(function(cell1, cell2) {
 				return cell1.sameNumber(cell2);
 			}, "nmAdjacent");
+		},
+		checkAroundCell: function(func, code) {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				var target = null,
+					clist = new this.klass.CellList();
+				// 右・左下・下・右下だけチェック
+				clist.add(cell);
+				target = cell.relcell(2, 0);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				target = cell.relcell(0, 2);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				target = cell.relcell(-2, 2);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				target = cell.relcell(2, 2);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				if (clist.length <= 1) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
 		},
 
 		//---------------------------------------------------------------------------

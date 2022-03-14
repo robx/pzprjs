@@ -270,46 +270,9 @@
 		},
 
 		checkAroundMarks: function() {
-			var bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var cell = bd.cell[c],
-					num = cell.getNum();
-				if (num < 0) {
-					continue;
-				}
-				var target = 0,
-					clist = new this.klass.CellList();
-				var func = function(cell) {
-					return !cell.isnull && num === cell.getNum();
-				};
-				// 右・左下・下・右下だけチェック
-				clist.add(cell);
-				target = cell.relcell(2, 0);
-				if (func(target)) {
-					clist.add(target);
-				}
-				target = cell.relcell(0, 2);
-				if (func(target)) {
-					clist.add(target);
-				}
-				target = cell.relcell(-2, 2);
-				if (func(target)) {
-					clist.add(target);
-				}
-				target = cell.relcell(2, 2);
-				if (func(target)) {
-					clist.add(target);
-				}
-				if (clist.length <= 1) {
-					continue;
-				}
-
-				this.failcode.add("nmAround");
-				if (this.checkOnly) {
-					break;
-				}
-				clist.seterr(1);
-			}
+			this.checkAroundCell(function(cell1, cell2) {
+				return cell1.getNum() >= 0 && cell1.getNum() === cell2.getNum();
+			}, "nmAround");
 		}
 	},
 

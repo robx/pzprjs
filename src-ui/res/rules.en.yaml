@@ -130,6 +130,20 @@ ovotovata:
   This genre is invented by Eric Fox.
 
 
+rassi:
+  Draw multiple lines through orthogonally adjacent cells.
+
+  1. Each region contains exactly one line covering all of the region's cells.
+
+  2. Lines cannot branch off or cross themselves.
+
+  3. Lines cannot go across region borders or through shaded cells.
+
+  4. The endpoints of lines cannot be horizontally, vertically or diagonally adjacent.
+
+  This genre is invented by Prasanna Seshadri.
+
+
 tontti:
   Draw horizontal and vertical lines from the points to divide the grid into regions. You can connect two points, or draw from a point to the outer border.
 
