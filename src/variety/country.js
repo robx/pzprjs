@@ -869,6 +869,7 @@
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkLineOverBorder",
+			"checkLoop",
 			"checkLinesInRoom",
 			"checkAroundEnd",
 			"checkNoLine"
@@ -1512,6 +1513,25 @@
 				return cell1.lcnt === 1 && cell2.lcnt === 1;
 			}, "lnDeadEndAround");
 		},
+		checkLoop: function() {
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				if (
+					paths[r].clist.some(function(cell) {
+						return cell.lcnt !== 2;
+					})
+				) {
+					continue;
+				}
+				this.failcode.add("laLoop");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				paths[r].setedgeerr(1);
+			}
+		},
 		checkLinesInRoom: function() {
 			var bd = this.board;
 			var paths = bd.linegraph.components;
@@ -1664,6 +1684,7 @@
 			"線が境界線をまたいでいます。",
 			"There is a line across a border."
 		],
+		laLoop: ["(please translate) A line forms a loop.", "A line forms a loop."],
 		lnDeadEndAround: [
 			"(please translate) Two line ends are adjacent.",
 			"Two line ends are adjacent."
