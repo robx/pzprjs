@@ -111,14 +111,55 @@
 			this.mouseCell = cell;
 		}
 	},
-	"MouseEvent@rassi": {
+	"MouseEvent@rassi#2": {
 		inputModes: {
 			edit: ["border", "clear", "info-line", "empty"],
 			play: ["line", "peke", "subcircle", "subcross", "clear", "info-line"]
+		},
+
+		mouseinput_rassi: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left") {
+						this.inputLine();
+					} else if (this.btn === "right") {
+						this.inputdragcross();
+					}
+				} else if (this.mouseend && this.notInputted()) {
+					if (this.inputpeke_ifborder()) {
+						return;
+					}
+					this.inputMB();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputborder();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputempty();
+				}
+			}
+		},
+
+		inputdragcross: function() {
+			if (this.firstPoint.bx === null) {
+				this.firstPoint.set(this.inputPoint);
+			} else if (this.inputData === null) {
+				var dx = this.inputPoint.bx - this.firstPoint.bx,
+					dy = this.inputPoint.by - this.firstPoint.by;
+				if (dx * dx + dy * dy > 0.1) {
+					this.inputFixedQsub(2);
+				}
+			} else {
+				this.inputFixedQsub(2);
+			}
 		}
 	},
 	MouseEvent: {
 		mouseinput_auto: function() {
+			if (this.pid === "rassi") {
+				return this.mouseinput_rassi();
+			}
+
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
 					if (this.btn === "left") {
