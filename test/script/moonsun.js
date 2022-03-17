@@ -85,12 +85,12 @@ ui.debug.addDebugData("moonsun", {
 		{
 			input: ["mouse,left, 1,1"],
 			result:
-				"pzprv3/moonsun/2/3/1/0 0 0 /0 0 0 /1 1 1 /. . . /0 0 /0 0 /0 0 0 /2 2 2 /0 0 0 /"
+				"pzprv3.2/moonsun/2/3/0 0 /0 0 /0 0 0 /1 1 1 /. . . /0 0 /0 0 /0 0 0 /2 2 2 /0 0 0 /"
 		},
 		{
 			input: ["mouse,left, 1,1"],
 			result:
-				"pzprv3/moonsun/2/3/1/0 0 0 /0 0 0 /1 1 1 /. . . /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /"
+				"pzprv3.2/moonsun/2/3/0 0 /0 0 /0 0 0 /1 1 1 /. . . /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /"
 		}
 	]
 });

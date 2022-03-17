@@ -688,7 +688,11 @@
 				this.decodeFlags();
 			}
 			if (this.pid !== "simpleloop") {
-				this.decodeAreaRoom();
+				if (this.filever >= 2) {
+					this.decodeBorderQues();
+				} else {
+					this.decodeAreaRoom();
+				}
 			}
 			if (
 				this.pid === "doubleback" ||
@@ -706,11 +710,11 @@
 		},
 		encodeData: function() {
 			if (this.pid === "country") {
-				this.filever = 1;
 				this.encodeFlags(["country_empty"]);
 			}
 			if (this.pid !== "simpleloop") {
-				this.encodeAreaRoom();
+				this.filever = 2;
+				this.encodeBorderQues();
 			}
 			if (
 				this.pid === "doubleback" ||
