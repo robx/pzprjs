@@ -214,7 +214,7 @@
 
 	//---------------------------------------------------------
 	// キーボード入力系
-	"KeyEvent@!rassi": {
+	KeyEvent: {
 		enablemake: true
 	},
 	"KeyEvent@ovotovata": {
