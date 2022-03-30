@@ -42,6 +42,24 @@
 			}
 		},
 
+		inputqnum_main: function(cell) {
+			var order = [-1, -3, -2, 0];
+
+			var current = order.indexOf(cell.qnum);
+			var next =
+				current === -1
+					? 0
+					: this.btn === "left"
+					? order[current + 1]
+					: order[current - 1];
+
+			if (next) {
+				this.inputFixedNumber(next);
+			} else {
+				this.common.inputqnum_main.call(this, cell);
+			}
+		},
+
 		inputLine: function() {
 			if (this.mousestart || this.mousemove) {
 				this.inputslash();
