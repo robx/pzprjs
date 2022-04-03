@@ -17,6 +17,10 @@ ui.debug.addDebugData("voxas", {
 		],
 		[
 			"bdVoxasBlack",
+			"pzprv3/voxas/5/5/0 0 4 0 /0 0 0 2 /0 0 0 0 /3 0 0 0 /0 2 0 5 /0 0 0 0 0 /3 0 4 0 0 /0 0 4 0 2 /5 5 5 5 0 /"
+		],
+		[
+			"bdVoxasBlack",
 			"pzprv3/voxas/5/5/0 0 4 0 /0 0 0 2 /0 0 0 0 /3 5 5 0 /0 2 5 0 /0 0 0 0 0 /3 0 4 0 0 /0 0 4 0 2 /5 5 0 0 0 /"
 		],
 		[
