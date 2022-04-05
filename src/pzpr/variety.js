@@ -72,7 +72,8 @@
 		"bdwalk",
 		"voxas",
 		"tontti",
-		"rassi"
+		"rassi",
+		"parquet"
 	]);
 
 	(function(Genre, obj) {
@@ -283,6 +284,7 @@
 			oneroom: [0, 0, "ワンルームワンドア", "One Room One Door", "heyawake"],
 			onsen: [0, 0, "温泉めぐり", "Onsen-meguri", "country"],
 			paintarea: [1, 0, "ペイントエリア", "Paintarea"],
+			parquet: [0, 0, "Parquet", "Parquet"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],
 			pipelink: [1, 0, "パイプリンク", "Pipelink", "pipelink"],
 			pipelinkr: [

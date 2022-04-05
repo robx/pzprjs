@@ -1141,6 +1141,75 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 			return true;
+		},
+
+		//--------------------------------------------------------------------------------
+		// ans.searchloop() Return all cells of a Graph component that forms a loop.
+		//--------------------------------------------------------------------------------
+		searchloop: function(component, graph) {
+			// Loopがない場合は何もしないでreturn
+			if (component.circuits <= 0) {
+				return new this.klass.CellList();
+			}
+
+			// どこにLoopが存在するか判定を行う
+			var bd = this.board;
+			var errclist = new this.klass.CellList();
+			var history = [component.clist[0]],
+				prevcell = null;
+			var steps = {},
+				rows = bd.maxbx - bd.minbx;
+
+			while (history.length > 0) {
+				var obj = history[history.length - 1],
+					nextobj = null;
+				var step = steps[obj.by * rows + obj.bx];
+				if (step === void 0) {
+					step = steps[obj.by * rows + obj.bx] = history.length - 1;
+				}
+				// ループになった場合 => ループフラグをセットする
+				else if (history.length - 1 > step) {
+					for (var i = history.length - 2; i >= 0; i--) {
+						if (history[i].group === "cell") {
+							errclist.add(history[i]);
+						}
+						if (history[i] === obj) {
+							break;
+						}
+					}
+				}
+
+				if (obj.group === "cell") {
+					prevcell = obj;
+					for (var i = 0; i < graph.getObjNodeList(obj)[0].nodes.length; i++) {
+						var cell2 = graph.getObjNodeList(obj)[0].nodes[i].obj;
+						var border = bd.getb(
+							(obj.bx + cell2.bx) >> 1,
+							(obj.by + cell2.by) >> 1
+						);
+						if (steps[border.by * rows + border.bx] === void 0) {
+							nextobj = border;
+							break;
+						}
+					}
+				} else {
+					// borderの時
+					for (var i = 0; i < obj.sidecell.length; i++) {
+						var cell = obj.sidecell[i];
+						if (cell !== prevcell && cell !== history[history.length - 2]) {
+							nextobj = cell;
+							break;
+						}
+					}
+				}
+				if (!!nextobj) {
+					history.push(nextobj);
+				} else {
+					history.pop();
+				}
+			}
+
+			return errclist;
 		}
 	},
 

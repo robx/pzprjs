@@ -8,6 +8,7 @@ pzpr.classmgr.makeCommon({
 	//--------------------------------------------------------------------------------
 	"AreaGraphBase:GraphBase": {
 		pointgroup: "cell",
+		countprop: "lcnt",
 
 		isedgevalidbynodeobj: function(cell1, cell2) {
 			return this.isedgevalidbylinkobj(
@@ -247,7 +248,7 @@ pzpr.classmgr.makeCommon({
 					bd.hasborder === 1
 						? bx === 0 || bx === bd.cols * 2 || by === 0 || by === bd.rows * 2
 						: false;
-				cross.lcnt = ischassis ? 2 : 0;
+				cross[this.countprop] = ischassis ? 2 : 0;
 			}
 			for (var id = 0; id < borders.length; id++) {
 				if (!this.isedgevalidbylinkobj(borders[id])) {
@@ -260,9 +261,9 @@ pzpr.classmgr.makeCommon({
 				var cross = border.sidecross[i];
 				if (!cross.isnull) {
 					if (isset) {
-						cross.lcnt++;
+						cross[this.countprop]++;
 					} else {
-						cross.lcnt--;
+						cross[this.countprop]--;
 					}
 				}
 			}
@@ -279,7 +280,10 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			this.addEdge(sidenodes[0], sidenodes[1]);
-			if (border.sidecross[0].lcnt === 0 || border.sidecross[1].lcnt === 0) {
+			if (
+				border.sidecross[0][this.countprop] === 0 ||
+				border.sidecross[1][this.countprop] === 0
+			) {
 				this.modifyNodes = [];
 			} else if (this.hastop && sidenodes.length >= 2) {
 				this.setTopOfRoom_combine(sidenodes[0].obj, sidenodes[1].obj);
@@ -292,7 +296,10 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			this.removeEdge(sidenodes[0], sidenodes[1]);
-			if (border.sidecross[0].lcnt === 1 || border.sidecross[1].lcnt === 1) {
+			if (
+				border.sidecross[0][this.countprop] === 1 ||
+				border.sidecross[1][this.countprop] === 1
+			) {
 				this.modifyNodes = [];
 			}
 		},

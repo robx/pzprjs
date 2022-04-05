@@ -1365,7 +1365,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawBaseMarks() 交点のdotをCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawBaseMarks: function() {
+		drawBaseMarks: function(isdraw) {
 			var g = this.vinc("cross_mark", "auto", true);
 			g.fillStyle = this.quescolor;
 
@@ -1374,7 +1374,11 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < clist.length; i++) {
 				var cross = clist[i];
 				g.vid = "x_cm_" + cross.id;
-				g.fillCircle(cross.bx * this.bw, cross.by * this.bh, size / 2);
+				if (isdraw !== false) {
+					g.fillCircle(cross.bx * this.bw, cross.by * this.bh, size / 2);
+				} else {
+					g.vhide();
+				}
 			}
 		},
 

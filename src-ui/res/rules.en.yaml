@@ -22,9 +22,9 @@ canal:
   1. The number on a cell indicates how many cells are shaded in a continuous line starting from the cell. These lines are in the four cardinal directions (up, down, left, right).
 
   2. You cannot shade a cell with a number.
-  
+
   3. The shaded cells cannot form a 2x2 square.
-  
+
   4. All shaded cells form an orthogonally contiguous area.
 
   This genre is invented by Prasanna Seshadri.
@@ -130,6 +130,18 @@ ovotovata:
   This genre is invented by Eric Fox.
 
 
+parquet:
+  You're given a grid divided into regions and tiles. Shade some tiles on the board.
+
+  1. A tile is either completely shaded or unshaded.
+
+  2. Within each thick-outlined region, exactly one tile is shaded.
+
+  3. All shaded cells form an orthogonally contiguous area.
+
+  4. Shaded cells cannot form a loop. This includes 2x2 squares.
+
+
 rassi:
   Draw multiple lines through orthogonally adjacent cells.
 
@@ -164,7 +176,7 @@ tontti:
 
 voxas:
   Draw lines over the dotted lines to divide the board into several areas. Some lines are given.
-  
+
   1. All areas must be rectangular in shape, and must be 2 or 3 cells in size.
 
   2. Two rectangles divided by a white circle must have the same size and orientation.

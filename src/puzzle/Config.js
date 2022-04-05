@@ -60,6 +60,7 @@
 				"singlenum",
 				!pzpr.env.API.touchevent
 			); /* hanare: 部屋に回答数字を一つだけ入力 */
+			this.add("singleregion", true); /* parquet: Unshade all other regions */
 			this.add("enline", true); /* kouchoku: 線は点の間のみ引ける */
 			this.add("lattice", true); /* kouchoku: 格子点チェック */
 
@@ -355,6 +356,9 @@
 					break;
 				case "singlenum":
 					exec = pid === "hanare" || pid === "putteria";
+					break;
+				case "singleregion":
+					exec = pid === "parquet";
 					break;
 				case "enline":
 				case "lattice":
