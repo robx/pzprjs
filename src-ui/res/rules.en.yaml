@@ -84,6 +84,18 @@ dotchi:
   4. The loop cannot go through a shaded circle.
 
 
+lapaz:
+  Shade some cells on the board, and divide the rest into regions of 2 cells.
+
+  1. No two shaded cells are horizontally or vertically adjacent.
+
+  2. Numbers must be contained in a 1x2 region. It's possible for a region to have multiple numbers.
+
+  3. A clue in a horizontal region indicates the amount of shaded cells in the same row as the clue. Likewise, a clue in a vertical region indicates the amount of shaded cells in the same column.
+
+  This genre is invented by Shye.
+
+
 lohkous:
   Draw lines over the dotted lines to divide the board into several blocks.
 

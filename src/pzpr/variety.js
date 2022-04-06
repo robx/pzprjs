@@ -73,7 +73,8 @@
 		"voxas",
 		"tontti",
 		"rassi",
-		"parquet"
+		"parquet",
+		"lapaz"
 	]);
 
 	(function(Genre, obj) {
@@ -236,6 +237,7 @@
 			kurodoko: [0, 1, "黒どこ(黒マスはどこだ)", "Kurodoko"],
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
+			lapaz: [0, 0, "La Paz", "La Paz"],
 			lightup: [
 				0,
 				1,
