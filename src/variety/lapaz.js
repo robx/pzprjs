@@ -266,7 +266,7 @@
 			"A number is not contained in a 1x2 region."
 		],
 		nmShadeNe: [
-			"行または列内にある水のマスの数と外の数字が異なります。",
+			"(please translate) The number of shaded cells in the row or column is not correct.",
 			"The number of shaded cells in the row or column is not correct."
 		]
 	}
