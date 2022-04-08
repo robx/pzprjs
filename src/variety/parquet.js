@@ -402,8 +402,8 @@
 			"There is a loop of shaded cells."
 		],
 		bkPluralShade: [
-			"(please translate) A block has multiple shaded tiles.",
-			"A block has multiple shaded tiles."
+			"(please translate) A region has multiple shaded tiles.",
+			"A region has multiple shaded tiles."
 		]
 	}
 });
