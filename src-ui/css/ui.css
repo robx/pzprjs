@@ -170,15 +170,20 @@ div#usepanel div.disabled div.childsel {
   background-color: white;
 }
 
-div#variantpanel input[type="checkbox"]:disabled {
+div#variantpanel.playeronly input[type="checkbox"] {
   display: none;
 }
-div#variantpanel input[type="checkbox"]:disabled:not(:checked) + span {
+div#variantpanel.playeronly
+  input[type="checkbox"]:disabled:not(:checked)
+  + span {
   display: none;
 }
 div#variantpanel input[type="checkbox"]:disabled:checked + span {
   font-style: italic;
   color: black;
+}
+div#variantpanel input[type="checkbox"]:disabled:not(:checked) + span {
+  color: silver;
 }
 
 div#auxeditorpanel > div {

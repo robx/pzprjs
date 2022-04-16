@@ -182,7 +182,7 @@ ui.toolarea = {
 			if (Object.keys(variants).length <= 0) {
 				return false;
 			}
-			if (!ui.puzzle.playmode) {
+			if (!ui.puzzle.playeronly) {
 				return true;
 			}
 			for (var key in variants) {
@@ -194,6 +194,9 @@ ui.toolarea = {
 		var vardisp = shouldDisplay ? "block" : "none";
 		getEL("separator1").style.display = vardisp;
 		getEL("variantpanel").style.display = vardisp;
+		if (ui.puzzle.playeronly) {
+			getEL("variantpanel").classList.add("playeronly");
+		}
 	},
 	setdisplay: function(idname) {
 		if (idname === "variant") {
