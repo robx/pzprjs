@@ -133,7 +133,6 @@
 		enablebcolor: true,
 		gridcolor_type: "LIGHT",
 		bgcellcolor_func: "qsub1",
-		bordercolor_func: "qans",
 
 		qanscolor: "rgb(0, 80, 0)",
 		qcmpcolor: "rgb(0, 80, 0)",
@@ -150,6 +149,14 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getBorderColor: function(border) {
+			if (!border.isBorder() && border.isCmp() && border.trial) {
+				return this.trialcolor;
+			}
+
+			return this.getBorderColor_qans(border);
 		}
 	},
 
