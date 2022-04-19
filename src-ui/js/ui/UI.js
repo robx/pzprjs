@@ -200,7 +200,14 @@ window.ui = {
 		if (!strEN) {
 			return strJP;
 		}
+		if (!strJP) {
+			return strEN;
+		}
 		return pzpr.lang === "ja" ? strJP : strEN;
+	},
+
+	i18n: function(strKey) {
+		return this.selectStr(this.langs.ja[strKey], this.langs.en[strKey]);
 	},
 
 	//---------------------------------------------------------------------------

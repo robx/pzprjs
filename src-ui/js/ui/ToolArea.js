@@ -90,20 +90,17 @@ ui.toolarea = {
 					}
 				}
 			} else if (el.nodeType === 3) {
-				if (el.data.match(/^__(.+)__(.+)__$/)) {
-					var str_jp = RegExp.$1,
-						str_en = RegExp.$2;
+				if (el.data.match(/^__(.+)__$/)) {
+					var str_key = RegExp.$1;
 					toolarea.captions.push({
 						textnode: el,
-						str_jp: str_jp,
-						str_en: str_en
+						str_key: str_key
 					});
 					parent = el.parentNode;
 					if (parent.className.match(/child/)) {
 						toolarea.captions.push({
 							datanode: parent,
-							str_jp: str_jp,
-							str_en: str_en
+							str_key: str_key
 						});
 					}
 				}
@@ -161,13 +158,10 @@ ui.toolarea = {
 		for (var i = 0; i < this.captions.length; i++) {
 			var obj = this.captions[i];
 			if (!!obj.textnode) {
-				obj.textnode.data = ui.selectStr(obj.str_jp, obj.str_en);
+				obj.textnode.data = ui.i18n(obj.str_key);
 			}
 			if (!!obj.datanode) {
-				obj.datanode.setAttribute(
-					"data-text",
-					ui.selectStr(obj.str_jp, obj.str_en)
-				);
+				obj.datanode.setAttribute("data-text", ui.i18n(obj.str_key));
 			}
 		}
 	},
@@ -202,9 +196,9 @@ ui.toolarea = {
 		if (idname === "variant") {
 			var str;
 			if (ui.menuconfig.get("variant")) {
-				str = ui.selectStr("本家ルールでチェック", "Check base type");
+				str = ui.i18n("check.variant");
 			} else {
-				str = ui.selectStr("チェック", "Check");
+				str = ui.i18n("check");
 			}
 			getEL("btncheck").textContent = str;
 		}

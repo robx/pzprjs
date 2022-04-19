@@ -148,7 +148,7 @@ ui.popupmgr.addpopup("template", {
 		}
 		for (var i = 0; i < this.captions.length; i++) {
 			var obj = this.captions[i];
-			var text = ui.selectStr(obj.str_jp, obj.str_en);
+			var text = ui.i18n(obj.str_key);
 			if (!!obj.textnode) {
 				obj.textnode.data = text;
 			} else if (!!obj.button) {
@@ -161,11 +161,10 @@ ui.popupmgr.addpopup("template", {
 		var popup = this;
 		this.captions = [];
 		ui.misc.walker(parent, function(el) {
-			if (el.nodeType === 3 && el.data.match(/^__(.+)__(.+)__$/)) {
+			if (el.nodeType === 3 && el.data.match(/^__(.+)__$/)) {
 				popup.captions.push({
 					textnode: el,
-					str_jp: RegExp.$1,
-					str_en: RegExp.$2
+					str_key: RegExp.$1
 				});
 			}
 		});
@@ -591,7 +590,7 @@ ui.popupmgr.addpopup("filesave", {
 		var prohibit = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"];
 		for (var i = 0; i < prohibit.length; i++) {
 			if (filename.indexOf(prohibit[i]) !== -1) {
-				ui.notify.alert("ファイル名として使用できない文字が含まれています。");
+				ui.notify.alert(ui.i18n("filesave.invalid"));
 				return;
 			}
 		}
@@ -722,7 +721,7 @@ ui.popupmgr.addpopup("imagesave", {
 		var prohibit = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"];
 		for (var i = 0; i < prohibit.length; i++) {
 			if (filename.indexOf(prohibit[i]) !== -1) {
-				ui.notify.alert("ファイル名として使用できない文字が含まれています。");
+				ui.notify.alert(ui.i18n("filesave.invalid"));
 				return;
 			}
 		}
@@ -766,7 +765,7 @@ ui.popupmgr.addpopup("imagesave", {
 				this.close();
 			}
 		} catch (e) {
-			ui.notify.alert("画像の出力に失敗しました", "Fail to Output the Image");
+			ui.notify.alert(ui.i18n("imagesave.error"));
 		}
 	},
 
@@ -790,7 +789,7 @@ ui.popupmgr.addpopup("imagesave", {
 				dataurl = ui.puzzle.toBuffer("svg", option);
 			}
 		} catch (e) {
-			ui.notify.alert("画像の出力に失敗しました", "Fail to Output the Image");
+			ui.notify.alert(ui.i18n("imagesave.error"));
 		}
 		if (!dataurl) {
 			/* No Data URL */ return;

@@ -10,6 +10,10 @@ module.exports = function(grunt){
     fs.statSync('src-ui/res/rules.en.yaml').mtime,
     fs.statSync('src-ui/res/rules.ja.yaml').mtime
   );
+  var pMTime = Math.max(
+    fs.statSync('src-ui/res/p.en.json').mtime,
+    fs.statSync('src-ui/res/p.ja.json').mtime
+  );
 
   var banner_min  = fs.readFileSync('./src/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/common/banner_full.js', 'utf-8');
@@ -30,6 +34,10 @@ module.exports = function(grunt){
     pkg: pkg,
 
     git: grunt.file.readJSON("git.json"),
+    langs: {
+      p_en: grunt.file.readJSON("src-ui/res/p.en.json", 'utf-8'),
+      p_ja: grunt.file.readJSON("src-ui/res/p.ja.json", 'utf-8')
+    },
 
     copy: {
       ui: {
@@ -60,7 +68,9 @@ module.exports = function(grunt){
         override: function(detail, include) {
           if(detail.task === 'concat' && detail.target === 'samples') {
             include(rulesMTime > detail.time);
-          } else {
+          } else if(detail.task === 'concat' && detail.target === 'ui') {
+            include(pMTime > detail.time);
+          }else{
             include(false);
           }
         }

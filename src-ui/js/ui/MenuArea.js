@@ -120,11 +120,10 @@ ui.menuarea = {
 				}
 			} else if (el.nodeType === 1 && el.nodeName === "MENU") {
 				var label = el.getAttribute("label");
-				if (!!label && label.match(/^__(.+)__(.+)__$/)) {
+				if (!!label && label.match(/^__(.+)__$/)) {
 					menuarea.captions.push({
 						menu: el,
-						str_jp: RegExp.$1,
-						str_en: RegExp.$2
+						str_key: RegExp.$1
 					});
 					if (menuarea.nohover) {
 						addmenuevent(el, "mousedown", function(e) {
@@ -133,11 +132,10 @@ ui.menuarea = {
 					}
 				}
 			} else if (el.nodeType === 3) {
-				if (el.data.match(/^__(.+)__(.+)__$/)) {
+				if (el.data.match(/^__(.+)__$/)) {
 					menuarea.captions.push({
 						textnode: el,
-						str_jp: RegExp.$1,
-						str_en: RegExp.$2
+						str_key: RegExp.$1
 					});
 				}
 			}
@@ -223,9 +221,9 @@ ui.menuarea = {
 		for (var i = 0; i < this.captions.length; i++) {
 			var obj = this.captions[i];
 			if (!!obj.textnode) {
-				obj.textnode.data = ui.selectStr(obj.str_jp, obj.str_en);
+				obj.textnode.data = ui.i18n(obj.str_key);
 			} else if (!!obj.menu) {
-				obj.menu.setAttribute("label", ui.selectStr(obj.str_jp, obj.str_en));
+				obj.menu.setAttribute("label", ui.i18n(obj.str_key));
 			}
 		}
 	},
@@ -239,9 +237,9 @@ ui.menuarea = {
 		if (idname === "toolarea") {
 			var str;
 			if (!ui.menuconfig.get("toolarea")) {
-				str = ui.selectStr("ツールエリアを表示", "Show tool area");
+				str = ui.i18n("toolarea.show");
 			} else {
-				str = ui.selectStr("ツールエリアを隠す", "Hide tool area");
+				str = ui.i18n("toolarea.hide");
 			}
 			getEL("menu_toolarea").textContent = str;
 		} else if (this.menuitem === null || !this.menuitem[idname]) {
@@ -407,22 +405,14 @@ ui.menuarea = {
 	},
 	answerclear: function() {
 		this.stopHovering();
-		ui.notify.confirm(
-			"解答を消去しますか？",
-			"Do you want to erase the answer?",
-			function() {
-				ui.puzzle.ansclear();
-			}
-		);
+		ui.notify.confirm(ui.i18n("ansclear.confirm"), function() {
+			ui.puzzle.ansclear();
+		});
 	},
 	submarkclear: function() {
 		this.stopHovering();
-		ui.notify.confirm(
-			"補助記号を消去しますか？",
-			"Do you want to erase the auxiliary marks?",
-			function() {
-				ui.puzzle.subclear();
-			}
-		);
+		ui.notify.confirm(ui.i18n("subclear.confirm"), function() {
+			ui.puzzle.subclear();
+		});
 	}
 };
