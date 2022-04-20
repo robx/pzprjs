@@ -167,6 +167,7 @@
     "aquarium_regions": "Water in one region must have the same surface level",
     "country_empty": "Areas don't have to be visited",
     "voxas_tatami": "Tatami rules (no 4-way intersections)",
+    "tren_new": "All unused cells must be connected",
     "variant": "This puzzle uses variant rules",
     "time": "Time:",
     "check": "Check",

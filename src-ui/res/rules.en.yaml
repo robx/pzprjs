@@ -186,6 +186,16 @@ tontti:
   This genre is invented by Arvi Teikari a.k.a. Hempuli.
 
 
+tren:
+  Place several 1x2 and 1x3 blocks on the board, which don't overlap each other.
+
+  1. Each number is contained in a block. Blocks must contain exactly one number.
+
+  2. Horizontally oriented blocks can slide left and right, while vertically oriented blocks can slide up and down. Blocks cannot move outside the grid or through other blocks.
+  
+  3. A number inside a block indicates how many spaces the block can move.
+
+
 voxas:
   Draw lines over the dotted lines to divide the board into several areas. Some lines are given.
 

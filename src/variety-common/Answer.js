@@ -883,7 +883,7 @@ pzpr.classmgr.makeCommon({
 				for (var by = 1; by <= bd.maxby; by += 2) {
 					for (var bx = 1; bx <= bd.maxbx; bx += 2) {
 						for (var tx = bx; tx <= bd.maxbx; tx += 2) {
-							if (termfunc(bd.getc(tx, by))) {
+							if (termfunc(bd.getc(tx, by), false)) {
 								break;
 							}
 						}
@@ -906,7 +906,7 @@ pzpr.classmgr.makeCommon({
 				for (var bx = 1; bx <= bd.maxbx; bx += 2) {
 					for (var by = 1; by <= bd.maxby; by += 2) {
 						for (var ty = by; ty <= bd.maxby; ty += 2) {
-							if (termfunc(bd.getc(bx, ty))) {
+							if (termfunc(bd.getc(bx, ty), true)) {
 								break;
 							}
 						}

@@ -167,6 +167,7 @@
     "aquarium_regions": "同一領域内の水面の高さがすべて等しい場合のみ正解とする",
     "country_empty": "線が全く通らない国があっても正解とする",
     "voxas_tatami": "Tatami rules (no 4-way intersections)",
+    "tren_new": "All unused cells must be connected",
     "variant": "変種ルール",
     "time": "経過時間：",
     "check": "チェック",

@@ -93,6 +93,10 @@
 				variant: true,
 				volatile: true
 			}); /* voxas: Rule variation for disallowing crossing borders */
+			this.add("tren_new", false, {
+				variant: true,
+				volatile: true
+			}); /* tren: Rule variation for connecting unused cells */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
