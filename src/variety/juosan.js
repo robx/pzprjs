@@ -296,21 +296,5 @@
 				return cell.qans === 0;
 			}, "ceNoBar");
 		}
-	},
-
-	FailCode: {
-		ceNoBar: ["何も入っていないマスがあります。", "There is an empty cell."],
-		baParaGe3: [
-			"縦棒か横棒が3マス以上並んでいます。",
-			"There are at least there vertical or horizonal bars in parallel."
-		],
-		bkMajorBarGt: [
-			"縦棒か横棒の多い方の数が部屋の数字より多いです。",
-			"The number of majority of vertical or horizonal bars is greater than the number of the area."
-		],
-		bkMajorBarLt: [
-			"縦棒か横棒の多い方の数が部屋の数字より少ないです。",
-			"The number of majority of vertical or horizonal bars is less than the number of the area."
-		]
 	}
 });

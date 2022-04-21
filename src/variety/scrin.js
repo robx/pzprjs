@@ -429,43 +429,5 @@
 				room.seterr(1);
 			}
 		}
-	},
-	FailCode: {
-		bkNumUnshade: [
-			"長方形の中に含まれていない丸があります。",
-			"A clue is not inside a rectangle."
-		],
-		bkNumGe2: [
-			"1つの領域に2つ以上の数字が入っています。",
-			"An area has multiple clues."
-		],
-		bkSizeNe: [
-			"数字と領域の大きさが違います。",
-			"The size of the area is not equal to the number."
-		],
-		bkNotRect: [
-			"四角形ではない領域があります。",
-			"An area is not a rectangle."
-		],
-		csdDivide: [
-			"長方形で出来た輪っかに含まれていない長方形があります。",
-			"There is a rectangle that is not connected to the other rectangles."
-		],
-		rmBranch: [
-			"３つ以上の頂点を共有している長方形があります。",
-			"There is a branch of rectangles."
-		],
-		rmDeadend: [
-			"頂点を１つしか共有していない長方形があります。",
-			"There is a dead-end rectangle."
-		],
-		rmIsolated: [
-			"頂点を全く共有していない長方形があります。",
-			"There is an isolated rectangle."
-		],
-		rmRectUnshade: [
-			"輪の中に長方形が出来ています。",
-			"A rectangle is not part of the solution."
-		]
 	}
 });

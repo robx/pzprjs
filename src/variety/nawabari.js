@@ -481,45 +481,5 @@
 				l2.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmBorderNe: [
-			"数字の周りにある境界線の本数が違います。",
-			"The number is not equal to the number of border lines around it."
-		],
-		bkNoNum: ["数字の入っていない部屋があります。", "A room has no numbers."],
-		bkNumGe2: [
-			"1つの部屋に2つ以上の数字が入っています。",
-			"A room has more than one number."
-		],
-		bkSizeLt3: [
-			"サイズが3マスより小さいブロックがあります。",
-			"The size of an area is smaller than three."
-		],
-		bkSizeLt4: [
-			"サイズが4マスより小さいブロックがあります。",
-			"The size of an area is smaller than four."
-		],
-		bkSizeLt5: [
-			"サイズが5マスより小さいブロックがあります。",
-			"The size of an area is smaller than five."
-		],
-		bkSizeGt3: [
-			"サイズが3マスより大きいブロックがあります。",
-			"The size of an area is larger than three."
-		],
-		bkSizeGt4: [
-			"サイズが4マスより大きいブロックがあります。",
-			"The size of an area is larger than four."
-		],
-		bkSizeGt5: [
-			"サイズが5マスより大きいブロックがあります。",
-			"The size of an area is larger than five."
-		],
-		bkSameTouch: [
-			"向きも形も同じブロックが接しています。",
-			"Two areas of the same shape and orientation area adjacent."
-		]
 	}
 });

@@ -1339,24 +1339,5 @@
 			}
 			return errgate;
 		}
-	},
-
-	FailCode: {
-		gateRedup: [
-			"線が２回以上通過している旗門があります。",
-			"A line goes through a gate twice or more."
-		],
-		gateUnpass: [
-			"線が通過していない旗門があります。",
-			"There is a gate that the line is not passing."
-		],
-		lrOrder: [
-			"旗門を通過する順番が間違っています。",
-			"The order of passing the gate is wrong."
-		],
-		stLineNe2: [
-			"○から線が２本出ていません。",
-			"Start/goal circle doesn't have two lines."
-		]
 	}
 });

@@ -591,22 +591,6 @@
 				}
 				return result;
 			}
-		},
-
-		FailCode: {
-			starAround: ["星がタテヨコナナメに隣接しています。", "Some stars touch."],
-			bkStarGt: [
-				"ブロックに入る星の数が多すぎます。",
-				"The number of stars in an area is too large."
-			],
-			bkStarLt: [
-				"ブロックに入る星の数が少ないです。",
-				"The number of stars in an area is too small."
-			],
-			lnStarNe: [
-				"1つの行に入る星の数が間違っています。",
-				"The number of stars in a line is wrong."
-			]
 		}
 	});
 })();

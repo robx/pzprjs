@@ -370,16 +370,5 @@
 				return true;
 			}
 		}
-	},
-
-	FailCode: {
-		nmSum: [
-			"黒マスに挟まれた数字の和と、枠外の数字が一致していません。",
-			"The sum of the numbers between the two blocks is wrong."
-		],
-		ceTooManyBlocks: [
-			"3つ以上の黒マスがある行または列があります。",
-			"There are more than two blocks in a row or column."
-		]
 	}
 });

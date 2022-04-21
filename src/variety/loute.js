@@ -675,24 +675,5 @@
 				rooms[id].clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		bkNotLshape: [
-			"ブロックが幅1のL字型になっていません。",
-			"An area is not L-shaped or its width is not 1."
-		],
-		arBlkEdge: [
-			"矢印がブロックの端にありません。",
-			"An arrow is not at the edge of the area."
-		],
-		arNotPtCnr: [
-			"矢印の先にブロックの角がありません。",
-			"An arrow doesn't point at the corner of an area."
-		],
-		ciNotOnCnr: [
-			"白丸がブロックの角にありません。",
-			"A circle is not at the corner of an area."
-		]
 	}
 });

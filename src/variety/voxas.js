@@ -377,7 +377,7 @@
 		},
 
 		checkValueSmall: function() {
-			this.checkRegionValue(this.board.roommgr.ERROR_SMALL, "bkSize1");
+			this.checkRegionValue(this.board.roommgr.ERROR_SMALL, "bkSizeLt2");
 		},
 		checkValueWide: function() {
 			this.checkRegionValue(this.board.roommgr.ERROR_WIDE, "bkNotRect");
@@ -450,31 +450,5 @@
 				cell2.room.clist.seterr(1);
 			}
 		}
-	},
-	FailCode: {
-		bkSize1: [
-			"サイズが2マスより小さいブロックがあります。",
-			"The size of an area is smaller than two."
-		],
-		bkSizeGt3: [
-			"サイズが3マスより大きいブロックがあります。",
-			"The size of an area is larger than three."
-		],
-		bkNotRect: [
-			"四角形ではない領域があります。",
-			"An area is not a rectangle."
-		],
-		bdVoxasBlack: [
-			"(please translate) Two areas separated by a black dot have the same size or the same orientation.",
-			"Two areas separated by a black dot have the same size or the same orientation."
-		],
-		bdVoxasGray: [
-			"(please translate) Two areas separated by a gray dot are identical, or have both a different size and different orientation.",
-			"Two areas separated by a gray dot are identical, or have both a different size and different orientation."
-		],
-		bdVoxasWhite: [
-			"(please translate) Two areas separated by a white dot are different.",
-			"Two areas separated by a white dot are different."
-		]
 	}
 });

@@ -4,6 +4,7 @@ exports.files = [
 	"lib/candle-intro",
 	"../node_modules/pzpr-canvas/dist/candle",
 	"lib/candle-outro",
+	"common/langs",
 	"pzpr/env",
 	"pzpr/event",
 	"pzpr/classmgr",

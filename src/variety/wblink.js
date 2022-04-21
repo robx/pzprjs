@@ -307,21 +307,5 @@
 				this.board.border.setnoerr();
 			}
 		}
-	},
-
-	FailCode: {
-		lcTripleNum: [
-			"3つ以上の○が繋がっています。",
-			"Three or more objects are connected."
-		],
-		lcInvWhite: [
-			"白丸同士が繋がっています。",
-			"Two white circles are connected."
-		],
-		lcInvBlack: [
-			"黒丸同士が繋がっています。",
-			"Two black circles are connected."
-		],
-		nmNoLine: ["○から線が出ていません。", "A circle doesn't start any line."]
 	}
 });

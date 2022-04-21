@@ -332,24 +332,5 @@
 			}
 			return true;
 		}
-	},
-
-	FailCode: {
-		lnNotRect: [
-			"長方形か正方形でない輪っかがあります。",
-			"There is a non-rectangle loop."
-		],
-		bkLineGt: [
-			"数字のある部屋と線が通過するマスの数が違います。",
-			"The number of the cells that is passed any line in the room and the number written in the room is diffrerent."
-		],
-		bkLineLt: [
-			"数字のある部屋と線が通過するマスの数が違います。",
-			"The number of the cells that is passed any line in the room and the number written in the room is diffrerent."
-		],
-		cuNoLine: [
-			"白マスの上に線が引かれていません。",
-			"There is no line on the unshaded cell."
-		]
 	}
 });

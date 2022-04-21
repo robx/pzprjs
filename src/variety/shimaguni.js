@@ -485,52 +485,9 @@
 		}
 	},
 
-	"FailCode@shimaguni": {
-		bkShadeNe: [
-			"海域内の数字と国のマス数が一致していません。",
-			"The number of shaded cells is not equal to the number."
-		],
-		bkShadeDivide: [
-			"1つの海域に入る国が2つ以上に分裂しています。",
-			"The shaded cells in a marine area are divided."
-		],
-		bkNoShade: [
-			"黒マスのカタマリがない海域があります。",
-			"A marine area has no shaded cells."
-		],
-		cbShade: [
-			"異なる海域にある国どうしが辺を共有しています。",
-			"Countries in different marine areas are adjacent."
-		],
-		bsEqShade: [
-			"隣り合う海域にある国の大きさが同じです。",
-			"The sizes of countries that are in adjacent marine areas are the same."
-		]
-	},
-
-	"FailCode@chocona": {
-		csNotRect: [
-			"黒マスのカタマリが正方形か長方形ではありません。",
-			"A mass of shaded cells is not rectangle."
-		],
-		bkShadeNe: [
-			"数字のある領域と、領域の中にある黒マスの数が違います。",
-			"The number of shaded cells in the area and the number written in the area is different."
-		]
-	},
-
 	"FailCode@stostone": {
-		cbShade: [
-			"異なる部屋にある黒マスどうしが辺を共有しています。",
-			"Shaded cells are adjacent over a border."
-		],
-		csUpper: [
-			"ブロックを落とした後に黒マスが盤面の上半分に残っています。",
-			"Shaded cells remain in the upper half of the board after the blocks have fallen."
-		],
-		cuLower: [
-			"ブロックを落とした後の空間が盤面の下半分にあります。",
-			"Unshaded cells exist in the lower half of the board after the blocks have fallen."
-		]
+		bkShadeDivide: "bkShadeDivide",
+		bkNoShade: "bkNoShade",
+		bkShadeNe: "bkShadeNe"
 	}
 });

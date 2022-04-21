@@ -441,16 +441,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		bkDupNum: [
-			"1つの部屋に同じ数字が複数入っています。",
-			"A room has two or more same numbers."
-		],
-		arNotMax: [
-			"矢印の先が最も大きい数字でありません。",
-			"An arrow doesn't point out biggest number."
-		]
 	}
 });

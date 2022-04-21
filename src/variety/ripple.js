@@ -335,28 +335,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		bkDupNum: [
-			"1つの部屋に同じ数字が複数入っています。",
-			"A room has two or more same numbers."
-		],
-		bkSmallOnBig: [
-			"同じ部屋で上に小さい数字が乗っています。",
-			"There is a smaller number on top of a bigger number in a room."
-		],
-		nmSmallGap: [
-			"数字よりもその間隔が短いところがあります。",
-			"The distance between two equal numbers is smaller than the number."
-		],
-		nmAround: [
-			"同じ数字がタテヨコナナメに隣接しています。",
-			"Equal numbers touch."
-		],
-		nmNotConsecNeighbors: [
-			"連続する数字がタテヨコに隣り合っていません。",
-			"A number is not the neighbor of its consecutive numbers."
-		]
 	}
 });

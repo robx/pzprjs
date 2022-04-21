@@ -287,28 +287,5 @@
 				area.clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		bkNoNum: [
-			"数字が含まれていないブロックがあります。",
-			"There is an empty room."
-		],
-		nm2x2: [
-			"数字が2x2のカタマリになっています。",
-			"There is a 2x2 block of numbers."
-		],
-		cbSameNum: [
-			"同じ数字が境界線を挟んで隣り合っています。",
-			"Adjacent blocks have the same number."
-		],
-		nmCountGt: [
-			"入っている数字の数が数字より多いです。",
-			"A number is bigger than the count."
-		],
-		nmCountLt: [
-			"入っている数字の数が数字より少ないです。",
-			"A number is smaller than the count."
-		]
 	}
 });

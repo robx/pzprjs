@@ -722,12 +722,5 @@
 				cell.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmSumOfDiff: [
-			"数字とその隣の数字の差の合計が合っていません。",
-			"Sum of the differences between the number and adjacent numbers is not equal to the number."
-		]
 	}
 });

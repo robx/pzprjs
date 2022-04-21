@@ -534,18 +534,5 @@
 				rooms[r].clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		bkNoStar: ["星が含まれていない領域があります。", "An area has no stars."],
-		bdPassStar: ["星を線が通過しています。", "A line goes over a star."],
-		bkNotSymSt: [
-			"領域が星を中心に点対称になっていません。",
-			"An area is not point symmetric about the star."
-		],
-		bkPlStar: [
-			"星が複数含まれる領域があります。",
-			"A block has two or more stars."
-		]
 	}
 });

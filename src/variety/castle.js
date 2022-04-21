@@ -518,24 +518,5 @@
 				);
 			}, "cuOutside");
 		}
-	},
-
-	FailCode: {
-		anLineLt: [
-			"矢印の方向にあるループの長さが数字よりも短いです。",
-			"The number of line segments is not correct."
-		],
-		anLineGt: [
-			"矢印の方向にあるループの長さが数字よりも長いです。",
-			"The number of line segments is not correct."
-		],
-		shInside: [
-			"黒マスがループの中にあります。",
-			"A shaded cell is inside of the loop."
-		],
-		cuOutside: [
-			"白マスがループの外にあります。",
-			"An unshaded cell is outside of the loop."
-		]
 	}
 });

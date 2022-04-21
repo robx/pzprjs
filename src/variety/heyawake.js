@@ -534,28 +534,5 @@
 				});
 			}
 		}
-	},
-
-	FailCode: {
-		bkUnshadeConsecGt3: [
-			"白マスが3部屋連続で続いています。",
-			"Unshaded cells are continued for three consecutive room."
-		],
-		bkNotSymShade: [
-			"部屋の中の黒マスが点対称に配置されていません。",
-			"Position of shaded cells in the room is not point symmetric."
-		],
-		bkNotSymRoom: [
-			"部屋の形が点対称ではありません。",
-			"The room is not point symmetric."
-		],
-		bkSubdivided: [
-			"(please translate) A room is divided internally by shaded cells.",
-			"A room is divided internally by shaded cells."
-		],
-		bdDoorsGt: [
-			"(please translate) Two rooms have more than one door between them.",
-			"Two rooms have more than one door between them."
-		]
 	}
 });

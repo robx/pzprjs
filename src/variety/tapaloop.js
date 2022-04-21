@@ -521,13 +521,6 @@
 					}
 				}, "tapaloopError");
 			}
-		},
-
-		FailCode: {
-			tapaloopError: [
-				"(please translate) The segments around a clue are not the same length as the numbers.",
-				"The segments around a clue are not the same length as the numbers."
-			]
 		}
 	});
 })();

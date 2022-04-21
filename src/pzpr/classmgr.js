@@ -36,7 +36,7 @@ pzpr.classmgr = {
 	makeCustom: function(pidlist, custombase) {
 		for (var i = 0; i < pidlist.length; i++) {
 			var pid = pidlist[i];
-			pzpr.custom[pid] = this.createCustom(pid, custombase);
+			pzpr.custom[pid] = this.createCustom(pid, custombase, pidlist[0]);
 		}
 	},
 	getExtension: function(pid, custombase) {
@@ -71,7 +71,7 @@ pzpr.classmgr = {
 		}
 		return extension;
 	},
-	createCustom: function(pid, custombase) {
+	createCustom: function(pid, custombase, pidbase) {
 		var custom = {};
 		var extension = this.getExtension(pid, custombase);
 
@@ -84,6 +84,7 @@ pzpr.classmgr = {
 					custom[names.base] || pzpr.common[names.base]
 				);
 				NewClass.prototype.pid = pid;
+				NewClass.prototype.pidbase = pidbase;
 			}
 			this.extendPrototype(NewClass.prototype, extension[key]);
 			custom[names.real] = NewClass;
@@ -94,6 +95,7 @@ pzpr.classmgr = {
 			if (!custom[classname]) {
 				custom[classname] = this.createClass(pzpr.common[classname]);
 				custom[classname].prototype.pid = pid;
+				custom[classname].prototype.pidbase = pidbase;
 			}
 		}
 

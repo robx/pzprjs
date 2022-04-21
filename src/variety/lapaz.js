@@ -258,23 +258,5 @@
 			}
 			return true;
 		}
-	},
-	FailCode: {
-		bkUnshade: [
-			"(please translate) A 1x1 region is unshaded.",
-			"A 1x1 region is unshaded."
-		],
-		bkSizeGt2: [
-			"サイズが2マスより大きいブロックがあります。",
-			"The size of an area is larger than two."
-		],
-		nmLt1: [
-			"(please translate) A number is not contained in a 1x2 region.",
-			"A number is not contained in a 1x2 region."
-		],
-		nmShadeNe: [
-			"(please translate) The number of shaded cells in the row or column is not correct.",
-			"The number of shaded cells in the row or column is not correct."
-		]
 	}
 });

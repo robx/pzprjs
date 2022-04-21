@@ -14,6 +14,10 @@ module.exports = function(grunt){
     fs.statSync('src-ui/res/p.en.json').mtime,
     fs.statSync('src-ui/res/p.ja.json').mtime
   );
+  var failcodeMTime = Math.max(
+    fs.statSync('src/res/failcode.en.json').mtime,
+    fs.statSync('src/res/failcode.ja.json').mtime
+  );
 
   var banner_min  = fs.readFileSync('./src/common/banner_min.js',  'utf-8');
   var banner_full = fs.readFileSync('./src/common/banner_full.js', 'utf-8');
@@ -36,7 +40,9 @@ module.exports = function(grunt){
     git: grunt.file.readJSON("git.json"),
     langs: {
       p_en: grunt.file.readJSON("src-ui/res/p.en.json", 'utf-8'),
-      p_ja: grunt.file.readJSON("src-ui/res/p.ja.json", 'utf-8')
+      p_ja: grunt.file.readJSON("src-ui/res/p.ja.json", 'utf-8'),
+      failcode_en: grunt.file.readJSON("src/res/failcode.en.json", 'utf-8'),
+      failcode_ja: grunt.file.readJSON("src/res/failcode.ja.json", 'utf-8')
     },
 
     copy: {
@@ -70,6 +76,8 @@ module.exports = function(grunt){
             include(rulesMTime > detail.time);
           } else if(detail.task === 'concat' && detail.target === 'ui') {
             include(pMTime > detail.time);
+          } else if(detail.task === 'concat' && detail.target === 'pzpr') {
+            include(failcodeMTime > detail.time);
           }else{
             include(false);
           }

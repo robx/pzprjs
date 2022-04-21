@@ -234,21 +234,5 @@
 				return !cell2.isnull && qn >= 0 && qn !== path.ccnt;
 			}, "lcCurveNe");
 		}
-	},
-
-	FailCode: {
-		nmNoLine: ["ホタルから線が出ていません。", "There is a lonely firefly."],
-		lcInvDirB: [
-			"黒点同士が線で繋がっています。",
-			"Points are connected each other."
-		],
-		lcInvDirW: [
-			"白丸の、黒点でない部分どうしがくっついています。",
-			"Fireflies are connected without a line starting from point."
-		],
-		lcCurveNe: [
-			"線の曲がった回数が数字と違っています。",
-			"The number of curves is different from a firefly's number."
-		]
 	}
 });

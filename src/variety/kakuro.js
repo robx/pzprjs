@@ -515,13 +515,5 @@
 			}
 			return result;
 		}
-	},
-
-	FailCode: {
-		nmSumRowNe: [
-			"数字の下か右にある数字の合計が間違っています。",
-			"The sum of the cells is not correct."
-		],
-		ceNoNum: ["すべてのマスに数字が入っていません。", "There is an empty cell."]
 	}
 });

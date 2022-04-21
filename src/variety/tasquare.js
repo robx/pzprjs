@@ -173,16 +173,5 @@
 				cell.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmSumSizeNe: [
-			"数字とそれに接する黒マスの大きさの合計が一致しません。",
-			"Sum of the adjacent masses of shaded cells is not equal to the number."
-		],
-		nmNoSideShade: [
-			"□に黒マスが接していません。",
-			"No shaded cells are adjacent to square marks."
-		]
 	}
 });

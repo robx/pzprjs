@@ -155,16 +155,5 @@
 				return !cell.isShade();
 			}, "cu3");
 		}
-	},
-
-	FailCode: {
-		cs3: [
-			"(please translate) There are more than three shaded cells in a row.",
-			"There are more than three shaded cells in a row."
-		],
-		cu3: [
-			"(please translate) There are more than three unshaded cells in a row.",
-			"There are more than three unshaded cells in a row."
-		]
 	}
 });

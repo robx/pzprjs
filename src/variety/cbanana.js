@@ -128,20 +128,5 @@
 				"cuRect"
 			);
 		}
-	},
-
-	FailCode: {
-		bkSizeNe: [
-			"数字とシマの面積が違います。",
-			"The number is not equal to the size of the area."
-		],
-		csNotRect: [
-			"黒マスのカタマリが正方形か長方形ではありません。",
-			"A mass of shaded cells is not rectangle."
-		],
-		cuRect: [
-			"(please translate) A mass of unshaded cells is a rectangle.",
-			"A mass of unshaded cells is a rectangle."
-		]
 	}
 });

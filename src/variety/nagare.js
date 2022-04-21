@@ -813,32 +813,5 @@
 
 			return info;
 		}
-	},
-
-	FailCode: {
-		arNoLine: [
-			"線が通っていない矢印があります。",
-			"A line doesn't go through some arrows."
-		],
-		arAgainstWind: [
-			"矢印の向きが風の指示と合っていません。",
-			"The direction of the arrow is against the wind."
-		],
-		lrAcrossWind: [
-			"線が風で流されずに横切っています。",
-			"The line passes across the wind."
-		],
-		lrAcrossArrow: [
-			"線が矢印を横切っています。",
-			"The line passes across an arrow."
-		],
-		lrAgainstWind: [
-			"線が風上に向かって進んでいます。",
-			"The line passes against the wind."
-		],
-		lrAgainstArrow: [
-			"線が矢印に反して進んでいます。",
-			"The line passes against an arrow."
-		]
 	}
 });

@@ -448,16 +448,5 @@
 				return cell.isValidNum() && cell.qnum > cell.getCountOfBridges();
 			}, "nmLineLt");
 		}
-	},
-
-	FailCode: {
-		nmLineGt: [
-			"数字につながる橋の数が違います。",
-			"The number of connecting bridges to a number is not correct."
-		],
-		nmLineLt: [
-			"数字につながる橋の数が違います。",
-			"The number of connecting bridges to a number is not correct."
-		]
 	}
 });

@@ -645,12 +645,5 @@
 				clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		ceEmpty: [
-			"黒マスも線も引かれていないマスがあります。",
-			"There is an empty cell."
-		]
 	}
 });

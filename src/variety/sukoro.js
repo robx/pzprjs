@@ -258,28 +258,5 @@
 				clist.seterr(2);
 			}
 		}
-	},
-
-	FailCode: {
-		bkDupNum: [
-			"1つの部屋に同じ数字が複数入っています。",
-			"A room has two or more same numbers."
-		],
-		bkMixed: [
-			"数字のあるなしが混在した部屋があります。",
-			"A room includes both numbered and non-numbered cells."
-		],
-		nmNumberNe: [
-			"数字と、その数字の上下左右に入る数字の数が一致していません。",
-			"The number of numbers placed in four adjacent cells is not equal to the number."
-		],
-		nmSumViewNe: [
-			"数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。",
-			"Sum of four-way gaps to another number is not equal to the number."
-		],
-		ceSuspend: [
-			"数字の入っていないマスがあります。",
-			"There is a cell that is not filled in number."
-		]
 	}
 });

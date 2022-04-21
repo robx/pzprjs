@@ -373,31 +373,5 @@
 			}
 			return result;
 		}
-	},
-
-	FailCode: {
-		cs2x2: [
-			"スネークが自分自身とタテヨコナナメに接しています。",
-			"The snake loops back on itself."
-		],
-		shBranch: ["スネークが分岐しています。", "The snake branches off."],
-		shLoop: ["頭または尾がありません。", "The snake has no head or tail."],
-		shEndpoint: [
-			"頭または尾になっていない黒丸があります。",
-			"A black circle is not on an endpoint."
-		],
-		shMidpoint: [
-			"胴体になっていない白丸があります。",
-			"A white circle is not a middle."
-		],
-		shDiag: [
-			"スネークが自分自身とタテヨコナナメに接しています。",
-			"The snake touches itself diagonally."
-		],
-		circleUnshade: ["塗られていない丸があります。", "A circle is not shaded."],
-		exShadeNe: [
-			"行または列内にあるスネークのマスの数と外の数字が異なります。",
-			"The number of shaded cells in the row or column is not correct."
-		]
 	}
 });

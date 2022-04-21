@@ -215,12 +215,5 @@
 				clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmShootShadeNe1: [
-			"数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。",
-			"There is not exactly one shaded cell at the given distance from the number."
-		]
 	}
 });

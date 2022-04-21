@@ -312,24 +312,5 @@
 				border.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmOutsideTren: [
-			"(please translate) A number is not contained inside a 1x2 or 1x3 block.",
-			"A number is not contained inside a 1x2 or 1x3 block."
-		],
-		nmMoveNe: [
-			"(please translate) A block cannot move in the correct number of spaces.",
-			"A block cannot move in the correct number of spaces."
-		],
-		bdUnused: [
-			"(please translate) A border is not adjacent to a block.",
-			"A border is not adjacent to a block."
-		],
-		bkDivide: [
-			"(please translate) The unused cells are divided.",
-			"The unused cells are divided."
-		]
 	}
 });

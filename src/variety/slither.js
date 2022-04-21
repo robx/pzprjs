@@ -267,12 +267,5 @@
 				return cell.qnum >= 0 && cell.getdir4BorderLine1() !== cell.qnum;
 			}, "nmLineNe");
 		}
-	},
-
-	FailCode: {
-		nmLineNe: [
-			"数字の周りにある線の本数が違います。",
-			"The number is not equal to the number of lines around it."
-		]
 	}
 });

@@ -428,20 +428,5 @@
 				clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmAround: [
-			"同じ数字がタテヨコナナメに隣接しています。",
-			"Same numbers are adjacent."
-		],
-		nqAroundDup: [
-			"初めから出ている数字の周りに同じ数字が入っています。",
-			"There are same numbers around the pre-numbered cell."
-		],
-		nqAroundSumNe: [
-			"初めから出ている数字の周りに入る数の合計が正しくありません。",
-			"A sum of numbers around the pre-numbered cell is incorrect."
-		]
 	}
 });

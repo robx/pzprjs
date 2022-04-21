@@ -186,12 +186,5 @@
 				clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmProduct: [
-			"ブロックの数字と数字の積が同じではありません。",
-			"A number of room is not equal to the product of these numbers."
-		]
 	}
 });

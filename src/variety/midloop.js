@@ -259,16 +259,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		lnOnDot: [
-			"ループが通過していない黒丸があります。",
-			"A line doesn't go over a circle."
-		],
-		lnOnCenter: [
-			"線分の中点になっていない黒丸があります。",
-			"A circle is not the center point of a line."
-		]
 	}
 });

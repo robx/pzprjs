@@ -155,21 +155,5 @@
 				return !path.cells[1].isnull && path.ccnt > 1;
 			}, "lcCurveGt1");
 		}
-	},
-
-	FailCode: {
-		nmNoLine: ["○から線が出ていません。", "A circle doesn't start any line."],
-		nmLineNe: [
-			"○から出る線の本数が正しくありません。",
-			"The number is not equal to the number of lines out of the circle."
-		],
-		lcSameNum: [
-			"同じ数字同士が線で繋がっています。",
-			"Same numbers are connected each other."
-		],
-		lcCurveGt1: [
-			"線が2回以上曲がっています。",
-			"The number of curves is twice or more."
-		]
 	}
 });

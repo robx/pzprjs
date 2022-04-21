@@ -311,16 +311,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		bkNoChain: [
-			"(please translate) A block is not diagonally adjacent to another block.",
-			"A block is not diagonally adjacent to another block."
-		],
-		bsSameShape: [
-			"(please translate) A chain contains two identical blocks.",
-			"A chain contains two identical blocks."
-		]
 	}
 });

@@ -449,39 +449,5 @@
 				"bkShadeLt2"
 			);
 		}
-	},
-
-	"FailCode@lits": {
-		bkShadeLt4: [
-			"黒マスのカタマリが４マス未満の部屋があります。",
-			"A room has three or less shaded cells."
-		],
-		bkShadeGt4: [
-			"５マス以上の黒マスがある部屋が存在します。",
-			"A room has five or more shaded cells."
-		],
-		bsSameShape: [
-			"同じ形のテトロミノが接しています。",
-			"Some Tetrominos that are the same shape are Adjacent."
-		]
-	},
-
-	"FailCode@norinori": {
-		csLt2: [
-			"１マスだけの黒マスのカタマリがあります。",
-			"There is a single shaded cell."
-		],
-		csGt2: [
-			"２マスより大きい黒マスのカタマリがあります。",
-			"The size of a mass of shaded cells is over two."
-		],
-		bkShadeLt2: [
-			"１マスしか黒マスがない部屋があります。",
-			"A room has only one shaded cell."
-		],
-		bkShadeGt2: [
-			"２マス以上の黒マスがある部屋が存在します。",
-			"A room has three or mode shaded cells."
-		]
 	}
 });

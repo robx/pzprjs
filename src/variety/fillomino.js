@@ -410,28 +410,5 @@
 				}, "ceNoNum");
 			}
 		}
-	},
-
-	FailCode: {
-		bkSizeLt: [
-			"ブロックの大きさより数字のほうが大きいです。",
-			"A number is bigger than the size of the area."
-		],
-		bkSizeGt: [
-			"ブロックの大きさよりも数字が小さいです。",
-			"A number is smaller than the size of the area."
-		],
-		bkMixedNum: [
-			"1つのブロックに2種類以上の数字が入っています。",
-			"An area has two or more kinds of numbers."
-		],
-		bsSameNum: [
-			"同じ数字のブロックが辺を共有しています。",
-			"Adjacent areas have the same number."
-		],
-		bkNotSymmRoom: [
-			"部屋の形が点対称ではありません。",
-			"An area is not point symmetric."
-		]
 	}
 });

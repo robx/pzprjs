@@ -781,39 +781,5 @@
 				return cell.ques === 31 && !cell.isDestination();
 			}, "nmIgnored");
 		}
-	},
-
-	FailCode: {
-		laIsolate: [
-			"ボールにつながっていない線があります。",
-			"A line doesn't connect any ball."
-		],
-		laOnNum: [
-			"ボールの上を線が通過しています。",
-			"A line goes through a ball."
-		],
-		laOnHole: [
-			"ホールの上を線が通過しています。",
-			"A line goes through a hole."
-		],
-		laCurve: ["ボールが移動途中に曲がっています。", "A ball curves halfway."],
-		laLenNe: ["ボールが移動途中に止まっています。", "A ball stops halfway."],
-		laMoveOver: [
-			"ボールが指示された打数を超えて動いています。",
-			"You make a bogey or more."
-		],
-		laWaterHazard: [
-			"ウォーターハザードになっています。",
-			"There is a water hazaad ball."
-		],
-		nmConnected: ["ボールが繋がっています。", "There are connected balls."],
-		nmOutOfHole: [
-			"ホールに入っていないボールがあります。",
-			"A ball doesn't cup in."
-		],
-		nmIgnored: [
-			"ボールの入っていないホールがあります。",
-			"There is a Hole without a ball."
-		]
 	}
 });

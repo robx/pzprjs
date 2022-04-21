@@ -294,12 +294,5 @@
 				clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		bkNoLineNe: [
-			"タイルと周囲の線が引かれない点線の長さが異なります。",
-			"The size of the tile is not equal to the total of length of lines that is remained dotted around the tile."
-		]
 	}
 });

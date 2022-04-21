@@ -679,30 +679,5 @@
 				this.searchloop(nets[r], bd.netgraph).seterr(4);
 			}
 		}
-	},
-
-	FailCode: {
-		lbDivide: ["棒が１つに繋がっていません。", "The bars are not connected."],
-		lbLenGt: [
-			"白丸から出る棒の長さが長いです。",
-			"The length of the bar is too long."
-		],
-		lbLenLt: [
-			"白丸から出る棒の長さが短いです。",
-			"The length of the bar is too short."
-		],
-		lbLoop: ["棒で輪っかができています。", "There is a loop of bars."],
-		lbNotCrossEq: [
-			"同じ長さの棒と交差していません。",
-			"A bar doesn't cross a bar whose length is the same."
-		],
-		nmLineGt1: [
-			"白丸に線が2本以上つながっています。",
-			"Multiple lines connect to a white circle."
-		],
-		nmNoLine: [
-			"白丸に線がつながっていません。",
-			"No bar connects to a white circle."
-		]
 	}
 });

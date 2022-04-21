@@ -608,34 +608,5 @@
 				clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		laOnNum: [
-			"具材の上を線が通過しています。",
-			"A line goes through a filling."
-		],
-		laIsolate: [
-			"具材につながっていない線があります。",
-			"A line doesn't connect any filling."
-		],
-		nmConnected: ["具材が繋がっています。", "There are connected fillings."],
-		nmOutOfBk: [
-			"鍋に入っていない具材があります。",
-			"A filling isn't in a crock."
-		],
-		bnIllegalPos: [
-			"鍋の外に数字が書いてあります。",
-			"There is a number out of a crock."
-		],
-		bkDoubleBn: [
-			"鍋に数字が２つ以上書いてあります。",
-			"There is two or more numbers in a crock."
-		],
-		bkSumNeBn: [
-			"具材の合計値が正しくありません。",
-			"Sum of filling is not equal to a crock."
-		],
-		bkNoNum: ["具材のない鍋があります。", "A crock has no circle."]
 	}
 });

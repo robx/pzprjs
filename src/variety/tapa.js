@@ -571,13 +571,6 @@
 					return false;
 				}, "ceTapaNe");
 			}
-		},
-
-		FailCode: {
-			ceTapaNe: [
-				"数字と周囲の黒マスの長さが異なっています。",
-				"The number is not equal to the length of surrounding shaded cells."
-			]
 		}
 	});
 })();

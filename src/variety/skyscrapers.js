@@ -423,12 +423,5 @@
 				});
 			}
 		}
-	},
-
-	FailCode: {
-		nmSightNe: [
-			"見えるビルの数が正しくありません。",
-			"The number of visible buildings is wrong."
-		]
 	}
 });

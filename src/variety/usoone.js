@@ -285,12 +285,5 @@
 				"bkLiarNe1"
 			);
 		}
-	},
-
-	FailCode: {
-		bkLiarNe1: [
-			"部屋に含まれる嘘つきの数字が1つでありません。",
-			"The number of liars in a room is not one."
-		]
 	}
 });

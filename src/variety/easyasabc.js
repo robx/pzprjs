@@ -580,20 +580,5 @@
 				this.failcode.add("nmSightNe");
 			}
 		}
-	},
-
-	FailCode: {
-		nmDupRow: [
-			"同じ列に同じアルファベットが入っています。",
-			"There are equal letters in a row or column."
-		],
-		nmMissRow: [
-			"列に入っていないアルファベットがあります。",
-			"There are missing letters in a row or column."
-		],
-		nmSightNe: [
-			"アルファベットが最も手前にありません。",
-			"The letter is not the closest."
-		]
 	}
 });

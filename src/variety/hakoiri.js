@@ -274,28 +274,5 @@
 				return cell1.getNum() >= 0 && cell1.getNum() === cell2.getNum();
 			}, "nmAround");
 		}
-	},
-
-	FailCode: {
-		bkDupNum: [
-			"1つのハコに同じ記号が複数入っています。",
-			"A box has duplicate shapes."
-		],
-		bkNumGt3: [
-			"1つのハコに4つ以上の記号が入っています。",
-			"A box has more than three shapes."
-		],
-		bkNumLt3: [
-			"1つのハコに2つ以下の記号しか入っていません。",
-			"A box has less than three shapes."
-		],
-		nmDivide: [
-			"タテヨコにつながっていない記号があります。",
-			"The shapes are divided."
-		],
-		nmAround: [
-			"同じ記号がタテヨコナナメに隣接しています。",
-			"Equal shapes touch."
-		]
 	}
 });

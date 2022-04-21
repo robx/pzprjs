@@ -351,12 +351,5 @@ function sameArray(array1, array2) {
 			}
 			return lines;
 		}
-	},
-
-	FailCode: {
-		exNoMatch: [
-			"(please translate) The shaded cells don't match the clues in the row or column.",
-			"The shaded cells don't match the clues in the row or column."
-		]
 	}
 });

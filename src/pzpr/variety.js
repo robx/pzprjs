@@ -56,7 +56,9 @@
 	 */
 	var inhibited = false;
 	if (pzpr.env.browser) {
-		inhibited = window.location.host.indexOf("localhost") === -1;
+		inhibited =
+			window.location.protocol !== "file:" &&
+			window.location.host.indexOf("localhost") === -1;
 	} else if (pzpr.env.node) {
 		inhibited = process.env.VERCEL;
 	}

@@ -480,28 +480,5 @@
 				clist2.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmSame2x2: [
-			"同じ数字が2x2のカタマリになっています。",
-			"There is a 2x2 block of the same number."
-		],
-		nmSumNe: [
-			"丸付き数字とその両側の数字の和が一致していません。",
-			"The sum between two adjacent cells is not equal to the number on circle."
-		],
-		nmNotLink: [
-			"同じ数字が部屋の中でつながっていません。",
-			"A number doesn't link to other cells in the room."
-		],
-		bkSameNumGt2: [
-			"部屋の同じ数字が3つ以上入っています",
-			"The room has three or more same numbers."
-		],
-		bkOddSize: [
-			"部屋のサイズが奇数になっています。",
-			"The size of the room is not even."
-		]
 	}
 });

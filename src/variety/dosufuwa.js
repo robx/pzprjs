@@ -401,26 +401,5 @@
 				);
 			}, "csNotBottom");
 		}
-	},
-
-	FailCode: {
-		bkUCGe2: [
-			"1つの領域に風船が複数入っています。",
-			"An area has two or more balloons."
-		],
-		bkSCGe2: [
-			"1つの領域に鉄球が複数入っています。",
-			"An area has two or more iron balls."
-		],
-		bkNoUC: ["風船が入っていない領域があります。", "An area has no balloon."],
-		bkNoSC: ["鉄球が入っていない領域があります。", "An area has no iron ball."],
-		cuNotTop: [
-			"風船の上に風船や黒マスがありません。",
-			"A balloon is not on the top of the row or under another balloon."
-		],
-		csNotBottom: [
-			"鉄球の下の鉄球や黒マスがありません。",
-			"An iron ball is not on the bottom of the row or on another iron ball."
-		]
 	}
 });

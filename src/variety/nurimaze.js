@@ -616,25 +616,5 @@
 
 			return (this._info.maze = info);
 		}
-	},
-
-	FailCode: {
-		cu2x2: [
-			"2x2の白マスのカタマリがあります。",
-			"There is a 2x2 block of unshaded cells."
-		],
-		cuLoop: [
-			"白マスで輪っかができています。",
-			"There is a looped unshaded cells."
-		],
-		routeIgnoreCP: [
-			"○がSからGへの経路上にありません。",
-			"There is a circle out of the shortest route from S to G."
-		],
-		routePassDeadEnd: [
-			"△がSからGへの経路上にあります。",
-			"There is a triangle on the shortest route from S to G."
-		],
-		objShaded: ["オブジェクトが黒マスになっています。", "An object is shaded."]
 	}
 });

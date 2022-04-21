@@ -781,36 +781,5 @@
 				return cell.qans === 33;
 			}).length;
 		}
-	},
-
-	FailCode: {
-		cxAdjacent: [
-			"(please translate) Crossings are adjacent.",
-			"Crossings are adjacent."
-		],
-		nmCircleNe: [
-			"(please translate) A circled number is not equal to the amount of corners used by a loop.",
-			"A circled number is not equal to the amount of corners used by a loop."
-		],
-		nmHatenaNe: [
-			"(please translate) A circled question mark does not have any corners used by a loop.",
-			"A circled question mark does not have any corners used by a loop."
-		],
-		lnCross: [
-			"(please translate) A loop crosses itself.",
-			"A loop crosses itself."
-		],
-		lnPlLoop: [
-			"(please translate) There are more than two loops.",
-			"There are more than two loops."
-		],
-		anNumberNe: [
-			"(please translate) The number of crossings is not correct.",
-			"The number of crossings is not correct."
-		],
-		anHatenaNe: [
-			"(please translate) There are no crossings in the given direction.",
-			"There are no crossings in the given direction."
-		]
 	}
 });

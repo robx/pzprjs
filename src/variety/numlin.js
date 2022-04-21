@@ -363,34 +363,5 @@
 				this.checkNoLine();
 			}
 		}
-	},
-
-	FailCode: {
-		nmConnDiff: [
-			"異なる数字がつながっています。",
-			"Different numbers are connected."
-		]
-	},
-	"FailCode@arukone": {
-		lcTripleNum: [
-			"3つ以上のアルファベットがつながっています。",
-			"Three or more alphabets are connected."
-		],
-		lcIsolate: [
-			"アルファベットにつながっていない線があります。",
-			"A line doesn't connect any alphabet."
-		],
-		lcOnNum: [
-			"アルファベットの上を線が通過しています。",
-			"A line goes through an alphabet."
-		],
-		nmConnDiff: [
-			"異なるアルファベットがつながっています。",
-			"Different alphabets are connected."
-		],
-		ceNoLine: [
-			"線が引かれていない交差点があります。",
-			"A crossing is left blank."
-		]
 	}
 });

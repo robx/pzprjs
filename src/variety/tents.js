@@ -683,29 +683,5 @@
 			}
 			return result;
 		}
-	},
-
-	FailCode: {
-		nmTentNone: [
-			"テントが隣り合っていない木があります。",
-			"A tree has no tent."
-		],
-		nmTreeNone: [
-			"木に接していないテントがあります。",
-			"A tent is not next to a tree."
-		],
-		nmTentLt: [
-			"木の数よりもテントの数が少ない部分があります。",
-			"There aren't enough tents around a tree."
-		],
-		nmTentGt: [
-			"木の数よりもテントの数が多い部分があります。",
-			"There are too many tents around a tree."
-		],
-		tentAround: ["テント同士が接しています。", "Some tents touch."],
-		exTentNe: [
-			"行または列にあるテントの数が正しくありません。",
-			"The number of tents in the row or column is not correct."
-		]
 	}
 });

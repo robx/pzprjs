@@ -696,24 +696,5 @@
 			}
 			return true;
 		}
-	},
-
-	FailCode: {
-		brNoTriangle: [
-			"盤面に三角形がありません。",
-			"There are no triangles on the board."
-		],
-		cuNotRectx: [
-			"白マスが長方形(正方形)ではありません。",
-			"A white area is not rectangle."
-		],
-		nmTriangleGt: [
-			"数字のまわりにある黒い三角形の数が間違っています。",
-			"The number of triangles in four adjacent cells is bigger than it."
-		],
-		nmTriangleLt: [
-			"数字のまわりにある黒い三角形の数が間違っています。",
-			"The number of triangles in four adjacent cells is smaller than it."
-		]
 	}
 });

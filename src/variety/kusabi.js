@@ -189,42 +189,5 @@
 				);
 			}, "lcLenInvDiff");
 		}
-	},
-
-	FailCode: {
-		lcOnNum: ["○の上を線が通過しています。", "A line goes through a circle."],
-		lcIsolate: [
-			"○につながっていない線があります。",
-			"A line isn't connected to any circle."
-		],
-		lcTripleNum: [
-			"3つ以上の○が繋がっています。",
-			"Three or more objects are connected."
-		],
-		lcNotKusabi: [
-			"丸がコの字型に繋がっていません。",
-			"A line is not U-shaped."
-		],
-		lcInvalid: [
-			"繋がる丸が正しくありません。",
-			"The types of connected circles don't match."
-		],
-		lcCurveGt2: [
-			"線が2回以上曲がっています。",
-			"A line turns more than twice."
-		],
-		lcCurveLt2: ["線が2回曲がっていません。", "A line turns less than twice."],
-		lcLenInvNe: [
-			"線の長さが同じではありません。",
-			"The legs of a U have different lengths."
-		],
-		lcLenInvDiff: [
-			"線の長短の指示に反してます。",
-			"The relative lengths of the legs of a U don't match the clues."
-		],
-		nmNoLine: [
-			"どこにもつながっていない○があります。",
-			"A circle is not connected another object."
-		]
 	}
 });

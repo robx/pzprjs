@@ -550,50 +550,9 @@
 		}
 	},
 
-	FailCode: {
-		bkNoNum: [
-			"数字の入っていないシマがあります。",
-			"An area of unshaded cells has no numbers."
-		],
-		bkNumGe2: [
-			"1つのシマに2つ以上の数字が入っています。",
-			"An area of unshaded cells has more than one number."
-		],
-		bkSizeNe: [
-			"数字とシマの面積が違います。",
-			"The number is not equal to the size of the area."
-		]
-	},
-	"FailCode@nuribou": {
-		csWidthGt1: [
-			"「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。",
-			"There is a mass of shaded cells whose width is more than two."
-		],
-		csCornerSize: [
-			"同じ面積の黒マスのカタマリが、角を共有しています。",
-			"Masses of shaded cells with the same length share a corner."
-		]
-	},
-
 	"FailCode@mochikoro,mochinyoro": {
-		cuNotRect: [
-			"四角形でない白マスのブロックがあります。",
-			"There is a block of unshaded cells that is not a rectangle."
-		],
-		csRect: [
-			"四角形になっている黒マスのブロックがあります。",
-			"There is a block of shaded cells that is a rectangle."
-		],
-		csDivide8: [
-			"孤立した白マスのブロックがあります。",
-			"The unshaded cells are divided."
-		]
-	},
-
-	"FailCode@canal": {
-		nmShadeViewNe: [
-			"(please translate) A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions.",
-			"A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions."
-		]
+		cuNotRect: "cuNotRect.mochikoro",
+		csRect: "csRect.mochikoro",
+		csDivide8: "csDivide8.mochikoro"
 	}
 });

@@ -687,35 +687,5 @@
 				cell.seterr(1);
 			}
 		}
-	},
-	FailCode: {
-		nmShadeLt: [
-			"(please translate) The number of shaded cells around a number is not correct.",
-			"The number of shaded cells around a number is not correct."
-		],
-		nmShadeGt: [
-			"(please translate) The number of shaded cells around a number is not correct.",
-			"The number of shaded cells around a number is not correct."
-		],
-		bkPlColor: [
-			"(please translate) A country has more than one color.",
-			"A country has more than one color."
-		],
-		bkNoColor: [
-			"(please translate) A country has no color.",
-			"A country has no color."
-		],
-		bkSepColor: [
-			"(please translate) One kind of color is included in different countries.",
-			"One kind of color is included in different countries."
-		],
-		shSurrounded: [
-			"(please translate) A shaded cell cannot divide two or more countries.",
-			"A shaded cell cannot divide two or more countries."
-		],
-		shNoDivide: [
-			"(please translate) A shaded cell does not divide two or more countries.",
-			"A shaded cell does not divide two or more countries."
-		]
 	}
 });
