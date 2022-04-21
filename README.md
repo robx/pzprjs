@@ -1,4 +1,5 @@
-[![Translation status](https://hosted.weblate.org/widgets/pzprjs/-/svg-badge.svg)](https://hosted.weblate.org/engage/pzprjs/)
+[![Translation status](https://hosted.weblate.org/widgets/pzprjs/en/svg-badge.svg)](https://hosted.weblate.org/engage/pzprjs/en/)
+[![Translation status](https://hosted.weblate.org/widgets/pzprjs/ja/svg-badge.svg)](https://hosted.weblate.org/engage/pzprjs/ja/)
 
 ## About pzprxs
 
