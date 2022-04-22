@@ -389,6 +389,9 @@
 				case "voxas_tatami":
 					exec = pid === "voxas";
 					break;
+				case "tren_new":
+					exec = pid === "tren";
+					break;
 				default:
 					exec = !!this.list[name];
 			}
