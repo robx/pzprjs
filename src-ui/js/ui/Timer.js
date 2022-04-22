@@ -92,7 +92,7 @@
 			this.bseconds = seconds;
 		},
 		label: function() {
-			return ui.i18n("time") + (pzpr.lang === "en") ? " " : "";
+			return ui.i18n("time") + (pzpr.lang === "en" ? " " : "");
 		},
 
 		//---------------------------------------------------------------------------
