@@ -53,7 +53,7 @@
     "autocheck": "Answer check",
     "autocheck.off": "Manual",
     "autocheck.guarded": "Automatic (guarded)",
-    "autocheck.simple": "Automatic (alwyas)",
+    "autocheck.simple": "Automatic (always)",
     "menu_help": "Help",
     "rules": "Rules",
     "about": "About pzprxs",
