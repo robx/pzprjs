@@ -1,6 +1,6 @@
 {
     "editor": "エディタ",
-    "beforeunload": "盤面が更新されています",
+    "beforeunload": "盤面が更新されています。",
     "completed": "正解です！",
     "cancel": "キャンセル",
     "close": "閉じる",
