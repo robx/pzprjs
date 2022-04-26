@@ -247,7 +247,7 @@
     "bsSameNum.fillomino": "Adjacent areas have the same number.",
     "bsSameShape.chainedb": "A chain contains two identical blocks.",
     "bsSameShape.lits": "Some Tetrominos that are the same shape are Adjacent.",
-    "bsSameShape": "The blocks that has the same shape are adjacent.",
+    "bsSameShape": "Two blocks that have the same shape are adjacent.",
     "bsSizeEq.fillmat": "Tatamis of the same size are adjacent.",
     "bsSnake.hebi": "Different snakes are adjacent.",
     "cbDiffLenNe.renban": "The difference between two numbers is not equal to the length of the line between them.",
