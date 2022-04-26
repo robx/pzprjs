@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["fillomino", "symmarea"], {
+})(["fillomino", "symmarea", "pentominous"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -74,6 +74,35 @@
 					border.draw();
 				}
 			}
+			this.mouseCell = cell;
+		}
+	},
+	"MouseEvent@pentominous": {
+		inputModes: {
+			edit: ["empty", "letter", "letter-", "clear"],
+			play: ["copyletter", "letter", "letter-", "clear", "border", "subline"]
+		},
+
+		mouseinput_other: function() {
+			if (this.inputMode.indexOf("letter") === 0) {
+				this.inputqnum();
+			} else if (this.inputMode === "copyletter") {
+				this.dragnumber_fillomino();
+			} else if (this.inputMode === "empty") {
+				this.inputempty();
+			}
+		},
+		inputempty: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.inputData === null) {
+				this.inputData = cell.isEmpty() ? 0 : 7;
+			}
+
+			cell.setQues(this.inputData);
+			cell.drawaround();
 			this.mouseCell = cell;
 		}
 	},
@@ -148,10 +177,77 @@
 		}
 	},
 
+	"KeyEvent@pentominous": {
+		keyinput: function(ca) {
+			if (this.puzzle.editmode && ca === "q") {
+				this.key_inputvalid();
+			} else {
+				this.key_inputqnum(ca);
+			}
+		},
+
+		key_inputvalid: function() {
+			var cell = this.cursor.getc();
+			if (!cell.isnull) {
+				cell.setValid(cell.ques !== 7 ? 7 : 0);
+			}
+		},
+
+		getNewNumber: function(cell, ca, cur) {
+			var idx = this.klass.Cell.prototype.letters.toLowerCase().indexOf(ca);
+			if (idx !== -1) {
+				return idx;
+			} else if (ca === "-") {
+				return -2;
+			} else if (ca === "BS" || ca === " ") {
+				return -1;
+			}
+			return null;
+		}
+	},
+
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
 		enableSubNumberArray: true
+	},
+	"Cell@pentominous": {
+		enableSubNumberArray: true,
+		letters: "FILNPTUVWXYZ",
+		lettershapes: [
+			"3:001111010",
+			"1:11111",
+			"2:01010111",
+			"2:01011110",
+			"2:011111",
+			"3:001111001",
+			"2:110111",
+			"3:001001111",
+			"3:001011110",
+			"3:010111010",
+			"2:01011101",
+			"3:001111100"
+		],
+
+		prehook: {
+			anum: function(num) {
+				return !this.isValid();
+			}
+		},
+
+		setValid: function(inputData) {
+			this.setQues(inputData);
+			this.setQnum(-1);
+			this.adjborder.top.qans = 0;
+			this.adjborder.bottom.qans = 0;
+			this.adjborder.right.qans = 0;
+			this.adjborder.left.qans = 0;
+			this.drawaround();
+			this.board.roommgr.rebuild();
+		},
+
+		minnum: 0,
+		maxnum: 11
 	},
 	Border: {
 		isCmp: function() {
@@ -162,7 +258,11 @@
 				cell2 = this.sidecell[1];
 			var num1 = cell1.getNum(),
 				num2 = cell2.getNum();
-			return num1 > 0 && num2 > 0 && num1 !== num2;
+			return num1 >= 0 && num2 >= 0 && num1 !== num2;
+		},
+
+		isQuesBorder: function() {
+			return this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty();
 		}
 	},
 	Board: {
@@ -172,17 +272,41 @@
 			this.numblkgraph = this.addInfoList(this.klass.AreaNumBlockGraph);
 		}
 	},
+	"Board@pentominous": {
+		initBoardSize: function(col, row) {
+			this.common.initBoardSize.call(this, col, row);
+
+			if (this.puzzle.playeronly) {
+				return;
+			}
+
+			var odd = (col * row) % 5;
+			if (odd >= 1) {
+				this.getc(this.minbx + 1, this.minby + 1).ques = 7;
+			}
+			if (odd >= 2) {
+				this.getc(this.maxbx - 1, this.minby + 1).ques = 7;
+			}
+			if (odd >= 3) {
+				this.getc(this.minbx + 1, this.maxby - 1).ques = 7;
+			}
+			if (odd >= 4) {
+				this.getc(this.maxbx - 1, this.maxby - 1).ques = 7;
+			}
+		}
+	},
 
 	"AreaNumBlockGraph:AreaNumberGraph": {
 		enabled: true,
 		relation: {
+			"cell.ques": "node",
 			"cell.qnum": "node",
 			"cell.anum": "node",
 			"border.qans": "separator"
 		},
 
 		isnodevalid: function(cell) {
-			return true;
+			return !cell.isEmpty();
 		},
 		isedgevalidbylinkobj: function(border) {
 			if (border.isBorder()) {
@@ -229,6 +353,14 @@
 		}
 	},
 
+	"AreaNumBlockGraph@pentominous": {
+		setExtraData: function(component) {
+			component.clist = new this.klass.CellList(component.getnodeobjs());
+			component.numkind = 1;
+			component.number = 5;
+		}
+	},
+
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -256,6 +388,27 @@
 		}
 	},
 
+	"Graphic@pentominous": {
+		getBorderColor: function(border) {
+			if (border.isQuesBorder()) {
+				return "black";
+			}
+
+			return this.getBorderColor_qans(border);
+		},
+
+		getBGCellColor: function(cell) {
+			if (!cell.isValid()) {
+				return "black";
+			}
+			return this.getBGCellColor_error1(cell);
+		},
+
+		getNumberTextCore: function(num) {
+			return num === -2 ? "?" : this.klass.Cell.prototype.letters[num] || "";
+		}
+	},
+
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
@@ -271,6 +424,24 @@
 		},
 		encodeKanpen: function() {
 			this.fio.encodeCellQnum_kanpen();
+		}
+	},
+	"Encode@pentominous": {
+		decodePzpr: function(type) {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				if (val === 12) {
+					bd.cell[c].ques = 7;
+				} else {
+					bd.cell[c].qnum = val;
+				}
+			});
+		},
+		encodePzpr: function(type) {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				return bd.cell[c].isEmpty() ? 12 : bd.cell[c].qnum;
+			});
 		}
 	},
 	//---------------------------------------------------------
@@ -326,6 +497,34 @@
 		},
 
 		UNDECIDED_NUM_XML: 0
+	},
+
+	"FileIO@pentominous": {
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				cell.ques = 0;
+				if (ca === "*") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "* ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else {
+					return ". ";
+				}
+			});
+		}
 	},
 
 	//---------------------------------------------------------
@@ -410,5 +609,50 @@
 				}, "ceNoNum");
 			}
 		}
+	},
+
+	"AnsCheck@pentominous": {
+		checklist: [
+			"checkSmallArea",
+			"checkLetterBlock",
+			"checkDifferentShapeBlock",
+			"checkLargeArea"
+		],
+
+		checkLetterBlock: function() {
+			this.checkAllCell(function(cell) {
+				return (
+					cell.isNum() &&
+					cell.nblk.clist.length === 5 &&
+					cell.lettershapes[cell.getNum()] !==
+						cell.nblk.clist.getBlockShapes().canon
+				);
+			}, "nmShapeNe");
+		},
+
+		checkDifferentShapeBlock: function() {
+			var sides = this.board.numblkgraph.getSideAreaInfo();
+			for (var i = 0; i < sides.length; i++) {
+				var area1 = sides[i][0],
+					area2 = sides[i][1];
+				if (area1.clist.length !== 5 || area2.clist.length !== 5) {
+					continue;
+				}
+				if (this.isDifferentShapeBlock(area1, area2)) {
+					continue;
+				}
+
+				this.failcode.add("bsSameShape");
+				if (this.checkOnly) {
+					break;
+				}
+				area1.clist.seterr(1);
+				area2.clist.seterr(1);
+			}
+		}
+	},
+	"FailCode@pentominous": {
+		bkSizeLt: "bkSizeLt5",
+		bkSizeGt: "bkSizeGt5"
 	}
 });

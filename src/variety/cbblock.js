@@ -739,11 +739,7 @@
 
 					var second = room.clist;
 					var secondshape = room.clist.getBlockShapes();
-					if (
-						firstshape.rows === secondshape.rows &&
-						firstshape.cols === secondshape.cols &&
-						firstshape.data[0] === secondshape.data[0]
-					) {
+					if (firstshape.id === secondshape.id) {
 						continue;
 					}
 					this.failcode.add("bkDifferentOrientation");

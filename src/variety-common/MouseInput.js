@@ -293,10 +293,7 @@ pzpr.classmgr.makeCommon({
 		inputQues_main: function(array, cell) {
 			var qu = cell.ques,
 				len = array.length;
-			var isInc =
-				(this.inputMode === "quesmark" || this.inputMode === "auto") ===
-				(this.btn === "left");
-			if (isInc) {
+			if (this.btn === "left") {
 				for (var i = 0; i <= len - 1; i++) {
 					if (qu === array[i]) {
 						cell.setQues(array[i < len - 1 ? i + 1 : 0]);

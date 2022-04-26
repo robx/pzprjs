@@ -116,6 +116,7 @@
     "inputmode.completion": "Completion",
     "inputmode.copycircle": "Copy circles",
     "inputmode.copynum": "Copy nums",
+    "inputmode.copyletter": "Copy letters",
     "inputmode.dragnum+": "Drag inc. nums",
     "inputmode.dragnum-": "Drag dec. nums",
     "inputmode.objblank": "Aux. dots",

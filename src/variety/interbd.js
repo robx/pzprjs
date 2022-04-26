@@ -129,7 +129,7 @@
 				qnum = cell.qnum;
 			var max = 6;
 
-			if ((this.btn === "left") === (this.inputMode === "color")) {
+			if (this.btn === "left") {
 				if (num >= max) {
 					if (qnum === -2) {
 						cell.setQnum(-1);

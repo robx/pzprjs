@@ -154,6 +154,14 @@ parquet:
   4. Shaded cells cannot form a loop. This includes 2x2 squares.
 
 
+pentominous:
+  Divide the grid into pentominoes (regions of 5 cells). You can use each pentomino any number of times (including zero).
+
+  1. Two adjacent pentominoes cannot have the same shape, counting rotations and reflections as the same.
+
+  2. A letter indicates the shape of the pentomino it's contained in. A pentomino may contain any number of identical letters.
+
+
 rassi:
   Draw multiple lines through orthogonally adjacent cells.
 

@@ -283,7 +283,8 @@ pzpr.classmgr.makeCommon({
 
 		//---------------------------------------------------------------------------
 		// clist.getBlockShapes() Encode the block shape into a string,
-		//     and return an array with each orientation
+		//     and return keys for matching shapes without considering orientation,
+		//     or matching shapes with the exact orientation.
 		//---------------------------------------------------------------------------
 		getBlockShapes: function() {
 			if (!!this.shape) {
@@ -293,7 +294,7 @@ pzpr.classmgr.makeCommon({
 			var bd = this.board;
 			var d = this.getRectSize();
 			var data = [[], [], [], [], [], [], [], []];
-			var shapes = { cols: d.cols, rows: d.rows, data: [] };
+			var shapes = [];
 
 			for (var by = 0; by < 2 * d.rows; by += 2) {
 				for (var bx = 0; bx < 2 * d.cols; bx += 2) {
@@ -312,9 +313,12 @@ pzpr.classmgr.makeCommon({
 			data[6] = data[5].concat().reverse();
 			data[7] = data[4].concat().reverse();
 			for (var i = 0; i < 8; i++) {
-				shapes.data[i] = data[i].join("");
+				shapes[i] = (i < 4 ? d.cols : d.rows) + ":" + data[i].join("");
 			}
-			return (this.shape = shapes);
+
+			var first = shapes[0];
+			shapes.sort();
+			return (this.shape = { canon: shapes[0], id: first });
 		}
 	},
 

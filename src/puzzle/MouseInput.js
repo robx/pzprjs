@@ -149,7 +149,8 @@ pzpr.classmgr.makeCommon({
 			kc.checkmodifiers(e);
 			if (
 				(kc.isSHIFT || kc.isMETA) !== this.inversion ||
-				this.inputMode === "number-"
+				(this.inputMode &&
+					this.inputMode.indexOf("-") === this.inputMode.length - 1)
 			) {
 				if (this.btn === "left") {
 					this.btn = "right";

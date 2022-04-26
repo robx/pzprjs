@@ -116,6 +116,7 @@
     "inputmode.completion": "確定数字",
     "inputmode.copycircle": "コピー",
     "inputmode.copynum": "コピー",
+    "inputmode.copyletter": "Copy letters",
     "inputmode.dragnum+": "数字を増やしてコピー",
     "inputmode.dragnum-": "数字を減らしてコピー",
     "inputmode.objblank": "ドット",

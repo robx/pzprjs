@@ -162,9 +162,8 @@
 			if (excell !== this.cursor.getex()) {
 				this.setcursor(excell);
 			} else {
-				var val = excell.qchar,
-					isInc = (this.inputMode === "letter") === (this.btn === "left");
-				if (isInc) {
+				var val = excell.qchar;
+				if (this.btn === "left") {
 					val = val < 104 ? val + 1 : 0;
 				} else {
 					val = val > 0 ? val - 1 : 104;

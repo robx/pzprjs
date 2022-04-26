@@ -77,7 +77,8 @@
 		"rassi",
 		"parquet",
 		"lapaz",
-		"tren"
+		"tren",
+		"pentominous"
 	]);
 
 	(function(Genre, obj) {
@@ -291,6 +292,7 @@
 			paintarea: [1, 0, "ペイントエリア", "Paintarea"],
 			parquet: [0, 0, "Parquet", "Parquet"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],
+			pentominous: [0, 0, "Pentominous", "Pentominous", "fillomino"],
 			pipelink: [1, 0, "パイプリンク", "Pipelink", "pipelink"],
 			pipelinkr: [
 				1,
