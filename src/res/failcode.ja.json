@@ -399,7 +399,7 @@
     "lnCurveOnCir.pipelink": "○の部分で線が曲がっています。",
     "lnCurveOnIce": "氷の部分で線が曲がっています。",
     "lnDeadEnd": "途中で途切れている線があります。",
-    "lnDeadEndAround.rassi": "線の端がタテヨコナナメに隣り合っています。",
+    "lnDeadEndAround.rassi": "線の端がたてよこななめに隣り合っています。",
     "lnExTri.reflect": "線が三角形を通過していません。",
     "lnIsolate.bdwalk": "線がすべての数字とエレベーターを通っていません。",
     "lnIsolate.dotchi": "線の通っていない○があります。",
