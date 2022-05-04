@@ -84,6 +84,13 @@ dotchi:
   4. The loop cannot go through a shaded circle.
 
 
+hinge:
+  Shade some cells on the board.
+
+  1. Each group of orthogonally connected cells is cut exactly once by a single straight segment of region borders, across which it must have reflectional symmetry.
+
+  2, Numbered regions must contain the indicated amount of shaded cells.
+
 lapaz:
   Shade some cells on the board, and divide the rest into regions of 2 cells.
 
