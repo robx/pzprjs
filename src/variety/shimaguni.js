@@ -650,9 +650,14 @@
 		}
 	},
 
-	"FailCode@stostone": {
+	FailCode: {
 		bkShadeDivide: "bkShadeDivide",
 		bkNoShade: "bkNoShade",
 		bkShadeNe: "bkShadeNe"
+	},
+	"FailCode@shimaguni": {
+		bkShadeDivide: "bkShadeDivide.shimaguni",
+		bkNoShade: "bkNoShade.shimaguni",
+		bkShadeNe: "bkShadeNe.shimaguni"
 	}
 });
