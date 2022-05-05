@@ -2,18 +2,6 @@
 // nonogram.js
 //
 
-function sameArray(array1, array2) {
-	if (array1.length !== array2.length) {
-		return false;
-	}
-	for (var k = 0; k < array2.length; k++) {
-		if (array1[k] !== array2[k]) {
-			return false;
-		}
-	}
-	return true;
-}
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -326,7 +314,7 @@ function sameArray(array1, array2) {
 
 			var lines = this.getLines(clist);
 
-			if (!sameArray(nums, lines)) {
+			if (!this.puzzle.pzpr.util.sameArray(nums, lines)) {
 				clist.seterr(1);
 				excells.seterr(1);
 				return false;
