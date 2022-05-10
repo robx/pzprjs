@@ -185,6 +185,18 @@ rassi:
   This genre is invented by Prasanna Seshadri.
 
 
+tajmahal:
+  Draw a square around each given circle.
+
+  1. All squares must have a circle in the center. The square's corners must be located on the grid points.
+
+  2. Two squares may not intersect or overlap, but they can touch at the corners.
+
+  3. Squares that share a corner are connected. All squares must form one connected group.
+
+  4. A number indicates the amount of squares that share a corner with this clue's square.
+
+
 tontti:
   Draw horizontal and vertical lines from the points to divide the grid into regions. You can connect two points, or draw from a point to the outer border.
 

@@ -489,19 +489,17 @@ pzpr.classmgr.makeCommon({
 				s = 0,
 				data = "";
 			for (var i = 0, rows = 2 * bd.rows - 1; i < rows; i++) {
-				var line = this.readLine();
-				if (line) {
-					data += line.match(/[12X\.]+/)[0];
-				}
+				data += this.readLine();
 			}
 			bd.disableInfo();
 			for (var s = 0; s < data.length; ++s) {
 				var dot = bd.dots[s],
-					ca = data.charAt(s);
-				if (ca === "1") {
-					dot.setDot(1);
-				} else if (ca === "2") {
-					dot.setDot(2);
+					ca = data.charAt(s),
+					num = +ca;
+				if (num >= 1 && num <= 9) {
+					dot.setDot(num);
+				} else if (ca === "-") {
+					dot.setDot(-2);
 				} else if (ca === "X") {
 					dot.piece.ques = 7;
 				}
@@ -515,12 +513,12 @@ pzpr.classmgr.makeCommon({
 				var data = "";
 				for (var bx = 1; bx <= 2 * bd.cols - 1; bx++) {
 					var dot = bd.dots[s];
-					if (dot.getDot() === 1) {
-						data += "1";
-					} else if (dot.getDot() === 2) {
-						data += "2";
+					if (dot.getDot() >= 1 && dot.getDot() <= 9) {
+						data += dot.getDot();
 					} else if (dot.piece.ques === 7) {
 						data += "X";
+					} else if (dot.getDot() === -2) {
+						data += "-";
 					} else {
 						data += ".";
 					}

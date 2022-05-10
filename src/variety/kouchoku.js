@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kouchoku", "angleloop"], {
+})(["kouchoku", "angleloop", "tajmahal"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -49,7 +49,7 @@
 				var cross0 = this.targetPoint[1];
 				this.targetPoint[1] = cross;
 				cross.draw();
-				if (cross0 !== null) {
+				if (cross0) {
 					cross0.draw();
 				}
 			}
@@ -65,13 +65,13 @@
 			var cross1 = this.targetPoint[0],
 				cross2 = this.targetPoint[1];
 			this.targetPoint = [null, null];
-			if (cross1 !== null) {
+			if (cross1) {
 				cross1.draw();
 			}
-			if (cross2 !== null) {
+			if (cross2) {
 				cross2.draw();
 			}
-			if (cross1 !== null && cross2 !== null) {
+			if (cross1 && cross2) {
 				if (
 					!puzzle.getConfig("enline") ||
 					(cross1.qnum !== -1 && cross2.qnum !== -1)
@@ -101,7 +101,7 @@
 				}
 			}
 		},
-		inputsegment_main: function(bx1, by1, bx2, by2) {
+		inputsegment_main: function(bx1, by1, bx2, by2, ox, oy) {
 			var tmp;
 			if (bx1 > bx2) {
 				tmp = bx1;
@@ -118,28 +118,223 @@
 				return;
 			}
 
+			if (isNaN(ox)) {
+				ox = null;
+				oy = null;
+			}
+
 			var bd = this.board,
 				seg = bd.getSegment(bx1, by1, bx2, by2);
+
+			if (seg && seg.ox !== null && (seg.ox !== ox || seg.oy !== oy)) {
+				bd.segment.removeSegmentsByOrigin(seg.ox, seg.oy);
+				seg = null;
+			}
+
 			if (seg === null) {
-				bd.segment.addSegmentByAddr(bx1, by1, bx2, by2);
-			} else {
+				bd.segment.addSegmentByAddr(bx1, by1, bx2, by2, ox, oy);
+			} else if (ox === null) {
 				bd.segment.remove(seg);
 			}
 		},
 
 		mousereset: function(e) {
 			if (this.inputData === 1) {
-				var cross1 = this.targetPoint[0],
-					cross2 = this.targetPoint[1];
-				this.targetPoint = [null, null];
-				if (cross1 !== null) {
-					cross1.draw();
-				}
-				if (cross2 !== null) {
-					cross2.draw();
-				}
+				var points = this.targetPoint;
+				this.targetPoint = new Array(points.length);
+				points.forEach(function(p) {
+					if (p) {
+						p.draw();
+					}
+				});
 			}
 			this.common.mousereset.call(this);
+		}
+	},
+
+	"MouseEvent@tajmahal": {
+		targetPoint: [null, null, null, null],
+		sourcePoint: null,
+
+		mouseinput_number: function() {
+			if (this.mousestart) {
+				this.inputqnum_tajmahal();
+			}
+		},
+		mouseinput_clear: function() {
+			this.inputdot();
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputsegment();
+				} else if (this.mouseend) {
+					this.inputsegment_up();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart) {
+					this.inputqnum_tajmahal();
+				}
+			}
+		},
+
+		inputqnum_tajmahal: function() {
+			var pos = this.getcrossorcell().moveToNearbyClue();
+			if (!pos || pos.isnull || pos.onborder()) {
+				return;
+			}
+
+			if (!pos.equals(this.cursor)) {
+				this.setcursor(pos);
+			} else {
+				this.inputdot();
+			}
+		},
+
+		inputdot: function() {
+			var pos = this.getcrossorcell().moveToNearbyClue();
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+
+			var dot = pos.getDot();
+			if (dot !== null && dot.piece.group !== "border") {
+				if (this.inputMode === "clear") {
+					dot.setDot(-1);
+				} else {
+					dot.setDot(this.getNewNumber(dot.piece, dot.getDot()));
+				}
+				dot.draw();
+			}
+			this.prevPos = pos;
+		},
+
+		inputsegment: function() {
+			var pos = this.getcrossorcell();
+			var cross = this.getcross();
+			var grabbing = false;
+			if (pos.getobj().isnull || pos.equals(this.mouseCell)) {
+				return;
+			}
+
+			if (this.mousestart) {
+				if (cross.lcnt > 0) {
+					var seg = cross.seglist[cross.seglist.length - 1];
+					if (seg.ox !== null) {
+						pos.init(seg.ox, seg.oy);
+						grabbing = true;
+					}
+				} else {
+					pos.moveToNearbyClue();
+				}
+			}
+
+			if (
+				this.mousestart &&
+				!pos.isnull &&
+				!pos.onborder() &&
+				(!this.puzzle.getConfig("ensquare") || pos.getobj().qnum !== -1)
+			) {
+				this.inputData = 1;
+				this.sourcePoint = pos;
+				cross.draw();
+			}
+			if (this.inputData === 1) {
+				var prev = this.targetPoint;
+				this.targetPoint = new Array(4);
+
+				prev.forEach(function(c) {
+					if (c) {
+						c.draw();
+					}
+				});
+
+				if (
+					!grabbing &&
+					(pos.equals(this.sourcePoint) || cross.equals(this.sourcePoint))
+				) {
+					this.sourcePoint.draw();
+					this.mouseCell = this.sourcePoint;
+					return;
+				}
+				this.targetPoint[0] = cross;
+				this.targetPoint[1] = this.sourcePoint.relcross(
+					this.sourcePoint.by - cross.by,
+					cross.bx - this.sourcePoint.bx
+				);
+				this.targetPoint[2] = this.sourcePoint.relcross(
+					this.sourcePoint.bx - cross.bx,
+					this.sourcePoint.by - cross.by
+				);
+				this.targetPoint[3] = this.sourcePoint.relcross(
+					cross.by - this.sourcePoint.by,
+					this.sourcePoint.bx - cross.bx
+				);
+
+				this.targetPoint.forEach(function(c) {
+					if (c) {
+						c.draw();
+					}
+				});
+				this.sourcePoint.draw();
+			}
+
+			this.mouseCell = pos;
+		},
+
+		inputsegment_up: function() {
+			if (this.inputData !== 1) {
+				return;
+			}
+
+			var puzzle = this.puzzle;
+			var prev = this.targetPoint;
+			this.targetPoint = new Array(4);
+			var valid = true;
+			for (var i = 0; i < 4; i++) {
+				var c = prev[i];
+				if (c && !c.isnull) {
+					c.draw();
+				} else {
+					valid = false;
+				}
+			}
+
+			if (valid && prev[0].bx === prev[1].bx && prev[0].by === prev[1].by) {
+				valid = false;
+			}
+
+			var sx = this.sourcePoint.bx,
+				sy = this.sourcePoint.by;
+			this.sourcePoint = null;
+
+			if (
+				!valid ||
+				!prev[0].seglist.some(function(seg) {
+					return seg.ox === sx && seg.oy === sy;
+				})
+			) {
+				this.board.segment.removeSegmentsByOrigin(sx, sy);
+			}
+			if (valid) {
+				for (var i = 0; i < 4; i++) {
+					this.inputsegment_main(
+						prev[i].bx,
+						prev[i].by,
+						prev[(i + 1) % 4].bx,
+						prev[(i + 1) % 4].by,
+						sx,
+						sy
+					);
+				}
+
+				var dist =
+					Math.max(Math.abs(sx - prev[0].bx), Math.abs(sy - prev[0].by)) + 1;
+
+				puzzle.painter.paintRange(sx - dist, sy - dist, sx + dist, sy + dist);
+			} else {
+				puzzle.painter.paintRange(sx, sy, sx, sy);
+			}
 		}
 	},
 
@@ -202,7 +397,20 @@
 		}
 	},
 
-	TargetCursor: {
+	"KeyEvent@tajmahal": {
+		moveTarget: function(ca) {
+			return this.moveTBorder(ca);
+		},
+
+		key_inputqnum: function(ca) {
+			var obj = this.cursor.getobj();
+			if (obj.group !== "border") {
+				this.key_inputqnum_main(obj, ca);
+			}
+		}
+	},
+
+	"TargetCursor@kouchoku,angleloop": {
 		crosstype: true
 	},
 
@@ -216,9 +424,36 @@
 		maxnum: 3,
 		minnum: 1
 	},
+	"Cross@tajmahal": {
+		maxnum: 8
+	},
+	"Cell@tajmahal": {
+		maxnum: 8
+	},
+	"Address@tajmahal": {
+		moveToNearbyClue: function() {
+			if (this.getDot() && this.getDot().getDot() !== -1) {
+				return this;
+			}
+
+			var dots = this.board.dotinside(
+				this.bx - 1,
+				this.by - 1,
+				this.bx + 1,
+				this.by + 1
+			);
+			for (var i = 0; i < dots.length; i++) {
+				if (dots[i].getDot() !== -1) {
+					this.set(dots[i]);
+					return this;
+				}
+			}
+			return this;
+		}
+	},
 	Segment: {
 		group: "segment",
-		initialize: function(bx1, by1, bx2, by2) {
+		initialize: function(bx1, by1, bx2, by2, ox, oy) {
 			this.path = null;
 			this.isnull = true;
 
@@ -232,14 +467,17 @@
 			this.dx = 0; // X座標の差分を保持する
 			this.dy = 0; // Y座標の差分を保持する
 
+			this.ox = null;
+			this.oy = null;
+
 			this.lattices = []; // 途中で通過する格子点を保持する
 
 			this.error = 0;
 			this.trial = 0;
 
-			this.setpos(bx1, by1, bx2, by2);
+			this.setpos(bx1, by1, bx2, by2, ox, oy);
 		},
-		setpos: function(bx1, by1, bx2, by2) {
+		setpos: function(bx1, by1, bx2, by2, ox, oy) {
 			this.sideobj[0] = this.board.getx(bx1, by1);
 			this.sideobj[1] = this.board.getx(bx2, by2);
 
@@ -251,12 +489,15 @@
 			this.dx = bx2 - bx1;
 			this.dy = by2 - by1;
 
+			this.ox = !isNaN(ox) && ox !== null ? ox : null;
+			this.oy = !isNaN(ox) && oy !== null ? oy : null;
+
 			this.setLattices();
 		},
 		setLattices: function() {
 			// ユークリッドの互助法で最大公約数を求める
-			var div = this.dx >> 1,
-				n = this.dy >> 1,
+			var div = this.dx,
+				n = this.dy,
 				tmp;
 			div = div < 0 ? -div : div;
 			n = n < 0 ? -n : n;
@@ -276,8 +517,8 @@
 			for (var a = 1; a < div; a++) {
 				var bx = this.bx1 + this.dx * (a / div);
 				var by = this.by1 + this.dy * (a / div);
-				var cross = this.board.getx(bx, by);
-				this.lattices.push([bx, by, cross.id]);
+				var obj = this.board.getobj(bx, by);
+				this.lattices.push([bx, by, obj.id, obj.group]);
 			}
 		},
 
@@ -570,11 +811,20 @@
 		// segment.addSegmentByAddr()    線をアドレス指定で引く時に呼ぶ
 		// segment.removeSegmentByAddr() 線をアドレス指定で消す時に呼ぶ
 		//---------------------------------------------------------------------------
-		addSegmentByAddr: function(bx1, by1, bx2, by2) {
-			this.add(new this.klass.Segment(bx1, by1, bx2, by2));
+		addSegmentByAddr: function(bx1, by1, bx2, by2, ox, oy) {
+			this.add(new this.klass.Segment(bx1, by1, bx2, by2, ox, oy));
 		},
 		removeSegmentByAddr: function(bx1, by1, bx2, by2) {
 			this.remove(this.board.getSegment(bx1, by1, bx2, by2));
+		},
+		removeSegmentsByOrigin: function(ox, oy) {
+			var list = this;
+			var others = this.filter(function(seg) {
+				return seg.ox === ox && seg.oy === oy;
+			});
+			others.each(function(seg) {
+				list.remove(seg);
+			});
 		}
 	},
 
@@ -626,8 +876,12 @@
 				lattice = [];
 			for (var i = 0; i < seg.lattices.length; i++) {
 				var xc = seg.lattices[i][2];
-				if (xc !== null && this.cross[xc].qnum !== -1) {
-					lattice.push(xc);
+				var group = seg.lattices[i][3];
+				if (xc !== null) {
+					var obj = this[group][xc];
+					if (obj.qnum !== -1) {
+						lattice.push(obj);
+					}
 				}
 			}
 			return lattice;
@@ -667,6 +921,13 @@
 			return seg;
 		}
 	},
+
+	"Board@tajmahal": {
+		cols: 10,
+		rows: 10,
+		hasdots: 1
+	},
+
 	BoardExec: {
 		adjustBoardData: function(key, d) {
 			var bd = this.board,
@@ -723,44 +984,50 @@
 				var bx1 = seg.bx1,
 					by1 = seg.by1,
 					bx2 = seg.bx2,
-					by2 = seg.by2;
+					by2 = seg.by2,
+					ox = seg.ox,
+					oy = seg.oy;
 				switch (key) {
 					case bexec.FLIPY:
-						seg.setpos(bx1, yy - by1, bx2, yy - by2);
+						seg.setpos(bx1, yy - by1, bx2, yy - by2, ox, yy - oy);
 						break;
 					case bexec.FLIPX:
-						seg.setpos(xx - bx1, by1, xx - bx2, by2);
+						seg.setpos(xx - bx1, by1, xx - bx2, by2, xx - ox, oy);
 						break;
 					case bexec.TURNR:
-						seg.setpos(yy - by1, bx1, yy - by2, bx2);
+						seg.setpos(yy - by1, bx1, yy - by2, bx2, yy - oy, ox);
 						break;
 					case bexec.TURNL:
-						seg.setpos(by1, xx - bx1, by2, xx - bx2);
+						seg.setpos(by1, xx - bx1, by2, xx - bx2, oy, xx - ox);
 						break;
 					case bexec.EXPANDUP:
-						seg.setpos(bx1, by1 + 2, bx2, by2 + 2);
+						seg.setpos(bx1, by1 + 2, bx2, by2 + 2, ox, oy + 2);
 						break;
 					case bexec.EXPANDDN:
-						seg.setpos(bx1, by1, bx2, by2);
+						seg.setpos(bx1, by1, bx2, by2, ox, oy);
 						break;
 					case bexec.EXPANDLT:
-						seg.setpos(bx1 + 2, by1, bx2 + 2, by2);
+						seg.setpos(bx1 + 2, by1, bx2 + 2, by2, ox + 2, oy);
 						break;
 					case bexec.EXPANDRT:
-						seg.setpos(bx1, by1, bx2, by2);
+						seg.setpos(bx1, by1, bx2, by2, ox, oy);
 						break;
 					case bexec.REDUCEUP:
-						seg.setpos(bx1, by1 - 2, bx2, by2 - 2);
+						seg.setpos(bx1, by1 - 2, bx2, by2 - 2, ox, oy - 2);
 						break;
 					case bexec.REDUCEDN:
-						seg.setpos(bx1, by1, bx2, by2);
+						seg.setpos(bx1, by1, bx2, by2, ox, oy);
 						break;
 					case bexec.REDUCELT:
-						seg.setpos(bx1 - 2, by1, bx2 - 2, by2);
+						seg.setpos(bx1 - 2, by1, bx2 - 2, by2, ox - 2, oy);
 						break;
 					case bexec.REDUCERT:
-						seg.setpos(bx1, by1, bx2, by2);
+						seg.setpos(bx1, by1, bx2, by2, ox, oy);
 						break;
+				}
+				if (ox === null) {
+					seg.ox = null;
+					seg.oy = null;
 				}
 			});
 		}
@@ -803,6 +1070,8 @@
 			this.by2 = seg.by2;
 			this.old = old;
 			this.num = num;
+			this.ox = seg.ox;
+			this.oy = seg.oy;
 		},
 		decode: function(strs) {
 			if (strs[0] !== "SG") {
@@ -814,10 +1083,17 @@
 			this.by2 = +strs[4];
 			this.old = +strs[5];
 			this.num = +strs[6];
+			if (!isNaN(strs[7])) {
+				this.ox = +strs[7];
+				this.oy = +strs[8];
+			} else {
+				this.ox = null;
+				this.oy = null;
+			}
 			return true;
 		},
 		toString: function() {
-			return [
+			var items = [
 				"SG",
 				this.bx1,
 				this.by1,
@@ -825,7 +1101,12 @@
 				this.by2,
 				this.old,
 				this.num
-			].join(",");
+			];
+			if (this.ox !== null) {
+				items.push(this.ox);
+				items.push(this.oy);
+			}
+			return items.join(",");
 		},
 
 		exec: function(num) {
@@ -833,10 +1114,12 @@
 				by1 = this.by1,
 				bx2 = this.bx2,
 				by2 = this.by2,
+				ox = this.ox,
+				oy = this.oy,
 				puzzle = this.puzzle,
 				tmp;
 			if (num === 1) {
-				puzzle.board.segment.addSegmentByAddr(bx1, by1, bx2, by2);
+				puzzle.board.segment.addSegmentByAddr(bx1, by1, bx2, by2, ox, oy);
 			} else if (num === 0) {
 				puzzle.board.segment.removeSegmentByAddr(bx1, by1, bx2, by2);
 			}
@@ -871,6 +1154,7 @@
 		irowake: true,
 
 		gridcolor_type: "DLIGHT",
+		pointColor: "rgb(64,127,255)",
 
 		repaintLines: function(segs) {
 			if (!this.context.use.canvas) {
@@ -951,7 +1235,7 @@
 			var g = this.vinc("cross_target_", "auto", true);
 
 			var csize = this.cw * 0.32;
-			g.strokeStyle = "rgb(64,127,255)";
+			g.strokeStyle = this.pointColor;
 			g.lineWidth = this.lw * 1.5;
 
 			var clist = this.range.crosses;
@@ -960,7 +1244,9 @@
 				g.vid = "x_point_" + cross.id;
 				if (
 					this.puzzle.mouse.targetPoint[0] === cross ||
-					this.puzzle.mouse.targetPoint[1] === cross
+					this.puzzle.mouse.targetPoint[1] === cross ||
+					this.puzzle.mouse.targetPoint[2] === cross ||
+					this.puzzle.mouse.targetPoint[3] === cross
 				) {
 					g.strokeCircle(cross.bx * this.bw, cross.by * this.bh, csize);
 				} else {
@@ -1118,6 +1404,62 @@
 		}
 	},
 
+	"Graphic@tajmahal": {
+		fontShadecolor: "white",
+		numbercolor_func: "fixed_shaded",
+
+		paint: function() {
+			this.drawBaseMarks();
+
+			this.drawSegments();
+
+			this.drawDots();
+			this.drawNumbers_tajmahal();
+
+			this.drawSegmentTarget();
+			this.drawTarget();
+		},
+
+		getDotOutlineColor: function() {
+			return null;
+		},
+		getDotFillColor: function(dot) {
+			if (
+				this.puzzle.mouse.sourcePoint &&
+				!this.puzzle.mouse.targetPoint[0] &&
+				dot.equals(this.puzzle.mouse.sourcePoint)
+			) {
+				return this.pointColor;
+			}
+			if (dot.piece.error === 1) {
+				return this.errcolor1;
+			}
+			return dot.getDot() !== -1 ? this.quescolor : null;
+		},
+		getDotRadius: function(dot) {
+			return dot.getDot() !== -1 ? 0.4 : 0.15;
+		},
+
+		drawNumbers_tajmahal: function() {
+			var g = this.context;
+			var d = this.range;
+			var dlist = this.board.dotinside(d.x1, d.y1, d.x2, d.y2);
+			for (var i = 0; i < dlist.length; i++) {
+				var dot = dlist[i];
+				var text = this.getQuesNumberText(dot.piece);
+				g.vid = "dot_text_" + dot.id;
+				if (!!text) {
+					g.fillStyle = this.getQuesNumberColor(dot.piece);
+					var x = dot.bx * this.bw;
+					var y = dot.by * this.bh;
+					this.disptext(text, x, y, { ratio: 0.65 });
+				} else {
+					g.vhide();
+				}
+			}
+		}
+	},
+
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
@@ -1181,6 +1523,66 @@
 			this.outbstr += cm;
 		}
 	},
+	"Encode@tajmahal": {
+		decodePzpr: function(type) {
+			this.decodeDot_tajmahal();
+		},
+		encodePzpr: function(type) {
+			this.encodeDot_tajmahal();
+		},
+
+		decodeDot_tajmahal: function() {
+			var bd = this.board;
+			bd.disableInfo();
+			var s = 0,
+				bstr = this.outbstr;
+			for (var i = 0; i < bstr.length; i++) {
+				var dot = bd.dots[s],
+					ca = bstr.charAt(i);
+				if (this.include(ca, "0", "8")) {
+					var val = parseInt(ca, 10);
+					dot.setDot(val === 0 ? -2 : val);
+					s++;
+				} else if (this.include(ca, "a", "z")) {
+					s += parseInt(ca, 36) - 9;
+				}
+
+				if (s >= bd.dotsmax) {
+					break;
+				}
+			}
+			bd.enableInfo();
+			this.outbstr = bstr.substr(i + 1);
+		},
+
+		encodeDot_tajmahal: function() {
+			var count = 0,
+				cm = "",
+				bd = this.board;
+			for (var s = 0; s < bd.dotsmax; s++) {
+				var pstr = "",
+					dot = bd.dots[s],
+					num = dot.getDot() === -2 ? 0 : dot.getDot();
+				if (num !== -1) {
+					pstr += num;
+				} else {
+					count++;
+				}
+
+				if (count === 0) {
+					cm += pstr;
+				} else if (pstr || count === 26) {
+					cm += (count + 9).toString(36) + pstr;
+					count = 0;
+				}
+			}
+			if (count > 0) {
+				cm += (count + 9).toString(36);
+			}
+
+			this.outbstr += cm;
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
@@ -1196,11 +1598,15 @@
 			var len = +this.readLine();
 			for (var i = 0; i < len; i++) {
 				var data = this.readLine().split(" ");
+				var ox = !isNaN(data[4]) ? +data[4] : null;
+				var oy = !isNaN(data[4]) ? +data[5] : null;
 				this.board.segment.addSegmentByAddr(
 					+data[0],
 					+data[1],
 					+data[2],
-					+data[3]
+					+data[3],
+					ox,
+					oy
 				);
 			}
 		},
@@ -1209,8 +1615,24 @@
 				segs = this.board.segment;
 			this.writeLine(segs.length);
 			segs.each(function(seg) {
-				fio.writeLine([seg.bx1, seg.by1, seg.bx2, seg.by2].join(" "));
+				var items = [seg.bx1, seg.by1, seg.bx2, seg.by2];
+				if (seg.ox !== null) {
+					items.push(seg.ox);
+					items.push(seg.oy);
+				}
+				fio.writeLine(items.join(" "));
 			});
+		}
+	},
+
+	"FileIO@tajmahal": {
+		decodeData: function() {
+			this.decodeDotFile();
+			this.decodeSegment();
+		},
+		encodeData: function() {
+			this.encodeDotFile();
+			this.encodeSegment();
 		}
 	},
 
@@ -1292,7 +1714,7 @@
 				var lattice = bd.getLatticePoint(seg.bx1, seg.by1, seg.bx2, seg.by2);
 				for (var n = 0; n < lattice.length; n++) {
 					seg.seterr(1);
-					bd.cross[lattice[n]].seterr(1);
+					lattice[n].seterr(1);
 					result = false;
 				}
 			});
@@ -1552,5 +1974,139 @@
 			"checkCrossLine",
 			"checkAngle"
 		]
+	},
+
+	"AnsCheck@tajmahal": {
+		checklist: [
+			"checkSegmentOverClue",
+			"checkSquareIntegrity",
+			"checkDuplicateSegment",
+			"checkCrossLine",
+			"checkCornerOverClue",
+			"checkSegmentOverCorner",
+			"checkSourceIsClue",
+			"checkOneSegmentLoop+",
+			"checkClueCount",
+			"checkClueHasSquare"
+		],
+
+		checkCornerOverClue: function() {
+			this.checkSegment(function(cross) {
+				return cross.lcnt > 0 && cross.qnum !== -1;
+			}, "lnOnClue");
+		},
+
+		getOriginMap: function() {
+			var bd = this.board;
+			if (!this._info.origins) {
+				var map = {};
+
+				bd.segment.each(function(seg) {
+					var key = seg.ox === null ? "null" : seg.ox + "," + seg.oy;
+					if (!(key in map)) {
+						map[key] = {
+							obj: seg.ox !== null ? bd.getobj(seg.ox, seg.oy) : null,
+							segs: new bd.klass.SegmentList()
+						};
+					}
+					map[key].segs.add(seg);
+				});
+
+				this._info.origins = map;
+			}
+			return this._info.origins;
+		},
+
+		checkOrigins: function(func, code) {
+			var origins = this.getOriginMap();
+			var bd = this.board;
+			for (var key in origins) {
+				var data = origins[key];
+				if (!func(data.obj, data.segs)) {
+					continue;
+				}
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				data.obj.seterr(1);
+				data.segs.seterr(1);
+				bd.segment.setnoerr();
+			}
+		},
+
+		checkSourceIsClue: function() {
+			this.checkOrigins(function(obj, segs) {
+				return obj === null || obj.qnum === -1;
+			}, "lnIsolate");
+		},
+
+		checkSquareIntegrity: function() {
+			this.checkOrigins(function(obj, segs) {
+				return segs.length % 4;
+			}, "lnNotSq");
+		},
+
+		checkClueCount: function() {
+			this.checkOrigins(function(obj, segs) {
+				if (obj === null || obj.qnum < 0) {
+					return false;
+				}
+
+				var count = 0;
+				segs.each(function(seg) {
+					count += seg.sideobj[0].lcnt - 2;
+					count += seg.sideobj[1].lcnt - 2;
+				});
+				return obj.qnum !== count / 4;
+			}, "crAdjacent");
+		},
+
+		checkClueHasSquare: function() {
+			var origins = this.getOriginMap();
+
+			var bd = this.board;
+			for (var s = 0; s < bd.dotsmax; s++) {
+				var dot = bd.dots[s];
+				var key = dot.bx + "," + dot.by;
+				if (dot.getDot() === -1 || key in origins) {
+					continue;
+				}
+
+				this.failcode.add("crNoSegment");
+				if (this.checkOnly) {
+					break;
+				}
+				dot.piece.seterr(1);
+			}
+		},
+
+		checkSegmentOverCorner: function() {
+			var result = true,
+				bd = this.board,
+				segs = bd.segment;
+			segs.each(function(seg) {
+				var lattice = [];
+				for (var i = 0; i < seg.lattices.length; i++) {
+					var xc = seg.lattices[i][2];
+					var group = seg.lattices[i][3];
+					if (xc !== null) {
+						var obj = bd[group][xc];
+						if (obj.lcnt > 0) {
+							lattice.push(obj);
+						}
+					}
+				}
+				for (var n = 0; n < lattice.length; n++) {
+					seg.seterr(1);
+					lattice[n].seterr(1);
+					result = false;
+				}
+			});
+			if (!result) {
+				this.failcode.add("lnOnCorner");
+				segs.setnoerr();
+			}
+		}
 	}
 });

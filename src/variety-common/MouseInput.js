@@ -241,7 +241,7 @@ pzpr.classmgr.makeCommon({
 					}
 				} else if (num > max) {
 					val = max;
-				} else if (num <= min) {
+				} else if (num <= min && num !== -2) {
 					val = ishatena ? -2 : -1;
 				} else if (num === -2) {
 					val = -1;

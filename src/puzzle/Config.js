@@ -38,6 +38,10 @@
 				option: [1, 2, 3]
 			}); /* interbd: Clue display mode */
 			this.add("snakebd", false); /* hebi: へびの境界線を表示する */
+			this.add(
+				"ensquare",
+				true
+			); /* tajmahal: Only draw given from square centers */
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
 			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
 
@@ -345,6 +349,9 @@
 					break;
 				case "snakebd":
 					exec = pid === "hebi";
+					break;
+				case "ensquare":
+					exec = pid === "tajmahal";
 					break;
 				case "dispqnumbg":
 					exec = pid === "yinyang";

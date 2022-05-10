@@ -158,6 +158,7 @@
     "singlenum.tool": "領域に一つだけ数字を入力できるようにする",
     "singleregion": "各領域で黒く塗れるタイルを1つだけにする",
     "forceallcell.tool": "全てのマスに数字が入った場合のみ正解とする",
+    "ensquare": "Enable to force drawing squares from a clue",
     "snakebd": "へびの周りに境界線を表示する",
     "keypopup.tool": "数字・記号をパネルで入力する",
     "irowake.tool": "線の色分けをする",

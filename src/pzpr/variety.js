@@ -79,7 +79,8 @@
 		"lapaz",
 		"tren",
 		"pentominous",
-		"hinge"
+		"hinge",
+		"tajmahal"
 	]);
 
 	(function(Genre, obj) {
@@ -350,6 +351,7 @@
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
 			symmarea: [0, 0, "シンメトリーエリア", "Symmetry Area", "fillomino"],
+			tajmahal: [0, 0, "タージ・マハル", "Taj Mahal", "kouchoku"],
 			tapa: [0, 0, "Tapa", "Tapa"],
 			tapaloop: [0, 0, "Tapa-Like Loop", "Tapa-Like Loop"],
 			tasquare: [0, 0, "たすくえあ", "Tasquare"],

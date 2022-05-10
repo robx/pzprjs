@@ -141,6 +141,7 @@ function toBGimage(pid) {
 		"snake",
 		"starbattle",
 		"symmarea",
+		"tajmahal",
 		"tapaloop",
 		"tents",
 		"voxas",

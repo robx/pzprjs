@@ -159,6 +159,7 @@
     "singleregion": "Ensure that only one tile is shaded in each region",
     "forceallcell.tool": "Force each cell to have a number",
     "snakebd": "Draw border around a snake",
+    "ensquare": "Enable to force drawing squares from a clue",
     "keypopup.tool": "Input numbers by panel",
     "irowake.tool": "Color each line",
     "irowake.change": "Change the line colors",
