@@ -211,6 +211,7 @@
 
 		inputsegment: function() {
 			var pos = this.getcrossorcell();
+			var origpos = pos.clone();
 			var cross = this.getcross();
 			var grabbing = false;
 			if (pos.getobj().isnull || pos.equals(this.mouseCell)) {
@@ -233,7 +234,9 @@
 				this.mousestart &&
 				!pos.isnull &&
 				!pos.onborder() &&
-				(!this.puzzle.getConfig("ensquare") || pos.getobj().qnum !== -1)
+				(!this.puzzle.getConfig("ensquare") ||
+					!origpos.equals(pos) ||
+					pos.getobj().qnum !== -1)
 			) {
 				this.inputData = 1;
 				this.sourcePoint = pos;
