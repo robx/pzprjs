@@ -2011,15 +2011,34 @@ pzpr.classmgr.makeCommon({
 			var g = this.vinc(layerid, "crispEdges");
 
 			var px = cursor.bx * this.bw,
-				py = cursor.by * this.bh,
-				w,
-				size;
+				py = cursor.by * this.bh;
+			var t, w, h;
 			if (islarge !== false) {
-				w = Math.max(this.cw / 16, 2) | 0;
-				size = this.bw - 0.5;
+				t = Math.max(this.cw / 16, 2) | 0;
+				w = this.bw - 0.5;
+				h = w;
 			} else {
-				w = Math.max(this.cw / 24, 1) | 0;
-				size = this.bw * 0.56;
+				t = Math.max(this.cw / 24, 1) | 0;
+				w = this.bw * 0.56;
+				h = w;
+			}
+
+			if (cursor.bankpiece !== null) {
+				var piece = this.board.bank.pieces[cursor.bankpiece];
+				if (cursor.bankpiece === this.board.bank.pieces.length) {
+					piece = this.board.bank.addButton;
+				}
+				if (piece) {
+					var r = this.puzzle.painter.bankratio;
+
+					px = (piece.x + 0.25 + piece.w / 2) * this.cw * r;
+					py = (piece.y + 0.25 + piece.h / 2) * this.ch * r;
+					py += (this.board.rows + 0.5) * this.ch;
+					w = (piece.w + 0.25) * this.cw * r * 0.5;
+					h = (piece.h + 0.25) * this.ch * r * 0.5;
+				} else {
+					isdraw = false;
+				}
 			}
 
 			isdraw = isdraw !== false && !this.outputImage;
@@ -2027,25 +2046,25 @@ pzpr.classmgr.makeCommon({
 
 			g.vid = prefix + "ti1_";
 			if (isdraw) {
-				g.fillRect(px - size, py - size, size * 2, w);
+				g.fillRect(px - w, py - h, w * 2, t);
 			} else {
 				g.vhide();
 			}
 			g.vid = prefix + "ti2_";
 			if (isdraw) {
-				g.fillRect(px - size, py - size, w, size * 2);
+				g.fillRect(px - w, py - h, t, h * 2);
 			} else {
 				g.vhide();
 			}
 			g.vid = prefix + "ti3_";
 			if (isdraw) {
-				g.fillRect(px - size, py + size - w, size * 2, w);
+				g.fillRect(px - w, py + h - t, w * 2, t);
 			} else {
 				g.vhide();
 			}
 			g.vid = prefix + "ti4_";
 			if (isdraw) {
-				g.fillRect(px + size - w, py - size, w, size * 2);
+				g.fillRect(px + w - t, py - h, t, h * 2);
 			} else {
 				g.vhide();
 			}
@@ -2540,6 +2559,89 @@ pzpr.classmgr.makeCommon({
 							g.vhide();
 						}
 					}
+				}
+			}
+		},
+
+		lastBankPieceCount: 0,
+		drawBank: function() {
+			if (!this.range.bank && this.range.bankPieces.length === 0) {
+				return;
+			}
+
+			var g = this.vinc("piecebank", "crispEdges"),
+				bd = this.board;
+
+			var count = Math.max(bd.bank.pieces.length, this.lastBankPieceCount);
+
+			for (var p = 0; p < count; p++) {
+				var piece = bd.bank.pieces[p];
+				if (!this.range.bank && this.range.bankPieces.indexOf(piece) === -1) {
+					continue;
+				}
+
+				this.drawBankPiece(g, piece, p);
+			}
+
+			this.drawBankAddButton();
+
+			this.lastBankPieceCount = bd.bank.pieces.length;
+		},
+		drawBankPiece: function(g, piece, idx) {},
+		getBankPieceColor: function(piece) {
+			return piece.error
+				? this.errcolor1
+				: piece.qcmp
+				? this.qcmpcolor
+				: this.quescolor;
+		},
+		drawBankAddButton: function() {
+			var g = this.vinc("piecebank_add", "crispEdges"),
+				bd = this.board,
+				addButton = bd.bank.addButton;
+			var showAdd =
+				this.puzzle.editmode &&
+				addButton.index !== null &&
+				(this.range.bank || this.range.bankPieces.indexOf(addButton) !== -1);
+
+			if (
+				addButton.index !== null &&
+				(this.range.bank || this.range.bankPieces.indexOf(addButton) !== -1)
+			) {
+				var r = this.bankratio;
+				var px = this.cw * r * (addButton.x + 0.25) + 1;
+				var py = this.ch * r * (addButton.y + 0.25) + 1;
+				py += (this.board.rows + 0.5) * this.ch;
+				var px2 = px + this.cw * r * addButton.w - 1;
+				var py2 = py + this.ch * r * addButton.h - 1;
+				for (var i = 0; i < 4; i++) {
+					g.vid = "pb_piece_add_" + i;
+					if (showAdd) {
+						g.strokeStyle = "blue";
+						g.strokeDashedLine(
+							i < 2 ? px : px2,
+							i < 2 ? py : py2,
+							i % 2 ? px : px2,
+							i % 2 ? py2 : py,
+							[3]
+						);
+					} else {
+						g.vhide();
+					}
+				}
+
+				g.vid = "pb_piece_add_symbol";
+				if (showAdd) {
+					g.fillStyle = "blue";
+					var option = { style: "bold" };
+					this.disptext(
+						"+",
+						px + 0.5 * r * this.cw * addButton.w,
+						py + 0.5 * r * this.ch * addButton.h,
+						option
+					);
+				} else {
+					g.vhide();
 				}
 			}
 		}

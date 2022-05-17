@@ -365,6 +365,7 @@
   <button type="button" class="btn" id="btnirowakeblk" data-button-exec="irowake" style="display:none;">__irowakeblk.change__</button>
   <button type="button" class="btn" id="btncolor"   data-button-exec="encolorall">__encolorall__</button>
   <button type="button" class="btn" id="btnflush"   data-button-exec="flushexcell">__flushexcell__</button>
+  <button type="button" class="btn" id="btnpresets" data-button-exec="applypreset">__applypreset__</button>
   <button type="button" class="btn" data-disp-pid="stostone" data-press-exec="dropblocks,resetblocks">__dropblocks__</button>
   <button type="button" class="btn" id="btntrial"   data-button-exec="enterTrial">__enterTrial__</button>
   <div id="btntrialarea" style="display:none;">
@@ -429,6 +430,10 @@
         <input type="radio" name="size" id="nb_size_sudoku_1" value="1" checked> 9x9<br>
         <input type="radio" name="size" id="nb_size_sudoku_2" value="2"> 16x16<br>
         <input type="radio" name="size" id="nb_size_sudoku_3" value="3"> 25x25
+      </div>
+      <div id="nb_piecebank">
+        <span>__newboard.preset__</span>
+        <select id="nb_piecebank_preset" name="preset"></select>
       </div>
       <br>
       <table id="nb_shape_tawa" data-disp-pid="tawa" border=0 cell-padding=0 cell-spaceing=2><tr>
@@ -609,8 +614,27 @@
             <div class="child" data-value="slide">__inputmode.slide__</div>
           </div>
         </div>
+        <div class="adjust">
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="turnl">__turnflip.turnl.short__</button>
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="turnr">__turnflip.turnr.short__</button>
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="flipy">__turnflip.flipy.short__</button>
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="flipx">__turnflip.flipx.short__</button>
+        </div>
       </div>
       <div id="divauxeditor"></div>  <!-- Canvas for editor -->
+      <div class="auxeditorclose">
+        <button type="button" class="btn" data-button-exec="close">__close__</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-danger" data-button-exec="delete">__delete__</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="popup" id="popapplypreset">
+    <div class="titlebar">__applypreset.title__</div>
+    <form name="applypreset">
+      <div id="ap_preset"></div>
+      <button type="button" class="btn btn-ok" data-button-exec="apply">__applypreset.submit__</button>
       <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>

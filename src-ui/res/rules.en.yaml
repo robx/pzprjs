@@ -185,6 +185,18 @@ rassi:
   This genre is invented by Prasanna Seshadri.
 
 
+statuepark:
+  Place every shape from the bank into the grid. Shapes can be rotated or mirrored.
+
+  1. All shapes must be used exactly once. There cannot be shapes in the grid that aren't present in the bank.
+
+  2. Two shapes cannot be orthogonally adjacent.
+
+  3. Black circles must overlap a shape, while white circles must not overlap a shape.
+
+  4. All cells not used by shapes must be connected.
+
+
 tajmahal:
   Draw a square around each given circle.
 

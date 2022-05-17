@@ -42,6 +42,7 @@ pzpr.variety.each(function(pid) {
 					assert.doesNotThrow(function() {
 						puzzle.open(urlstr + urlstr, function() {
 							if (
+								pid.indexOf("-aux") === -1 &&
 								pid !== "icebarn" &&
 								pid !== "icelom" &&
 								pid !== "icelom2" &&

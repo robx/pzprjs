@@ -57,6 +57,12 @@ pzpr.classmgr.makeCommon({
 			this.ublkmgr = this.addInfoList(classes.AreaUnshadeGraph); // 白マス情報を保持する
 			this.nblkmgr = this.addInfoList(classes.AreaNumberGraph); // 数字情報を保持する
 
+			if (classes.Bank.prototype.enabled) {
+				this.bank = new classes.Bank();
+				this.bank.init();
+				this.bank.initialize(this.bank.defaultPreset());
+			}
+
 			this.addExtraInfo();
 
 			this.exec = new classes.BoardExec();
@@ -117,6 +123,11 @@ pzpr.classmgr.makeCommon({
 
 			this.initExtraObject(col, row);
 
+			if (this.bank) {
+				this.bank.width = this.cols / this.puzzle.painter.bankratio;
+				this.bank.performLayout();
+			}
+
 			this.rebuildInfo();
 
 			this.puzzle.cursor.initCursor();
@@ -124,6 +135,14 @@ pzpr.classmgr.makeCommon({
 		},
 		createExtraObject: function() {},
 		initExtraObject: function(col, row) {},
+
+		//---------------------------------------------------------------------------
+		// bd.getBankPiecesInGrid(): Returns an array of [strings, PieceList] tuples
+		// which can be compared to the pieces inside the bank.
+		//---------------------------------------------------------------------------
+		getBankPiecesInGrid: function() {
+			return [];
+		},
 
 		//---------------------------------------------------------------------------
 		// bd.initGroup()     数を比較して、オブジェクトの追加か削除を行う
@@ -408,6 +427,9 @@ pzpr.classmgr.makeCommon({
 			this.cross.ansclear();
 			this.border.ansclear();
 			this.excell.ansclear();
+			if (this.bank) {
+				this.bank.ansclear();
+			}
 			this.rebuildInfo();
 		},
 		// 呼び出し元：補助消去ボタン押した時
@@ -418,6 +440,9 @@ pzpr.classmgr.makeCommon({
 			this.cross.subclear();
 			this.border.subclear();
 			this.excell.subclear();
+			if (this.bank) {
+				this.bank.subclear();
+			}
 			this.rebuildInfo();
 		},
 
@@ -428,6 +453,9 @@ pzpr.classmgr.makeCommon({
 				this.cross.errclear();
 				this.border.errclear();
 				this.excell.errclear();
+				if (this.bank) {
+					this.bank.errclear();
+				}
 				this.haserror = false;
 				this.hasinfo = false;
 			}

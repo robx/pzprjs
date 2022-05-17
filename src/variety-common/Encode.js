@@ -939,6 +939,64 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.outbstr += cm;
+		},
+
+		//---------------------------------------------------------------------------
+		// enc.decodePieceBank() Decode piece bank preset/custom
+		// enc.encodePieceBank() Encode piece bank preset/custom
+		//---------------------------------------------------------------------------
+		decodePieceBank: function() {
+			var bank = this.board.bank;
+			if (this.outbstr.substr(0, 2) === "//") {
+				var shortkey = this.outbstr[2];
+
+				for (var i = 0; i < bank.presets.length; i++) {
+					if (bank.presets[i].shortkey === shortkey) {
+						bank.initialize(bank.presets[i].constant);
+						break;
+					}
+				}
+
+				this.outbstr = this.outbstr.substr(3);
+			} else {
+				// Trim slash
+				this.outbstr = this.outbstr.substr(1);
+
+				var next = this.outbstr.indexOf("/");
+				var count = +this.outbstr.substr(0, next);
+				this.outbstr = this.outbstr.substr(next + 1);
+				var pieces = [];
+
+				for (var i = 0; i < count; i++) {
+					next = this.outbstr.indexOf("/");
+					pieces.push(next >= 0 ? this.outbstr.substr(0, next) : this.outbstr);
+					this.outbstr = next >= 0 ? this.outbstr.substr(next + 1) : "";
+				}
+				bank.initialize(pieces);
+			}
+		},
+		encodePieceBank: function() {
+			this.outbstr += "/";
+			var bank = this.board.bank;
+
+			var pieces = bank.pieces.map(function(p) {
+				return p.serialize();
+			});
+
+			for (var i = 0; i < bank.presets.length; i++) {
+				if (!bank.presets[i].constant) {
+					continue;
+				}
+				if (this.puzzle.pzpr.util.sameArray(bank.presets[i].constant, pieces)) {
+					this.outbstr += "/" + bank.presets[i].shortkey;
+					return;
+				}
+			}
+
+			this.outbstr += pieces.length;
+			for (var i = 0; i < pieces.length; i++) {
+				this.outbstr += "/" + pieces[i];
+			}
 		}
 	}
 });

@@ -186,10 +186,18 @@ div#variantpanel input[type="checkbox"]:disabled:not(:checked) + span {
   color: silver;
 }
 
-div#auxeditorpanel > div {
+div#auxeditorpanel,
+div#auxeditorpanel > div,
+div.auxeditorclose {
   display: flex;
   display: -webkit-flex;
 }
+
+div#auxeditorpanel div.config,
+.spacer {
+  flex-grow: 1;
+}
+
 div#auxeditorpanel > div > div {
   display: inline-block;
 }

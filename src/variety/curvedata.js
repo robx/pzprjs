@@ -48,7 +48,8 @@
 					h = Math.max(h, shape.bits.length / shape.w);
 				}
 
-				var data = [w, h];
+				var s = Math.max(w, h);
+				var data = [s, s];
 
 				if (shape && shape.w > 0) {
 					data.push(shape.w);

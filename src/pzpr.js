@@ -29,6 +29,7 @@ exports.files = [
 	"puzzle/FileData",
 	"puzzle/Answer",
 	"puzzle/Operation",
+	"puzzle/Bank",
 	"variety-common/Graphic",
 	"variety-common/KeyInput",
 	"variety-common/MouseInput",

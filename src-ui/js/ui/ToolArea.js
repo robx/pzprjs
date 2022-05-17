@@ -143,6 +143,12 @@ ui.toolarea = {
 			ui.puzzle.pid === "tentaisho" ? "" : "none";
 		getEL("btnflush").style.display =
 			ui.puzzle.board.hasflush && !ui.puzzle.playeronly ? "" : "none";
+		getEL("btnpresets").style.display =
+			ui.puzzle.board.bank &&
+			ui.puzzle.board.bank.presets.length &&
+			!ui.puzzle.playeronly
+				? ""
+				: "none";
 		/* ボタンエリアの色分けボタンは、ツールパネル領域が消えている時に表示 */
 		getEL("btnirowake").style.display =
 			ui.puzzle.painter.irowake && !ui.menuconfig.get("toolarea") ? "" : "none";
@@ -235,7 +241,11 @@ ui.toolarea = {
 			if (!!toolitem.children) {
 				var children = toolitem.children;
 				var validval =
-					idname === "inputmode" ? ui.puzzle.mouse.getInputModeList() : null;
+					idname === "inputmode"
+						? ui.puzzle.mouse.getInputModeList()
+						: idname === "auxeditor_inputmode"
+						? ui.auxeditor.puzzle.mouse.getInputModeList()
+						: null;
 				for (var i = 0; i < children.length; i++) {
 					var child = children[i],
 						value = ui.customAttr(child, "value"),
@@ -301,12 +311,14 @@ ui.toolarea = {
 		ui.menuarea.answercheck();
 	},
 	undo: function() {
+		ui.auxeditor.close(true);
 		ui.undotimer.startUndo();
 	},
 	undostop: function() {
 		ui.undotimer.stopUndo();
 	},
 	redo: function() {
+		ui.auxeditor.close(true);
 		ui.undotimer.startRedo();
 	},
 	redostop: function() {
@@ -332,6 +344,18 @@ ui.toolarea = {
 	},
 	flushexcell: function() {
 		ui.puzzle.board.flushexcell();
+	},
+	applypreset: function(e) {
+		ui.auxeditor.close();
+
+		ui.popupmgr.open("applypreset", 0, 0);
+		var rect = pzpr.util.getRect(getEL("btnarea"));
+		var bounds = pzpr.util.getRect(getEL("popapplypreset"));
+		ui.popupmgr.open(
+			"applypreset",
+			rect.left + (rect.width - bounds.width) / 2,
+			Math.max(16, rect.top - bounds.height - 16)
+		);
 	},
 	enterTrial: function() {
 		if (ui.puzzle.board.trialstage === 0) {

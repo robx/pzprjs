@@ -159,6 +159,10 @@
 				if (bd.hasdots) {
 					bd.initDots(bd.cols, bd.rows, bd.hasdots === 2);
 				}
+				if (bd.bank) {
+					bd.bank.width = bd.cols / this.puzzle.painter.bankratio;
+					bd.bank.performLayout();
+				}
 
 				this.adjustBoardData2(key, d);
 			},

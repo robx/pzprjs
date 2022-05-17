@@ -218,7 +218,9 @@ ui.popupmgr.addpopup("template", {
 		}
 	},
 	close: function() {
-		this.pop.style.display = "none";
+		if (this.pop) {
+			this.pop.style.display = "none";
+		}
 		if (!this.multipopup) {
 			ui.popupmgr.popup = null;
 		}
@@ -236,6 +238,14 @@ ui.popupmgr.addpopup("newboard", {
 
 	reset: function() {
 		ui.misc.displayByPid(this.pop);
+
+		if (ui.puzzle.klass.Bank.prototype.enabled) {
+			getEL("nb_piecebank").style.display = "";
+			this.loadpresets();
+		} else {
+			getEL("nb_piecebank").style.display = "none";
+		}
+
 		if (this.pid !== "tawa") {
 			return;
 		}
@@ -367,6 +377,7 @@ ui.popupmgr.addpopup("newboard", {
 	// clickshape() たわむれんがの形状指定ボタンを押した時の処理を行う
 	// setshapeidx() たわむれんがの形状指定ボタンに背景色を設定する
 	// getshapeidx() たわむれんがの形状指定ボタン背景色からインデックスを取得する
+	// loadpresets() Fill the dropdown with all possible Bank presets.
 	//---------------------------------------------------------------------------
 	setshape: function(shape) {
 		this.setshapeidx([0, 2, 3, 1][shape]);
@@ -392,6 +403,21 @@ ui.popupmgr.addpopup("newboard", {
 		}
 		return null;
 	},
+	loadpresets: function() {
+		var root = getEL("nb_piecebank_preset");
+		root.replaceChildren();
+
+		var presets = ui.puzzle.board.bank.presets;
+		for (var i = 0; i < presets.length; i++) {
+			if (!presets[i].constant) {
+				continue;
+			}
+			var option = document.createElement("option");
+			option.value = presets[i].shortkey;
+			option.textContent = ui.i18n(presets[i].name) || presets[i].name;
+			root.appendChild(option);
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// execute() 新規盤面を作成するボタンを押したときの処理を行う
@@ -416,6 +442,9 @@ ui.popupmgr.addpopup("newboard", {
 			var url = pid + "/" + obj.col + "/" + obj.row;
 			if (pid === "tawa") {
 				url += "/" + obj.shape;
+			}
+			if (ui.puzzle.klass.Bank.prototype.enabled) {
+				url += "///" + this.form.preset.value;
 			}
 			ui.puzzle.open(url);
 		}

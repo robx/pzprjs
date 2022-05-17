@@ -453,6 +453,9 @@ pzpr.classmgr.makeCommon({
 			var classes = this.klass;
 			this.operationlist = [
 				classes.ObjectOperation,
+				classes.BankEditOperation,
+				classes.BankReplaceOperation,
+				classes.BankPieceOperation,
 				classes.BoardClearOperation,
 				classes.BoardAdjustOperation,
 				classes.BoardFlipOperation,

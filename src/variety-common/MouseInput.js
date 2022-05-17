@@ -71,7 +71,7 @@ pzpr.classmgr.makeCommon({
 					this.inputData = cell.qsub !== 1 ? 2 : 0;
 				}
 			} else if (this.puzzle.getConfig("use") === 2) {
-				if (cell.numberRemainsUnshaded && cell.qnum !== -1) {
+				if (!cell.allowShade()) {
 					this.inputData = cell.qsub !== 1 ? 2 : 0;
 				} else if (this.btn === "left") {
 					if (cell.qans === 1) {

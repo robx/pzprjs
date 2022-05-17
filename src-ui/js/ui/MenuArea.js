@@ -313,21 +313,25 @@ ui.menuarea = {
 	//---------------------------------------------------------------------------
 	// submenuから呼び出される関数たち
 	undo: function() {
+		ui.auxeditor.close(true);
 		ui.undotimer.startUndo();
 	},
 	undostop: function() {
 		ui.undotimer.stopUndo();
 	},
 	undoall: function() {
+		ui.auxeditor.close(true);
 		ui.puzzle.undoall();
 	},
 	redo: function() {
+		ui.auxeditor.close(true);
 		ui.undotimer.startRedo();
 	},
 	redostop: function() {
 		ui.undotimer.stopRedo();
 	},
 	redoall: function() {
+		ui.auxeditor.close(true);
 		ui.puzzle.redoall();
 	},
 	enterTrial: function() {
@@ -339,12 +343,15 @@ ui.menuarea = {
 		ui.puzzle.enterTrial();
 	},
 	acceptTrial: function() {
+		ui.auxeditor.close(true);
 		ui.puzzle.acceptTrial();
 	},
 	rejectTrial: function() {
+		ui.auxeditor.close(true);
 		ui.puzzle.rejectTrial();
 	},
 	rejectCurrentTrial: function() {
+		ui.auxeditor.close(true);
 		ui.puzzle.rejectCurrentTrial();
 	},
 	toolarea: function() {
