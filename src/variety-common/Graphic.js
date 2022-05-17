@@ -2023,7 +2023,7 @@ pzpr.classmgr.makeCommon({
 				h = w;
 			}
 
-			if (this.board.bank && cursor.bankpiece !== null) {
+			if (typeof cursor.bankpiece === "number") {
 				var piece = this.board.bank.pieces[cursor.bankpiece];
 				if (cursor.bankpiece === this.board.bank.pieces.length) {
 					piece = this.board.bank.addButton;
