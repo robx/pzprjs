@@ -1,5 +1,5 @@
 /* jshint devel:true */
-/* global ui:false, getEL:readonly */
+/* global getEL:readonly */
 
 ui.popupmgr.addpopup("auxeditor", {
 	formname: "auxeditor",
