@@ -99,8 +99,8 @@ module.exports = function(grunt){
   grunt.registerTask('default', ['build']);
   grunt.registerTask('release', ['build']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);
-  grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
-  grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);
-  grunt.registerTask('build:variety',['newer:uglify:variety']);
-  grunt.registerTask('build:samples',['newer:uglify:samples']);
+  grunt.registerTask('build:pzpr',   ['concat:pzpr', 'uglify:pzpr']);
+  grunt.registerTask('build:ui',     ['copy:ui', 'concat:ui', 'uglify:ui']);
+  grunt.registerTask('build:variety',['uglify:variety']);
+  grunt.registerTask('build:samples',['uglify:samples']);
 };
