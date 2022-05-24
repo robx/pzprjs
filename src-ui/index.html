@@ -54,6 +54,60 @@ Currently, you can find
     <code>puzz.link/db</code>.</li>
 </ul>
 
+<h2>Recent changes</h2>
+
+<dl>
+<dt>2020-11-02</dt>
+<dd>Experimental service worker support.
+The desired effect is that loading new player links doesn't causes a server round-trip, and might even work offline.</dd>
+<dd>Disable direct puzzle linking from the puzzle index, to make it clear that this indexes puzzles and does not republish them.</dd>
+<dt>2020-10-28</dt>
+<dd>Disable direct puzzle linking from the puzzle index, to make it clear that this indexes puzzles and does not republish them.</dd>
+<dt>2020-10-27</dt>
+<dd>New puzzle types: <a href="/p.html?aqre">Aqre</a>, <a href="/p.html?interbd">International Borders</a>, <a href="/p.html?tapaloop">Tapa-Like Loop</a>, <a href="/p.html?toichika2">Toichika 2</a>.</dd>
+<dt>2020-08-30</dt>
+<dd>New puzzle types: <a href="/p.html?mines">Minesweeper</a>, <a href="/p.html?nikoji">NIKOJI</a>, <a href="/p.html?nonogram">Nonogram</a>.</dd>
+<dt>2020-05-02</dt>
+<dd>New puzzle types: <a href="/p.html?symmarea">Symmetry Area</a>, <a href="/p.html?detour">Detour</a>, <a href="/p.html?snake">Snake</a>.</dd>
+<dt>2020-04-18</dt>
+<dd>New puzzle type <a href="/p.html?tents">Tents</a>.</dd>
+<dt>2020-03-30</dt>
+<dd>
+  <ul><li>
+    puzzledb: Add <a href="/db/stats.html">stats page</a>
+    (including user solve counts when logged in)
+  </li><li>
+    pzprjs: Add experimental networked cooperative play (see File-&gt;Network play)
+  </li></ul>
+</dd>
+<dt>2020-03-19</dt>
+<dd>Update pzprjs applet:
+  <ul><li>
+    Thinner grid lines on high-DPI displays.
+  </li><li>
+    Fix alignment of Shakashaka triangles.
+  </li><li>
+    Reword several error messages. Particularly, replace "plural" by "more than one".
+  </li></ul>
+  If you run into issues, please <a href="#contact">get in touch</a>!
+</dd>
+<dt>2020-03-16</dt>
+<dd>Extend database login sessions automatically.</dd>
+<dt>2020-03-10</dt>
+<dd>Renban consecutive number check fix.</dd>
+<dt>2020-03-08</dt>
+<dd>Update pzprjs applet with tweaked line-dashing.</dd>
+<dt>2020-03-04</dt>
+<dd>Update pzprjs applet. Major changes:
+  <ul><li>
+    For shading puzzles, autocheck consistently only triggers when all cells are decided.
+    (And autocheck mode can be configured to be dumb instead.)
+  </li><li>
+    Change Cave and Nurimisaki back to be shading-first.
+  </li></ul>
+</dd>
+</dl>
+
 <h2>The pzprjs applet</h2>
 puzz.link hosts the <a href="https://github.com/robx/pzprjs">robx/pzprjs applet</a>,
 an improved fork of the applet that powers <a href="http://pzv.jp">pzv.jp</a>.
