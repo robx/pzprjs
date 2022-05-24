@@ -169,6 +169,20 @@ pentominous:
   2. A letter indicates the shape of the pentomino it's contained in. A pentomino may contain any number of identical letters.
 
 
+railpool:
+  Draw a loop that visits every cell.
+
+  1. The loop cannot branch off or cross itself.
+  
+  2. A line segment that overlaps a region must have a length indicated by one of the numbers in that region. For segments contained partially in the region, the number still refers to the total length of the segment.
+  
+  3. Each number must be represented at least once by a horizontal or vertical segment overlapping the region. Regions without numbers can have line segments of any lengths.
+  
+  4. A question mark can replace any number, as long as no number is repeated in that region.
+  
+  This genre is invented by Martin Ender a.k.a. Menderbug.
+
+
 rassi:
   Draw multiple lines through orthogonally adjacent cells.
 

@@ -290,6 +290,7 @@
     "circleShade.statuepark": "A white circle is shaded.",
     "circleUnshade.statuepark": "A black circle is not shaded.",
     "circNoLine.balance": "A circle has no line.",
+    "clueUnused.railpool": "Some of the region's numbers don't match with any segment's length.",
     "complete": "Complete!",
     "crConnSlNe.gokigen": "A number is not equal to count of lines that is connected to it.",
     "crShadeGt.creek": "The number of shaded cells around a number on crossing is big.",
@@ -597,6 +598,7 @@
     "segLong.geradeweg": "A segment is longer than a number.",
     "segShort.balance": "A segment is too short.",
     "segShort.geradeweg": "A segment is shorter than a number.",
+    "segUnclued.railpool": "The segment's length isn't in the region's set of numbers.",
     "segWhiteUneq.balance": "Segments through a white circle are different.",
     "shBranch.snake": "The snake branches off.",
     "shDiag.snake": "The snake touches itself diagonally.",
@@ -620,5 +622,7 @@
     "stopHalfway.roma": "A cell cannot reach a goal.",
     "tapaloopError.tapaloop": "The segments around a clue are not the same length as the numbers.",
     "tentAround.tents": "Some tents touch.",
+    "tooManyUnspecified.railpool": "The region contains more unspecified segment lengths than question marks.",
+    "tooFewUnspecified.railpool": "The region contains fewer unspecified segment lengths than question marks.",
     "unusedCell.pencils": "A cell is unused."
 }

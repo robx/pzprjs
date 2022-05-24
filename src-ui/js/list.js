@@ -371,7 +371,8 @@
 			"ovotovata",
 			"crossstitch",
 			"chainedb",
-			"canal"
+			"canal",
+			"railpool"
 		]
 	};
 	var tabstate = {

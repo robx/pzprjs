@@ -290,6 +290,7 @@
     "circleShade.statuepark": "白丸が黒マスになっています。",
     "circleUnshade.statuepark": "黒丸が黒マスになっていません。",
     "circNoLine.balance": "線が通っていない丸があります。",
+    "clueUnused.railpool": "Some of the region's numbers don't match with any segment's length.",
     "complete": "正解です！",
     "crConnSlNe.gokigen": "数字に繋がる線の数が間違っています。",
     "crShadeGt.creek": "数字のまわりにある黒マスの数が間違っています。",
@@ -597,6 +598,7 @@
     "segLong.geradeweg": "線の長さが数字より長いです。",
     "segShort.balance": "線の長さの和が数字より小さいです。",
     "segShort.geradeweg": "線の長さが数字より短いです。",
+    "segUnclued.railpool": "The segment's length isn't in the region's set of numbers.",
     "segWhiteUneq.balance": "白丸から線の端までの長さが異なっています。",
     "shBranch.snake": "スネークが分岐しています。",
     "shDiag.snake": "スネークが自分自身とタテヨコナナメに接しています。",
@@ -620,5 +622,7 @@
     "stopHalfway.roma": "ゴールにたどり着かないセルがあります。",
     "tapaloopError.tapaloop": "線の長さと数字が一致していません。",
     "tentAround.tents": "テント同士が接しています。",
+    "tooManyUnspecified.railpool": "The region contains more unspecified segment lengths than question marks.",
+    "tooFewUnspecified.railpool": "The region contains fewer unspecified segment lengths than question marks.",
     "unusedCell.pencils": "何も書かれていないマスがあります。"
 }
