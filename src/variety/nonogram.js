@@ -8,7 +8,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nonogram"], {
+})(["nonogram", "coral"], {
 	MouseEvent: {
 		use: true,
 		inputModes: { edit: ["number"], play: ["shade", "unshade"] },
@@ -49,6 +49,13 @@
 			} else {
 				this.inputqnum_main(excell);
 			}
+		}
+	},
+
+	"MouseEvent@coral": {
+		inputModes: {
+			edit: ["number", "clear", "info-blk"],
+			play: ["shade", "unshade", "info-blk"]
 		}
 	},
 
@@ -121,7 +128,7 @@
 						excell.setQnum(num);
 					}
 				}
-			} else if (ca === " " || ca === "-") {
+			} else if (ca === " " || ca === "-" || ca === "BS") {
 				excell.setQnum(-1);
 			} else {
 				return;
@@ -158,6 +165,7 @@
 	},
 
 	Board: {
+		hasborder: 1,
 		hasexcell: 1,
 		hasflush: 1,
 
@@ -209,8 +217,23 @@
 		}
 	},
 
+	"BoardExec@coral": {
+		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d, true);
+		}
+	},
+
+	"AreaUnshadeGraph@coral": {
+		enabled: true
+	},
+
+	"AreaShadeGraph@coral": {
+		enabled: true
+	},
+
 	Graphic: {
 		enablebcolor: true,
+		shadecolor: "#444444",
 
 		paint: function() {
 			this.drawBGCells();
@@ -222,8 +245,19 @@
 			this.drawNumbersExCell();
 
 			this.drawChassis(true);
+			this.drawBorders();
 
 			this.drawTarget();
+		},
+
+		getBorderColor: function(border) {
+			if (this.board.maxbx % 10 || this.board.maxby % 10) {
+				return null;
+			}
+
+			return border.bx % 10 === 0 || border.by % 10 === 0
+				? this.quescolor
+				: null;
 		},
 
 		getBoardCols: function() {
@@ -291,6 +325,8 @@
 	AnsCheck: {
 		checklist: ["checkNonogram"],
 
+		excellsInUnknownOrder: false,
+
 		checkNonogram: function() {
 			this.checkRowsCols(this.isExCellCount, "exNoMatch");
 		},
@@ -313,6 +349,15 @@
 			}
 
 			var lines = this.getLines(clist);
+
+			if (this.excellsInUnknownOrder) {
+				if (nums.length === 0) {
+					return true;
+				}
+
+				nums.sort();
+				lines.sort();
+			}
 
 			if (!this.puzzle.pzpr.util.sameArray(nums, lines)) {
 				clist.seterr(1);
@@ -338,6 +383,38 @@
 				lines.push(count);
 			}
 			return lines;
+		}
+	},
+
+	"AnsCheck@coral": {
+		checklist: [
+			"check2x2ShadeCell",
+			"checkConnectUnshadeOutside",
+			"checkNonogram",
+			"checkConnectShade"
+		],
+
+		excellsInUnknownOrder: true,
+
+		checkConnectUnshadeOutside: function() {
+			var bd = this.board;
+			for (var r = 0; r < bd.ublkmgr.components.length; r++) {
+				var clist = bd.ublkmgr.components[r].clist;
+				var d = clist.getRectSize();
+				if (
+					d.x1 === 1 ||
+					d.x2 === bd.maxbx - 1 ||
+					d.y1 === 1 ||
+					d.y2 === bd.maxby - 1
+				) {
+					continue;
+				}
+				this.failcode.add("cuConnOut");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
 		}
 	}
 });

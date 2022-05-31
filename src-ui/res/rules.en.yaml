@@ -54,6 +54,20 @@ chainedb:
   4. All blocks must be diagonally adjacent to at least one other block.
 
 
+coral:
+  Shade some cells on the board according to the numbers.
+
+  1. Clues outside the grid represent the lengths of each of the blocks of consecutive shaded cells in the corresponding row or column, not necessarily in order.
+  
+  2. Rows or columns without numbers can contain any amount of shaded cells.
+
+  3. All unshaded cells are connected through other unshaded cells to the outside of the grid.
+
+  4. The shaded cells cannot form a 2x2 square.
+
+  5. All shaded cells form an orthogonally contiguous area.
+
+
 crossstitch:
   Draw diagonal lines to make two loops.
 

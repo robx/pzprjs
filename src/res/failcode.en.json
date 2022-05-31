@@ -322,6 +322,7 @@
     "csWidthGt1.nuribou": "There is a mass of shaded cells whose width is more than two.",
     "cu2x2": "There is a 2x2 block of unshaded cells.",
     "cu3.aqre": "There are more than three unshaded cells in a row.",
+    "cuConnOut": "Some unshaded cells are not connected to the outside.",
     "cuDivide": "The unshaded cells are divided.",
     "cuDivideRB": "The unshaded cells are divided.",
     "cuLoop.nurimaze": "There is a looped unshaded cells.",

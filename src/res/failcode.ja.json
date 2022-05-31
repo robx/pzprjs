@@ -322,6 +322,7 @@
     "csWidthGt1.nuribou": "「幅１マス、長さ１マス以上」ではない黒マスのカタマリがあります。",
     "cu2x2": "2x2の白マスのカタマリがあります。",
     "cu3.aqre": "白マスが4マス連続しています。",
+    "cuConnOut": "Some unshaded cells are not connected to the outside.",
     "cuDivide": "白マスが分断されています。",
     "cuDivideRB": "白マスが分断されています。",
     "cuLoop.nurimaze": "白マスで輪っかができています。",

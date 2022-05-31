@@ -83,7 +83,8 @@
 		"tajmahal",
 		"statuepark",
 		"statuepark-aux",
-		"railpool"
+		"railpool",
+		"coral"
 	]);
 
 	(function(Genre, obj) {
@@ -137,14 +138,7 @@
 			arukone: [0, 0, "アルコネ", "Arukone", "numlin"],
 			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "ekawayeh", "heyawake"],
 			balance: [0, 0, "Balance Loop", "Balance Loop"],
-			cave: [
-				1,
-				0,
-				"バッグ",
-				"Cave",
-				"kurodoko",
-				{ alias: "bag", alias2: "corral", alias3: "correl" }
-			],
+			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
 			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
 			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			barns: [1, 0, "バーンズ", "Barns"],
@@ -168,6 +162,7 @@
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
 			compass: [0, 0, "Compass", "Compass", "compass"],
+			coral: [0, 0, "Coral", "Coral", "nonogram"],
 			country: [1, 0, "カントリーロード", "Country Road"],
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
