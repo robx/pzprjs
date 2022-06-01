@@ -1,278 +1,175 @@
-bdwalk:
-  You're given a top-down view of a building of unknown height. Grey cells represent elevators.
+bdwalk: "You're given a top-down view of a building of unknown height. Grey cells\
+  \ represent elevators.\n1. Draw a path from S to G that doesn't branch off or overlap\
+  \ itself at any cell.\n2. The path must visit every number and elevator.\n3. The\
+  \ path goes up one or more floors at an Up arrow, and goes down one or more floors\
+  \ at a Down arrow.\n4. The path must change floors at an elevator without an arrow,\
+  \ but this can be in either direction.\n5. A number indicates the floor that the\
+  \ path should be on when passing through it.\n6. At no point does the path go below\
+  \ the 1st floor.\nThis genre first appeared in Puzzle Communication Nikoli vol.\
+  \ 174."
+
+
+canal: "Shade some cells on the board.\n1. The number on a cell indicates how many\
+  \ cells are shaded in a continuous line starting from the cell. These lines are\
+  \ in the four cardinal directions (up, down, left, right).\n2. You cannot shade\
+  \ a cell with a number.\n3. The shaded cells cannot form a 2x2 square.\n4. All shaded\
+  \ cells form an orthogonally contiguous area.\nThis genre is invented by Prasanna\
+  \ Seshadri."
+
+
+cbanana: "Shade some cells on the board.\n1. A group of shaded cells must form a rectangle\
+  \ or square.\n2. A group of unshaded cells must not form a rectangle or square.\n\
+  3. A number indicates the size of the (shaded or unshaded) group that overlaps it.\
+  \ A group can contain one or more numbers, or none at all.\nThis genre first appeared\
+  \ in Puzzle Communication Nikoli vol. 176."
+
+
+chainedb: "Shade some cells on the board to form blocks of any shape.\n1. Each block\
+  \ must contain exactly one number or a question mark.\n2. A number indicates the\
+  \ size of the block that contains it.\n3. Diagonally adjacent blocks form a chain.\
+  \ A chain cannot contain two identically shaped blocks, counting rotations and reflections\
+  \ as the same.\n4. All blocks must be diagonally adjacent to at least one other\
+  \ block."
+
+
+coral: "Shade some cells on the board according to the numbers.\n1. Clues outside\
+  \ the grid represent the lengths of each of the blocks of consecutive shaded cells\
+  \ in the corresponding row or column, not necessarily in order.\n2. Rows or columns\
+  \ without numbers can contain any amount of shaded cells.\n3. All unshaded cells\
+  \ are connected through other unshaded cells to the outside of the grid.\n4. The\
+  \ shaded cells cannot form a 2x2 square.\n5. All shaded cells form an orthogonally\
+  \ contiguous area."
+
+
+crossstitch: "Draw diagonal lines to make two loops.\n1. A shaded cell is not part\
+  \ of any loop.\n2. Loops cannot branch off or cross themselves, but they can cross\
+  \ each other.\n3. Two cells where the loops intersect cannot be horizontally or\
+  \ vertically adjacent.\n4. A circled number indicates how many of that cell's corner\
+  \ points touch a loop.\n5. A number with an arrow indicates how many cells in that\
+  \ direction contain an intersection, up to the next shaded cell.\n6. A question\
+  \ mark can be replaced with any number except 0.\nThis genre is invented by Arvi\
+  \ Teikari a.k.a. Hempuli."
+
+
+dotchi: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The loop\
+  \ cannot branch off or cross itself.\n2. The loop goes through all unshaded circles.\n\
+  3. Within a region, all unshaded circles contain either a corner or a straight line.\n\
+  4. The loop cannot go through a shaded circle."
+
+
+hinge: "Shade some cells on the board.\n1. Each group of orthogonally connected cells\
+  \ is cut exactly once by a single straight segment of region borders, across which\
+  \ it must have reflectional symmetry.\n2. Numbered regions must contain the indicated\
+  \ amount of shaded cells."
+
+lapaz: "Shade some cells on the board, and divide the rest into regions of 2 cells.\n\
+  1. No two shaded cells are horizontally or vertically adjacent.\n2. Numbers must\
+  \ be contained in a 1x2 region. It's possible for a region to have multiple numbers.\n\
+  3. A clue in a horizontal region indicates the amount of shaded cells in the same\
+  \ row as the clue. Likewise, a clue in a vertical region indicates the amount of\
+  \ shaded cells in the same column.\nThis genre is invented by Shye."
+
+
+lohkous: "Draw lines over the dotted lines to divide the board into several blocks.\n\
+  1. Each block must contain exactly one square with one or more numbers on it.\n\
+  2. All lines must be used to divide two regions, there can not be any dead-ends.\n\
+  3. When dividing a block into horizontal segments, each segment must have a length\
+  \ specified by one of the clue numbers. The same applies when dividing the block\
+  \ into vertical segments.\n4. Each number must be represented at least once by a\
+  \ horizontal or vertical segment in the same block.\n5. A question mark can replace\
+  \ any number, as long as no number is repeated in that cell.\nThis genre is invented\
+  \ by Arvi Teikari a.k.a. Hempuli."
+
+
+oneroom: "You're given a board divided into rooms. Shade some cells on the board.\n\
+  1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number inside\
+  \ a room indicates how many cells inside the room are shaded.\n3. A room border\
+  \ between two unshaded cells forms a door. There can be no more than one door between\
+  \ any two rooms.\n4. All unshaded cells within a room form an orthogonally connected\
+  \ area. It's possible for a room to have no unshaded cells.\n5. All unshaded cells\
+  \ on the board from an orthogonally connected area.\nThis genre first appeared in\
+  \ Puzzle Communication Nikoli vol. 169."
+
+
+ovotovata: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
+  \ loop cannot branch off or cross itself.\n2. When the loop exits a numbered region\
+  \ in any direction, it must travel in a straight line for the indicated number of\
+  \ cells, and then turn. e.g. A number 1 means that the loop must turn immediately\
+  \ after leaving that region.\n3. A question mark can be replaced with any number.\n\
+  4. All shaded regions must be visited at least once.\nThis genre is invented by\
+  \ Eric Fox."
+
 
-  1. Draw a path from S to G that doesn't branch off or overlap itself at any cell.
-
-  2. The path must visit every number and elevator.
-
-  3. The path goes up one or more floors at an Up arrow, and goes down one or more floors at a Down arrow.
-
-  4. The path must change floors at an elevator without an arrow, but this can be in either direction.
-
-  5. A number indicates the floor that the path should be on when passing through it.
-
-  6. At no point does the path go below the 1st floor.
-
-  This genre first appeared in Puzzle Communication Nikoli vol. 174.
-
-
-canal:
-  Shade some cells on the board.
-
-  1. The number on a cell indicates how many cells are shaded in a continuous line starting from the cell. These lines are in the four cardinal directions (up, down, left, right).
-
-  2. You cannot shade a cell with a number.
-
-  3. The shaded cells cannot form a 2x2 square.
-
-  4. All shaded cells form an orthogonally contiguous area.
-
-  This genre is invented by Prasanna Seshadri.
-
-
-cbanana:
-  Shade some cells on the board.
-
-  1. A group of shaded cells must form a rectangle or square.
-
-  2. A group of unshaded cells must not form a rectangle or square.
-
-  3. A number indicates the size of the (shaded or unshaded) group that overlaps it. A group can contain one or more numbers, or none at all.
-
-  This genre first appeared in Puzzle Communication Nikoli vol. 176.
-
-
-chainedb:
-  Shade some cells on the board to form blocks of any shape.
-
-  1. Each block must contain exactly one number or a question mark.
-
-  2. A number indicates the size of the block that contains it.
-
-  3. Diagonally adjacent blocks form a chain. A chain cannot contain two identically shaped blocks, counting rotations and reflections as the same.
-
-  4. All blocks must be diagonally adjacent to at least one other block.
-
-
-coral:
-  Shade some cells on the board according to the numbers.
-
-  1. Clues outside the grid represent the lengths of each of the blocks of consecutive shaded cells in the corresponding row or column, not necessarily in order.
-  
-  2. Rows or columns without numbers can contain any amount of shaded cells.
-
-  3. All unshaded cells are connected through other unshaded cells to the outside of the grid.
-
-  4. The shaded cells cannot form a 2x2 square.
-
-  5. All shaded cells form an orthogonally contiguous area.
-
-
-crossstitch:
-  Draw diagonal lines to make two loops.
-
-  1. A shaded cell is not part of any loop.
-
-  2. Loops cannot branch off or cross themselves, but they can cross each other.
-
-  3. Two cells where the loops intersect cannot be horizontally or vertically adjacent.
-
-  4. A circled number indicates how many of that cell's corner points touch a loop.
-
-  5. A number with an arrow indicates how many cells in that direction contain an intersection, up to the next shaded cell.
-
-  6. A question mark can be replaced with any number except 0.
-
-  This genre is invented by Arvi Teikari a.k.a. Hempuli.
-
-
-dotchi:
-  Draw lines through orthogonally adjacent cells to form a loop.
-
-  1. The loop cannot branch off or cross itself.
-
-  2. The loop goes through all unshaded circles.
-
-  3. Within a region, all unshaded circles contain either a corner or a straight line.
-
-  4. The loop cannot go through a shaded circle.
-
-
-hinge:
-  Shade some cells on the board.
-
-  1. Each group of orthogonally connected cells is cut exactly once by a single straight segment of region borders, across which it must have reflectional symmetry.
-
-  2, Numbered regions must contain the indicated amount of shaded cells.
-
-lapaz:
-  Shade some cells on the board, and divide the rest into regions of 2 cells.
-
-  1. No two shaded cells are horizontally or vertically adjacent.
-
-  2. Numbers must be contained in a 1x2 region. It's possible for a region to have multiple numbers.
-
-  3. A clue in a horizontal region indicates the amount of shaded cells in the same row as the clue. Likewise, a clue in a vertical region indicates the amount of shaded cells in the same column.
-
-  This genre is invented by Shye.
-
-
-lohkous:
-  Draw lines over the dotted lines to divide the board into several blocks.
-
-  1. Each block must contain exactly one square with one or more numbers on it.
-
-  2. All lines must be used to divide two regions, there can not be any dead-ends.
-
-  3. When dividing a block into horizontal segments, each segment must have a length specified by one of the clue numbers. The same applies when dividing the block into vertical segments.
-
-  4. Each number must be represented at least once by a horizontal or vertical segment in the same block.
-
-  5. A question mark can replace any number, as long as no number is repeated in that cell.
-
-  This genre is invented by Arvi Teikari a.k.a. Hempuli.
-
-
-oneroom:
-  You're given a board divided into rooms. Shade some cells on the board.
-
-  1. Shaded cells cannot be horizontally or vertically adjacent.
-
-  2. A number inside a room indicates how many cells inside the room are shaded.
-
-  3. A room border between two unshaded cells forms a door. There can be no more than one door between any two rooms.
-
-  4. All unshaded cells within a room form an orthogonally connected area. It's possible for a room to have no unshaded cells.
-
-  5. All unshaded cells on the board from an orthogonally connected area.
-
-  This genre first appeared in Puzzle Communication Nikoli vol. 169.
-
-
-ovotovata:
-  Draw lines through orthogonally adjacent cells to form a loop.
-
-  1. The loop cannot branch off or cross itself.
-
-  2. When the loop exits a numbered region in any direction, it must travel in a straight line for the indicated number of cells, and then turn. e.g. A number 1 means that the loop must turn immediately after leaving that region.
-
-  3. A question mark can be replaced with any number.
-
-  4. All shaded regions must be visited at least once.
-
-  This genre is invented by Eric Fox.
-
-
-parquet:
-  You're given a grid divided into regions and tiles. Shade some tiles on the board.
-
-  1. A tile is either completely shaded or unshaded.
-
-  2. Within each thick-outlined region, exactly one tile is shaded.
-
-  3. All shaded cells form an orthogonally contiguous area.
-
-  4. Shaded cells cannot form a loop. This includes 2x2 squares.
-
-
-pentominous:
-  Divide the grid into pentominoes (regions of 5 cells). You can use each pentomino any number of times (including zero).
-
-  1. Two adjacent pentominoes cannot have the same shape, counting rotations and reflections as the same.
-
-  2. A letter indicates the shape of the pentomino it's contained in. A pentomino may contain any number of identical letters.
-
-
-railpool:
-  Draw a loop that visits every cell.
-
-  1. The loop cannot branch off or cross itself.
-  
-  2. A line segment that overlaps a region must have a length indicated by one of the numbers in that region. For segments contained partially in the region, the number still refers to the total length of the segment.
-  
-  3. Each number must be represented at least once by a horizontal or vertical segment overlapping the region. Regions without numbers can have line segments of any lengths.
-  
-  4. A question mark can replace any number, as long as no number is repeated in that region.
-  
-  This genre is invented by Martin Ender a.k.a. Menderbug.
-
-
-rassi:
-  Draw multiple lines through orthogonally adjacent cells.
-
-  1. Each region contains exactly one line covering all of the region's cells.
-
-  2. Lines cannot branch off or cross themselves.
-
-  3. Lines cannot form loops.
-
-  4. Lines cannot go across region borders or through shaded cells.
-
-  5. The endpoints of lines cannot be horizontally, vertically or diagonally adjacent.
-
-  This genre is invented by Prasanna Seshadri.
-
-
-statuepark:
-  Place every shape from the bank into the grid. Shapes can be rotated or mirrored.
-
-  1. All shapes must be used exactly once. There cannot be shapes in the grid that aren't present in the bank.
-
-  2. Two shapes cannot be orthogonally adjacent.
-
-  3. Black circles must overlap a shape, while white circles must not overlap a shape.
-
-  4. All cells not used by shapes must be connected.
-
-
-tajmahal:
-  Draw a square around each given circle.
-
-  1. All squares must have a circle in the center. The square's corners must be located on the grid points.
-
-  2. Two squares may not intersect or overlap, but they can touch at the corners.
-
-  3. Squares that share a corner are connected. All squares must form one connected group.
-
-  4. A number indicates the amount of squares that share a corner with this clue's square.
-
-
-tontti:
-  Draw horizontal and vertical lines from the points to divide the grid into regions. You can connect two points, or draw from a point to the outer border.
-
-  1. Cells can contain a straight line, a corner or a T-junction (or remain empty). There can not be any plus-shaped crossings or dead-end lines.
-
-  2. When two adjacent cells are directly connected by a line, the shapes inside the cells must be different.
-
-  3. Each region has exactly one numbered cell, or a question mark.
-
-  4. You cannot draw over numbered cells.
-
-  5. Each number indicates the amount of cells without lines inside that region, the numbered cell included. Cells don't need to be adjacent, as long as they are reachable without going through a wall.
-
-  This genre is invented by Arvi Teikari a.k.a. Hempuli.
-
-
-tren:
-  Place several 1x2 and 1x3 blocks on the board, which don't overlap each other.
-
-  1. Each number is contained in a block. Blocks must contain exactly one number.
-
-  2. Horizontally oriented blocks can slide left and right, while vertically oriented blocks can slide up and down. Blocks cannot move outside the grid or through other blocks.
-  
-  3. A number inside a block indicates how many spaces the block can move.
-
-
-voxas:
-  Draw lines over the dotted lines to divide the board into several areas. Some lines are given.
-
-  1. All areas must be rectangular in shape, and must be 2 or 3 cells in size.
-
-  2. Two rectangles divided by a white circle must have the same size and orientation.
-
-  3. Two rectangles divided by a grey circle must have the same size or the same orientation, but not both.
-
-  4. Two rectangles divided by a black circle must have different size and different orientation.
-
-  This genre is invented by Eric Fox.
+parquet: "You're given a grid divided into regions and tiles. Shade some tiles on\
+  \ the board.\n1. A tile is either completely shaded or unshaded.\n2. Within each\
+  \ thick-outlined region, exactly one tile is shaded.\n3. All shaded cells form an\
+  \ orthogonally contiguous area.\n4. Shaded cells cannot form a loop. This includes\
+  \ 2x2 squares."
+
+
+pentominous: "Divide the grid into pentominoes (regions of 5 cells). You can use each\
+  \ pentomino any number of times (including zero).\n1. Two adjacent pentominoes cannot\
+  \ have the same shape, counting rotations and reflections as the same.\n2. A letter\
+  \ indicates the shape of the pentomino it's contained in. A pentomino may contain\
+  \ any number of identical letters."
+
+
+railpool: "Draw a loop that visits every cell.\n1. The loop cannot branch off or cross\
+  \ itself.\n2. A line segment that overlaps a region must have a length indicated\
+  \ by one of the numbers in that region. For segments contained partially in the\
+  \ region, the number still refers to the total length of the segment.\n3. Each number\
+  \ must be represented at least once by a horizontal or vertical segment overlapping\
+  \ the region. Regions without numbers can have line segments of any lengths.\n4.\
+  \ A question mark can replace any number, as long as no number is repeated in that\
+  \ region.\nThis genre is invented by Martin Ender a.k.a. Menderbug."
+
+
+rassi: "Draw multiple lines through orthogonally adjacent cells.\n1. Each region contains\
+  \ exactly one line covering all of the region's cells.\n2. Lines cannot branch off\
+  \ or cross themselves.\n3. Lines cannot form loops.\n4. Lines cannot go across region\
+  \ borders or through shaded cells.\n5. The endpoints of lines cannot be horizontally,\
+  \ vertically or diagonally adjacent.\nThis genre is invented by Prasanna Seshadri."
+
+
+statuepark: "Place every shape from the bank into the grid. Shapes can be rotated\
+  \ or mirrored.\n1. All shapes must be used exactly once. There cannot be shapes\
+  \ in the grid that aren't present in the bank.\n2. Two shapes cannot be orthogonally\
+  \ adjacent.\n3. Black circles must overlap a shape, while white circles must not\
+  \ overlap a shape.\n4. All cells not used by shapes must be connected."
+
+
+tajmahal: "Draw a square around each given circle.\n1. All squares must have a circle\
+  \ in the center. The square's corners must be located on the grid points.\n2. Two\
+  \ squares may not intersect or overlap, but they can touch at the corners.\n3. Squares\
+  \ that share a corner are connected. All squares must form one connected group.\n\
+  4. A number indicates the amount of squares that share a corner with this clue's\
+  \ square."
+
+
+tontti: "Draw horizontal and vertical lines from the points to divide the grid into\
+  \ regions. You can connect two points, or draw from a point to the outer border.\n\
+  1. Cells can contain a straight line, a corner or a T-junction (or remain empty).\
+  \ There can not be any plus-shaped crossings or dead-end lines.\n2. When two adjacent\
+  \ cells are directly connected by a line, the shapes inside the cells must be different.\n\
+  3. Each region has exactly one numbered cell, or a question mark.\n4. You cannot\
+  \ draw over numbered cells.\n5. Each number indicates the amount of cells without\
+  \ lines inside that region, the numbered cell included. Cells don't need to be adjacent,\
+  \ as long as they are reachable without going through a wall.\nThis genre is invented\
+  \ by Arvi Teikari a.k.a. Hempuli."
+
+
+tren: "Place several 1x2 and 1x3 blocks on the board, which don't overlap each other.\n\
+  1. Each number is contained in a block. Blocks must contain exactly one number.\n\
+  2. Horizontally oriented blocks can slide left and right, while vertically oriented\
+  \ blocks can slide up and down. Blocks cannot move outside the grid or through other\
+  \ blocks.\n3. A number inside a block indicates how many spaces the block can move."
+
+
+voxas: "Draw lines over the dotted lines to divide the board into several areas. Some\
+  \ lines are given.\n1. All areas must be rectangular in shape, and must be 2 or\
+  \ 3 cells in size.\n2. Two rectangles divided by a white circle must have the same\
+  \ size and orientation.\n3. Two rectangles divided by a grey circle must have the\
+  \ same size or the same orientation, but not both.\n4. Two rectangles divided by\
+  \ a black circle must have different size and different orientation.\nThis genre\
+  \ is invented by Eric Fox."
 
