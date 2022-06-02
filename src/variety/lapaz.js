@@ -105,6 +105,13 @@
 		},
 		minnum: 0,
 
+		allowUnshade: function() {
+			return this.isValid();
+		},
+		allowShade: function() {
+			return this.isValid() && !this.isNum();
+		},
+
 		posthook: {
 			qans: function() {
 				this.rebuildAroundCell();
@@ -127,6 +134,8 @@
 		setValid: function(inputData) {
 			this.setQues(inputData);
 			this.setQnum(-1);
+			this.setQans(0);
+			this.setQsub(0);
 			for (var dir in this.adjborder) {
 				this.adjborder[dir].setQans(0);
 			}
