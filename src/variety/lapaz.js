@@ -13,7 +13,7 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["number", "clear"],
+			edit: ["number", "empty", "clear"],
 			play: ["border", "shade", "unshade"]
 		},
 
@@ -51,13 +51,48 @@
 			} else {
 				this.inputFixedQsub(1);
 			}
+		},
+
+		mouseinput_other: function() {
+			if (this.inputMode === "empty") {
+				this.inputempty();
+			}
+		},
+		inputempty: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = cell.isEmpty() ? 0 : 7;
+			}
+
+			cell.setValid(this.inputData);
+			this.mouseCell = cell;
 		}
 	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
-		enablemake: true
+		enablemake: true,
+
+		keyinput: function(ca) {
+			if (ca === "w") {
+				this.key_inputvalid(ca);
+			} else {
+				this.key_inputqnum(ca);
+			}
+		},
+		key_inputvalid: function(ca) {
+			if (ca === "w") {
+				var cell = this.cursor.getc();
+				if (!cell.isnull) {
+					cell.setValid(cell.ques !== 7 ? 7 : 0);
+				}
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -73,6 +108,11 @@
 		posthook: {
 			qans: function() {
 				this.rebuildAroundCell();
+			},
+			qnum: function(val) {
+				if (val !== -1) {
+					this.setQues(0);
+				}
 			}
 		},
 
@@ -82,9 +122,38 @@
 					t[1].updateGhostBorder();
 				}
 			});
+		},
+
+		setValid: function(inputData) {
+			this.setQues(inputData);
+			this.setQnum(-1);
+			for (var dir in this.adjborder) {
+				this.adjborder[dir].setQans(0);
+			}
+			this.drawaround();
+			this.board.roommgr.rebuild();
 		}
 	},
 	Border: {
+		isGrid: function() {
+			return this.sidecell[0].isValid() && this.sidecell[1].isValid();
+		},
+		isBorder: function() {
+			return this.qans > 0 || this.isQuesBorder();
+		},
+		isQuesBorder: function() {
+			return !!(this.sidecell[0].isEmpty() ^ this.sidecell[1].isEmpty());
+		},
+
+		prehook: {
+			qans: function() {
+				return !this.isGrid();
+			},
+			qsub: function() {
+				return !this.isGrid();
+			}
+		},
+
 		isCmp: function() {
 			return !!this.qcmp;
 		},
@@ -105,7 +174,7 @@
 		}
 	},
 	Board: {
-		hasborder: 1,
+		hasborder: 2,
 
 		cols: 8,
 		rows: 8,
@@ -141,17 +210,45 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 
-			this.drawDashedGrid();
+			this.drawValidDashedGrid();
 			this.drawBorders();
 
 			this.drawQuesNumbers();
 
-			this.drawChassis();
-
 			this.drawTarget();
 		},
 
+		drawValidDashedGrid: function() {
+			var g = this.vinc("grid_waritai", "crispEdges", true);
+
+			var dasharray = this.getDashArray();
+
+			g.lineWidth = 1;
+			g.strokeStyle = this.gridcolor;
+
+			var blist = this.range.borders;
+			for (var n = 0; n < blist.length; n++) {
+				var border = blist[n];
+				g.vid = "b_grid_wari_" + border.id;
+				if (border.isGrid()) {
+					var px = border.bx * this.bw,
+						py = border.by * this.bh;
+					if (border.isVert()) {
+						g.strokeDashedLine(px, py - this.bh, px, py + this.bh, dasharray);
+					} else {
+						g.strokeDashedLine(px - this.bw, py, px + this.bw, py, dasharray);
+					}
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
 		getBorderColor: function(border) {
+			if (border.isQuesBorder()) {
+				return this.quescolor;
+			}
+
 			if (!border.isBorder() && border.isCmp() && border.trial) {
 				return this.trialcolor;
 			}
@@ -165,9 +262,11 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
+			this.decodeEmpty();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16();
+			this.encodeEmpty();
 		}
 	},
 	//---------------------------------------------------------
@@ -181,6 +280,30 @@
 			this.encodeCellQnum();
 			this.encodeBorderAns();
 			this.encodeCellAns();
+		},
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "# ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else {
+					return ". ";
+				}
+			});
 		}
 	},
 
@@ -225,7 +348,13 @@
 		},
 
 		checkShadeCounts: function() {
-			this.checkRowsCols(this.isRowCount, "nmShadeNe");
+			this.checkRowsColsPartly(
+				this.isRowCount,
+				function(cell) {
+					return cell.isEmpty();
+				},
+				"nmShadeNe"
+			);
 		},
 
 		isRowCount: function(clist) {

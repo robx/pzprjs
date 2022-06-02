@@ -48,7 +48,8 @@ pzpr.variety.each(function(pid) {
 								pid !== "icelom2" &&
 								pid !== "mejilink" &&
 								pid !== "yajitatami" &&
-								pid !== "doubleback"
+								pid !== "doubleback" &&
+								pid !== "lapaz"
 							) {
 								assert_equal_board(bd, bd2);
 							}

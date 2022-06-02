@@ -271,6 +271,7 @@
 				if (
 					bd.hasborder === 1 ||
 					puzzle.pid === "bosanowa" ||
+					puzzle.pid === "lapaz" ||
 					(puzzle.pid === "fourcells" && this.filever === 0)
 				) {
 					this.decodeObj(
@@ -352,7 +353,11 @@
 			encodeBorder: function(func) {
 				var puzzle = this.puzzle,
 					bd = puzzle.board;
-				if (bd.hasborder === 1 || puzzle.pid === "bosanowa") {
+				if (
+					bd.hasborder === 1 ||
+					puzzle.pid === "bosanowa" ||
+					puzzle.pid === "lapaz"
+				) {
 					this.encodeObj(
 						func,
 						"border",
