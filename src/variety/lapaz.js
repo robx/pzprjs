@@ -40,6 +40,11 @@
 		},
 
 		inputdragcross: function() {
+			var cell = this.getcell();
+			if (cell.isnull || !cell.allowUnshade()) {
+				return;
+			}
+
 			if (this.firstPoint.bx === null) {
 				this.firstPoint.set(this.inputPoint);
 			} else if (this.inputData === null) {
