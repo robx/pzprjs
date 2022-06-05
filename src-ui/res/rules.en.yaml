@@ -173,3 +173,15 @@ voxas: "Draw lines over the dotted lines to divide the board into several areas.
   \ a black circle must have different size and different orientation.\nThis genre\
   \ is invented by Eric Fox."
 
+nuriuzu: "Shade some cells on the board.\n1. The unshaded areas must form blocks with\
+  \ exactly one star. You cannot shade a cell overlapping a star.\n2. Unshaded areas\
+  \ must be rotationally symmetric, with a star at the center.\n3. There cannot be\
+  \ a 2x2 square of all shaded or unshaded cells."
+nothree: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
+  \ vertically adjacent.\n2. A circle overlaps exactly one shaded cell.\n3. Three\
+  \ consecutive shaded cells in a row/column must have different distances.\n4. All\
+  \ unshaded cells on the board from an orthogonally connected area."
+coffeemilk: "Draw lines between the circles to form groups.\n1. Lines must be horizontal\
+  \ or vertical, and cannot turn.\n2. Lines cannot cross each other.\n3. Each group\
+  \ of circles must contain exactly one gray circle, and an equal amount of white\
+  \ and black circles.\n4. A black circle and a white circle cannot be connected directly."
