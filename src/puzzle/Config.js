@@ -101,6 +101,10 @@
 				variant: true,
 				volatile: true
 			}); /* tren: Rule variation for connecting unused cells */
+			this.add("nuriuzu_connect", false, {
+				variant: true,
+				volatile: true
+			}); /* nuriuzu: Rule variation for shaded connectivity */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -398,6 +402,9 @@
 					break;
 				case "tren_new":
 					exec = pid === "tren";
+					break;
+				case "nuriuzu_connect":
+					exec = pid === "nuriuzu";
 					break;
 				default:
 					exec = !!this.list[name];

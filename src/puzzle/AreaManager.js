@@ -160,6 +160,9 @@ pzpr.classmgr.makeCommon({
 
 	"AreaUnshadeGraph:AreaGraphBase": {
 		relation: { "cell.qans": "node" },
+		getComponentRefs: function(obj) {
+			return obj.ublk;
+		},
 		setComponentRefs: function(obj, component) {
 			obj.ublk = component;
 		},

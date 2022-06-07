@@ -40,6 +40,7 @@
     "bdIgnoreBP.kramma": "黒点上を線が通過していません。",
     "bdNotChassis.shwolf": "外枠につながっていない線があります。",
     "bdPassStar.tentaisho": "星を線が通過しています。",
+    "bdPassStar.nuriuzu": "A star overlaps a shaded cell.",
     "bdUnused.lohkous": "使われていない線があります。",
     "bdUnused.tren": "余分な線があります。",
     "bdVoxasBlack": "黒丸をはさんだ長方形の大きさまたは向きが同じです。",

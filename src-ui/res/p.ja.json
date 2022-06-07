@@ -176,6 +176,7 @@
     "country_empty": "線が全く通らない国があっても正解とする",
     "voxas_tatami": "タタミルール(境界の十字交差禁止)",
     "tren_new": "白マスひとつながりルールを追加",
+    "nuriuzu_connect": "All shaded cells must be connected",
     "variant": "変種ルール",
     "time": "経過時間：",
     "check": "チェック",

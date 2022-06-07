@@ -105,6 +105,9 @@
 				case "tren":
 					idname = "tren_new";
 					break;
+				case "nuriuzu":
+					idname = "nuriuzu_connect";
+					break;
 			}
 			if (!!idname) {
 				this.set(idname, ui.puzzle.getConfig(idname));

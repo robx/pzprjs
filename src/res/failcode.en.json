@@ -40,6 +40,7 @@
     "bdIgnoreBP.kramma": "A point has no line.",
     "bdNotChassis.shwolf": "A line doesn't connect to the chassis.",
     "bdPassStar.tentaisho": "A line goes over a star.",
+    "bdPassStar.nuriuzu": "A star overlaps a shaded cell.",
     "bdUnused.lohkous": "There is an unused border.",
     "bdUnused.tren": "A border is not adjacent to a block.",
     "bdVoxasBlack": "Two areas separated by a black dot have the same size or the same orientation.",
