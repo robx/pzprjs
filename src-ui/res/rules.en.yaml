@@ -185,3 +185,10 @@ coffeemilk: "Draw lines between the circles to form groups.\n1. Lines must be ho
   \ or vertical, and cannot turn.\n2. Lines cannot cross each other.\n3. Each group\
   \ of circles must contain exactly one gray circle, and an equal amount of white\
   \ and black circles.\n4. A black circle and a white circle cannot be connected directly."
+ququ: "Shade some triangles on the board.\n1. Triangles with numbers or question marks\
+  \ cannot be shaded.\n2. Unshaded triangles which share an edge form regions. Each\
+  \ region contains exactly one number or a question mark.\n3. A number indicates\
+  \ how many triangles are contained in its region.\n4. Shaded triangles which share\
+  \ an edge form blocks. Two blocks which touch each other at the corners must have\
+  \ different shapes, counting rotations and reflections as the same.\nThis genre\
+  \ first appeared in Puzzle Communication Nikoli vol. 171."
