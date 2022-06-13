@@ -235,6 +235,8 @@
 			// pc.resizeCanvasByCellSize() セルのサイズを指定してキャンバスのサイズを変える
 			//                             (指定なしの場合は、前のセルのサイズを用いる)
 			//---------------------------------------------------------------------------
+			cellexpandratio: 1.0,
+
 			resizeCanvas: function(cwid, chgt) {
 				var insuspend = this.suspended;
 				this.suspendAll();
@@ -247,12 +249,14 @@
 					this.unsuspend();
 				}
 			},
-			resizeCanvasByCellSize: function(cellsize) {
+			resizeCanvasByCellSize: function(cellsize, absolute) {
 				var insuspend = this.suspended;
 				this.suspendAll();
 
-				this.cw = cellsize || this.cw;
-				this.ch = cellsize || this.ch;
+				if (cellsize) {
+					this.cw = cellsize * (absolute ? 1 : this.cellexpandratio);
+					this.ch = cellsize * (absolute ? 1 : this.cellexpandratio);
+				}
 				this.canvasWidth = this.cw * this.getCanvasCols();
 				this.canvasHeight = this.ch * this.getCanvasRows();
 

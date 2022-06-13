@@ -418,22 +418,7 @@
 			}
 		},
 
-		resizeCanvasByCellSize: function(cellsize) {
-			var insuspend = this.suspended;
-			this.suspendAll();
-
-			if (cellsize) {
-				this.cw = cellsize * 1.5;
-				this.ch = cellsize * 1.5;
-			}
-			this.canvasWidth = this.cw * this.getCanvasCols();
-			this.canvasHeight = this.ch * this.getCanvasRows();
-
-			this.pendingResize = true;
-			if (!insuspend) {
-				this.unsuspend();
-			}
-		},
+		cellexpandratio: 1.5,
 
 		getBoardCols: function() {
 			var bd = this.board;

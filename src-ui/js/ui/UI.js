@@ -102,7 +102,7 @@ window.ui = {
 		var uiconf = ui.menuconfig;
 
 		var cellsize,
-			cellsizeval = uiconf.get("cellsizeval");
+			cellsizeval = uiconf.get("cellsizeval") * pc.cellexpandratio;
 		var cr = { base: 1.0, limit: 0.4 },
 			ws = { base: 0.8, limit: 0.96 },
 			ci = [];
@@ -144,7 +144,7 @@ window.ui = {
 			}
 		}
 
-		puzzle.setCanvasSizeByCellSize(cellsize);
+		puzzle.setCanvasSizeByCellSize(cellsize, true);
 	},
 	getBoardPadding: function() {
 		var puzzle = ui.puzzle,

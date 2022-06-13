@@ -150,11 +150,12 @@
 				this.preInitCanvasInfo.height = height;
 			}
 		},
-		setCanvasSizeByCellSize: function(cellsize) {
+		setCanvasSizeByCellSize: function(cellsize, absolute) {
 			if (!this.preInitCanvasInfo) {
-				this.painter.resizeCanvasByCellSize(cellsize);
+				this.painter.resizeCanvasByCellSize(cellsize, absolute);
 			} else {
-				this.preInitCanvasInfo.cellsize = cellsize;
+				this.preInitCanvasInfo.cellsize =
+					cellsize * (absolute ? 1 : this.painter.cellexpandratio);
 			}
 		},
 
@@ -525,7 +526,7 @@
 				if (!!opt.width && !!opt.height) {
 					pc.resizeCanvas(opt.width, opt.height);
 				} else if (!!opt.cellsize) {
-					pc.resizeCanvasByCellSize(opt.cellsize);
+					pc.resizeCanvasByCellSize(opt.cellsize, true);
 				}
 			}
 			delete puzzle.preInitCanvasInfo;
