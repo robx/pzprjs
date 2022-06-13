@@ -197,6 +197,9 @@ pzpr.classmgr.makeCommon({
 			var subtype = 0; // qsubを0～いくつまで入力可能かの設定
 			if (puzzle.editmode) {
 				subtype = -1;
+				if (this.puzzle.painter.enablebcolor) {
+					qs = 0;
+				}
 			} else if (this.cursor.targetdir >= 2) {
 				subtype = 0;
 				qs = 0;
