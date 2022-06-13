@@ -85,7 +85,8 @@
 		"statuepark-aux",
 		"railpool",
 		"coral",
-		"nuriuzu"
+		"nuriuzu",
+		"ququ"
 	]);
 
 	(function(Genre, obj) {
@@ -305,6 +306,7 @@
 				"pipelink"
 			],
 			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
+			ququ: [0, 0, "区区", "Ququ"],
 			railpool: [0, 0, "Rail Pool", "Rail Pool"],
 			rassi: [0, 0, "Rassi Silai", "Rassi Silai", "country"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],

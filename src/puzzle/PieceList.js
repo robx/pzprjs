@@ -293,17 +293,19 @@ pzpr.classmgr.makeCommon({
 
 			var bd = this.board;
 			var d = this.getRectSize();
+			var dx = d.x2 - d.x1 === d.cols - 1 ? 1 : 2;
+			var dy = d.y2 - d.y1 === d.rows - 1 ? 1 : 2;
 			var data = [[], [], [], [], [], [], [], []];
 			var shapes = [];
 
-			for (var by = 0; by < 2 * d.rows; by += 2) {
-				for (var bx = 0; bx < 2 * d.cols; bx += 2) {
+			for (var by = 0; by <= d.y2 - d.y1; by += dy) {
+				for (var bx = 0; bx <= d.x2 - d.x1; bx += dx) {
 					data[0].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
 					data[1].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
 				}
 			}
-			for (var bx = 0; bx < 2 * d.cols; bx += 2) {
-				for (var by = 0; by < 2 * d.rows; by += 2) {
+			for (var bx = 0; bx <= d.x2 - d.x1; bx += dx) {
+				for (var by = 0; by <= d.y2 - d.y1; by += dy) {
 					data[4].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
 					data[5].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
 				}
