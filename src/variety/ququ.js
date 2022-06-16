@@ -344,6 +344,19 @@
 			this.drawCursor(false, this.puzzle.editmode);
 		},
 
+		flushCanvas: function() {
+			var g = this.vinc("background", "crispEdges", true);
+			var bw = this.bw,
+				bh = this.bh;
+			var bd = this.board;
+			var bwidth = (bd.maxbx + 1) * (2 / 3);
+			var bheight = (bd.maxby + 1) * (2 / 3);
+
+			g.vid = "BG";
+			g.fillStyle = this.bgcolor;
+			g.fillRect(-0.5, -0.5, bwidth * bw + 1, bheight * bh + 1);
+		},
+
 		getCellCenter: function(bx, by) {
 			var x = (bx + 0.5) * (2 / 3);
 			var y = (by + 0.5) * (2 / 3);
