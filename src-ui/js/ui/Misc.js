@@ -114,6 +114,7 @@ function toBGimage(pid) {
 		"castle",
 		"cbanana",
 		"chainedb",
+		"coffeemilk",
 		"compass",
 		"coral",
 		"curvedata",
