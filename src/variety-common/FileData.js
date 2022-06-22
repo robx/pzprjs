@@ -529,6 +529,35 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//---------------------------------------------------------------------------
+		// fio.decodeQnums() Decode cells with qnums list
+		// fio.encodeQnums() Encode cells with qnums list
+		//---------------------------------------------------------------------------
+		decodeQnums: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca !== ".") {
+					cell.qnums = [];
+					var array = ca.split(/,/);
+					for (var i = 0; i < array.length; i++) {
+						cell.qnums.push(array[i] !== "-" ? +array[i] : -2);
+					}
+				}
+			});
+		},
+		encodeQnums: function() {
+			this.encodeCell(function(cell) {
+				if (cell.qnums.length > 0) {
+					var array = [];
+					for (var i = 0; i < cell.qnums.length; i++) {
+						array.push(cell.qnums[i] >= 0 ? "" + cell.qnums[i] : "-");
+					}
+					return array.join(",") + " ";
+				} else {
+					return ". ";
+				}
+			});
+		},
+
+		//---------------------------------------------------------------------------
 		// fio.decodePieceBank() Decode piece bank preset/custom
 		// fio.encodePieceBank() Encode piece bank preset/custom
 		//---------------------------------------------------------------------------

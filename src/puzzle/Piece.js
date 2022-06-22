@@ -23,6 +23,7 @@ pzpr.classmgr.makeCommon({
 		qnum2: -1, // cell  :(カックロの下側/よせなべの丸無し数字)
 		qnum3: -1,
 		qnum4: -1,
+		qnums: [],
 
 		qchar: 0, // excell:キンコンカンの文字
 
@@ -43,7 +44,7 @@ pzpr.classmgr.makeCommon({
 		qinfo: 0,
 		trial: 0, // TrialModeのstateを保持する変数
 
-		propques: ["ques", "qdir", "qnum", "qnum2", "qchar"],
+		propques: ["ques", "qdir", "qnum", "qnum2", "qchar", "qnums"],
 		propans: ["qans", "anum", "line", "trial"],
 		propsub: ["qsub", "qcmp", "snum"],
 		propinfo: ["error", "qinfo"],
@@ -110,6 +111,13 @@ pzpr.classmgr.makeCommon({
 		setSnum: function(val) {
 			this.setdata("snum", val);
 		},
+		distinctQnums: false,
+		isValidQnums: function(val) {
+			return val.length <= 4;
+		},
+		setQnums: function(val) {
+			this.setdata("qnums", val);
+		},
 
 		setQnumDir: function(dir, val) {
 			switch (dir) {
@@ -146,7 +154,11 @@ pzpr.classmgr.makeCommon({
 		// addOpe()  履歴情報にプロパティの変更を通知する
 		//---------------------------------------------------------------------------
 		setdata: function(prop, num, force) {
-			if (this[prop] === num) {
+			if (
+				prop === "qnums"
+					? this.puzzle.pzpr.util.sameArray(this[prop], num)
+					: this[prop] === num
+			) {
 				return;
 			}
 			if (!!this.prehook[prop]) {
@@ -172,12 +184,19 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		addOpe: function(property, old, num) {
-			if (old === num) {
-				return;
+			if (property === "qnums") {
+				if (this.puzzle.pzpr.util.sameArray(old, num)) {
+					return;
+				}
+				this.puzzle.opemgr.add(new this.klass.ObjectOperation2(this, old, num));
+			} else {
+				if (old === num) {
+					return;
+				}
+				this.puzzle.opemgr.add(
+					new this.klass.ObjectOperation(this, property, old, num)
+				);
 			}
-			this.puzzle.opemgr.add(
-				new this.klass.ObjectOperation(this, property, old, num)
-			);
 		},
 
 		//---------------------------------------------------------------------------
@@ -223,7 +242,11 @@ pzpr.classmgr.makeCommon({
 			var proplist = this.getproplist(["ques", "ans", "sub"]);
 			for (var i = 0; i < proplist.length; i++) {
 				var a = proplist[i];
-				if (props[a] !== this[a]) {
+				if (
+					a === "qnums"
+						? !this.puzzle.pzpr.util.sameArray(props[a], this[a])
+						: props[a] !== this[a]
+				) {
 					callback(this.group, this.id, a);
 				}
 			}

@@ -67,49 +67,7 @@
 		enablemake: true,
 
 		keyinput: function(ca) {
-			this.key_inputqnum_railpool(ca);
-		},
-		// taken from lohkous
-		key_inputqnum_railpool: function(ca) {
-			var cell = this.cursor.getc(),
-				nums = cell.qnums,
-				val = [];
-
-			if (("1" <= ca && ca <= "9") || ca === "-") {
-				var num = ca !== "-" ? +ca : -2;
-				var clear = false;
-				if (this.prev === cell) {
-					for (var i = 0; i < nums.length; i++) {
-						if (num === -2 || num !== nums[i]) {
-							val.push(nums[i]);
-						} else {
-							clear = true;
-						}
-					}
-				}
-				if (!clear) {
-					if (nums.length < 4) {
-						val.push(num);
-					} else {
-						val = [num];
-					}
-				}
-			} else if (ca === "BS") {
-				if (nums.length > 1) {
-					for (var i = 0; i < nums.length - 1; i++) {
-						val.push(nums[i]);
-					}
-				}
-			} else if (ca === " ") {
-				val = [];
-			} else {
-				return;
-			}
-
-			cell.setNums(val);
-
-			this.prev = cell;
-			cell.draw();
+			this.key_inputqnums(ca);
 		}
 	},
 
@@ -117,27 +75,9 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
-		qnums: [],
+		distinctQnums: true,
 		noLP: function(dir) {
 			return this.isEmpty();
-		},
-		setNums: function(val) {
-			this.setQnums(val);
-			this.setQans(0);
-			this.setQsub(0);
-		},
-		setQnums: function(val) {
-			if (this.puzzle.pzpr.util.sameArray(this.qnums, val)) {
-				return;
-			}
-			this.addOpeQnums(this.qnums, val);
-			this.qnums = val;
-		},
-		addOpeQnums: function(old, val) {
-			if (this.puzzle.pzpr.util.sameArray(old, val)) {
-				return;
-			}
-			this.puzzle.opemgr.add(new this.klass.ObjectOperation2(this, old, val));
 		},
 		// this was taken from geradeweg.js
 		getSegment: function(horiz) {
@@ -184,19 +124,6 @@
 		}
 	},
 	CellList: {
-		allclear: function(isrec) {
-			this.common.allclear.call(this, isrec);
-
-			for (var i = 0; i < this.length; i++) {
-				var cell = this[i];
-				if (cell.qnums.length > 0) {
-					if (isrec) {
-						cell.addOpeQnums(cell.qnums, []);
-					}
-					cell.qnums = [];
-				}
-			}
-		},
 		getClueSet: function() {
 			var result = [];
 			for (var i = 0; i < this.length; i++) {
@@ -227,83 +154,6 @@
 				}
 			}
 			return result;
-		}
-	},
-	"ObjectOperation2:Operation": {
-		setData: function(cell, old, val) {
-			this.bx = cell.bx;
-			this.by = cell.by;
-			this.old = old;
-			this.val = val;
-			this.property = "qnums";
-		},
-		decode: function(strs) {
-			if (strs.shift() !== "CR") {
-				return false;
-			}
-			this.bx = +strs.shift();
-			this.by = +strs.shift();
-			var str = strs.join(",");
-			var strs2 = str.substr(1, str.length - 2).split(/\],\[/);
-			if (strs2[0].length === 0) {
-				this.old = [];
-			} else {
-				this.old = strs2[0].split(/,/);
-				for (var i = 0; i < this.old.length; i++) {
-					this.old[i] = +this.old[i];
-				}
-			}
-			if (strs2[1].length === 0) {
-				this.val = [];
-			} else {
-				this.val = strs2[1].split(/,/);
-				for (var i = 0; i < this.val.length; i++) {
-					this.val[i] = +this.val[i];
-				}
-			}
-			return true;
-		},
-		toString: function() {
-			return [
-				"CR",
-				this.bx,
-				this.by,
-				"[" + this.old.join(",") + "]",
-				"[" + this.val.join(",") + "]"
-			].join(",");
-		},
-
-		isModify: function(lastope) {
-			// 前回と同じ場所なら前回の更新のみ
-			if (
-				lastope.property === this.property &&
-				lastope.bx === this.bx &&
-				lastope.by === this.by &&
-				this.puzzle.pzpr.util.sameArray(lastope.val, this.old)
-			) {
-				lastope.val = this.val;
-				return true;
-			}
-			return false;
-		},
-
-		undo: function() {
-			this.exec(this.old);
-		},
-		redo: function() {
-			this.exec(this.val);
-		},
-		exec: function(val) {
-			var puzzle = this.puzzle,
-				cell = puzzle.board.getc(this.bx, this.by);
-			cell.setQnums(val);
-			cell.draw();
-			puzzle.checker.resetCache();
-		}
-	},
-	OperationManager: {
-		addExtraOperation: function() {
-			this.operationlist.push(this.klass.ObjectOperation2);
 		}
 	},
 
@@ -471,41 +321,16 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			this.decodeQnums_railpool();
+			this.decodeQnums();
 			this.decodeEmpty();
 			this.decodeAreaRoom();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
-			this.encodeQnums_railpool();
+			this.encodeQnums();
 			this.encodeEmpty();
 			this.encodeAreaRoom();
 			this.encodeBorderLine();
-		},
-		// from tapaloop.js
-		decodeQnums_railpool: function() {
-			this.decodeCell(function(cell, ca) {
-				if (ca !== ".") {
-					cell.qnums = [];
-					var array = ca.split(/,/);
-					for (var i = 0; i < array.length; i++) {
-						cell.qnums.push(array[i] !== "-" ? +array[i] : -2);
-					}
-				}
-			});
-		},
-		encodeQnums_railpool: function() {
-			this.encodeCell(function(cell) {
-				if (cell.qnums.length > 0) {
-					var array = [];
-					for (var i = 0; i < cell.qnums.length; i++) {
-						array.push(cell.qnums[i] >= 0 ? "" + cell.qnums[i] : "-");
-					}
-					return array.join(",") + " ";
-				} else {
-					return ". ";
-				}
-			});
 		},
 		// from country.js
 		decodeEmpty: function() {

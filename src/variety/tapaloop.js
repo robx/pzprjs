@@ -46,81 +46,30 @@
 		enablemake: true,
 
 		keyinput: function(ca) {
-			this.key_inputqnum_tapaloop(ca);
-		},
-		key_inputqnum_tapaloop: function(ca) {
-			var cell = this.cursor.getc(),
-				nums = cell.qnums,
-				val = [];
-
-			if (("0" <= ca && ca <= "8") || ca === "-") {
-				var num = ca !== "-" ? +ca : -2;
-				if (this.prev === cell && nums.length <= 3) {
-					for (var i = 0; i < nums.length; i++) {
-						val.push(nums[i]);
-					}
-				}
-				val.push(num);
-				if (val.length > 1) {
-					var sum = 0;
-					for (var i = 0; i < val.length; i++) {
-						sum += val[i] >= 0 ? val[i] : 1;
-					}
-					if (sum > 8) {
-						val = [num];
-					} else {
-						for (var i = 0; i < val.length; i++) {
-							if (val[i] === 0) {
-								val = [num];
-								break;
-							}
-						}
-					}
-				}
-			} else if (ca === "BS") {
-				if (nums.length > 1) {
-					for (var i = 0; i < nums.length - 1; i++) {
-						val.push(nums[i]);
-					}
-				}
-			} else if (ca === " ") {
-				val = [];
-			} else {
-				return;
-			}
-
-			cell.setNums(val);
-
-			this.prev = cell;
-			cell.draw();
+			this.key_inputqnums(ca);
 		}
 	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
-		qnums: [],
+		minnum: 0,
+		maxnum: 8,
 		noLP: function(dir) {
 			return this.qnums.length === 0 ? false : true;
 		},
-		setNums: function(val) {
-			this.setQnums(val);
-			this.setQans(0);
-			this.setQsub(0);
-		},
-		setQnums: function(val) {
-			if (this.puzzle.pzpr.util.sameArray(this.qnums, val)) {
-				return;
+
+		isValidQnums: function(val) {
+			var sum = 0;
+			for (var i = 0; i < val.length; i++) {
+				if (val[i] === 0) {
+					return false;
+				}
+				sum += val[i] >= 0 ? val[i] : 1;
 			}
-			this.addOpeQnums(this.qnums, val);
-			this.qnums = val;
+			return sum <= 8;
 		},
-		addOpeQnums: function(old, val) {
-			if (this.puzzle.pzpr.util.sameArray(old, val)) {
-				return;
-			}
-			this.puzzle.opemgr.add(new this.klass.ObjectOperation2(this, old, val));
-		},
+
 		getSegmentLengths: function() {
 			var segs = [];
 			var current = 0;
@@ -175,99 +124,7 @@
 			return segs;
 		}
 	},
-	CellList: {
-		allclear: function(isrec) {
-			this.common.allclear.call(this, isrec);
 
-			for (var i = 0; i < this.length; i++) {
-				var cell = this[i];
-				if (cell.qnums.length > 0) {
-					if (isrec) {
-						cell.addOpeQnums(cell.qnums, []);
-					}
-					cell.qnums = [];
-				}
-			}
-		}
-	},
-	"ObjectOperation2:Operation": {
-		setData: function(cell, old, val) {
-			this.bx = cell.bx;
-			this.by = cell.by;
-			this.old = old;
-			this.val = val;
-			this.property = "qnums";
-		},
-		decode: function(strs) {
-			if (strs.shift() !== "CR") {
-				return false;
-			}
-			this.bx = +strs.shift();
-			this.by = +strs.shift();
-			var str = strs.join(",");
-			var strs2 = str.substr(1, str.length - 2).split(/\],\[/);
-			if (strs2[0].length === 0) {
-				this.old = [];
-			} else {
-				this.old = strs2[0].split(/,/);
-				for (var i = 0; i < this.old.length; i++) {
-					this.old[i] = +this.old[i];
-				}
-			}
-			if (strs2[1].length === 0) {
-				this.val = [];
-			} else {
-				this.val = strs2[1].split(/,/);
-				for (var i = 0; i < this.val.length; i++) {
-					this.val[i] = +this.val[i];
-				}
-			}
-			return true;
-		},
-		toString: function() {
-			return [
-				"CR",
-				this.bx,
-				this.by,
-				"[" + this.old.join(",") + "]",
-				"[" + this.val.join(",") + "]"
-			].join(",");
-		},
-
-		isModify: function(lastope) {
-			// 前回と同じ場所なら前回の更新のみ
-			if (
-				lastope.property === this.property &&
-				lastope.bx === this.bx &&
-				lastope.by === this.by &&
-				this.puzzle.pzpr.util.sameArray(lastope.val, this.old)
-			) {
-				lastope.val = this.val;
-				return true;
-			}
-			return false;
-		},
-
-		undo: function() {
-			this.exec(this.old);
-		},
-		redo: function() {
-			this.exec(this.val);
-		},
-		exec: function(val) {
-			var puzzle = this.puzzle,
-				cell = puzzle.board.getc(this.bx, this.by);
-			cell.setQnums(val);
-			cell.draw();
-			puzzle.checker.resetCache();
-		}
-	},
-
-	OperationManager: {
-		addExtraOperation: function() {
-			this.operationlist.push(this.klass.ObjectOperation2);
-		}
-	},
 	Border: {
 		enableLineNG: true
 	},
@@ -442,36 +299,12 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			this.decodeQnums_tapaloop();
+			this.decodeQnums();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
-			this.encodeQnums_tapaloop();
+			this.encodeQnums();
 			this.encodeBorderLine();
-		},
-		decodeQnums_tapaloop: function() {
-			this.decodeCell(function(cell, ca) {
-				if (ca !== ".") {
-					cell.qnums = [];
-					var array = ca.split(/,/);
-					for (var i = 0; i < array.length; i++) {
-						cell.qnums.push(array[i] !== "-" ? +array[i] : -2);
-					}
-				}
-			});
-		},
-		encodeQnums_tapaloop: function() {
-			this.encodeCell(function(cell) {
-				if (cell.qnums.length > 0) {
-					var array = [];
-					for (var i = 0; i < cell.qnums.length; i++) {
-						array.push(cell.qnums[i] >= 0 ? "" + cell.qnums[i] : "-");
-					}
-					return array.join(",") + " ";
-				} else {
-					return ". ";
-				}
-			});
 		}
 	},
 
