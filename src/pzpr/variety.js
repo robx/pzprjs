@@ -86,7 +86,8 @@
 		"railpool",
 		"coral",
 		"nuriuzu",
-		"ququ"
+		"ququ",
+		"vslither"
 	]);
 
 	(function(Genre, obj) {
@@ -375,6 +376,7 @@
 			usoone: [0, 0, "ウソワン", "Uso-one"],
 			view: [1, 0, "ヴィウ", "View", "sukoro"],
 			voxas: [0, 0, "Voxas", "Voxas"],
+			vslither: [0, 0, "Vertex Slitherlink", "Vertex Slitherlink", "slither"],
 			wagiri: [0, 0, "ごきげんななめ・輪切", "Wagiri", "gokigen"],
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
