@@ -572,6 +572,7 @@
     "nmTentGt.tents": "木の数よりもテントの数が多い部分があります。",
     "nmTentLt.tents": "木の数よりもテントの数が少ない部分があります。",
     "nmTentNone.tents": "テントが隣り合っていない木があります。",
+    "nmTouchNe.tslither": "この数は、セルのエッジ/頂点への個別の訪問の数と同じではありません",
     "nmTreeNone.tents": "木に接していないテントがあります。",
     "nmTriangleGt.shakashaka": "数字のまわりにある黒い三角形の数が間違っています。",
     "nmTriangleLt.shakashaka": "数字のまわりにある黒い三角形の数が間違っています。",
