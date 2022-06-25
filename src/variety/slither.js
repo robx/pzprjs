@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["slither"], {
+})(["slither","vslither","tslither"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -90,6 +90,23 @@
 				cnt++;
 			}
 			return cnt;
+		},
+
+		getdir4BorderVertex1: function() {
+			var vcnt = 0;
+			if (this.relbd(-1,0).isLine() || this.relbd(-1,-2).isLine() || this.relbd(0,-1).isLine() || this.relbd(-2,-1).isLine()) {
+				vcnt++;
+			}
+			if (this.relbd(-1,0).isLine() || this.relbd(-1,2).isLine() || this.relbd(0,1).isLine() || this.relbd(-2,1).isLine()) {
+				vcnt++;
+			}
+			if (this.relbd(1,0).isLine() || this.relbd(1,-2).isLine() || this.relbd(0,-1).isLine() || this.relbd(2,-1).isLine()) {
+				vcnt++;
+			}
+			if (this.relbd(1,0).isLine() || this.relbd(1,2).isLine() || this.relbd(0,1).isLine() || this.relbd(2,1).isLine()) {
+				vcnt++;
+			}
+			return vcnt;
 		}
 	},
 
@@ -256,7 +273,9 @@
 			"checkBranchLine",
 			"checkCrossLine",
 
-			"checkdir4BorderLine",
+			"checkdir4BorderLine@slither",
+			"checkdir4VertexLine@vslither",
+			"checkdir4TouchLine@tslither",
 
 			"checkOneLoop",
 			"checkDeadendLine+"
@@ -266,6 +285,18 @@
 			this.checkAllCell(function(cell) {
 				return cell.qnum >= 0 && cell.getdir4BorderLine1() !== cell.qnum;
 			}, "nmLineNe");
+		},
+
+		checkdir4VertexLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum >= 0 && cell.getdir4BorderVertex1() !== cell.qnum;
+			}, "nmVertexNe")
+		},
+
+		checkdir4TouchLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum >= 0 && (cell.getdir4BorderVertex1() - cell.getdir4BorderLine1()) !== cell.qnum;
+			}, "nmTouchNe")
 		}
 	}
 });

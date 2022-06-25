@@ -192,3 +192,11 @@ ququ: "Shade some triangles on the board.\n1. Triangles with numbers or question
   \ an edge form blocks. Two blocks which touch each other at the corners must have\
   \ different shapes, counting rotations and reflections as the same.\nThis genre\
   \ first appeared in Puzzle Communication Nikoli vol. 171."
+
+vslither: "Draw a line along the edges of some cells to form a single loop which may \
+  \ not branch or self-intersect. \nA number indicates how many vertices of that cell are\
+  \ visited by the loop."
+
+tslither: "Draw a line along the edges of some cells to form a single loop which may \
+  \ not branch or self-intersect. \nA number indicates how many separate times the loop\
+  \ touches that cell's edges/vertices."
