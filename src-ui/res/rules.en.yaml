@@ -179,8 +179,8 @@ nuriuzu: "Shade some cells on the board.\n1. The unshaded areas must form blocks
   \ a 2x2 square of all shaded or unshaded cells."
 nothree: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
   \ vertically adjacent.\n2. A circle overlaps exactly one shaded cell.\n3. Three\
-  \ consecutive shaded cells in a row/column must have different distances.\n4. All\
-  \ unshaded cells on the board from an orthogonally connected area."
+  \ consecutive shaded cells in a row/column must have different distances between\
+  \ them.\n4. All unshaded cells on the board from an orthogonally connected area."
 coffeemilk: "Draw lines between the circles to form groups.\n1. Lines must be horizontal\
   \ or vertical, and cannot turn.\n2. Lines cannot cross each other.\n3. Each group\
   \ of circles must contain exactly one gray circle, and an equal amount of white\
