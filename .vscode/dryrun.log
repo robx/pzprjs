@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/mnt/d/GitHub/pzprjs'
+npm run-script build
+make: Leaving directory '/mnt/d/GitHub/pzprjs'
+ 
