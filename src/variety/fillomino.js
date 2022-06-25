@@ -1,6 +1,8 @@
 //
 // パズル固有スクリプト部 フィルオミノ版 fillomino.js
 //
+
+/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -19,6 +21,9 @@
 			if (this.inputMode === "copynum") {
 				this.dragnumber_fillomino();
 			}
+		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
@@ -209,7 +214,45 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
-		enableSubNumberArray: true
+		enableSubNumberArray: true,
+
+		posthook: {
+			qnum: function() {
+				this.rebuildAroundCell();
+			},
+			anum: function() {
+				this.rebuildAroundCell();
+			}
+		},
+
+		rebuildAroundCell: function() {
+			var blocks = new Set();
+			blocks.add(this.eqblk);
+			this.getdir4clist().forEach(function(pair) {
+				blocks.add(pair[0].eqblk);
+			});
+
+			var borders = new Set();
+			this.getdir4cblist().forEach(function(pair) {
+				borders.add(pair[1]);
+			});
+			blocks.forEach(function(block) {
+				if (!block) {
+					return;
+				}
+				block.clist.each(function(cell) {
+					cell.getdir4cblist().forEach(function(pair) {
+						borders.add(pair[1]);
+					});
+				});
+			});
+
+			borders.forEach(function(border) {
+				if (border) {
+					border.updateGhostBorder();
+				}
+			});
+		}
 	},
 	"Cell@pentominous": {
 		enableSubNumberArray: true,
@@ -250,10 +293,48 @@
 		maxnum: 11
 	},
 	Border: {
+		posthook: {
+			qans: function(num) {
+				this.sidecell[0].rebuildAroundCell();
+				this.sidecell[1].rebuildAroundCell();
+			}
+		},
+
+		updateGhostBorder: function() {
+			var c0 = this.sidecell[0],
+				c1 = this.sidecell[1];
+
+			var block = c0.getNum() >= 0 ? c0.eqblk : null;
+			if (!block) {
+				block = c1.getNum() >= 0 ? c1.eqblk : null;
+			} else if (c1.getNum() >= 0 && c1.eqblk !== null) {
+				block = null;
+			}
+
+			if (!block || block.clist.length === 0) {
+				if (this.qcmp) {
+					this.setQcmp(0);
+					this.draw();
+				}
+				return;
+			}
+			var num = this.pid !== "pentominous" ? block.clist[0].getNum() : 5;
+			var newcmp = num === block.clist.length ? 1 : 0;
+			if (newcmp !== this.qcmp) {
+				this.setQcmp(newcmp);
+				this.draw();
+			}
+		},
+
 		isCmp: function() {
 			if (!this.puzzle.execConfig("autocmp")) {
 				return false;
 			}
+
+			if (this.qcmp) {
+				return true;
+			}
+
 			var cell1 = this.sidecell[0],
 				cell2 = this.sidecell[1];
 			var num1 = cell1.getNum(),
@@ -270,6 +351,44 @@
 
 		addExtraInfo: function() {
 			this.numblkgraph = this.addInfoList(this.klass.AreaNumBlockGraph);
+			this.eqblkgraph = this.addInfoList(this.klass.AreaEqualNumberGraph);
+		},
+
+		rebuildInfo: function() {
+			this.common.rebuildInfo.call(this);
+			this.border.each(function(border) {
+				border.updateGhostBorder();
+			});
+		}
+	},
+
+	"AreaEqualNumberGraph:AreaNumberGraph": {
+		relation: {
+			"cell.qnum": "node",
+			"cell.anum": "node",
+			"border.qans": "separator"
+		},
+		enabled: true,
+
+		setComponentRefs: function(obj, component) {
+			obj.eqblk = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.eqblknodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.eqblknodes = [];
+		},
+		isnodevalid: function(cell) {
+			return cell.getNum() >= 0;
+		},
+		isedgevalidbylinkobj: function(border) {
+			if (border.isBorder()) {
+				return false;
+			}
+			var num1 = border.sidecell[0].getNum(),
+				num2 = border.sidecell[1].getNum();
+			return num1 === num2;
 		}
 	},
 	"Board@pentominous": {
@@ -302,14 +421,15 @@
 			"cell.ques": "node",
 			"cell.qnum": "node",
 			"cell.anum": "node",
-			"border.qans": "separator"
+			"border.qans": "separator",
+			"border.qcmp": "separator"
 		},
 
 		isnodevalid: function(cell) {
 			return !cell.isEmpty();
 		},
 		isedgevalidbylinkobj: function(border) {
-			if (border.isBorder()) {
+			if (border.isBorder() || border.qcmp) {
 				return false;
 			}
 			var num1 = border.sidecell[0].getNum(),
@@ -342,7 +462,8 @@
 				--numkind;
 			}
 			component.numkind = numkind;
-			component.number = numkind === 1 ? filled : -1;
+			component.number =
+				numkind === 1 ? filled : numkind === 0 ? clist.length : -1;
 		},
 
 		getComponentRefs: function(cell) {
@@ -536,7 +657,6 @@
 			"checkLargeArea",
 			"checkNumKinds",
 			"checkRoomSymm@symmarea",
-			"checkNoNumArea",
 			"checkNoNumCell_fillomino+"
 		],
 
@@ -564,11 +684,6 @@
 			this.checkAllErrorRoom(function(area) {
 				return area.numkind <= 1;
 			}, "bkMixedNum");
-		},
-		checkNoNumArea: function() {
-			this.checkAllErrorRoom(function(area) {
-				return area.numkind >= 1;
-			}, "bkNoNum");
 		},
 		checkRoomSymm: function() {
 			var board = this.board;

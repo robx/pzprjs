@@ -168,7 +168,11 @@ pzpr.classmgr.makeCommon({
 						}
 					} else {
 						var def = piece.constructor.prototype[pp];
-						if (piece[pp] !== def) {
+						if (
+							pp === "qnums"
+								? !this.puzzle.pzpr.util.sameArray(piece[pp], def)
+								: piece[pp] !== def
+						) {
 							if (isrec && !norec[pp]) {
 								piece.addOpe(pp, piece[pp], def);
 							}

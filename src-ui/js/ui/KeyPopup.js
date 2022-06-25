@@ -117,6 +117,7 @@ ui.keypopup = {
 		hinge: [10, 0],
 		tajmahal: [8, 0],
 		railpool: [10, 0],
+		coral: [10, 0],
 		ququ: [10, 0]
 	},
 
