@@ -121,6 +121,7 @@
 	Graphic: {
 		gridcolor_type: "LIGHT",
 
+		shadecolor: "#444444",
 		enablebcolor: true,
 		bgcellcolor_func: "qsub1",
 
