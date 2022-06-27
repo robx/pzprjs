@@ -192,11 +192,22 @@ ququ: "Shade some triangles on the board.\n1. Triangles with numbers or question
   \ an edge form blocks. Two blocks which touch each other at the corners must have\
   \ different shapes, counting rotations and reflections as the same.\nThis genre\
   \ first appeared in Puzzle Communication Nikoli vol. 171."
-
-vslither: "Draw a line along the edges of some cells to form a single loop which may \
-  \ not branch or self-intersect. \nA number indicates how many vertices of that cell are\
-  \ visited by the loop."
-
-tslither: "Draw a line along the edges of some cells to form a single loop which may \
-  \ not branch or self-intersect. \nA number indicates how many separate times the loop\
-  \ touches that cell's edges/vertices."
+squarejam: "Draw lines over the dotted lines to divide the grid into square-shaped\
+  \ regions.\n1. A number indicates the side length of the square it's contained in.\
+  \ Squares may have any amount of identical numbers.\n2. Region borders must not\
+  \ form 4-way intersections.\nThis genre is invented by Eric Fox."
+snakepit: "Divide the grid into regions, where each region represents a snake.\n1.\
+  \ A snake is a path that is at least 2 cells long and exactly 1 cell wide, and can\
+  \ have any amount of turns.\n2. A snake cannot loop back on itself and visit a cell\
+  \ that's orthogonally or diagonally adjacent to a cell it has visited before.\n\
+  3. Two snakes of the same length cannot be orthogonally adjacent.\n4. A number indicates\
+  \ the length of the snake, in cells. Snakes can have any amount of identical numbers.\n\
+  5. A circle indicates an endpoint of a snake, while a gray cell must not be on the\
+  \ endpoints of a snake."
+disloop: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The loop\
+  \ cannot branch off or cross itself.\n2. The loop cannot go through gray cells.\n\
+  3. Arrows point from a gray cell to an adjacent cell where the loop must make a\
+  \ turn.\n4. Clues represent the lengths of the next N line segments when following\
+  \ the loop in the direction of the arrow, where N is the amount of numbers inside\
+  \ the clue. Numbers aren't necessarily in order.\nThis genre is invented by Eric\
+  \ Fox."
