@@ -317,7 +317,9 @@
 			this.checkAllCell(function(cell) {
 				return (
 					cell.qnum >= 0 &&
-					cell.getdir4BorderVertex1() - cell.getdir4BorderLine1() !== cell.qnum
+					cell.getdir4BorderVertex1() -
+						Math.min(cell.getdir4BorderLine1(), 3) !==
+						cell.qnum
 				);
 			}, "nmTouchNe");
 		}
