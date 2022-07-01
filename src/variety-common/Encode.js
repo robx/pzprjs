@@ -347,13 +347,13 @@ pzpr.classmgr.makeCommon({
 			} else if (qn >= 256 && qn < 4096) {
 				return "+" + qn.toString(16);
 			} else if (qn >= 4096 && qn < 8192) {
-				return "=" + (qn - 4096).toString(16);
+				return "=" + (qn - 4096).toString(16).padStart(3, 0);
 			} else if (qn >= 8192 && qn < 12240) {
-				return "@" + (qn - 8192).toString(16);
+				return "@" + (qn - 8192).toString(16).padStart(3, 0);
 			} else if (qn >= 12240 && qn < 77776) {
-				return "*" + (qn - 12240).toString(16);
+				return "*" + (qn - 12240).toString(16).padStart(4, 0);
 			} else if (qn >= 77776) {
-				return "$" + (qn - 77776).toString(16);
+				return "$" + (qn - 77776).toString(16).padStart(5, 0);
 			} else {
 				// 最大1126352
 				return "";
