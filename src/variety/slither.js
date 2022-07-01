@@ -93,40 +93,12 @@
 		},
 
 		getdir4BorderVertex1: function() {
-			var vcnt = 0;
-			if (
-				this.relbd(-1, 0).isLine() ||
-				this.relbd(-1, -2).isLine() ||
-				this.relbd(0, -1).isLine() ||
-				this.relbd(-2, -1).isLine()
-			) {
-				vcnt++;
-			}
-			if (
-				this.relbd(-1, 0).isLine() ||
-				this.relbd(-1, 2).isLine() ||
-				this.relbd(0, 1).isLine() ||
-				this.relbd(-2, 1).isLine()
-			) {
-				vcnt++;
-			}
-			if (
-				this.relbd(1, 0).isLine() ||
-				this.relbd(1, -2).isLine() ||
-				this.relbd(0, -1).isLine() ||
-				this.relbd(2, -1).isLine()
-			) {
-				vcnt++;
-			}
-			if (
-				this.relbd(1, 0).isLine() ||
-				this.relbd(1, 2).isLine() ||
-				this.relbd(0, 1).isLine() ||
-				this.relbd(2, 1).isLine()
-			) {
-				vcnt++;
-			}
-			return vcnt;
+			return (
+				(this.relcross(-1, -1).lcnt > 0) +
+				(this.relcross(1, -1).lcnt > 0) +
+				(this.relcross(-1, 1).lcnt > 0) +
+				(this.relcross(1, 1).lcnt > 0)
+			);
 		}
 	},
 
@@ -304,12 +276,6 @@
 			this.checkAllCell(function(cell) {
 				return cell.qnum >= 0 && cell.getdir4BorderLine1() !== cell.qnum;
 			}, "nmLineNe");
-		},
-
-		checkdir4VertexLine: function() {
-			this.checkAllCell(function(cell) {
-				return cell.qnum >= 0 && cell.getdir4BorderVertex1() !== cell.qnum;
-			}, "nmVertexNe");
 		},
 
 		checkdir4TouchLine: function() {

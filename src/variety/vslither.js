@@ -26,26 +26,6 @@
 		},
 		mouseinput_auto: function() {
 			var puzzle = this.puzzle;
-			// if (puzzle.playmode) {
-			// 	if (this.checkInputBGcolor()) {
-			// 		this.inputBGcolor();
-			// 	} else if (this.btn === "left") {
-			// 		if (this.mousestart || this.mousemove) {
-			// 			this.inputLine();
-			// 		} else if (this.mouseend && this.notInputted()) {
-			// 			this.prevPos.reset();
-			// 			this.inputpeke();
-			// 		}
-			// 	} else if (this.btn === "right") {
-			// 		if (this.mousestart || this.mousemove) {
-			// 			this.inputpeke();
-			// 		}
-			// 	}
-			// } else if (puzzle.editmode) {
-			// 	if (this.mousestart) {
-			// 		this.inputqnum();
-			// 	}
-			// }
 			if (puzzle.playmode) {
 				if (this.checkInputBGcolor()) {
 					this.inputBGcolor();
@@ -133,40 +113,12 @@
 		minnum: 0,
 
 		getdir4BorderVertex1: function() {
-			var vcnt = 0;
-			if (
-				this.relbd(-1, 0).isLine() ||
-				this.relbd(-1, -2).isLine() ||
-				this.relbd(0, -1).isLine() ||
-				this.relbd(-2, -1).isLine()
-			) {
-				vcnt++;
-			}
-			if (
-				this.relbd(-1, 0).isLine() ||
-				this.relbd(-1, 2).isLine() ||
-				this.relbd(0, 1).isLine() ||
-				this.relbd(-2, 1).isLine()
-			) {
-				vcnt++;
-			}
-			if (
-				this.relbd(1, 0).isLine() ||
-				this.relbd(1, -2).isLine() ||
-				this.relbd(0, -1).isLine() ||
-				this.relbd(2, -1).isLine()
-			) {
-				vcnt++;
-			}
-			if (
-				this.relbd(1, 0).isLine() ||
-				this.relbd(1, 2).isLine() ||
-				this.relbd(0, 1).isLine() ||
-				this.relbd(2, 1).isLine()
-			) {
-				vcnt++;
-			}
-			return vcnt;
+			return (
+				(this.relcross(-1, -1).lcnt > 0) +
+				(this.relcross(1, -1).lcnt > 0) +
+				(this.relcross(-1, 1).lcnt > 0) +
+				(this.relcross(1, 1).lcnt > 0)
+			);
 		}
 	},
 	Dot: {
@@ -281,120 +233,30 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decode4Cell();
+			this.decodeCrossMark();
 		},
 		encodePzpr: function(type) {
 			this.encode4Cell();
-		},
-
-		decodeKanpen: function() {
-			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen();
+			this.encodeCrossMark();
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			if (this.filever === 1) {
-				this.decodeCellQnum();
-				this.decodeCellQsub();
-				this.decodeBorderLine();
-			} else if (this.filever === 0) {
-				this.decodeCellQnum();
-				this.decodeBorderLine();
-			}
+			this.decodeCellQnum();
+			this.decodeCellQsub();
+			this.decodeBorderLine();
+			this.decodeCross(function(cross, ca) {
+				cross.qsub = +ca;
+			});
 		},
 		encodeData: function() {
 			this.filever = 1;
 			this.encodeCellQnum();
 			this.encodeCellQsub();
 			this.encodeBorderLine();
-		},
-		kanpenOpen: function() {
-			this.decodeCellQnum_kanpen();
-			this.decodeBorderLine();
-		},
-		kanpenSave: function() {
-			this.encodeCellQnum_kanpen();
-			this.encodeBorderLine();
-		},
-
-		kanpenOpenXML: function() {
-			this.PBOX_ADJUST = 0;
-			this.decodeCellQnum_XMLBoard_Brow();
-			this.PBOX_ADJUST = 1;
-			this.decodeBorderLine_slither_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.PBOX_ADJUST = 0;
-			this.encodeCellQnum_XMLBoard_Brow();
-			this.PBOX_ADJUST = 1;
-			this.encodeBorderLine_slither_XMLAnswer();
-		},
-
-		UNDECIDED_NUM_XML: 5,
-		PBOX_ADJUST: 1,
-		decodeBorderLine_slither_XMLAnswer: function() {
-			this.decodeCellXMLArow(function(cross, name) {
-				var val = 0;
-				var bdh = cross.relbd(0, 1),
-					bdv = cross.relbd(1, 0);
-				if (name.charAt(0) === "n") {
-					val = +name.substr(1);
-				} else {
-					if (name.match(/h/)) {
-						val += 1;
-					}
-					if (name.match(/v/)) {
-						val += 2;
-					}
-				}
-				if (val & 1) {
-					bdh.line = 1;
-				}
-				if (val & 2) {
-					bdv.line = 1;
-				}
-				if (val & 4) {
-					bdh.qsub = 2;
-				}
-				if (val & 8) {
-					bdv.qsub = 2;
-				}
-			});
-		},
-		encodeBorderLine_slither_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cross) {
-				var val = 0,
-					nodename = "";
-				var bdh = cross.relbd(0, 1),
-					bdv = cross.relbd(1, 0);
-				if (bdh.line === 1) {
-					val += 1;
-				}
-				if (bdv.line === 1) {
-					val += 2;
-				}
-				if (bdh.qsub === 2) {
-					val += 4;
-				}
-				if (bdv.qsub === 2) {
-					val += 8;
-				}
-
-				if (val === 0) {
-					nodename = "s";
-				} else if (val === 1) {
-					nodename = "h";
-				} else if (val === 2) {
-					nodename = "v";
-				} else if (val === 3) {
-					nodename = "hv";
-				} else {
-					nodename = "n" + val;
-				}
-				return nodename;
+			this.encodeCross(function(cross) {
+				return cross.qsub + " ";
 			});
 		}
 	},
