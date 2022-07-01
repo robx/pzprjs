@@ -11,7 +11,12 @@ export function parse_query(url: string) {
 	if(!query)
 		return null;
 
-	const parts = decode_vercel_query(query).split('&');
+	let parts: string[];
+	try {
+		parts = decode_vercel_query(query).split('&');
+	} catch {
+		return null;
+	}
 	var args = {
 		thumb: false,
 		frame: 0,

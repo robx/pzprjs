@@ -294,7 +294,7 @@ pzpr.classmgr.makeCommon({
 				return [parseInt(bstr.substr(i + 1, 3), 16), 4];
 			} else if (ca === "=") {
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 4096, 4];
-			} else if (ca === "%") {
+			} else if (ca === "%" || ca === "@") {
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 8192, 4];
 			} else if (ca === "*") {
 				return [parseInt(bstr.substr(i + 1, 4), 16) + 12240, 5];
@@ -349,7 +349,7 @@ pzpr.classmgr.makeCommon({
 			} else if (qn >= 4096 && qn < 8192) {
 				return "=" + (qn - 4096).toString(16);
 			} else if (qn >= 8192 && qn < 12240) {
-				return "%" + (qn - 8192).toString(16);
+				return "@" + (qn - 8192).toString(16);
 			} else if (qn >= 12240 && qn < 77776) {
 				return "*" + (qn - 12240).toString(16);
 			} else if (qn >= 77776) {
