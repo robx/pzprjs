@@ -30,8 +30,12 @@ export function parse_query(url: string) {
 			args.svgout = true;
 		} else if (part.match(/^frame=([0-9]+)$/)) {
 			args.frame = Math.max(0, Math.min(100, +RegExp.$1)) / 100.0
-		} else if (args.pzv === '' && part.match(/^[\w-]+\//)) {
-			args.pzv = part;
+		} else if (args.pzv === '' || part.match(/^[\w-]+\//)) {
+			if(!part.match(/^[\w-]+\//) && part.endsWith("=")) {
+				args.pzv = part.substring(0, part.length - 1);
+			} else {
+				args.pzv = part;
+			}
 		}
 	}
 	return args;
@@ -39,6 +43,8 @@ export function parse_query(url: string) {
 
 export interface PuzzleDetails {
 	pid: string;
+	isEditor: boolean;
+	bodyMode: "blank" | "url" | "file",
 	title: string;
 	cols: number;
 	rows: number;
@@ -49,6 +55,8 @@ export function pzvdetails(pzv: string): PuzzleDetails {
 	const info = pzpr.variety(urldata.pid);
 	return {
 		pid: urldata.pid,
+		isEditor: urldata.mode ? urldata.mode === "editor" : !urldata.body,
+		bodyMode: !urldata.body ? "blank" : urldata.type === pzpr.parser.URL_PZPRFILE ? "file" : "url",
 		title: info.en,
 		cols: urldata.cols,
 		rows: urldata.rows

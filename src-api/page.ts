@@ -40,7 +40,8 @@ export function sendPage(res: VercelResponse, host: string, url: string) {
 			size = "" + p.rows + "×" + p.cols;
 		}
 		var title = p.title;
-		var desc = 'Solve a ' + p.title + ' puzzle';
+		var desc = (p.isEditor ? 'Create' : 'Solve') + ' a ' + p.title + ' puzzle';
+
 		if (size) {
 			title = size + ' ' + title;
 			desc += ', size ' + size;
