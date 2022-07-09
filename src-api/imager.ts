@@ -11,6 +11,7 @@ path.resolve(fontPath, 'fonts.conf') // Reference conf so it gets copied
 
 process.env.FONTCONFIG_PATH=fontPath
 
+const saveicons = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'dist/js', 'saveicons.json'), { encoding: "utf8" }));
 const maskHoriz = fs.readFileSync(path.resolve(process.cwd(), 'src-api/img', 'mask-horiz.png'));
 const maskVert = fs.readFileSync(path.resolve(process.cwd(), 'src-api/img', 'mask-vert.png'));
 
@@ -37,6 +38,9 @@ export function preview(res: VercelResponse, url: string) {
 		res.end("file thumbnails are not supported");
 		console.log('skipping File puzzle:', pzv);
 		return;
+	}
+	if(details.bodyMode === "blank") {
+		pzv = saveicons[details.pid] ?? pzv;
 	}
 
 	const canvas = {};

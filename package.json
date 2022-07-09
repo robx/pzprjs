@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "eslint --cache --quiet src src-ui && \"./git-hash.sh\" && grunt default",
-    "vercel-build": "\"./git-hash.sh\" && grunt vercel",
+    "vercel-build": "\"./git-hash.sh\" && grunt vercel && node \"./src-api/build-saveicons.js\"",
     "release": "npm run clean && eslint --cache --quiet src && grunt release",
     "clean": "del dist/* pzpr-*.{zip,tar.gz,tar.bz2,tgz}",
     "format": "prettier --write \"{src,src-ui,test}/**/*.{js,css}\"",
