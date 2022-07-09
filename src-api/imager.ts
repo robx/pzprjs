@@ -1,5 +1,5 @@
-import fs = require('fs');
-import path = require('path');
+import fs from 'fs';
+import path from 'path';
 import { VercelResponse } from "@vercel/node";
 import { parse_query, pzvdetails } from "./tools"
 import sharp from "sharp"
@@ -15,7 +15,7 @@ const maskHoriz = fs.readFileSync(path.resolve(process.cwd(), 'src-api/img', 'ma
 const maskVert = fs.readFileSync(path.resolve(process.cwd(), 'src-api/img', 'mask-vert.png'));
 
 export function preview(res: VercelResponse, url: string) {
-	var qargs = parse_query(url);
+	const qargs = parse_query(url);
 	if (!qargs || !qargs.pzv) {
 		res.statusCode = 400;
 		res.end();
@@ -30,6 +30,12 @@ export function preview(res: VercelResponse, url: string) {
 		res.statusCode = 404;
 		res.end("oversized puzzle");
 		console.log('skipping large puzzle:', pzv);
+		return;
+	}
+	if (details.bodyMode === "file") {
+		res.statusCode = 404;
+		res.end("file thumbnails are not supported");
+		console.log('skipping File puzzle:', pzv);
 		return;
 	}
 

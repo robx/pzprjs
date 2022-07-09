@@ -1,5 +1,5 @@
-import fs = require('fs');
-import path = require('path');
+import fs from 'fs';
+import path from 'path';
 import { VercelResponse } from '@vercel/node';
 import { parse_query, pzvdetails } from "./tools"
 
