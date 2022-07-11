@@ -1139,16 +1139,20 @@ pzpr.classmgr.makeCommon({
 		//--------------------------------------------------------------------------------
 		// ans.searchloop() Return all cells of a Graph component that forms a loop.
 		//--------------------------------------------------------------------------------
-		searchloop: function(component, graph) {
+		searchloop: function(component, graph, borders) {
+			var errlist = borders
+				? new this.klass.BorderList()
+				: graph.pointgroup === "cross"
+				? new this.klass.CrossList()
+				: new this.klass.CellList();
 			// Loopがない場合は何もしないでreturn
 			if (component.circuits <= 0) {
-				return new this.klass.CellList();
+				return errlist;
 			}
 
 			// どこにLoopが存在するか判定を行う
 			var bd = this.board;
-			var errclist = new this.klass.CellList();
-			var history = [component.clist[0]],
+			var history = [component.nodes[0].obj],
 				prevcell = null;
 			var steps = {},
 				rows = bd.maxbx - bd.minbx;
@@ -1163,8 +1167,8 @@ pzpr.classmgr.makeCommon({
 				// ループになった場合 => ループフラグをセットする
 				else if (history.length - 1 > step) {
 					for (var i = history.length - 2; i >= 0; i--) {
-						if (history[i].group === "cell") {
-							errclist.add(history[i]);
+						if ((history[i].group === "border") === !!borders) {
+							errlist.add(history[i]);
 						}
 						if (history[i] === obj) {
 							break;
@@ -1172,7 +1176,7 @@ pzpr.classmgr.makeCommon({
 					}
 				}
 
-				if (obj.group === "cell") {
+				if (obj.group !== "border") {
 					prevcell = obj;
 					for (var i = 0; i < graph.getObjNodeList(obj)[0].nodes.length; i++) {
 						var cell2 = graph.getObjNodeList(obj)[0].nodes[i].obj;
@@ -1187,8 +1191,10 @@ pzpr.classmgr.makeCommon({
 					}
 				} else {
 					// borderの時
-					for (var i = 0; i < obj.sidecell.length; i++) {
-						var cell = obj.sidecell[i];
+					var side =
+						graph.pointgroup === "cross" ? obj.sidecross : obj.sidecell;
+					for (var i = 0; i < side.length; i++) {
+						var cell = side[i];
 						if (cell !== prevcell && cell !== history[history.length - 2]) {
 							nextobj = cell;
 							break;
@@ -1202,7 +1208,7 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 
-			return errclist;
+			return errlist;
 		},
 
 		//--------------------------------------------------------------------------------

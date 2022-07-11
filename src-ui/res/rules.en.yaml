@@ -192,6 +192,7 @@ ququ: "Shade some triangles on the board.\n1. Triangles with numbers or question
   \ an edge form blocks. Two blocks which touch each other at the corners must have\
   \ different shapes, counting rotations and reflections as the same.\nThis genre\
   \ first appeared in Puzzle Communication Nikoli vol. 171."
+
 squarejam: "Draw lines over the dotted lines to divide the grid into square-shaped\
   \ regions.\n1. A number indicates the side length of the square it's contained in.\
   \ Squares may have any amount of identical numbers.\n2. Region borders must not\
@@ -211,3 +212,9 @@ disloop: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The
   \ the loop in the direction of the arrow, where N is the amount of numbers inside\
   \ the clue. Numbers aren't necessarily in order.\nThis genre is invented by Eric\
   \ Fox."
+
+lither: "Draw lines along the edges of some cells to form trees.\n1. There must be\
+  \ more than one tree.\n2. A tree must branch or terminate at every grid vertex. In\
+  \ other words, each grid vertex must have 1, 3, or 4 connected edges.\n3. Trees must\
+  \ not contain loops.\n4. A number indicates the number of edges of that cell that are\
+  \ included in a tree.\nThis genre is invented by Eli Doris a.k.a. TwoHoleStraw."
