@@ -57,10 +57,10 @@ dotchi: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The 
   4. The loop cannot go through a shaded circle."
 
 
-hinge: "Shade some cells on the board.\n1. Each group of orthogonally connected cells\
-  \ is cut exactly once by a single straight segment of region borders, across which\
-  \ it must have reflectional symmetry.\n2. Numbered regions must contain the indicated\
-  \ amount of shaded cells."
+hinge: "Shade some cells on the board.\n1. A group of orthogonally connected shaded\
+  \ cells is called a block. Each block is cut exactly once by a single straight segment\
+  \ of region borders, across which it must have reflectional symmetry.\n2. Numbered\
+  \ regions must contain the indicated amount of shaded cells."
 
 lapaz: "Shade some cells on the board, and divide the rest into regions of 2 cells.\n\
   1. No two shaded cells are horizontally or vertically adjacent.\n2. Numbers must\
@@ -214,7 +214,7 @@ disloop: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The
   \ Fox."
 
 lither: "Draw lines along the edges of some cells to form trees.\n1. There must be\
-  \ more than one tree.\n2. A tree must branch or terminate at every grid vertex. In\
-  \ other words, each grid vertex must have 1, 3, or 4 connected edges.\n3. Trees must\
-  \ not contain loops.\n4. A number indicates the number of edges of that cell that are\
-  \ included in a tree.\nThis genre is invented by Eli Doris a.k.a. TwoHoleStraw."
+  \ more than one tree.\n2. A tree must branch or terminate at every grid vertex.\
+  \ In other words, each grid vertex must have 1, 3, or 4 connected edges.\n3. Trees\
+  \ must not contain loops.\n4. A number indicates the number of edges of that cell\
+  \ that are included in a tree.\nThis genre is invented by Eli Doris a.k.a. TwoHoleStraw."
