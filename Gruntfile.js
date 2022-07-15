@@ -64,10 +64,6 @@ module.exports = function(grunt){
         src: 'dist/p.html',
         dest: 'dist/p.template',
       },
-      list: {
-        src: 'dist/list.html',
-        dest: 'dist/list.template',
-      },
     },
     newer: {
       options: {
