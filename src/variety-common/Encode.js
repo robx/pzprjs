@@ -743,7 +743,7 @@ pzpr.classmgr.makeCommon({
 		// enc.decodeCircle() 白丸・黒丸をデコードする
 		// enc.encodeCircle() 白丸・黒丸をエンコードする
 		//---------------------------------------------------------------------------
-		decodeCircle: function() {
+		genericDecodeThree: function(set_func) {
 			var bd = this.board;
 			var bstr = this.outbstr,
 				c = 0,
@@ -757,7 +757,7 @@ pzpr.classmgr.makeCommon({
 					if (!!bd.cell[c]) {
 						var val = ((ca / tri[w]) | 0) % 3;
 						if (val > 0) {
-							bd.cell[c].qnum = val;
+							set_func(bd.cell[c], val);
 						}
 						c++;
 					}
@@ -765,16 +765,19 @@ pzpr.classmgr.makeCommon({
 			}
 			this.outbstr = bstr.substr(pos);
 		},
-		encodeCircle: function() {
+		decodeCircle: function() {
+			this.genericDecodeThree(function(cell, val) {
+				cell.qnum = val;
+			});
+		},
+		genericEncodeThree: function(get_func) {
 			var bd = this.board;
 			var cm = "",
 				num = 0,
 				pass = 0,
 				tri = [9, 3, 1];
 			for (var c = 0; c < bd.cell.length; c++) {
-				if (bd.cell[c].qnum > 0) {
-					pass += bd.cell[c].qnum * tri[num];
-				}
+				pass += get_func(bd.cell[c]) * tri[num];
 				num++;
 				if (num === 3) {
 					cm += pass.toString(27);
@@ -787,6 +790,11 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.outbstr += cm;
+		},
+		encodeCircle: function() {
+			this.genericEncodeThree(function(cell) {
+				return Math.max(0, cell.qnum);
+			});
 		},
 
 		//---------------------------------------------------------------------------

@@ -90,7 +90,8 @@
 		"coffeemilk",
 		"nothree",
 		"disloop",
-		"lither"
+		"lither",
+		"snakepit"
 	]);
 
 	(function(Genre, obj) {
@@ -356,6 +357,7 @@
 				{ kanpen: "slitherlink" }
 			],
 			snake: [0, 0, "Snake", "Snake"],
+			snakepit: [0, 0, "Snake Pit", "Snake Pit", "fillomino"],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
 			statuepark: [0, 0, "Statue Park", "Statue Park"],
 			"statuepark-aux": [0, 0, "図形の編集", "Edit shape"],

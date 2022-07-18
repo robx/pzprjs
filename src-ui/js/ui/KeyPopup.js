@@ -120,7 +120,8 @@ ui.keypopup = {
 		coral: [10, 0],
 		ququ: [10, 0],
 		disloop: [10, 0],
-		lither: [3, 0]
+		lither: [3, 0],
+		snakepit: [120, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -240,6 +241,8 @@ ui.keypopup = {
 			this.generate_voxas();
 		} else if (type === 119) {
 			this.generate_pentominous(mode);
+		} else if (type === 120) {
+			this.generate_snakepit(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -592,6 +595,27 @@ ui.keypopup = {
 		items.push(" ");
 
 		this.generate_main(items, 5);
+	},
+	generate_snakepit: function() {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				" ",
+				["-", "?"],
+				["q", { text: "○" }],
+				["w", { text: "■", color: "gray" }]
+			],
+			4
+		);
 	},
 
 	generate_main: function(list, split) {
