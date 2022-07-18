@@ -94,6 +94,9 @@
 	},
 
 	Board: {
+		cols: 6,
+		rows: 6,
+
 		hasborder: 2,
 		borderAsLine: true
 	},
