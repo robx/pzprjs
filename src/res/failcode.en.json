@@ -26,7 +26,7 @@
     "bankGt": "A piece appears too many times on the board.",
     "bankInvalid": "The board contains an invalid piece.",
     "bankLt": "Some pieces are not used on the board.",
-    "baParaGe3.juosan": "There are at least there vertical or horizonal bars in parallel.",
+    "baParaGe3.juosan": "There are at least three vertical or horizontal bars in parallel.",
     "baPlNum.tateyoko": "A line passes more than one number.",
     "bdBranch.kramma": "There is a branch line.",
     "bdBranchExBP.bdblock": "Lines are branched out of the point.",
