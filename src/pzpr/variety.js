@@ -91,7 +91,8 @@
 		"nothree",
 		"disloop",
 		"lither",
-		"snakepit"
+		"snakepit",
+		"squarejam"
 	]);
 
 	(function(Genre, obj) {
@@ -359,6 +360,7 @@
 			snake: [0, 0, "Snake", "Snake"],
 			snakepit: [0, 0, "Snake Pit", "Snake Pit", "fillomino"],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
+			squarejam: [0, 0, "Square Jam", "Square Jam"],
 			statuepark: [0, 0, "Statue Park", "Statue Park"],
 			"statuepark-aux": [0, 0, "図形の編集", "Edit shape"],
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],

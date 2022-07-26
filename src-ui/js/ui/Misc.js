@@ -143,6 +143,7 @@ function toBGimage(pid) {
 		"scrin",
 		"simpleloop",
 		"snake",
+		"squarejam",
 		"starbattle",
 		"statuepark",
 		"symmarea",
