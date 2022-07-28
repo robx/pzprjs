@@ -506,7 +506,7 @@ pzpr.classmgr.makeCommon({
 			if (this.mode51 && this.puzzle.editmode) {
 				this.targetdir = 4;
 			} // right
-			else if (this.modesnum && this.puzzle.playmode) {
+			else if (this.modesnum) {
 				this.targetdir = 0;
 			}
 		},
