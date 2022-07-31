@@ -236,3 +236,8 @@ pentopia: "Place some shapes from the bank into the grid. Shapes can be rotated 
   \ If a clue has multiple arrows, the distance to the closest shape must be the same.\
   \ Directions without an arrow must have a shape further away, or not have a shape\
   \ in that direction.\n4. A cell with a clue cannot overlap a shape."
+numrope: "Place a number between 1 and 9 into every unshaded cell.\n1. Each gray line\
+  \ should contain a sequence of numbers which increase by 1.\n2. Numbers on shaded\
+  \ cells indicate the sum of numbers in the (up to four) orthogonally adjacent cells.\n\
+  3. Identical numbers cannot be adjacent.\nThis genre first appeared in Puzzle Communication\
+  \ Nikoli vol. 178."
