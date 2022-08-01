@@ -108,6 +108,9 @@
 				case "nuriuzu":
 					idname = "nuriuzu_connect";
 					break;
+				case "context":
+					idname = "context_marks";
+					break;
 			}
 			if (!!idname) {
 				this.set(idname, ui.puzzle.getConfig(idname));
