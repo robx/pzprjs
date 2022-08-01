@@ -241,3 +241,9 @@ numrope: "Place a number between 1 and 9 into every unshaded cell.\n1. Each gray
   \ cells indicate the sum of numbers in the (up to four) orthogonally adjacent cells.\n\
   3. Identical numbers cannot be adjacent.\nThis genre first appeared in Puzzle Communication\
   \ Nikoli vol. 178."
+dominion: "Shade some cells on the board to divide all unshaded cells into regions.\n\
+  1. All shaded cells are orthogonally adjacent to exactly one other shaded cell.\n\
+  2. Cells with letters cannot be shaded.\n3. All identical letters must be in the\
+  \ same region. There can not be a region without any letters.\n4. Different letters\
+  \ must be in different regions.\n5. Question marks can be replaced with any letter,\
+  \ as long as it appears elsewhere on the grid."
