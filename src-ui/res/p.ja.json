@@ -235,6 +235,7 @@
     "imagesave.filename": "ファイル名",
     "imagesave.cellsize": "画像のサイズ",
     "imagesave.transparent": "背景色を透明にする",
+    "imagesave.bank": "Include piece bank",
     "imagesave.saveimage": "ダウンロード",
     "imagesave.openimage": "別ウィンドウで開く",
     "imagesave.error": "画像の出力に失敗しました",

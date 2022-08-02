@@ -235,6 +235,7 @@
     "imagesave.filename": "Filename",
     "imagesave.cellsize": "Image Size",
     "imagesave.transparent": "Set background to transparent",
+    "imagesave.bank": "Include piece bank",
     "imagesave.saveimage": "Download",
     "imagesave.openimage": "Open in another window",
     "imagesave.error": "Fail to Output the Image",
