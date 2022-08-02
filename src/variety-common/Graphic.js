@@ -2604,6 +2604,7 @@ pzpr.classmgr.makeCommon({
 				addButton = bd.bank.addButton;
 			var showAdd =
 				this.puzzle.editmode &&
+				!this.outputImage &&
 				addButton.index !== null &&
 				(this.range.bank || this.range.bankPieces.indexOf(addButton) !== -1);
 
