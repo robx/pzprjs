@@ -169,6 +169,7 @@
 
 			useBuffer: false, // Buffer描画を行うか
 			outputImage: false, // 画像保存中
+			showBank: true,
 
 			// resize関数が呼ばれたが、初期化されていない等でresizeしていないことを示すフラグ
 			pendingResize: false,
@@ -379,7 +380,7 @@
 			},
 			getCanvasRows: function() {
 				var rows = this.getBoardRows() + 2 * this.margin;
-				if (this.board.bank) {
+				if (this.board.bank && this.showBank) {
 					rows += this.board.bank.height * this.bankratio + 1 / 16;
 				}
 				return rows;
@@ -401,7 +402,7 @@
 			getOffsetRows: function() {
 				/* 下にずらしたい分プラス、上にずらしたい分マイナス */
 				var rows = (0 - this.board.minby) / 2;
-				if (this.board.bank) {
+				if (this.board.bank && this.showBank) {
 					rows -= (this.board.bank.height * this.bankratio) / 2;
 				}
 				return rows;
@@ -461,7 +462,9 @@
 					y1 = this.range.y1,
 					x2 = this.range.x2,
 					y2 = this.range.y2,
-					bank = this.range.bank || this.range.bankPieces.length > 0;
+					bank =
+						this.showBank &&
+						(this.range.bank || this.range.bankPieces.length > 0);
 				if (
 					!bank &&
 					(x1 > x2 ||

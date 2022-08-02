@@ -21,10 +21,15 @@ export function parse_query(url: string) {
 		thumb: false,
 		frame: 0,
 		svgout: false,
+		bank: null as boolean | null,
 		pzv: '',
 	};
 	for (var part of parts) {
-		if (part === "thumb" || part === 'thumb=') {
+		if (part === "bank" || part === 'bank=') {
+			args.bank = true;
+		} else if (part === "no-bank" || part === 'no-bank=') {
+			args.bank = false;
+		} else if (part === "thumb" || part === 'thumb=') {
 			args.thumb = true;
 		} else if (part === "svg" || part === 'svg=') {
 			args.svgout = true;

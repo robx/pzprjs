@@ -49,8 +49,12 @@ export function preview(res: VercelResponse, url: string) {
 		p.setMode('play');
 		p.setConfig('undefcell', false);
 		p.setConfig('autocmp', false);
+		var options: any = { cellsize: 30 };
+		if(p.board.bank) {
+			options.bank = qargs.bank ?? p.board.bank.shouldDrawBank();
+		}
 
-		var svgTxt: string = p.toBuffer('svg', 0, 30);
+		var svgTxt: string = p.toBuffer('svg', 0, options);
 
 		if (qargs.svgout) {
 			res.statusCode = 200;

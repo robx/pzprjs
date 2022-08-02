@@ -2565,7 +2565,10 @@ pzpr.classmgr.makeCommon({
 
 		lastBankPieceCount: 0,
 		drawBank: function() {
-			if (!this.range.bank && this.range.bankPieces.length === 0) {
+			if (
+				!this.showBank ||
+				(!this.range.bank && this.range.bankPieces.length === 0)
+			) {
 				return;
 			}
 
