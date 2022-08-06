@@ -28,7 +28,8 @@
     "format": "prettier --write \"{src,src-ui,test}/**/*.{js,css}\"",
     "check-format": "prettier --check \"{src,src-ui,test}/**/*.{js,css}\"",
     "lint": "eslint src src-ui test sample",
-    "test": "eslint --quiet src src-ui test sample && mocha -r source-map-support/register -R progress --recursive test",
+    "test": "mocha -r source-map-support/register -R progress --recursive test",
+    "coverage": "nyc --reporter=lcov npm run test",
     "prepublishOnly": "npm test"
   },
   "devDependencies": {
@@ -41,6 +42,7 @@
     "grunt-move": "^1.0.3",
     "grunt-newer": "^1.1.1",
     "mocha": "^9.1.4",
+    "nyc": "^15.1.0",
     "prettier": "^1.19.1"
   },
   "dependencies": {
