@@ -137,6 +137,7 @@ function toBGimage(pid) {
 		"oneroom",
 		"ovotovata",
 		"pencils",
+		"pentopia",
 		"ququ",
 		"rassi",
 		"satogaeri",
