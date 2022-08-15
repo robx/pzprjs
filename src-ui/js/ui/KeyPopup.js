@@ -123,7 +123,8 @@ ui.keypopup = {
 		lither: [3, 0],
 		snakepit: [120, 10],
 		squarejam: [10, 0],
-		context: [4, 0]
+		context: [4, 0],
+		numrope: [10, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -292,7 +293,10 @@ ui.keypopup = {
 		}
 		if (
 			mode === 1 &&
-			(pid === "kakuru" || pid === "tateyoko" || pid === "crossstitch")
+			(pid === "kakuru" ||
+				pid === "tateyoko" ||
+				pid === "crossstitch" ||
+				pid === "numrope")
 		) {
 			itemlist.push(
 				["q1", "■"],
@@ -313,6 +317,7 @@ ui.keypopup = {
 		if (
 			mode === 3 ||
 			pid === "kakuru" ||
+			pid === "numrope" ||
 			pid === "tateyoko" ||
 			pid === "crossstitch"
 		) {

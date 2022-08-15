@@ -511,7 +511,11 @@ pzpr.classmgr.makeCommon({
 			);
 		},
 		sameNumber: function(cell) {
-			return this.isValidNum() && this.getNum() === cell.getNum();
+			return (
+				this.isValidNum() &&
+				cell.isValidNum() &&
+				this.getNum() === cell.getNum()
+			);
 		},
 
 		//---------------------------------------------------------------------------
