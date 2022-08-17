@@ -253,4 +253,20 @@ yajisoko: "Draw lines to move some of the boxes.\n1. Boxes can be moved horizont
   \ indicates the amount of boxes in the given direction. If a box stops on top of\
   \ a clue, the number becomes meaningless (it may be true or false).\nThis genre\
   \ is invented by Jamie Hargrove."
-kaidan: '-'
+kaidan: 'Draw several rectangles of length 1xN (at least 2) and draw a circle in all
+  remaining cells.
+
+  1. Rectangles and circles cannot overlap shaded cells.
+
+  2. A number indicates the amount of circles in the 4 orthogonally adjacent cells.
+
+  3. Two circles cannot be orthogonally adjacent.
+
+  4. Two rectangles with the same orientation cannot be adjacent along the short end.
+
+  5. When two rectangles are orthogonally adjacent, one rectangle must be exactly
+  1 square longer than the other.
+
+  6. All rectangles form an orthogonally contiguous area.
+
+  This genre first appeared in Puzzle Communication Nikoli vol. 172.'
