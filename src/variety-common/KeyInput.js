@@ -205,7 +205,7 @@ pzpr.classmgr.makeCommon({
 		key_inputdirec_common: function(ca, arrownum) {
 			// 共通処理
 			var cell = this.cursor.getc();
-			if (arrownum && cell.qnum === -1) {
+			if (arrownum && cell.getNum() === -1) {
 				return false;
 			}
 
@@ -228,7 +228,7 @@ pzpr.classmgr.makeCommon({
 			if (dir !== cell.NDIR) {
 				cell.setQdir(cell.qdir !== dir ? dir : cell.NDIR);
 				if (!arrownum) {
-					cell.setQnum(-1);
+					cell.setNum(-1);
 				}
 				this.cursor.draw();
 				return true;

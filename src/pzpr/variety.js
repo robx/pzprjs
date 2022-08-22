@@ -95,7 +95,8 @@
 		"squarejam",
 		"context",
 		"pentopia",
-		"numrope"
+		"numrope",
+		"yajisoko"
 	]);
 
 	(function(Genre, obj) {
@@ -413,6 +414,7 @@
 				"yajilin",
 				{ alias: "yajirin-regions" }
 			],
+			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
 			yosenabe: [0, 0, "よせなべ", "Yosenabe"]
