@@ -247,12 +247,12 @@ dominion: "Shade some cells on the board to divide all unshaded cells into regio
   \ same region. There can not be a region without any letters.\n4. Different letters\
   \ must be in different regions.\n5. Question marks can be replaced with any letter,\
   \ as long as it appears elsewhere on the grid."
-yajisoko: "Draw lines to move some of the boxes.\n1. Boxes can be moved horizontally\
-  \ or vertically, but not both.\n2. Movement lines cannot cross or overlap each other.\
-  \ Lines can also not go through the start- or endpoint of other boxes.\n3. A number\
-  \ indicates the amount of boxes in the given direction. If a box stops on top of\
-  \ a clue, the number becomes meaningless (it may be true or false).\nThis genre\
-  \ is invented by Jamie Hargrove."
+yajisoko: "Draw lines to move some of the boxes.\n1. A box can be moved horizontally\
+  \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
+  \ each other. Lines can also not go through the start- or endpoint of other boxes.\n\
+  3. A number indicates the amount of boxes in the given direction. If a box stops\
+  \ on top of a clue, the number becomes meaningless (it may be true or false).\n\
+  This genre is invented by Jamie Hargrove."
 kaidan: 'Draw several rectangles of length 1xN (at least 2) and draw a circle in all
   remaining cells.
 
