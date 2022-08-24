@@ -270,3 +270,11 @@ kaidan: 'Draw several rectangles of length 1xN (at least 2) and draw a circle in
   6. All rectangles form an orthogonally contiguous area.
 
   This genre first appeared in Puzzle Communication Nikoli vol. 172.'
+roundtrip: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
+  \ loop cannot branch off or retrace itself. When the loop visits a cell twice, it\
+  \ must travel in a straight line each time.\n2. The numbers to the left/right of\
+  \ the rows indicate the number of cells visited by the nearest section of the loop\
+  \ that travels horizontally in that row. Likewise, The numbers to the top/bottom\
+  \ of the columns indicate the number of cells visited by the nearest section of\
+  \ the loop that travels vertically in that column.\nThis genre is invented by Craig\
+  \ Kasper."
