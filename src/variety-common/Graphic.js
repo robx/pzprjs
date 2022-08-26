@@ -403,7 +403,7 @@ pzpr.classmgr.makeCommon({
 							addwidth = basewidth / 2;
 						}
 
-						if (info > 0) {
+						if (this.pid !== "kinkonkan" && info > 0) {
 							if (info & (slash ? 4 : 8)) {
 								color = this.noerrcolor;
 							} else if (info & 1) {
