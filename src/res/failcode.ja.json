@@ -645,5 +645,20 @@
     "nmEqOne.snakepit": "1マスの領域があります。",
     "nmLoop.snakepit": "スネークに端がありません。",
     "nmMidpoint.snakepit": "灰色のマスがスネークの端になっています。",
-    "nmSame2x2.snakepit": "スネークが自分自身とタテヨコに接しています。"
+    "nmSame2x2.snakepit": "スネークが自分自身とタテヨコに接しています。",
+    "bkNotSquare.squarejam": "領域が正方形ではありません。",
+    "anShadeNe.yajisoko": "箱の数が正しくありません。",
+    "bkSideNe.squarejam": "数字と領域の大きさが異なります。",
+    "laOnNum.yajisoko": "線が箱を通り過ぎています。",
+    "nmConnected.yajisoko": "箱どうしが線でつながっています。",
+    "nmNotSeq.numrope": "線上の数字が連続していません。",
+    "nmRange.kakuru": "数字が9より大きいです。",
+    "nmSubNe1.numrope": "隣り合う数字の差が1ではありません。",
+    "nmUnshadeAdjNe.context": "タテヨコに隣り合う黒マスの数が数字と異なります。",
+    "arDistanceGt.pentopia": "矢印のない方向に、近すぎる黒マスがあります。",
+    "arDistanceNe.pentopia": "矢印の指す方向の黒マスまでの距離が異なります。",
+    "arNoShade.pentopia": "矢印の指す方向に黒マスがありません。",
+    "csOnArrow.pentopia": "矢印のあるマスが黒マスになっています。",
+    "nmShadeDiagNe.context": "ナナメに隣り合う黒マスの数が数字と異なります。",
+    "shDiag.pentopia": "黒マスのカタマリがナナメに接しています。"
 }
