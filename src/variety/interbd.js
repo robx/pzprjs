@@ -615,45 +615,13 @@
 		},
 
 		checkSeparated: function() {
-			var areas = this.board.ublkmgr.components;
-			for (var id = 0; id < areas.length; id++) {
-				areas[id].colors = 0;
-			}
-
-			for (var c = 0; c < this.board.cell.length; c++) {
-				var cell = this.board.cell[c];
-				if (cell.ques === 0) {
-					continue;
-				}
-				cell.ublk.colors |= 1 << (cell.ques - 1);
-			}
-
-			var singles = 0,
-				doubles = 0;
-			var areas = this.board.ublkmgr.components;
-			for (var id = 0; id < areas.length; id++) {
-				var colors = areas[id].colors;
-				doubles |= colors & singles;
-				singles |= colors;
-			}
-
-			if (doubles === 0) {
-				return;
-			}
-			this.failcode.add("bkSepColor");
-			if (this.checkOnly) {
-				return;
-			}
-
-			for (var c = 0; c < this.board.cell.length; c++) {
-				var cell = this.board.cell[c];
-				if (cell.ques === 0) {
-					continue;
-				}
-				if (doubles & (1 << (cell.ques - 1))) {
-					cell.seterr(1);
-				}
-			}
+			this.checkGatheredObjectInGraph(
+				this.board.ublkmgr,
+				function(cell) {
+					return cell.ques || -1;
+				},
+				"bkSepColor"
+			);
 		},
 
 		checkDivision: function() {

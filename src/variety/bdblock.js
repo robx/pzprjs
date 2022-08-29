@@ -146,36 +146,13 @@
 
 		// 同じ値であれば、同じ部屋に存在することを判定する
 		checkGatheredObject: function() {
-			var d = [],
-				dmax = 0,
-				val = [],
-				bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				val[c] = bd.cell[c].getNum();
-				if (dmax < val[c]) {
-					dmax = val[c];
-				}
-			}
-			for (var i = 0; i <= dmax; i++) {
-				d[i] = null;
-			}
-			for (var c = 0; c < bd.cell.length; c++) {
-				if (val[c] === -1) {
-					continue;
-				}
-				var room = bd.cell[c].room;
-				if (d[val[c]] === null) {
-					d[val[c]] = room;
-				} else if (d[val[c]] !== room) {
-					this.failcode.add("bkSepNum");
-					bd.cell
-						.filter(function(cell) {
-							return room === cell.room || d[val[c]] === cell.room;
-						})
-						.seterr(1);
-					break;
-				}
-			}
+			this.checkGatheredObjectInGraph(
+				this.board.roommgr,
+				function(cell) {
+					return cell.getNum();
+				},
+				"bkSepNum"
+			);
 		}
 	}
 });

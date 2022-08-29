@@ -726,6 +726,7 @@ pzpr.classmgr.makeCommon({
 
 		//---------------------------------------------------------------------------
 		// ans.checkSameObjectInRoom()      部屋の中のgetvalueの値が1種類であるか判定する
+		// ans.checkGatheredObjectInGraph() Check for a value appearing in no more than 1 component
 		// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
 		// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 		//---------------------------------------------------------------------------
@@ -754,6 +755,30 @@ pzpr.classmgr.makeCommon({
 							areas[id].setedgeerr(1);
 						}
 					}
+				}
+			}
+		},
+
+		checkGatheredObjectInGraph: function(graph, getvalue, code) {
+			var d = {},
+				bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var val = getvalue(bd.cell[c]);
+				if (val === -1) {
+					continue;
+				}
+				var room = graph.getComponentRefs(bd.cell[c]);
+				if (d[val] === undefined) {
+					d[val] = room;
+				} else if (room && d[val] !== room) {
+					this.failcode.add(code);
+					bd.cell
+						.filter(function(cell) {
+							var otherroom = graph.getComponentRefs(cell);
+							return room === otherroom || d[val] === otherroom;
+						})
+						.seterr(1);
+					break;
 				}
 			}
 		},

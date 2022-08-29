@@ -120,6 +120,7 @@ function toBGimage(pid) {
 		"curvedata",
 		"dbchoco",
 		"detour",
+		"dominion",
 		"doppelblock",
 		"dotchi",
 		"doubleback",
