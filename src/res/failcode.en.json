@@ -581,6 +581,7 @@
     "nmShapeNe.pentominous": "A shape does not match the given letter.",
     "nmShootShadeNe1.kurochute": "There is not exactly one shaded cell at the given distance from the number.",
     "nmSightNe.easyasabc": "The letter is not the closest.",
+    "nmSightNe.roundtrip": "The length of the closest line segment is wrong.",
     "nmSightNe.skyscrapers": "The number of visible buildings is wrong.",
     "nmSizeGt.pencils": "A number is larger than the length of the pencil.",
     "nmSizeLt.pencils": "A number is smaller than the length of the pencil.",
