@@ -106,6 +106,10 @@
 				variant: true,
 				volatile: true
 			}); /* nuriuzu: Rule variation for shaded connectivity */
+			this.add("pentopia_transparent", false, {
+				variant: true,
+				volatile: true
+			}); /* pentopia: Allow shading clues */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -410,6 +414,9 @@
 					break;
 				case "nuriuzu_connect":
 					exec = pid === "nuriuzu";
+					break;
+				case "pentopia_transparent":
+					exec = pid === "pentopia";
 					break;
 				default:
 					exec = !!this.list[name];

@@ -435,7 +435,7 @@
 		numberAsObject: true,
 		maxnum: 15,
 		allowShade: function() {
-			return this.qnum === -1;
+			return this.puzzle.getConfig("pentopia_transparent") || this.qnum === -1;
 		},
 		seterr: function(num) {
 			if (this.board.isenableSetError()) {
@@ -684,12 +684,16 @@
 	},
 	"Encode@pentopia": {
 		decodePzpr: function(type) {
+			this.puzzle.setConfig("pentopia_transparent", this.checkpflag("t"));
 			if (this.outbstr[0] !== "/") {
 				this.decodeNumber16();
 			}
 			this.decodePieceBank();
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("pentopia_transparent")
+				? "t"
+				: null;
 			this.encodeNumber16();
 			this.encodePieceBank();
 		}
@@ -710,15 +714,37 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodePieceBank();
+			this.decodeConfig();
 			this.decodeCellQnum();
 			this.decodeCellAns();
 			this.decodePieceBankQcmp();
 		},
 		encodeData: function() {
 			this.encodePieceBank();
+			this.encodeConfig();
 			this.encodeCellQnum();
 			this.encodeCellAns();
 			this.encodePieceBankQcmp();
+		},
+
+		decodeConfig: function() {},
+		encodeConfig: function() {}
+	},
+
+	"FileIO@pentopia": {
+		decodeConfig: function() {
+			if (this.dataarray[this.lineseek] === "t") {
+				this.puzzle.setConfig("pentopia_transparent", true);
+				this.readLine();
+			} else {
+				this.puzzle.setConfig("pentopia_transparent", false);
+			}
+		},
+
+		encodeConfig: function() {
+			if (this.puzzle.getConfig("pentopia_transparent")) {
+				this.writeLine("t");
+			}
 		}
 	},
 
@@ -768,6 +794,9 @@
 		],
 
 		checkShadeOnArrow: function() {
+			if (this.puzzle.getConfig("pentopia_transparent")) {
+				return;
+			}
 			this.checkAllCell(function(cell) {
 				return cell.isShade() && cell.qnum !== -1;
 			}, "csOnArrow");
@@ -822,9 +851,9 @@
 				var row = [cell0, -1, -1, -1, -1];
 				for (var dir = 1; dir <= 4; dir++) {
 					var addr = cell0.getaddr();
-					while (!addr.getc().isnull && !addr.getc().isShade()) {
+					do {
 						addr.movedir(dir, 2);
-					}
+					} while (!addr.getc().isnull && !addr.getc().isShade());
 					if (addr.getc().isShade()) {
 						row[dir] =
 							Math.abs(dir >= 3 ? addr.bx - cell0.bx : addr.by - cell0.by) / 2;

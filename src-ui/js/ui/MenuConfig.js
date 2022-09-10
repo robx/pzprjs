@@ -108,6 +108,9 @@
 				case "nuriuzu":
 					idname = "nuriuzu_connect";
 					break;
+				case "pentopia":
+					idname = "pentopia_transparent";
+					break;
 				case "context":
 					idname = "context_marks";
 					break;
