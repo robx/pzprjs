@@ -278,3 +278,11 @@ roundtrip: "Draw lines through orthogonally adjacent cells to form a loop.\n1. T
   \ of the columns indicate the number of cells visited by the nearest section of\
   \ the loop that travels vertically in that column.\nThis genre is invented by Craig\
   \ Kasper."
+cts: "Shade some cells on the board according to the numbers.\n1. Clues outside the\
+  \ grid represent the lengths of each of the blocks of consecutive shaded cells in\
+  \ the corresponding row or column, in order from left to right or top to bottom.\n\
+  2. A question mark represents a block of any length (at least 1).\n3. An asterisk\
+  \ represents an unknown amount of blocks of any length. An asterisk may also be\
+  \ meaningless, i.e. represent no blocks at all.\n4. The shaded cells cannot form\
+  \ a 2x2 square.\n5. All shaded cells form an orthogonally contiguous area.\nThis\
+  \ genre is invented by Grant Fikes."
