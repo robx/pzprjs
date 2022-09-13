@@ -98,7 +98,8 @@
 		"numrope",
 		"yajisoko",
 		"dominion",
-		"roundtrip"
+		"roundtrip",
+		"cts"
 	]);
 
 	(function(Genre, obj) {
@@ -156,6 +157,7 @@
 			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
 			context: [0, 0, "Context", "Context"],
 			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
+			cts: [0, 0, "Cross the Streams", "Cross the Streams", "nonogram"],
 			barns: [1, 0, "バーンズ", "Barns"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
 			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],

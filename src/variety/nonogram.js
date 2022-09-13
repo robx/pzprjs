@@ -8,10 +8,10 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nonogram", "coral"], {
+})(["nonogram", "coral", "cts"], {
 	MouseEvent: {
 		use: true,
-		inputModes: { edit: ["number"], play: ["shade", "unshade"] },
+		inputModes: { edit: ["number"], play: ["shade", "unshade", "completion"] },
 
 		mouseinput: function() {
 			// オーバーライド
@@ -29,6 +29,9 @@
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
+					if (this.mousestart) {
+						this.inputqcmp();
+					}
 					this.inputcell();
 				}
 			} else if (this.puzzle.editmode) {
@@ -49,13 +52,25 @@
 			} else {
 				this.inputqnum_main(excell);
 			}
+		},
+
+		inputqcmp: function() {
+			var excell = this.getcell_excell();
+			if (excell.isnull || excell.noNum() || excell.group !== "excell") {
+				return;
+			}
+
+			excell.setQcmp(+!excell.qcmp);
+			excell.draw();
+
+			this.mousereset();
 		}
 	},
 
-	"MouseEvent@coral": {
+	"MouseEvent@coral,cts": {
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "info-blk", "completion"]
 		}
 	},
 
@@ -108,31 +123,15 @@
 		keyinput: function(ca) {
 			this.key_inputexcell(ca);
 		},
+
 		key_inputexcell: function(ca) {
-			var excell = this.cursor.getex(),
-				qn = excell.qnum;
-			var max = excell.getmaxnum(),
-				min = excell.getminnum();
+			var excell = this.cursor.getex();
 
-			if ("0" <= ca && ca <= "9") {
-				var num = +ca;
-
-				if (qn <= 0 || this.prev !== excell) {
-					if (num <= max && num >= min) {
-						excell.setQnum(num);
-					}
-				} else {
-					if (qn * 10 + num <= max) {
-						excell.setQnum(qn * 10 + num);
-					} else if (num <= max && num >= min) {
-						excell.setQnum(num);
-					}
-				}
-			} else if (ca === " " || ca === "-" || ca === "BS") {
-				excell.setQnum(-1);
-			} else {
+			var val = this.getNewNumber(excell, ca, excell.qnum);
+			if (val === null) {
 				return;
 			}
+			excell.setQnum(val);
 
 			this.prev = excell;
 			this.cursor.draw();
@@ -162,6 +161,20 @@
 				this.puzzle.board.excellOffsets = null;
 			}
 		}
+	},
+
+	"KeyEvent@cts": {
+		getNewNumber: function(cell, ca, cur) {
+			if (ca === "w" || ca === "shift+8" || ca === "*") {
+				return 0;
+			}
+			return this.common.getNewNumber.call(this, cell, ca, cur);
+		}
+	},
+
+	"ExCell@cts": {
+		disInputHatena: false,
+		minnum: 0
 	},
 
 	Board: {
@@ -227,7 +240,7 @@
 		enabled: true
 	},
 
-	"AreaShadeGraph@coral": {
+	"AreaShadeGraph@coral,cts": {
 		enabled: true
 	},
 
@@ -248,6 +261,15 @@
 			this.drawBorders();
 
 			this.drawTarget();
+		},
+
+		getQuesNumberColor: function(cell) {
+			if (cell.error === 1) {
+				return this.errcolor1;
+			} else if (cell.qcmp) {
+				return this.qcmpcolor;
+			}
+			return this.quescolor;
 		},
 
 		getBorderColor: function(border) {
@@ -281,6 +303,15 @@
 		}
 	},
 
+	"Graphic@cts": {
+		getQuesNumberText: function(excell) {
+			if (excell.qnum === 0) {
+				return "*";
+			}
+			return this.getNumberTextCore(excell.qnum);
+		}
+	},
+
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
@@ -296,6 +327,10 @@
 				if (ca === ".") {
 					return;
 				} else if (obj.group === "excell" && !obj.isnull) {
+					if (ca[0] === "c") {
+						obj.qcmp = 1;
+						ca = ca.substring(1);
+					}
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
 					if (ca === "#") {
@@ -309,7 +344,7 @@
 		encodeData: function() {
 			this.encodeCellExCell(function(obj) {
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
-					return obj.qnum + " ";
+					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
 				} else if (obj.group === "cell") {
 					if (obj.qans === 1) {
 						return "# ";
@@ -415,6 +450,71 @@
 				}
 				clist.seterr(1);
 			}
+		}
+	},
+
+	"AnsCheck@cts": {
+		checklist: ["check2x2ShadeCell", "checkNonogram", "checkConnectShade"],
+
+		isExCellCount: function(clist) {
+			var d = clist.getRectSize(),
+				bd = this.board;
+
+			var excells =
+				d.x1 === d.x2
+					? bd.excellinside(d.x1, bd.minby, d.x1, -1)
+					: bd.excellinside(bd.minbx, d.y1, -1, d.y1);
+
+			var nums = [];
+			var addedStar = false;
+			for (var i = 0; i < excells.length; i++) {
+				var qnum = excells[i].qnum;
+				if (qnum !== -1 && (!addedStar || qnum !== 0)) {
+					nums.push(qnum);
+				}
+				addedStar = qnum === 0;
+			}
+
+			if (nums.length === 1 && nums[0] === 0) {
+				return true;
+			}
+
+			var lines = this.getLines(clist);
+
+			if (lines.length === 0 || nums.length === 0) {
+				if (lines.length !== nums.length) {
+					clist.seterr(1);
+					excells.seterr(1);
+					return false;
+				}
+				return true;
+			}
+
+			var lineStr = "";
+			lines.forEach(function(l) {
+				lineStr += "a".repeat(l) + " ";
+			});
+
+			var regex = "^";
+			nums.forEach(function(n) {
+				if (n === -2) {
+					regex += "a* ";
+				} else if (n === 0) {
+					regex += "(|.* )";
+				} else if (n === 1) {
+					regex += "a ";
+				} else {
+					regex += "a{" + n + "} ";
+				}
+			});
+			regex += "$";
+
+			if (!lineStr.match(new RegExp(regex))) {
+				clist.seterr(1);
+				excells.seterr(1);
+				return false;
+			}
+			return true;
 		}
 	}
 });

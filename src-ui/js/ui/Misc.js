@@ -117,6 +117,7 @@ function toBGimage(pid) {
 		"coffeemilk",
 		"compass",
 		"coral",
+		"cts",
 		"curvedata",
 		"dbchoco",
 		"detour",
