@@ -635,6 +635,7 @@ pzpr.classmgr.makeCommon({
 					return excell[i].qnum;
 				},
 				function(i, num) {
+					excell[i].setQcmp(0);
 					excell[i].setQnum(num);
 				}
 			);
