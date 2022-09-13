@@ -475,19 +475,16 @@
 				addedStar = qnum === 0;
 			}
 
-			if (nums.length === 1 && nums[0] === 0) {
+			if (nums.length === 0 || (nums.length === 1 && nums[0] === 0)) {
 				return true;
 			}
 
 			var lines = this.getLines(clist);
 
-			if (lines.length === 0 || nums.length === 0) {
-				if (lines.length !== nums.length) {
-					clist.seterr(1);
-					excells.seterr(1);
-					return false;
-				}
-				return true;
+			if (lines.length === 0) {
+				clist.seterr(1);
+				excells.seterr(1);
+				return false;
 			}
 
 			var lineStr = "";
