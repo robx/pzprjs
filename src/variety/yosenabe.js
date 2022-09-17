@@ -522,7 +522,7 @@
 	},
 	"Graphic@yajisoko": {
 		bgcellcolor_func: "qsub2",
-		numbercolor_func: "move",
+		fontsizeratio: 0.75,
 		circlefillcolor_func: "qcmp",
 		circlebasecolor: "#CFCFCF",
 		qcmpcolor: "gray",
@@ -536,8 +536,8 @@
 			this.drawDepartures();
 			this.drawLines();
 
-			this.drawArrowNumbers({ bottom: true });
 			this.drawBoxes();
+			this.drawArrowNumbers({ scale: 0.75, arrowfontsize: 0.6, bottom: true });
 
 			this.drawPekes();
 
@@ -548,6 +548,12 @@
 
 		getNumberText: function(cell, num) {
 			return num === -4 ? "∞" : this.getNumberTextCore(num);
+		},
+		getQuesNumberColor: function(cell) {
+			if (this.puzzle.execConfig("dispmove") && cell.lcnt === 1) {
+				return "#00000050";
+			}
+			return this.quescolor;
 		},
 
 		drawBoxes: function() {

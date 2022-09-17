@@ -655,10 +655,12 @@ pzpr.classmgr.makeCommon({
 		drawArrowNumbers: function(opts) {
 			var g = this.vinc("cell_arrownumber", "auto");
 
-			var al = this.cw * 0.4; // ArrowLength
-			var aw = this.cw * 0.03; // ArrowWidth
-			var tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
-			var tw = this.cw * 0.12; // 矢じりの幅
+			var scale = (opts && opts.scale) || 1;
+
+			var al = this.cw * 0.4 * scale; // ArrowLength
+			var aw = this.cw * 0.03 * scale; // ArrowWidth
+			var tl = this.cw * 0.16 * scale; // 矢じりの長さの座標(中心-長さ)
+			var tw = this.cw * 0.12 * scale; // 矢じりの幅
 			var dy = -this.bh * 0.6;
 			var dx = [this.bw * 0.6, this.bw * 0.7, this.bw * 0.8, this.bw * 0.85];
 
@@ -686,7 +688,7 @@ pzpr.classmgr.makeCommon({
 					switch (dir) {
 						case cell.UP:
 							g.setOffsetLinePath(
-								px + dx[digit],
+								px + dx[digit] * scale,
 								py,
 								0,
 								-al,
@@ -707,7 +709,7 @@ pzpr.classmgr.makeCommon({
 							break;
 						case cell.DN:
 							g.setOffsetLinePath(
-								px + dx[digit],
+								px + dx[digit] * scale,
 								py,
 								0,
 								al,
@@ -779,13 +781,14 @@ pzpr.classmgr.makeCommon({
 				if (!!text) {
 					var option = { ratio: this.fontsizeratio };
 					if (dir !== cell.NDIR) {
-						option.ratio = 0.7;
+						option.ratio =
+							opts && opts.arrowfontsize ? opts.arrowfontsize : 0.7;
 					}
 
 					if (dir === cell.UP || dir === cell.DN) {
 						px -= this.cw * 0.1;
 					} else if (dir === cell.LT || dir === cell.RT) {
-						py += this.ch * 0.1 * (opts && opts.bottom ? -1 : +1);
+						py += this.ch * 0.1 * (opts && opts.bottom ? -1 : +1) * 0.5;
 					}
 
 					this.disptext(text, px, py, option);
