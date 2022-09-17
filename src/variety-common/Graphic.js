@@ -788,7 +788,7 @@ pzpr.classmgr.makeCommon({
 					if (dir === cell.UP || dir === cell.DN) {
 						px -= this.cw * 0.1;
 					} else if (dir === cell.LT || dir === cell.RT) {
-						py += this.ch * 0.1 * (opts && opts.bottom ? -1 : +1) * 0.5;
+						py += this.ch * 0.1 * (opts && opts.bottom ? -0.5 : +1);
 					}
 
 					this.disptext(text, px, py, option);
