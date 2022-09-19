@@ -99,7 +99,9 @@
 		"yajisoko",
 		"dominion",
 		"roundtrip",
-		"cts"
+		"cts",
+		"vslither",
+		"tslither"
 	]);
 
 	(function(Genre, obj) {
@@ -396,10 +398,12 @@
 			tontti: [0, 0, "Tonttiraja", "Tonttiraja"],
 			tren: [0, 0, "パーキング", "Tren"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
+			tslither: [0, 0, "Touch Slitherlink", "Touch Slitherlink", "vslither"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],
 			view: [1, 0, "ヴィウ", "View", "sukoro"],
 			voxas: [0, 0, "Voxas", "Voxas"],
+			vslither: [0, 0, "Vertex Slitherlink", "Vertex Slitherlink"],
 			wagiri: [0, 0, "ごきげんななめ・輪切", "Wagiri", "gokigen"],
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],

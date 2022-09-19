@@ -154,7 +154,9 @@ function toBGimage(pid) {
 		"tajmahal",
 		"tapaloop",
 		"tents",
+		"tslither",
 		"voxas",
+		"vslither",
 		"walllogic",
 		"yinyang"
 	];
