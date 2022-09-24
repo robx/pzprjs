@@ -9,7 +9,18 @@
 		inputModes: { edit: ["number", "shade", "clear"], play: ["line", "peke"] },
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				this.inputLine();
+				if (this.btn === "left") {
+					if (this.mousestart || this.mousemove) {
+						this.inputLine();
+					} else if (this.mouseend && this.notInputted()) {
+						this.prevPos.reset();
+						this.inputpeke();
+					}
+				} else if (this.btn === "right") {
+					if (this.mousestart || this.mousemove) {
+						this.inputpeke();
+					}
+				}
 			} else if (this.puzzle.editmode && this.mousestart) {
 				this.inputqnum();
 			}
@@ -60,7 +71,22 @@
 		hasexcell: 2,
 		hasborder: 2
 	},
-	// TODO prevent drawing lines on border with excell if no number is present
+	Border: {
+		// TODO noLP
+		prehook: {
+			line: function(num) {
+				return (
+					num &&
+					!!this.sidecell.find(function(s) {
+						return s.group === "excell" && s.qnum === -1;
+					})
+				);
+			},
+			qsub: function(num) {
+				return num && !this.inside;
+			}
+		}
+	},
 	LineGraph: {
 		enabled: true,
 
@@ -135,6 +161,49 @@
 			});
 			this.encodeBorderLine();
 		}
-	}
+	},
 	// TODO answers
+	AnsCheck: {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkLineOnShade",
+			"checkLineOverLetter",
+			"checkVisited"
+		],
+		checkLineOnShade: function() {
+			this.checkAllCellExcell(function(cell) {
+				return (
+					cell.qnum === (cell.group === "excell" ? -1 : -3) &&
+					cell.pathnodes &&
+					cell.pathnodes.length > 0
+				);
+			}, "lnOnShade");
+		},
+		checkAllCellExcell: function(func, code) {
+			var bd = this.board;
+			for (var y = -1; y <= bd.maxby; y += 2) {
+				for (var x = -1; x <= bd.maxbx; x += 2) {
+					var obj = bd.getobj(x, y);
+
+					if (!func(obj)) {
+						continue;
+					}
+
+					this.failcode.add(code);
+					if (this.checkOnly) {
+						break;
+					}
+					obj.seterr(1);
+				}
+			}
+		},
+		checkVisited: function() {
+			this.checkAllCellExcell(function(cell) {
+				return (
+					cell.qnum !== -1 && cell.qnum !== -3 && cell.pathnodes.length === 0
+				);
+			}, "lnIsolate");
+		}
+	}
 });
