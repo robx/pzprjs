@@ -91,6 +91,7 @@
 		enabled: true,
 		makeClist: true,
 
+		// TODO reset extra data when typing numbers
 		rebuild2: function() {
 			var excells = this.board.excell;
 			for (var c = 0; c < excells.length; c++) {
@@ -174,7 +175,6 @@
 			this.encodeBorderLine();
 		}
 	},
-	// TODO answers
 	AnsCheck: {
 		checklist: [
 			"checkBranchLine",
@@ -223,7 +223,20 @@
 			}, "lnIsolate");
 		},
 		checkAllPath: function(func, code) {
-			// TODO implement
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				if (!func(path)) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				path.setedgeerr(1);
+			}
 		},
 		checkLineHasFish: function() {
 			this.checkAllPath(function(path) {
