@@ -59,12 +59,26 @@
 	ExCell: {
 		maxnum: function() {
 			return this.board.cols * this.board.rows;
+		},
+		posthook: {
+			qnum: function() {
+				if (this.path) {
+					this.board.linegraph.setExtraData(this.path);
+				}
+			}
 		}
 	},
 	Cell: {
 		minnum: 0,
 		maxnum: function() {
 			return this.board.cols * this.board.rows;
+		},
+		posthook: {
+			qnum: function() {
+				if (this.path) {
+					this.board.linegraph.setExtraData(this.path);
+				}
+			}
 		}
 	},
 	Board: {
@@ -72,13 +86,12 @@
 		hasborder: 2
 	},
 	Border: {
-		// TODO noLP
 		prehook: {
 			line: function(num) {
 				return (
 					num &&
 					!!this.sidecell.find(function(s) {
-						return s.group === "excell" && s.qnum === -1;
+						return s.qnum === -3 || (s.group === "excell" && s.qnum === -1);
 					})
 				);
 			},
@@ -91,7 +104,6 @@
 		enabled: true,
 		makeClist: true,
 
-		// TODO reset extra data when typing numbers
 		rebuild2: function() {
 			var excells = this.board.excell;
 			for (var c = 0; c < excells.length; c++) {
@@ -144,7 +156,7 @@
 
 		getBGCellColor: function(cell) {
 			if (cell.qnum === -3) {
-				return this.quescolor;
+				return cell.error ? this.errcolor1 : this.quescolor;
 			}
 			if (cell.error) {
 				return this.errbcolor1;
@@ -245,7 +257,7 @@
 		},
 		checkLineHasNumber: function() {
 			this.checkAllPath(function(path) {
-				return path.fishcount === 0;
+				return path.numcount === 0;
 			}, "lnNoNum");
 		},
 		checkLineTooLong: function() {
