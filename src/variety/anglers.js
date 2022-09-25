@@ -198,7 +198,8 @@
 
 			"checkLineHasFish",
 			"checkLineHasNumber",
-			"checkVisited"
+			"checkVisited",
+			"checkNoLine+"
 		],
 		checkLineOnShade: function() {
 			this.checkAllCellExcell(function(cell) {
@@ -276,6 +277,11 @@
 					cell.path.clist.length < cell.qnum + 1
 				);
 			}, "lnLenLt");
+		},
+		checkNoLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum !== -3 && cell.lcnt === 0;
+			}, "ceNoLine");
 		}
 	}
 });
