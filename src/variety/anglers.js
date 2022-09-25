@@ -89,6 +89,7 @@
 	},
 	LineGraph: {
 		enabled: true,
+		makeClist: true,
 
 		rebuild2: function() {
 			var excells = this.board.excell;
@@ -98,6 +99,17 @@
 			}
 
 			this.common.rebuild2.call(this);
+		},
+
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+
+			component.fishcount = component.clist.filter(function(c) {
+				return c.qnum === 0;
+			}).length;
+			component.numcount = component.clist.filter(function(c) {
+				return c.qnum === -2 || c.qnum > 0;
+			}).length;
 		}
 	},
 	Graphic: {
@@ -169,6 +181,11 @@
 			"checkCrossLine",
 			"checkLineOnShade",
 			"checkLineOverLetter",
+			"checkLineTooLong",
+			"checkLineTooShort",
+
+			"checkLineHasFish",
+			"checkLineHasNumber",
 			"checkVisited"
 		],
 		checkLineOnShade: function() {
@@ -204,6 +221,36 @@
 					cell.qnum !== -1 && cell.qnum !== -3 && cell.pathnodes.length === 0
 				);
 			}, "lnIsolate");
+		},
+		checkAllPath: function(func, code) {
+			// TODO implement
+		},
+		checkLineHasFish: function() {
+			this.checkAllPath(function(path) {
+				return path.fishcount === 0;
+			}, "lnNoFish");
+		},
+		checkLineHasNumber: function() {
+			this.checkAllPath(function(path) {
+				return path.fishcount === 0;
+			}, "lnNoNum");
+		},
+		checkLineTooLong: function() {
+			this.checkAllCellExcell(function(cell) {
+				return (
+					cell.qnum > 0 && cell.path && cell.path.clist.length > cell.qnum + 1
+				);
+			}, "lnLenGt");
+		},
+		checkLineTooShort: function() {
+			this.checkAllCellExcell(function(cell) {
+				return (
+					cell.qnum > 0 &&
+					cell.path &&
+					cell.path.fishcount &&
+					cell.path.clist.length < cell.qnum + 1
+				);
+			}, "lnLenLt");
 		}
 	}
 });
