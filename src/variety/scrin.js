@@ -622,6 +622,7 @@
 
 	"AnsCheck@antmill": {
 		checklist: [
+			"checkShadeCellExist",
 			"checkOverShadeCell",
 			"checkEqualSideCell",
 			"checkBranchRoom",
