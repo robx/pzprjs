@@ -101,7 +101,8 @@
 		"roundtrip",
 		"cts",
 		"vslither",
-		"tslither"
+		"tslither",
+		"antmill"
 	]);
 
 	(function(Genre, obj) {
@@ -148,6 +149,7 @@
 			aho: [0, 0, "アホになり切れ", "Aho-ni-Narikire", "shikaku"],
 			amibo: [0, 0, "あみぼー", "Amibo", "amibo"],
 			angleloop: [0, 0, "鋭直鈍ループ", "Angle Loop", "kouchoku"],
+			antmill: [0, 0, "Ant Mill", "Ant Mill", "scrin"],
 			aqre: [0, 0, "Aqre", "Aqre", "aqre"],
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],
 			araf: [0, 0, "相ダ部屋", "Araf", "araf"],

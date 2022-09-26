@@ -706,7 +706,7 @@ pzpr.classmgr.makeCommon({
 				}
 				var cell1 = border.sidecell[0],
 					cell2 = border.sidecell[1];
-				if (cell1.isnull || cell2.isnull || !func(cell1, cell2)) {
+				if (cell1.isnull || cell2.isnull || !func(cell1, cell2, border)) {
 					continue;
 				}
 
