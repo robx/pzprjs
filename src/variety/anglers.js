@@ -164,7 +164,24 @@
 			return null;
 		}
 	},
-	// TODO encode
+	Encode: {
+		decodePzpr: function(type) {
+			var bd = this.board;
+			var clen = bd.cell.length;
+			this.genericDecodeNumber16(clen + bd.excell.length, function(c, val) {
+				var obj = c < clen ? bd.cell[c] : bd.excell[c - clen];
+				obj.qnum = val === 0 ? -3 : val > 0 ? val - 1 : val;
+			});
+		},
+		encodePzpr: function(type) {
+			var bd = this.board;
+			var clen = bd.cell.length;
+			this.genericEncodeNumber16(clen + bd.excell.length, function(c) {
+				var obj = c < clen ? bd.cell[c] : bd.excell[c - clen];
+				return obj.qnum === -3 ? 0 : obj.qnum >= 0 ? obj.qnum + 1 : obj.qnum;
+			});
+		}
+	},
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellExCell(function(obj, ca) {
