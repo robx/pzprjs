@@ -418,7 +418,7 @@
 			var g = this.vinc("antmill", "auto", true);
 
 			g.lineWidth = this.lm;
-			var size = this.cw * 0.24;
+			var size = this.cw * 0.21;
 			var blist = this.range.borders;
 			for (var i = 0; i < blist.length; i++) {
 				var border = blist[i],
