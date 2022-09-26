@@ -286,3 +286,13 @@ cts: "Shade some cells on the board according to the numbers.\n1. Clues outside 
   \ meaningless, i.e. represent no blocks at all.\n4. The shaded cells cannot form\
   \ a 2x2 square.\n5. All shaded cells form an orthogonally contiguous area.\nThis\
   \ genre is invented by Grant Fikes."
+antmill: "Shade some dominoes on the board to form a loop.\n1. Two dominoes may not\
+  \ be orthogonally adjacent.\n2. Every domino is diagonally adjacent to exactly two\
+  \ other dominoes.\n3. All dominoes form a diagonally connected area.\n4. Cells separated\
+  \ by a square must both be shaded or both be unshaded.\n5. A cross mark overlaps\
+  \ exactly one shaded cell.\nThis genre is invented by Eric Fox."
+anglers: "Draw lines so each person (represented by a number) is connected to a fish.\n\
+  1. Lines cannot branch off or cross. A number or fish can not have more than one\
+  \ line.\n2. A number shows the length of the connected line. A question mark can\
+  \ be replaced by any number.\n3. All unshaded cells must have a line. Shaded cells\
+  \ are obstacles."
