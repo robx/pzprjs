@@ -6,6 +6,7 @@
 	}
 })(["scrin", "antmill"], {
 	MouseEvent: {
+		use: true,
 		inputModes: { edit: ["number", "clear"], play: ["shade", "unshade"] },
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
