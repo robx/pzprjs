@@ -296,3 +296,21 @@ anglers: "Draw lines so each person (represented by a number) is connected to a 
   \ line.\n2. A number shows the length of the connected line. A question mark can\
   \ be replaced by any number.\n3. All unshaded cells must have a line. Shaded cells\
   \ are obstacles."
+koburin: "Shade some cells on the board, and draw a single loop that goes through\
+  \ all remaining cells.\n1. The loop cannot branch off or cross itself.\n2. Shaded\
+  \ cells cannot be orthogonally adjacent.\n3. Cells with numbers or question marks\
+  \ cannot be shaded, and are not part of the loop.\n4. A number indicates the amount\
+  \ of shaded cells in the (up to) four orthogonally adjacent cells."
+heyablock: "Shade some cells on the board.\n1. All shaded cells in one region must\
+  \ be connected.\n2. A number indicates the amount of shaded cells in a region.\n\
+  3. If a region has no number, it must have at least one shaded cell.\n4. Shaded\
+  \ cells cannot be adjacent across region borders.\n5. There cannot be a horizontal\
+  \ or vertical line of unshaded cells that goes through 2 or more region borders.\n\
+  6. All unshaded cells form an orthogonally contiguous area.\nThis genre first appeared\
+  \ in Toketa vol. 1."
+slashpack: "Draw diagonal lines through the center of some cells to divide the board\
+  \ into regions.\n1. Two lines cannot overlap within a cell. All lines must be drawn\
+  \ from one corner to the opposite corner of the cell.\n2. A cell with a number cannot\
+  \ overlap a line.\n3. Each region must contain exactly one of each kind of number\
+  \ on the board.\n4. Question marks can be replaced with any number, as long as it\
+  \ appears elsewhere on the grid."
