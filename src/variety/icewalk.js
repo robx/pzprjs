@@ -47,6 +47,12 @@
 			}
 		}
 	},
+	Border:{
+		enableLineNG: true,
+		isLineNG:function(){
+			return !this.inside;
+		}
+	},
 	Cell: {
 		posthook: {
 			qnum: function(val) {
