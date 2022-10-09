@@ -141,15 +141,22 @@
 			"checkBranchLine",
 			"checkCrossOutOfIce",
 			"checkIceLines",
+			"checkLessWalk",
 			"checkOverWalk",
 
 			"checkOneLoop",
-			// TODO count if line is too short, but only when enclosed on all sides with lines
 			"checkNoLineOnNum",
 			"checkDeadendLine+"
 		],
 
+		checkLessWalk: function() {
+			this.checkWalkLength(-1, "bkSizeLt");
+		},
 		checkOverWalk: function() {
+			this.checkWalkLength(+1, "bkSizeGt");
+		},
+
+		checkWalkLength: function(flag, code) {
 			for (var i = 0; i < this.board.cell.length; i++) {
 				var cell = this.board.cell[i];
 				var qnum = cell.qnum;
@@ -157,10 +164,19 @@
 					continue;
 				}
 
+				if (
+					flag < 0 &&
+					cell.room.clist.some(function(c) {
+						return c.lcnt !== 2;
+					})
+				) {
+					continue;
+				}
+
 				var d = cell.room.clist.length;
 
-				if (d > qnum) {
-					this.failcode.add("bkSizeGt");
+				if (flag > 0 ? d > qnum : d < qnum) {
+					this.failcode.add(code);
 					if (this.checkOnly) {
 						return;
 					}
