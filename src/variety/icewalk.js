@@ -47,9 +47,9 @@
 			}
 		}
 	},
-	Border:{
+	Border: {
 		enableLineNG: true,
-		isLineNG:function(){
+		isLineNG: function() {
 			return !this.inside;
 		}
 	},
