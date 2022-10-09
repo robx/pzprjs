@@ -103,7 +103,8 @@
 		"vslither",
 		"tslither",
 		"antmill",
-		"kaidan"
+		"kaidan",
+		"icewalk"
 	]);
 
 	(function(Genre, obj) {
@@ -243,6 +244,7 @@
 			icebarn: [1, 0, "アイスバーン", "Icebarn", "icebarn"],
 			icelom: [0, 0, "アイスローム", "Icelom", "icebarn"],
 			icelom2: [0, 0, "アイスローム２", "Icelom 2", "icebarn"],
+			icewalk: [0, 0, "Ice Walk", "Ice Walk"],
 			ichimaga: [0, 0, "イチマガ", "Ichimaga", "ichimaga"],
 			ichimagam: [0, 0, "磁石イチマガ", "Magnetic Ichimaga", "ichimaga"],
 			ichimagax: [
