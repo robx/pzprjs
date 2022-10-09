@@ -20,7 +20,12 @@
 					this.inputpeke();
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
+				var cell = this.getcell();
+				if (
+					this.btn === "right" &&
+					!cell.isNum() &&
+					(this.mousestart || this.mousemove)
+				) {
 					this.inputIcebarn();
 				} else if (this.mouseend && this.notInputted()) {
 					this.inputqnum();
@@ -28,14 +33,29 @@
 			}
 		}
 	},
+	// TODO keyboard input
 	Cell: {
-		// TODO make sure that ice and qnum are exclusive
+		posthook: {
+			qnum: function(val) {
+				if (val !== -1 && this.ques === 6) {
+					this.setQues(0);
+				}
+			},
+			ques: function(val) {
+				if (val === 6 && this.qnum !== -1) {
+					this.setQnum(-1);
+				}
+			}
+		},
 		maxnum: function() {
 			return this.board.cols * this.board.rows;
 		},
 		ice: function() {
 			return this.isnull || this.ques === 6;
 		}
+	},
+	Board: {
+		hasborder: 2
 	},
 	Graphic: {
 		irowake: true,
@@ -61,15 +81,22 @@
 			return null;
 		}
 	},
-	Board: {
-		cols: 8,
-		rows: 8,
-
-		hasborder: 2
-	},
 	LineGraph: {
 		enabled: true,
 		isLineCross: true
+	},
+	AreaRoomGraph: {
+		enabled: true,
+		relation: {
+			"cell.ques": "node",
+			"border.line": "separator"
+		},
+		isnodevalid: function(cell) {
+			return !cell.ice();
+		},
+		isedgevalidbylinkobj: function(border) {
+			return border.isLine();
+		}
 	},
 	Encode: {
 		decodePzpr: function() {
@@ -114,16 +141,44 @@
 			"checkBranchLine",
 			"checkCrossOutOfIce",
 			"checkIceLines",
+			"checkOverWalk",
+
 			"checkOneLoop",
-			// TODO go through all numbers
-			// TODO count line length on number
+			// TODO count if line is too short, but only when enclosed on all sides with lines
+			"checkNoLineOnNum",
 			"checkDeadendLine+"
 		],
+
+		checkOverWalk: function() {
+			for (var i = 0; i < this.board.cell.length; i++) {
+				var cell = this.board.cell[i];
+				var qnum = cell.qnum;
+				if (qnum <= 0 || !cell.room) {
+					continue;
+				}
+
+				var d = cell.room.clist.length;
+
+				if (d > qnum) {
+					this.failcode.add("bkSizeGt");
+					if (this.checkOnly) {
+						return;
+					}
+					cell.room.clist.seterr(1);
+				}
+			}
+		},
 
 		checkCrossOutOfIce: function() {
 			this.checkAllCell(function(cell) {
 				return cell.lcnt === 4 && !cell.ice();
 			}, "lnCrossExIce");
+		},
+
+		checkNoLineOnNum: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum !== -1 && cell.lcnt === 0;
+			}, "lnIsolate");
 		}
 	}
 });
