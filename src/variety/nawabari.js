@@ -351,7 +351,9 @@
 					cell.qnum = +ca;
 				}
 			});
-			this.decodeBorderAns();
+			this.decodeBorderAns(
+				this.pid === "fourcells" && this.filever === 0 ? 1 : null
+			);
 		},
 		encodeData: function() {
 			if (this.pid === "fourcells") {

@@ -265,15 +265,13 @@
 					2 * this.board.rows
 				);
 			},
-			decodeBorder: function(func) {
+			decodeBorder: function(func, hasborder) {
 				var puzzle = this.puzzle,
 					bd = puzzle.board;
-				if (
-					bd.hasborder === 1 ||
-					puzzle.pid === "bosanowa" ||
-					puzzle.pid === "lapaz" ||
-					(puzzle.pid === "fourcells" && this.filever === 0)
-				) {
+				if (!hasborder) {
+					hasborder = bd.hasborder;
+				}
+				if (hasborder === 1) {
 					this.decodeObj(
 						func,
 						"border",
@@ -290,7 +288,7 @@
 						2 * bd.cols - 1,
 						2 * bd.rows - 2
 					);
-				} else if (bd.hasborder === 2) {
+				} else if (hasborder === 2) {
 					if (this.currentType === pzpr.parser.FILE_PZPR) {
 						this.decodeObj(func, "border", 0, 1, 2 * bd.cols, 2 * bd.rows - 1);
 						this.decodeObj(func, "border", 1, 0, 2 * bd.cols - 1, 2 * bd.rows);
@@ -350,14 +348,13 @@
 					2 * this.board.rows
 				);
 			},
-			encodeBorder: function(func) {
+			encodeBorder: function(func, hasborder) {
 				var puzzle = this.puzzle,
 					bd = puzzle.board;
-				if (
-					bd.hasborder === 1 ||
-					puzzle.pid === "bosanowa" ||
-					puzzle.pid === "lapaz"
-				) {
+				if (!hasborder) {
+					hasborder = bd.hasborder;
+				}
+				if (hasborder === 1) {
 					this.encodeObj(
 						func,
 						"border",
@@ -374,7 +371,7 @@
 						2 * bd.cols - 1,
 						2 * bd.rows - 2
 					);
-				} else if (bd.hasborder === 2) {
+				} else if (hasborder === 2) {
 					if (this.currentType === pzpr.parser.FILE_PZPR) {
 						this.encodeObj(func, "border", 0, 1, 2 * bd.cols, 2 * bd.rows - 1);
 						this.encodeObj(func, "border", 1, 0, 2 * bd.cols - 1, 2 * bd.rows);
