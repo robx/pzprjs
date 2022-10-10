@@ -151,6 +151,8 @@ pzpr.classmgr.makeCommon({
 				key = "BS";
 			} else if (keycode === 109 || keycode === 189 || keycode === 173) {
 				key = "-";
+			} else if (keycode === 106) {
+				key = "*";
 			}
 
 			var keylist = !!key ? [key] : [];
@@ -506,7 +508,7 @@ pzpr.classmgr.makeCommon({
 			if (this.mode51 && this.puzzle.editmode) {
 				this.targetdir = 4;
 			} // right
-			else if (this.modesnum && this.puzzle.playmode) {
+			else if (this.modesnum) {
 				this.targetdir = 0;
 			}
 		},

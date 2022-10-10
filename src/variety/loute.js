@@ -476,7 +476,7 @@
 					i += 2;
 				} else if (ca === ".") {
 					cell.qdir = 5;
-				} else if (ca === "%") {
+				} else if (ca === "%" || ca === "@") {
 					cell.qdir = -2;
 				} else if (ca >= "g" && ca <= "j") {
 					cell.qdir = parseInt(ca, 20) - 15;
@@ -508,7 +508,7 @@
 						pstr = ".";
 					}
 				} else if (dir === -2) {
-					pstr = "%";
+					pstr = "@";
 				} else if (dir !== 0) {
 					pstr = (dir + 15).toString(20);
 				} else {

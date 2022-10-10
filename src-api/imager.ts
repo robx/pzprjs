@@ -1,5 +1,5 @@
-import fs = require('fs');
-import path = require('path');
+import fs from 'fs';
+import path from 'path';
 import { VercelResponse } from "@vercel/node";
 import { parse_query, pzvdetails } from "./tools"
 import sharp from "sharp"
@@ -11,11 +11,12 @@ path.resolve(fontPath, 'fonts.conf') // Reference conf so it gets copied
 
 process.env.FONTCONFIG_PATH=fontPath
 
+const saveicons = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'dist/js', 'saveicons.json'), { encoding: "utf8" }));
 const maskHoriz = fs.readFileSync(path.resolve(process.cwd(), 'src-api/img', 'mask-horiz.png'));
 const maskVert = fs.readFileSync(path.resolve(process.cwd(), 'src-api/img', 'mask-vert.png'));
 
 export function preview(res: VercelResponse, url: string) {
-	var qargs = parse_query(url);
+	const qargs = parse_query(url);
 	if (!qargs || !qargs.pzv) {
 		res.statusCode = 400;
 		res.end();
@@ -32,6 +33,15 @@ export function preview(res: VercelResponse, url: string) {
 		console.log('skipping large puzzle:', pzv);
 		return;
 	}
+	if (details.bodyMode === "file") {
+		res.statusCode = 404;
+		res.end("file thumbnails are not supported");
+		console.log('skipping File puzzle:', pzv);
+		return;
+	}
+	if(details.bodyMode === "blank") {
+		pzv = saveicons[details.pid] ?? pzv;
+	}
 
 	const canvas = {};
 	const p = new pzpr.Puzzle(canvas);
@@ -39,8 +49,12 @@ export function preview(res: VercelResponse, url: string) {
 		p.setMode('play');
 		p.setConfig('undefcell', false);
 		p.setConfig('autocmp', false);
+		var options: any = { cellsize: 30 };
+		if(p.board.bank) {
+			options.bank = qargs.bank ?? p.board.bank.shouldDrawBank();
+		}
 
-		var svgTxt: string = p.toBuffer('svg', 0, 30);
+		var svgTxt: string = p.toBuffer('svg', 0, options);
 
 		if (qargs.svgout) {
 			res.statusCode = 200;

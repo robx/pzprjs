@@ -680,6 +680,7 @@ ui.popupmgr.addpopup("imagesave", {
 	formname: "imagesave",
 	anchor: null,
 	showsize: null,
+	bankLabel: null,
 	init: function() {
 		ui.popupmgr.popups.template.init.call(this);
 
@@ -688,6 +689,7 @@ ui.popupmgr.addpopup("imagesave", {
 				? getEL("saveanchor")
 				: null;
 		this.showsize = getEL("showsize");
+		this.bankLabel = getEL("bank_label");
 
 		/* ファイル形式選択オプション */
 		var filetype = this.form.filetype,
@@ -710,6 +712,12 @@ ui.popupmgr.addpopup("imagesave", {
 
 		this.form.filename.value = pzpr.variety(ui.puzzle.pid).urlid + ".png";
 		this.form.cellsize.value = ui.menuconfig.get("cellsizeval");
+		if (ui.puzzle.board.bank) {
+			this.bankLabel.style.display = "";
+			this.form.bank.checked = ui.puzzle.board.bank.shouldDrawBank();
+		} else {
+			this.bankLabel.style.display = "none";
+		}
 
 		this.changefilename();
 		this.estimatesize();
@@ -756,7 +764,10 @@ ui.popupmgr.addpopup("imagesave", {
 		}
 
 		/* 画像出力ルーチン */
-		var option = { cellsize: +this.form.cellsize.value };
+		var option = {
+			cellsize: +this.form.cellsize.value,
+			bank: this.form.bank.checked
+		};
 		if (this.form.transparent.checked) {
 			option.bgcolor = "";
 		}
@@ -803,7 +814,10 @@ ui.popupmgr.addpopup("imagesave", {
 	//------------------------------------------------------------------------------
 	openimage: function() {
 		/* 画像出力ルーチン */
-		var option = { cellsize: +this.form.cellsize.value };
+		var option = {
+			cellsize: +this.form.cellsize.value,
+			bank: this.form.bank.checked
+		};
 		if (this.form.transparent.checked) {
 			option.bgcolor = "";
 		}

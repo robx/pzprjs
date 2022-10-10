@@ -706,7 +706,7 @@ pzpr.classmgr.makeCommon({
 				}
 				var cell1 = border.sidecell[0],
 					cell2 = border.sidecell[1];
-				if (cell1.isnull || cell2.isnull || !func(cell1, cell2)) {
+				if (cell1.isnull || cell2.isnull || !func(cell1, cell2, border)) {
 					continue;
 				}
 
@@ -726,6 +726,7 @@ pzpr.classmgr.makeCommon({
 
 		//---------------------------------------------------------------------------
 		// ans.checkSameObjectInRoom()      部屋の中のgetvalueの値が1種類であるか判定する
+		// ans.checkGatheredObjectInGraph() Check for a value appearing in no more than 1 component
 		// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
 		// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 		//---------------------------------------------------------------------------
@@ -754,6 +755,30 @@ pzpr.classmgr.makeCommon({
 							areas[id].setedgeerr(1);
 						}
 					}
+				}
+			}
+		},
+
+		checkGatheredObjectInGraph: function(graph, getvalue, code) {
+			var d = {},
+				bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var val = getvalue(bd.cell[c]);
+				if (val === -1) {
+					continue;
+				}
+				var room = graph.getComponentRefs(bd.cell[c]);
+				if (d[val] === undefined) {
+					d[val] = room;
+				} else if (room && d[val] !== room) {
+					this.failcode.add(code);
+					bd.cell
+						.filter(function(cell) {
+							var otherroom = graph.getComponentRefs(cell);
+							return room === otherroom || d[val] === otherroom;
+						})
+						.seterr(1);
+					break;
 				}
 			}
 		},
@@ -1139,16 +1164,20 @@ pzpr.classmgr.makeCommon({
 		//--------------------------------------------------------------------------------
 		// ans.searchloop() Return all cells of a Graph component that forms a loop.
 		//--------------------------------------------------------------------------------
-		searchloop: function(component, graph) {
+		searchloop: function(component, graph, borders) {
+			var errlist = borders
+				? new this.klass.BorderList()
+				: graph.pointgroup === "cross"
+				? new this.klass.CrossList()
+				: new this.klass.CellList();
 			// Loopがない場合は何もしないでreturn
 			if (component.circuits <= 0) {
-				return new this.klass.CellList();
+				return errlist;
 			}
 
 			// どこにLoopが存在するか判定を行う
 			var bd = this.board;
-			var errclist = new this.klass.CellList();
-			var history = [component.clist[0]],
+			var history = [component.nodes[0].obj],
 				prevcell = null;
 			var steps = {},
 				rows = bd.maxbx - bd.minbx;
@@ -1163,8 +1192,8 @@ pzpr.classmgr.makeCommon({
 				// ループになった場合 => ループフラグをセットする
 				else if (history.length - 1 > step) {
 					for (var i = history.length - 2; i >= 0; i--) {
-						if (history[i].group === "cell") {
-							errclist.add(history[i]);
+						if ((history[i].group === "border") === !!borders) {
+							errlist.add(history[i]);
 						}
 						if (history[i] === obj) {
 							break;
@@ -1172,7 +1201,7 @@ pzpr.classmgr.makeCommon({
 					}
 				}
 
-				if (obj.group === "cell") {
+				if (obj.group !== "border") {
 					prevcell = obj;
 					for (var i = 0; i < graph.getObjNodeList(obj)[0].nodes.length; i++) {
 						var cell2 = graph.getObjNodeList(obj)[0].nodes[i].obj;
@@ -1187,8 +1216,10 @@ pzpr.classmgr.makeCommon({
 					}
 				} else {
 					// borderの時
-					for (var i = 0; i < obj.sidecell.length; i++) {
-						var cell = obj.sidecell[i];
+					var side =
+						graph.pointgroup === "cross" ? obj.sidecross : obj.sidecell;
+					for (var i = 0; i < side.length; i++) {
+						var cell = side[i];
 						if (cell !== prevcell && cell !== history[history.length - 2]) {
 							nextobj = cell;
 							break;
@@ -1202,7 +1233,7 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 
-			return errclist;
+			return errlist;
 		},
 
 		//--------------------------------------------------------------------------------

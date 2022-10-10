@@ -265,6 +265,8 @@ pzpr.classmgr.makeCommon({
 					mode = "info-line";
 				} else if (this.inputModes.play.indexOf("info-blk") >= 0) {
 					mode = "info-blk";
+				} else if (this.inputModes.play.indexOf("info-ublk") >= 0) {
+					mode = "info-ublk";
 				}
 			}
 			switch (mode) {
@@ -356,6 +358,11 @@ pzpr.classmgr.makeCommon({
 				case "info-blk":
 					if (this.mousestart) {
 						this.dispInfoBlk();
+					}
+					break;
+				case "info-ublk":
+					if (this.mousestart) {
+						this.dispInfoUblk();
 					}
 					break;
 				default:

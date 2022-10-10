@@ -57,10 +57,10 @@ dotchi: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The 
   4. The loop cannot go through a shaded circle."
 
 
-hinge: "Shade some cells on the board.\n1. Each group of orthogonally connected cells\
-  \ is cut exactly once by a single straight segment of region borders, across which\
-  \ it must have reflectional symmetry.\n2. Numbered regions must contain the indicated\
-  \ amount of shaded cells."
+hinge: "Shade some cells on the board.\n1. A group of orthogonally connected shaded\
+  \ cells is called a block. Each block is cut exactly once by a single straight segment\
+  \ of region borders, across which it must have reflectional symmetry.\n2. Numbered\
+  \ regions must contain the indicated amount of shaded cells."
 
 lapaz: "Shade some cells on the board, and divide the rest into regions of 2 cells.\n\
   1. No two shaded cells are horizontally or vertically adjacent.\n2. Numbers must\
@@ -179,8 +179,8 @@ nuriuzu: "Shade some cells on the board.\n1. The unshaded areas must form blocks
   \ a 2x2 square of all shaded or unshaded cells."
 nothree: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
   \ vertically adjacent.\n2. A circle overlaps exactly one shaded cell.\n3. Three\
-  \ consecutive shaded cells in a row/column must have different distances.\n4. All\
-  \ unshaded cells on the board from an orthogonally connected area."
+  \ consecutive shaded cells in a row/column must have different distances between\
+  \ them.\n4. All unshaded cells on the board from an orthogonally connected area."
 coffeemilk: "Draw lines between the circles to form groups.\n1. Lines must be horizontal\
   \ or vertical, and cannot turn.\n2. Lines cannot cross each other.\n3. Each group\
   \ of circles must contain exactly one gray circle, and an equal amount of white\
@@ -192,6 +192,7 @@ ququ: "Shade some triangles on the board.\n1. Triangles with numbers or question
   \ an edge form blocks. Two blocks which touch each other at the corners must have\
   \ different shapes, counting rotations and reflections as the same.\nThis genre\
   \ first appeared in Puzzle Communication Nikoli vol. 171."
+
 squarejam: "Draw lines over the dotted lines to divide the grid into square-shaped\
   \ regions.\n1. A number indicates the side length of the square it's contained in.\
   \ Squares may have any amount of identical numbers.\n2. Region borders must not\
@@ -211,3 +212,105 @@ disloop: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The
   \ the loop in the direction of the arrow, where N is the amount of numbers inside\
   \ the clue. Numbers aren't necessarily in order.\nThis genre is invented by Eric\
   \ Fox."
+
+lither: "Draw lines along the edges of some cells to form trees.\n1. There must be\
+  \ more than one tree.\n2. A tree must branch or terminate at every grid vertex.\
+  \ In other words, each grid vertex must have 1, 3, or 4 connected edges.\n3. Trees\
+  \ must not contain loops.\n4. A number indicates the number of edges of that cell\
+  \ that are included in a tree.\nThis genre is invented by Eli Doris a.k.a. TwoHoleStraw."
+context: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
+  \ vertically adjacent.\n2. An unshaded number shows the amount of orthogonally adjacent\
+  \ shaded cells.\n3. A shaded number shows the amount of diagonally adjacent shaded\
+  \ cells.\n4. All unshaded cells on the board from an orthogonally connected area.\n\
+  This genre is invented by RSP."
+vslither: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot\
+  \ branch off or cross itself.\n2. A number indicates the amount of vertices surrounding\
+  \ the cell that are visited by the loop."
+tslither: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot\
+  \ branch off or cross itself.\n2. A number indicates how many times the loop visits\
+  \ the set of edges and vertices adjacent to the cell."
+pentopia: "Place some shapes from the bank into the grid. Shapes can be rotated or\
+  \ mirrored.\n1. A shape can be used no more than once. There cannot be shapes in\
+  \ the grid that aren't present in the bank.\n2. Two shapes cannot be orthogonally\
+  \ or diagonally adjacent.\n3. Arrows point towards the shape closest to the clue.\
+  \ If a clue has multiple arrows, the distance to the closest shape must be the same.\
+  \ Directions without an arrow must have a shape further away, or not have a shape\
+  \ in that direction.\n4. A cell with a clue cannot overlap a shape."
+numrope: "Place a number between 1 and 9 into every unshaded cell.\n1. Each gray line\
+  \ should contain a sequence of numbers which increase by 1.\n2. Numbers on shaded\
+  \ cells indicate the sum of numbers in the (up to four) orthogonally adjacent cells.\n\
+  3. Identical numbers cannot be adjacent.\nThis genre first appeared in Puzzle Communication\
+  \ Nikoli vol. 178."
+dominion: "Shade some cells on the board to divide all unshaded cells into regions.\n\
+  1. All shaded cells are orthogonally adjacent to exactly one other shaded cell.\n\
+  2. Cells with letters cannot be shaded.\n3. All identical letters must be in the\
+  \ same region. There can not be a region without any letters.\n4. Different letters\
+  \ must be in different regions.\n5. Question marks can be replaced with any letter,\
+  \ as long as it appears elsewhere on the grid."
+yajisoko: "Draw lines to move some of the boxes.\n1. A box can be moved horizontally\
+  \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
+  \ each other. Lines can also not go through the start- or endpoint of other boxes.\n\
+  3. A number indicates the amount of boxes in the given direction. If a box stops\
+  \ on top of a clue, the number becomes meaningless (it may be true or false).\n\
+  This genre is invented by Jamie Hargrove."
+kaidan: 'Draw several rectangles of length 1xN (at least 2) and draw a circle in all
+  remaining cells.
+
+  1. Rectangles and circles cannot overlap shaded cells.
+
+  2. A number indicates the amount of circles in the 4 orthogonally adjacent cells.
+
+  3. Two circles cannot be orthogonally adjacent.
+
+  4. Two rectangles with the same orientation cannot be adjacent along the short end.
+
+  5. When two rectangles are orthogonally adjacent, one rectangle must be exactly
+  1 square longer than the other.
+
+  6. All rectangles form an orthogonally contiguous area.
+
+  This genre first appeared in Puzzle Communication Nikoli vol. 172.'
+roundtrip: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
+  \ loop cannot branch off or retrace itself. When the loop visits a cell twice, it\
+  \ must travel in a straight line each time.\n2. The numbers to the left/right of\
+  \ the rows indicate the number of cells visited by the nearest section of the loop\
+  \ that travels horizontally in that row. Likewise, The numbers to the top/bottom\
+  \ of the columns indicate the number of cells visited by the nearest section of\
+  \ the loop that travels vertically in that column.\nThis genre is invented by Craig\
+  \ Kasper."
+cts: "Shade some cells on the board according to the numbers.\n1. Clues outside the\
+  \ grid represent the lengths of each of the blocks of consecutive shaded cells in\
+  \ the corresponding row or column, in order from left to right or top to bottom.\n\
+  2. A question mark represents a block of any length (at least 1).\n3. An asterisk\
+  \ represents an unknown amount of blocks of any length. An asterisk may also be\
+  \ meaningless, i.e. represent no blocks at all.\n4. The shaded cells cannot form\
+  \ a 2x2 square.\n5. All shaded cells form an orthogonally contiguous area.\nThis\
+  \ genre is invented by Grant Fikes."
+antmill: "Shade some dominoes on the board to form a loop.\n1. Two dominoes may not\
+  \ be orthogonally adjacent.\n2. Every domino is diagonally adjacent to exactly two\
+  \ other dominoes.\n3. All dominoes form a diagonally connected area.\n4. Cells separated\
+  \ by a square must both be shaded or both be unshaded.\n5. A cross mark overlaps\
+  \ exactly one shaded cell.\nThis genre is invented by Eric Fox."
+anglers: "Draw lines so each person (represented by a number) is connected to a fish.\n\
+  1. Lines cannot branch off or cross. A number or fish can not have more than one\
+  \ line.\n2. A number shows the length of the connected line. A question mark can\
+  \ be replaced by any number.\n3. All unshaded cells must have a line. Shaded cells\
+  \ are obstacles."
+koburin: "Shade some cells on the board, and draw a single loop that goes through\
+  \ all remaining cells.\n1. The loop cannot branch off or cross itself.\n2. Shaded\
+  \ cells cannot be orthogonally adjacent.\n3. Cells with numbers or question marks\
+  \ cannot be shaded, and are not part of the loop.\n4. A number indicates the amount\
+  \ of shaded cells in the (up to) four orthogonally adjacent cells."
+heyablock: "Shade some cells on the board.\n1. All shaded cells in one region must\
+  \ be connected.\n2. A number indicates the amount of shaded cells in a region.\n\
+  3. If a region has no number, it must have at least one shaded cell.\n4. Shaded\
+  \ cells cannot be adjacent across region borders.\n5. There cannot be a horizontal\
+  \ or vertical line of unshaded cells that goes through 2 or more region borders.\n\
+  6. All unshaded cells form an orthogonally contiguous area.\nThis genre first appeared\
+  \ in Toketa vol. 1."
+slashpack: "Draw diagonal lines through the center of some cells to divide the board\
+  \ into regions.\n1. Two lines cannot overlap within a cell. All lines must be drawn\
+  \ from one corner to the opposite corner of the cell.\n2. A cell with a number cannot\
+  \ overlap a line.\n3. Each region must contain exactly one of each kind of number\
+  \ on the board.\n4. Question marks can be replaced with any number, as long as it\
+  \ appears elsewhere on the grid."

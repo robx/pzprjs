@@ -610,6 +610,9 @@
 		if (puzzle.pid === "kramma") {
 			pc2.imgtile = puzzle.painter.imgtile;
 		}
+		if ("bank" in imageopt) {
+			pc2.showBank = imageopt.bank;
+		}
 
 		// canvasの設定を適用して、再描画
 		pc2.resizeCanvasByCellSize(imageopt.cellsize);
@@ -627,7 +630,8 @@
 		var type = pzpr.Candle.current;
 		var cellsize = null,
 			bgcolor = null,
-			quality = null;
+			quality = null,
+			bank = null;
 		for (var i = 0; i < arguments.length; i++) {
 			var argv = arguments[i];
 			switch (typeof argv) {
@@ -648,6 +652,9 @@
 					if ("bgcolor" in argv) {
 						bgcolor = argv.bgcolor;
 					}
+					if ("bank" in argv) {
+						bank = argv.bank;
+					}
 					break;
 			}
 		}
@@ -666,6 +673,9 @@
 		}
 		if (bgcolor !== null) {
 			imageopt.bgcolor = bgcolor;
+		}
+		if (bank !== null) {
+			imageopt.bank = bank;
 		}
 
 		return imageopt;

@@ -9,7 +9,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["fillomino", "symmarea", "pentominous"], {
+})(["fillomino", "symmarea", "pentominous", "snakepit"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -96,7 +96,9 @@
 			} else if (this.inputMode === "empty") {
 				this.inputempty();
 			}
-		},
+		}
+	},
+	"MouseEvent@pentominous,snakepit#2": {
 		inputempty: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
@@ -109,6 +111,34 @@
 			cell.setQues(this.inputData);
 			cell.drawaround();
 			this.mouseCell = cell;
+		}
+	},
+	"MouseEvent@snakepit": {
+		inputModes: {
+			edit: ["number", "circle-unshade", "shade", "empty", "clear"],
+			play: ["copynum", "number", "clear", "border", "subline"]
+		},
+
+		mouseinput: function() {
+			if (this.inputMode === "circle-unshade") {
+				this.inputCircle();
+			} else if (this.inputMode === "empty") {
+				this.inputempty();
+			} else {
+				this.common.mouseinput.call(this);
+			}
+		},
+
+		inputCircle: function() {
+			var cell = this.getcell();
+			if (!cell.isnull && this.inputData === null) {
+				this.inputData = cell.ques === 1 ? 0 : 1;
+			}
+			this.inputIcebarn();
+		},
+
+		inputShade: function() {
+			this.inputIcebarn();
 		}
 	},
 
@@ -181,6 +211,34 @@
 			return false;
 		}
 	},
+	"KeyEvent@snakepit": {
+		keyinput: function(ca) {
+			if (this.puzzle.editmode) {
+				var cell = this.cursor.getc();
+				if (cell.isnull) {
+					return;
+				}
+				if (ca === "q" || ca === "a" || ca === "z") {
+					cell.setQues(cell.ques === 1 ? 0 : 1);
+					cell.draw();
+					return;
+				} else if (ca === "w" || ca === "s" || ca === "x") {
+					cell.setQues(cell.ques === 6 ? 0 : 6);
+					cell.draw();
+					return;
+				} else if (ca === "e" || ca === "d" || ca === "c") {
+					cell.setQues(cell.ques === 7 ? 0 : 7);
+					cell.draw();
+					return;
+				} else if (ca === "r" || ca === "f" || ca === "v") {
+					cell.setQues(0);
+					cell.draw();
+					return;
+				}
+			}
+			this.key_inputqnum(ca);
+		}
+	},
 
 	"KeyEvent@pentominous": {
 		keyinput: function(ca) {
@@ -215,6 +273,9 @@
 	// 盤面管理系
 	Cell: {
 		enableSubNumberArray: true,
+		maxnum: function() {
+			return this.board.cols * this.board.rows;
+		},
 
 		posthook: {
 			qnum: function() {
@@ -292,6 +353,26 @@
 		minnum: 0,
 		maxnum: 11
 	},
+	"Cell@snakepit": {
+		minnum: 2,
+
+		isSameBlock: function(other) {
+			if (this.getNum() !== -1 && this.eqblk === other.eqblk) {
+				return true;
+			}
+			if (this.nblk === other.nblk) {
+				return this.nblk.complete;
+			}
+			return false;
+		},
+
+		equalcount: function() {
+			var cell = this;
+			return this.countDir4Cell(function(adj) {
+				return cell.isSameBlock(adj);
+			});
+		}
+	},
 	Border: {
 		posthook: {
 			qans: function(num) {
@@ -320,6 +401,13 @@
 			}
 			var num = this.pid !== "pentominous" ? block.clist[0].getNum() : 5;
 			var newcmp = num === block.clist.length ? 1 : 0;
+
+			if (this.puzzle.pid === "snakepit") {
+				if (num === 1) {
+					newcmp = 0;
+				}
+			}
+
 			if (newcmp !== this.qcmp) {
 				this.setQcmp(newcmp);
 				this.draw();
@@ -464,6 +552,7 @@
 			component.numkind = numkind;
 			component.number =
 				numkind === 1 ? filled : numkind === 0 ? clist.length : -1;
+			component.complete = clist.length === component.number;
 		},
 
 		getComponentRefs: function(cell) {
@@ -488,14 +577,29 @@
 		gridcolor_type: "DLIGHT",
 
 		bordercolor_func: "qans",
+		icecolor: "rgb(204,204,204)",
+
+		getCircleStrokeColor: function(cell) {
+			return cell.ques === 1 ? this.quescolor : null;
+		},
+		circlefillcolor_func: "null",
+		numbercolor_func: "qnum",
 
 		autocmp: "border",
+
+		getBGCellColor: function(cell) {
+			if (!cell.isValid()) {
+				return "black";
+			}
+			return this.getBGCellColor_icebarn(cell);
+		},
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawTargetSubNumber();
 			this.drawDashedGrid();
 
+			this.drawCircles();
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
@@ -518,16 +622,13 @@
 			return this.getBorderColor_qans(border);
 		},
 
-		getBGCellColor: function(cell) {
-			if (!cell.isValid()) {
-				return "black";
-			}
-			return this.getBGCellColor_error1(cell);
-		},
-
 		getNumberTextCore: function(num) {
 			return num === -2 ? "?" : this.klass.Cell.prototype.letters[num] || "";
 		}
+	},
+
+	"Graphic@snakepit": {
+		fontsizeratio: 0.65
 	},
 
 	//---------------------------------------------------------
@@ -565,15 +666,67 @@
 			});
 		}
 	},
+	"Encode@snakepit": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+			this.decodeQues();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+			this.encodeQues();
+		},
+		decodeNumber16: function() {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				if (val === 0) {
+					bd.cell[c].ques = 7;
+				} else {
+					bd.cell[c].qnum = val;
+				}
+			});
+		},
+		encodeNumber16: function(type) {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				return bd.cell[c].isEmpty() ? 0 : bd.cell[c].qnum;
+			});
+		},
+		decodeQues: function() {
+			this.genericDecodeThree(function(cell, val) {
+				if (val === 1) {
+					cell.ques = 1;
+				} else if (val === 2) {
+					cell.ques = 6;
+				}
+			});
+		},
+		encodeQues: function() {
+			this.genericEncodeThree(function(cell) {
+				return cell.ques === 6 ? 2 : cell.ques === 1 ? 1 : 0;
+			});
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnum();
+			if (this.puzzle.pid === "snakepit") {
+				this.decodeCell(function(cell, ca) {
+					cell.ques = ca !== "." ? +ca : 0;
+				});
+			}
+
 			this.decodeCellAnumsub();
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
+			if (this.puzzle.pid === "snakepit") {
+				this.encodeCell(function(cell) {
+					return cell.ques >= 0 ? cell.ques + " " : ". ";
+				});
+			}
+
 			this.encodeCellAnumsub();
 			this.encodeBorderAns();
 		},
@@ -652,6 +805,14 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkMinNum@snakepit",
+			"check2x2SameNumber@snakepit",
+			"checkNumberBranch@snakepit",
+			"checkNumberLoop@snakepit",
+			"checkSnakeDiagonal@snakepit",
+			"checkEndpoints@snakepit",
+			"checkMidpoints@snakepit",
+
 			"checkSmallArea",
 			"checkSideAreaNumberSize",
 			"checkLargeArea",
@@ -769,5 +930,122 @@
 	"FailCode@pentominous": {
 		bkSizeLt: "bkSizeLt5",
 		bkSizeGt: "bkSizeGt5"
+	},
+	"AnsCheck@snakepit": {
+		// TODO reduce amount of errors when forceallcell is on
+		checkMinNum: function() {
+			this.checkAllCell(function(cell) {
+				return (
+					cell.getNum() === 1 || (cell.nblk && cell.nblk.clist.length === 1)
+				);
+			}, "nmEqOne");
+		},
+		check2x2SameNumber: function() {
+			var bd = this.board;
+			allloop: for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c],
+					bx = cell.bx,
+					by = cell.by;
+				if (bx >= bd.maxbx - 1 || by >= bd.maxby - 1) {
+					continue;
+				}
+
+				var clist = bd.cellinside(bx, by, bx + 2, by + 2);
+				for (var i = 1; i < 4; i++) {
+					if (!clist[0].isSameBlock(clist[i])) {
+						continue allloop;
+					}
+				}
+
+				this.failcode.add("nmSame2x2");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		},
+
+		checkSnakeDiagonal: function() {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c],
+					bx = cell.bx,
+					by = cell.by;
+				if (bx >= bd.maxbx - 1 || by >= bd.maxby - 1) {
+					continue;
+				}
+
+				var clist = bd.cellinside(bx, by, bx + 2, by + 2);
+				if (
+					clist[0].isSameBlock(clist[3]) &&
+					!clist[0].isSameBlock(clist[1]) &&
+					!clist[0].isSameBlock(clist[2])
+				) {
+					clist[0].seterr(1);
+					clist[3].seterr(1);
+				} else if (
+					clist[1].isSameBlock(clist[2]) &&
+					!clist[0].isSameBlock(clist[1]) &&
+					!clist[3].isSameBlock(clist[1])
+				) {
+					clist[1].seterr(1);
+					clist[2].seterr(1);
+				} else {
+					continue;
+				}
+
+				this.failcode.add("nmDiag");
+				if (this.checkOnly) {
+					break;
+				}
+			}
+		},
+
+		checkEndpoints: function() {
+			this.checkAllCell(function(cell) {
+				return cell.ques === 1 && cell.equalcount() > 1;
+			}, "nmEndpoint");
+		},
+
+		checkMidpoints: function() {
+			this.checkAllCell(function(cell) {
+				return cell.ques === 6 && cell.equalcount() === 1;
+			}, "nmMidpoint");
+		},
+
+		checkNumberBranch: function() {
+			this.checkAllCell(function(cell) {
+				return cell.equalcount() > 2;
+			}, "nmBranch");
+		},
+
+		checkNumberLoop: function() {
+			var snakes = this.board.numblkgraph.components;
+			for (var r = 0; r < snakes.length; r++) {
+				var blk = snakes[r];
+				var clist = blk.clist;
+				if (!blk.complete) {
+					continue;
+				}
+
+				var invalid = true;
+
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					if (cell.equalcount() !== 2) {
+						invalid = false;
+						break;
+					}
+				}
+
+				if (invalid) {
+					this.failcode.add("nmLoop");
+					clist.seterr(1);
+					if (this.checkOnly) {
+						break;
+					}
+				}
+			}
+		}
 	}
 });

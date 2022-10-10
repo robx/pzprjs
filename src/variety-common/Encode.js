@@ -294,7 +294,7 @@ pzpr.classmgr.makeCommon({
 				return [parseInt(bstr.substr(i + 1, 3), 16), 4];
 			} else if (ca === "=") {
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 4096, 4];
-			} else if (ca === "%") {
+			} else if (ca === "%" || ca === "@") {
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 8192, 4];
 			} else if (ca === "*") {
 				return [parseInt(bstr.substr(i + 1, 4), 16) + 12240, 5];
@@ -347,13 +347,13 @@ pzpr.classmgr.makeCommon({
 			} else if (qn >= 256 && qn < 4096) {
 				return "+" + qn.toString(16);
 			} else if (qn >= 4096 && qn < 8192) {
-				return "=" + (qn - 4096).toString(16);
+				return "=" + (qn - 4096).toString(16).padStart(3, 0);
 			} else if (qn >= 8192 && qn < 12240) {
-				return "%" + (qn - 8192).toString(16);
+				return "@" + (qn - 8192).toString(16).padStart(3, 0);
 			} else if (qn >= 12240 && qn < 77776) {
-				return "*" + (qn - 12240).toString(16);
+				return "*" + (qn - 12240).toString(16).padStart(4, 0);
 			} else if (qn >= 77776) {
-				return "$" + (qn - 77776).toString(16);
+				return "$" + (qn - 77776).toString(16).padStart(5, 0);
 			} else {
 				// 最大1126352
 				return "";
@@ -743,7 +743,7 @@ pzpr.classmgr.makeCommon({
 		// enc.decodeCircle() 白丸・黒丸をデコードする
 		// enc.encodeCircle() 白丸・黒丸をエンコードする
 		//---------------------------------------------------------------------------
-		decodeCircle: function() {
+		genericDecodeThree: function(set_func) {
 			var bd = this.board;
 			var bstr = this.outbstr,
 				c = 0,
@@ -757,7 +757,7 @@ pzpr.classmgr.makeCommon({
 					if (!!bd.cell[c]) {
 						var val = ((ca / tri[w]) | 0) % 3;
 						if (val > 0) {
-							bd.cell[c].qnum = val;
+							set_func(bd.cell[c], val);
 						}
 						c++;
 					}
@@ -765,16 +765,19 @@ pzpr.classmgr.makeCommon({
 			}
 			this.outbstr = bstr.substr(pos);
 		},
-		encodeCircle: function() {
+		decodeCircle: function() {
+			this.genericDecodeThree(function(cell, val) {
+				cell.qnum = val;
+			});
+		},
+		genericEncodeThree: function(get_func) {
 			var bd = this.board;
 			var cm = "",
 				num = 0,
 				pass = 0,
 				tri = [9, 3, 1];
 			for (var c = 0; c < bd.cell.length; c++) {
-				if (bd.cell[c].qnum > 0) {
-					pass += bd.cell[c].qnum * tri[num];
-				}
+				pass += get_func(bd.cell[c]) * tri[num];
 				num++;
 				if (num === 3) {
 					cm += pass.toString(27);
@@ -787,6 +790,11 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.outbstr += cm;
+		},
+		encodeCircle: function() {
+			this.genericEncodeThree(function(cell) {
+				return Math.max(0, cell.qnum);
+			});
 		},
 
 		//---------------------------------------------------------------------------

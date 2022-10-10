@@ -118,7 +118,19 @@ ui.keypopup = {
 		tajmahal: [8, 0],
 		railpool: [10, 0],
 		coral: [10, 0],
-		ququ: [10, 0]
+		ququ: [10, 0],
+		disloop: [10, 0],
+		lither: [3, 0],
+		snakepit: [120, 10],
+		squarejam: [10, 0],
+		context: [4, 0],
+		numrope: [10, 10],
+		yajisoko: [10, 0],
+		roundtrip: [10, 0],
+		cts: [121, 0],
+		vslither: [4, 0],
+		tslither: [4, 0],
+		kaidan: [4, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -238,6 +250,10 @@ ui.keypopup = {
 			this.generate_voxas();
 		} else if (type === 119) {
 			this.generate_pentominous(mode);
+		} else if (type === 120) {
+			this.generate_snakepit(mode);
+		} else if (type === 121) {
+			this.generate_cts(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -285,13 +301,17 @@ ui.keypopup = {
 		}
 		if (
 			mode === 1 &&
-			(pid === "kakuru" || pid === "tateyoko" || pid === "crossstitch")
+			(pid === "kakuru" ||
+				pid === "tateyoko" ||
+				pid === "crossstitch" ||
+				pid === "numrope" ||
+				pid === "yajisoko")
 		) {
-			itemlist.push(
-				["q1", "■"],
-				["w2", pid === "crossstitch" ? "○" : "□"],
-				["-", "?"]
-			);
+			itemlist.push(["q1", pid === "yajisoko" ? "□" : "■"]);
+			if (pid === "crossstitch") {
+				itemlist.push(["w2", "○"]);
+			}
+			itemlist.push(["-", "?"]);
 		}
 
 		itemlist.push("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
@@ -306,8 +326,10 @@ ui.keypopup = {
 		if (
 			mode === 3 ||
 			pid === "kakuru" ||
+			pid === "numrope" ||
 			pid === "tateyoko" ||
-			pid === "crossstitch"
+			pid === "crossstitch" ||
+			pid === "yajisoko"
 		) {
 		} else if (!ui.puzzle.painter.hideHatena) {
 			cap = "?";
@@ -590,6 +612,47 @@ ui.keypopup = {
 		items.push(" ");
 
 		this.generate_main(items, 5);
+	},
+	generate_snakepit: function() {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				" ",
+				["-", "?"],
+				["q", { text: "○" }],
+				["w", { text: "■", color: "gray" }]
+			],
+			4
+		);
+	},
+	generate_cts: function() {
+		this.generate_main(
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
+				["-", "?"],
+				["w", "*"],
+				" "
+			],
+			5
+		);
 	},
 
 	generate_main: function(list, split) {

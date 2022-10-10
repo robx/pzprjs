@@ -64,6 +64,10 @@ pzpr.classmgr.makeCommon({
 		width: 1,
 		height: 1,
 
+		shouldDrawBank: function() {
+			return true;
+		},
+
 		performLayout: function() {
 			if (!this.pieces || !this.width) {
 				return;

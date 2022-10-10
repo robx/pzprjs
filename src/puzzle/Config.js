@@ -42,6 +42,7 @@
 				"ensquare",
 				true
 			); /* tajmahal: Only draw given from square centers */
+			this.add("context_marks", true);
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
 			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
 
@@ -105,6 +106,10 @@
 				variant: true,
 				volatile: true
 			}); /* nuriuzu: Rule variation for shaded connectivity */
+			this.add("pentopia_transparent", false, {
+				variant: true,
+				volatile: true
+			}); /* pentopia: Allow shading clues */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -336,6 +341,9 @@
 				case "disptype_bosanowa":
 					exec = pid === "bosanowa";
 					break;
+				case "context_marks":
+					exec = pid === "context";
+					break;
 				case "disptype_yajilin":
 					exec = pid === "yajilin";
 					break;
@@ -386,7 +394,8 @@
 					exec = pid === "mashu";
 					break;
 				case "forceallcell":
-					exec = pid === "fillomino" || pid === "symmarea";
+					exec =
+						pid === "fillomino" || pid === "symmarea" || pid === "snakepit";
 					break;
 				case "dontpassallcell":
 					exec = pid === "arukone";
@@ -405,6 +414,9 @@
 					break;
 				case "nuriuzu_connect":
 					exec = pid === "nuriuzu";
+					break;
+				case "pentopia_transparent":
+					exec = pid === "pentopia";
 					break;
 				default:
 					exec = !!this.list[name];
@@ -431,6 +443,7 @@
 				case "autoerr":
 				case "aquarium_regions":
 				case "snakebd":
+				case "context_marks":
 				case "disptype_yajilin":
 				case "disptype_interbd":
 				case "dispqnumbg":

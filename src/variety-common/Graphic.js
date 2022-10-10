@@ -403,7 +403,7 @@ pzpr.classmgr.makeCommon({
 							addwidth = basewidth / 2;
 						}
 
-						if (info > 0) {
+						if (this.pid !== "kinkonkan" && info > 0) {
 							if (info & (slash ? 4 : 8)) {
 								color = this.noerrcolor;
 							} else if (info & 1) {
@@ -652,15 +652,21 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawArrowNumbers: function() {
+		drawArrowNumbers: function(opts) {
 			var g = this.vinc("cell_arrownumber", "auto");
 
-			var al = this.cw * 0.4; // ArrowLength
-			var aw = this.cw * 0.03; // ArrowWidth
-			var tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
-			var tw = this.cw * 0.12; // 矢じりの幅
+			var scale = (opts && opts.scale) || 1;
+
+			var al = this.cw * 0.4 * scale; // ArrowLength
+			var aw = this.cw * 0.03 * scale; // ArrowWidth
+			var tl = this.cw * 0.16 * scale; // 矢じりの長さの座標(中心-長さ)
+			var tw = this.cw * 0.12 * scale; // 矢じりの幅
 			var dy = -this.bh * 0.6;
 			var dx = [this.bw * 0.6, this.bw * 0.7, this.bw * 0.8, this.bw * 0.85];
+
+			if (opts && opts.bottom) {
+				dy *= -1;
+			}
 
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
@@ -682,7 +688,7 @@ pzpr.classmgr.makeCommon({
 					switch (dir) {
 						case cell.UP:
 							g.setOffsetLinePath(
-								px + dx[digit],
+								px + dx[digit] * scale,
 								py,
 								0,
 								-al,
@@ -703,7 +709,7 @@ pzpr.classmgr.makeCommon({
 							break;
 						case cell.DN:
 							g.setOffsetLinePath(
-								px + dx[digit],
+								px + dx[digit] * scale,
 								py,
 								0,
 								al,
@@ -775,13 +781,14 @@ pzpr.classmgr.makeCommon({
 				if (!!text) {
 					var option = { ratio: this.fontsizeratio };
 					if (dir !== cell.NDIR) {
-						option.ratio = 0.7;
+						option.ratio =
+							opts && opts.arrowfontsize ? opts.arrowfontsize : 0.7;
 					}
 
 					if (dir === cell.UP || dir === cell.DN) {
 						px -= this.cw * 0.1;
 					} else if (dir === cell.LT || dir === cell.RT) {
-						py += this.ch * 0.1;
+						py += this.ch * 0.1 * (opts && opts.bottom ? -0.5 : +1);
 					}
 
 					this.disptext(text, px, py, option);
@@ -2565,7 +2572,10 @@ pzpr.classmgr.makeCommon({
 
 		lastBankPieceCount: 0,
 		drawBank: function() {
-			if (!this.range.bank && this.range.bankPieces.length === 0) {
+			if (
+				!this.showBank ||
+				(!this.range.bank && this.range.bankPieces.length === 0)
+			) {
 				return;
 			}
 
@@ -2601,6 +2611,7 @@ pzpr.classmgr.makeCommon({
 				addButton = bd.bank.addButton;
 			var showAdd =
 				this.puzzle.editmode &&
+				!this.outputImage &&
 				addButton.index !== null &&
 				(this.range.bank || this.range.bankPieces.indexOf(addButton) !== -1);
 

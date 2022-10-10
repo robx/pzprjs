@@ -20,7 +20,6 @@ pzpr.variety.each(function(pid) {
 						assert.equal(failcode.undecided, testcase[2].undecided);
 					}
 					assert.notEqual(failcode.gettext("en"), pzpr.failcodes.en.invalid);
-					assert.notEqual(failcode.gettext("ja"), pzpr.failcodes.ja.invalid);
 				});
 			});
 		});

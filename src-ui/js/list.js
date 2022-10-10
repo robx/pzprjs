@@ -4,6 +4,7 @@
 		doclang: pzpr.lang,
 		captions: [],
 		phtml: "p.html",
+		ruleshtml: "rules.html",
 		extend: function(obj) {
 			for (var n in obj) {
 				this[n] = obj[n];
@@ -20,13 +21,16 @@
 	if (location.search === "?en" || location.search === "?ja") {
 		self.doclang = location.search.substr(1, 2);
 	}
-	if (location.hostname === "puzz.link") {
+	if (
+		location.hostname === "puzz.link" ||
+		location.pathname === "/list" ||
+		location.host.indexOf("vercel.app") >= 0
+	) {
 		// puzz.link serves p.html at puzz.link/p
 		self.phtml = "p";
 	}
-
-	function getEL(id) {
-		return _doc.getElementById(id);
+	if (location.pathname === "/list") {
+		self.ruleshtml = "rules";
 	}
 	function customAttr(el, name) {
 		var value = "";
@@ -47,88 +51,12 @@
 	v3index.extend({
 		/* onload function */
 		onload_func: function() {
-			Array.prototype.slice
-				.call(_doc.querySelectorAll("#puztypes > li"))
-				.forEach(function(el) {
-					if (el.id.match(/puzmenu_(.+)$/)) {
-						var typename = RegExp.$1;
-						el.addEventListener(
-							"click",
-							(function(typename) {
-								return function(e) {
-									self.click_tab(typename);
-								};
-							})(typename),
-							false
-						);
-					}
-				});
-			if (!!getEL("puztypes")) {
-				getEL("puztypes").style.display = "block";
-			}
-
-			self.disp_tab();
-
 			self.setTranslation();
+			self.setBlockVisibility();
 			self.translate();
 		},
 
-		/* tab-click function */
-		click_tab: function(typename) {
-			Array.prototype.slice
-				.call(_doc.querySelectorAll("#puztypes > li"))
-				.forEach(function(el) {
-					el.className =
-						el.id === "puzmenu_" + typename ? "puzmenusel" : "puzmenu";
-				});
-			self.disp_tab();
-			if (customAttr(_doc.querySelector("li.puzmenusel"), "table") === "all") {
-				self.set_puzzle_filter(typename);
-			}
-			if (typename === "input") {
-				self.dbif.display();
-			} /* iPhone用 */
-		},
-		/* display contents and tables in tabs function */
-		disp_tab: function() {
-			var isdisp = {};
-			Array.prototype.slice
-				.call(_doc.querySelectorAll("#puztypes > li"))
-				.forEach(function(el) {
-					if (!el.id.match(/puzmenu_(.+)$/)) {
-						return;
-					}
-					var tablename = "table_" + customAttr(el, "table");
-					if (isdisp[tablename] === void 0) {
-						isdisp[tablename] = false;
-					}
-					if (isdisp[tablename] === false && el.className === "puzmenusel") {
-						isdisp[tablename] = true;
-					}
-				});
-			Array.prototype.slice
-				.call(_doc.querySelectorAll("div.puztable"))
-				.forEach(function(el) {
-					el.style.display = !!isdisp[el.id || "1"] ? "block" : "none";
-				});
-		},
-
-		/* filter-click function */
-		set_puzzle_filter: function(filtername) {
-			/* Set visibility of each puzzle */
-			Array.prototype.slice
-				.call(_doc.querySelectorAll(".lists ul > li"))
-				.forEach(function(el) {
-					var pid = pzpr.variety.toPID(customAttr(el, "pid"));
-					if (!!pid) {
-						var isdisp =
-							filtername === "all" ||
-							filtername ===
-								(self.variety[pid] ? self.variety[pid].tab : "extra");
-						el.style.display = isdisp ? "" : "none";
-					}
-				});
-			/* Set visibility of each flexbox */
+		setBlockVisibility: function() {
 			Array.prototype.slice
 				.call(_doc.querySelectorAll(".lists ul"))
 				.forEach(function(el) {
@@ -143,7 +71,6 @@
 					el.parentNode.style.display = count > 0 ? "" : "none";
 				});
 		},
-
 		/* Language display functions */
 		setlang: function(lang) {
 			self.doclang = lang;
@@ -160,6 +87,7 @@
 					var pinfo = pzpr.variety(customAttr(el, "pid"));
 					var pid = pinfo.pid;
 					if (!pinfo.valid) {
+						el.style.display = "none";
 						return;
 					}
 
@@ -168,7 +96,7 @@
 					el.appendChild(editor);
 					var rules = document.createElement("a");
 					rules.className = "rules";
-					rules.href = "rules.html?" + pid;
+					rules.href = v3index.ruleshtml + "?" + pid;
 					rules.textContent = "?";
 					el.appendChild(rules);
 					self.captions.push({

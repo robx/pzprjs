@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["vslither"], {
+})(["vslither", "tslither"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -111,6 +111,24 @@
 	Cell: {
 		maxnum: 4,
 		minnum: 0,
+
+		getdir4BorderLine1: function() {
+			var adb = this.adjborder,
+				cnt = 0;
+			if (adb.top.isLine()) {
+				cnt++;
+			}
+			if (adb.bottom.isLine()) {
+				cnt++;
+			}
+			if (adb.left.isLine()) {
+				cnt++;
+			}
+			if (adb.right.isLine()) {
+				cnt++;
+			}
+			return cnt;
+		},
 
 		getdir4BorderVertex1: function() {
 			return (
@@ -233,11 +251,9 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decode4Cell();
-			this.decodeCrossMark();
 		},
 		encodePzpr: function(type) {
 			this.encode4Cell();
-			this.encodeCrossMark();
 		}
 	},
 	//---------------------------------------------------------
@@ -251,7 +267,6 @@
 			});
 		},
 		encodeData: function() {
-			this.filever = 1;
 			this.encodeCellQnum();
 			this.encodeCellQsub();
 			this.encodeBorderLine();
@@ -268,7 +283,8 @@
 			"checkLineExist+",
 			"checkBranchLine",
 			"checkCrossLine",
-			"checkdir4VertexLine",
+			"checkdir4VertexLine@vslither",
+			"checkdir4TouchLine@tslither",
 			"checkOneLoop",
 			"checkDeadendLine+"
 		],
@@ -277,6 +293,17 @@
 			this.checkAllCell(function(cell) {
 				return cell.qnum >= 0 && cell.getdir4BorderVertex1() !== cell.qnum;
 			}, "nmVertexNe");
+		},
+
+		checkdir4TouchLine: function() {
+			this.checkAllCell(function(cell) {
+				return (
+					cell.qnum >= 0 &&
+					cell.getdir4BorderVertex1() -
+						Math.min(cell.getdir4BorderLine1(), 3) !==
+						cell.qnum
+				);
+			}, "nmTouchNe");
 		}
 	}
 });

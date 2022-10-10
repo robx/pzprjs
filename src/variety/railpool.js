@@ -269,11 +269,14 @@
 					off = false;
 				}
 
-				if (!bd.cell[c]) {
+				if (!bd.cell[c] || ca === "/") {
 					break;
 				}
 			}
 			this.outbstr = bstr.substr(i + 1);
+			if (this.outbstr[0] === "/") {
+				this.outbstr = this.outbstr.substr(1);
+			}
 		},
 		encodeNumber_railpool: function() {
 			var count = 0,
@@ -313,6 +316,8 @@
 			}
 			if (count > 1) {
 				cm += (19 + count).toString(36);
+			} else {
+				cm += "/";
 			}
 
 			this.outbstr += cm;

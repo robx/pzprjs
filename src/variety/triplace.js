@@ -208,7 +208,7 @@
 				} else {
 					cell.set51cell();
 					if (ca === "_") {
-					} else if (ca === "%") {
+					} else if (ca === "%" || ca === "@") {
 						cell.qnum2 = parseInt(bstr.charAt(i + 1), 36);
 						i++;
 					} else if (ca === "$") {
@@ -306,7 +306,7 @@
 					} else if (cell.qnum2 === -1 && cell.qnum < 35) {
 						pstr = "$" + cell.qnum.toString(36);
 					} else if (cell.qnum === -1 && cell.qnum2 < 35) {
-						pstr = "%" + cell.qnum2.toString(36);
+						pstr = "@" + cell.qnum2.toString(36);
 					} else {
 						pstr += cell.qnum2.toString(16);
 						pstr += cell.qnum.toString(16);

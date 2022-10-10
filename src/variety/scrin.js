@@ -4,8 +4,9 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["scrin"], {
+})(["scrin", "antmill"], {
 	MouseEvent: {
+		use: true,
 		inputModes: { edit: ["number", "clear"], play: ["shade", "unshade"] },
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -20,7 +21,104 @@
 		}
 	},
 
-	KeyEvent: {
+	"MouseEvent@antmill": {
+		inputModes: {
+			edit: ["mark-rect", "mark-cross", "clear"],
+			play: ["shade", "unshade"]
+		},
+		shadeCount: 0,
+		mousereset: function() {
+			this.shadeCount = 0;
+			this.common.mousereset.call(this);
+		},
+		mouseinput_other: function() {
+			switch (this.inputMode) {
+				case "mark-rect":
+					this.inputFixedNumber(1);
+					break;
+				case "mark-cross":
+					this.inputFixedNumber(2);
+					break;
+			}
+		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(0);
+		},
+		inputFixedNumber: function(num) {
+			var pos = this.getpos(0.33);
+			var border = pos.getb();
+			if (!pos.isinside()) {
+				return;
+			}
+			if (border.isnull) {
+				return;
+			}
+
+			var val = border.ques;
+			if (this.inputData === null) {
+				this.inputData = val === num ? 0 : num;
+			}
+			if (val !== num || this.inputData === 0) {
+				border.setQues(this.inputData);
+				border.draw();
+			}
+		},
+		inputcell: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			this.common.inputcell.call(this);
+
+			if (this.inputData === 1) {
+				++this.shadeCount;
+				if (this.shadeCount >= 2) {
+					this.mousereset();
+				}
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputcell();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart) {
+					this.inputmark_antmill();
+				}
+			}
+		},
+
+		inputmark_antmill: function() {
+			var pos = this.getpos(0.33);
+			var border = pos.getb();
+			if (!pos.isinside()) {
+				return;
+			}
+			if (border.isnull) {
+				return;
+			}
+
+			var qn = border.ques;
+			if (this.btn === "left") {
+				if (qn === 2) {
+					border.setQues(0);
+				} else {
+					border.setQues(qn + 1);
+				}
+			} else if (this.btn === "right") {
+				if (qn === 0) {
+					border.setQues(2);
+				} else {
+					border.setQues(qn - 1);
+				}
+			}
+			border.draw();
+		}
+	},
+
+	"KeyEvent@scrin": {
 		enablemake: true
 	},
 	"Room:BoardPiece": {
@@ -160,8 +258,8 @@
 			return list;
 		}
 	},
-	Border: {
-		hascross: 2,
+	Border: { hascross: 2 },
+	"Border@scrin": {
 		isLine: function() {
 			return this.sidecell[0].isShade() !== this.sidecell[1].isShade();
 		}
@@ -191,6 +289,9 @@
 				r.isnull = false;
 			}
 		}
+	},
+	"Board@antmill": {
+		hasborder: 1
 	},
 	BoardExec: {
 		adjustBoardData2: function(key, d) {
@@ -236,7 +337,7 @@
 		}
 	},
 
-	Graphic: {
+	"Graphic@scrin": {
 		hideHatena: true,
 		gridcolor_type: "DLIGHT",
 
@@ -300,9 +401,58 @@
 		}
 	},
 
+	"Graphic@antmill": {
+		shadecolor: "#444444",
+		bgcellcolor_func: "qsub1",
+
+		paint: function() {
+			this.drawBGCells();
+			this.drawShadedCells();
+
+			this.drawGrid();
+			this.drawChassis();
+
+			this.drawBorderClues();
+		},
+
+		drawBorderClues: function() {
+			var g = this.vinc("antmill", "auto", true);
+
+			g.lineWidth = this.lm;
+			var size = this.cw * 0.21;
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i],
+					bx = border.bx,
+					by = border.by;
+
+				g.vid = "s_square_" + border.id;
+				if (border.ques === 1) {
+					g.strokeStyle = this.quescolor;
+					g.strokeRect(
+						bx * this.bw - size,
+						by * this.bh - size,
+						size * 2,
+						size * 2
+					);
+				} else {
+					g.vhide();
+				}
+
+				g.vid = "s_cross_" + border.id;
+				if (border.ques === 2) {
+					g.strokeStyle = this.quescolor;
+					g.strokeCross(bx * this.bw, by * this.bh, size);
+				} else {
+					g.vhide();
+				}
+			}
+		}
+	},
+
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	Encode: {
+	"Encode@scrin": {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 		},
@@ -310,13 +460,53 @@
 			this.encodeNumber16();
 		}
 	},
-	FileIO: {
+	"FileIO@scrin": {
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
+			this.encodeCellAns();
+		}
+	},
+	"Encode@antmill": {
+		decodePzpr: function(type) {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length - 1, function(c, val) {
+				var cell = bd.cell[c];
+				if (!cell.adjborder.right.isnull) {
+					cell.adjborder.right.ques = (val / 3) | 0;
+				}
+				if (!cell.adjborder.bottom.isnull) {
+					cell.adjborder.bottom.ques = val % 3;
+				}
+			});
+		},
+		encodePzpr: function(type) {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length - 1, function(c) {
+				var cell = bd.cell[c];
+				var r = cell.adjborder.right.ques;
+				var b = cell.adjborder.bottom.ques;
+				if (!r && !b) {
+					return -1;
+				}
+				return r * 3 + b;
+			});
+		}
+	},
+	"FileIO@antmill": {
+		decodeData: function() {
+			this.decodeBorder(function(border, ca) {
+				border.ques = +ca;
+			});
+			this.decodeCellAns();
+		},
+		encodeData: function() {
+			this.encodeBorder(function(border) {
+				return border.ques + " ";
+			});
 			this.encodeCellAns();
 		}
 	},
@@ -428,6 +618,56 @@
 				}
 				room.seterr(1);
 			}
+		}
+	},
+
+	"AnsCheck@antmill": {
+		checklist: [
+			"checkShadeCellExist",
+			"checkOverShadeCell",
+			"checkEqualSideCell",
+			"checkBranchRoom",
+			"checkSingleShadeCell",
+			"checkUnequalSideCell",
+			"checkIsolatedRoom",
+			"checkDeadendRoom",
+			"checkConnectShadeDiag"
+		],
+		checkOverShadeCell: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"csGt2"
+			);
+		},
+		checkSingleShadeCell: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a >= 2;
+				},
+				"csLt2"
+			);
+		},
+		checkEqualSideCell: function() {
+			this.checkSideAreaCell(
+				function(c1, c2, border) {
+					return border.ques === 1 && c1.isShade() !== c2.isShade();
+				},
+				false,
+				"bdEqual"
+			);
+		},
+		checkUnequalSideCell: function() {
+			this.checkSideAreaCell(
+				function(c1, c2, border) {
+					return border.ques === 2 && c1.isShade() === c2.isShade();
+				},
+				false,
+				"bdUnequal"
+			);
 		}
 	}
 });

@@ -7,10 +7,10 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["yosenabe"], {
+})(["yosenabe", "yajisoko"], {
 	//---------------------------------------------------------
 	// マウス入力系
-	MouseEvent: {
+	"MouseEvent@yosenabe": {
 		inputModes: {
 			edit: ["nabe", "number", "clear"],
 			play: ["line", "peke", "completion"]
@@ -39,25 +39,6 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.inputqnum_yosenabe();
 				}
-			}
-		},
-
-		inputqcmp: function() {
-			var cell = this.getcell();
-			if (cell.isnull) {
-				return;
-			}
-			var targetcell = !this.puzzle.execConfig("dispmove") ? cell : cell.base,
-				distance = 0.6,
-				dx = this.inputPoint.bx - cell.bx /* ここはtargetcellではなくcell */,
-				dy = this.inputPoint.by - cell.by;
-			if (
-				targetcell.isNum() &&
-				(this.inputMode === "completion" ||
-					dx * dx + dy * dy < distance * distance)
-			) {
-				targetcell.setQcmp(targetcell.qcmp === 0 ? 1 : 0);
-				cell.draw();
 			}
 		},
 
@@ -147,9 +128,116 @@
 		}
 	},
 
+	MouseEvent: {
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull) {
+				return false;
+			}
+			var targetcell = !this.puzzle.execConfig("dispmove") ? cell : cell.base,
+				distance = 0.6,
+				dx = this.inputPoint.bx - cell.bx /* ここはtargetcellではなくcell */,
+				dy = this.inputPoint.by - cell.by;
+			if (
+				targetcell.isNum() &&
+				(this.inputMode === "completion" ||
+					dx * dx + dy * dy < distance * distance)
+			) {
+				targetcell.setQcmp(targetcell.qcmp === 0 ? 1 : 0);
+				cell.draw();
+				return true;
+			}
+			return false;
+		}
+	},
+	"MouseEvent@yajisoko": {
+		inputModes: {
+			edit: ["number", "direc", "box", "clear"],
+			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "box") {
+				this.inputFixedNumber(-3);
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left") {
+						this.inputLine();
+					} else if (this.btn === "right") {
+						this.inputdragcross();
+					}
+				} else if (this.mouseend && this.notInputted()) {
+					if (this.btn === "left" && this.inputqcmp()) {
+					} else if (!this.inputpeke_ifborder()) {
+						this.inputBGcolor();
+					}
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.notInputted()) {
+						this.inputdirec();
+					}
+				} else if (this.mouseend && this.notInputted()) {
+					if (this.prevPos.getc() === this.getcell()) {
+						this.inputqnum();
+					}
+				}
+			}
+		},
+		inputdragcross: function() {
+			if (this.firstPoint.bx === null) {
+				this.firstPoint.set(this.inputPoint);
+			} else if (this.inputData === null) {
+				var dx = this.inputPoint.bx - this.firstPoint.bx,
+					dy = this.inputPoint.by - this.firstPoint.by;
+				if (dx * dx + dy * dy > 0.1) {
+					this.inputFixedQsub(2);
+				}
+			} else {
+				this.inputFixedQsub(2);
+			}
+		},
+		inputdirec: function() {
+			var pos = this.getpos(0);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+
+			var cell = this.prevPos.getc();
+			if (!cell.isnull) {
+				if (cell.qnum2 !== -1) {
+					var dir = this.prevPos.getdir(pos, 2);
+					if (dir !== cell.NDIR) {
+						cell.setQdir(cell.qdir !== dir ? dir : 0);
+						cell.draw();
+					}
+				}
+			}
+			this.prevPos = pos;
+		},
+		getNewNumber: function(cell, val) {
+			if (this.btn === "left" && val === -1) {
+				return -3;
+			} else if (this.btn === "left" && val === -2) {
+				return 0;
+			} else if (this.btn === "left" && val === cell.getmaxnum()) {
+				return -1;
+			} else if (this.btn === "right" && val === 0) {
+				return -2;
+			} else if (this.btn === "right" && (val === -3 || val === -4)) {
+				return -1;
+			} else if (this.btn === "right" && val === -1) {
+				return cell.getmaxnum();
+			}
+			return val + (this.btn === "left" ? 1 : -1);
+		}
+	},
+
 	//---------------------------------------------------------
 	// キーボード入力系
-	KeyEvent: {
+	"KeyEvent@yosenabe": {
 		enablemake: true,
 
 		key_inputqnum_main: function(cell, ca) {
@@ -200,6 +288,42 @@
 			}
 		}
 	},
+	"KeyEvent@yajisoko": {
+		enablemake: true,
+		moveTarget: function(ca) {
+			if (ca.match(/shift/)) {
+				return false;
+			}
+			return this.moveTCell(ca);
+		},
+
+		keyinput: function(ca) {
+			if (this.key_inputdirec(ca)) {
+				return;
+			}
+			if (ca === "q" || ca === "q1") {
+				ca = "s2";
+			} else if (ca === "i") {
+				ca = "s3";
+			}
+			this.key_inputqnum(ca);
+		},
+
+		getNewNumber: function(cell, ca, cur) {
+			var ret = this.common.getNewNumber.call(this, cell, ca, cur);
+			if (
+				this.puzzle.execConfig("dispmove") &&
+				cur === -3 &&
+				cell.lcnt &&
+				ret !== null &&
+				ret !== -3
+			) {
+				// Cannot edit boxes, only remove them
+				return -1;
+			}
+			return ret;
+		}
+	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
@@ -222,8 +346,30 @@
 				}
 				var edges = this.path.getedgeobjs();
 				edges.forEach(function(edge) {
-					edge.line = 0;
+					edge.removeLine();
+					edge.draw();
 				});
+			}
+		}
+	},
+	"Cell@yajisoko": {
+		minnum: 0,
+		maxnum: function() {
+			var bd = this.board;
+			return Math.max(bd.cols, bd.rows) - 1;
+		},
+		getNum: function() {
+			return this.qnum === -2 ? -3 : this.qnum2;
+		},
+		setNum: function(val) {
+			if (val === -3) {
+				val = this.qnum === -2 ? -1 : -2;
+				this.setQnum2(-1);
+				this.setQnum(val);
+			} else {
+				val = val === -2 && this.qnum2 === val ? -1 : val;
+				this.setQnum(-1);
+				this.setQnum2(val);
 			}
 		}
 	},
@@ -263,6 +409,12 @@
 		}
 	},
 
+	"BoardExec@yajisoko": {
+		adjustBoardData: function(key, d) {
+			this.adjustNumberArrow(key, d);
+		}
+	},
+
 	LineGraph: {
 		enabled: true,
 		moveline: true
@@ -286,7 +438,7 @@
 
 	//---------------------------------------------------------
 	// 画像表示系
-	Graphic: {
+	"Graphic@yosenabe": {
 		hideHatena: true,
 
 		gridcolor_type: "LIGHT",
@@ -368,10 +520,98 @@
 			}
 		}
 	},
+	"Graphic@yajisoko": {
+		bgcellcolor_func: "qsub2",
+		fontsizeratio: 0.75,
+		circlefillcolor_func: "qcmp",
+		circlebasecolor: "#CFCFCF",
+		qcmpcolor: "gray",
+		qsubcolor1: "rgb(224, 224, 255)",
+		qsubcolor2: "rgb(255, 255, 144)",
+		paint: function() {
+			this.drawBGCells();
+			this.drawGrid();
+
+			this.drawTip();
+			this.drawDepartures();
+			this.drawLines();
+
+			this.drawBoxes();
+			this.drawArrowNumbers({ scale: 0.75, arrowfontsize: 0.6, bottom: true });
+
+			this.drawPekes();
+
+			this.drawChassis();
+
+			this.drawTarget();
+		},
+
+		getNumberText: function(cell, num) {
+			return num === -4 ? "∞" : this.getNumberTextCore(num);
+		},
+		getQuesNumberColor: function(cell) {
+			if (this.puzzle.execConfig("dispmove") && cell.lcnt === 1) {
+				return "#00000050";
+			}
+			return this.quescolor;
+		},
+
+		drawBoxes: function() {
+			var g = this.vinc("cell_boxes", "auto", true);
+
+			var ra = this.circleratio;
+			var rsize_stroke = (this.cw * (ra[0] + ra[1])) / 2,
+				rsize_fill = this.cw * ra[0];
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				var color = this.getCircleFillColor(cell);
+				g.vid = "c_cirb_" + cell.id;
+				if (!!color) {
+					g.fillStyle = color;
+					g.fillRectCenter(
+						cell.bx * this.bw,
+						cell.by * this.bh,
+						rsize_fill,
+						rsize_fill
+					);
+				} else {
+					g.vhide();
+				}
+			}
+
+			g = this.vinc("cell_boxes_stroke", "auto", true);
+			g.lineWidth = Math.max(this.cw * (ra[0] - ra[1]), 1);
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				var color = this.getCircleStrokeColor(cell);
+				g.vid = "c_cira_" + cell.id;
+				if (!!color) {
+					g.strokeStyle = color;
+					g.strokeRectCenter(
+						cell.bx * this.bw,
+						cell.by * this.bh,
+						rsize_stroke,
+						rsize_stroke
+					);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		getQuesNumberText: function(cell) {
+			return this.getNumberText(cell, cell.qnum2);
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	Encode: {
+	"Encode@yosenabe": {
 		decodePzpr: function(type) {
 			this.decodeIce();
 			this.decodeNumber16_yosenabe();
@@ -455,8 +695,43 @@
 			this.outbstr += cm;
 		}
 	},
+	"Encode@yajisoko": {
+		decodePzpr: function(type) {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				var cell = bd.cell[c];
+				if (val === -2) {
+					cell.qnum = -2;
+				} else if (val !== -1) {
+					cell.qdir = val % 5;
+					cell.qnum2 = (val / 5) | 0;
+					if (cell.qnum2 === 0) {
+						cell.qnum2 = -4;
+					} else if (cell.qnum2 === 1) {
+						cell.qnum2 = -2;
+					} else {
+						cell.qnum2 -= 2;
+					}
+				}
+			});
+		},
+		encodePzpr: function(type) {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				var cell = bd.cell[c];
+				if (cell.qnum2 === -1) {
+					return cell.qnum;
+				}
+
+				var val =
+					(cell.qnum2 === -4 ? 0 : cell.qnum2 === -2 ? 1 : cell.qnum2 + 2) * 5 +
+					cell.qdir;
+				return val;
+			});
+		}
+	},
 	//---------------------------------------------------------
-	FileIO: {
+	"FileIO@yosenabe": {
 		decodeData: function() {
 			this.decodeCell(function(cell, ca) {
 				if (ca.charAt(0) === "i") {
@@ -499,8 +774,9 @@
 			});
 			this.encodeBorderLine();
 			this.encodeCellQsubQcmp();
-		},
-
+		}
+	},
+	FileIO: {
 		/* decode/encodeCellQsubの上位互換です */
 		decodeCellQsubQcmp: function() {
 			this.decodeCell(function(cell, ca) {
@@ -513,6 +789,43 @@
 		encodeCellQsubQcmp: function() {
 			this.encodeCell(function(cell) {
 				return cell.qsub + (cell.qcmp << 4) + " ";
+			});
+		}
+	},
+	"FileIO@yajisoko": {
+		decodeData: function() {
+			this.decodeCellDirecQnum();
+			this.decodeBorderLine();
+			this.decodeCellQsubQcmp();
+		},
+		encodeData: function() {
+			this.encodeCellDirecQnum();
+			this.encodeBorderLine();
+			this.encodeCellQsubQcmp();
+		},
+		decodeCellDirecQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.qdir = 0;
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					var inp = ca.split(",");
+					cell.qdir = +inp[0];
+					cell.qnum2 = +inp[1];
+				}
+			});
+		},
+		encodeCellDirecQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.qnum === -2) {
+					return "# ";
+				} else if (cell.qnum2 !== -1) {
+					var ca1 = "" + cell.qdir;
+					var ca2 = "" + cell.qnum2;
+					return [ca1, ",", ca2, " "].join("");
+				} else {
+					return ". ";
+				}
 			});
 		}
 	},
@@ -607,6 +920,67 @@
 				clist.getDeparture().seterr(4);
 				clist.seterr(1);
 			}
+		}
+	},
+	"AnsCheck@yajisoko": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkConnectObject",
+			"checkLineOverLetter",
+			"checkCurveLine",
+
+			"checkArrowNumber",
+
+			"checkDisconnectLine",
+			"checkNumberHasArrow"
+		],
+
+		checkArrowNumber: function() {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (
+					cell.qnum2 === -1 ||
+					cell.qnum2 === -2 ||
+					cell.qdir === 0 ||
+					cell.lcnt === 1
+				) {
+					continue;
+				}
+				var pos = cell.getaddr(),
+					dir = cell.qdir;
+				var clist = new this.klass.CellList();
+				while (1) {
+					pos.movedir(dir, 2);
+					var cell2 = pos.getc();
+					if (cell2.isnull) {
+						break;
+					}
+					clist.add(cell2);
+				}
+				if (
+					cell.qnum2 ===
+					clist.filter(function(cell) {
+						return (cell.lcnt === 1) ^ (cell.qnum !== -1);
+					}).length
+				) {
+					continue;
+				}
+
+				this.failcode.add("anShadeNe");
+				if (this.checkOnly) {
+					break;
+				}
+				cell.seterr(1);
+				clist.seterr(1);
+			}
+		},
+
+		checkNumberHasArrow: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum2 !== -1 && cell.qdir === cell.NDIR;
+			}, "anNoArrow");
 		}
 	}
 });

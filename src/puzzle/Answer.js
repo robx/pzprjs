@@ -161,7 +161,10 @@ pzpr.classmgr.makeCommon({
 					key = baseKey;
 				}
 
-				var textitem = textlist[langcode][key] || textlist[langcode].invalid;
+				var textitem =
+					textlist[langcode][key] ||
+					textlist.en[key] ||
+					textlist[langcode].invalid;
 				texts.push(textitem);
 			}
 			return texts.join("\n");
