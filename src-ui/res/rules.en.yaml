@@ -314,3 +314,8 @@ slashpack: "Draw diagonal lines through the center of some cells to divide the b
   \ overlap a line.\n3. Each region must contain exactly one of each kind of number\
   \ on the board.\n4. Question marks can be replaced with any number, as long as it\
   \ appears elsewhere on the grid."
+icewalk: "Draw a loop that goes through every numbered cell.\n1. Two perpendicular\
+  \ line segments may intersect each other only on icy cells, but they may not turn\
+  \ at their intersection or otherwise overlap.\n2. The loop may not turn on icy cells.\n\
+  3. A number indicates how many cells make up the continuous non-icy section of the\
+  \ loop that the number is on."
