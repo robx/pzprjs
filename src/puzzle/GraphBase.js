@@ -551,10 +551,36 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// graph.newIrowake()  線の情報が再構築された際、線に色をつける
 		//---------------------------------------------------------------------------
+		// newIrowake: function() {
+		// 	var paths = this.components;
+		// 	for (var i = 0; i < paths.length; i++) {
+		// 		paths[i].color = this.puzzle.painter.getNewLineColor();
+		// 	}
+		// }
 		newIrowake: function() {
 			var paths = this.components;
-			for (var i = 0; i < paths.length; i++) {
-				paths[i].color = this.puzzle.painter.getNewLineColor();
+			var npaths = paths.length;
+
+			var thetaStartDeg = Math.random()*360;
+			var spacingDeg = 360/npaths;
+
+			var yspacing = (this.maxYdeg-this.minYdeg)/(npaths-1);
+
+			var Kr = 0.29891,
+				Kg = 0.58661,
+				Kb = 0.11448;
+
+			for (i = 0; i < npaths; i++) {
+				var currentThetaDeg = (thetaStartDeg + i*spacingDeg) % 360,
+					cb = Math.sin(currentThetaDeg*Math.PI/180),
+					cr = Math.cos(currentThetaDeg*Math.PI/180),
+					y = this.minYdeg + i*yspacing;
+				
+				var r = y + (2-2*Kr)*cr,
+					g = y -(Kb/Kg)*(2-2*Kb)*cb -(Kr/Kg)*(2-2*Kr)*cr,
+					b = y + (2-2*Kb)*cr;
+
+					paths[i].color = "rgb(" + Math.floor(r*255) + "," + Math.floor(g*255) + "," + Math.floor(b*255) + ")";
 			}
 		}
 	},
