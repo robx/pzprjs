@@ -151,7 +151,7 @@
 			var clist = component.clist;
 			var nums = [];
 			var numkind = 0, 
-				filled = -1
+				filled = -1,
 				circlecnt = 0;
 			for (var i = 0; i < clist.length; i++) {
 				var num = clist[i].getNum();
