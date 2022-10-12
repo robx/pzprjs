@@ -151,6 +151,7 @@
 			this.drawLines();
 			this.drawPekes();
 
+			this.drawCellSquare();
 			this.drawQuesNumbers();
 			this.drawNumbersExCell();
 			this.drawFish();
@@ -158,6 +159,40 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		drawCellSquare: function() {
+			var g = this.vinc("cell_number_base", "crispEdges", true);
+
+			var rw = this.bw * 0.7 - 1;
+			var rh = this.bh * 0.7 - 1;
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				g.vid = "c_sq_" + cell.id;
+				if (cell.qnum === -2 || cell.qnum > 0) {
+					g.fillStyle = cell.error === 1 ? this.errbcolor1 : this.bgcolor;
+					g.fillRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
+				} else {
+					g.vhide();
+				}
+			}
+
+			rw = this.bw - 2;
+			rh = this.bh - 2;
+
+			var exclist = this.range.excells;
+			for (var i = 0; i < exclist.length; i++) {
+				var cell = exclist[i];
+				g.vid = "x_sq_" + cell.id;
+				if (cell.qnum === -2 || cell.qnum > 0) {
+					g.fillStyle = cell.error === 1 ? this.errbcolor1 : this.bgcolor;
+					g.fillRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
+				} else {
+					g.vhide();
+				}
+			}
 		},
 
 		getQuesNumberText: function(excell) {
@@ -329,6 +364,7 @@
 				if (this.checkOnly) {
 					break;
 				}
+				bd.border.setnoerr();
 				path.setedgeerr(1);
 			}
 		},
