@@ -103,7 +103,8 @@
 		"vslither",
 		"tslither",
 		"antmill",
-		"kaidan"
+		"kaidan",
+		"anglers"
 	]);
 
 	(function(Genre, obj) {
@@ -150,6 +151,7 @@
 			aho: [0, 0, "アホになり切れ", "Aho-ni-Narikire", "shikaku"],
 			amibo: [0, 0, "あみぼー", "Amibo", "amibo"],
 			angleloop: [0, 0, "鋭直鈍ループ", "Angle Loop", "kouchoku"],
+			anglers: [0, 0, "フィッシング", "Anglers"],
 			antmill: [0, 0, "Ant Mill", "Ant Mill", "scrin"],
 			aqre: [0, 0, "Aqre", "Aqre", "aqre"],
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],

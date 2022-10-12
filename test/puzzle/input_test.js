@@ -90,15 +90,20 @@ pzpr.variety.each(function(pid) {
 			inps.forEach(function(data) {
 				testcount++;
 				var label = data.label || "execinput " + testcount;
-				it(label, function() {
-					var action = data.input || [];
-					action.forEach(a => execinput(puzzle, a));
-					if (!!data.result) {
-						var filestr = puzzle.getFileData();
-						var resultstr = data.result.replace(/\//g, "\n");
-						assert.equal(filestr, resultstr);
-					}
-				});
+				if (!!data.input || !!data.result) {
+					it(label, function() {
+						var action = data.input || [];
+						action.forEach(a => execinput(puzzle, a));
+						if (!!data.result) {
+							var filestr = puzzle.getFileData();
+							var resultstr = data.result.replace(/\//g, "\n");
+							assert.equal(filestr, resultstr);
+						}
+					});
+				} else {
+					// Mark test as pending in Mocha
+					it(label);
+				}
 			});
 		});
 	});
