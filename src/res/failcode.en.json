@@ -271,7 +271,7 @@
     "cbNoLine.country": "The cells that is not passed any line are adjacent over border line.",
     "cbSameNum.nanro": "Adjacent blocks have the same number.",
     "cbShade.shimaguni": "Countries in different marine areas are adjacent.",
-    "cbShade.stostone": "Shaded cells are adjacent over a border.",
+    "cbShade": "Shaded cells are adjacent over a border.",
     "ceAddLine": "A cell with given lines has extra lines.",
     "ceDark.lightup": "A cell is not shined.",
     "ceDirection.compass": "The number of cells in the direction is wrong.",

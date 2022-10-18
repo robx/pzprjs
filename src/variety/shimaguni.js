@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["shimaguni", "chocona", "stostone", "hinge"], {
+})(["shimaguni", "chocona", "stostone", "hinge", "heyablock"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -54,7 +54,7 @@
 			return Math.min(999, this.room.clist.length);
 		}
 	},
-	"Cell@chocona,hinge": {
+	"Cell@chocona,hinge,heyablock": {
 		minnum: 0
 	},
 	"Cell@stostone": {
@@ -101,7 +101,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@shimaguni,stostone": {
+	"Board@shimaguni,stostone,heyablock": {
 		addExtraInfo: function() {
 			this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
 		}
@@ -226,7 +226,7 @@
 			component.hinge = null;
 		}
 	},
-	"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone": {
+	"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock": {
 		// Same as LITS AreaTetrominoGraph
 		enabled: true,
 		relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -246,6 +246,9 @@
 	},
 	"AreaStoneGraph@stostone": {
 		coloring: true
+	},
+	"AreaUnshadeGraph@heyablock": {
+		enabled: true
 	},
 	AreaRoomGraph: {
 		enabled: true,
@@ -409,15 +412,18 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	"AnsCheck@shimaguni,stostone#1": {
+	"AnsCheck@shimaguni,stostone,heyablock#1": {
 		checklist: [
 			"checkSideAreaShadeCell",
 			"checkSeqBlocksInRoom",
 			"checkFallenBlock@stostone",
+			"checkConnectUnshade@heyablock",
 			"checkShadeCellCount",
 			"checkSideAreaLandSide@shimaguni",
 			"checkRemainingSpace@stostone",
-			"checkNoShadeCellInArea"
+			"checkCountinuousUnshadeCell@heyablock",
+			"checkNoShadeCellInArea",
+			"doneShadingDecided@heyablock"
 		]
 	},
 	"AnsCheck@chocona#1": {
@@ -433,7 +439,7 @@
 			"checkShadeCellCount"
 		]
 	},
-	"AnsCheck@shimaguni,stostone": {
+	"AnsCheck@shimaguni,stostone,heyablock": {
 		checkSideAreaShadeCell: function() {
 			this.checkSideAreaCell(
 				function(cell1, cell2) {
@@ -649,15 +655,59 @@
 			this.checkHinge("bkHingeLt");
 		}
 	},
+	"AnsCheck@heyablock": {
+		checkCountinuousUnshadeCell: function() {
+			var savedflag = this.checkOnly;
+			this.checkOnly = true; /* エラー判定を一箇所だけにしたい */
+			this.checkRowsColsPartly(
+				this.isBorderCount,
+				function(cell) {
+					return cell.isShade();
+				},
+				"bkUnshadeConsecGt3"
+			);
+			this.checkOnly = savedflag;
+		},
+		isBorderCount: function(clist) {
+			var d = clist.getRectSize(),
+				count = 0,
+				bd = this.board,
+				bx,
+				by;
+			if (d.x1 === d.x2) {
+				bx = d.x1;
+				for (by = d.y1 + 1; by <= d.y2 - 1; by += 2) {
+					if (bd.getb(bx, by).isBorder()) {
+						count++;
+					}
+				}
+			} else if (d.y1 === d.y2) {
+				by = d.y1;
+				for (bx = d.x1 + 1; bx <= d.x2 - 1; bx += 2) {
+					if (bd.getb(bx, by).isBorder()) {
+						count++;
+					}
+				}
+			}
+
+			var result = count <= 1;
+			if (!result) {
+				clist.seterr(1);
+			}
+			return result;
+		}
+	},
 
 	FailCode: {
 		bkShadeDivide: "bkShadeDivide",
 		bkNoShade: "bkNoShade",
-		bkShadeNe: "bkShadeNe"
+		bkShadeNe: "bkShadeNe",
+		cbShade: "cbShade"
 	},
 	"FailCode@shimaguni": {
 		bkShadeDivide: "bkShadeDivide.shimaguni",
 		bkNoShade: "bkNoShade.shimaguni",
-		bkShadeNe: "bkShadeNe.shimaguni"
+		bkShadeNe: "bkShadeNe.shimaguni",
+		cbShade: "cbShade.shimaguni"
 	}
 });
