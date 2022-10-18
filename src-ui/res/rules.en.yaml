@@ -306,8 +306,8 @@ heyablock: "Shade some cells on the board.\n1. All shaded cells in one region mu
   3. If a region has no number, it must have at least one shaded cell.\n4. Shaded\
   \ cells cannot be adjacent across region borders.\n5. There cannot be a horizontal\
   \ or vertical line of unshaded cells that goes through 2 or more region borders.\n\
-  6. All unshaded cells form an orthogonally contiguous area.\nThis genre first appeared\
-  \ in Toketa vol. 1."
+  6. All unshaded cells form an orthogonally contiguous area.\nThis genre was invented\
+  \ by Atsumi Hirose for 2013JZdC, and appears in Toketa vol. 1."
 slashpack: "Draw diagonal lines through the center of some cells to divide the board\
   \ into regions.\n1. Two lines cannot overlap within a cell. All lines must be drawn\
   \ from one corner to the opposite corner of the cell.\n2. A cell with a number cannot\
