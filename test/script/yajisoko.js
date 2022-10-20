@@ -40,6 +40,16 @@ ui.debug.addDebugData("yajisoko", {
 			{ skiprules: true }
 		],
 		[
+			"laOnBorder",
+			"pzprv3/yajisoko/3/3/# 2,-4 0,-5 /. . . /. . . /1 1 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /",
+			{ skiprules: true }
+		],
+		[
+			null,
+			"pzprv3/yajisoko/3/3/# 2,-4 0,-5 /. . . /. . . /1 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /",
+			{ skiprules: true }
+		],
+		[
 			null,
 			"pzprv3/yajisoko/4/4/. . # . /. # 3,3 # /# . 1,2 . /4,2 . 4,1 . /0 0 0 /0 1 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 1 /1 0 0 1 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
 		]

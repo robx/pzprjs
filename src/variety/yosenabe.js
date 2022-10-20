@@ -152,12 +152,14 @@
 	},
 	"MouseEvent@yajisoko": {
 		inputModes: {
-			edit: ["number", "direc", "box", "clear"],
+			edit: ["number", "direc", "box", "empty", "clear"],
 			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
 		},
 		mouseinput_other: function() {
 			if (this.inputMode === "box") {
 				this.inputFixedNumber(-3);
+			} else if (this.inputMode === "empty") {
+				this.inputFixedNumber(-5);
 			}
 		},
 		mouseinput_auto: function() {
@@ -305,6 +307,8 @@
 				ca = "s2";
 			} else if (ca === "i") {
 				ca = "s3";
+			} else if (ca === "w") {
+				ca = "s4";
 			}
 			this.key_inputqnum(ca);
 		},
@@ -371,6 +375,9 @@
 				this.setQnum(-1);
 				this.setQnum2(val);
 			}
+		},
+		noLP: function() {
+			return this.qnum2 === -5;
 		}
 	},
 	CellList: {
@@ -391,9 +398,13 @@
 	},
 
 	Border: {
+		enableLineNG: true,
 		prehook: {
 			line: function(num) {
-				return this.puzzle.execConfig("dispmove") && this.checkFormCurve(num);
+				return (
+					this.puzzle.execConfig("dispmove") &&
+					(this.checkStableLine(num) || this.checkFormCurve(num))
+				);
 			}
 		}
 	},
@@ -555,6 +566,12 @@
 			}
 			return this.quescolor;
 		},
+		getBGCellColor: function(cell) {
+			if (cell.qnum2 === -5) {
+				return cell.error ? this.errcolor1 : "black";
+			}
+			return this.getBGCellColor_qsub2(cell);
+		},
 
 		drawBoxes: function() {
 			var g = this.vinc("cell_boxes", "auto", true);
@@ -714,6 +731,7 @@
 					}
 				}
 			});
+			this.decodeBinary("qnum2", -5);
 		},
 		encodePzpr: function(type) {
 			var bd = this.board;
@@ -728,6 +746,7 @@
 					cell.qdir;
 				return val;
 			});
+			this.encodeBinary("qnum2", -5, true);
 		}
 	},
 	//---------------------------------------------------------
@@ -926,6 +945,7 @@
 		checklist: [
 			"checkBranchLine",
 			"checkCrossLine",
+			"checkInvalidHasLine",
 			"checkConnectObject",
 			"checkLineOverLetter",
 			"checkCurveLine",
@@ -979,8 +999,16 @@
 
 		checkNumberHasArrow: function() {
 			this.checkAllCell(function(cell) {
-				return cell.qnum2 !== -1 && cell.qdir === cell.NDIR;
+				return (
+					cell.qnum2 !== -1 && cell.qnum2 !== -5 && cell.qdir === cell.NDIR
+				);
 			}, "anNoArrow");
+		},
+
+		checkInvalidHasLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum2 === -5 && cell.lcnt > 0;
+			}, "laOnBorder");
 		}
 	}
 });
