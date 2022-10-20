@@ -228,12 +228,12 @@
 				return -1;
 			} else if (this.btn === "right" && val === 0) {
 				return -2;
-			} else if (this.btn === "right" && (val === -3 || val === -4)) {
-				return -1;
 			} else if (this.btn === "right" && val === -1) {
 				return cell.getmaxnum();
 			}
-			return val + (this.btn === "left" ? 1 : -1);
+
+			val += this.btn === "left" ? 1 : -1;
+			return val < -3 ? -1 : val;
 		}
 	},
 
