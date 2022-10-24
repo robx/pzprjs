@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["yajilin", "yajilin-regions"], {
+})(["yajilin", "yajilin-regions", "koburin"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -31,14 +31,18 @@
 					if (!this.firstCell.isnull && cell !== this.firstCell) {
 						return;
 					}
-					if (!cell.isnull && cell.isNum() && this.pid === "yajilin") {
+					if (!cell.isnull && cell.isNum() && this.pid !== "yajilin-regions") {
 						this.inputqcmp();
 					} else {
 						this.inputcell();
 					}
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
+				if (this.pid === "koburin") {
+					if (this.mousestart) {
+						this.inputqnum();
+					}
+				} else if (this.mousestart || this.mousemove) {
 					if (this.pid === "yajilin") {
 						this.inputdirec();
 					} else if (this.pid === "yajilin-regions") {
@@ -71,6 +75,12 @@
 		inputModes: {
 			edit: ["number", "border", "clear", "info-line"],
 			play: ["line", "peke", "shade", "unshade", "info-line"]
+		}
+	},
+	"MouseEvent@koburin": {
+		inputModes: {
+			edit: ["number", "clear", "info-line"],
+			play: ["line", "peke", "shade", "unshade", "info-line", "completion"]
 		}
 	},
 
@@ -153,7 +163,7 @@
 			}
 		}
 	},
-	"Cell@yajilin": {
+	"Cell@yajilin,koburin": {
 		minnum: 0,
 		maxnum: function() {
 			return Math.max((this.board.cols + 1) >> 1, (this.board.rows + 1) >> 1);
@@ -223,6 +233,28 @@
 			return clist;
 		}
 	},
+	"Cell@koburin#2": {
+		maxnum: 4,
+		getClist: function() {
+			if (!this.isValidNum()) {
+				return null;
+			}
+			if (this.puzzle.getConfig("koburin_minesweeper")) {
+				return this.board.cellinside(
+					this.bx - 2,
+					this.by - 2,
+					this.bx + 2,
+					this.by + 2
+				);
+			}
+
+			return new this.klass.CellList(
+				this.getdir4clist().map(function(cl) {
+					return cl[0];
+				})
+			);
+		}
+	},
 	"Cell@yajilin-regions": {
 		minnum: 0,
 		maxnum: function() {
@@ -283,7 +315,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@yajilin": {
+	"Board@yajilin,koburin": {
 		redrawAffected: function(cells) {
 			var minx = this.maxbx,
 				maxx = this.minbx,
@@ -375,7 +407,7 @@
 
 			this.drawLines();
 
-			if (this.pid === "yajilin-regions") {
+			if (this.pid !== "yajilin") {
 				this.drawQuesNumbers();
 			}
 
@@ -390,7 +422,7 @@
 			this.drawTarget();
 		}
 	},
-	"Graphic@yajilin": {
+	"Graphic@yajilin,koburin": {
 		getBGCellColor: function(cell) {
 			var info = cell.error || cell.qinfo;
 			if (this.puzzle.getConfig("disptype_yajilin") === 2 && cell.qnum !== -1) {
@@ -451,6 +483,16 @@
 		encodePzpr: function(type) {
 			this.encodeBorder();
 			this.encodeRoomNumber16();
+		}
+	},
+	"Encode@koburin": {
+		decodePzpr: function(type) {
+			this.decode4Cell();
+			this.puzzle.setConfig("koburin_minesweeper", this.checkpflag("m"));
+		},
+		encodePzpr: function(type) {
+			this.encode4Cell();
+			this.outpflag = this.puzzle.getConfig("koburin_minesweeper") ? "m" : null;
 		}
 	},
 	//---------------------------------------------------------
@@ -599,6 +641,35 @@
 			this.encodeBorderLine();
 		}
 	},
+	"FileIO@koburin": {
+		decodeData: function() {
+			this.decodeConfig();
+			this.decodeCellQnum();
+			this.decodeCellAns();
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeConfig();
+			this.encodeCellQnum();
+			this.encodeCellAns();
+			this.encodeBorderLine();
+		},
+
+		decodeConfig: function() {
+			if (this.dataarray[this.lineseek] === "m") {
+				this.puzzle.setConfig("koburin_minesweeper", true);
+				this.readLine();
+			} else {
+				this.puzzle.setConfig("koburin_minesweeper", false);
+			}
+		},
+
+		encodeConfig: function() {
+			if (this.puzzle.getConfig("koburin_minesweeper")) {
+				this.writeLine("m");
+			}
+		}
+	},
 	//---------------------------------------------------------
 	// 正解判定処理実行部
 	AnsCheck: {
@@ -608,10 +679,10 @@
 			"checkLineOnShadeCell",
 			"checkAdjacentShadeCell",
 			"checkDeadendLine+",
-			"checkArrowNumber@yajilin",
+			"checkArrowNumber@yajilin,koburin",
 			"checkShadeCellCount@yajilin-regions",
 			"checkOneLoop",
-			"checkEmptyCell_yajilin+@yajilin",
+			"checkEmptyCell_yajilin+@yajilin,koburin",
 			"checkEmptyCell_regions+@yajilin-regions",
 			"checkNumberHasArrow@yajilin"
 		],
@@ -645,5 +716,8 @@
 				clist.seterr(1);
 			}
 		}
+	},
+	"FailCode@koburin": {
+		anShadeNe: "nmShadeNe.tawa"
 	}
 });

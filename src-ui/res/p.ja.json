@@ -183,6 +183,7 @@
     "tren_new": "白マスひとつながりルールを追加",
     "nuriuzu_connect": "黒マスひとつながりルールを追加",
     "pentopia_transparent": "Transparent mode (clues may be shaded)",
+    "koburin_minesweeper": "Minesweeper mode (numbers include diagonal cells)",
     "variant": "変種ルール",
     "time": "経過時間：",
     "check": "チェック",
