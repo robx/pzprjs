@@ -662,5 +662,9 @@
     "shDiag.pentopia": "黒マスのカタマリがナナメに接しています。",
     "nmSightNe.roundtrip": "最も近い線の長さが正しくありません。",
     "bdUnequal.antmill": "バツ印に隣接するマスのうち１つだけが黒マスになるようにします。",
-    "bdEqual.antmill": "正方形に隣接するマスが同色になっていません。"
+    "bdEqual.antmill": "正方形に隣接するマスが同色になっていません。",
+    "lnOnShade.yajisoko": "線が黒マスの上を通っています。",
+    "lnNoFish.anglers": "魚のいない線があります。",
+    "ceEmpty.kaidan": "空白のマスがあります。",
+    "lnNoNum.anglers": "数字のない線があります。"
 }
