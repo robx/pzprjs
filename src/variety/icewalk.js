@@ -105,6 +105,7 @@
 		isLineCross: true
 	},
 	AreaRoomGraph: {
+		countprop: "l2cnt",
 		enabled: true,
 		relation: {
 			"cell.ques": "node",
