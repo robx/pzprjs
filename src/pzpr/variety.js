@@ -104,6 +104,9 @@
 		"tslither",
 		"antmill",
 		"kaidan",
+		"anglers",
+		"heyablock",
+		"koburin",
 		"icewalk"
 	]);
 
@@ -151,6 +154,7 @@
 			aho: [0, 0, "アホになり切れ", "Aho-ni-Narikire", "shikaku"],
 			amibo: [0, 0, "あみぼー", "Amibo", "amibo"],
 			angleloop: [0, 0, "鋭直鈍ループ", "Angle Loop", "kouchoku"],
+			anglers: [0, 0, "フィッシング", "Anglers"],
 			antmill: [0, 0, "Ant Mill", "Ant Mill", "scrin"],
 			aqre: [0, 0, "Aqre", "Aqre", "aqre"],
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],
@@ -230,6 +234,7 @@
 			hebi: [1, 0, "へびいちご", "Hebi-Ichigo", "", { old: "snakes" }],
 			herugolf: [0, 0, "ヘルゴルフ", "Herugolf"],
 			heteromino: [0, 0, "ヘテロミノ", "Heteromino", "nawabari"],
+			heyablock: [0, 0, "へやブロ", "Heyablock", "shimaguni"],
 			heyabon: [1, 0, "へやぼん", "Heya-Bon", "bonsan"],
 			heyawake: [
 				0,
@@ -262,6 +267,7 @@
 			kakuru: [0, 0, "カックル", "Kakuru"],
 			kazunori: [0, 0, "かずのりのへや", "Kazunori Room"],
 			kinkonkan: [1, 0, "キンコンカン", "Kin-Kon-Kan"],
+			koburin: [0, 0, "コブリン", "Koburin", "yajilin"],
 			kouchoku: [0, 0, "交差は直角に限る", "Kouchoku"],
 			kramma: [0, 0, "快刀乱麻", "KaitoRamma", "kramma"],
 			kramman: [0, 0, "新・快刀乱麻", "New KaitoRamma", "kramma"],

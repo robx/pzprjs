@@ -306,11 +306,21 @@ heyablock: "Shade some cells on the board.\n1. All shaded cells in one region mu
   3. If a region has no number, it must have at least one shaded cell.\n4. Shaded\
   \ cells cannot be adjacent across region borders.\n5. There cannot be a horizontal\
   \ or vertical line of unshaded cells that goes through 2 or more region borders.\n\
-  6. All unshaded cells form an orthogonally contiguous area.\nThis genre first appeared\
-  \ in Toketa vol. 1."
+  6. All unshaded cells form an orthogonally contiguous area.\nThis genre was invented\
+  \ by Atsumi Hirose for 2013JZdC, and appears in Toketa vol. 1."
 slashpack: "Draw diagonal lines through the center of some cells to divide the board\
   \ into regions.\n1. Two lines cannot overlap within a cell. All lines must be drawn\
   \ from one corner to the opposite corner of the cell.\n2. A cell with a number cannot\
   \ overlap a line.\n3. Each region must contain exactly one of each kind of number\
   \ on the board.\n4. Question marks can be replaced with any number, as long as it\
   \ appears elsewhere on the grid."
+icewalk: "Draw a loop that goes through every numbered cell.\n1. Two perpendicular\
+  \ line segments may intersect each other only on icy cells, but they may not turn\
+  \ at their intersection or otherwise overlap.\n2. The loop may not turn on icy cells.\n\
+  3. A number indicates how many cells make up the continuous non-icy section of the\
+  \ loop that the number is on."
+mirrorbk: "Draw lines over the dotted lines to divide the board into regions.\n1.\
+  \ A number indicates the size of the region that contains it.\n2. Regions can have\
+  \ no more than 1 number.\n3. A thick line represents a mirror, and divides two regions.\
+  \ These regions must have reflectional symmetry across this mirror.\nThis genre\
+  \ first appeared in Puzzle Communication Nikoli vol. 177."

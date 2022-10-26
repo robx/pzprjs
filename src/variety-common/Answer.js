@@ -587,7 +587,7 @@ pzpr.classmgr.makeCommon({
 					return cell.isShade();
 				},
 				function(w, h, a, n) {
-					return a > 0;
+					return a > 0 || n === 0;
 				},
 				"bkNoShade"
 			);

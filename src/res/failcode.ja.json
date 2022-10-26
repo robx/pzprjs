@@ -261,7 +261,7 @@
     "cbNoLine.country": "線が通らないマスが、太線をはさんでタテヨコにとなりあっています。",
     "cbSameNum.nanro": "同じ数字が境界線を挟んで隣り合っています。",
     "cbShade.shimaguni": "異なる海域にある国どうしが辺を共有しています。",
-    "cbShade.stostone": "異なる部屋にある黒マスどうしが辺を共有しています。",
+    "cbShade": "異なる部屋にある黒マスどうしが辺を共有しています。",
     "ceAddLine": "最初から引かれている線があるマスに線が足されています。",
     "ceDark.lightup": "照明に照らされていないセルがあります。",
     "ceDirection.compass": "数字の方向にあるブロック内のマス数が、数字と一致していないブロックがあります。",
@@ -359,8 +359,7 @@
     "laLenNe": "数字と線の長さが違います。",
     "laLoop.rassi": "線がループになっています。",
     "laMoveOver.herugolf": "ボールが指示された打数を超えて動いています。",
-    "laOnBorder.armyants": "線が境界線をまたいでいます。",
-    "laOnBorder.rassi": "線が境界線をまたいでいます。",
+    "laOnBorder": "線が境界線をまたいでいます。",
     "laOnHole.herugolf": "ホールの上を線が通過しています。",
     "laOnNum.armyants": "数字の上を線が通過しています。",
     "laOnNum.bonsan": "○の上を線が通過しています。",
@@ -663,5 +662,9 @@
     "shDiag.pentopia": "黒マスのカタマリがナナメに接しています。",
     "nmSightNe.roundtrip": "最も近い線の長さが正しくありません。",
     "bdUnequal.antmill": "バツ印に隣接するマスのうち１つだけが黒マスになるようにします。",
-    "bdEqual.antmill": "正方形に隣接するマスが同色になっていません。"
+    "bdEqual.antmill": "正方形に隣接するマスが同色になっていません。",
+    "lnOnShade.yajisoko": "線が黒マスの上を通っています。",
+    "lnNoFish.anglers": "魚のいない線があります。",
+    "ceEmpty.kaidan": "空白のマスがあります。",
+    "lnNoNum.anglers": "数字のない線があります。"
 }
