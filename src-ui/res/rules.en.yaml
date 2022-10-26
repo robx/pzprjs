@@ -319,3 +319,8 @@ icewalk: "Draw a loop that goes through every numbered cell.\n1. Two perpendicul
   \ at their intersection or otherwise overlap.\n2. The loop may not turn on icy cells.\n\
   3. A number indicates how many cells make up the continuous non-icy section of the\
   \ loop that the number is on."
+mirrorbk: "Draw lines over the dotted lines to divide the board into regions.\n1.\
+  \ A number indicates the size of the region that contains it.\n2. Regions can have\
+  \ no more than 1 number.\n3. A thick line represents a mirror, and divides two regions.\
+  \ These regions must have reflectional symmetry across this mirror.\nThis genre\
+  \ first appeared in Puzzle Communication Nikoli vol. 177."
