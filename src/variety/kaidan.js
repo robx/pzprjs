@@ -538,6 +538,7 @@
 			"checkCrossLine",
 			"checkLineOnShadeCell",
 			"checkDir4ShadeOver",
+			"checkCirclesInUniqueRowsCols",
 			"checkDir4ShadeLess",
 			"checkEmptyCell+"
 		],
@@ -552,6 +553,18 @@
 			this.checkAllCell(function(cell) {
 				return cell.lcnt === 0 && cell.noNum();
 			}, "ceEmpty");
+		},
+		checkCirclesInUniqueRowsCols: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				paths[r].id = r + 1;
+			}
+			this.checkDifferentNumberInLine();
+		},
+		isDifferentNumberInClist: function(clist) {
+			return this.isIndividualObject(clist, function(cell) {
+				return cell.qans === 1 && cell.path ? cell.path.id : -1;
+			});
 		}
 	}
 });
