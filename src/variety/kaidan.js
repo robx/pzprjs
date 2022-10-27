@@ -401,6 +401,9 @@
 			}
 		}
 	},
+	"Graphic@takoyaki": {
+		irowake: true
+	},
 
 	Encode: {
 		decodePzpr: function(type) {
@@ -442,20 +445,7 @@
 		}
 	},
 
-	"AnsCheck@kaidan": {
-		checklist: [
-			"checkLineOverlap",
-			"checkLineOnShadeCell",
-			"checkAdjacentShadeCell",
-			"checkDir4ShadeOver",
-			"checkConnectUnshade",
-			"checkShortEnds",
-			"checkLengthConsecutive",
-			"checkDir4ShadeLess",
-			"checkMissingEnd",
-			"checkEmptyCell_kaidan+"
-		],
-
+	AnsCheck: {
 		checkDir4ShadeOver: function() {
 			this.checkDir4Cell(
 				function(cell) {
@@ -473,7 +463,23 @@
 				1,
 				"nmShadeLt"
 			);
-		},
+		}
+	},
+
+	"AnsCheck@kaidan#1": {
+		checklist: [
+			"checkLineOverlap",
+			"checkLineOnShadeCell",
+			"checkAdjacentShadeCell",
+			"checkDir4ShadeOver",
+			"checkConnectUnshade",
+			"checkShortEnds",
+			"checkLengthConsecutive",
+			"checkDir4ShadeLess",
+			"checkMissingEnd",
+			"checkEmptyCell_kaidan+"
+		],
+
 		checkLengthConsecutive: function() {
 			this.checkSideCell(function(cell1, cell2) {
 				return (
@@ -522,6 +528,29 @@
 		checkEmptyCell_kaidan: function() {
 			this.checkAllCell(function(cell) {
 				return cell.lcnt === 0 && !cell.isShade() && cell.noNum();
+			}, "ceEmpty");
+		}
+	},
+
+	"AnsCheck@takoyaki#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkLineOnShadeCell",
+			"checkDir4ShadeOver",
+			"checkDir4ShadeLess",
+			"checkEmptyCell+"
+		],
+
+		checkLineOnShadeCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum !== -1 && cell.lcnt > 0;
+			}, "lnOnShade");
+		},
+
+		checkEmptyCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.noNum();
 			}, "ceEmpty");
 		}
 	}
