@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaidan"], {
+})(["kaidan", "takoyaki"], {
 	MouseEvent: {
 		use: true,
 		RBShadeCell: true,
@@ -53,7 +53,7 @@
 				return;
 			}
 
-			if (cell.lcnt === 1 && this.btn === "left") {
+			if (this.pid === "kaidan" && cell.lcnt === 1 && this.btn === "left") {
 				cell.setLineVal(+!cell.line);
 				cell.draw();
 			} else if (cell.isNum()) {
@@ -92,6 +92,14 @@
 			this.edgeCell = new this.klass.Address();
 			this.common.initialize.call(this);
 		},
+
+		mousereset: function() {
+			this.edgeCell.reset();
+			this.edgeData = {};
+			this.common.mousereset.call(this);
+		}
+	},
+	"MouseEvent@kaidan": {
 		inputLine: function() {
 			var cell = this.getcell();
 			var addcmp = false;
@@ -162,18 +170,13 @@
 			if (!cell.isnull) {
 				this.edgeCell.set(cell);
 			}
-		},
-		mousereset: function() {
-			this.edgeCell.reset();
-			this.edgeData = {};
-			this.common.mousereset.call(this);
 		}
 	},
 
 	KeyEvent: {
 		enablemake: true
 	},
-	Border: {
+	"Border@kaidan": {
 		prehook: {
 			line: function(num) {
 				return (num && this.isLineNG()) || this.checkFormCurve(num);
@@ -190,6 +193,9 @@
 				}
 			}
 		}
+	},
+	"Border@takoyaki": {
+		enableLineNG: true
 	},
 
 	Cell: {
@@ -214,6 +220,14 @@
 			}
 		}
 	},
+	"Cell@takoyaki": {
+		noLP: function(dir) {
+			return this.isNum();
+		},
+		allowShade: function() {
+			return this.qnum === -1;
+		}
+	},
 
 	Board: {
 		cols: 8,
@@ -226,7 +240,7 @@
 		enabled: true,
 		makeClist: true
 	},
-	AreaUnshadeGraph: {
+	"AreaUnshadeGraph@kaidan": {
 		enabled: true,
 		relation: { "cell.qnum": "node", "cell.qans": "node" },
 		isnodevalid: function(cell) {
@@ -255,7 +269,9 @@
 			this.drawCrosses();
 
 			this.drawLines();
-			this.drawLineEnds();
+			if (this.pid === "kaidan") {
+				this.drawLineEnds();
+			}
 			this.drawPekes();
 
 			this.drawChassis();
@@ -271,19 +287,41 @@
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
 					px,
-					py;
+					py,
+					shrink = this.pid === "kaidan" && cell.lcnt;
 				g.vid = "c_MB2_" + cell.id;
 				if (cell.qsub > 0) {
 					px = cell.bx * this.bw;
 					py = cell.by * this.bh;
 					g.lineWidth = (1 + this.cw / 40) | 0;
 					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
-					g.strokeCross(px, py, rsize * (cell.lcnt ? 0.5 : 1));
+					g.strokeCross(px, py, rsize * (shrink ? 0.5 : 1));
 				} else {
 					g.vhide();
 				}
 			}
 		},
+
+		getQuesNumberColor: function(cell) {
+			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
+		},
+		getCircleStrokeColor: function(cell) {
+			if (cell.qans === 1) {
+				if (cell.error === 1) {
+					return this.errcolor1;
+				} else if (cell.trial) {
+					return this.trialcolor;
+				} else {
+					return this.quescolor;
+				}
+			}
+			return null;
+		},
+		getCircleFillColor: function(cell) {
+			return null;
+		}
+	},
+	"Graphic@kaidan": {
 		drawLines: function() {
 			var g = this.vinc("line", "crispEdges");
 			var mx = this.bw / 2;
@@ -361,25 +399,6 @@
 					g.vhide();
 				}
 			}
-		},
-
-		getQuesNumberColor: function(cell) {
-			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
-		},
-		getCircleStrokeColor: function(cell) {
-			if (cell.qans === 1) {
-				if (cell.error === 1) {
-					return this.errcolor1;
-				} else if (cell.trial) {
-					return this.trialcolor;
-				} else {
-					return this.quescolor;
-				}
-			}
-			return null;
-		},
-		getCircleFillColor: function(cell) {
-			return null;
 		}
 	},
 
@@ -423,7 +442,7 @@
 		}
 	},
 
-	AnsCheck: {
+	"AnsCheck@kaidan": {
 		checklist: [
 			"checkLineOverlap",
 			"checkLineOnShadeCell",
