@@ -307,7 +307,7 @@
 			}
 		}
 	},
-	"Border@yajilin": {
+	"Border@yajilin,koburin": {
 		isBorder: function() {
 			return (this.sidecell[0].qnum === -1) !== (this.sidecell[1].qnum === -1);
 		}
@@ -489,10 +489,20 @@
 		decodePzpr: function(type) {
 			this.decode4Cell();
 			this.puzzle.setConfig("koburin_minesweeper", this.checkpflag("m"));
+			this.puzzle.setConfig("disptype_yajilin", !this.checkpflag("b") ? 1 : 2);
 		},
 		encodePzpr: function(type) {
 			this.encode4Cell();
-			this.outpflag = this.puzzle.getConfig("koburin_minesweeper") ? "m" : null;
+
+			var flags = "";
+			if (this.puzzle.getConfig("koburin_minesweeper")) {
+				flags += "m";
+			}
+			if (this.puzzle.getConfig("disptype_yajilin") === 2) {
+				flags += "b";
+			}
+
+			this.outpflag = flags.length ? flags : null;
 		}
 	},
 	//---------------------------------------------------------
@@ -662,11 +672,21 @@
 			} else {
 				this.puzzle.setConfig("koburin_minesweeper", false);
 			}
+
+			if (this.dataarray[this.lineseek] === "b") {
+				this.puzzle.setConfig("disptype_yajilin", 2);
+				this.readLine();
+			} else {
+				this.puzzle.setConfig("disptype_yajilin", 1);
+			}
 		},
 
 		encodeConfig: function() {
 			if (this.puzzle.getConfig("koburin_minesweeper")) {
 				this.writeLine("m");
+			}
+			if (this.puzzle.getConfig("disptype_yajilin") === 2) {
+				this.writeLine("b");
 			}
 		}
 	},
