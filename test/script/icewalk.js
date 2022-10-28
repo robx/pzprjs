@@ -51,9 +51,11 @@ ui.debug.addDebugData("icewalk", {
 				"cursor,1,3",
 				"key,2",
 				"cursor,3,3",
-				"key,q"
+				"key,q",
+				"playmode",
+				"mouse,left,1,1,1,3"
 			],
-			result: "pzprv3/icewalk/2/2/4 # /2 # /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /"
+			result: "pzprv3/icewalk/2/2/4 # /2 # /0 0 0 /0 0 0 /0 0 /1 0 /0 0 /"
 		}
 	]
 });
