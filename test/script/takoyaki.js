@@ -40,5 +40,11 @@ ui.debug.addDebugData("takoyaki", {
 			"pzprv3/takoyaki/6/6/- 1 - . . . /. . . . . . /. . . 4 . 1 /0 . 3 . . . /. . . . . . /. . . - 0 - /0 0 0 0 0 1 /0 1 0 1 0 0 /0 0 1 0 1 0 /0 0 0 1 0 0 /0 0 1 0 0 1 /1 0 0 0 0 0 /0 0 0 1 0 /1 0 1 0 1 /1 0 0 0 0 /0 0 0 0 1 /1 0 0 1 1 /1 1 0 0 0 /0 0 0 1 1 1 /1 0 1 0 0 0 /0 1 0 0 1 0 /0 1 0 1 0 1 /1 0 1 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{ input: ["newboard,4,1", "playmode"] },
+		{
+			input: ["mouse,left,3,1", "mouse,left,1,1,7,1", "mouse,left,7,1"],
+			result: "pzprv3/takoyaki/1/4/. . . . /0 1 0 1 /1 1 1 /"
+		}
+	]
 });
