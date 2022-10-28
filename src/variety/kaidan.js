@@ -534,16 +534,16 @@
 
 	"AnsCheck@takoyaki#1": {
 		checklist: [
-			// TODO loop
-			// TODO no middle circle
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkLineOnShadeCell",
 			"checkAdjacentShadeCell",
+			"checkLoop",
 			"checkNumberOfMiddle",
 			"checkDir4ShadeOver",
 			"checkCirclesInUniqueRowsCols",
 			"checkEndpoints",
+			"checkNoMiddle",
 			"checkDir4ShadeLess",
 			"checkEmptyCell+"
 		],
@@ -589,6 +589,41 @@
 				this.board.border.setnoerr();
 				path.setedgeerr(1);
 				circles.seterr(1);
+			}
+		},
+		checkLoop: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				if (path.circuits === 0) {
+					continue;
+				}
+
+				this.failcode.add("laLoop");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
+			}
+		},
+		checkNoMiddle: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				var circles = path.clist.filter(function(c) {
+					return c.lcnt >= 2 && c.qans === 1;
+				});
+				if (circles.length) {
+					continue;
+				}
+
+				this.failcode.add("csLt1");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
 			}
 		},
 		checkEndpoints: function() {
