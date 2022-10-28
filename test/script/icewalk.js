@@ -40,5 +40,20 @@ ui.debug.addDebugData("icewalk", {
 			"pzprv3/icewalk/4/4/. # . 5 /. # . . /. # # . /. # 1 . /0 0 0 1 0 /0 0 0 0 0 /0 1 1 1 0 /0 1 1 0 0 /0 0 0 0 /0 0 1 1 /0 0 1 1 /1 0 1 0 /0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,2,2",
+				"editmode,number",
+				"mouse,right,1,1",
+				"editmode,auto",
+				"mouse,right,3,1",
+				"cursor,1,3",
+				"key,2",
+				"cursor,3,3",
+				"key,q"
+			],
+			result: "pzprv3/icewalk/2/2/4 # /2 # /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /"
+		}
+	]
 });
