@@ -324,3 +324,10 @@ mirrorbk: "Draw lines over the dotted lines to divide the board into regions.\n1
   \ no more than 1 number.\n3. A thick line represents a mirror, and divides two regions.\
   \ These regions must have reflectional symmetry across this mirror.\nThis genre\
   \ first appeared in Puzzle Communication Nikoli vol. 177."
+takoyaki: "Draw lines through all unshaded cells, then place circles on top of them.\n\
+  1. Every line goes through exactly three circles: One on each endpoint, and another\
+  \ somewhere in the middle.\n2. Lines cannot cross or branch off, and cannot form\
+  \ loops.\n3. Two circles cannot be orthogonally adjacent.\n4. Circles belonging\
+  \ to the same line cannot share a row or column.\n5. A number indicates the amount\
+  \ of circles in the 4 orthogonally adjacent cells.\n6. Lines and circles cannot\
+  \ overlap shaded cells.\nThis genre is invented by michael3.14."
