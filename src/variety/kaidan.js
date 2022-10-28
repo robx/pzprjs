@@ -550,7 +550,7 @@
 
 		checkLineOnShadeCell: function() {
 			this.checkAllCell(function(cell) {
-				return cell.qnum !== -1 && cell.lcnt > 0;
+				return cell.qnum !== -1 && (cell.lcnt > 0 || cell.qans === 1);
 			}, "lnOnShade");
 		},
 
@@ -631,5 +631,8 @@
 				return cell.qans !== 1 && cell.lcnt === 1;
 			}, "cuEndpoint");
 		}
+	},
+	"FailCode@takoyaki": {
+		lnOnShade: "lnOnShade"
 	}
 });

@@ -542,6 +542,7 @@
     "nmDivide": "Numbers are divided.",
     "nmDivNe2.kropki": "The number is not double the other between two adjacent cells with shaded circle.",
     "nmDupRow.easyasabc": "There are equal letters in a row or column.",
+    "nmDupRow.takoyaki": "Two circles in the same row or column belong to the same line.",
     "nmDupRow": "There are equal numbers in a row or column.",
     "nmDupRowCol.toichika2": "A number has an identical number in both the same row and column.",
     "nmEndpoint.snakepit": "A circle is not on an endpoint.",
