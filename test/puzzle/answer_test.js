@@ -15,7 +15,9 @@ pzpr.variety.each(function(pid) {
 				it("Check: " + testcase[0], function() {
 					puzzle.open(testcase[1]);
 					var failcode = puzzle.check(true);
+					var failcodePassive = puzzle.check(false);
 					assert.equal(failcode[0], testcase[0]);
+					assert.equal(!!failcode[0], !!failcodePassive[0]);
 					if (testcase.length > 2 && "undecided" in testcase[2]) {
 						assert.equal(failcode.undecided, testcase[2].undecided);
 					}

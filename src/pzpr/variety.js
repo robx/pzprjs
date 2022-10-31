@@ -107,6 +107,7 @@
 		"anglers",
 		"heyablock",
 		"koburin",
+		"mirrorbk",
 		"takoyaki"
 	]);
 
@@ -298,6 +299,7 @@
 			minarism: [1, 0, "マイナリズム", "Minarism"],
 			mines: [0, 0, "マインスイーパ", "Minesweeper", "kurotto"],
 			midloop: [0, 0, "ミッドループ", "Mid-loop"],
+			mirrorbk: [0, 0, "ミラーブロック", "Mirror Block", "cbblock"],
 			mochikoro: [1, 0, "モチコロ", "Mochikoro", "nurikabe"],
 			mochinyoro: [1, 0, "モチにょろ", "Mochinyoro", "nurikabe"],
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
