@@ -200,10 +200,12 @@
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
+			this.decodeConfig();
 			this.decodeBorder();
 			this.decodeRoomNumber16();
 		},
 		encodePzpr: function(type) {
+			this.encodeConfig();
 			this.encodeBorder();
 			this.encodeRoomNumber16();
 		},
@@ -214,6 +216,9 @@
 		encodeKanpen: function() {
 			this.fio.encodeSquareRoom();
 		},
+
+		decodeConfig: function() {},
+		encodeConfig: function() {},
 
 		decodeHeyaApp: function() {
 			var c = 0,
@@ -262,18 +267,31 @@
 			this.outbstr = barray.join("/");
 		}
 	},
+	"Encode@akichi": {
+		decodeConfig: function() {
+			this.puzzle.setConfig("akichi_maximum", this.checkpflag("x"));
+		},
+		encodeConfig: function() {
+			this.outpflag = this.puzzle.getConfig("akichi_maximum") ? "x" : null;
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfig();
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
 			this.decodeCellAns();
 		},
 		encodeData: function() {
+			this.encodeConfig();
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCellAns();
 		},
+
+		decodeConfig: function() {},
+		encodeConfig: function() {},
 
 		kanpenOpen: function() {
 			this.decodeSquareRoom();
@@ -380,6 +398,22 @@
 			}
 		}
 	},
+	"FileIO@akichi": {
+		decodeConfig: function() {
+			if (this.dataarray[this.lineseek] === "x") {
+				this.puzzle.setConfig("akichi_maximum", true);
+				this.readLine();
+			} else {
+				this.puzzle.setConfig("akichi_maximum", false);
+			}
+		},
+
+		encodeConfig: function() {
+			if (this.puzzle.getConfig("akichi_maximum")) {
+				this.writeLine("x");
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
@@ -391,6 +425,7 @@
 			"checkRegionDivided@oneroom",
 			"checkFractal@ayeheya",
 			"checkShadeCellCount@!akichi",
+			"checkAttainedSize@akichi",
 			"checkUnshadedSize@akichi",
 			"checkOneDoor@oneroom",
 			"checkCountinuousUnshadeCell@!oneroom",
@@ -542,7 +577,40 @@
 		}
 	},
 	"AnsCheck@akichi": {
-		// TODO cuRoomLt + variant
+		checkAttainedSize: function() {
+			if (this.puzzle.getConfig("akichi_maximum")) {
+				return;
+			}
+			var rooms = this.board.roommgr.components;
+			var unshrs = this.board.unshrgraph.components;
+			for (var r = 0; r < rooms.length; r++) {
+				rooms[r].isMaxFound = false;
+			}
+
+			for (var r = 0; r < unshrs.length; r++) {
+				var size = unshrs[r].clist.length;
+				if (!size) {
+					continue;
+				}
+
+				var room = unshrs[r].clist[0].room;
+				if (size >= room.top.qnum) {
+					room.isMaxFound = true;
+				}
+			}
+
+			for (var r = 0; r < rooms.length; r++) {
+				if (rooms[r].isMaxFound) {
+					continue;
+				}
+
+				this.failcode.add("cuRoomLt");
+				if (this.checkOnly) {
+					break;
+				}
+				rooms[r].clist.seterr(1);
+			}
+		},
 		checkUnshadedSize: function() {
 			var unshrs = this.board.unshrgraph.components;
 			for (var r = 0; r < unshrs.length; r++) {

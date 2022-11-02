@@ -114,6 +114,9 @@
 				case "koburin":
 					idname = "koburin_minesweeper";
 					break;
+				case "akichi":
+					idname = "akichi_maximum";
+					break;
 				case "context":
 					idname = "context_marks";
 					break;
