@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["heyawake", "ayeheya", "oneroom"], {
+})(["heyawake", "ayeheya", "oneroom", "akichi"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -77,10 +77,15 @@
 		},
 		minnum: 0
 	},
+	"Cell@akichi": {
+		maxnum: function() {
+			return this.room.clist.length;
+		}
+	},
 	Board: {
 		hasborder: 1
 	},
-	"Board@oneroom": {
+	"Board@oneroom,akichi": {
 		addExtraInfo: function() {
 			this.unshrgraph = this.addInfoList(this.klass.AreaUnshadeRoomGraph);
 		}
@@ -141,7 +146,7 @@
 			return (this.allborderlist = borders);
 		}
 	},
-	"AreaUnshadeRoomGraph:AreaUnshadeGraph@oneroom": {
+	"AreaUnshadeRoomGraph:AreaUnshadeGraph@oneroom,akichi": {
 		enabled: true,
 		relation: { "cell.qans": "node", "border.ques": "separator" },
 		setComponentRefs: function(obj, component) {
@@ -385,7 +390,8 @@
 			"checkConnectUnshadeRB",
 			"checkRegionDivided@oneroom",
 			"checkFractal@ayeheya",
-			"checkShadeCellCount",
+			"checkShadeCellCount@!akichi",
+			"checkUnshadedSize@akichi",
 			"checkOneDoor@oneroom",
 			"checkCountinuousUnshadeCell@!oneroom",
 			"checkRoomSymm@ayeheya",
@@ -532,6 +538,29 @@
 					border.sidecell[0].seterr(1);
 					border.sidecell[1].seterr(1);
 				});
+			}
+		}
+	},
+	"AnsCheck@akichi": {
+		// TODO cuRoomLt + variant
+		checkUnshadedSize: function() {
+			var unshrs = this.board.unshrgraph.components;
+			for (var r = 0; r < unshrs.length; r++) {
+				var size = unshrs[r].clist.length;
+				if (!size) {
+					continue;
+				}
+
+				var top = unshrs[r].clist[0].room.top.qnum;
+				if (top < 0 || top >= size) {
+					continue;
+				}
+
+				this.failcode.add("cuRoomGt");
+				if (this.checkOnly) {
+					break;
+				}
+				unshrs[r].clist.seterr(1);
 			}
 		}
 	}

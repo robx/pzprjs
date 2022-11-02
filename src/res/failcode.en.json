@@ -345,6 +345,8 @@
     "cuDivide.kaidan": "The rectangles are divided.",
     "cuDivide": "The unshaded cells are divided.",
     "cuDivideRB": "The unshaded cells are divided.",
+    "cuRoomLt.akichi": "All clusters of unshaded cells are smaller than the number.",
+    "cuRoomGt.akichi": "A cluster of unshaded cells is larger than the number.",
     "cuLoop.nurimaze": "There is a looped unshaded cells.",
     "cuLower.stostone": "Unshaded cells exist in the lower half of the board after the blocks have fallen.",
     "cuNoLine.icebarn": "The line doesn't pass all of the non-icy cell.",
