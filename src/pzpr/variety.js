@@ -107,7 +107,8 @@
 		"anglers",
 		"heyablock",
 		"koburin",
-		"mirrorbk"
+		"mirrorbk",
+		"akichi"
 	]);
 
 	(function(Genre, obj) {
