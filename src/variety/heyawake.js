@@ -584,7 +584,7 @@
 			var rooms = this.board.roommgr.components;
 			var unshrs = this.board.unshrgraph.components;
 			for (var r = 0; r < rooms.length; r++) {
-				rooms[r].isMaxFound = false;
+				rooms[r].isMaxFound = rooms[r].top.qnum === 0;
 			}
 
 			for (var r = 0; r < unshrs.length; r++) {
