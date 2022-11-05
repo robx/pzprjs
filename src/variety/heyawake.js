@@ -400,18 +400,11 @@
 	},
 	"FileIO@akichi": {
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "x") {
-				this.puzzle.setConfig("akichi_maximum", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("akichi_maximum", false);
-			}
+			this.decodeConfigFlag("x", "akichi_maximum");
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("akichi_maximum")) {
-				this.writeLine("x");
-			}
+			this.encodeConfigFlag("x", "akichi_maximum");
 		}
 	},
 
