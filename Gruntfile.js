@@ -59,27 +59,6 @@ module.exports = function(grunt){
         ]
       }
     },
-    move: {
-      p: {
-        src: 'dist/p.html',
-        dest: 'dist/p.template',
-      },
-    },
-    newer: {
-      options: {
-        override: function(detail, include) {
-          if(detail.task === 'concat' && detail.target === 'samples') {
-            include(rulesMTime > detail.time);
-          } else if(detail.task === 'concat' && detail.target === 'ui') {
-            include(pMTime > detail.time);
-          } else if(detail.task === 'concat' && detail.target === 'pzpr') {
-            include(failcodeMTime > detail.time);
-          }else{
-            include(false);
-          }
-        }
-      }
-    },
 
     concat: {
       options: {
@@ -167,10 +146,9 @@ module.exports = function(grunt){
   
   grunt.registerTask('default', ['build']);
   grunt.registerTask('release', ['build']);
-  grunt.registerTask('vercel', ['build', 'move']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);
-  grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
-  grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);
-  grunt.registerTask('build:variety',['newer:uglify:variety']);
-  grunt.registerTask('build:samples',['newer:concat:samples', 'newer:uglify:samples']);
+  grunt.registerTask('build:pzpr',   ['concat:pzpr', 'uglify:pzpr']);
+  grunt.registerTask('build:ui',     ['copy:ui', 'concat:ui', 'uglify:ui']);
+  grunt.registerTask('build:variety',['uglify:variety']);
+  grunt.registerTask('build:samples',['concat:samples', 'uglify:samples']);
 };

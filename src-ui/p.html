@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width">
 
 <link rel="stylesheet" href="./css/ui.css?<%= git.hash %>" type="text/css">
+<script type="text/javascript">
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister()
+      }
+    })
+  });
+}
+</script>
 <script type="text/javascript" src="./js/pzpr.js?<%= git.hash %>"></script>
 <script type="text/javascript" src="./js/pzpr-ui.js?<%= git.hash %>"></script>
 <title>pzprxs player</title>
