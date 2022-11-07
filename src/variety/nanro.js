@@ -150,7 +150,7 @@
 		setNumOfRoom: function(component) {
 			var clist = component.clist;
 			var nums = [];
-			var numkind = 0, 
+			var numkind = 0,
 				filled = -1,
 				circlecnt = 0;
 			for (var i = 0; i < clist.length; i++) {
