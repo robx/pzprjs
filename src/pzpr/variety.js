@@ -1,5 +1,4 @@
 // Variety.js v3.4.1
-/* global Set:false */
 
 (function() {
 	var _info = {},
