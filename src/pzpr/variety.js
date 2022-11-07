@@ -47,6 +47,7 @@
 
 	(function(Genre, obj) {
 		for (var pzprid in obj) {
+			_info[pzprid] = new Genre(pzprid, obj[pzprid]);
 			try {
 				Object.freeze(_info[pzprid]);
 				Object.freeze(_info[pzprid].exists);
