@@ -331,3 +331,9 @@ takoyaki: "Draw lines through all unshaded cells, then place circles on top of t
   \ to the same line cannot share a row or column.\n5. A number indicates the amount\
   \ of circles in the 4 orthogonally adjacent cells.\n6. Lines and circles cannot\
   \ overlap shaded cells.\nThis genre is invented by Michael Vedder."
+akichi: "You're given a board divided into rooms. Shade some cells on the board.\n\
+  1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number indicates\
+  \ the size of the largest group of connected unshaded cells within its region.\n\
+  3. There cannot be a horizontal or vertical line of unshaded cells that goes through\
+  \ 2 or more region borders.\n4. All unshaded cells on the board from an orthogonally\
+  \ connected area.\nThis genre is invented by Prasanna Seshadri."
