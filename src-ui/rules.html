@@ -127,7 +127,7 @@ pzpr.on("load", function(){
     return;
   }
 
-  var failcheck, url, rules;
+  var failcheck, url, info;
   window.ui = {};
   window.ui.debug = {};
   window.ui.debug.addDebugData = function(pid, data){
@@ -135,8 +135,8 @@ pzpr.on("load", function(){
     failcheck = data.failcheck;
   };
   window.ui.debug.addRules = function(pid, newrules) {
-    rules = newrules;
-    if(!rules[1]) {
+    info = newrules;
+    if(!info[1].rules) {
       document.body.classList.add('language-en', 'language-ja', 'language-all');
     } else {
       document.body.classList.remove('language-all');
@@ -168,9 +168,9 @@ pzpr.on("load", function(){
     render(player, url, 'player', function(puzzle){
       var rulediv = document.createElement('div');
       rulediv.className = 'rule-msg';
-      var langs = ['en', 'ja'];
+      var langs = info[1].rules ? ['en', 'ja'] : ['en'];
       for(var i in langs) {
-        var ruletext = rules[i].rules.split("\n");
+        var ruletext = info[i].rules.split("\n");
         ruletext.forEach(function(r) {
           var span = document.createElement('p');
           span.setAttribute('lang', langs[i]);
@@ -178,7 +178,7 @@ pzpr.on("load", function(){
           rulediv.appendChild(span);
         });
 
-        var historytext = rules[i].history.split("\n");
+        var historytext = info[i].history.split("\n");
         historytext.forEach(function(r) {
           var span = document.createElement('p');
           span.setAttribute('lang', langs[i]);
