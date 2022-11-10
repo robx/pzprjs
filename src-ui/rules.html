@@ -72,6 +72,10 @@ div + h1 {
   display: none;
 }
 
+.rule-msg p.history {
+  font-size: small;
+}
+
 .language-en .rule-msg p[lang=en] {
   display: block;
 }
@@ -166,10 +170,19 @@ pzpr.on("load", function(){
       rulediv.className = 'rule-msg';
       var langs = ['en', 'ja'];
       for(var i in langs) {
-        var ruletext = rules[i].split("\n");
+        var ruletext = rules[i].rules.split("\n");
         ruletext.forEach(function(r) {
           var span = document.createElement('p');
           span.setAttribute('lang', langs[i]);
+          span.textContent = r;
+          rulediv.appendChild(span);
+        });
+
+        var historytext = rules[i].history.split("\n");
+        historytext.forEach(function(r) {
+          var span = document.createElement('p');
+          span.setAttribute('lang', langs[i]);
+          span.classList.add("history");
           span.textContent = r;
           rulediv.appendChild(span);
         });
