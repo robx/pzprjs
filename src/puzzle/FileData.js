@@ -414,6 +414,34 @@
 			},
 
 			//---------------------------------------------------------------------------
+			// fio.decodeConfigFlag() Set a config bool based on the presence of a string
+			// fio.encodeConfigFlag() Conditionally write a string
+			//---------------------------------------------------------------------------
+
+			decodeConfigFlag: function(flag, configkey, truevalue, falsevalue) {
+				if (truevalue === undefined) {
+					truevalue = true;
+				}
+				if (falsevalue === undefined) {
+					falsevalue = !truevalue;
+				}
+				if (this.dataarray[this.lineseek] === flag) {
+					this.puzzle.setConfig(configkey, truevalue);
+					this.readLine();
+				} else {
+					this.puzzle.setConfig(configkey, falsevalue);
+				}
+			},
+			encodeConfigFlag: function(flag, configkey, truevalue) {
+				if (truevalue === undefined) {
+					truevalue = true;
+				}
+				if (this.puzzle.getConfig(configkey) === truevalue) {
+					this.writeLine(flag);
+				}
+			},
+
+			//---------------------------------------------------------------------------
 			// fio.decodeCellXMLBoard()  配列で、個別文字列から個別セルの設定を行う (XML board用)
 			// fio.decodeCellXMLBrow()   配列で、個別文字列から個別セルの設定を行う (XML board用)
 			// fio.decodeCellXMLArow()   配列で、個別文字列から個別セルの設定を行う (XML answer用)

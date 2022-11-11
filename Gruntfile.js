@@ -5,10 +5,14 @@ module.exports = function(grunt){
   var fs = require('fs');
   var rulesEN = grunt.file.readYAML('src-ui/res/rules.en.yaml');
   var rulesJA = grunt.file.readYAML('src-ui/res/rules.ja.yaml');
+  var historyEN = grunt.file.readYAML('src-ui/res/history.en.yaml');
+  var historyJA = grunt.file.readYAML('src-ui/res/history.ja.yaml');
 
   var rulesMTime = Math.max(
     fs.statSync('src-ui/res/rules.en.yaml').mtime,
-    fs.statSync('src-ui/res/rules.ja.yaml').mtime
+    fs.statSync('src-ui/res/rules.ja.yaml').mtime,
+    fs.statSync('src-ui/res/history.en.yaml').mtime,
+    fs.statSync('src-ui/res/history.ja.yaml').mtime
   );
   var pMTime = Math.max(
     fs.statSync('src-ui/res/p.en.json').mtime,
@@ -88,8 +92,8 @@ module.exports = function(grunt){
             var pid = filepath.split('/').pop().split('.')[0];
 
             var ruleResult = [
-              rulesEN[pid] || '',
-              rulesJA[pid] || ''
+              { rules: rulesEN[pid] || '', history: historyEN[pid] || '' },
+              { rules: rulesJA[pid] || '', history: historyJA[pid] || '' }
             ];
 
             return "ui.debug.addRules('" + pid + "', " + JSON.stringify(ruleResult) + ");\n" + src;
