@@ -142,18 +142,11 @@
 		},
 
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "n") {
-				this.puzzle.setConfig("tren_new", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("tren_new", false);
-			}
+			this.decodeConfigFlag("n", "tren_new");
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("tren_new")) {
-				this.writeLine("n");
-			}
+			this.encodeConfigFlag("n", "tren_new");
 		}
 	},
 

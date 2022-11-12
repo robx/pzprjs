@@ -110,6 +110,10 @@
 				variant: true,
 				volatile: true
 			}); /* pentopia: Allow shading clues */
+			this.add("koburin_minesweeper", false, {
+				variant: true,
+				volatile: true
+			}); /* koburin: Orthogonal and diagonal clues */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -345,7 +349,7 @@
 					exec = pid === "context";
 					break;
 				case "disptype_yajilin":
-					exec = pid === "yajilin";
+					exec = pid === "yajilin" || pid === "koburin";
 					break;
 				case "disptype_interbd":
 					exec = pid === "interbd";
@@ -418,6 +422,9 @@
 				case "pentopia_transparent":
 					exec = pid === "pentopia";
 					break;
+				case "koburin_minesweeper":
+					exec = pid === "koburin";
+					break;
 				default:
 					exec = !!this.list[name];
 			}
@@ -442,6 +449,7 @@
 				case "autocmp":
 				case "autoerr":
 				case "aquarium_regions":
+				case "koburin_minesweeper":
 				case "snakebd":
 				case "context_marks":
 				case "disptype_yajilin":

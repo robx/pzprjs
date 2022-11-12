@@ -801,7 +801,7 @@ pzpr.classmgr.makeCommon({
 		// enc.decodeIce() cell.ques===6をデコードする
 		// enc.encodeIce() cell.ques===6をエンコードする
 		//---------------------------------------------------------------------------
-		decodeQues: function(val) {
+		decodeBinary: function(prop, val) {
 			var bstr = this.outbstr,
 				bd = this.board;
 
@@ -811,7 +811,9 @@ pzpr.classmgr.makeCommon({
 				var num = parseInt(bstr.charAt(i), 32);
 				for (var w = 0; w < 5; w++) {
 					if (!!bd.cell[c]) {
-						bd.cell[c].ques = num & twi[w] ? val : 0;
+						if (num & twi[w]) {
+							bd.cell[c][prop] = val;
+						}
 						c++;
 					}
 				}
@@ -821,7 +823,7 @@ pzpr.classmgr.makeCommon({
 			}
 			this.outbstr = bstr.substr(i + 1);
 		},
-		encodeQues: function(val, skipnone) {
+		encodeBinary: function(prop, val, skipnone) {
 			var cm = "",
 				num = 0,
 				pass = 0,
@@ -829,7 +831,7 @@ pzpr.classmgr.makeCommon({
 				bd = this.board;
 			var found = false;
 			for (var c = 0; c < bd.cell.length; c++) {
-				if (bd.cell[c].ques === val) {
+				if (bd.cell[c][prop] === val) {
 					pass += twi[num];
 					found = true;
 				}
@@ -849,16 +851,16 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		decodeIce: function() {
-			this.decodeQues(6);
+			this.decodeBinary("ques", 6);
 		},
 		encodeIce: function() {
-			this.encodeQues(6);
+			this.encodeBinary("ques", 6);
 		},
 		decodeEmpty: function() {
-			this.decodeQues(7);
+			this.decodeBinary("ques", 7);
 		},
 		encodeEmpty: function() {
-			this.encodeQues(7, true);
+			this.encodeBinary("ques", 7, true);
 		},
 
 		//---------------------------------------------------------------------------

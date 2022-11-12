@@ -38,6 +38,23 @@ ui.debug.addDebugData("statuepark", {
 			input: ["newboard,3,3", "playmode", "mouse,left,bank,4"],
 			result:
 				"pzprv3/statuepark/3/3/p/. . . /. . . /. . . /. . . /. . . /. . . /0 0 0 0 1 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Can shade shaded circles",
+			input: [
+				"newboard,1,1",
+				"ansclear",
+				"editmode",
+				"key,2",
+				"playmode",
+				"mouse,left,1,1"
+			],
+			result: "pzprv3/statuepark/1/1/p/2 /# /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Can unshade shaded circles",
+			input: ["setconfig,use,2", "mouse,left,1,1"],
+			result: "pzprv3/statuepark/1/1/p/2 /. /0 0 0 0 0 0 0 0 0 0 0 0 /"
 		}
 	]
 });

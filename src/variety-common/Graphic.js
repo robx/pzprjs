@@ -537,7 +537,7 @@ pzpr.classmgr.makeCommon({
 		},
 		getNumberTextCore: function(num) {
 			var hideHatena =
-				this.pid !== "yajilin"
+				this.pid !== "yajilin" && this.pid !== "koburin"
 					? this.hideHatena
 					: this.puzzle.getConfig("disptype_yajilin") === 2;
 			return num >= 0 ? "" + num : !hideHatena && num === -2 ? "?" : "";

@@ -111,6 +111,9 @@
 				case "pentopia":
 					idname = "pentopia_transparent";
 					break;
+				case "koburin":
+					idname = "koburin_minesweeper";
+					break;
 				case "context":
 					idname = "context_marks";
 					break;
