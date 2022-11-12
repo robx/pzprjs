@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["slither", "tslither"], {
+})(["slither"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -90,15 +90,6 @@
 				cnt++;
 			}
 			return cnt;
-		},
-
-		getdir4BorderVertex1: function() {
-			return (
-				(this.relcross(-1, -1).lcnt > 0) +
-				(this.relcross(1, -1).lcnt > 0) +
-				(this.relcross(-1, 1).lcnt > 0) +
-				(this.relcross(1, 1).lcnt > 0)
-			);
 		}
 	},
 
@@ -265,8 +256,7 @@
 			"checkBranchLine",
 			"checkCrossLine",
 
-			"checkdir4BorderLine@slither",
-			"checkdir4TouchLine@tslither",
+			"checkdir4BorderLine",
 
 			"checkOneLoop",
 			"checkDeadendLine+"
@@ -276,17 +266,6 @@
 			this.checkAllCell(function(cell) {
 				return cell.qnum >= 0 && cell.getdir4BorderLine1() !== cell.qnum;
 			}, "nmLineNe");
-		},
-
-		checkdir4TouchLine: function() {
-			this.checkAllCell(function(cell) {
-				return (
-					cell.qnum >= 0 &&
-					cell.getdir4BorderVertex1() -
-						Math.min(cell.getdir4BorderLine1(), 3) !==
-						cell.qnum
-				);
-			}, "nmTouchNe");
 		}
 	}
 });

@@ -575,7 +575,6 @@
     "nmTriangleLt.shakashaka": "数字のまわりにある黒い三角形の数が間違っています。",
     "nmTripRow.toichika2": "同じ行または同じ列に、同じ数字が３つ以上あります。",
     "nmUnpass.icebarn": "通過していない数字があります。",
-    "nmVertexNe.vslither": "数字の周りの頂点の数が異なります",
     "nonCirclePromontory.kurodoko": "丸のないマスが岬になっています。",
     "nqAroundDup.kakuru": "初めから出ている数字の周りに同じ数字が入っています。",
     "nqAroundSumNe.kakuru": "初めから出ている数字の周りに入る数の合計が正しくありません。",
