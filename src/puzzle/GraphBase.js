@@ -551,36 +551,58 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// graph.newIrowake()  線の情報が再構築された際、線に色をつける
 		//---------------------------------------------------------------------------
-		// newIrowake: function() {
-		// 	var paths = this.components;
-		// 	for (var i = 0; i < paths.length; i++) {
-		// 		paths[i].color = this.puzzle.painter.getNewLineColor();
-		// 	}
-		// }
 		newIrowake: function() {
-			var paths = this.components;
-			var npaths = paths.length;
+			var paths = this.components,
+				npaths = paths.length;
 
-			var thetaStartDeg = Math.random()*360;
-			var spacingDeg = 360/npaths;
+			var thetaStartDeg = Math.random() * 360,
+				spacingDeg = 360 / npaths;
 
-			var yspacing = (this.maxYdeg-this.minYdeg)/(npaths-1);
+			var minY = this.puzzle.painter.minYdeg,
+				maxY = this.puzzle.painter.maxYdeg,
+				ydiff = maxY - minY;
 
-			var Kr = 0.29891,
-				Kg = 0.58661,
-				Kb = 0.11448;
+			var delta = 6 / 29,
+				Xn = 95.0489,
+				Yn = 100,
+				Zn = 108.884;
 
-			for (i = 0; i < npaths; i++) {
-				var currentThetaDeg = (thetaStartDeg + i*spacingDeg) % 360,
-					cb = Math.sin(currentThetaDeg*Math.PI/180),
-					cr = Math.cos(currentThetaDeg*Math.PI/180),
-					y = this.minYdeg + i*yspacing;
-				
-				var r = y + (2-2*Kr)*cr,
-					g = y -(Kb/Kg)*(2-2*Kb)*cb -(Kr/Kg)*(2-2*Kr)*cr,
-					b = y + (2-2*Kb)*cr;
+			var fInv = function(value) {
+				if (value > delta) {
+					return Math.pow(value, 3);
+				} else {
+					return 3 * Math.pow(delta, 2) * (value - 4 / 29);
+				}
+			};
 
-					paths[i].color = "rgb(" + Math.floor(r*255) + "," + Math.floor(g*255) + "," + Math.floor(b*255) + ")";
+			var abRadius = 127;
+
+			for (var i = 0; i < npaths; i++) {
+				var currentThetaDeg = (thetaStartDeg + i * spacingDeg) % 360,
+					LCoord = (maxY - Math.pow(10, (-2 * i) / npaths) * ydiff) * 127,
+					aCoord = Math.sin((currentThetaDeg * Math.PI) / 180) * abRadius,
+					bCoord = Math.cos((currentThetaDeg * Math.PI) / 180) * abRadius;
+
+				var Ladj = (LCoord + 16) / 116,
+					X = Xn * fInv(Ladj + aCoord / 500),
+					Y = Yn * fInv(Ladj),
+					Z = Zn * fInv(Ladj - bCoord / 500);
+
+				var r = 2.041369 * X - 0.5649464 * Y - 0.3446944 * Z,
+					g = -0.969266 * X + 1.8760108 * Y + 0.041556 * Z,
+					b = 0.0134474 * X - 0.1183897 * Y + 1.0154096 * Z;
+
+				r = Math.max(Math.min(r * 2.55, 255), 0) | 0;
+				g = Math.max(Math.min(g * 2.55, 255), 0) | 0;
+				b = Math.max(Math.min(b * 2.55, 255), 0) | 0;
+				paths[i].color = "rgb(" + r + "," + g + "," + b + ")";
+			}
+
+			for (var i = npaths - 1; i > 0; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var temp = paths[i].color;
+				paths[i].color = paths[j].color;
+				paths[j].color = temp;
 			}
 		}
 	},
