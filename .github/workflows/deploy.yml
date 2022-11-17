@@ -1,0 +1,35 @@
+on:
+  workflow_dispatch
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.4.0
+    - uses: cachix/install-nix-action@v17
+    - name: bump pzprjs input in puzzlink flake
+      env:
+        CONFIG_PUSH_KEY: ${{ secrets.CONFIG_PUSH_KEY }}
+        BRANCH: main
+        INPUT: pzprjs
+      run: |
+        eval $(ssh-agent -s)
+        ssh-add - <<< "$CONFIG_PUSH_KEY"
+        git config --global user.name "deploy bot"
+        git clone git@github.com:robx/puzzlink-config.git
+        cd puzzlink-config
+        git checkout $BRANCH
+        nix flake lock --override-input "$INPUT" github:robx/pzprjs/"$GITHUB_SHA" --commit-lock-file
+        echo "CONFIG_REV=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        git push origin $BRANCH
+    - name: deploy
+      env:
+        NIXY_DEPLOY_KEY: ${{ secrets.NIXY_DEPLOY_KEY }}
+        NIXY_HOST: "116.202.108.63"
+        SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+      run: |
+        eval $(ssh-agent -s)
+        ssh-add - <<< "$NIXY_DEPLOY_KEY"
+        mkdir -p ~/.ssh
+        echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+        ssh -p 2323 deploy@"$NIXY_HOST" sudo deploy ${{ env.CONFIG_REV }}
