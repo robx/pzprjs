@@ -778,34 +778,5 @@
 				);
 			}, "nmDivEq2");
 		}
-	},
-
-	"FailCode@minarism": {
-		nmSubNe: [
-			"丸付き数字とその両側の数字の差が一致していません。",
-			"The difference between two adjacent cells is not equal to the number on circle."
-		],
-		nmIneqNe: [
-			"不等号と数字が矛盾しています。",
-			"A inequality sign is not correct."
-		]
-	},
-	"FailCode@kropki": {
-		nmSubNe1: [
-			"白まるの両側の数字の差が1ではありません。",
-			"The difference is not one between two adjacent cells with white circle."
-		],
-		nmSubEq1: [
-			"白まるのない両側の数字の差が1になっています。",
-			"The difference is one between two adjacent cells without white circle."
-		],
-		nmDivNe2: [
-			"黒まるの両側の数字が2倍ではありません。",
-			"The number is not double the other between two adjacent cells with shaded circle."
-		],
-		nmDivEq2: [
-			"黒まるのない両側の数字が2倍になっています。",
-			"The number is double the other between two adjacent cells without shaded circle."
-		]
 	}
 });

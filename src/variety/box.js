@@ -383,12 +383,5 @@
 				clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmSumRowShadeNe: [
-			"数字と黒マスになった数字の合計が正しくありません。",
-			"A number is not equal to the sum of the number of shaded cells."
-		]
 	}
 });

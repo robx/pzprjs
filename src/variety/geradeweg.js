@@ -250,20 +250,5 @@
 				return cell.isNum() && cell.lcnt === 0;
 			}, "numNoLine");
 		}
-	},
-	FailCode: {
-		segShort: [
-			"線の長さが数字より短いです。",
-			"A segment is shorter than a number."
-		],
-		segLong: [
-			"線の長さが数字より長いです。",
-			"A segment is longer than a number."
-		],
-		segDiff: [
-			"(please translate) Segments have different length.",
-			"Segments have different length."
-		],
-		numNoLine: ["線の通っていない数字があります。", "A number has no line."]
 	}
 });

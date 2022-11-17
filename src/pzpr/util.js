@@ -208,6 +208,18 @@
 				}
 			}
 			return isdisp;
+		},
+
+		sameArray: function(array1, array2) {
+			if (array1.length !== array2.length) {
+				return false;
+			}
+			for (var k = 0; k < array2.length; k++) {
+				if (array1[k] !== array2[k]) {
+					return false;
+				}
+			}
+			return true;
 		}
 	};
 })();

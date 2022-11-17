@@ -244,20 +244,5 @@
 				blist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		bkDupNum: [
-			"1つの部屋に同じ数字が複数入っています。",
-			"A room has two or more equal numbers."
-		],
-		bkNotSeqNum: [
-			"数字が連番になっていない部屋があります。",
-			"The numbers in the room are not consecutive."
-		],
-		cbDiffLenNe: [
-			"数字の差がその間にある線の長さと等しくありません。",
-			"The difference between two numbers is not equal to the length of the line between them."
-		]
 	}
 });

@@ -698,24 +698,5 @@
 				this.board.cell.setnoerr();
 			}
 		}
-	},
-
-	FailCode: {
-		nmConnWallGt: [
-			"数字に繋がる線が長いです。",
-			"The lines connected to a number is long."
-		],
-		nmConnWallLt: [
-			"数字に繋がる線が短いです。",
-			"The lines connected to a number is short."
-		],
-		nmConnNoWall: [
-			"数字に線が繋がっていません。",
-			"The number isn't connected by any lines."
-		],
-		lbIsolate: [
-			"数字につながっていない線があります。",
-			"A line doesn't connect to any number."
-		]
 	}
 });

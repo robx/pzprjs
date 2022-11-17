@@ -544,39 +544,5 @@
 				this.failcode.add("bsAnt");
 			}
 		}
-	},
-
-	"FailCode@kaero": {
-		bkNoNum: [
-			"アルファベットのないブロックがあります。",
-			"An area has no letters."
-		],
-		bkPlNum: [
-			"１つのブロックに異なるアルファベットが入っています。",
-			"An area has more than one kind of letter."
-		],
-		bkSepNum: [
-			"同じアルファベットが異なるブロックに入っています。",
-			"Letters of one kind are placed in different areas."
-		]
-	},
-	"FailCode@armyants": {
-		laOnNum: [
-			"数字の上を線が通過しています。",
-			"There is a line across a number."
-		],
-		laOnBorder: [
-			"線が境界線をまたいでいます。",
-			"There is a line across a border."
-		],
-		bsAnt: ["別々のアリが接しています。", "Two ants are adjacent."],
-		bkWrongNum: [
-			"アリの数字がおかしいです。",
-			"The numbers on the ant are wrong."
-		],
-		ceNumGtSize: [
-			"数字がアリの大きさよりも大きいです。",
-			"A number is greater than the size of the ant."
-		]
 	}
 });

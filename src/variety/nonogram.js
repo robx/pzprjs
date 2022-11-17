@@ -2,28 +2,16 @@
 // nonogram.js
 //
 
-function sameArray(array1, array2) {
-	if (array1.length !== array2.length) {
-		return false;
-	}
-	for (var k = 0; k < array2.length; k++) {
-		if (array1[k] !== array2[k]) {
-			return false;
-		}
-	}
-	return true;
-}
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nonogram"], {
+})(["nonogram", "coral", "cts"], {
 	MouseEvent: {
 		use: true,
-		inputModes: { edit: ["number"], play: ["shade", "unshade"] },
+		inputModes: { edit: ["number"], play: ["shade", "unshade", "completion"] },
 
 		mouseinput: function() {
 			// オーバーライド
@@ -41,6 +29,9 @@ function sameArray(array1, array2) {
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
+					if (this.mousestart) {
+						this.inputqcmp();
+					}
 					this.inputcell();
 				}
 			} else if (this.puzzle.editmode) {
@@ -61,6 +52,25 @@ function sameArray(array1, array2) {
 			} else {
 				this.inputqnum_main(excell);
 			}
+		},
+
+		inputqcmp: function() {
+			var excell = this.getcell_excell();
+			if (excell.isnull || excell.noNum() || excell.group !== "excell") {
+				return;
+			}
+
+			excell.setQcmp(+!excell.qcmp);
+			excell.draw();
+
+			this.mousereset();
+		}
+	},
+
+	"MouseEvent@coral,cts": {
+		inputModes: {
+			edit: ["number", "clear", "info-blk"],
+			play: ["shade", "unshade", "info-blk", "completion"]
 		}
 	},
 
@@ -113,31 +123,15 @@ function sameArray(array1, array2) {
 		keyinput: function(ca) {
 			this.key_inputexcell(ca);
 		},
+
 		key_inputexcell: function(ca) {
-			var excell = this.cursor.getex(),
-				qn = excell.qnum;
-			var max = excell.getmaxnum(),
-				min = excell.getminnum();
+			var excell = this.cursor.getex();
 
-			if ("0" <= ca && ca <= "9") {
-				var num = +ca;
-
-				if (qn <= 0 || this.prev !== excell) {
-					if (num <= max && num >= min) {
-						excell.setQnum(num);
-					}
-				} else {
-					if (qn * 10 + num <= max) {
-						excell.setQnum(qn * 10 + num);
-					} else if (num <= max && num >= min) {
-						excell.setQnum(num);
-					}
-				}
-			} else if (ca === " " || ca === "-") {
-				excell.setQnum(-1);
-			} else {
+			var val = this.getNewNumber(excell, ca, excell.qnum);
+			if (val === null) {
 				return;
 			}
+			excell.setQnum(val);
 
 			this.prev = excell;
 			this.cursor.draw();
@@ -169,7 +163,22 @@ function sameArray(array1, array2) {
 		}
 	},
 
+	"KeyEvent@cts": {
+		getNewNumber: function(cell, ca, cur) {
+			if (ca === "w" || ca === "shift+8" || ca === "*") {
+				return 0;
+			}
+			return this.common.getNewNumber.call(this, cell, ca, cur);
+		}
+	},
+
+	"ExCell@cts": {
+		disInputHatena: false,
+		minnum: 0
+	},
+
 	Board: {
+		hasborder: 1,
 		hasexcell: 1,
 		hasflush: 1,
 
@@ -221,8 +230,23 @@ function sameArray(array1, array2) {
 		}
 	},
 
+	"BoardExec@coral": {
+		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d, true);
+		}
+	},
+
+	"AreaUnshadeGraph@coral": {
+		enabled: true
+	},
+
+	"AreaShadeGraph@coral,cts": {
+		enabled: true
+	},
+
 	Graphic: {
 		enablebcolor: true,
+		shadecolor: "#444444",
 
 		paint: function() {
 			this.drawBGCells();
@@ -234,8 +258,28 @@ function sameArray(array1, array2) {
 			this.drawNumbersExCell();
 
 			this.drawChassis(true);
+			this.drawBorders();
 
 			this.drawTarget();
+		},
+
+		getQuesNumberColor: function(cell) {
+			if (cell.error === 1) {
+				return this.errcolor1;
+			} else if (cell.qcmp) {
+				return this.qcmpcolor;
+			}
+			return this.quescolor;
+		},
+
+		getBorderColor: function(border) {
+			if (this.board.maxbx % 10 || this.board.maxby % 10) {
+				return null;
+			}
+
+			return border.bx % 10 === 0 || border.by % 10 === 0
+				? this.quescolor
+				: null;
 		},
 
 		getBoardCols: function() {
@@ -259,6 +303,15 @@ function sameArray(array1, array2) {
 		}
 	},
 
+	"Graphic@cts": {
+		getQuesNumberText: function(excell) {
+			if (excell.qnum === 0) {
+				return "*";
+			}
+			return this.getNumberTextCore(excell.qnum);
+		}
+	},
+
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
@@ -274,6 +327,10 @@ function sameArray(array1, array2) {
 				if (ca === ".") {
 					return;
 				} else if (obj.group === "excell" && !obj.isnull) {
+					if (ca[0] === "c") {
+						obj.qcmp = 1;
+						ca = ca.substring(1);
+					}
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
 					if (ca === "#") {
@@ -287,7 +344,7 @@ function sameArray(array1, array2) {
 		encodeData: function() {
 			this.encodeCellExCell(function(obj) {
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
-					return obj.qnum + " ";
+					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
 				} else if (obj.group === "cell") {
 					if (obj.qans === 1) {
 						return "# ";
@@ -302,6 +359,8 @@ function sameArray(array1, array2) {
 
 	AnsCheck: {
 		checklist: ["checkNonogram"],
+
+		excellsInUnknownOrder: false,
 
 		checkNonogram: function() {
 			this.checkRowsCols(this.isExCellCount, "exNoMatch");
@@ -326,7 +385,16 @@ function sameArray(array1, array2) {
 
 			var lines = this.getLines(clist);
 
-			if (!sameArray(nums, lines)) {
+			if (this.excellsInUnknownOrder) {
+				if (nums.length === 0) {
+					return true;
+				}
+
+				nums.sort();
+				lines.sort();
+			}
+
+			if (!this.puzzle.pzpr.util.sameArray(nums, lines)) {
 				clist.seterr(1);
 				excells.seterr(1);
 				return false;
@@ -353,10 +421,97 @@ function sameArray(array1, array2) {
 		}
 	},
 
-	FailCode: {
-		exNoMatch: [
-			"(please translate) The shaded cells don't match the clues in the row or column.",
-			"The shaded cells don't match the clues in the row or column."
-		]
+	"AnsCheck@coral": {
+		checklist: [
+			"check2x2ShadeCell",
+			"checkConnectUnshadeOutside",
+			"checkNonogram",
+			"checkConnectShade"
+		],
+
+		excellsInUnknownOrder: true,
+
+		checkConnectUnshadeOutside: function() {
+			var bd = this.board;
+			for (var r = 0; r < bd.ublkmgr.components.length; r++) {
+				var clist = bd.ublkmgr.components[r].clist;
+				var d = clist.getRectSize();
+				if (
+					d.x1 === 1 ||
+					d.x2 === bd.maxbx - 1 ||
+					d.y1 === 1 ||
+					d.y2 === bd.maxby - 1
+				) {
+					continue;
+				}
+				this.failcode.add("cuConnOut");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		}
+	},
+
+	"AnsCheck@cts": {
+		checklist: ["check2x2ShadeCell", "checkNonogram", "checkConnectShade"],
+
+		isExCellCount: function(clist) {
+			var d = clist.getRectSize(),
+				bd = this.board;
+
+			var excells =
+				d.x1 === d.x2
+					? bd.excellinside(d.x1, bd.minby, d.x1, -1)
+					: bd.excellinside(bd.minbx, d.y1, -1, d.y1);
+
+			var nums = [];
+			var addedStar = false;
+			for (var i = 0; i < excells.length; i++) {
+				var qnum = excells[i].qnum;
+				if (qnum !== -1 && (!addedStar || qnum !== 0)) {
+					nums.push(qnum);
+				}
+				addedStar = qnum === 0;
+			}
+
+			if (nums.length === 0 || (nums.length === 1 && nums[0] === 0)) {
+				return true;
+			}
+
+			var lines = this.getLines(clist);
+
+			if (lines.length === 0) {
+				clist.seterr(1);
+				excells.seterr(1);
+				return false;
+			}
+
+			var lineStr = "";
+			lines.forEach(function(l) {
+				lineStr += "a".repeat(l) + " ";
+			});
+
+			var regex = "^";
+			nums.forEach(function(n) {
+				if (n === -2) {
+					regex += "a* ";
+				} else if (n === 0) {
+					regex += "(|.* )";
+				} else if (n === 1) {
+					regex += "a ";
+				} else {
+					regex += "a{" + n + "} ";
+				}
+			});
+			regex += "$";
+
+			if (!lineStr.match(new RegExp(regex))) {
+				clist.seterr(1);
+				excells.seterr(1);
+				return false;
+			}
+			return true;
+		}
 	}
 });

@@ -310,20 +310,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		ceDirection: [
-			"数字の方向にあるブロック内のマス数が、数字と一致していないブロックがあります。",
-			"The number of cells in the direction is wrong."
-		],
-		ceNoNum: [
-			"記号マスを１つも含まないブロックがあります。",
-			"There is an area without a clue."
-		],
-		bkNumGe2: [
-			"２つ以上の記号マスを含むブロックがあります。",
-			"There is an area with more than one clue."
-		]
 	}
 });

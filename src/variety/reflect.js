@@ -509,24 +509,5 @@
 				bd.border.setnoerr();
 			}
 		}
-	},
-
-	FailCode: {
-		lnCrossExMk: [
-			"十字以外の場所で線が交差しています。",
-			"There is a crossing outside given crosses."
-		],
-		lnExTri: [
-			"線が三角形を通過していません。",
-			"A line doesn't goes through a triangle."
-		],
-		lnLenGt: [
-			"三角形の数字とそこから延びる線の長さが一致していません。",
-			"The lines passing a triangle are too long."
-		],
-		lnLenLt: [
-			"三角形の数字とそこから延びる線の長さが一致していません。",
-			"The lines passing a triangle are too short."
-		]
 	}
 });

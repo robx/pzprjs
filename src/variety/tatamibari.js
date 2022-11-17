@@ -294,29 +294,5 @@
 				"bkNotVRect"
 			);
 		}
-	},
-
-	FailCode: {
-		bkNoNum: ["記号の入っていないタタミがあります。", "A tatami has no marks."],
-		bkNumGe2: [
-			"1つのタタミに2つ以上の記号が入っています。",
-			"A tatami has multiple marks."
-		],
-		bkNotRect: [
-			"タタミの形が長方形ではありません。",
-			"A tatami is not rectangle."
-		],
-		bkNotSquare: [
-			"正方形でないタタミがあります。",
-			"A tatami is not a square."
-		],
-		bkNotHRect: [
-			"横長ではないタタミがあります。",
-			"A tatami is not a horizontally long rectangle."
-		],
-		bkNotVRect: [
-			"縦長ではないタタミがあります。",
-			"A tatami is not a vertically long rectangle."
-		]
 	}
 });

@@ -134,6 +134,7 @@
 
 			// 枠外の一辺のmargin(セル数換算)
 			margin: 0.15,
+			bankratio: 0.5,
 
 			// canvasの大きさを保持する
 			canvasWidth: null,
@@ -168,6 +169,7 @@
 
 			useBuffer: false, // Buffer描画を行うか
 			outputImage: false, // 画像保存中
+			showBank: true,
 
 			// resize関数が呼ばれたが、初期化されていない等でresizeしていないことを示すフラグ
 			pendingResize: false,
@@ -234,6 +236,8 @@
 			// pc.resizeCanvasByCellSize() セルのサイズを指定してキャンバスのサイズを変える
 			//                             (指定なしの場合は、前のセルのサイズを用いる)
 			//---------------------------------------------------------------------------
+			cellexpandratio: 1.0,
+
 			resizeCanvas: function(cwid, chgt) {
 				var insuspend = this.suspended;
 				this.suspendAll();
@@ -246,12 +250,14 @@
 					this.unsuspend();
 				}
 			},
-			resizeCanvasByCellSize: function(cellsize) {
+			resizeCanvasByCellSize: function(cellsize, absolute) {
 				var insuspend = this.suspended;
 				this.suspendAll();
 
-				this.cw = cellsize || this.cw;
-				this.ch = cellsize || this.ch;
+				if (cellsize) {
+					this.cw = cellsize * (absolute ? 1 : this.cellexpandratio);
+					this.ch = cellsize * (absolute ? 1 : this.cellexpandratio);
+				}
 				this.canvasWidth = this.cw * this.getCanvasCols();
 				this.canvasHeight = this.ch * this.getCanvasRows();
 
@@ -373,7 +379,11 @@
 				return this.getBoardCols() + 2 * this.margin;
 			},
 			getCanvasRows: function() {
-				return this.getBoardRows() + 2 * this.margin;
+				var rows = this.getBoardRows() + 2 * this.margin;
+				if (this.board.bank && this.showBank) {
+					rows += this.board.bank.height * this.bankratio + 1 / 16;
+				}
+				return rows;
 			},
 
 			getBoardCols: function() {
@@ -391,7 +401,11 @@
 			},
 			getOffsetRows: function() {
 				/* 下にずらしたい分プラス、上にずらしたい分マイナス */
-				return (0 - this.board.minby) / 2;
+				var rows = (0 - this.board.minby) / 2;
+				if (this.board.bank && this.showBank) {
+					rows -= (this.board.bank.height * this.bankratio) / 2;
+				}
+				return rows;
 			},
 
 			//---------------------------------------------------------------------------
@@ -415,6 +429,7 @@
 
 				if (this.suspendedAll) {
 					var bd = this.board;
+					this.range.bank = true;
 					this.setRange(bd.minbx - 2, bd.minby - 2, bd.maxbx + 2, bd.maxby + 2);
 					this.suspendedAll = false;
 				}
@@ -446,14 +461,18 @@
 					x1 = this.range.x1,
 					y1 = this.range.y1,
 					x2 = this.range.x2,
-					y2 = this.range.y2;
+					y2 = this.range.y2,
+					bank =
+						this.showBank &&
+						(this.range.bank || this.range.bankPieces.length > 0);
 				if (
-					x1 > x2 ||
-					y1 > y2 ||
-					x1 >= bd.maxbx + bm ||
-					y1 >= bd.maxby + bm ||
-					x2 <= bd.minbx - bm ||
-					y2 <= bd.minby - (bm + (this.pid === "starbattle" ? 2 : 0))
+					!bank &&
+					(x1 > x2 ||
+						y1 > y2 ||
+						x1 >= bd.maxbx + bm ||
+						y1 >= bd.maxby + bm ||
+						x2 <= bd.minbx - bm ||
+						y2 <= bd.minby - (bm + (this.pid === "starbattle" ? 2 : 0)))
 				) {
 					/* 入力が範囲外ならば何もしない */
 				} else if (!this.useBuffer) {
@@ -513,7 +532,9 @@
 					cells: new classes.CellList(),
 					crosses: new classes.CrossList(),
 					borders: new classes.BorderList(),
-					excells: new classes.ExCellList()
+					excells: new classes.ExCellList(),
+					bank: false,
+					bankPieces: []
 				};
 			},
 
@@ -564,6 +585,7 @@
 					this.suspendedAll = true;
 				}
 				var bd = this.board;
+				this.range.bank = true;
 				this.paintRange(bd.minbx - 2, bd.minby - 2, bd.maxbx + 2, bd.maxby + 2);
 			},
 
@@ -677,6 +699,7 @@
 
 				g.vid = "BG";
 				g.fillStyle = this.bgcolor;
+				// TODO test if piecebank is flushed
 				g.fillRect(
 					minbx * bw - 0.5,
 					minby * bh - 0.5,

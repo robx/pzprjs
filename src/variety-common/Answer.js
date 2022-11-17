@@ -101,6 +101,7 @@ pzpr.classmgr.makeCommon({
 		// ans.checkSideCell()  隣り合った2つのセルが条件func==trueの時、エラーを設定する
 		// ans.checkAdjacentShadeCell()  黒マスが隣接している時、エラーを設定する
 		// ans.checkAdjacentDiffNumber() 同じ数字が隣接している時、エラーを設定する
+		// ans.checkAroundCell()  Same as checkSideCell, but also checks diagonally adjacent cells
 		//---------------------------------------------------------------------------
 		checkSideCell: function(func, code) {
 			var result = true,
@@ -139,6 +140,41 @@ pzpr.classmgr.makeCommon({
 			this.checkSideCell(function(cell1, cell2) {
 				return cell1.sameNumber(cell2);
 			}, "nmAdjacent");
+		},
+		checkAroundCell: function(func, code) {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				var target = null,
+					clist = new this.klass.CellList();
+				// 右・左下・下・右下だけチェック
+				clist.add(cell);
+				target = cell.relcell(2, 0);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				target = cell.relcell(0, 2);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				target = cell.relcell(-2, 2);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				target = cell.relcell(2, 2);
+				if (func(cell, target)) {
+					clist.add(target);
+				}
+				if (clist.length <= 1) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
 		},
 
 		//---------------------------------------------------------------------------
@@ -465,7 +501,9 @@ pzpr.classmgr.makeCommon({
 				if (this.checkOnly) {
 					break;
 				}
-				if (areas !== this.board.linegraph) {
+				if (!!graph.seterr) {
+					graph.seterr(area, 1);
+				} else if (areas !== this.board.linegraph) {
 					clist.seterr(this.pid !== "tateyoko" ? 1 : 4);
 				} else {
 					this.board.border.setnoerr();
@@ -549,7 +587,7 @@ pzpr.classmgr.makeCommon({
 					return cell.isShade();
 				},
 				function(w, h, a, n) {
-					return a > 0;
+					return a > 0 || n === 0;
 				},
 				"bkNoShade"
 			);
@@ -668,7 +706,7 @@ pzpr.classmgr.makeCommon({
 				}
 				var cell1 = border.sidecell[0],
 					cell2 = border.sidecell[1];
-				if (cell1.isnull || cell2.isnull || !func(cell1, cell2)) {
+				if (cell1.isnull || cell2.isnull || !func(cell1, cell2, border)) {
 					continue;
 				}
 
@@ -688,6 +726,7 @@ pzpr.classmgr.makeCommon({
 
 		//---------------------------------------------------------------------------
 		// ans.checkSameObjectInRoom()      部屋の中のgetvalueの値が1種類であるか判定する
+		// ans.checkGatheredObjectInGraph() Check for a value appearing in no more than 1 component
 		// ans.checkDifferentNumberInRoom() 部屋の中に同じ数字が存在しないことを判定する
 		// ans.isDifferentNumberInClist()   clistの中に同じ数字が存在しないことを判定だけを行う
 		//---------------------------------------------------------------------------
@@ -716,6 +755,30 @@ pzpr.classmgr.makeCommon({
 							areas[id].setedgeerr(1);
 						}
 					}
+				}
+			}
+		},
+
+		checkGatheredObjectInGraph: function(graph, getvalue, code) {
+			var d = {},
+				bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var val = getvalue(bd.cell[c]);
+				if (val === -1) {
+					continue;
+				}
+				var room = graph.getComponentRefs(bd.cell[c]);
+				if (d[val] === undefined) {
+					d[val] = room;
+				} else if (room && d[val] !== room) {
+					this.failcode.add(code);
+					bd.cell
+						.filter(function(cell) {
+							var otherroom = graph.getComponentRefs(cell);
+							return room === otherroom || d[val] === otherroom;
+						})
+						.seterr(1);
+					break;
 				}
 			}
 		},
@@ -845,7 +908,7 @@ pzpr.classmgr.makeCommon({
 				for (var by = 1; by <= bd.maxby; by += 2) {
 					for (var bx = 1; bx <= bd.maxbx; bx += 2) {
 						for (var tx = bx; tx <= bd.maxbx; tx += 2) {
-							if (termfunc(bd.getc(tx, by))) {
+							if (termfunc(bd.getc(tx, by), false)) {
 								break;
 							}
 						}
@@ -868,7 +931,7 @@ pzpr.classmgr.makeCommon({
 				for (var bx = 1; bx <= bd.maxbx; bx += 2) {
 					for (var by = 1; by <= bd.maxby; by += 2) {
 						for (var ty = by; ty <= bd.maxby; ty += 2) {
-							if (termfunc(bd.getc(bx, ty))) {
+							if (termfunc(bd.getc(bx, ty), true)) {
 								break;
 							}
 						}
@@ -1083,191 +1146,195 @@ pzpr.classmgr.makeCommon({
 				return pathseg;
 			}
 			return null;
+		},
+
+		//--------------------------------------------------------------------------------
+		// ans.isDifferentShapeBlock() Check if two components have a different block
+		//     shape, counting all orientations as equal.
+		//--------------------------------------------------------------------------------
+		isDifferentShapeBlock: function(area1, area2) {
+			if (area1.clist.length !== area2.clist.length) {
+				return true;
+			}
+			var s1 = area1.clist.getBlockShapes(),
+				s2 = area2.clist.getBlockShapes();
+			return s1.canon !== s2.canon;
+		},
+
+		//--------------------------------------------------------------------------------
+		// ans.searchloop() Return all cells of a Graph component that forms a loop.
+		//--------------------------------------------------------------------------------
+		searchloop: function(component, graph, borders) {
+			var errlist = borders
+				? new this.klass.BorderList()
+				: graph.pointgroup === "cross"
+				? new this.klass.CrossList()
+				: new this.klass.CellList();
+			// Loopがない場合は何もしないでreturn
+			if (component.circuits <= 0) {
+				return errlist;
+			}
+
+			// どこにLoopが存在するか判定を行う
+			var bd = this.board;
+			var history = [component.nodes[0].obj],
+				prevcell = null;
+			var steps = {},
+				rows = bd.maxbx - bd.minbx;
+
+			while (history.length > 0) {
+				var obj = history[history.length - 1],
+					nextobj = null;
+				var step = steps[obj.by * rows + obj.bx];
+				if (step === void 0) {
+					step = steps[obj.by * rows + obj.bx] = history.length - 1;
+				}
+				// ループになった場合 => ループフラグをセットする
+				else if (history.length - 1 > step) {
+					for (var i = history.length - 2; i >= 0; i--) {
+						if ((history[i].group === "border") === !!borders) {
+							errlist.add(history[i]);
+						}
+						if (history[i] === obj) {
+							break;
+						}
+					}
+				}
+
+				if (obj.group !== "border") {
+					prevcell = obj;
+					for (var i = 0; i < graph.getObjNodeList(obj)[0].nodes.length; i++) {
+						var cell2 = graph.getObjNodeList(obj)[0].nodes[i].obj;
+						var border = bd.getb(
+							(obj.bx + cell2.bx) >> 1,
+							(obj.by + cell2.by) >> 1
+						);
+						if (steps[border.by * rows + border.bx] === void 0) {
+							nextobj = border;
+							break;
+						}
+					}
+				} else {
+					// borderの時
+					var side =
+						graph.pointgroup === "cross" ? obj.sidecross : obj.sidecell;
+					for (var i = 0; i < side.length; i++) {
+						var cell = side[i];
+						if (cell !== prevcell && cell !== history[history.length - 2]) {
+							nextobj = cell;
+							break;
+						}
+					}
+				}
+				if (!!nextobj) {
+					history.push(nextobj);
+				} else {
+					history.pop();
+				}
+			}
+
+			return errlist;
+		},
+
+		//--------------------------------------------------------------------------------
+		// ans.checkBankPiecesAvailable(): Check if all pieces on the board are
+		// represented in the Bank, and no counts are exceeded.
+		// ans.checkBankPiecesUsed(): Check if all piece count requirements are met.
+		//--------------------------------------------------------------------------------
+		getBoardPiecesMap: function() {
+			if (this._info.boardpiecesmap) {
+				return this._info.boardpiecesmap;
+			}
+			if (!this._info.boardpieces) {
+				this._info.boardpieces = this.board.getBankPiecesInGrid();
+			}
+
+			var ret = {};
+			this._info.boardpieces.forEach(function(p) {
+				if (!(p[0] in ret)) {
+					ret[p[0]] = [p[1]];
+				} else {
+					ret[p[0]].push(p[1]);
+				}
+			});
+			return (this._info.boardpiecesmap = ret);
+		},
+
+		checkBankPiecesInvalid: function() {
+			var pieces = this.getBoardPiecesMap();
+
+			for (var key in pieces) {
+				var found = false;
+				for (var b = 0; b < this.board.bank.pieces.length; b++ && !found) {
+					if (key === this.board.bank.pieces[b].canonize()) {
+						found = true;
+					}
+				}
+				if (!found) {
+					this.failcode.add("bankInvalid");
+					if (this.checkOnly) {
+						break;
+					}
+					pieces[key].forEach(function(list) {
+						list.seterr(1);
+					});
+				}
+			}
+		},
+
+		checkBankPiecesAvailable: function() {
+			var pieces = this.getBoardPiecesMap();
+			var counts = {};
+			for (var b = 0; b < this.board.bank.pieces.length; b++) {
+				var key = this.board.bank.pieces[b].canonize();
+				if (!(key in counts)) {
+					counts[key] = 0;
+				}
+				counts[key] += this.board.bank.pieces[b].count;
+			}
+
+			for (var key in pieces) {
+				if (key in counts && counts[key] < pieces[key].length) {
+					this.failcode.add("bankGt");
+					if (this.checkOnly) {
+						break;
+					}
+					this.board.bank.pieces.forEach(function(piece) {
+						if (piece.canonize() === key) {
+							piece.seterr(1);
+						}
+					});
+
+					pieces[key].forEach(function(list) {
+						list.seterr(1);
+					});
+				}
+			}
+		},
+		checkBankPiecesUsed: function() {
+			var pieces = this.getBoardPiecesMap();
+			var counts = {};
+			for (var b = 0; b < this.board.bank.pieces.length; b++) {
+				var key = this.board.bank.pieces[b].canonize();
+				if (!(key in counts)) {
+					counts[key] = 0;
+				}
+				counts[key] += this.board.bank.pieces[b].count;
+			}
+
+			for (var key in counts) {
+				if (!(key in pieces) || counts[key] > pieces[key].length) {
+					this.failcode.add("bankLt");
+					if (this.checkOnly) {
+						break;
+					}
+					this.board.bank.pieces.forEach(function(piece) {
+						if (piece.canonize() === key) {
+							piece.seterr(1);
+						}
+					});
+				}
+			}
 		}
-	},
-
-	//---------------------------------------------------------------------------
-	// ★FailCodeクラス 答えの文字列を扱う
-	//---------------------------------------------------------------------------
-	FailCode: {
-		/* ** 黒マス ** */
-		cs2x2: [
-			"2x2の黒マスのカタマリがあります。",
-			"There is a 2x2 block of shaded cells."
-		],
-		csNotSquare: [
-			"正方形でない黒マスのカタマリがあります。",
-			"A group of shaded cells is not a square."
-		],
-		csAdjacent: [
-			"黒マスがタテヨコに連続しています。",
-			"Some shaded cells are adjacent."
-		],
-		csDivide: ["黒マスが分断されています。", "The shaded cells are divided."],
-		cuDivide: ["白マスが分断されています。", "The unshaded cells are divided."],
-		cuDivideRB: [
-			"白マスが分断されています。",
-			"The unshaded cells are divided."
-		] /* 連黒分断禁 */,
-		brNoShade: [
-			"盤面に黒マスがありません。",
-			"There are no shaded cells on the board."
-		],
-
-		/* ** 領域＋数字 ** */
-		bkNoNum: ["数字のないブロックがあります。", "A block has no number."],
-		bkNumGe2: [
-			"1つのブロックに2つ以上の数字が入っています。",
-			"A block has multiple numbers."
-		],
-		bkDupNum: [
-			"同じブロックに同じ数字が入っています。",
-			"There are equal numbers in a block."
-		],
-		bkPlNum: [
-			"複数種類の数字が入っているブロックがあります。",
-			"A block has two or more kinds of number."
-		],
-		bkSepNum: [
-			"同じ数字が異なるブロックに入っています。",
-			"One kind of number is included in different blocks."
-		],
-
-		bkSizeNe: [
-			"数字とブロックの大きさが違います。",
-			"The size of the block is not equal to the number."
-		],
-
-		bkShadeNe: [
-			"部屋の数字と黒マスの数が一致していません。",
-			"The number of shaded cells in the room and the number written in the room is different."
-		],
-		bkShadeDivide: [
-			"1つの部屋に入る黒マスが2つ以上に分裂しています。",
-			"Shaded cells are divided in a room."
-		],
-		bkNoShade: ["黒マスがない部屋があります。", "A room has no shaded cell."],
-		bkMixed: [
-			"白マスと黒マスの混在したタイルがあります。",
-			"A tile includes both shaded and unshaded cells."
-		],
-
-		bkWidthGt1: [
-			"幅が１マスではないタタミがあります。",
-			"The width of the tatami is not one."
-		],
-
-		brNoValidNum: [
-			"盤面に数字がありません。",
-			"There are no numbers on the board."
-		],
-
-		/* ** 領域＋線を引く ** */
-		brNoLine: ["線が引かれていません。", "There is no line on the board."],
-
-		/* ** 盤面切り分け系 ** */
-		bkNotRect: [
-			"四角形ではない部屋があります。",
-			"There is a room whose shape is not a rectangle."
-		],
-		bdDeadEnd: [
-			"途中で途切れている線があります。",
-			"There is a dead-end line."
-		],
-		bdCross: ["十字の交差点があります。", "There is a crossing border line."],
-
-		/* ** 線を引く系 ** */
-		lnDeadEnd: [
-			"途中で途切れている線があります。",
-			"There is a dead-end line."
-		],
-		lnBranch: ["分岐している線があります。", "There is a branch line."],
-		lnCross: ["線が交差しています。", "There is a crossing line."],
-		lnNotCrossMk: [
-			"十字の場所で線が交差していません。",
-			"A cross-joint cell doesn't have four-way lines."
-		],
-		lnCrossExIce: [
-			"氷の部分以外で線が交差しています。",
-			"A line is crossed outside of ice."
-		],
-		lnCurveOnIce: ["氷の部分で線が曲がっています。", "A line turns on ice."],
-		lnPlLine: ["線がひとつながりではありません。", "There are multiple lines."],
-		lnPlLoop: ["輪っかが一つではありません。", "There are multiple loops."],
-		lnOnShade: [
-			"黒マスの上に線が引かれています。",
-			"There is a line on a shaded cell."
-		],
-
-		/* ** 線でつなぐ系 ** */
-		lcDeadEnd: ["線が途中で途切れています。", "There is a dead-end line."],
-		lcDivided: [
-			"線が全体でひとつながりになっていません。",
-			"All lines and numbers are not connected to each other."
-		],
-		lcTripleNum: [
-			"3つ以上の数字がつながっています。",
-			"Three or more numbers are connected."
-		],
-		lcIsolate: [
-			"数字につながっていない線があります。",
-			"A line doesn't connect to any number."
-		],
-		lcOnNum: [
-			"数字の上を線が通過しています。",
-			"A line goes through a number."
-		],
-		nmNoLine: [
-			"どこにもつながっていない数字があります。",
-			"A number is not connected to another number."
-		],
-		nmConnected: [
-			"アルファベットが繋がっています。",
-			"There are connected letters."
-		],
-
-		/* ** 線で動かす系 ** */
-		laIsolate: [
-			"アルファベットにつながっていない線があります。",
-			"A line doesn't connect to any letter."
-		],
-		laOnNum: [
-			"アルファベットの上を線が通過しています。",
-			"A line goes through a letter."
-		],
-		laCurve: ["曲がっている線があります。", "A line has curve."],
-		laLenNe: ["数字と線の長さが違います。", "The length of a line is wrong."],
-
-		/* ** 単体セルチェック ** */
-		ceNoNum: ["数字の入っていないマスがあります。", "There is an empty cell."],
-		ceNoLine: ["線が引かれていないマスがあります。", "There is an empty cell."],
-		ceAddLine: [
-			"最初から引かれている線があるマスに線が足されています。",
-			"A cell with given lines has extra lines."
-		],
-
-		anNoArrow: ["矢印がない数字のマスがあります。", "A number has no arrow."],
-		anShadeNe: [
-			"矢印の方向にある黒マスの数が正しくありません。",
-			"The number of shaded cells is not correct."
-		],
-
-		/* ** 数字系 ** */
-		nmAdjacent: [
-			"同じ数字がタテヨコに連続しています。",
-			"Equal numbers are adjacent."
-		],
-		nmDupRow: [
-			"同じ列に同じ数字が入っています。",
-			"There are equal numbers in a row or column."
-		],
-		nmDivide: [
-			"タテヨコにつながっていない数字があります。",
-			"Numbers are divided."
-		],
-		nmSumViewNe: [
-			"数字と黒マスにぶつかるまでの4方向のマスの合計が違います。",
-			"A cell containing a clue number sees a different number of cells in the four orthogonal directions."
-		]
 	}
 });

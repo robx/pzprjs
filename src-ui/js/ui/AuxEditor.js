@@ -14,6 +14,19 @@ ui.popupmgr.addpopup("auxeditor", {
 		ui.popupmgr.popups.template.close.apply(this);
 	},
 
+	delete: function() {
+		if (!ui.auxeditor.puzzle.opemgr.enableUndo) {
+			ui.auxeditor.puzzle.board.ansclear();
+			this.close();
+		} else {
+			var thiz = this;
+			ui.notify.confirm(ui.i18n("auxdelete.confirm"), function() {
+				ui.auxeditor.puzzle.board.ansclear();
+				thiz.close();
+			});
+		}
+	},
+
 	init: function() {
 		ui.popupmgr.popups.template.init.call(this);
 
@@ -47,6 +60,10 @@ ui.popupmgr.addpopup("auxeditor", {
 				}
 			}
 		});
+	},
+
+	adjust_aux: function(e) {
+		ui.auxeditor.puzzle.board.operate(e.target.name);
 	}
 });
 
@@ -54,9 +71,27 @@ ui.auxeditor = {
 	current: null,
 	cb: null,
 
+	close: function(abort) {
+		if (ui.popupmgr.popups.auxeditor.pop) {
+			if (abort) {
+				this.cb = null;
+			}
+			ui.popupmgr.popups.auxeditor.close();
+		}
+	},
+
 	open: function(sender, args, cb) {
+		if (!args || args.abort) {
+			ui.auxeditor.close(args && args.abort);
+			return;
+		}
+
 		if (ui.auxeditor.current === args.key) {
 			return;
+		}
+
+		if (ui.popupmgr.popups.applypreset.pop) {
+			ui.popupmgr.popups.applypreset.close();
 		}
 
 		var cellsize = ui.puzzle.painter.cw;
@@ -96,3 +131,43 @@ ui.auxeditor = {
 		ui.menuconfig.set("auxeditor_inputmode", "auto");
 	}
 };
+
+ui.popupmgr.addpopup("applypreset", {
+	formname: "applypreset",
+
+	reset: function() {
+		this.loadpresets();
+	},
+
+	apply: function() {
+		if (this.form.preset.value === "") {
+			this.close();
+			return;
+		}
+		var preset = ui.puzzle.board.bank.presets[+this.form.preset.value];
+		ui.puzzle.board.bank.applyPreset(preset);
+		this.close();
+	},
+
+	loadpresets: function() {
+		var root = getEL("ap_preset");
+		root.replaceChildren();
+
+		var presets = ui.puzzle.board.bank.presets;
+		for (var i = 0; i < presets.length; i++) {
+			var div = document.createElement("div");
+			var label = document.createElement("label");
+			var input = document.createElement("input");
+
+			input.name = "preset";
+			input.value = i;
+			input.type = "radio";
+
+			label.textContent = ui.i18n(presets[i].name) || presets[i].name;
+			label.prepend(input);
+
+			div.replaceChildren(label);
+			root.appendChild(div);
+		}
+	}
+});

@@ -55,7 +55,7 @@ pzpr.classmgr.makeCommon({
 		e_keydown: function(e) {
 			var c = this.getchar(e);
 			if (!this.enableKey) {
-				if (c === "BS" || c === " ") {
+				if (e.target === document.body && (c === "BS" || c === " ")) {
 					e.stopPropagation();
 					e.preventDefault();
 				}
@@ -75,7 +75,7 @@ pzpr.classmgr.makeCommon({
 		e_keyup: function(e) {
 			var c = this.getchar(e);
 			if (!this.enableKey) {
-				if (c === "BS" || c === " ") {
+				if (e.target === document.body && (c === "BS" || c === " ")) {
 					e.stopPropagation();
 					e.preventDefault();
 				}
@@ -151,6 +151,8 @@ pzpr.classmgr.makeCommon({
 				key = "BS";
 			} else if (keycode === 109 || keycode === 189 || keycode === 173) {
 				key = "-";
+			} else if (keycode === 106) {
+				key = "*";
 			}
 
 			var keylist = !!key ? [key] : [];
@@ -417,6 +419,7 @@ pzpr.classmgr.makeCommon({
 		initialize: function() {
 			this.bx = 1;
 			this.by = 1;
+			this.bankpiece = null;
 			this.mode51 = this.puzzle.klass.ExCell.prototype.ques === 51;
 			this.modesnum = this.puzzle.klass.Cell.prototype.enableSubNumberArray;
 			this.targetdirs = this.puzzle.klass.Cell.prototype.dirs51;
@@ -427,10 +430,17 @@ pzpr.classmgr.makeCommon({
 		init: function(bx, by) {
 			this.bx = bx;
 			this.by = by;
+			this.bankpiece = null;
 			if (!this.mode51) {
 				this.targetdir = 0;
 			}
 			return this;
+		},
+
+		getc: function() {
+			return this.bankpiece === null
+				? this.board.getc(this.bx, this.by)
+				: this.board.emptycell;
 		},
 
 		// 有効な範囲(minx,miny)-(maxx,maxy)
@@ -498,7 +508,7 @@ pzpr.classmgr.makeCommon({
 			if (this.mode51 && this.puzzle.editmode) {
 				this.targetdir = 4;
 			} // right
-			else if (this.modesnum && this.puzzle.playmode) {
+			else if (this.modesnum) {
 				this.targetdir = 0;
 			}
 		},
@@ -548,6 +558,12 @@ pzpr.classmgr.makeCommon({
 		// tc.getaddr() ターゲットの位置を移動する
 		//---------------------------------------------------------------------------
 		movedir: function(dir, mv) {
+			if (this.bankpiece !== null) {
+				// TODO implement moving from board to bank
+				// TODO implement moving between bankpieces
+				return this;
+			}
+
 			this.puzzle.klass.Address.prototype.movedir.call(this, dir, mv);
 			if (this.modesnum && this.puzzle.playmode) {
 				this.targetdir = 0;
@@ -569,6 +585,7 @@ pzpr.classmgr.makeCommon({
 			) {
 				return;
 			}
+			this.bankpiece = null;
 			this.set(pos);
 			if (this.modesnum && this.puzzle.playmode) {
 				this.targetdir = 0;

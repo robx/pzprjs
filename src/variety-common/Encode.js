@@ -294,8 +294,12 @@ pzpr.classmgr.makeCommon({
 				return [parseInt(bstr.substr(i + 1, 3), 16), 4];
 			} else if (ca === "=") {
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 4096, 4];
-			} else if (ca === "%") {
+			} else if (ca === "%" || ca === "@") {
 				return [parseInt(bstr.substr(i + 1, 3), 16) + 8192, 4];
+			} else if (ca === "*") {
+				return [parseInt(bstr.substr(i + 1, 4), 16) + 12240, 5];
+			} else if (ca === "$") {
+				return [parseInt(bstr.substr(i + 1, 5), 16) + 77776, 6];
 			} else if (ca === ".") {
 				return [-2, 1];
 			} else {
@@ -308,16 +312,20 @@ pzpr.classmgr.makeCommon({
 			return res[0];
 		},
 		decodeNumber16: function() {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				bd.cell[c].qnum = val;
+			});
+		},
+		genericDecodeNumber16: function(length, set_func) {
 			var c = 0,
 				i = 0,
-				bstr = this.outbstr,
-				bd = this.board;
-			while (i < bstr.length && bd.cell[c]) {
-				var cell = bd.cell[c],
-					ca = bstr.charAt(i);
+				bstr = this.outbstr;
+			while (i < bstr.length && c < length) {
+				var ca = bstr.charAt(i);
 				var res = this.readNumber16(bstr, i);
 				if (res[0] !== -1) {
-					cell.qnum = res[0];
+					set_func(c, res[0]);
 					i += res[1];
 					c++;
 				} else if (ca >= "g" && ca <= "z") {
@@ -339,10 +347,15 @@ pzpr.classmgr.makeCommon({
 			} else if (qn >= 256 && qn < 4096) {
 				return "+" + qn.toString(16);
 			} else if (qn >= 4096 && qn < 8192) {
-				return "=" + (qn - 4096).toString(16);
-			} else if (qn >= 8192) {
-				return "%" + (qn - 8192).toString(16);
+				return "=" + (qn - 4096).toString(16).padStart(3, 0);
+			} else if (qn >= 8192 && qn < 12240) {
+				return "@" + (qn - 8192).toString(16).padStart(3, 0);
+			} else if (qn >= 12240 && qn < 77776) {
+				return "*" + (qn - 12240).toString(16).padStart(4, 0);
+			} else if (qn >= 77776) {
+				return "$" + (qn - 77776).toString(16).padStart(5, 0);
 			} else {
+				// 最大1126352
 				return "";
 			}
 		},
@@ -470,86 +483,21 @@ pzpr.classmgr.makeCommon({
 		// enc.encodeRoomNumber16()  部屋＋部屋の一つのquesが0～8192?までの場合、問題部をエンコードする
 		//---------------------------------------------------------------------------
 		decodeRoomNumber16: function() {
-			var r = 0,
-				i = 0,
-				bstr = this.outbstr,
-				bd = this.board;
+			var bd = this.board;
 			bd.roommgr.rebuild();
-			for (i = 0; i < bstr.length; i++) {
-				var ca = bstr.charAt(i),
-					top = bd.roommgr.components[r].top;
+			var rooms = bd.roommgr.components;
 
-				if (this.include(ca, "0", "9") || this.include(ca, "a", "f")) {
-					top.qnum = parseInt(ca, 16);
-				} else if (ca === "-") {
-					top.qnum = parseInt(bstr.substr(i + 1, 2), 16);
-					i += 2;
-				} else if (ca === "+") {
-					top.qnum = parseInt(bstr.substr(i + 1, 3), 16);
-					i += 3;
-				} else if (ca === "=") {
-					top.qnum = parseInt(bstr.substr(i + 1, 3), 16) + 4096;
-					i += 3;
-				} else if (ca === "%") {
-					top.qnum = parseInt(bstr.substr(i + 1, 3), 16) + 8192;
-					i += 3;
-				} else if (ca === "*") {
-					top.qnum = parseInt(bstr.substr(i + 1, 4), 16) + 12240;
-					i += 4;
-				} else if (ca === "$") {
-					top.qnum = parseInt(bstr.substr(i + 1, 5), 16) + 77776;
-					i += 5;
-				} else if (ca >= "g" && ca <= "z") {
-					r += parseInt(ca, 36) - 16;
-				}
-
-				r++;
-				if (r >= bd.roommgr.components.length) {
-					break;
-				}
-			}
-			this.outbstr = bstr.substr(i + 1);
+			this.genericDecodeNumber16(rooms.length, function(r, val) {
+				rooms[r].top.qnum = val;
+			});
 		},
 		encodeRoomNumber16: function() {
-			var count = 0,
-				cm = "",
-				bd = this.board;
+			var bd = this.board;
 			bd.roommgr.rebuild();
-			for (var r = 0; r < bd.roommgr.components.length; r++) {
-				var pstr = "",
-					qn = bd.roommgr.components[r].top.qnum;
 
-				if (qn >= 0 && qn < 16) {
-					pstr = qn.toString(16);
-				} else if (qn >= 16 && qn < 256) {
-					pstr = "-" + qn.toString(16);
-				} else if (qn >= 256 && qn < 4096) {
-					pstr = "+" + qn.toString(16);
-				} else if (qn >= 4096 && qn < 8192) {
-					pstr = "=" + (qn - 4096).toString(16);
-				} else if (qn >= 8192 && qn < 12240) {
-					pstr = "%" + (qn - 8192).toString(16);
-				} else if (qn >= 12240 && qn < 77776) {
-					pstr = "*" + (qn - 12240).toString(16);
-				} else if (qn >= 77776) {
-					pstr = "$" + (qn - 77776).toString(16);
-				} // 最大1126352
-				else {
-					count++;
-				}
-
-				if (count === 0) {
-					cm += pstr;
-				} else if (pstr || count === 20) {
-					cm += (15 + count).toString(36) + pstr;
-					count = 0;
-				}
-			}
-			if (count > 0) {
-				cm += (15 + count).toString(36);
-			}
-
-			this.outbstr += cm;
+			this.genericEncodeNumber16(bd.roommgr.components.length, function(r) {
+				return bd.roommgr.components[r].top.qnum;
+			});
 		},
 
 		//---------------------------------------------------------------------------
@@ -565,7 +513,10 @@ pzpr.classmgr.makeCommon({
 				var ca = bstr.charAt(i),
 					cell = bd.cell[c];
 
-				if (this.include(ca, "0", "4")) {
+				if (ca === "+") {
+					cell.qdir = 0;
+					cell.qnum = -3;
+				} else if (this.include(ca, "0", "4")) {
 					var ca1 = bstr.charAt(i + 1);
 					cell.qdir = parseInt(ca, 16);
 					cell.qnum = ca1 !== "." ? parseInt(ca1, 16) : -2;
@@ -599,6 +550,8 @@ pzpr.classmgr.makeCommon({
 					qn = bd.cell[c].qnum;
 				if (qn === -2) {
 					pstr = dir + ".";
+				} else if (qn === -3) {
+					pstr = "+";
 				} else if (qn >= 0 && qn < 16) {
 					pstr = dir + qn.toString(16);
 				} else if (qn >= 16 && qn < 256) {
@@ -790,7 +743,7 @@ pzpr.classmgr.makeCommon({
 		// enc.decodeCircle() 白丸・黒丸をデコードする
 		// enc.encodeCircle() 白丸・黒丸をエンコードする
 		//---------------------------------------------------------------------------
-		decodeCircle: function() {
+		genericDecodeThree: function(set_func) {
 			var bd = this.board;
 			var bstr = this.outbstr,
 				c = 0,
@@ -804,7 +757,7 @@ pzpr.classmgr.makeCommon({
 					if (!!bd.cell[c]) {
 						var val = ((ca / tri[w]) | 0) % 3;
 						if (val > 0) {
-							bd.cell[c].qnum = val;
+							set_func(bd.cell[c], val);
 						}
 						c++;
 					}
@@ -812,16 +765,19 @@ pzpr.classmgr.makeCommon({
 			}
 			this.outbstr = bstr.substr(pos);
 		},
-		encodeCircle: function() {
+		decodeCircle: function() {
+			this.genericDecodeThree(function(cell, val) {
+				cell.qnum = val;
+			});
+		},
+		genericEncodeThree: function(get_func) {
 			var bd = this.board;
 			var cm = "",
 				num = 0,
 				pass = 0,
 				tri = [9, 3, 1];
 			for (var c = 0; c < bd.cell.length; c++) {
-				if (bd.cell[c].qnum > 0) {
-					pass += bd.cell[c].qnum * tri[num];
-				}
+				pass += get_func(bd.cell[c]) * tri[num];
 				num++;
 				if (num === 3) {
 					cm += pass.toString(27);
@@ -835,12 +791,17 @@ pzpr.classmgr.makeCommon({
 
 			this.outbstr += cm;
 		},
+		encodeCircle: function() {
+			this.genericEncodeThree(function(cell) {
+				return Math.max(0, cell.qnum);
+			});
+		},
 
 		//---------------------------------------------------------------------------
 		// enc.decodeIce() cell.ques===6をデコードする
 		// enc.encodeIce() cell.ques===6をエンコードする
 		//---------------------------------------------------------------------------
-		decodeQues: function(val) {
+		decodeBinary: function(prop, val) {
 			var bstr = this.outbstr,
 				bd = this.board;
 
@@ -850,7 +811,9 @@ pzpr.classmgr.makeCommon({
 				var num = parseInt(bstr.charAt(i), 32);
 				for (var w = 0; w < 5; w++) {
 					if (!!bd.cell[c]) {
-						bd.cell[c].ques = num & twi[w] ? val : 0;
+						if (num & twi[w]) {
+							bd.cell[c][prop] = val;
+						}
 						c++;
 					}
 				}
@@ -860,7 +823,7 @@ pzpr.classmgr.makeCommon({
 			}
 			this.outbstr = bstr.substr(i + 1);
 		},
-		encodeQues: function(val, skipnone) {
+		encodeBinary: function(prop, val, skipnone) {
 			var cm = "",
 				num = 0,
 				pass = 0,
@@ -868,7 +831,7 @@ pzpr.classmgr.makeCommon({
 				bd = this.board;
 			var found = false;
 			for (var c = 0; c < bd.cell.length; c++) {
-				if (bd.cell[c].ques === val) {
+				if (bd.cell[c][prop] === val) {
 					pass += twi[num];
 					found = true;
 				}
@@ -888,16 +851,16 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		decodeIce: function() {
-			this.decodeQues(6);
+			this.decodeBinary("ques", 6);
 		},
 		encodeIce: function() {
-			this.encodeQues(6);
+			this.encodeBinary("ques", 6);
 		},
 		decodeEmpty: function() {
-			this.decodeQues(7);
+			this.decodeBinary("ques", 7);
 		},
 		encodeEmpty: function() {
-			this.encodeQues(7, true);
+			this.encodeBinary("ques", 7, true);
 		},
 
 		//---------------------------------------------------------------------------
@@ -986,6 +949,64 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.outbstr += cm;
+		},
+
+		//---------------------------------------------------------------------------
+		// enc.decodePieceBank() Decode piece bank preset/custom
+		// enc.encodePieceBank() Encode piece bank preset/custom
+		//---------------------------------------------------------------------------
+		decodePieceBank: function() {
+			var bank = this.board.bank;
+			if (this.outbstr.substr(0, 2) === "//") {
+				var shortkey = this.outbstr[2];
+
+				for (var i = 0; i < bank.presets.length; i++) {
+					if (bank.presets[i].shortkey === shortkey) {
+						bank.initialize(bank.presets[i].constant);
+						break;
+					}
+				}
+
+				this.outbstr = this.outbstr.substr(3);
+			} else {
+				// Trim slash
+				this.outbstr = this.outbstr.substr(1);
+
+				var next = this.outbstr.indexOf("/");
+				var count = +this.outbstr.substr(0, next);
+				this.outbstr = this.outbstr.substr(next + 1);
+				var pieces = [];
+
+				for (var i = 0; i < count; i++) {
+					next = this.outbstr.indexOf("/");
+					pieces.push(next >= 0 ? this.outbstr.substr(0, next) : this.outbstr);
+					this.outbstr = next >= 0 ? this.outbstr.substr(next + 1) : "";
+				}
+				bank.initialize(pieces);
+			}
+		},
+		encodePieceBank: function() {
+			this.outbstr += "/";
+			var bank = this.board.bank;
+
+			var pieces = bank.pieces.map(function(p) {
+				return p.serialize();
+			});
+
+			for (var i = 0; i < bank.presets.length; i++) {
+				if (!bank.presets[i].constant) {
+					continue;
+				}
+				if (this.puzzle.pzpr.util.sameArray(bank.presets[i].constant, pieces)) {
+					this.outbstr += "/" + bank.presets[i].shortkey;
+					return;
+				}
+			}
+
+			this.outbstr += pieces.length;
+			for (var i = 0; i < pieces.length; i++) {
+				this.outbstr += "/" + pieces[i];
+			}
 		}
 	}
 });

@@ -100,7 +100,41 @@ ui.keypopup = {
 		kusabi: [114, 0],
 		doppelblock: [10, 115],
 		interbd: [116, 0],
-		toichika2: [10, 10]
+		toichika2: [10, 10],
+		crossstitch: [10, 0],
+		ovotovata: [10, 0],
+		lohkous: [10, 0],
+		chainedb: [10, 0],
+		canal: [10, 0],
+		cbanana: [10, 0],
+		bdwalk: [117, 0],
+		voxas: [118, 0],
+		oneroom: [10, 0],
+		tontti: [10, 0],
+		lapaz: [10, 0],
+		tren: [10, 0],
+		pentominous: [119, 119],
+		hinge: [10, 0],
+		tajmahal: [8, 0],
+		railpool: [10, 0],
+		coral: [10, 0],
+		ququ: [10, 0],
+		disloop: [10, 0],
+		lither: [3, 0],
+		snakepit: [120, 10],
+		squarejam: [10, 0],
+		context: [4, 0],
+		numrope: [10, 10],
+		yajisoko: [10, 0],
+		roundtrip: [10, 0],
+		cts: [121, 0],
+		vslither: [4, 0],
+		tslither: [4, 0],
+		kaidan: [4, 0],
+		anglers: [122, 0],
+		heyablock: [10, 0],
+		koburin: [4, 0],
+		mirrorbk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -214,6 +248,18 @@ ui.keypopup = {
 			this.generate_doppelblock();
 		} else if (type === 116) {
 			this.generate_interbd();
+		} else if (type === 117) {
+			this.generate_bdwalk();
+		} else if (type === 118) {
+			this.generate_voxas();
+		} else if (type === 119) {
+			this.generate_pentominous(mode);
+		} else if (type === 120) {
+			this.generate_snakepit(mode);
+		} else if (type === 121) {
+			this.generate_cts(mode);
+		} else if (type === 122) {
+			this.generate_anglers(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -259,8 +305,19 @@ ui.keypopup = {
 				null
 			);
 		}
-		if (mode === 1 && (pid === "kakuru" || pid === "tateyoko")) {
-			itemlist.push(["q1", "■"], ["w2", "□"], " ", ["-", "?"]);
+		if (
+			mode === 1 &&
+			(pid === "kakuru" ||
+				pid === "tateyoko" ||
+				pid === "crossstitch" ||
+				pid === "numrope" ||
+				pid === "yajisoko")
+		) {
+			itemlist.push(["q1", pid === "yajisoko" ? "□" : "■"]);
+			if (pid === "crossstitch") {
+				itemlist.push(["w2", "○"]);
+			}
+			itemlist.push(["-", "?"]);
 		}
 
 		itemlist.push("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
@@ -272,7 +329,14 @@ ui.keypopup = {
 		);
 
 		var cap = null;
-		if (mode === 3 || pid === "kakuru" || pid === "tateyoko") {
+		if (
+			mode === 3 ||
+			pid === "kakuru" ||
+			pid === "numrope" ||
+			pid === "tateyoko" ||
+			pid === "crossstitch" ||
+			pid === "yajisoko"
+		) {
 		} else if (!ui.puzzle.painter.hideHatena) {
 			cap = "?";
 		} else if (pid === "tasquare") {
@@ -511,6 +575,113 @@ ui.keypopup = {
 			4
 		);
 	},
+	generate_bdwalk: function() {
+		this.generate_main(
+			[
+				["-", { text: "■", color: "gray" }],
+				["u", { text: "▲" }],
+				["d", { text: "▼" }],
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
+				" "
+			],
+			4
+		);
+	},
+	generate_voxas: function() {
+		this.generate_main(
+			[
+				["2", { text: "●" }],
+				["3", { text: "●", color: "gray" }],
+				["4", { text: "○" }],
+				["1", { text: "━" }],
+				" "
+			],
+			3
+		);
+	},
+	generate_pentominous: function(mode) {
+		var items = "filnptuvwxyz".split("").map(function(c) {
+			return [c, { text: c.toUpperCase() }];
+		});
+		if (mode === 1) {
+			items.push(["-", "?"], ["q", "■"]);
+		}
+		items.push(" ");
+
+		this.generate_main(items, 5);
+	},
+	generate_snakepit: function() {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				" ",
+				["-", "?"],
+				["q", { text: "○" }],
+				["w", { text: "■", color: "gray" }]
+			],
+			4
+		);
+	},
+	generate_cts: function() {
+		this.generate_main(
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
+				["-", "?"],
+				["w", "*"],
+				" "
+			],
+			5
+		);
+	},
+	generate_anglers: function() {
+		this.imgCR = [2, 1];
+		this.generate_main(
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
+				["-", "?"],
+				["q", { image: 0 }],
+				["w", { image: 1 }],
+				" "
+			],
+			5
+		);
+	},
 
 	generate_main: function(list, split) {
 		for (var i = 0; i < list.length; i++) {
@@ -647,6 +818,8 @@ ui.keypopup = {
 	dataurl: {
 		slalom:
 			"R0lGODlhAAFAAMIEAAICAmBgYJ+fn///////AP//AP//AP//ACH5BAEKAAQALAAAAAAAAUAAAAP+OLrc/jDKSau9OOvNu/9gKI5kaZ5oqq5s675wLM90bd94ru+24AdAH68BKBqHNqNyyWw6n9DSD2oMCHhMZI3K7XqLI0Hgq7TmstoZec0GhMTt8jW5TKvj+OhnnFfOaWh2MH2EdR0ChUtmd0qCMYmJHXxOQFZ/P5OUjEeOL5CFHJmKfxFTmp2oIZ+EG6JVpBVwTQGptR2rfRquAIsbiLO2wRi4eRm7tB+yS7DCzQ7EeBi/yyO7zCiBziTQcRfTfiWuyCzZ2iLcbReu1yDrLeXmIOhsFt9F7CGu74bx5/NkFkSNO2EPAL4R8Prd+vclFpODbxKWkKhQA8OGFAS2EAX+UR6/ih4ueqFQsGPEMiCDieySUZGLkilrreTSEpwLjjFTzaRCweULewNz2tmpR4JPTyhTUBQ6geiTCUBjiFKxlGkEp06gUoMxVelHqxawNpmAE4Y9kxyqevw4dkFbt+XeQhBbtezPrSfUfpDLN67fr8/oNpLQ1SxeE3pDZuv7Ve4Ax4EFgyF8uMVZr4MxZ368+O9mzoCJSJ5cqjILeyAZb3bMuupo0hAucw3tTDUnBa0bu36tNemLwmCRvHbT1Lflo8GHDO9JG0XU5MJ5kzWdwm7e5tBFjyaJXAVMzbCzX5Ve3OaK5+CJizdKnrLx9GgXfl4fWbJD6iQ0rkgMfXmvBX0pfEcVdvT5x113+SF43Xz0MWBgTeYliF+DgLTH3IShMBEUhTc8eCCGxjQRH4fkWAjhe744MSKJ+5l4YoQhisjiDh4GRMmKBRmx4lq3zQiafa08YQlUu+goA3/J1agOFUH44CQQXOyoCoHrKelNkXj08giV4lkpTSJaHslldl5Kg2UXYW4SHotlapAjk1Iu2KOPVplCyZB05pmDk0Lo6eefgAYq6KCEFmrooSwkAAA7",
+		anglers:
+			"R0lGODdhgABAAPQAAP///wICAp+fn4CAgLCwsMDAwD8/PwAAABAQEFBQUKCgoO/v7yAgIDAwMJCQkN/f329vb39/fx8fH8/Pzy8vL6+vr7+/vw8PD2BgYF9fX0BAQE9PT4+PjwAAAAAAAAAAACwAAAAAgABAAAAF/yAgjmRpnmiqrmzrvnAsz3Rt33iu73zv/8CgcEgsGoOBpHLJbDqfUOexGK1ar80pEcvtSrVCr9gLDo/P1plgQCgUyim0HDozHO74hGIBH83/TDFrDHiFdw0OD3CAjAExEIaReAN8Wo2Aj3gSBnaSd5RTl3+ZnyMTERSSDBVHonMxFnknAhKRoFuuaLCyKBEXhhiVZrlju3grvoUNwkDEZzK1d6wqE7+aE8POXTKQdxktqZrMPdpiMhXiLRnKSOXb0HjY6oXBP+7vMRu84IUC9vdY1BSy8CLcHXk8AAass49FtYY6FF6hESvei4oHyUmsUqPTAQbjVHjUoHEjHRoP2O+5wHjA3w6TUWx08/Zi3aGEMJ/cMNjSRUqLEXN+sRFNmgt9pYIKDXTj4aQWAiDaWJoFBzp6DguFpEGVqVVDy1YYdImj65IdTp+mSHYgglKzPB7wTGoCo4G3XX0gVTYAoQi7eKn+iKoKQxsATsOWNZskCFtPYDVInizZLwvGjYXMhMz5AMEXmB0REWCzs6TPLkJPsQCBk2mgqTH3ATDQgu3btrfGkd1Haw7VvY/95r1I+GLGs30fhxv8TuClyY3fAF7c+XDkzQ88Fzo7gne315nPxol9/Evi5sPnTb89J/v38OPLn0+/vv37+PPr3z8+BAA7",
 		reflect:
 			"R0lGODlhAAFAAIABAAAAAP///yH5BAEKAAEALAAAAAAAAUAAAAL+jI+py+0Po5y02ouz3rz7D4biSJbmiabqyrbuC8fyTNf2jef6bgD8H/A9AMSi8YhMKpdJCPMJjSKdQiCOGJFqt9Mh96vNYq22ogSMflLT7OPZTJ4ZJ+362GGv0+dxmHufh7YW+EXR1cdy+EbINcgoVdGEqCJp+BjmdRlloTSJ0smpCeUoWmlp6hmyhFHKRNoKFwqaCuLKCqvIgJt7OkvLoZaxy4c3fHcx+ruRLGz8WrrMrCxrq+GciQu8OR25HZ2N3dqByS3m/S0eLuqxVf7si76ufvnR6K7bXp9eDK2ff4+gUK1+/DSpEggwCEJ/9OYFEiEIYMSDDQsyGpHmXkb+jBUbGOQ4URmbEh3xXSTRZlpKkict2jGhh1ZMlg8dbqQ50tPLE4Tegfm0s0+eFDVd3oQ5NE5RnkE9NkWaFEhPSjOdriQ6lUdLrDmN2qOaNcejFlethuQatsxYskdN/mS7Vm3cRGcXtAU7V4Y8F3UV9EWb9wVBvgvdkiO8V/BgxIcNn2P8EXJJycG8rtILi3JgzfDsNlacecWuGp/9QqIxDO8+OY89S8M8mmls0q9dV0N9DWVu2rcd84KdGmTwG5XNosJtrArD4cQvW1YuN/nA5NCj/7G8g3qseLuvHDf9m7d2bdqrN79u/JjY8uq7sZeK3jF89ubNvZ/fHnx+7/Q96z9nrtV2bpHRn4A2SUfgfgEpyF+BiziolH8HMNgghP8hqJQTCW3IYYcefghiiCKOSGKJJp6IYooqrlhOAQA7",
 		shitappa:

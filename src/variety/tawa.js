@@ -584,20 +584,5 @@
 				cell.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmShadeNe: [
-			"数字の周りに入っている黒マスの数が違います。",
-			"The number of shaded cells around a number is not correct."
-		],
-		csConsecGt3: [
-			"黒マスが横に3マス以上続いています。",
-			"Three or more shaded cells continue horizontally."
-		],
-		csNotOnShade: [
-			"黒マスの下に黒マスがありません。",
-			"There are no shaded cells under a shaded cell."
-		]
 	}
 });

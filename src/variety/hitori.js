@@ -158,7 +158,7 @@
 				} else if (ca === "-") {
 					cell.qnum = parseInt(bstr.substr(i + 1, 2), 36);
 					i += 2;
-				} else if (ca === "%") {
+				} else if (ca === "%" || ca === "@") {
 					cell.qnum = -2;
 				}
 
@@ -178,7 +178,7 @@
 					qn = bd.cell[c].qnum;
 
 				if (qn === -2) {
-					pstr = "%";
+					pstr = "@";
 				} else if (qn >= 0 && qn < 36) {
 					pstr = qn.toString(36);
 				} else if (qn >= 36 && qn < 1296) {

@@ -1384,48 +1384,5 @@
 
 			return info;
 		}
-	},
-
-	FailCode: {
-		bkNoLine: [
-			"すべてのアイスバーンを通っていません。",
-			"A icebarn is not gone through."
-		],
-		arNoLine: [
-			"線が通っていない矢印があります。",
-			"A line doesn't go through some arrows."
-		],
-		lrOrder: [
-			"数字の通過順が間違っています。",
-			"A line goes through an arrow reverse."
-		],
-		nmUnpass: [
-			"通過していない数字があります。",
-			"The line doesn't pass all of the number."
-		],
-		stInvalid: [
-			"スタート位置を特定できませんでした。",
-			"System can't detect start position."
-		],
-		stNoLine: [
-			"INに線が通っていません。",
-			"The line doesn't go through the 'IN' arrow."
-		],
-		lrDeadEnd: [
-			"途中で途切れている線があります。",
-			"There is a dead-end line."
-		],
-		lrOffField: [
-			"盤面の外に出てしまった線があります",
-			"A line is not reached out the 'OUT' arrow."
-		],
-		lrReverse: [
-			"矢印を逆に通っています。",
-			"A line goes through an arrow reverse."
-		],
-		cuNoLine: [
-			"通過していない白マスがあります。",
-			"The line doesn't pass all of the non-icy cell."
-		]
 	}
 });

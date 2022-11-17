@@ -168,7 +168,11 @@ pzpr.classmgr.makeCommon({
 						}
 					} else {
 						var def = piece.constructor.prototype[pp];
-						if (piece[pp] !== def) {
+						if (
+							pp === "qnums"
+								? !this.puzzle.pzpr.util.sameArray(piece[pp], def)
+								: piece[pp] !== def
+						) {
 							if (isrec && !norec[pp]) {
 								piece.addOpe(pp, piece[pp], def);
 							}
@@ -279,6 +283,48 @@ pzpr.classmgr.makeCommon({
 		draw: function() {
 			var d = this.getRectSize();
 			this.puzzle.painter.paintRange(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1);
+		},
+
+		//---------------------------------------------------------------------------
+		// clist.getBlockShapes() Encode the block shape into a string,
+		//     and return keys for matching shapes without considering orientation,
+		//     or matching shapes with the exact orientation.
+		//---------------------------------------------------------------------------
+		getBlockShapes: function() {
+			if (!!this.shape) {
+				return this.shape;
+			}
+
+			var bd = this.board;
+			var d = this.getRectSize();
+			var dx = d.x2 - d.x1 === d.cols - 1 ? 1 : 2;
+			var dy = d.y2 - d.y1 === d.rows - 1 ? 1 : 2;
+			var data = [[], [], [], [], [], [], [], []];
+			var shapes = [];
+
+			for (var by = 0; by <= d.y2 - d.y1; by += dy) {
+				for (var bx = 0; bx <= d.x2 - d.x1; bx += dx) {
+					data[0].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
+					data[1].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
+				}
+			}
+			for (var bx = 0; bx <= d.x2 - d.x1; bx += dx) {
+				for (var by = 0; by <= d.y2 - d.y1; by += dy) {
+					data[4].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
+					data[5].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
+				}
+			}
+			data[2] = data[1].concat().reverse();
+			data[3] = data[0].concat().reverse();
+			data[6] = data[5].concat().reverse();
+			data[7] = data[4].concat().reverse();
+			for (var i = 0; i < 8; i++) {
+				shapes[i] = (i < 4 ? d.cols : d.rows) + ":" + data[i].join("");
+			}
+
+			var first = shapes[0];
+			shapes.sort();
+			return (this.shape = { canon: shapes[0], id: first });
 		}
 	},
 

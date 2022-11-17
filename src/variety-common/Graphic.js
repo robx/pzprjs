@@ -386,64 +386,76 @@ pzpr.classmgr.makeCommon({
 			var irowake = this.puzzle.execConfig("irowake");
 
 			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i];
-				g.vid = "c_slash_" + cell.id;
-				if (cell.qans !== 0) {
-					var info = cell.error || cell.qinfo,
-						addwidth = 0,
-						color;
-					if (this.pid === "gokigen" || this.pid === "wagiri") {
+			for (var slash = 0; slash <= 1; slash++) {
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					g.vid = "c_slash_" + slash + "_" + cell.id;
+					if (cell.qans === 33 || cell.qans === (slash ? 32 : 31)) {
+						var info = cell.qinfo || cell.error,
+							addwidth = 0,
+							color;
 						if (cell.trial && this.puzzle.execConfig("irowake")) {
 							addwidth = -basewidth / 2;
-						} else if (info === 1 || info === 3) {
+						} else if (
+							(this.pid === "gokigen" || this.pid === "wagiri") &&
+							(info === 1 || info === 3)
+						) {
 							addwidth = basewidth / 2;
 						}
-					}
 
-					if (info === 1) {
-						color = this.errcolor1;
-					} else if (info === 2) {
-						color = this.errcolor2;
-					} else if (info === -1) {
-						color = this.noerrcolor;
-					} else if (irowake && cell.path.color) {
-						color = cell.path.color;
-					} else if (cell.trial) {
-						color = this.trialcolor;
+						if (this.pid !== "kinkonkan" && info > 0) {
+							if (info & (slash ? 4 : 8)) {
+								color = this.noerrcolor;
+							} else if (info & 1) {
+								color = this.errcolor1;
+							} else if (info & 2) {
+								color = this.errcolor2;
+							}
+						} else if (info === -1) {
+							color = this.noerrcolor;
+						} else if (irowake && cell.qans === 33) {
+							color =
+								!!slash === cell.parity() ? cell.path.color : cell.path2.color;
+						} else if (irowake && cell.path && cell.path.color) {
+							color = cell.path.color;
+						} else if (irowake && cell.path2 && cell.path2.color) {
+							color = cell.path2.color;
+						} else if (cell.trial) {
+							color = this.trialcolor;
+						} else {
+							color = this.linecolor;
+						}
+
+						g.lineWidth = basewidth + addwidth;
+						g.strokeStyle = color;
+						g.beginPath();
+						var px = cell.bx * this.bw,
+							py = cell.by * this.bh;
+						if (!slash) {
+							g.setOffsetLinePath(
+								px,
+								py,
+								-this.bw,
+								-this.bh,
+								this.bw,
+								this.bh,
+								true
+							);
+						} else {
+							g.setOffsetLinePath(
+								px,
+								py,
+								this.bw,
+								-this.bh,
+								-this.bw,
+								this.bh,
+								true
+							);
+						}
+						g.stroke();
 					} else {
-						color = "black";
+						g.vhide();
 					}
-
-					g.lineWidth = basewidth + addwidth;
-					g.strokeStyle = color;
-					g.beginPath();
-					var px = cell.bx * this.bw,
-						py = cell.by * this.bh;
-					if (cell.qans === 31) {
-						g.setOffsetLinePath(
-							px,
-							py,
-							-this.bw,
-							-this.bh,
-							this.bw,
-							this.bh,
-							true
-						);
-					} else if (cell.qans === 32) {
-						g.setOffsetLinePath(
-							px,
-							py,
-							this.bw,
-							-this.bh,
-							-this.bw,
-							this.bh,
-							true
-						);
-					}
-					g.stroke();
-				} else {
-					g.vhide();
 				}
 			}
 		},
@@ -525,7 +537,7 @@ pzpr.classmgr.makeCommon({
 		},
 		getNumberTextCore: function(num) {
 			var hideHatena =
-				this.pid !== "yajilin"
+				this.pid !== "yajilin" && this.pid !== "koburin"
 					? this.hideHatena
 					: this.puzzle.getConfig("disptype_yajilin") === 2;
 			return num >= 0 ? "" + num : !hideHatena && num === -2 ? "?" : "";
@@ -640,15 +652,21 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawArrowNumbers() Cellの数字と矢印をCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawArrowNumbers: function() {
+		drawArrowNumbers: function(opts) {
 			var g = this.vinc("cell_arrownumber", "auto");
 
-			var al = this.cw * 0.4; // ArrowLength
-			var aw = this.cw * 0.03; // ArrowWidth
-			var tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
-			var tw = this.cw * 0.12; // 矢じりの幅
+			var scale = (opts && opts.scale) || 1;
+
+			var al = this.cw * 0.4 * scale; // ArrowLength
+			var aw = this.cw * 0.03 * scale; // ArrowWidth
+			var tl = this.cw * 0.16 * scale; // 矢じりの長さの座標(中心-長さ)
+			var tw = this.cw * 0.12 * scale; // 矢じりの幅
 			var dy = -this.bh * 0.6;
 			var dx = [this.bw * 0.6, this.bw * 0.7, this.bw * 0.8, this.bw * 0.85];
+
+			if (opts && opts.bottom) {
+				dy *= -1;
+			}
 
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
@@ -670,7 +688,7 @@ pzpr.classmgr.makeCommon({
 					switch (dir) {
 						case cell.UP:
 							g.setOffsetLinePath(
-								px + dx[digit],
+								px + dx[digit] * scale,
 								py,
 								0,
 								-al,
@@ -691,7 +709,7 @@ pzpr.classmgr.makeCommon({
 							break;
 						case cell.DN:
 							g.setOffsetLinePath(
-								px + dx[digit],
+								px + dx[digit] * scale,
 								py,
 								0,
 								al,
@@ -761,15 +779,16 @@ pzpr.classmgr.makeCommon({
 				// 数字の描画
 				g.vid = "cell_arnum_" + cell.id;
 				if (!!text) {
-					var option = { ratio: 0.8 };
+					var option = { ratio: this.fontsizeratio };
 					if (dir !== cell.NDIR) {
-						option.ratio = 0.7;
+						option.ratio =
+							opts && opts.arrowfontsize ? opts.arrowfontsize : 0.7;
 					}
 
 					if (dir === cell.UP || dir === cell.DN) {
 						px -= this.cw * 0.1;
 					} else if (dir === cell.LT || dir === cell.RT) {
-						py += this.ch * 0.1;
+						py += this.ch * 0.1 * (opts && opts.bottom ? -0.5 : +1);
 					}
 
 					this.disptext(text, px, py, option);
@@ -837,8 +856,8 @@ pzpr.classmgr.makeCommon({
 				var nums = cell.qnums,
 					n = nums.length;
 
-				g.fillStyle = this.getQuesNumberColor(cell);
 				for (var k = 0; k < 4; k++) {
+					g.fillStyle = this.getQuesNumberColor(cell, k);
 					g.vid = "cell_text_" + cell.id + "_" + k;
 					if (k < n && nums[k] !== -1) {
 						var opt = opts[n - 1],
@@ -1353,7 +1372,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawBaseMarks() 交点のdotをCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawBaseMarks: function() {
+		drawBaseMarks: function(isdraw) {
 			var g = this.vinc("cross_mark", "auto", true);
 			g.fillStyle = this.quescolor;
 
@@ -1362,7 +1381,11 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < clist.length; i++) {
 				var cross = clist[i];
 				g.vid = "x_cm_" + cross.id;
-				g.fillCircle(cross.bx * this.bw, cross.by * this.bh, size / 2);
+				if (isdraw !== false) {
+					g.fillCircle(cross.bx * this.bw, cross.by * this.bh, size / 2);
+				} else {
+					g.vhide();
+				}
 			}
 		},
 
@@ -1995,15 +2018,34 @@ pzpr.classmgr.makeCommon({
 			var g = this.vinc(layerid, "crispEdges");
 
 			var px = cursor.bx * this.bw,
-				py = cursor.by * this.bh,
-				w,
-				size;
+				py = cursor.by * this.bh;
+			var t, w, h;
 			if (islarge !== false) {
-				w = Math.max(this.cw / 16, 2) | 0;
-				size = this.bw - 0.5;
+				t = Math.max(this.cw / 16, 2) | 0;
+				w = this.bw - 0.5;
+				h = w;
 			} else {
-				w = Math.max(this.cw / 24, 1) | 0;
-				size = this.bw * 0.56;
+				t = Math.max(this.cw / 24, 1) | 0;
+				w = this.bw * 0.56;
+				h = w;
+			}
+
+			if (typeof cursor.bankpiece === "number") {
+				var piece = this.board.bank.pieces[cursor.bankpiece];
+				if (cursor.bankpiece === this.board.bank.pieces.length) {
+					piece = this.board.bank.addButton;
+				}
+				if (piece) {
+					var r = this.puzzle.painter.bankratio;
+
+					px = (piece.x + 0.25 + piece.w / 2) * this.cw * r;
+					py = (piece.y + 0.25 + piece.h / 2) * this.ch * r;
+					py += (this.board.rows + 0.5) * this.ch;
+					w = (piece.w + 0.25) * this.cw * r * 0.5;
+					h = (piece.h + 0.25) * this.ch * r * 0.5;
+				} else {
+					isdraw = false;
+				}
 			}
 
 			isdraw = isdraw !== false && !this.outputImage;
@@ -2011,25 +2053,25 @@ pzpr.classmgr.makeCommon({
 
 			g.vid = prefix + "ti1_";
 			if (isdraw) {
-				g.fillRect(px - size, py - size, size * 2, w);
+				g.fillRect(px - w, py - h, w * 2, t);
 			} else {
 				g.vhide();
 			}
 			g.vid = prefix + "ti2_";
 			if (isdraw) {
-				g.fillRect(px - size, py - size, w, size * 2);
+				g.fillRect(px - w, py - h, t, h * 2);
 			} else {
 				g.vhide();
 			}
 			g.vid = prefix + "ti3_";
 			if (isdraw) {
-				g.fillRect(px - size, py + size - w, size * 2, w);
+				g.fillRect(px - w, py + h - t, w * 2, t);
 			} else {
 				g.vhide();
 			}
 			g.vid = prefix + "ti4_";
 			if (isdraw) {
-				g.fillRect(px + size - w, py - size, w, size * 2);
+				g.fillRect(px + w - t, py - h, t, h * 2);
 			} else {
 				g.vhide();
 			}
@@ -2179,7 +2221,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		drawDots: function() {
-			var g = this.vinc("dot", "auto", true);
+			var g = this.vinc("dot", "auto");
 
 			g.lineWidth = Math.max(this.cw * 0.04, 1);
 			var d = this.range;
@@ -2524,6 +2566,93 @@ pzpr.classmgr.makeCommon({
 							g.vhide();
 						}
 					}
+				}
+			}
+		},
+
+		lastBankPieceCount: 0,
+		drawBank: function() {
+			if (
+				!this.showBank ||
+				(!this.range.bank && this.range.bankPieces.length === 0)
+			) {
+				return;
+			}
+
+			var g = this.vinc("piecebank", "crispEdges"),
+				bd = this.board;
+
+			var count = Math.max(bd.bank.pieces.length, this.lastBankPieceCount);
+
+			for (var p = 0; p < count; p++) {
+				var piece = bd.bank.pieces[p];
+				if (!this.range.bank && this.range.bankPieces.indexOf(piece) === -1) {
+					continue;
+				}
+
+				this.drawBankPiece(g, piece, p);
+			}
+
+			this.drawBankAddButton();
+
+			this.lastBankPieceCount = bd.bank.pieces.length;
+		},
+		drawBankPiece: function(g, piece, idx) {},
+		getBankPieceColor: function(piece) {
+			return piece.error
+				? this.errcolor1
+				: piece.qcmp
+				? this.qcmpcolor
+				: this.quescolor;
+		},
+		drawBankAddButton: function() {
+			var g = this.vinc("piecebank_add", "crispEdges"),
+				bd = this.board,
+				addButton = bd.bank.addButton;
+			var showAdd =
+				this.puzzle.editmode &&
+				!this.outputImage &&
+				addButton.index !== null &&
+				(this.range.bank || this.range.bankPieces.indexOf(addButton) !== -1);
+
+			if (
+				addButton.index !== null &&
+				(this.range.bank || this.range.bankPieces.indexOf(addButton) !== -1)
+			) {
+				var r = this.bankratio;
+				var px = this.cw * r * (addButton.x + 0.25) + 1;
+				var py = this.ch * r * (addButton.y + 0.25) + 1;
+				py += (this.board.rows + 0.5) * this.ch;
+				var px2 = px + this.cw * r * addButton.w - 1;
+				var py2 = py + this.ch * r * addButton.h - 1;
+				for (var i = 0; i < 4; i++) {
+					g.vid = "pb_piece_add_" + i;
+					if (showAdd) {
+						g.strokeStyle = "blue";
+						g.strokeDashedLine(
+							i < 2 ? px : px2,
+							i < 2 ? py : py2,
+							i % 2 ? px : px2,
+							i % 2 ? py2 : py,
+							[3]
+						);
+					} else {
+						g.vhide();
+					}
+				}
+
+				g.vid = "pb_piece_add_symbol";
+				if (showAdd) {
+					g.fillStyle = "blue";
+					var option = { style: "bold" };
+					this.disptext(
+						"+",
+						px + 0.5 * r * this.cw * addButton.w,
+						py + 0.5 * r * this.ch * addButton.h,
+						option
+					);
+				} else {
+					g.vhide();
 				}
 			}
 		}

@@ -333,16 +333,5 @@
 					.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		bkDupNum: [
-			"1つの領域に2つ以上の同じ矢印が入っています。",
-			"An area has duplicate arrows."
-		],
-		stopHalfway: [
-			"ゴールにたどり着かないセルがあります。",
-			"A cell cannot reach a goal."
-		]
 	}
 });

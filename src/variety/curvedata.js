@@ -48,7 +48,8 @@
 					h = Math.max(h, shape.bits.length / shape.w);
 				}
 
-				var data = [w, h];
+				var s = Math.max(w, h);
+				var data = [s, s];
 
 				if (shape && shape.w > 0) {
 					data.push(shape.w);
@@ -1495,20 +1496,5 @@
 			}
 			return false;
 		}
-	},
-
-	FailCode: {
-		shNone: [
-			"記号マスを通っていない線があります。",
-			"A shape is not connected to a clue."
-		],
-		shMultiple: [
-			"2つ以上の記号マスを通る線があります。",
-			"A shape is connected to multiple clues."
-		],
-		shIncorrect: [
-			"記号の形に合っていない線があります。",
-			"A shape does not match the clue."
-		]
 	}
 });

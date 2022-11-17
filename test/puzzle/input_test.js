@@ -16,7 +16,15 @@ function execmouse(puzzle, strs) {
 		args.push("right");
 	}
 	for (var i = 2; i < strs.length; i++) {
-		args.push(+strs[i]);
+		if (strs[i] === "bank") {
+			var idx = +strs[++i];
+			var piece = puzzle.board.bank.pieces[idx];
+			var r = puzzle.painter.bankratio;
+			args.push((piece.x + piece.w / 2) * r * 2);
+			args.push((piece.y + piece.h / 2 + puzzle.board.maxby + 0.5) * r * 2);
+		} else {
+			args.push(+strs[i]);
+		}
 	}
 	for (var t = 0; t < repeat; t++) {
 		puzzle.mouse.inputPath.apply(puzzle.mouse, args);
@@ -82,15 +90,20 @@ pzpr.variety.each(function(pid) {
 			inps.forEach(function(data) {
 				testcount++;
 				var label = data.label || "execinput " + testcount;
-				it(label, function() {
-					var action = data.input || [];
-					action.forEach(a => execinput(puzzle, a));
-					if (!!data.result) {
-						var filestr = puzzle.getFileData();
-						var resultstr = data.result.replace(/\//g, "\n");
-						assert.equal(filestr, resultstr);
-					}
-				});
+				if (!!data.input || !!data.result) {
+					it(label, function() {
+						var action = data.input || [];
+						action.forEach(a => execinput(puzzle, a));
+						if (!!data.result) {
+							var filestr = puzzle.getFileData();
+							var resultstr = data.result.replace(/\//g, "\n");
+							assert.equal(filestr, resultstr);
+						}
+					});
+				} else {
+					// Mark test as pending in Mocha
+					it(label);
+				}
 			});
 		});
 	});

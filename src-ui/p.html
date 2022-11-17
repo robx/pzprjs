@@ -34,68 +34,68 @@ if ('serviceWorker' in navigator) {
 
 <div id="menuboard" class="outofboard">
   <menu id="menupanel" style="display:none;">
-   <li id="menu_file"><span>__ファイル__File__</span><menu label="__ファイル__File__">
-     <li data-popup="newboard" id="menu_newboard"><span>__新規作成__New board__</span></li>
-     <li data-popup="urlinput"><span>__URL入力__Load from URL__</span></li>
-     <li data-popup="urloutput" id="menu_urloutput"><span>__URL出力__Export URL__</span></li>
+   <li id="menu_file"><span>__menu_file__</span><menu label="__menu_file__">
+     <li data-popup="newboard" id="menu_newboard"><span>__newboard__</span></li>
+     <li data-popup="urlinput"><span>__urlinput__</span></li>
+     <li data-popup="urloutput" id="menu_urloutput"><span>__urloutput__</span></li>
      <hr>
-     <li data-popup="fileopen"><span>__ファイルを開く__Open file__</span></li>
-     <li data-popup="filesave"><span>__ファイル保存__Save file as ...__</span></li>
-     <li class="link" data-linktype="duplicate" id="menu_duplicate"><a target="_blank">__盤面の複製__Duplicate the board__</a></li>
+     <li data-popup="fileopen"><span>__fileopen__</span></li>
+     <li data-popup="filesave"><span>__filesave__</span></li>
+     <li class="link" data-linktype="duplicate" id="menu_duplicate"><a target="_blank">__duplicate__</a></li>
      <hr>
-     <li data-popup="imagesave" id="menu_imagesave"><span>__画像を保存__Save as image file__</span></li>
+     <li data-popup="imagesave" id="menu_imagesave"><span>__imagesave__</span></li>
      <hr>
-     <li data-popup="network" id="menu_network"><span>__ネットワークプレイ__Network play__</span></li>
+     <li data-popup="network" id="menu_network"><span>__network.title__</span></li>
    </menu></li>
-   <li id="menu_edit"><span>__編集__Edit__</span><menu label="__編集__Edit__">
-     <li data-popup="adjust" id="menu_adjust"><span>__盤面の調整__Adjust the board__</span></li>
-     <li data-popup="turnflip" id="menu_turnflip"><span>__反転・回転__Flip/Turn the board__</span></li>
+   <li id="menu_edit"><span>__menu_edit__</span><menu label="__menu_edit__">
+     <li data-popup="adjust" id="menu_adjust"><span>__adjust__</span></li>
+     <li data-popup="turnflip" id="menu_turnflip"><span>__turnflip__</span></li>
    </menu></li>
-   <li id="menu_display"><span>__表示__Display__</span><menu label="__表示__Display__">
-     <li data-config="cellsizeval"><span>__表示サイズ__Cell size__</span> -&gt;<menu label="__表示サイズ__Cell size__">
-       <li data-value="19"><span>__サイズ 極小__Extra small__</span></li>
-       <li data-value="36"><span>__サイズ 小__Small__</span></li>
-       <li data-value="48"><span>__サイズ 標準__Normal__</span></li>
-       <li data-value="72"><span>__サイズ 大__Large__</span></li>
-       <li data-value="108"><span>__サイズ 特大__Extra large__</span></li>
+   <li id="menu_display"><span>__menu_display__</span><menu label="__menu_display__">
+     <li data-config="cellsizeval"><span>__cellsize__</span> -&gt;<menu label="__cellsize__">
+       <li data-value="19"><span>__cellsize.xs__</span></li>
+       <li data-value="36"><span>__cellsize.s__</span></li>
+       <li data-value="48"><span>__cellsize.n__</span></li>
+       <li data-value="72"><span>__cellsize.l__</span></li>
+       <li data-value="108"><span>__cellsize.xl__</span></li>
        <hr>
-       <li data-popup="dispsize"><span>__数値指定__Set by number ...__</span></li>
+       <li data-popup="dispsize"><span>__cellsize.custom__</span></li>
      </menu></li>
-     <li data-config="font"><span>__フォント__Font family__</span> -&gt;<menu label="__フォント__Font family__">
-       <li data-value="1"><span>__ゴシック__Sans-serif__</span></li>
-       <li data-value="2"><span>__明朝__Serif__</span></li>
+     <li data-config="font"><span>__font__</span> -&gt;<menu label="__font__">
+       <li data-value="1"><span>__font.sans__</span></li>
+       <li data-value="2"><span>__font.serif__</span></li>
      </menu></li>
      <hr>
-     <li class="check" data-config="dispqnumbg"><span>__問題背景描画__Paint background of clue circles__</span></li>
-     <li class="check" data-config="undefcell"><span>__未確定領域背景描画__Paint uninputted cells__</span></li>
-     <li class="check" data-config="cursor"><span>__カーソルの表示__Show cursor__</span></li>
-     <li class="check" data-config="trialmarker"><span>__仮置きマーカーの表示__Show trial markers__</li>
-     <li class="check" data-config="adjsize"><span>__自動横幅調節__Auto size adjust__</span></li>
-     <li class="check" data-config="fullwidth"><span>__横幅最大拡張__Expand canvas width__</span></li>
+     <li class="check" data-config="dispqnumbg"><span>__dispqnumbg__</span></li>
+     <li class="check" data-config="undefcell"><span>__undefcell__</span></li>
+     <li class="check" data-config="cursor"><span>__cursor__</span></li>
+     <li class="check" data-config="trialmarker"><span>__trialmarker__</span></li>
+     <li class="check" data-config="adjsize"><span>__adjsize__</span></li>
+     <li class="check" data-config="fullwidth"><span>__fullwidth__</span></li>
      <hr>
-     <li data-menu-exec="toolarea"><span id="menu_toolarea">__ツールエリアを隠す__Hide tool area__</span></li>
+     <li data-menu-exec="toolarea"><span id="menu_toolarea">__toolarea.hide__</span></li>
    </menu></li>
-   <li id="menu_setting"><span>__設定__Setting__</span><menu label="__設定__Setting__">
-     <li class="check" data-config="lrinvert"><span>__マウス左右反転__Invert mouse button__</span></li>
-     <li data-config="use_tri"><span>__操作方法__Input type__</span> -&gt;<menu label="__操作方法__Input type__">
-       <li data-value="1"><span>__クリックした位置__Corner-side__</span></li>
-       <li data-value="2"><span>__引っ張り入力__Pull-to-input__</span></li>
-       <li data-value="3"><span>__1ボタン__One button__</span></li>
+   <li id="menu_setting"><span>__menu_setting__</span><menu label="__menu_setting__">
+     <li class="check" data-config="lrinvert"><span>__lrinvert__</span></li>
+     <li data-config="use_tri"><span>__use_tri__</span> -&gt;<menu label="__use_tri__">
+       <li data-value="1"><span>__use_tri.1__</span></li>
+       <li data-value="2"><span>__use_tri.2__</span></li>
+       <li data-value="3"><span>__use_tri.3__</span></li>
      </menu></li>
-     <li class="check" data-config="bgcolor"><span>__背景色入力__Input background color__</span></li>
-     <li class="check" data-config="autoerr"><span data-disp-pid="hitori">__重複した数字を表示__Show overlapped number__</span
-                                            ><span data-disp-pid="gokigen,wagiri">__ループした斜線の色分け__Loop slash with color__</span></li>
-     <li class="check" data-config="multierr"><span>__複数エラー検出__Check multiple errors__</span></li>
-     <li class="check" data-config="forceallcell"><span>__全マス数字必須__Number in all cells__</span></li>
-     <li class="check" data-config="dirauxmark"><span>__方向の補助記号__Direction aux. mark__</span></li>
-     <li class="check" data-config="enline"><span>__線は点の間__Line between points__</span></li>
-     <li class="check" data-config="lattice"><span>__格子点チェック__Check lattice point__</span></li>
-     <li class="check" data-config="singlenum"><span>__領域に数字1つ__Single number in a region__</span></li>
-     <li class="check" data-config="discolor"><span>__色分け無効化__Disable color__</span></li>
-     <li data-config="autocheck_mode"><span>__正答自動判定__Answer check__</span>&nbsp;-&gt;<menu label="__正答自動判定__Automatic answer check__">
-       <li class="child" data-value="off"><span>__Manual__Manual__</span></li>
-       <li class="child" data-value="guarded"><span>__Automatic (guarded)__Automatic (guarded)__</span></li>
-       <li class="child" data-value="simple"><span>__Automatic (always)__Automatic (always)__</span></li>
+     <li class="check" data-config="bgcolor"><span>__bgcolor.menu__</span></li>
+     <li class="check" data-config="autoerr"><span data-disp-pid="hitori">__autoerr.menu.hitori__</span
+                                            ><span data-disp-pid="gokigen,wagiri">__autoerr.menu.gokigen__</span></li>
+     <li class="check" data-config="multierr"><span>__multierr__</span></li>
+     <li class="check" data-config="forceallcell"><span>__forceallcell.menu__</span></li>
+     <li class="check" data-config="dirauxmark"><span>__dirauxmark.menu__</span></li>
+     <li class="check" data-config="enline"><span>__enline.menu__</span></li>
+     <li class="check" data-config="lattice"><span>__lattice.menu__</span></li>
+     <li class="check" data-config="singlenum"><span>__singlenum.menu__</span></li>
+     <li class="check" data-config="discolor"><span>__discolor__</span></li>
+     <li data-config="autocheck_mode"><span>__autocheck__</span>&nbsp;-&gt;<menu label="__autocheck__">
+       <li class="child" data-value="off"><span>__autocheck.off__</span></li>
+       <li class="child" data-value="guarded"><span>__autocheck.guarded__</span></li>
+       <li class="child" data-value="simple"><span>__autocheck.simple__</span></li>
      </menu></li>
      <hr>
      <li data-config="language"><span>言語/Language</span> -&gt;<menu label="言語/Language">
@@ -103,117 +103,124 @@ if ('serviceWorker' in navigator) {
        <li class="child" data-value="en"><span>English</span></li>
      </menu></li>
    </menu></li>
-   <li id="menu_help"><span>__ヘルプ__Help__</span><menu label="__ヘルプ__Help__">
-     <li class="link" data-pidlink="rules.html?"><a target="_blank">__ルール__Rules__</a></li>
+   <li id="menu_help"><span>__menu_help__</span><menu label="__menu_help__">
+     <li class="link" data-pidlink="rules.html?"><a target="_blank">__rules__</a></li>
      <hr>
-     <li data-popup="about"><span>__puzz.linkについて__About__</span></li>
-     <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__バグレポートと機能リクエスト__Bug reports and feature requests__</a></li>
+     <li data-popup="about"><span>__about__</span></li>
+     <li class="link"><a target="_blank" href="https://hosted.weblate.org/projects/pzprjs/">__translate__</a></li>
+     <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__issues__</a></li>
    </menu></li>
   </menu>
   <div id="usepanel" style="display:none;">
     <div class="config" data-config="mode">
-     <div><span>__モード__Mode__</span> | </div>
+     <div><span>__mode__</span> | </div>
      <div>
-      <div class="child" data-value="edit">__問題入力モード__Edit mode__</div>
-      <div class="child" data-value="play">__解答モード__Answer mode__</div>
+      <div class="child" data-value="edit">__mode.edit__</div>
+      <div class="child" data-value="play">__mode.play__</div>
      </div>
     </div>
     <div class="config" data-config="use">
-     <div><span>__操作方法__Input Type__</span> | </div>
+     <div><span>__use__</span> | </div>
      <div>
-      <div class="child" data-value="1">__左右ボタン__L/R buttons__</div>
-      <div class="child" data-value="2">__1ボタン__One button__</div>
+      <div class="child" data-value="1">__use.1__</div>
+      <div class="child" data-value="2">__use.2__</div>
      </div>
     </div>
     <div class="config" data-config="inputmode" id="panel_inputmode">
-     <div><span>__入力モード__Input Mode__</span> | </div>
+     <div><span>__inputmode__</span> | </div>
      <div>
-      <div class="child" data-value="auto">__自動__Auto__</div>
-      <div class="child" data-value="shade">__黒マス__Shaded cells__</div>
-      <div class="child" data-value="unshade">__白マス__Unshaded cells__</div>
-      <div class="child" data-value="number">__数字__Number__</div>
-      <div class="child" data-value="number-">__数字(逆順)__Number (rev)__</div>
-      <div class="child" data-value="letter">__アルファベット__Alphabet__</div>
-      <div class="child" data-value="letter-">__アルファベット(逆順)__Alphabet (rev)__</div>
-      <div class="child" data-value="quesmark">__盤面記号__Question marks__</div>
-      <div class="child" data-value="quesmark-">__盤面記号(逆順)__Question marks (rev)__</div>
-      <div class="child" data-value="color">__色__Color__</div>
-      <div class="child" data-value="color-">__色(逆順)__Color (rev)__</div>
-      <div class="child" data-value="border">__境界線__Border__</div>
-      <div class="child" data-value="subline">__補助線__Aux. conn. lines__</div>
-      <div class="child" data-value="direc">__向き__Direction__</div>
-      <div class="child" data-value="arrow">__矢印__Arrows__</div>
-      <div class="child" data-value="circle-unshade">__白まる__Unshaded circles__</div>
-      <div class="child" data-value="circle-shade">__黒まる__Shaded circles__</div>
-      <div class="child" data-value="goat">__ヤギ__Goats__</div>
-      <div class="child" data-value="wolf">__オオカミ__Wolves__</div>
-      <div class="child" data-value="moon">__月__Marks of moon__</div>
-      <div class="child" data-value="sun">__太陽__Marks of sun__</div>
-      <div class="child" data-value="empty">__無効セル__Invalid cells__</div>
-      <div class="child" data-value="ice">__アイスバーン__Icebarns__</div>
-      <div class="child" data-value="water">__ウォーターハザード__Water hazard__</div>
-      <div class="child" data-value="nabe">__鍋__Crocks__</div>
-      <div class="child" data-value="crossdot">__黒点__Shaded dots__</div>
-      <div class="child" data-value="ineq">__不等号__Inequality marks__</div>
-      <div class="child" data-value="move-clue">__図形の移動__Move clue__</div>
-      <div class="child" data-value="copy-answer">__解答モードから記号作成__Copy answer__</div>
-      <div class="child" data-value="mark-circle">__丸記号__Circles__</div>
-      <div class="child" data-value="mark-triangle">__三角形__Triangles__</div>
-      <div class="child" data-value="mark-rect">__四角形__Rectangles__</div>
-      <div class="child" data-value="mark-tree">__木__Trees__</div>
-      <div class="child" data-value="mark-tent">__テント__Tents__</div>
-      <div class="child" data-value="undef">__？記号__Question marks__</div>
-      <div class="child" data-value="line">__線__Lines__</div>
-      <div class="child" data-value="peke">__バツ印__Cross marks__</div>
-      <div class="child" data-value="diraux">__線の向き補助記号__Aux. dir. marks__</div>
-      <div class="child" data-value="bar">__線__Bars__</div>
-      <div class="child" data-value="akari">__あかり__Bulbs__</div>
-      <div class="child" data-value="star">__スター__Stars__</div>
-      <div class="child" data-value="dot">__黒点__Dots__</div>
-      <div class="child" data-value="balloon">__風船__Balloons__</div>
-      <div class="child" data-value="ironball">__鉄球__Iron balls__</div>
-      <div class="child" data-value="futon">__ふとん__Futons__</div>
-      <div class="child" data-value="completion">__確定数字__Completion__</div>
-      <div class="child" data-value="copycircle">__コピー__Copy circles__</div>
-      <div class="child" data-value="copynum">__コピー__Copy nums__</div>
-      <div class="child" data-value="dragnum+">__数字を増やしてコピー__Drag inc. nums__</div>
-      <div class="child" data-value="dragnum-">__数字を減らしてコピー__Drag dec. nums__</div>
-      <div class="child" data-value="objblank">__ドット__Aux. dots__</div>
-      <div class="child" data-value="numexist">__数字あり補助記号__Aux. circles__</div>
-      <div class="child" data-value="numblank">__数字なし補助記号__Aux. crosses__</div>
-      <div class="child" data-value="subcircle">__補助丸記号__Aux. circles__</div>
-      <div class="child" data-value="subcross">__補助バツ記号__Aux. crosses__</div>
-      <div class="child" data-value="bgcolor">__背景色1/2__Bgcolor 1/2__</div>
-      <div class="child" data-value="bgcolor1">__背景色1__Bgcolor 1__</div>
-      <div class="child" data-value="bgcolor2">__背景色2__Bgcolor 2__</div>
-      <div class="child" data-value="bgpaint">__下絵__Draft sketch__</div>
-      <div class="child" data-value="clear">__消去__Erase data__</div>
-      <div class="child" data-value="info-line">__線の繋がりチェック__Check line connection__</div>
-      <div class="child" data-value="info-blk">__黒マス繋がりチェック__Check shaded cell connection__</div>
-      <div class="child" data-value="info-road">__経路チェック__Check route__</div>
+      <div class="child" data-value="auto">__inputmode.auto__</div>
+      <div class="child" data-value="shade">__inputmode.shade__</div>
+      <div class="child" data-value="unshade">__inputmode.unshade__</div>
+      <div class="child" data-value="number">__inputmode.number__</div>
+      <div class="child" data-value="number-">__inputmode.number-__</div>
+      <div class="child" data-value="letter">__inputmode.letter__</div>
+      <div class="child" data-value="letter-">__inputmode.letter-__</div>
+      <div class="child" data-value="quesmark">__inputmode.quesmark__</div>
+      <div class="child" data-value="quesmark-">__inputmode.quesmark-__</div>
+      <div class="child" data-value="color">__inputmode.color__</div>
+      <div class="child" data-value="color-">__inputmode.color-__</div>
+      <div class="child" data-value="border">__inputmode.border__</div>
+      <div class="child" data-value="sub-border">__inputmode.sub-border__</div>
+      <div class="child" data-value="subline">__inputmode.subline__</div>
+      <div class="child" data-value="direc">__inputmode.direc__</div>
+      <div class="child" data-value="arrow">__inputmode.arrow__</div>
+      <div class="child" data-value="circle-unshade">__inputmode.circle-unshade__</div>
+      <div class="child" data-value="circle-shade">__inputmode.circle-shade__</div>
+      <div class="child" data-value="circle-gray">__inputmode.circle-gray__</div>
+      <div class="child" data-value="goat">__inputmode.goat__</div>
+      <div class="child" data-value="wolf">__inputmode.wolf__</div>
+      <div class="child" data-value="moon">__inputmode.moon__</div>
+      <div class="child" data-value="sun">__inputmode.sun__</div>
+      <div class="child" data-value="empty">__inputmode.empty__</div>
+      <div class="child" data-value="ice">__inputmode.ice__</div>
+      <div class="child" data-value="water">__inputmode.water__</div>
+      <div class="child" data-value="nabe">__inputmode.nabe__</div>
+      <div class="child" data-value="box">__inputmode.box__</div>
+      <div class="child" data-value="crossdot">__inputmode.crossdot__</div>
+      <div class="child" data-value="ineq">__inputmode.ineq__</div>
+      <div class="child" data-value="move-clue">__inputmode.move-clue__</div>
+      <div class="child" data-value="copy-answer">__inputmode.copy-answer__</div>
+      <div class="child" data-value="mark-circle">__inputmode.mark-circle__</div>
+      <div class="child" data-value="mark-triangle">__inputmode.mark-triangle__</div>
+      <div class="child" data-value="mark-rect">__inputmode.mark-rect__</div>
+      <div class="child" data-value="mark-tree">__inputmode.mark-tree__</div>
+      <div class="child" data-value="mark-tent">__inputmode.mark-tent__</div>
+      <div class="child" data-value="mark-cross">__inputmode.mark-cross__</div>
+      <div class="child" data-value="undef">__inputmode.undef__</div>
+      <div class="child" data-value="line">__inputmode.line__</div>
+      <div class="child" data-value="peke">__inputmode.peke__</div>
+      <div class="child" data-value="diraux">__inputmode.diraux__</div>
+      <div class="child" data-value="bar">__inputmode.bar__</div>
+      <div class="child" data-value="akari">__inputmode.akari__</div>
+      <div class="child" data-value="star">__inputmode.star__</div>
+      <div class="child" data-value="dot">__inputmode.dot__</div>
+      <div class="child" data-value="balloon">__inputmode.balloon__</div>
+      <div class="child" data-value="ironball">__inputmode.ironball__</div>
+      <div class="child" data-value="futon">__inputmode.futon__</div>
+      <div class="child" data-value="completion">__inputmode.completion__</div>
+      <div class="child" data-value="copycircle">__inputmode.copycircle__</div>
+      <div class="child" data-value="copynum">__inputmode.copynum__</div>
+      <div class="child" data-value="copyletter">__inputmode.copyletter__</div>
+      <div class="child" data-value="dragnum+">__inputmode.dragnum+__</div>
+      <div class="child" data-value="dragnum-">__inputmode.dragnum-__</div>
+      <div class="child" data-value="objblank">__inputmode.objblank__</div>
+      <div class="child" data-value="numexist">__inputmode.numexist__</div>
+      <div class="child" data-value="numblank">__inputmode.numblank__</div>
+      <div class="child" data-value="subcircle">__inputmode.subcircle__</div>
+      <div class="child" data-value="subcross">__inputmode.subcross__</div>
+      <div class="child" data-value="bgcolor">__inputmode.bgcolor__</div>
+      <div class="child" data-value="bgcolor1">__inputmode.bgcolor1__</div>
+      <div class="child" data-value="bgcolor2">__inputmode.bgcolor2__</div>
+      <div class="child" data-value="bgpaint">__inputmode.bgpaint__</div>
+      <div class="child" data-value="clear">__inputmode.clear__</div>
+      <div class="child" data-value="info-line">__inputmode.info-line__</div>
+      <div class="child" data-value="info-blk">__inputmode.info-blk__</div>
+      <div class="child" data-value="info-ublk">__inputmode.info-ublk__</div>
+      <div class="child" data-value="info-road">__inputmode.info-road__</div>
      </div>
     </div>
     <div class="config" data-config="disptype_yajilin">
-     <div><span>__表示形式__Display__</span> | </div>
+     <div><span>__disptype__</span> | </div>
      <div>
-      <div class="child" data-value="1">__ニコリ紙面形式__Original style__</div>
-      <div class="child" data-value="2">__背景色をグレーにする__Gray background__</div>
+      <div class="child" data-value="1">__disptype_yajilin.1__</div>
+      <div class="child" data-value="2">__disptype_yajilin.2__</div>
      </div>
     </div>
     <div class="config" data-config="disptype_bosanowa">
-     <div><span>__表示形式__Display__</span> | </div>
+     <div><span>__disptype__</span> | </div>
      <div>
-      <div class="child" data-value="1">__ニコリ紙面形式__Original style__</div>
-      <div class="child" data-value="2">__倉庫番形式__Sokoban style__</div>
-      <div class="child" data-value="3">__ワリタイ形式__Waritai style__</div>
+      <div class="child" data-value="1">__disptype_bosanowa.1__</div>
+      <div class="child" data-value="2">__disptype_bosanowa.2__</div>
+      <div class="child" data-value="3">__disptype_bosanowa.3__</div>
      </div>
     </div>
     <div class="config" data-config="disptype_interbd">
-     <div><span>__表示形式__Display__</span> | </div>
+     <div><span>__disptype__</span> | </div>
      <div>
-      <div class="child" data-value="1">__色__Colors__</div>
-      <div class="child" data-value="2">__形__Shapes__</div>
-      <div class="child" data-value="3">__両方__Both__</div>
+      <div class="child" data-value="1">__disptype_interbd.1__</div>
+      <div class="child" data-value="2">__disptype_interbd.2__</div>
+      <div class="child" data-value="3">__disptype_interbd.3__</div>
      </div>
     </div>
   </div>
@@ -221,94 +228,112 @@ if ('serviceWorker' in navigator) {
     <div class="config" data-config="dispmove">
       <label>
         <input type="checkbox">
-        <span>__動かしたように描画を行う__Display as object moving__</span>
+        <span>__dispmove__</span>
       </label>
     </div>
     <div class="config" data-config="bgcolor">
       <label>
         <input type="checkbox">
-        <span>__セルの中央をクリックした時に背景色の入力を有効にする__Allow inputting background color when cell center is clicked__</span>
+        <span>__bgcolor.tool__</span>
       </label>
     </div>
     <div class="config" data-config="autocmp">
       <label>
         <input type="checkbox">
-        <span data-autocmp-type="number">__正しい数字をグレーにする__Grey each correct number__</span>
-        <span data-autocmp-type="room">__条件を満たした領域に背景色をつける__Paint background of each completed block__</span>
-        <span data-autocmp-type="akari">__光の照らす領域に背景色をつける__Paint background of each illuminated block__</span>
-        <span data-autocmp-type="kouchoku">__線が2本以上になったら点をグレーにする__Grey each letter which links over two segments__</span>
-        <span data-autocmp-type="border">__異なる数字の間にグレーの境界線を引く__Grey border between different areas__</span>
+        <span data-autocmp-type="number">__autocmp.number__</span>
+        <span data-autocmp-type="room">__autocmp.room__</span>
+        <span data-autocmp-type="akari">__autocmp.akari__</span>
+        <span data-autocmp-type="kouchoku">__autocmp.kouchoku__</span>
+        <span data-autocmp-type="border">__autocmp.border__</span>
       </label>
     </div>
     <div class="config" data-config="autoerr">
       <label>
         <input type="checkbox">
-        <span data-disp-pid="hitori">__重複している数字を赤くする__Show overlapped number as red__</span>
-        <span data-disp-pid="gokigen">__ループになっている斜線を赤くする__Draw loop line as red__</span>
-        <span data-disp-pid="wagiri">__ループになっている斜線を太くする__Draw loop line as bold__</span>
+        <span data-disp-pid="hitori">__autoerr.tool.hitori__</span>
+        <span data-disp-pid="gokigen">__autoerr.tool.gokigen__</span>
+        <span data-disp-pid="wagiri">__autoerr.tool.wagiri__</span>
       </label>
     </div>
     <div class="config" data-config="dirauxmark">
       <label>
         <input type="checkbox">
-        <span>__方向を表す補助記号を入力する__Enable to input aux mark of direction__</span>
+        <span>__dirauxmark.tool__</span>
       </label>
     </div>
     <div class="config" data-config="enline">
       <label>
         <input type="checkbox">
-        <span>__点の間のみ線を引けるようにする__Enable to draw line only between the points__</span>
+        <span>__enline.tool__</span>
       </label>
     </div>
     <div class="config" data-config="lattice">
       <label>
         <input type="checkbox">
-        <span>__点を通過する線を引けないようにする__Disable drawing segment passing over a lattice point__</span>
+        <span>__lattice.tool__</span>
       </label>
     </div>
     <div class="config" data-config="uramashu">
       <label>
         <input type="checkbox">
-        <span>__裏ましゅにする__Change to Ura-Mashu__</span>
+        <span>__uramashu__</span>
       </label>
     </div>
     <div class="config" data-config="singlenum">
       <label>
         <input type="checkbox">
-        <span>__領域に一つだけ数字を入力できるようにする__Ensure that a region has a number__</span>
+        <span>__singlenum.tool__</span>
+      </label>
+    </div>
+    <div class="config" data-config="singleregion">
+      <label>
+        <input type="checkbox">
+        <span>__singleregion__</span>
       </label>
     </div>
     <div class="config" data-config="forceallcell">
       <label>
         <input type="checkbox">
-        <span>__全てのマスに数字が入った場合のみ正解とする__Force each cell to have a number__</span>
+        <span>__forceallcell.tool__</span>
       </label>
     </div>
     <div class="config" data-config="snakebd">
       <label>
         <input type="checkbox">
-        <span>__へびの周りに境界線を表示する__Draw border around a snake__</span>
+        <span>__snakebd__</span>
+      </label>
+    </div>
+    <div class="config" data-config="ensquare">
+      <label>
+        <input type="checkbox">
+        <span>__ensquare__</span>
+      </label>
+    </div>
+    <div class="config" data-config="context_marks">
+      <label>
+        <input type="checkbox">
+        <span>__context_marks__</span>
       </label>
     </div>
     <div class="config" data-config="keypopup">
       <label>
         <input type="checkbox">
-        <span>__数字・記号をパネルで入力する__Input numbers by panel__</span>
+        <span>__keypopup.tool__</span>
       </label>
     </div>
     <div class="config" data-config="irowake">
       <label>
         <input type="checkbox">
-        <span>__線の色分けをする__Color each line__</span>
+        <span>__irowake.tool__</span>
       </label>
-      <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the line colors__</button>
+      <button class="btn" data-button-exec="irowake">__irowake.change__</button>
     </div>
     <div class="config" data-config="irowakeblk">
       <label>
         <input type="checkbox">
-        <span>__黒マスの色分けをする__Color each block__</span>
+        <span>__irowakeblk.tool__</span>
       </label>
-      <button class="btn" data-button-exec="irowake">__色分けしなおす__Change the block colors__</button>
+      <button class="btn" data-button-exec="irowake">__irowakeblk.change__</button>
     </div>
   </div>
   <hr class="separator" id="separator1">
@@ -316,25 +341,55 @@ if ('serviceWorker' in navigator) {
     <div class="config" data-config="dontpassallcell">
       <label>
         <input type="checkbox">
-        <span>__線が全ての交差点を通過していない場合も正解とする__Lines need not pass all crossings__</span>
+        <span>__dontpassallcell__</span>
       </label>
     </div>
     <div class="config" data-config="aquarium_regions">
       <label>
         <input type="checkbox">
-        <span>__同一領域内の水面の高さがすべて等しい場合のみ正解とする__Water in one region must have the same surface level__</span>
+        <span>__aquarium_regions__</span>
       </label>
     </div>
     <div class="config" data-config="country_empty">
       <label>
         <input type="checkbox">
-        <span>__線が全く通らない国があっても正解とする__Areas don't have to be visited__</span>
+        <span>__country_empty__</span>
+      </label>
+    </div>
+    <div class="config" data-config="voxas_tatami">
+      <label>
+        <input type="checkbox">
+        <span>__voxas_tatami__</span>
+      </label>
+    </div>
+    <div class="config" data-config="tren_new">
+      <label>
+        <input type="checkbox">
+        <span>__tren_new__</span>
+      </label>
+    </div>
+    <div class="config" data-config="nuriuzu_connect">
+      <label>
+        <input type="checkbox">
+        <span>__nuriuzu_connect__</span>
+      </label>
+    </div>
+    <div class="config" data-config="pentopia_transparent">
+      <label>
+        <input type="checkbox">
+        <span>__pentopia_transparent__</span>
+      </label>
+    </div>
+    <div class="config" data-config="koburin_minesweeper">
+      <label>
+        <input type="checkbox">
+        <span>__koburin_minesweeper__</span>
       </label>
     </div>
     <div class="config" data-config="variant">
       <label>
         <input type="checkbox">
-        <span>__変種ルール__This puzzle uses variant rules__</span>
+        <span>__variant__</span>
       </label>
     </div>
   </div>
@@ -347,21 +402,22 @@ if ('serviceWorker' in navigator) {
 </div>
 
 <div id="btnarea" class="outofboard" style="display:none;"> <!-- Buttons below board下部のボタン -->
-  <button type="button" class="btn btn-ok" id="btncheck" data-button-exec="answercheck">__チェック__Check__</button>
-  <button type="button" class="btn" id="btnundo"    data-press-exec="undo,undostop">__戻__&lt;-__</button
- ><button type="button" class="btn" id="btnredo"    data-press-exec="redo,redostop">__進__-&gt;__</button>
-  <button type="button" class="btn" id="btnclear"   data-button-exec="ansclear">__解答消去__Erase answer__</button
- ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__補助消去__Erase aux. marks__</button>
-  <button type="button" class="btn" id="btnirowake" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change line colors__</button>
-  <button type="button" class="btn" id="btnirowakeblk" data-button-exec="irowake" style="display:none;">__色分けしなおす__Change block colors__</button>
-  <button type="button" class="btn" id="btncolor"   data-button-exec="encolorall">__色をつける__Color up__</button>
-  <button type="button" class="btn" id="btnflush"   data-button-exec="flushexcell">__(please translate) Flush clues__Flush clues__</button>
-  <button type="button" class="btn" data-disp-pid="stostone" data-press-exec="dropblocks,resetblocks">__ブロックを落とす__Drop blocks__</button>
-  <button type="button" class="btn" id="btntrial"   data-button-exec="enterTrial">__仮置きモード__Trial mode__</button>
+  <button type="button" class="btn btn-ok" id="btncheck" data-button-exec="answercheck">__check__</button>
+  <button type="button" class="btn" id="btnundo"    data-press-exec="undo,undostop">__undo__</button
+ ><button type="button" class="btn" id="btnredo"    data-press-exec="redo,redostop">__redo__</button>
+  <button type="button" class="btn" id="btnclear"   data-button-exec="ansclear">__ansclear__</button
+ ><button type="button" class="btn" id="btnclear2"  data-button-exec="subclear">__subclear__</button>
+  <button type="button" class="btn" id="btnirowake" data-button-exec="irowake" style="display:none;">__irowake.change__</button>
+  <button type="button" class="btn" id="btnirowakeblk" data-button-exec="irowake" style="display:none;">__irowakeblk.change__</button>
+  <button type="button" class="btn" id="btncolor"   data-button-exec="encolorall">__encolorall__</button>
+  <button type="button" class="btn" id="btnflush"   data-button-exec="flushexcell">__flushexcell__</button>
+  <button type="button" class="btn" id="btnpresets" data-button-exec="applypreset">__applypreset__</button>
+  <button type="button" class="btn" data-disp-pid="stostone" data-press-exec="dropblocks,resetblocks">__dropblocks__</button>
+  <button type="button" class="btn" id="btntrial"   data-button-exec="enterTrial">__enterTrial__</button>
   <div id="btntrialarea" style="display:none;">
-    <button type="button" class="btn btn-ok" id="btntriala"  data-button-exec="acceptTrial">__仮置き確定__Accept trial__</button
-   ><button type="button" class="btn btn-danger" id="btntrialr"  data-button-exec="rejectTrial">__仮置き破棄__Reject trial__</button
-   ><button type="button" class="btn" id="btntriale"  data-button-exec="enterFurtherTrial">__多重仮置き__Enter further trial__</button>
+    <button type="button" class="btn btn-ok" id="btntriala"  data-button-exec="acceptTrial">__acceptTrial__</button
+   ><button type="button" class="btn btn-danger" id="btntrialr"  data-button-exec="rejectTrial">__rejectTrial__</button
+   ><button type="button" class="btn" id="btntriale"  data-button-exec="enterFurtherTrial">__enterFurtherTrial__</button>
   </div>
 </div>
 
@@ -401,18 +457,18 @@ if ('serviceWorker' in navigator) {
 <div id="popup_parent" class="outofboard">
 
   <div class="popup">
-    <div class="titlebar">__盤面の新規作成__New Board__</div>
+    <div class="titlebar">__newboard.title__</div>
     <form name="newboard">
-      <span>__盤面を新規作成します。__Create New Board.__</span>
+      <span>__newboard.header__</span>
       <br>
       <div id="nb_size" data-disp-pid="!sudoku">
-        <span id="nb_cols" data-disp-pid="!tawa">__よこ__Cols__</span>
+        <span id="nb_cols" data-disp-pid="!tawa">__newboard.cols__</span>
         <input type="number" name="col" value="1" size=4 maxlength=3 min=1 max=999>
-        <span id="nb_cols_tawa" data-disp-pid="tawa">__横幅 (黄色の数)__Width (Yellows)__</span>
+        <span id="nb_cols_tawa" data-disp-pid="tawa">__newboard.tawa.width__</span>
         <br>
-        <span id="nb_rows" data-disp-pid="!tawa">__たて__Rows__</span>
+        <span id="nb_rows" data-disp-pid="!tawa">__newboard.rows__</span>
         <input type="number" name="row" value="1" size=4 maxlength=3 min=1 max=999>
-        <span id="nb_rows_tawa" data-disp-pid="tawa">__高さ__Height__</span>
+        <span id="nb_rows_tawa" data-disp-pid="tawa">__newboard.tawa.height__</span>
       </div>
       <div id="nb_size_sudoku" data-disp-pid="sudoku">
         <input type="radio" name="size" id="nb_size_sudoku_0" value="0"> 4x4<br>
@@ -421,6 +477,10 @@ if ('serviceWorker' in navigator) {
         <input type="radio" name="size" id="nb_size_sudoku_2" value="2"> 16x16<br>
         <input type="radio" name="size" id="nb_size_sudoku_3" value="3"> 25x25
       </div>
+      <div id="nb_piecebank">
+        <span>__newboard.preset__</span>
+        <select id="nb_piecebank_preset" name="preset"></select>
+      </div>
       <br>
       <table id="nb_shape_tawa" data-disp-pid="tawa" border=0 cell-padding=0 cell-spaceing=2><tr>
         <td><div id="nb_shape_0"><img src="" data-button-exec="clickshape"></div></td>
@@ -428,49 +488,49 @@ if ('serviceWorker' in navigator) {
         <td><div id="nb_shape_2"><img src="" data-button-exec="clickshape"></div></td>
         <td><div id="nb_shape_3"><img src="" data-button-exec="clickshape"></div></td>
       </tr></table>
-      <button type="button" class="btn btn-ok" data-button-exec="execute">__新規作成__Create__</button>
-      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
+      <button type="button" class="btn btn-ok" data-button-exec="execute">__newboard.submit__</button>
+      <button type="button" class="btn" data-button-exec="close">__cancel__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__URL入力__Load from URL__</div>
+    <div class="titlebar">__urlinput.title__</div>
     <form name="urlinput">
       <textarea name="ta" cols=48 rows=8 wrap="hard"></textarea>
       <br>
-      <button type="button" class="btn btn-ok" data-button-exec="urlinput">__読み込む__Load__</button>
-      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
+      <button type="button" class="btn btn-ok" data-button-exec="urlinput">__urlinput.submit__</button>
+      <button type="button" class="btn" data-button-exec="close">__cancel__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__URL出力__Export URL__</div>
+    <div class="titlebar">__urloutput.title__</div>
     <form name="urloutput">
       <a id="urlanchor" class="urlanchor" target="_blank"></a>
       <br>
-      <button type="button" class="btn" data-button-exec="urloutput" name="kanpen" >__カンペンのURLを出力する__Change to Kanpen URL__</button><br>
-      <button type="button" class="btn" data-button-exec="urloutput" name="heyaapp">__へやわけアプレットのURLを出力する__Change to Heyawake-Applet URL__</button><br>
-      <button type="button" class="btn" data-button-exec="urloutput" name="pzprv3e">__ぱずぷれv3の再編集用URLを出力する__Change to PUZ-PRE v3 Re-Edit URL__</button><br>
+      <button type="button" class="btn" data-button-exec="urloutput" name="kanpen" >__urloutput.kanpen__</button><br>
+      <button type="button" class="btn" data-button-exec="urloutput" name="heyaapp">__urloutput.heyaapp__</button><br>
+      <button type="button" class="btn" data-button-exec="urloutput" name="pzprv3e">__urloutput.pzprv3e__</button><br>
       <br>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__ファイルを開く__Open File__</div>
+    <div class="titlebar">__fileopen.title__</div>
     <form name="fileform" target="fileiopanel">
       <input type="hidden" name="operation" value="open">
       <input type="hidden" name="pencilbox" value="0">
-      <span>__ファイル選択__Choose file__</span>
+      <span>__fileopen.choose__</span>
       <br>
       <input type="file" name="filebox" data-change-exec="fileopen" class="btn btn-info" id="filebox" value="">
       <br>
-      <button type="button" class="btn" data-button-exec="close">__キャンセル__Cancel__</button>
+      <button type="button" class="btn" data-button-exec="close">__cancel__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__ファイルを保存する__Save File__</div>
+    <div class="titlebar">__filesave.title__</div>
     <form name="filesave" target="fileiopanel">
       <input type="hidden" name="operation" value="save">
       <input type="hidden" name="ques" value="">
@@ -479,112 +539,117 @@ if ('serviceWorker' in navigator) {
       <br>
       <textarea name="ta2" cols=48 rows=2 wrap="hard"></textarea>
       <br>
-      <span>__ファイル形式__File format__</span>
+      <span>__filesave.format__</span>
       <select name="filetype" data-change-exec="changefilename">
-        <option value="filesave">__ぱずぷれv3形式__Puz-Pre v3 format__</option>
-        <option value="filesave2">__pencilbox形式__Pencilbox Text format__</option>
-        <option value="filesave4">__pencilbox XML形式__Pencilbox XML format__</option>
+        <option value="filesave">__filesave.format.pzprv3__</option>
+        <option value="filesave2">__filesave.format.penciltxt__</option>
+        <option value="filesave4">__filesave.format.pencilxml__</option>
       </select>
       <br>
-      <span>__ファイル名__Filename__</span>
+      <span>__filesave.filename__</span>
       <input type="text" name="filename" value="">
       <br>
       <br>
-      <button type="button" class="btn btn-ok" data-button-exec="filesave">__保存__Save__</button>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <button type="button" class="btn btn-ok" data-button-exec="filesave">__filesave.submit__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__画像を保存する__Save Image__</div>
+    <div class="titlebar">__imagesave.title__</div>
     <form name="imagesave" target="fileiopanel">
       <input type="hidden" name="operation" value="imagesave">
       <input type="hidden" name="urlstr" value="">
-      <span>__ファイル形式__File format__</span>
+      <span>__imagesave.filetype__</span>
       <select name="filetype" data-change-exec="changefilename">
-        <option value="png">__PNG形式__PNG Format__</option>
-        <option value="svg">__ベクター画像(SVG)__Vector Image (SVG)__</option>
-        <option value="gif">__GIF形式__GIF Format__</option>
-        <option value="jpeg">__jpeg形式__jpeg Format__</option>
-        <option value="webp">__webp形式__webp Format__</option>
+        <option value="png">__imagesave.png__</option>
+        <option value="svg">__imagesave.svg__</option>
+        <option value="gif">__imagesave.gif__</option>
+        <option value="jpeg">__imagesave.jpeg__</option>
+        <option value="webp">__imagesave.webp__</option>
       </select>
       <br>
-      <span>__ファイル名__Filename__</span>
+      <span>__imagesave.filename__</span>
       <input type="text" name="filename" value="">
       <br>
-      <span>__画像のサイズ__Image Size__</span>
+      <span>__imagesave.cellsize__</span>
       <input type="number" name="cellsize" value="36" size=4 maxlength=3 min=8 max=999 data-change-exec="estimatesize">
       <span id="showsize">x</span>
       <br>
       <label>
-        <span>__背景色を透明にする__Set background to transparent__</span>
+        <span>__imagesave.transparent__</span>
         <input type="checkbox" name="transparent">
       </label>
       <br>
+      <label id="bank_label">
+        <span>__imagesave.bank__</span>
+        <input type="checkbox" name="bank">
+      </label>
       <br>
-      <button type="button" class="btn btn-ok"   data-button-exec="saveimage">__ダウンロード__Download__</button>
-      <button type="button" class="btn btn-info" data-button-exec="openimage">__別ウィンドウで開く__Open in another window__</button>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <br>
+      <button type="button" class="btn btn-ok"   data-button-exec="saveimage">__imagesave.saveimage__</button>
+      <button type="button" class="btn btn-info" data-button-exec="openimage">__imagesave.openimage__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__盤面の調整__Board Dimension Resizer__</div>
+    <div class="titlebar">__adjust.title__</div>
     <form name="adjust">
-      <span>__盤面の調整を行います。__Adjust the board.__</span>
+      <span>__adjust.header__</span>
       <br>
-      <span>__拡大__Expand__</span>
-      <button type="button" class="btn" data-button-exec="adjust" name="expandup">__上__Top__</button>
-      <button type="button" class="btn" data-button-exec="adjust" name="expanddn">__下__Bottom__</button>
+      <span>__adjust.expand__</span>
+      <button type="button" class="btn" data-button-exec="adjust" name="expandup">__adjust.up__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="expanddn">__adjust.dn__</button>
       <span> </span>
-      <button type="button" class="btn" data-button-exec="adjust" name="expandlt">__左__Left__</button>
-      <button type="button" class="btn" data-button-exec="adjust" name="expandrt">__右__Right__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="expandlt">__adjust.lt__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="expandrt">__adjust.rt__</button>
       <br>
-      <span>__縮小__Reduce__</span>
-      <button type="button" class="btn" data-button-exec="adjust" name="reduceup">__上__Top__</button>
-      <button type="button" class="btn" data-button-exec="adjust" name="reducedn">__下__Bottom__</button>
+      <span>__adjust.reduce__</span>
+      <button type="button" class="btn" data-button-exec="adjust" name="reduceup">__adjust.up__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="reducedn">__adjust.dn__</button>
       <span> </span>
-      <button type="button" class="btn" data-button-exec="adjust" name="reducelt">__左__Left__</button>
-      <button type="button" class="btn" data-button-exec="adjust" name="reducert">__右__Right__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="reducelt">__adjust.lt__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="reducert">__adjust.rt__</button>
       <br>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__反転・回転__Flip/Turn the board__</div>
+    <div class="titlebar">__turnflip.title__</div>
     <form name="turnflip">
-      <span>__盤面の回転・反転を行います。__Flip/Turn the board.__</span>
+      <span>__turnflip.header__</span>
       <br>
-      <button type="button" class="btn" data-button-exec="adjust" name="turnl">__左90°回転__Turn left by 90 degree__</button>
-      <button type="button" class="btn" data-button-exec="adjust" name="turnr">__右90°回転__Turn right by 90 degree__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="turnl">__turnflip.turnl__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="turnr">__turnflip.turnr__</button>
       <br>
-      <button type="button" class="btn" data-button-exec="adjust" name="flipy">__上下反転__Flip upside down__</button>
-      <button type="button" class="btn" data-button-exec="adjust" name="flipx">__左右反転__Flip leftside right__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="flipy">__turnflip.flipy__</button>
+      <button type="button" class="btn" data-button-exec="adjust" name="flipx">__turnflip.flipx__</button>
       <br>
       <br>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup">
-    <div class="titlebar">__表示サイズの変更__Change size__</div>
+    <div class="titlebar">__dispsize.title__</div>
     <form name="dispsize">
-      <span>__表示サイズを変更します。__Change the display size.__</span>
+      <span>__dispsize.header__</span>
       <br>
-      <span>__表示サイズ__Display size__</span>
+      <span>__dispsize.cellsize__</span>
       <input type="number" name="cellsize" value="" size=4 maxlength=3 min=8 max=999>
       <br>
-      <button type="button" class="btn btn-ok" data-button-exec="changesize">__変更する__Change__</button>
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <button type="button" class="btn btn-ok" data-button-exec="changesize">__dispsize.submit__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
   <div class="popup" id="about">
-    <div class="titlebar">__puzz.linkについて__About__</div>
+    <div class="titlebar">__about.title__</div>
     <form name="about">
       <p><a href="https://github.com/robx/pzprjs">github.com/robx/pzprjs</a> version <%= git.hash %></p>
-      <p>based on <span>__ぱずぷれv3__PUZ-PRE v3__</span> by <span>__は はっぱ/連続発破__happa__</span></p>
+      <p>based on <span>__about.pzv__</span> by <span>__about.author__</span></p>
       <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
     </form>
   </div>
@@ -594,15 +659,34 @@ if ('serviceWorker' in navigator) {
     <form name="auxeditor">
       <div id="auxeditorpanel">
         <div class="config" data-config="auxeditor_inputmode">
-          <div><span>__入力モード__Input Mode__</span> | </div>
+          <div><span>__inputmode__</span> | </div>
           <div>
-            <div class="child" data-value="auto">__自動__Auto__</div>
-            <div class="child" data-value="slide">__平行移動__Slide__</div>
+            <div class="child" data-value="auto">__inputmode.auto__</div>
+            <div class="child" data-value="slide">__inputmode.slide__</div>
           </div>
+        </div>
+        <div class="adjust">
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="turnl">__turnflip.turnl.short__</button>
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="turnr">__turnflip.turnr.short__</button>
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="flipy">__turnflip.flipy.short__</button>
+          <button type="button" class="btn" data-button-exec="adjust_aux" name="flipx">__turnflip.flipx.short__</button>
         </div>
       </div>
       <div id="divauxeditor"></div>  <!-- Canvas for editor -->
-      <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+      <div class="auxeditorclose">
+        <button type="button" class="btn" data-button-exec="close">__close__</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-danger" data-button-exec="delete">__delete__</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="popup" id="popapplypreset">
+    <div class="titlebar">__applypreset.title__</div>
+    <form name="applypreset">
+      <div id="ap_preset"></div>
+      <button type="button" class="btn btn-ok" data-button-exec="apply">__applypreset.submit__</button>
+      <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 
@@ -613,14 +697,14 @@ if ('serviceWorker' in navigator) {
   </div>
 
   <div class="popup">
-    <div class="titlebar">__ネットワークプレイ__Network play__</div>
+    <div class="titlebar">__network.title__</div>
     <form name="network">
     <button type="button" class="btn" data-button-exec="coop">Start</button>
     <br>
     Share this link to play with someone: <br>
     <a id="urlanchor_network" class="urlanchor" target="_blank"></a>
     <br>
-    <button type="button" class="btn" data-button-exec="close">__閉じる__Close__</button>
+    <button type="button" class="btn" data-button-exec="close">__close__</button>
     </form>
   </div>
 </div>

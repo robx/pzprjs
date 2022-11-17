@@ -146,52 +146,13 @@
 
 		// 同じ値であれば、同じ部屋に存在することを判定する
 		checkGatheredObject: function() {
-			var d = [],
-				dmax = 0,
-				val = [],
-				bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				val[c] = bd.cell[c].getNum();
-				if (dmax < val[c]) {
-					dmax = val[c];
-				}
-			}
-			for (var i = 0; i <= dmax; i++) {
-				d[i] = null;
-			}
-			for (var c = 0; c < bd.cell.length; c++) {
-				if (val[c] === -1) {
-					continue;
-				}
-				var room = bd.cell[c].room;
-				if (d[val[c]] === null) {
-					d[val[c]] = room;
-				} else if (d[val[c]] !== room) {
-					this.failcode.add("bkSepNum");
-					bd.cell
-						.filter(function(cell) {
-							return room === cell.room || d[val[c]] === cell.room;
-						})
-						.seterr(1);
-					break;
-				}
-			}
+			this.checkGatheredObjectInGraph(
+				this.board.roommgr,
+				function(cell) {
+					return cell.getNum();
+				},
+				"bkSepNum"
+			);
 		}
-	},
-
-	FailCode: {
-		bdBranchExBP: [
-			"黒点以外のところで線が分岐しています。",
-			"Lines are branched out of the point."
-		],
-		bdCrossExBP: [
-			"黒点以外のところで線が交差しています。",
-			"Lines are crossed out of the point."
-		],
-		bdCountLt3BP: [
-			"黒点から線が３本以上出ていません。",
-			"A point has two or less lines."
-		],
-		bdIgnoreBP: ["黒点上を線が通過していません。", "A point has no line."]
 	}
 });

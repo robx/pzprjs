@@ -51,12 +51,12 @@ ui.notify = {
 	// ui.confirm() 現在の言語に応じた選択ダイアログを表示し、結果を返す
 	// ui.setVerticalPosition() 指定したエレメントの盾位置を画面中央に設定して表示する
 	//--------------------------------------------------------------------------------
-	alert: function(strJP, strEN) {
-		getEL("notification").innerHTML = ui.selectStr(strJP, strEN);
+	alert: function(str) {
+		getEL("notification").innerHTML = str;
 		this.setVerticalPosition(getEL("assertbox"));
 	},
-	confirm: function(strJP, strEN, func) {
-		getEL("confirmcaption").innerHTML = ui.selectStr(strJP, strEN);
+	confirm: function(str, func) {
+		getEL("confirmcaption").innerHTML = str;
 		this.setVerticalPosition(getEL("confirmbox"));
 		this.onconfirm = func;
 	},

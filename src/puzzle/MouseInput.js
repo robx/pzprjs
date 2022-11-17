@@ -149,7 +149,8 @@ pzpr.classmgr.makeCommon({
 			kc.checkmodifiers(e);
 			if (
 				(kc.isSHIFT || kc.isMETA) !== this.inversion ||
-				this.inputMode === "number-"
+				(this.inputMode &&
+					this.inputMode.indexOf("-") === this.inputMode.length - 1)
 			) {
 				if (this.btn === "left") {
 					this.btn = "right";
@@ -264,6 +265,8 @@ pzpr.classmgr.makeCommon({
 					mode = "info-line";
 				} else if (this.inputModes.play.indexOf("info-blk") >= 0) {
 					mode = "info-blk";
+				} else if (this.inputModes.play.indexOf("info-ublk") >= 0) {
+					mode = "info-ublk";
 				}
 			}
 			switch (mode) {
@@ -357,6 +360,11 @@ pzpr.classmgr.makeCommon({
 						this.dispInfoBlk();
 					}
 					break;
+				case "info-ublk":
+					if (this.mousestart) {
+						this.dispInfoUblk();
+					}
+					break;
 				default:
 					this.mouseinput_other();
 					break; /* 各パズルのルーチンへ */
@@ -437,6 +445,36 @@ pzpr.classmgr.makeCommon({
 		getcross: function() {
 			return this.getpos(0.5).getx();
 		},
+		getbank: function() {
+			var bank = this.board.bank;
+			var r = this.puzzle.painter.bankratio;
+			var bx = this.inputPoint.bx / (r * 2);
+			var by = (this.inputPoint.by - (this.board.maxby + 1)) / (r * 2);
+
+			if (bx < 0 || by < 0) {
+				return null;
+			}
+
+			var len = bank.pieces.length;
+			var allowAdd =
+				this.puzzle.editmode &&
+				(typeof this.allowAdd === "function"
+					? bank.allowAdd()
+					: !!bank.allowAdd);
+			for (var p = 0; p < len + (allowAdd ? 1 : 0); p++) {
+				var piece = p < len ? bank.pieces[p] : bank.addButton;
+				if (
+					piece.index !== null &&
+					bx >= piece.x - 0.25 &&
+					by >= piece.y - 0.25 &&
+					bx < piece.x + piece.w + 0.75 &&
+					by < piece.y + piece.h + 0.75
+				) {
+					return piece;
+				}
+			}
+			return null;
+		},
 
 		getpos: function(spc) {
 			var addr = this.inputPoint,
@@ -456,8 +494,23 @@ pzpr.classmgr.makeCommon({
 			return new this.klass.Address(bx, by);
 		},
 
+		getcrossorcell: function(spc) {
+			var adj = this.inputPoint.clone();
+			adj.bx += 1;
+			var addr = this.getDiagonalAddress(adj, spc, false);
+			if (addr) {
+				addr.bx -= 1;
+				return addr;
+			}
+			return this.getpos(0.25);
+		},
+
 		getborder: function(spc) {
-			var addr = this.inputPoint;
+			var addr = this.getDiagonalAddress(this.inputPoint, spc, true);
+			return addr ? addr.getb() : this.board.emptyborder;
+		},
+
+		getDiagonalAddress: function(addr, spc, isBorder) {
 			var bx = (addr.bx & ~1) + 1,
 				by = (addr.by & ~1) + 1;
 			var dx = addr.bx + 1 - bx,
@@ -465,18 +518,18 @@ pzpr.classmgr.makeCommon({
 
 			// 真ん中のあたりはどこにも該当しないようにする
 			var bd = this.board;
-			if (bd.linegraph.isLineCross) {
+			if (isBorder && bd.linegraph.isLineCross) {
 				if (!bd.borderAsLine) {
 					var m1 = 2 * spc,
 						m2 = 2 * (1 - spc);
 					if ((dx < m1 || m2 < dx) && (dy < m1 || m2 < dy)) {
-						return bd.emptyborder;
+						return null;
 					}
 				} else {
 					var m1 = 2 * (0.5 - spc),
 						m2 = 2 * (0.5 + spc);
 					if (m1 < dx && dx < m2 && m1 < dy && dy < m2) {
-						return bd.emptyborder;
+						return null;
 					}
 				}
 			}
@@ -484,18 +537,18 @@ pzpr.classmgr.makeCommon({
 			if (dx < 2 - dy) {
 				//左上
 				if (dx > dy) {
-					return bd.getb(bx, by - 1);
+					return new this.klass.Address(bx, by - 1);
 				} //左上＆右上 -> 上
 				else {
-					return bd.getb(bx - 1, by);
+					return new this.klass.Address(bx - 1, by);
 				} //左上＆左下 -> 左
 			} else {
 				//右下
 				if (dx > dy) {
-					return bd.getb(bx + 1, by);
+					return new this.klass.Address(bx + 1, by);
 				} //右下＆右上 -> 右
 				else {
-					return bd.getb(bx, by + 1);
+					return new this.klass.Address(bx, by + 1);
 				} //右下＆左下 -> 下
 			}
 			// unreachable

@@ -333,21 +333,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		bkMSGe2: [
-			"1つの領域に複数のくろまるがあります。",
-			"An area has two or more shaded circles."
-		],
-		bkNoMS: ["くろまるのない領域があります。", "An area has no shaded circle."],
-		msConsecGt3: [
-			"くろまるが3つ以上連続しています。",
-			"There are three or more shaded circles in a row."
-		],
-		muConsecGt3: [
-			"しろまるが3つ以上連続しています。",
-			"There are three or more unshaded circles in a row."
-		]
 	}
 });

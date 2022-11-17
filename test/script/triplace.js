@@ -1,7 +1,7 @@
 /* triplace.js */
 
 ui.debug.addDebugData("triplace", {
-	url: "5/5/%2m_m%1m_.0.1....11",
+	url: "5/5/@2m_m@1m_.0.1....11",
 	failcheck: [
 		[
 			"bkSizeLt3",

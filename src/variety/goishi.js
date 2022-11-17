@@ -454,16 +454,5 @@
 				return cell.isStone() && cell.anum === -1;
 			}, "goishiRemains");
 		}
-	},
-
-	FailCode: {
-		brNoStone: [
-			"盤面に碁石がありません。",
-			"There are no goishis on the board."
-		],
-		goishiRemains: [
-			"拾われていない碁石があります。",
-			"There is remaining Goishi."
-		]
 	}
 });

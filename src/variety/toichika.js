@@ -652,49 +652,8 @@
 		}
 	},
 
-	"FailCode@toichika": {
-		bkNoNum: ["国に矢印が入っていません。", "A country has no arrow."],
-		bkNumGe2: [
-			"1つの国に2つ以上の矢印が入っています。",
-			"A country has more than one arrow."
-		],
-		arAdjPair: [
-			"辺を共有する国にペアとなる矢印が入っています。",
-			"There are paired arrows in adjacent countries."
-		],
-		arAlone: [
-			"矢印の先にペアとなる矢印がいません。",
-			"There is no paired arrow in the direction of an arrow."
-		]
-	},
 	"FailCode@toichika2": {
-		arAdjPair: [
-			"(please translate) There are paired numbers in adjacent countries.",
-			"There are paired numbers in adjacent countries."
-		],
-		arAlone: [
-			"(please translate) A number can not see an identical number.",
-			"A number can not see an identical number."
-		],
-		nmDupRowCol: [
-			"(please translate) A number has an identical number in both the same row and column.",
-			"A number has an identical number in both the same row and column."
-		],
-		nmTripRow: [
-			"(please translate) A number appears more than twice in the same row or column.",
-			"A number appears more than twice in the same row or column."
-		],
-		bkClue: [
-			"(please translate) A number does not match the clue for the country.",
-			"A number does not match the clue for the country."
-		],
-		arDistance: [
-			"(please translate) A pair of numbers does not have the correct distance.",
-			"A pair of numbers does not have the correct distance."
-		],
-		arBlocked: [
-			"(please translate) Other numbers are between a pair of numbers.",
-			"Other numbers are between a pair of numbers."
-		]
+		bkNumGe2: "bkNumGe2",
+		bkNoNum: "bkNoNum"
 	}
 });

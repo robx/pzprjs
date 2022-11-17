@@ -158,16 +158,5 @@
 				cross.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		crShadeGt: [
-			"数字のまわりにある黒マスの数が間違っています。",
-			"The number of shaded cells around a number on crossing is big."
-		],
-		crShadeLt: [
-			"数字のまわりにある黒マスの数が間違っています。",
-			"The number of shaded cells around a number on crossing is small."
-		]
 	}
 });

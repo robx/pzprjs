@@ -19,7 +19,7 @@ pzpr.classmgr.makeCommon({
 		// pos.equals() 同じ位置にあるかどうか判定する
 		//---------------------------------------------------------------------------
 		equals: function(pos) {
-			return this.bx === pos.bx && this.by === pos.by;
+			return pos && this.bx === pos.bx && this.by === pos.by;
 		},
 
 		//---------------------------------------------------------------------------

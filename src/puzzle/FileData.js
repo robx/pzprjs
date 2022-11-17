@@ -271,6 +271,7 @@
 				if (
 					bd.hasborder === 1 ||
 					puzzle.pid === "bosanowa" ||
+					puzzle.pid === "lapaz" ||
 					(puzzle.pid === "fourcells" && this.filever === 0)
 				) {
 					this.decodeObj(
@@ -352,7 +353,11 @@
 			encodeBorder: function(func) {
 				var puzzle = this.puzzle,
 					bd = puzzle.board;
-				if (bd.hasborder === 1 || puzzle.pid === "bosanowa") {
+				if (
+					bd.hasborder === 1 ||
+					puzzle.pid === "bosanowa" ||
+					puzzle.pid === "lapaz"
+				) {
 					this.encodeObj(
 						func,
 						"border",
@@ -406,6 +411,34 @@
 					}
 				}
 				this.writeLine(flags.join(","));
+			},
+
+			//---------------------------------------------------------------------------
+			// fio.decodeConfigFlag() Set a config bool based on the presence of a string
+			// fio.encodeConfigFlag() Conditionally write a string
+			//---------------------------------------------------------------------------
+
+			decodeConfigFlag: function(flag, configkey, truevalue, falsevalue) {
+				if (truevalue === undefined) {
+					truevalue = true;
+				}
+				if (falsevalue === undefined) {
+					falsevalue = !truevalue;
+				}
+				if (this.dataarray[this.lineseek] === flag) {
+					this.puzzle.setConfig(configkey, truevalue);
+					this.readLine();
+				} else {
+					this.puzzle.setConfig(configkey, falsevalue);
+				}
+			},
+			encodeConfigFlag: function(flag, configkey, truevalue) {
+				if (truevalue === undefined) {
+					truevalue = true;
+				}
+				if (this.puzzle.getConfig(configkey) === truevalue) {
+					this.writeLine(flag);
+				}
 			},
 
 			//---------------------------------------------------------------------------

@@ -26,7 +26,7 @@ in
     '';
 
     buildPhase = ''
-      make build
+      npm run-script build
     '';
 
     installPhase = ''

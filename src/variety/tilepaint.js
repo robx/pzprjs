@@ -438,12 +438,5 @@
 			}
 			return result;
 		}
-	},
-
-	FailCode: {
-		asShadeNe: [
-			"数字の下か右にある黒マスの数が間違っています。",
-			"The number of shaded cells underward or rightward is not correct."
-		]
 	}
 });

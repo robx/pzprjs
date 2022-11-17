@@ -548,42 +548,9 @@
 			],
 
 			checkAroundStars: function() {
-				var bd = this.board;
-				for (var c = 0; c < bd.cell.length; c++) {
-					var cell = bd.cell[c];
-					if (cell.qans !== 1) {
-						continue;
-					}
-					var target = null,
-						clist = new this.klass.CellList();
-					// 右・左下・下・右下だけチェック
-					clist.add(cell);
-					target = cell.relcell(2, 0);
-					if (target.qans === 1) {
-						clist.add(target);
-					}
-					target = cell.relcell(0, 2);
-					if (target.qans === 1) {
-						clist.add(target);
-					}
-					target = cell.relcell(-2, 2);
-					if (target.qans === 1) {
-						clist.add(target);
-					}
-					target = cell.relcell(2, 2);
-					if (target.qans === 1) {
-						clist.add(target);
-					}
-					if (clist.length <= 1) {
-						continue;
-					}
-
-					this.failcode.add("starAround");
-					if (this.checkOnly) {
-						break;
-					}
-					clist.seterr(1);
-				}
+				this.checkAroundCell(function(cell1, cell2) {
+					return cell1.qans === 1 && cell2.qans === 1;
+				}, "starAround");
 			},
 			checkInsufficientStars: function() {
 				var bd = this.board;
@@ -624,22 +591,6 @@
 				}
 				return result;
 			}
-		},
-
-		FailCode: {
-			starAround: ["星がタテヨコナナメに隣接しています。", "Some stars touch."],
-			bkStarGt: [
-				"ブロックに入る星の数が多すぎます。",
-				"The number of stars in an area is too large."
-			],
-			bkStarLt: [
-				"ブロックに入る星の数が少ないです。",
-				"The number of stars in an area is too small."
-			],
-			lnStarNe: [
-				"1つの行に入る星の数が間違っています。",
-				"The number of stars in a line is wrong."
-			]
 		}
 	});
 })();

@@ -704,50 +704,5 @@
 				"bkSize1"
 			);
 		}
-	},
-
-	FailCode: {
-		bkNoNum: ["○のない部屋があります。", "A room has no circle."],
-		bkObjNotSym: [
-			"部屋の中の○が点対称に配置されていません。",
-			"Position of circles in the room is not point symmetric."
-		],
-		brObjNotSym: [
-			"○が点対称に配置されていません。",
-			"Position of circles is not point symmetric."
-		],
-		laOnNum: ["○の上を線が通過しています。", "A line goes through a circle."],
-		laIsolate: [
-			"○につながっていない線があります。",
-			"A line doesn't connect any circle."
-		],
-		nmConnected: ["○が繋がっています。", "There are connected circles."],
-		nmNoMove: ["○から線が出ていません。", "A circle doesn't start any line."]
-	},
-	"FailCode@rectslider": {
-		csNotRect: [
-			"黒マスのカタマリが正方形か長方形ではありません。",
-			"A mass of shaded cells is not rectangle."
-		],
-		bkSize1: [
-			"黒マスが一つで孤立しています。",
-			"There is a isolated shaded cells."
-		],
-		laOnNum: [
-			"黒マスの上を線が通過しています。",
-			"A line goes through a shaded cell."
-		],
-		laIsolate: [
-			"黒マスにつながっていない線があります。",
-			"A line doesn't connect any shaded cell."
-		],
-		nmConnected: [
-			"黒マスが繋がっています。",
-			"There are connected shaded cells."
-		],
-		nmNoMove: [
-			"黒マスから線が出ていません。",
-			"A shaded cell doesn't start any line."
-		]
 	}
 });

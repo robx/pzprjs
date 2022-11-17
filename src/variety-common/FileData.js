@@ -89,7 +89,10 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		decodeCellDirecQnum: function() {
 			this.decodeCell(function(cell, ca) {
-				if (ca !== ".") {
+				if (ca === "#") {
+					cell.qdir = 0;
+					cell.qnum = -3;
+				} else if (ca !== ".") {
 					var inp = ca.split(",");
 					cell.qdir = inp[0] !== "0" ? +inp[0] : 0;
 					cell.qnum = inp[1] !== "-" ? +inp[1] : -2;
@@ -98,7 +101,9 @@ pzpr.classmgr.makeCommon({
 		},
 		encodeCellDirecQnum: function() {
 			this.encodeCell(function(cell) {
-				if (cell.qnum !== -1) {
+				if (cell.qnum === -3) {
+					return "# ";
+				} else if (cell.qnum !== -1) {
 					var ca1 = cell.qdir !== 0 ? "" + cell.qdir : "0";
 					var ca2 = cell.qnum !== -2 ? "" + cell.qnum : "-";
 					return [ca1, ",", ca2, " "].join("");
@@ -484,19 +489,17 @@ pzpr.classmgr.makeCommon({
 				s = 0,
 				data = "";
 			for (var i = 0, rows = 2 * bd.rows - 1; i < rows; i++) {
-				var line = this.readLine();
-				if (line) {
-					data += line.match(/[12X\.]+/)[0];
-				}
+				data += this.readLine();
 			}
 			bd.disableInfo();
 			for (var s = 0; s < data.length; ++s) {
 				var dot = bd.dots[s],
-					ca = data.charAt(s);
-				if (ca === "1") {
-					dot.setDot(1);
-				} else if (ca === "2") {
-					dot.setDot(2);
+					ca = data.charAt(s),
+					num = +ca;
+				if (num >= 1 && num <= 9) {
+					dot.setDot(num);
+				} else if (ca === "-") {
+					dot.setDot(-2);
 				} else if (ca === "X") {
 					dot.piece.ques = 7;
 				}
@@ -510,12 +513,12 @@ pzpr.classmgr.makeCommon({
 				var data = "";
 				for (var bx = 1; bx <= 2 * bd.cols - 1; bx++) {
 					var dot = bd.dots[s];
-					if (dot.getDot() === 1) {
-						data += "1";
-					} else if (dot.getDot() === 2) {
-						data += "2";
+					if (dot.getDot() >= 1 && dot.getDot() <= 9) {
+						data += dot.getDot();
 					} else if (dot.piece.ques === 7) {
 						data += "X";
+					} else if (dot.getDot() === -2) {
+						data += "-";
 					} else {
 						data += ".";
 					}
@@ -523,6 +526,96 @@ pzpr.classmgr.makeCommon({
 				}
 				this.writeLine(data);
 			}
+		},
+
+		//---------------------------------------------------------------------------
+		// fio.decodeQnums() Decode cells with qnums list
+		// fio.encodeQnums() Encode cells with qnums list
+		//---------------------------------------------------------------------------
+		decodeQnums: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca !== ".") {
+					cell.qnums = [];
+					var array = ca.split(/,/);
+					for (var i = 0; i < array.length; i++) {
+						cell.qnums.push(array[i] !== "-" ? +array[i] : -2);
+					}
+				}
+			});
+		},
+		encodeQnums: function() {
+			this.encodeCell(function(cell) {
+				if (cell.qnums.length > 0) {
+					var array = [];
+					for (var i = 0; i < cell.qnums.length; i++) {
+						array.push(cell.qnums[i] >= 0 ? "" + cell.qnums[i] : "-");
+					}
+					return array.join(",") + " ";
+				} else {
+					return ". ";
+				}
+			});
+		},
+
+		//---------------------------------------------------------------------------
+		// fio.decodePieceBank() Decode piece bank preset/custom
+		// fio.encodePieceBank() Encode piece bank preset/custom
+		//---------------------------------------------------------------------------
+		decodePieceBank: function() {
+			var bank = this.board.bank;
+			var head = this.readLine();
+			if (isNaN(head)) {
+				for (var i = 0; i < bank.presets.length; i++) {
+					if (bank.presets[i].shortkey === head) {
+						bank.initialize(bank.presets[i].constant);
+						break;
+					}
+				}
+			} else {
+				var pieces = [];
+				for (var i = 0; i < +head; i++) {
+					pieces.push(this.readLine());
+				}
+
+				bank.initialize(pieces);
+			}
+		},
+		encodePieceBank: function() {
+			var bank = this.board.bank;
+
+			var pieces = bank.pieces.map(function(p) {
+				return p.serialize();
+			});
+
+			for (var i = 0; i < bank.presets.length; i++) {
+				if (!bank.presets[i].constant) {
+					continue;
+				}
+				if (this.puzzle.pzpr.util.sameArray(bank.presets[i].constant, pieces)) {
+					this.writeLine(bank.presets[i].shortkey);
+					return;
+				}
+			}
+
+			this.writeLine("" + pieces.length);
+			for (var i = 0; i < pieces.length; i++) {
+				this.writeLine(pieces[i]);
+			}
+		},
+		decodePieceBankQcmp: function() {
+			var nums = (this.readLine() || "").split(" ");
+			var count = Math.min(nums.length, this.board.bank.pieces.length);
+			for (var i = 0; i < count; i++) {
+				this.board.bank.pieces[i].qcmp = +nums[i];
+			}
+		},
+		encodePieceBankQcmp: function() {
+			var data = this.board.bank.pieces
+				.map(function(piece) {
+					return piece.qcmp + " ";
+				})
+				.join("");
+			this.writeLine(data);
 		},
 
 		//---------------------------------------------------------------------------

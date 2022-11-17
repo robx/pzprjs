@@ -90,20 +90,17 @@ ui.toolarea = {
 					}
 				}
 			} else if (el.nodeType === 3) {
-				if (el.data.match(/^__(.+)__(.+)__$/)) {
-					var str_jp = RegExp.$1,
-						str_en = RegExp.$2;
+				if (el.data.match(/^__(.+)__$/)) {
+					var str_key = RegExp.$1;
 					toolarea.captions.push({
 						textnode: el,
-						str_jp: str_jp,
-						str_en: str_en
+						str_key: str_key
 					});
 					parent = el.parentNode;
 					if (parent.className.match(/child/)) {
 						toolarea.captions.push({
 							datanode: parent,
-							str_jp: str_jp,
-							str_en: str_en
+							str_key: str_key
 						});
 					}
 				}
@@ -146,6 +143,12 @@ ui.toolarea = {
 			ui.puzzle.pid === "tentaisho" ? "" : "none";
 		getEL("btnflush").style.display =
 			ui.puzzle.board.hasflush && !ui.puzzle.playeronly ? "" : "none";
+		getEL("btnpresets").style.display =
+			ui.puzzle.board.bank &&
+			ui.puzzle.board.bank.presets.length &&
+			!ui.puzzle.playeronly
+				? ""
+				: "none";
 		/* ボタンエリアの色分けボタンは、ツールパネル領域が消えている時に表示 */
 		getEL("btnirowake").style.display =
 			ui.puzzle.painter.irowake && !ui.menuconfig.get("toolarea") ? "" : "none";
@@ -161,13 +164,10 @@ ui.toolarea = {
 		for (var i = 0; i < this.captions.length; i++) {
 			var obj = this.captions[i];
 			if (!!obj.textnode) {
-				obj.textnode.data = ui.selectStr(obj.str_jp, obj.str_en);
+				obj.textnode.data = ui.i18n(obj.str_key);
 			}
 			if (!!obj.datanode) {
-				obj.datanode.setAttribute(
-					"data-text",
-					ui.selectStr(obj.str_jp, obj.str_en)
-				);
+				obj.datanode.setAttribute("data-text", ui.i18n(obj.str_key));
 			}
 		}
 	},
@@ -182,7 +182,7 @@ ui.toolarea = {
 			if (Object.keys(variants).length <= 0) {
 				return false;
 			}
-			if (!ui.puzzle.playmode) {
+			if (!ui.puzzle.playeronly) {
 				return true;
 			}
 			for (var key in variants) {
@@ -194,14 +194,17 @@ ui.toolarea = {
 		var vardisp = shouldDisplay ? "block" : "none";
 		getEL("separator1").style.display = vardisp;
 		getEL("variantpanel").style.display = vardisp;
+		if (ui.puzzle.playeronly) {
+			getEL("variantpanel").classList.add("playeronly");
+		}
 	},
 	setdisplay: function(idname) {
 		if (idname === "variant") {
 			var str;
 			if (ui.menuconfig.get("variant")) {
-				str = ui.selectStr("本家ルールでチェック", "Check base type");
+				str = ui.i18n("check.variant");
 			} else {
-				str = ui.selectStr("チェック", "Check");
+				str = ui.i18n("check");
 			}
 			getEL("btncheck").textContent = str;
 		}
@@ -238,7 +241,11 @@ ui.toolarea = {
 			if (!!toolitem.children) {
 				var children = toolitem.children;
 				var validval =
-					idname === "inputmode" ? ui.puzzle.mouse.getInputModeList() : null;
+					idname === "inputmode"
+						? ui.puzzle.mouse.getInputModeList()
+						: idname === "auxeditor_inputmode"
+						? ui.auxeditor.puzzle.mouse.getInputModeList()
+						: null;
 				for (var i = 0; i < children.length; i++) {
 					var child = children[i],
 						value = ui.customAttr(child, "value"),
@@ -304,12 +311,14 @@ ui.toolarea = {
 		ui.menuarea.answercheck();
 	},
 	undo: function() {
+		ui.auxeditor.close(true);
 		ui.undotimer.startUndo();
 	},
 	undostop: function() {
 		ui.undotimer.stopUndo();
 	},
 	redo: function() {
+		ui.auxeditor.close(true);
 		ui.undotimer.startRedo();
 	},
 	redostop: function() {
@@ -335,6 +344,18 @@ ui.toolarea = {
 	},
 	flushexcell: function() {
 		ui.puzzle.board.flushexcell();
+	},
+	applypreset: function(e) {
+		ui.auxeditor.close();
+
+		ui.popupmgr.open("applypreset", 0, 0);
+		var rect = pzpr.util.getRect(getEL("btnarea"));
+		var bounds = pzpr.util.getRect(getEL("popapplypreset"));
+		ui.popupmgr.open(
+			"applypreset",
+			rect.left + (rect.width - bounds.width) / 2,
+			Math.max(16, rect.top - bounds.height - 16)
+		);
 	},
 	enterTrial: function() {
 		if (ui.puzzle.board.trialstage === 0) {

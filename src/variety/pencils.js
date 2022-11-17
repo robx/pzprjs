@@ -1004,57 +1004,5 @@
 				return cell.lcnt === 0 && !cell.insidePencil();
 			}, "unusedCell");
 		}
-	},
-
-	FailCode: {
-		ptNoPencil: [
-			"幅が1の長方形の軸の先端に位置していない芯があります。",
-			"A tip is not at the short end of a 1xN rectangle."
-		],
-		ptInPencil: [
-			"芯が他の鉛筆の軸に入り込んでいます。",
-			"A tip is inside a pencil."
-		],
-		pcMultipleTips: [
-			"2つ以上の芯を持つ鉛筆があります。",
-			"A pencil has more than one tip."
-		],
-		nmSizeLt: [
-			"中の数字よりも長い軸があります。",
-			"A number is smaller than the length of the pencil."
-		],
-		nmSizeGt: [
-			"中の数字よりも短い軸があります。",
-			"A number is larger than the length of the pencil."
-		],
-		nmOutsidePencil: [
-			"軸の中に入っていない数字があります。",
-			"A number is not inside a pencil."
-		],
-		lnCrossPencil: [
-			"線が鉛筆の軸と交差しています。",
-			"A line crosses a pencil."
-		],
-		ptNoLine: [
-			"線が繋がっていない芯があります。",
-			"A pencil tip is not connected to a line."
-		],
-		lnNoTip: [
-			"芯に繋がっていない線があります。",
-			"A line is not connected to a pencil tip."
-		],
-		lnMultipleTips: [
-			"2つ以上の芯に繋がっている線があります。",
-			"A line connects to more than one pencil tip."
-		],
-		lnLengthLt: [
-			"鉛筆から引かれた線が軸よりも短くなっているところがあります。",
-			"A line is shorter than the connected pencil."
-		],
-		lnLengthGt: [
-			"鉛筆から引かれた線が軸よりも長くなっているところがあります。",
-			"A line is longer than the connected pencil."
-		],
-		unusedCell: ["何も書かれていないマスがあります。", "A cell is unused."]
 	}
 });

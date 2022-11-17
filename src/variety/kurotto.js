@@ -273,18 +273,5 @@
 		checkCellNumber_mines: function() {
 			this.checkCellNumber("nmMinesNe");
 		}
-	},
-
-	"FailCode@kurotto": {
-		nmSumSizeNe: [
-			"隣り合う黒マスの個数の合計が数字と違います。",
-			"The number is not equal to sum of adjacent masses of shaded cells."
-		]
-	},
-	"FailCode@mines": {
-		nmMinesNe: [
-			"(please translate) The number of mines in the surrounding cells is not equal to the number.",
-			"The number of mines in the surrounding cells is not equal to the number."
-		]
 	}
 });

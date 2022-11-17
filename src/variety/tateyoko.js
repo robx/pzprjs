@@ -444,21 +444,5 @@
 				return cell.ques === 0 && cell.qans === 0;
 			}, "ceNoBar");
 		}
-	},
-
-	FailCode: {
-		ceNoBar: ["何も入っていないマスがあります。", "There is an empty cell."],
-		bkSizeNe: [
-			"数字と棒の長さが違います。",
-			"The number is different from the length of the line."
-		],
-		baPlNum: [
-			"1つの棒に2つ以上の数字が入っています。",
-			"A line passes more than one number."
-		],
-		nmConnBarWrong: [
-			"黒マスに繋がる線の数が正しくありません。",
-			"The number of lines connected to a shaded cell is wrong."
-		]
 	}
 });

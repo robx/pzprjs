@@ -266,18 +266,11 @@
 		},
 
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "r") {
-				this.puzzle.setConfig("aquarium_regions", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("aquarium_regions", false);
-			}
+			this.decodeConfigFlag("r", "aquarium_regions");
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("aquarium_regions")) {
-				this.writeLine("r");
-			}
+			this.encodeConfigFlag("r", "aquarium_regions");
 		}
 	},
 
@@ -413,24 +406,5 @@
 			}
 			return result;
 		}
-	},
-
-	FailCode: {
-		csNoSupport: [
-			"水の入っているマスの隣や下のマスが空白になっています。",
-			"A water cell is next to or above an empty cell."
-		],
-		csNoLevel: [
-			"ひとつながりの水のマスの水位が等しくなっていません。",
-			"A body of water has different surface levels."
-		],
-		bkNoLevel: [
-			"同じブロック内で、水のマスの水位が等しくないブロックがあります。",
-			"A region has different water surface levels."
-		],
-		exShadeNe: [
-			"行または列内にある水のマスの数と外の数字が異なります。",
-			"The number of shaded cells in the row or column is not correct."
-		]
 	}
 });

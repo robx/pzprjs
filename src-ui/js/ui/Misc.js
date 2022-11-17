@@ -13,9 +13,7 @@ ui.misc = {
 		var pid = ui.puzzle.pid;
 		var pinfo = pzpr.variety(pid);
 		var title = ui.selectStr(pinfo.ja, pinfo.en);
-		title += ui.puzzle.playeronly
-			? " player"
-			: ui.selectStr(" エディタ", " editor");
+		title += ui.puzzle.playeronly ? " player" : " " + ui.i18n("editor");
 
 		_doc.title = title;
 		var titleEL = _doc.getElementById("title2");
@@ -112,32 +110,55 @@ function toBGimage(pid) {
 		"araf",
 		"skyscrapers",
 		"balance",
+		"bdwalk",
 		"castle",
+		"cbanana",
+		"chainedb",
+		"coffeemilk",
 		"compass",
+		"coral",
+		"cts",
 		"curvedata",
 		"dbchoco",
 		"detour",
+		"dominion",
 		"doppelblock",
+		"dotchi",
 		"doubleback",
 		"easyasabc",
 		"geradeweg",
 		"heteromino",
+		"kaidan",
 		"kropki",
 		"maxi",
 		"midloop",
+		"mirrorbk",
 		"moonsun",
 		"nondango",
 		"nonogram",
 		"nurimisaki",
+		"nuriuzu",
+		"oneroom",
+		"ovotovata",
 		"pencils",
+		"pentopia",
+		"ququ",
+		"rassi",
+		"roundtrip",
 		"satogaeri",
 		"scrin",
 		"simpleloop",
 		"snake",
+		"squarejam",
 		"starbattle",
+		"statuepark",
 		"symmarea",
+		"tajmahal",
 		"tapaloop",
 		"tents",
+		"tslither",
+		"voxas",
+		"vslither",
 		"walllogic",
 		"yinyang"
 	];

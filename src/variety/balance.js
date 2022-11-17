@@ -412,18 +412,5 @@
 				return cell.isNum() && cell.lcnt === 0;
 			}, "circNoLine");
 		}
-	},
-	FailCode: {
-		segShort: ["線の長さの和が数字より小さいです。", "A segment is too short."],
-		segLong: ["線の長さの和が数字より大きいです。", "A segment is too long."],
-		segWhiteUneq: [
-			"白丸から線の端までの長さが異なっています。",
-			"Segments through a white circle are different."
-		],
-		segBlackEq: [
-			"黒丸から線の端までの長さが同じになっています。",
-			"Segments through a black circle are equal."
-		],
-		circNoLine: ["線が通っていない丸があります。", "A circle has no line."]
 	}
 });

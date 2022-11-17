@@ -110,7 +110,7 @@
 			if (!this.cursor.equals(pos)) {
 				this.setcursor(pos);
 			} else {
-				var isInc = (this.inputMode === "subnumber") === (this.btn === "left");
+				var isInc = this.btn === "left";
 				var num = border.qsub;
 				if (isInc) {
 					num = num < 99 ? num + 1 : -1;
@@ -722,12 +722,5 @@
 				cell.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		nmSumOfDiff: [
-			"数字とその隣の数字の差の合計が合っていません。",
-			"Sum of the differences between the number and adjacent numbers is not equal to the number."
-		]
 	}
 });

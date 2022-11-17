@@ -3,6 +3,7 @@ exports.files = [
 	"common/intro",
 	"ui/Boot",
 	"ui/UI",
+	"common/langs",
 	"ui/Event",
 	"ui/Listener",
 	"ui/MenuConfig",

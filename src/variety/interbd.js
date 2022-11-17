@@ -129,7 +129,7 @@
 				qnum = cell.qnum;
 			var max = 6;
 
-			if ((this.btn === "left") === (this.inputMode === "color")) {
+			if (this.btn === "left") {
 				if (num >= max) {
 					if (qnum === -2) {
 						cell.setQnum(-1);
@@ -615,45 +615,13 @@
 		},
 
 		checkSeparated: function() {
-			var areas = this.board.ublkmgr.components;
-			for (var id = 0; id < areas.length; id++) {
-				areas[id].colors = 0;
-			}
-
-			for (var c = 0; c < this.board.cell.length; c++) {
-				var cell = this.board.cell[c];
-				if (cell.ques === 0) {
-					continue;
-				}
-				cell.ublk.colors |= 1 << (cell.ques - 1);
-			}
-
-			var singles = 0,
-				doubles = 0;
-			var areas = this.board.ublkmgr.components;
-			for (var id = 0; id < areas.length; id++) {
-				var colors = areas[id].colors;
-				doubles |= colors & singles;
-				singles |= colors;
-			}
-
-			if (doubles === 0) {
-				return;
-			}
-			this.failcode.add("bkSepColor");
-			if (this.checkOnly) {
-				return;
-			}
-
-			for (var c = 0; c < this.board.cell.length; c++) {
-				var cell = this.board.cell[c];
-				if (cell.ques === 0) {
-					continue;
-				}
-				if (doubles & (1 << (cell.ques - 1))) {
-					cell.seterr(1);
-				}
-			}
+			this.checkGatheredObjectInGraph(
+				this.board.ublkmgr,
+				function(cell) {
+					return cell.ques || -1;
+				},
+				"bkSepColor"
+			);
 		},
 
 		checkDivision: function() {
@@ -687,32 +655,5 @@
 				cell.seterr(1);
 			}
 		}
-	},
-	FailCode: {
-		nmShadeLt: [
-			"数字に接する黒く塗られたマスの数が異なっています。",
-			"The number of shaded cells around a number is not correct."
-		],
-		nmShadeGt: [
-			"数字に接する黒く塗られたマスの数が異なっています。",
-			"The number of shaded cells around a number is not correct."
-		],
-		bkPlColor: [
-			"2色以上含んでいる国があります。",
-			"A country has more than one color."
-		],
-		bkNoColor: ["色のない国があります。", "A country has no color."],
-		bkSepColor: [
-			"同じ色の国が複数あります。",
-			"One kind of color is included in different countries."
-		],
-		shSurrounded: [
-			"黒く塗られたマスが2つ以上の国と接していません。",
-			"A shaded cell cannot divide two or more countries."
-		],
-		shNoDivide: [
-			"黒く塗られたマスが2つ以上の国と接していません。",
-			"A shaded cell does not divide two or more countries."
-		]
 	}
 });

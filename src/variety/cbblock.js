@@ -10,7 +10,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["cbblock", "dbchoco", "nikoji"], {
+})(["cbblock", "dbchoco", "nikoji", "mirrorbk"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@cbblock": {
@@ -106,6 +106,31 @@
 		}
 	},
 
+	"MouseEvent@mirrorbk": {
+		inputModes: {
+			edit: ["number", "border"],
+			play: ["border", "subline"]
+		},
+
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left" && this.isBorderMode()) {
+						this.inputborder();
+					} else {
+						this.inputQsubLine();
+					}
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputborder();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputqnum();
+				}
+			}
+		}
+	},
+
 	"KeyEvent@dbchoco": {
 		enablemake: true,
 
@@ -121,15 +146,16 @@
 		}
 	},
 
-	"KeyEvent@nikoji": {
+	"KeyEvent@nikoji,mirrorbk": {
 		enablemake: true
 	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
-	"Border@cbblock": {
-		ques: 1,
-
+	"Border@cbblock#1": {
+		ques: 1
+	},
+	"Border@cbblock,mirrorbk": {
 		enableLineNG: true,
 
 		// 線を引かせたくないので上書き
@@ -169,10 +195,21 @@
 		addExtraInfo: function() {}
 	},
 
+	"Board@mirrorbk": {
+		addExtraInfo: function() {}
+	},
+
 	"Cell@dbchoco": {
 		maxnum: function() {
 			var bd = this.board;
 			return (bd.cols * bd.rows) >> 1;
+		}
+	},
+
+	"Cell@mirrorbk": {
+		maxnum: function() {
+			var bd = this.board;
+			return bd.cols * bd.rows;
 		}
 	},
 
@@ -301,39 +338,8 @@
 			component.num = component.numcell ? component.numcell.qnum : null;
 		}
 	},
-
-	CellList: {
-		getBlockShapes: function() {
-			if (!!this.shape) {
-				return this.shape;
-			}
-
-			var bd = this.board;
-			var d = this.getRectSize();
-			var data = [[], [], [], [], [], [], [], []];
-			var shapes = { cols: d.cols, rows: d.rows, data: [] };
-
-			for (var by = 0; by < 2 * d.rows; by += 2) {
-				for (var bx = 0; bx < 2 * d.cols; bx += 2) {
-					data[0].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
-					data[1].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
-				}
-			}
-			for (var bx = 0; bx < 2 * d.cols; bx += 2) {
-				for (var by = 0; by < 2 * d.rows; by += 2) {
-					data[4].push(this.include(bd.getc(d.x1 + bx, d.y1 + by)) ? 1 : 0);
-					data[5].push(this.include(bd.getc(d.x1 + bx, d.y2 - by)) ? 1 : 0);
-				}
-			}
-			data[2] = data[1].concat().reverse();
-			data[3] = data[0].concat().reverse();
-			data[6] = data[5].concat().reverse();
-			data[7] = data[4].concat().reverse();
-			for (var i = 0; i < 8; i++) {
-				shapes.data[i] = data[i].join("");
-			}
-			return (this.shape = shapes);
-		}
+	"AreaRoomGraph@mirrorbk": {
+		enabled: true
 	},
 
 	//---------------------------------------------------------
@@ -344,17 +350,25 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawDashedGrid();
+
+			if (this.pid === "mirrorbk") {
+				this.drawMirrorBase();
+				this.drawMirrorSplit();
+			}
+
 			this.drawBorders();
 
 			this.drawBorderQsubs();
 
-			this.drawBaseMarks();
+			if (this.pid !== "mirrorbk") {
+				this.drawBaseMarks();
+			}
 
 			this.drawChassis();
 
 			this.drawPekes();
 
-			if (this.pid === "dbchoco" || this.pid === "nikoji") {
+			if (this.pid !== "cbblock") {
 				this.drawQuesNumbers();
 				this.drawTarget();
 			}
@@ -389,6 +403,86 @@
 
 	"Graphic@nikoji": {
 		bordercolor_func: "qans"
+	},
+
+	"Graphic@mirrorbk": {
+		fontsizeratio: 0.75,
+
+		drawMirrorBase: function() {
+			var g = this.vinc("border_mirror", "crispEdges", true);
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i];
+
+				g.vid = "b_mirror_" + border.id;
+				if (border.ques === 1) {
+					var px = border.bx * this.bw,
+						py = border.by * this.bh;
+					var lm = (this.lw + this.addlw) * 1.2;
+					var pad = 0;
+
+					g.fillStyle = "black";
+					if (border.isVert()) {
+						if (border.relbd(0, 2).ques === 1) {
+							py += 1;
+							pad += 1;
+						}
+
+						g.fillRectCenter(px, py, lm, this.bh + pad);
+					} else {
+						if (border.relbd(2, 0).ques === 1) {
+							px += 1;
+							pad += 1;
+						}
+
+						g.fillRectCenter(px, py, this.bw + pad, lm);
+					}
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		drawMirrorSplit: function() {
+			var g = this.vinc("border_mirror2", "crispEdges", true);
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i];
+
+				g.vid = "b_mirror2_" + border.id;
+				if (border.ques === 1) {
+					var px = border.bx * this.bw,
+						py = border.by * this.bh;
+					var lm = (this.lw + this.addlw) * 0.4;
+					var pad = 0;
+
+					g.fillStyle = "white";
+					if (border.isVert()) {
+						if (border.relbd(0, 2).ques === 1) {
+							py += 1;
+							pad += 1;
+						}
+
+						g.fillRectCenter(px, py, lm, this.bh + pad);
+					} else {
+						if (border.relbd(2, 0).ques === 1) {
+							px += 1;
+							pad += 1;
+						}
+
+						g.fillRectCenter(px, py, this.bw + pad, lm);
+					}
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		getBorderColor: function(border) {
+			return border.qans ? this.getBorderColor_qans(border) : null;
+		}
 	},
 
 	//---------------------------------------------------------
@@ -471,9 +565,23 @@
 		}
 	},
 
+	"Encode@mirrorbk": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+			this.decodeBorder();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+			this.encodeBorder();
+		}
+	},
+
 	//---------------------------------------------------------
-	"FileIO@cbblock": {
+	"FileIO@cbblock,mirrorbk": {
 		decodeData: function() {
+			if (this.pid === "mirrorbk") {
+				this.decodeCellQnum();
+			}
 			this.decodeBorder(function(border, ca) {
 				if (ca === "3") {
 					border.ques = 0;
@@ -496,6 +604,9 @@
 			});
 		},
 		encodeData: function() {
+			if (this.pid === "mirrorbk") {
+				this.encodeCellQnum();
+			}
 			this.encodeBorder(function(border) {
 				if (border.qans === 1 && border.qsub === 1) {
 					return "3 ";
@@ -628,21 +739,6 @@
 				area1.clist.seterr(1);
 				area2.clist.seterr(1);
 			}
-		},
-		isDifferentShapeBlock: function(area1, area2) {
-			if (area1.size !== area2.size) {
-				return true;
-			}
-			var s1 = area1.clist.getBlockShapes(),
-				s2 = area2.clist.getBlockShapes();
-			var t1 = s1.cols === s2.cols && s1.rows === s2.rows ? 0 : 4;
-			var t2 = s1.cols === s2.rows && s1.rows === s2.cols ? 8 : 4;
-			for (var t = t1; t < t2; t++) {
-				if (s2.data[0] === s1.data[t]) {
-					return false;
-				}
-			}
-			return true;
 		},
 
 		checkSmallNumberArea: function() {
@@ -788,11 +884,7 @@
 
 					var second = room.clist;
 					var secondshape = room.clist.getBlockShapes();
-					if (
-						firstshape.rows === secondshape.rows &&
-						firstshape.cols === secondshape.cols &&
-						firstshape.data[0] === secondshape.data[0]
-					) {
+					if (firstshape.id === secondshape.id) {
 						continue;
 					}
 					this.failcode.add("bkDifferentOrientation");
@@ -902,70 +994,72 @@
 			}
 		}
 	},
+	"AnsCheck@mirrorbk": {
+		checklist: [
+			"checkDoubleNumber",
+			"checkNumberAndSize",
+			"checkMirrorShape",
+			"checkMirrorUnused"
+		],
 
-	"FailCode@cbblock": {
-		bkRect: ["ブロックが四角形になっています。", "A block is rectangle."],
-		bsSameShape: [
-			"同じ形のブロックが接しています。",
-			"The blocks that has the same shape are adjacent."
-		],
-		bkSubLt2: [
-			"ブロックが1つの点線からなる領域で構成されています。",
-			"A block has one area framed by dotted line."
-		],
-		bkSubGt2: [
-			"ブロックが3つ以上の点線からなる領域で構成されています。",
-			"A block has three or more areas framed by dotted line."
-		]
-	},
+		checkMirrorShape: function() {
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (border.isnull || !border.ques) {
+					continue;
+				}
+				var a1 = border.sidecell[0].room,
+					a2 = border.sidecell[1].room;
+				if (a1 === a2) {
+					continue;
+				}
 
-	"FailCode@dbchoco": {
-		bkSubLt2: [
-			"1色のマスしか入っていないブロックがあります。",
-			"A block contains a single color."
-		],
-		bkSubGt2: [
-			"同じ色のマスのカタマリが3個以上入っているブロックがあります。",
-			"A block has three or more shapes."
-		],
-		bkSizeLt: [
-			"同じ色のマスのカタマリの大きさより数字が大きいです。",
-			"A number is bigger than the size of the shape."
-		],
-		bkSizeGt: [
-			"同じ色のマスのカタマリの大きさより数字が小さいです。",
-			"A number is smaller than the size of the shape."
-		],
-		bkDifferentShape: [
-			"同じ形でないマスのカタマリを含むブロックがあります。",
-			"The two shapes inside a block are different."
-		]
-	},
+				if (a1.clist.length === a2.clist.length) {
+					var found = false;
+					for (var i = 0; i < a1.clist.length && !found; i++) {
+						var c1 = a1.clist[i];
+						var c2 = border.isVert()
+							? c1.relcell(2 * (border.bx - c1.bx), 0)
+							: c1.relcell(0, 2 * (border.by - c1.by));
 
-	"FailCode@nikoji": {
-		bkNoNum: [
-			"(please translate) An area has no letter.",
-			"An area has no letter."
-		],
-		bkNumGe2: [
-			"(please translate) An area has multiple letters.",
-			"An area has multiple letters."
-		],
-		bkDifferentShape: [
-			"(please translate) Two areas with equal letters have different shapes.",
-			"Two areas with equal letters have different shapes."
-		],
-		bkDifferentOrientation: [
-			"(please translate) Two areas with equal letters have different orientation.",
-			"Two areas with equal letters have different orientation."
-		],
-		bkDifferentPosition: [
-			"(please translate) Two areas with equal letters have the letter in different positions.",
-			"Two areas with equal letters have the letter in different positions."
-		],
-		bkDifferentLetters: [
-			"(please translate) Two areas with different letters have the same shape.",
-			"Two areas with different letters have the same shape."
-		]
+						if (c2.isnull || c2.room !== a2) {
+							found = true;
+						}
+					}
+
+					if (!found) {
+						continue;
+					}
+				}
+
+				this.failcode.add("bkMirror");
+				if (this.checkOnly) {
+					break;
+				}
+				a1.clist.seterr(1);
+				a2.clist.seterr(1);
+			}
+		},
+
+		checkMirrorUnused: function() {
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (border.isnull || !border.ques) {
+					continue;
+				}
+				var a1 = border.sidecell[0].room,
+					a2 = border.sidecell[1].room;
+				if (a1 !== a2) {
+					continue;
+				}
+				this.failcode.add("bdUnused");
+				if (this.checkOnly) {
+					break;
+				}
+				new this.klass.CellList(border.sidecell).seterr(1);
+			}
+		}
 	}
 });

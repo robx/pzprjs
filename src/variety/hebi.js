@@ -499,22 +499,5 @@
 				cell.snake.clist.seterr(1);
 			}
 		}
-	},
-
-	FailCode: {
-		bkDupNum: ["同じ数字が入っています。", "A snake has duplicate numbers."],
-		bkSizeNe5: [
-			"大きさが５ではない蛇がいます。",
-			"The size of a snake is not five."
-		],
-		bsSnake: ["別々の蛇が接しています。", "Different snakes are adjacent."],
-		anNumberNe: [
-			"矢印の先にある数字が正しくありません。",
-			"A clue points at the wrong number."
-		],
-		snakeAttack: [
-			"蛇の視線の先に別の蛇がいます。",
-			"A snake can see another snake."
-		]
 	}
 });

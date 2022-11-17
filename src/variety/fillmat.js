@@ -169,32 +169,5 @@
 				"bkWidthGt1"
 			);
 		}
-	},
-
-	FailCode: {
-		bkNoNum: [
-			"数字の入っていないタタミがあります。",
-			"A tatami has no numbers."
-		],
-		bkNumGe2: [
-			"1つのタタミに2つ以上の数字が入っています。",
-			"A tatami has more than one number."
-		],
-		bkSizeNe: [
-			"数字とタタミの大きさが違います。",
-			"The number is different from the size of the tatami."
-		],
-		bkSizeEq: [
-			"数字とタタミの大きさが同じです。",
-			"The number is equal to the size of the tatami."
-		],
-		bkLenGt4: [
-			"「幅１マス、長さ１～４マス」ではないタタミがあります。",
-			"The width of the tatami is more than one, or the length is more than four."
-		],
-		bsSizeEq: [
-			"隣り合うタタミの大きさが同じです。",
-			"Tatamis of the same size are adjacent."
-		]
 	}
 });

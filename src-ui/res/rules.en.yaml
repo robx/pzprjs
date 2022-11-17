@@ -1,0 +1,319 @@
+bdwalk: "You're given a top-down view of a building of unknown height. Grey cells\
+  \ represent elevators.\n1. Draw a path from S to G that doesn't branch off or overlap\
+  \ itself at any cell.\n2. The path must visit every number and elevator.\n3. The\
+  \ path goes up one or more floors at an Up arrow, and goes down one or more floors\
+  \ at a Down arrow.\n4. The path must change floors at an elevator without an arrow,\
+  \ but this can be in either direction.\n5. A number indicates the floor that the\
+  \ path should be on when passing through it.\n6. At no point does the path go below\
+  \ the 1st floor."
+
+
+canal: "Shade some cells on the board.\n1. The number on a cell indicates how many\
+  \ cells are shaded in a continuous line starting from the cell. These lines are\
+  \ in the four cardinal directions (up, down, left, right).\n2. You cannot shade\
+  \ a cell with a number.\n3. The shaded cells cannot form a 2x2 square.\n4. All shaded\
+  \ cells form an orthogonally contiguous area."
+
+
+cbanana: "Shade some cells on the board.\n1. A group of shaded cells must form a rectangle\
+  \ or square.\n2. A group of unshaded cells must not form a rectangle or square.\n\
+  3. A number indicates the size of the (shaded or unshaded) group that overlaps it.\
+  \ A group can contain one or more numbers, or none at all."
+
+
+chainedb: "Shade some cells on the board to form blocks of any shape.\n1. Each block\
+  \ must contain exactly one number or a question mark.\n2. A number indicates the\
+  \ size of the block that contains it.\n3. Diagonally adjacent blocks form a chain.\
+  \ A chain cannot contain two identically shaped blocks, counting rotations and reflections\
+  \ as the same.\n4. All blocks must be diagonally adjacent to at least one other\
+  \ block."
+
+
+coral: "Shade some cells on the board according to the numbers.\n1. Clues outside\
+  \ the grid represent the lengths of each of the blocks of consecutive shaded cells\
+  \ in the corresponding row or column, not necessarily in order.\n2. Rows or columns\
+  \ without numbers can contain any amount of shaded cells.\n3. All unshaded cells\
+  \ are connected through other unshaded cells to the outside of the grid.\n4. The\
+  \ shaded cells cannot form a 2x2 square.\n5. All shaded cells form an orthogonally\
+  \ contiguous area."
+
+
+crossstitch: "Draw diagonal lines to make two loops.\n1. A shaded cell is not part\
+  \ of any loop.\n2. Loops cannot branch off or cross themselves, but they can cross\
+  \ each other.\n3. Two cells where the loops intersect cannot be horizontally or\
+  \ vertically adjacent.\n4. A circled number indicates how many of that cell's corner\
+  \ points touch a loop.\n5. A number with an arrow indicates how many cells in that\
+  \ direction contain an intersection, up to the next shaded cell.\n6. A question\
+  \ mark can be replaced with any number except 0."
+
+
+dotchi: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The loop\
+  \ cannot branch off or cross itself.\n2. The loop goes through all unshaded circles.\n\
+  3. Within a region, all unshaded circles contain either a corner or a straight line.\n\
+  4. The loop cannot go through a shaded circle."
+
+
+hinge: "Shade some cells on the board.\n1. A group of orthogonally connected shaded\
+  \ cells is called a block. Each block is cut exactly once by a single straight segment\
+  \ of region borders, across which it must have reflectional symmetry.\n2. Numbered\
+  \ regions must contain the indicated amount of shaded cells."
+
+lapaz: "Shade some cells on the board, and divide the rest into regions of 2 cells.\n\
+  1. No two shaded cells are horizontally or vertically adjacent.\n2. Numbers must\
+  \ be contained in a 1x2 region. It's possible for a region to have multiple numbers.\n\
+  3. A clue in a horizontal region indicates the amount of shaded cells in the same\
+  \ row as the clue. Likewise, a clue in a vertical region indicates the amount of\
+  \ shaded cells in the same column."
+
+
+lohkous: "Draw lines over the dotted lines to divide the board into several blocks.\n\
+  1. Each block must contain exactly one square with one or more numbers on it.\n\
+  2. All lines must be used to divide two regions, there can not be any dead-ends.\n\
+  3. When dividing a block into horizontal segments, each segment must have a length\
+  \ specified by one of the clue numbers. The same applies when dividing the block\
+  \ into vertical segments.\n4. Each number must be represented at least once by a\
+  \ horizontal or vertical segment in the same block.\n5. A question mark can replace\
+  \ any number, as long as no number is repeated in that cell."
+
+
+oneroom: "You're given a board divided into rooms. Shade some cells on the board.\n\
+  1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number inside\
+  \ a room indicates how many cells inside the room are shaded.\n3. A room border\
+  \ between two unshaded cells forms a door. There can be no more than one door between\
+  \ any two rooms.\n4. All unshaded cells within a room form an orthogonally connected\
+  \ area. It's possible for a room to have no unshaded cells.\n5. All unshaded cells\
+  \ on the board from an orthogonally connected area."
+
+
+ovotovata: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
+  \ loop cannot branch off or cross itself.\n2. When the loop exits a numbered region\
+  \ in any direction, it must travel in a straight line for the indicated number of\
+  \ cells, and then turn. e.g. A number 1 means that the loop must turn immediately\
+  \ after leaving that region.\n3. A question mark can be replaced with any number.\n\
+  4. All shaded regions must be visited at least once."
+
+
+parquet: "You're given a grid divided into regions and tiles. Shade some tiles on\
+  \ the board.\n1. A tile is either completely shaded or unshaded.\n2. Within each\
+  \ thick-outlined region, exactly one tile is shaded.\n3. All shaded cells form an\
+  \ orthogonally contiguous area.\n4. Shaded cells cannot form a loop. This includes\
+  \ 2x2 squares."
+
+
+pentominous: "Divide the grid into pentominoes (regions of 5 cells). You can use each\
+  \ pentomino any number of times (including zero).\n1. Two adjacent pentominoes cannot\
+  \ have the same shape, counting rotations and reflections as the same.\n2. A letter\
+  \ indicates the shape of the pentomino it's contained in. A pentomino may contain\
+  \ any number of identical letters."
+
+
+railpool: "Draw a loop that visits every cell.\n1. The loop cannot branch off or cross\
+  \ itself.\n2. A line segment that overlaps a region must have a length indicated\
+  \ by one of the numbers in that region. For segments contained partially in the\
+  \ region, the number still refers to the total length of the segment.\n3. Each number\
+  \ must be represented at least once by a horizontal or vertical segment overlapping\
+  \ the region. Regions without numbers can have line segments of any lengths.\n4.\
+  \ A question mark can replace any number, as long as no number is repeated in that\
+  \ region."
+
+
+rassi: "Draw multiple lines through orthogonally adjacent cells.\n1. Each region contains\
+  \ exactly one line covering all of the region's cells.\n2. Lines cannot branch off\
+  \ or cross themselves.\n3. Lines cannot form loops.\n4. Lines cannot go across region\
+  \ borders or through shaded cells.\n5. The endpoints of lines cannot be horizontally,\
+  \ vertically or diagonally adjacent."
+
+
+statuepark: "Place every shape from the bank into the grid. Shapes can be rotated\
+  \ or mirrored.\n1. All shapes must be used exactly once. There cannot be shapes\
+  \ in the grid that aren't present in the bank.\n2. Two shapes cannot be orthogonally\
+  \ adjacent.\n3. Black circles must overlap a shape, while white circles must not\
+  \ overlap a shape.\n4. All cells not used by shapes must be connected."
+
+
+tajmahal: "Draw a square around each given circle.\n1. All squares must have a circle\
+  \ in the center. The square's corners must be located on the grid points.\n2. Two\
+  \ squares may not intersect or overlap, but they can touch at the corners.\n3. Squares\
+  \ that share a corner are connected. All squares must form one connected group.\n\
+  4. A number indicates the amount of squares that share a corner with this clue's\
+  \ square."
+
+
+tontti: "Draw horizontal and vertical lines from the points to divide the grid into\
+  \ regions. You can connect two points, or draw from a point to the outer border.\n\
+  1. Cells can contain a straight line, a corner or a T-junction (or remain empty).\
+  \ There can not be any plus-shaped crossings or dead-end lines.\n2. When two adjacent\
+  \ cells are directly connected by a line, the shapes inside the cells must be different.\n\
+  3. Each region has exactly one numbered cell, or a question mark.\n4. You cannot\
+  \ draw over numbered cells.\n5. Each number indicates the amount of cells without\
+  \ lines inside that region, the numbered cell included. Cells don't need to be adjacent,\
+  \ as long as they are reachable without going through a wall."
+
+
+tren: "Place several 1x2 and 1x3 blocks on the board, which don't overlap each other.\n\
+  1. Each number is contained in a block. Blocks must contain exactly one number.\n\
+  2. Horizontally oriented blocks can slide left and right, while vertically oriented\
+  \ blocks can slide up and down. Blocks cannot move outside the grid or through other\
+  \ blocks.\n3. A number inside a block indicates how many spaces the block can move."
+
+
+voxas: "Draw lines over the dotted lines to divide the board into several areas. Some\
+  \ lines are given.\n1. All areas must be rectangular in shape, and must be 2 or\
+  \ 3 cells in size.\n2. Two rectangles divided by a white circle must have the same\
+  \ size and orientation.\n3. Two rectangles divided by a grey circle must have the\
+  \ same size or the same orientation, but not both.\n4. Two rectangles divided by\
+  \ a black circle must have different size and different orientation."
+
+nuriuzu: "Shade some cells on the board.\n1. The unshaded areas must form blocks with\
+  \ exactly one star. You cannot shade a cell overlapping a star.\n2. Unshaded areas\
+  \ must be rotationally symmetric, with a star at the center.\n3. There cannot be\
+  \ a 2x2 square of all shaded or unshaded cells."
+nothree: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
+  \ vertically adjacent.\n2. A circle overlaps exactly one shaded cell.\n3. Three\
+  \ consecutive shaded cells in a row/column must have different distances between\
+  \ them.\n4. All unshaded cells on the board from an orthogonally connected area."
+coffeemilk: "Draw lines between the circles to form groups.\n1. Lines must be horizontal\
+  \ or vertical, and cannot turn.\n2. Lines cannot cross each other.\n3. Each group\
+  \ of circles must contain exactly one gray circle, and an equal amount of white\
+  \ and black circles.\n4. A black circle and a white circle cannot be connected directly."
+ququ: "Shade some triangles on the board.\n1. Triangles with numbers or question marks\
+  \ cannot be shaded.\n2. Unshaded triangles which share an edge form regions. Each\
+  \ region contains exactly one number or a question mark.\n3. A number indicates\
+  \ how many triangles are contained in its region.\n4. Shaded triangles which share\
+  \ an edge form blocks. Two blocks which touch each other at the corners must have\
+  \ different shapes, counting rotations and reflections as the same."
+
+squarejam: "Draw lines over the dotted lines to divide the grid into square-shaped\
+  \ regions.\n1. A number indicates the side length of the square it's contained in.\
+  \ Squares may have any amount of identical numbers.\n2. Region borders must not\
+  \ form 4-way intersections."
+snakepit: "Divide the grid into regions, where each region represents a snake.\n1.\
+  \ A snake is a path that is at least 2 cells long and exactly 1 cell wide, and can\
+  \ have any amount of turns.\n2. A snake cannot loop back on itself and visit a cell\
+  \ that's orthogonally or diagonally adjacent to a cell it has visited before.\n\
+  3. Two snakes of the same length cannot be orthogonally adjacent.\n4. A number indicates\
+  \ the length of the snake, in cells. Snakes can have any amount of identical numbers.\n\
+  5. A circle indicates an endpoint of a snake, while a gray cell must not be on the\
+  \ endpoints of a snake."
+disloop: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The loop\
+  \ cannot branch off or cross itself.\n2. The loop cannot go through gray cells.\n\
+  3. Arrows point from a gray cell to an adjacent cell where the loop must make a\
+  \ turn.\n4. Clues represent the lengths of the next N line segments when following\
+  \ the loop in the direction of the arrow, where N is the amount of numbers inside\
+  \ the clue. Numbers aren't necessarily in order."
+
+lither: "Draw lines along the edges of some cells to form trees.\n1. There must be\
+  \ more than one tree.\n2. A tree must branch or terminate at every grid vertex.\
+  \ In other words, each grid vertex must have 1, 3, or 4 connected edges.\n3. Trees\
+  \ must not contain loops.\n4. A number indicates the number of edges of that cell\
+  \ that are included in a tree."
+context: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
+  \ vertically adjacent.\n2. An unshaded number shows the amount of orthogonally adjacent\
+  \ shaded cells.\n3. A shaded number shows the amount of diagonally adjacent shaded\
+  \ cells.\n4. All unshaded cells on the board from an orthogonally connected area."
+vslither: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot\
+  \ branch off or cross itself.\n2. A number indicates the amount of vertices surrounding\
+  \ the cell that are visited by the loop."
+tslither: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot\
+  \ branch off or cross itself.\n2. A number indicates how many times the loop visits\
+  \ the set of edges and vertices adjacent to the cell."
+pentopia: "Place some shapes from the bank into the grid. Shapes can be rotated or\
+  \ mirrored.\n1. A shape can be used no more than once. There cannot be shapes in\
+  \ the grid that aren't present in the bank.\n2. Two shapes cannot be orthogonally\
+  \ or diagonally adjacent.\n3. Arrows point towards the shape closest to the clue.\
+  \ If a clue has multiple arrows, the distance to the closest shape must be the same.\
+  \ Directions without an arrow must have a shape further away, or not have a shape\
+  \ in that direction.\n4. A cell with a clue cannot overlap a shape."
+numrope: "Place a number between 1 and 9 into every unshaded cell.\n1. Each gray line\
+  \ should contain a sequence of numbers which increase by 1.\n2. Numbers on shaded\
+  \ cells indicate the sum of numbers in the (up to four) orthogonally adjacent cells.\n\
+  3. Identical numbers cannot be adjacent."
+dominion: "Shade some cells on the board to divide all unshaded cells into regions.\n\
+  1. All shaded cells are orthogonally adjacent to exactly one other shaded cell.\n\
+  2. Cells with letters cannot be shaded.\n3. All identical letters must be in the\
+  \ same region. There can not be a region without any letters.\n4. Different letters\
+  \ must be in different regions.\n5. Question marks can be replaced with any letter,\
+  \ as long as it appears elsewhere on the grid."
+yajisoko: "Draw lines to move some of the boxes.\n1. A box can be moved horizontally\
+  \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
+  \ each other. Lines can also not go through the start- or endpoint of other boxes.\n\
+  3. A number indicates the amount of boxes in the given direction. If a box stops\
+  \ on top of a clue, the number becomes meaningless (it may be true or false)."
+kaidan: 'Draw several rectangles of length 1xN (at least 2) and draw a circle in all
+  remaining cells.
+
+  1. Rectangles and circles cannot overlap shaded cells.
+
+  2. A number indicates the amount of circles in the 4 orthogonally adjacent cells.
+
+  3. Two circles cannot be orthogonally adjacent.
+
+  4. Two rectangles with the same orientation cannot be adjacent along the short end.
+
+  5. When two rectangles are orthogonally adjacent, one rectangle must be exactly
+  1 square longer than the other.
+
+  6. All rectangles form an orthogonally contiguous area.'
+roundtrip: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
+  \ loop cannot branch off or retrace itself. When the loop visits a cell twice, it\
+  \ must travel in a straight line each time.\n2. The numbers to the left/right of\
+  \ the rows indicate the number of cells visited by the nearest section of the loop\
+  \ that travels horizontally in that row. Likewise, The numbers to the top/bottom\
+  \ of the columns indicate the number of cells visited by the nearest section of\
+  \ the loop that travels vertically in that column."
+cts: "Shade some cells on the board according to the numbers.\n1. Clues outside the\
+  \ grid represent the lengths of each of the blocks of consecutive shaded cells in\
+  \ the corresponding row or column, in order from left to right or top to bottom.\n\
+  2. A question mark represents a block of any length (at least 1).\n3. An asterisk\
+  \ represents an unknown amount of blocks of any length. An asterisk may also be\
+  \ meaningless, i.e. represent no blocks at all.\n4. The shaded cells cannot form\
+  \ a 2x2 square.\n5. All shaded cells form an orthogonally contiguous area."
+antmill: "Shade some dominoes on the board to form a loop.\n1. Two dominoes may not\
+  \ be orthogonally adjacent.\n2. Every domino is diagonally adjacent to exactly two\
+  \ other dominoes.\n3. All dominoes form a diagonally connected area.\n4. Cells separated\
+  \ by a square must both be shaded or both be unshaded.\n5. A cross mark overlaps\
+  \ exactly one shaded cell."
+anglers: "Draw lines so each person (represented by a number) is connected to a fish.\n\
+  1. Lines cannot branch off or cross. A number or fish can not have more than one\
+  \ line.\n2. A number shows the length of the connected line. A question mark can\
+  \ be replaced by any number.\n3. All unshaded cells must have a line. Shaded cells\
+  \ are obstacles."
+koburin: "Shade some cells on the board, and draw a single loop that goes through\
+  \ all remaining cells.\n1. The loop cannot branch off or cross itself.\n2. Shaded\
+  \ cells cannot be orthogonally adjacent.\n3. Cells with numbers or question marks\
+  \ cannot be shaded, and are not part of the loop.\n4. A number indicates the amount\
+  \ of shaded cells in the (up to) four orthogonally adjacent cells."
+heyablock: "Shade some cells on the board.\n1. All shaded cells in one region must\
+  \ be connected.\n2. A number indicates the amount of shaded cells in a region.\n\
+  3. If a region has no number, it must have at least one shaded cell.\n4. Shaded\
+  \ cells cannot be adjacent across region borders.\n5. There cannot be a horizontal\
+  \ or vertical line of unshaded cells that goes through 2 or more region borders.\n\
+  6. All unshaded cells form an orthogonally contiguous area."
+slashpack: "Draw diagonal lines through the center of some cells to divide the board\
+  \ into regions.\n1. Two lines cannot overlap within a cell. All lines must be drawn\
+  \ from one corner to the opposite corner of the cell.\n2. A cell with a number cannot\
+  \ overlap a line.\n3. Each region must contain exactly one of each kind of number\
+  \ on the board.\n4. Question marks can be replaced with any number, as long as it\
+  \ appears elsewhere on the grid."
+icewalk: "Draw a loop that goes through every numbered cell.\n1. Two perpendicular\
+  \ line segments may intersect each other only on icy cells, but they may not turn\
+  \ at their intersection or otherwise overlap.\n2. The loop may not turn on icy cells.\n\
+  3. A number indicates how many cells make up the continuous non-icy section of the\
+  \ loop that the number is on."
+mirrorbk: "Draw lines over the dotted lines to divide the board into regions.\n1.\
+  \ A number indicates the size of the region that contains it.\n2. Regions can have\
+  \ no more than 1 number.\n3. A thick line represents a mirror, and divides two regions.\
+  \ These regions must have reflectional symmetry across this mirror."
+takoyaki: "Draw lines through all unshaded cells, then place circles on top of them.\n\
+  1. Every line goes through exactly three circles: One on each endpoint, and another\
+  \ somewhere in the middle.\n2. Lines cannot cross or branch off, and cannot form\
+  \ loops.\n3. Two circles cannot be orthogonally adjacent.\n4. Circles belonging\
+  \ to the same line cannot share a row or column.\n5. A number indicates the amount\
+  \ of circles in the 4 orthogonally adjacent cells.\n6. Lines and circles cannot\
+  \ overlap shaded cells."
+akichi: "You're given a board divided into rooms. Shade some cells on the board.\n\
+  1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number indicates\
+  \ the size of the largest group of connected unshaded cells within its region.\n\
+  3. There cannot be a horizontal or vertical line of unshaded cells that goes through\
+  \ 2 or more region borders.\n4. All unshaded cells on the board from an orthogonally\
+  \ connected area."

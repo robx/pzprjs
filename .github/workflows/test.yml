@@ -1,5 +1,8 @@
 on:
-  pull_request
+  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -10,6 +13,8 @@ jobs:
       with:
         node-version: 16
     - run: npm install
-    - run: make
-    - run: make test
     - run: npm run-script check-format
+    - run: npm run-script build
+    - run: npm run-script lint
+    - run: npm run-script coverage
+    - uses: codecov/codecov-action@v3

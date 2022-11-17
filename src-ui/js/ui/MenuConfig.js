@@ -20,7 +20,7 @@
 			this.list = {};
 
 			/* 正解自動判定機能 */
-			this.add("autocheck_mode", "guarded", {
+			this.add("autocheck_mode", "simple", {
 				option: ["off", "simple", "guarded"]
 			});
 
@@ -99,6 +99,24 @@
 				case "country":
 					idname = "country_empty";
 					break;
+				case "voxas":
+					idname = "voxas_tatami";
+					break;
+				case "tren":
+					idname = "tren_new";
+					break;
+				case "nuriuzu":
+					idname = "nuriuzu_connect";
+					break;
+				case "pentopia":
+					idname = "pentopia_transparent";
+					break;
+				case "koburin":
+					idname = "koburin_minesweeper";
+					break;
+				case "context":
+					idname = "context_marks";
+					break;
 			}
 			if (!!idname) {
 				this.set(idname, ui.puzzle.getConfig(idname));
@@ -130,9 +148,7 @@
 			}
 
 			if (idname === "mode" || idname === "inputmode") {
-				if (ui.popupmgr.popups.auxeditor.pop) {
-					ui.popupmgr.popups.auxeditor.close();
-				}
+				ui.auxeditor.close();
 			}
 
 			if (idname === "mode") {

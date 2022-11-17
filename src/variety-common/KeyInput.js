@@ -138,11 +138,60 @@ pzpr.classmgr.makeCommon({
 				val = -2;
 			} else if (ca === "s2") {
 				val = -3;
+			} else if (ca === "s3") {
+				val = -4;
+			} else if (ca === "s4") {
+				val = -5;
 			} else {
 				val = null;
 			}
 
 			return val;
+		},
+
+		//---------------------------------------------------------------------------
+		// kc.key_inputqnums()  Input for Tapa-style clues
+		//---------------------------------------------------------------------------
+		key_inputqnums: function(ca) {
+			var cell = this.cursor.getc(),
+				nums = cell.qnums,
+				val = [];
+
+			if (("0" <= ca && ca <= "9") || ca === "-") {
+				var num = ca !== "-" ? +ca : -2;
+				if (num !== -2 && (num < cell.getminnum() || num > cell.getmaxnum())) {
+					return;
+				}
+				if (this.prev === cell) {
+					val = nums.slice();
+				}
+				var existing = cell.distinctQnums && num !== -2 ? val.indexOf(num) : -1;
+				if (existing >= 0) {
+					val.splice(existing, 1);
+				} else {
+					val.push(num);
+				}
+				if (!cell.isValidQnums(val)) {
+					val = [num];
+				}
+			} else if (ca === "BS") {
+				if (nums.length > 1) {
+					for (var i = 0; i < nums.length - 1; i++) {
+						val.push(nums[i]);
+					}
+				}
+			} else if (ca === " ") {
+				val = [];
+			} else {
+				return;
+			}
+
+			cell.setQnums(val);
+			cell.setQans(0);
+			cell.setQsub(0);
+
+			this.prev = cell;
+			cell.draw();
 		},
 
 		//---------------------------------------------------------------------------
@@ -158,7 +207,7 @@ pzpr.classmgr.makeCommon({
 		key_inputdirec_common: function(ca, arrownum) {
 			// 共通処理
 			var cell = this.cursor.getc();
-			if (arrownum && cell.qnum === -1) {
+			if (arrownum && cell.getNum() === -1) {
 				return false;
 			}
 
@@ -181,7 +230,7 @@ pzpr.classmgr.makeCommon({
 			if (dir !== cell.NDIR) {
 				cell.setQdir(cell.qdir !== dir ? dir : cell.NDIR);
 				if (!arrownum) {
-					cell.setQnum(-1);
+					cell.setNum(-1);
 				}
 				this.cursor.draw();
 				return true;

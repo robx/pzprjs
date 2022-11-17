@@ -162,9 +162,8 @@
 			if (excell !== this.cursor.getex()) {
 				this.setcursor(excell);
 			} else {
-				var val = excell.qchar,
-					isInc = (this.inputMode === "letter") === (this.btn === "left");
-				if (isInc) {
+				var val = excell.qchar;
+				if (this.btn === "left") {
 					val = val < 104 ? val + 1 : 0;
 				} else {
 					val = val > 0 ? val - 1 : 104;
@@ -412,6 +411,7 @@
 		errcolor2: "black", // drawSlashes関係 quescolorと同じ
 
 		lightcolor: "rgb(255, 255, 127)",
+		linecolor: "black",
 
 		paint: function() {
 			this.drawBGCells_kinkonkan();
@@ -748,21 +748,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		bkNoObj: ["斜線の引かれていない部屋があります。", "A room has no mirrors."],
-		bkObjGe2: [
-			"斜線が複数引かれた部屋があります。",
-			"A room has more than one mirror."
-		],
-		pairedLetterNe: [
-			"光が同じ文字の場所へ到達しません。",
-			"Beam from a light doesn't reach its pair."
-		],
-		pairedNumberNe: [
-			"光の反射回数が正しくありません。",
-			"The number of reflections is wrong."
-		]
 	}
 });

@@ -433,17 +433,5 @@
 			}
 			return result;
 		}
-	},
-
-	FailCode: {
-		nmAkariNe: [
-			"数字のまわりにある照明の数が間違っています。",
-			"The number is not equal to the number of Akari around it."
-		],
-		akariDup: [
-			"照明に別の照明の光が当たっています。",
-			"Akari is shined from another Akari."
-		],
-		ceDark: ["照明に照らされていないセルがあります。", "A cell is not shined."]
 	}
 });

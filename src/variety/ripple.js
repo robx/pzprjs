@@ -295,38 +295,9 @@
 		},
 
 		checkAdjacentNumbers: function() {
-			var bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var cell = bd.cell[c];
-				if (!cell.isNum()) {
-					continue;
-				}
-				var bx = cell.bx,
-					by = cell.by;
-				var clist = new this.klass.CellList(),
-					clist0 = bd.cellinside(bx, by, bx + 2, by + 2);
-				clist.add(cell);
-				clist0.add(bd.getc(bx - 2, by + 2));
-				for (var i = 0; i < clist0.length; i++) {
-					var cell2 = clist0[i];
-					if (
-						cell !== cell2 &&
-						cell2.isNum() &&
-						cell.getNum() === cell2.getNum()
-					) {
-						clist.add(cell2);
-					}
-				}
-				if (clist.length <= 1) {
-					continue;
-				}
-
-				this.failcode.add("nmAround");
-				if (this.checkOnly) {
-					break;
-				}
-				clist.seterr(1);
-			}
+			this.checkAroundCell(function(cell1, cell2) {
+				return cell1.isNum() && cell1.getNum() === cell2.getNum();
+			}, "nmAround");
 		},
 
 		checkConsecutiveNeighbors: function() {
@@ -364,28 +335,5 @@
 				}
 			}
 		}
-	},
-
-	FailCode: {
-		bkDupNum: [
-			"1つの部屋に同じ数字が複数入っています。",
-			"A room has two or more same numbers."
-		],
-		bkSmallOnBig: [
-			"同じ部屋で上に小さい数字が乗っています。",
-			"There is a smaller number on top of a bigger number in a room."
-		],
-		nmSmallGap: [
-			"数字よりもその間隔が短いところがあります。",
-			"The distance between two equal numbers is smaller than the number."
-		],
-		nmAround: [
-			"同じ数字がタテヨコナナメに隣接しています。",
-			"Equal numbers touch."
-		],
-		nmNotConsecNeighbors: [
-			"連続する数字がタテヨコに隣り合っていません。",
-			"A number is not the neighbor of its consecutive numbers."
-		]
 	}
 });

@@ -134,7 +134,7 @@ ui.event = {
 			return;
 		}
 
-		var msg = ui.selectStr("盤面が更新されています", "The board is edited.");
+		var msg = ui.i18n("beforeunload");
 		e.returnValue = msg;
 		return msg;
 	},

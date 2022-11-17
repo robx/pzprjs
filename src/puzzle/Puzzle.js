@@ -150,11 +150,12 @@
 				this.preInitCanvasInfo.height = height;
 			}
 		},
-		setCanvasSizeByCellSize: function(cellsize) {
+		setCanvasSizeByCellSize: function(cellsize, absolute) {
 			if (!this.preInitCanvasInfo) {
-				this.painter.resizeCanvasByCellSize(cellsize);
+				this.painter.resizeCanvasByCellSize(cellsize, absolute);
 			} else {
-				this.preInitCanvasInfo.cellsize = cellsize;
+				this.preInitCanvasInfo.cellsize =
+					cellsize * (absolute ? 1 : this.painter.cellexpandratio);
 			}
 		},
 
@@ -525,7 +526,7 @@
 				if (!!opt.width && !!opt.height) {
 					pc.resizeCanvas(opt.width, opt.height);
 				} else if (!!opt.cellsize) {
-					pc.resizeCanvasByCellSize(opt.cellsize);
+					pc.resizeCanvasByCellSize(opt.cellsize, true);
 				}
 			}
 			delete puzzle.preInitCanvasInfo;
@@ -609,6 +610,9 @@
 		if (puzzle.pid === "kramma") {
 			pc2.imgtile = puzzle.painter.imgtile;
 		}
+		if ("bank" in imageopt) {
+			pc2.showBank = imageopt.bank;
+		}
 
 		// canvasの設定を適用して、再描画
 		pc2.resizeCanvasByCellSize(imageopt.cellsize);
@@ -626,7 +630,8 @@
 		var type = pzpr.Candle.current;
 		var cellsize = null,
 			bgcolor = null,
-			quality = null;
+			quality = null,
+			bank = null;
 		for (var i = 0; i < arguments.length; i++) {
 			var argv = arguments[i];
 			switch (typeof argv) {
@@ -647,6 +652,9 @@
 					if ("bgcolor" in argv) {
 						bgcolor = argv.bgcolor;
 					}
+					if ("bank" in argv) {
+						bank = argv.bank;
+					}
 					break;
 			}
 		}
@@ -665,6 +673,9 @@
 		}
 		if (bgcolor !== null) {
 			imageopt.bgcolor = bgcolor;
+		}
+		if (bank !== null) {
+			imageopt.bank = bank;
 		}
 
 		return imageopt;

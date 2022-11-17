@@ -148,7 +148,7 @@ ui.popupmgr.addpopup("template", {
 		}
 		for (var i = 0; i < this.captions.length; i++) {
 			var obj = this.captions[i];
-			var text = ui.selectStr(obj.str_jp, obj.str_en);
+			var text = ui.i18n(obj.str_key);
 			if (!!obj.textnode) {
 				obj.textnode.data = text;
 			} else if (!!obj.button) {
@@ -161,11 +161,10 @@ ui.popupmgr.addpopup("template", {
 		var popup = this;
 		this.captions = [];
 		ui.misc.walker(parent, function(el) {
-			if (el.nodeType === 3 && el.data.match(/^__(.+)__(.+)__$/)) {
+			if (el.nodeType === 3 && el.data.match(/^__(.+)__$/)) {
 				popup.captions.push({
 					textnode: el,
-					str_jp: RegExp.$1,
-					str_en: RegExp.$2
+					str_key: RegExp.$1
 				});
 			}
 		});
@@ -219,7 +218,9 @@ ui.popupmgr.addpopup("template", {
 		}
 	},
 	close: function() {
-		this.pop.style.display = "none";
+		if (this.pop) {
+			this.pop.style.display = "none";
+		}
 		if (!this.multipopup) {
 			ui.popupmgr.popup = null;
 		}
@@ -237,6 +238,14 @@ ui.popupmgr.addpopup("newboard", {
 
 	reset: function() {
 		ui.misc.displayByPid(this.pop);
+
+		if (ui.puzzle.klass.Bank.prototype.enabled) {
+			getEL("nb_piecebank").style.display = "";
+			this.loadpresets();
+		} else {
+			getEL("nb_piecebank").style.display = "none";
+		}
+
 		if (this.pid !== "tawa") {
 			return;
 		}
@@ -368,6 +377,7 @@ ui.popupmgr.addpopup("newboard", {
 	// clickshape() たわむれんがの形状指定ボタンを押した時の処理を行う
 	// setshapeidx() たわむれんがの形状指定ボタンに背景色を設定する
 	// getshapeidx() たわむれんがの形状指定ボタン背景色からインデックスを取得する
+	// loadpresets() Fill the dropdown with all possible Bank presets.
 	//---------------------------------------------------------------------------
 	setshape: function(shape) {
 		this.setshapeidx([0, 2, 3, 1][shape]);
@@ -393,6 +403,21 @@ ui.popupmgr.addpopup("newboard", {
 		}
 		return null;
 	},
+	loadpresets: function() {
+		var root = getEL("nb_piecebank_preset");
+		root.replaceChildren();
+
+		var presets = ui.puzzle.board.bank.presets;
+		for (var i = 0; i < presets.length; i++) {
+			if (!presets[i].constant) {
+				continue;
+			}
+			var option = document.createElement("option");
+			option.value = presets[i].shortkey;
+			option.textContent = ui.i18n(presets[i].name) || presets[i].name;
+			root.appendChild(option);
+		}
+	},
 
 	//---------------------------------------------------------------------------
 	// execute() 新規盤面を作成するボタンを押したときの処理を行う
@@ -417,6 +442,9 @@ ui.popupmgr.addpopup("newboard", {
 			var url = pid + "/" + obj.col + "/" + obj.row;
 			if (pid === "tawa") {
 				url += "/" + obj.shape;
+			}
+			if (ui.puzzle.klass.Bank.prototype.enabled) {
+				url += "///" + this.form.preset.value;
 			}
 			ui.puzzle.open(url);
 		}
@@ -591,7 +619,7 @@ ui.popupmgr.addpopup("filesave", {
 		var prohibit = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"];
 		for (var i = 0; i < prohibit.length; i++) {
 			if (filename.indexOf(prohibit[i]) !== -1) {
-				ui.notify.alert("ファイル名として使用できない文字が含まれています。");
+				ui.notify.alert(ui.i18n("filesave.invalid"));
 				return;
 			}
 		}
@@ -652,6 +680,7 @@ ui.popupmgr.addpopup("imagesave", {
 	formname: "imagesave",
 	anchor: null,
 	showsize: null,
+	bankLabel: null,
 	init: function() {
 		ui.popupmgr.popups.template.init.call(this);
 
@@ -660,6 +689,7 @@ ui.popupmgr.addpopup("imagesave", {
 				? getEL("saveanchor")
 				: null;
 		this.showsize = getEL("showsize");
+		this.bankLabel = getEL("bank_label");
 
 		/* ファイル形式選択オプション */
 		var filetype = this.form.filetype,
@@ -682,6 +712,12 @@ ui.popupmgr.addpopup("imagesave", {
 
 		this.form.filename.value = pzpr.variety(ui.puzzle.pid).urlid + ".png";
 		this.form.cellsize.value = ui.menuconfig.get("cellsizeval");
+		if (ui.puzzle.board.bank) {
+			this.bankLabel.style.display = "";
+			this.form.bank.checked = ui.puzzle.board.bank.shouldDrawBank();
+		} else {
+			this.bankLabel.style.display = "none";
+		}
 
 		this.changefilename();
 		this.estimatesize();
@@ -722,13 +758,16 @@ ui.popupmgr.addpopup("imagesave", {
 		var prohibit = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"];
 		for (var i = 0; i < prohibit.length; i++) {
 			if (filename.indexOf(prohibit[i]) !== -1) {
-				ui.notify.alert("ファイル名として使用できない文字が含まれています。");
+				ui.notify.alert(ui.i18n("filesave.invalid"));
 				return;
 			}
 		}
 
 		/* 画像出力ルーチン */
-		var option = { cellsize: +this.form.cellsize.value };
+		var option = {
+			cellsize: +this.form.cellsize.value,
+			bank: this.form.bank.checked
+		};
 		if (this.form.transparent.checked) {
 			option.bgcolor = "";
 		}
@@ -766,7 +805,7 @@ ui.popupmgr.addpopup("imagesave", {
 				this.close();
 			}
 		} catch (e) {
-			ui.notify.alert("画像の出力に失敗しました", "Fail to Output the Image");
+			ui.notify.alert(ui.i18n("imagesave.error"));
 		}
 	},
 
@@ -775,7 +814,10 @@ ui.popupmgr.addpopup("imagesave", {
 	//------------------------------------------------------------------------------
 	openimage: function() {
 		/* 画像出力ルーチン */
-		var option = { cellsize: +this.form.cellsize.value };
+		var option = {
+			cellsize: +this.form.cellsize.value,
+			bank: this.form.bank.checked
+		};
 		if (this.form.transparent.checked) {
 			option.bgcolor = "";
 		}
@@ -790,7 +832,7 @@ ui.popupmgr.addpopup("imagesave", {
 				dataurl = ui.puzzle.toBuffer("svg", option);
 			}
 		} catch (e) {
-			ui.notify.alert("画像の出力に失敗しました", "Fail to Output the Image");
+			ui.notify.alert(ui.i18n("imagesave.error"));
 		}
 		if (!dataurl) {
 			/* No Data URL */ return;

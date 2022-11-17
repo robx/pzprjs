@@ -71,8 +71,10 @@ pzpr.classmgr.makeCommon({
 					this.inputData = cell.qsub !== 1 ? 2 : 0;
 				}
 			} else if (this.puzzle.getConfig("use") === 2) {
-				if (cell.numberRemainsUnshaded && cell.qnum !== -1) {
+				if (!cell.allowShade()) {
 					this.inputData = cell.qsub !== 1 ? 2 : 0;
+				} else if (!cell.allowUnshade()) {
+					this.inputData = cell.qans !== 1 ? 1 : 0;
 				} else if (this.btn === "left") {
 					if (cell.qans === 1) {
 						this.inputData = 2;
@@ -197,6 +199,9 @@ pzpr.classmgr.makeCommon({
 			var subtype = 0; // qsubを0～いくつまで入力可能かの設定
 			if (puzzle.editmode) {
 				subtype = -1;
+				if (this.puzzle.painter.enablebcolor) {
+					qs = 0;
+				}
 			} else if (this.cursor.targetdir >= 2) {
 				subtype = 0;
 				qs = 0;
@@ -241,7 +246,7 @@ pzpr.classmgr.makeCommon({
 					}
 				} else if (num > max) {
 					val = max;
-				} else if (num <= min) {
+				} else if (num <= min && num !== -2) {
 					val = ishatena ? -2 : -1;
 				} else if (num === -2) {
 					val = -1;
@@ -293,10 +298,7 @@ pzpr.classmgr.makeCommon({
 		inputQues_main: function(array, cell) {
 			var qu = cell.ques,
 				len = array.length;
-			var isInc =
-				(this.inputMode === "quesmark" || this.inputMode === "auto") ===
-				(this.btn === "left");
-			if (isInc) {
+			if (this.btn === "left") {
 				for (var i = 0; i <= len - 1; i++) {
 					if (qu === array[i]) {
 						cell.setQues(array[i < len - 1 ? i + 1 : 0]);
