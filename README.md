@@ -1,3 +1,6 @@
+[![Translation status](https://hosted.weblate.org/widgets/pzprjs/en/svg-badge.svg)](https://hosted.weblate.org/engage/pzprjs/en/)
+[![Translation status](https://hosted.weblate.org/widgets/pzprjs/ja/svg-badge.svg)](https://hosted.weblate.org/engage/pzprjs/ja/)
+
 ## About pzprjs
 
 pzprjs enables one to create or edit pencil puzzles like
@@ -11,6 +14,10 @@ This project is a fork of the original [sabo2/pzprjs]; it is live on [puzz.link]
 Please file issues using the issue tracker if you run into any issues with pzprjs.
 Or write to `feedback at puzz.link`, or join
 [puzzlink.zulipchat.com](https://puzzlink.zulipchat.com) to discuss.
+
+### Translation
+
+Translations can be contributed using [Weblate](https://hosted.weblate.org/engage/pzprjs/) (no account required).
 
 ### Repository structure
 
