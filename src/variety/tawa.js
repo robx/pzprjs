@@ -298,6 +298,7 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
+		shadecolor: "#444444",
 		qanscolor: "black",
 		numbercolor_func: "qnum",
 
