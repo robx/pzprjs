@@ -1,5 +1,5 @@
 bdwalk: This genre first appeared in Puzzle Communication Nikoli vol. 174.
-canal: This genre is invented by Prasanna Seshadri.
+canal: This genre was invented by Prasanna Seshadri.
 cbanana: This genre first appeared in Puzzle Communication Nikoli vol. 176.
 crossstitch: This genre is invented by Arvi Teikari a.k.a. Hempuli.
 lapaz: This genre is invented by Shye.
@@ -21,15 +21,16 @@ kaidan: This genre first appeared in Puzzle Communication Nikoli vol. 172.
 roundtrip: This genre is invented by Craig Kasper.
 cts: This genre is invented by Grant Fikes.
 antmill: This genre is invented by Eric Fox.
-heyablock: This genre was invented by Atsumi Hirose for 2013JZdC, and appears in Toketa vol. 1.
+heyablock: This genre was invented by Atsumi Hirose for 2013JZdC, and appears in Toketa
+  vol. 1.
 mirrorbk: This genre first appeared in Puzzle Communication Nikoli vol. 177.
 takoyaki: This genre is invented by Michael Vedder.
-akichi: This genre is invented by Prasanna Seshadri.
+akichi: This genre was invented by Prasanna Seshadri.
 aho: ""
 amibo: ""
 angleloop: ""
 anglers: ""
-aqre: ""
+aqre: "This genre was invented by Eric Fox."
 aquarium: ""
 araf: ""
 armyants: ""
@@ -43,7 +44,7 @@ bonsan: ""
 bosanowa: ""
 box: ""
 skyscrapers: ""
-castle: ""
+castle: "This genre was invented by Palmer Mebane."
 cbblock: ""
 chainedb: ""
 chocona: ""
@@ -54,14 +55,13 @@ coral: ""
 country: ""
 creek: ""
 curvedata: ""
-curvedata-aux: ""
 dbchoco: ""
 detour: ""
 dominion: ""
 doppelblock: ""
 dosufuwa: ""
 dotchi: ""
-doubleback: ""
+doubleback: "This genre was invented by Palmer Mebane."
 easyasabc: ""
 factors: ""
 fillmat: ""
@@ -89,7 +89,7 @@ icelom2: ""
 ichimaga: ""
 ichimagam: ""
 ichimagax: ""
-interbd: ""
+interbd: "This genre was invented by Palmer Mebane."
 juosan: ""
 kaero: ""
 kakuro: ""
@@ -166,7 +166,6 @@ snake: ""
 snakepit: ""
 starbattle: ""
 statuepark: ""
-statuepark-aux: ""
 stostone: ""
 sudoku: ""
 sukoro: ""
