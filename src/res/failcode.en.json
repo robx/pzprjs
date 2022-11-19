@@ -194,7 +194,7 @@
     "bkSepNum": "One kind of number is included in different blocks.",
     "bkShadeDivide.shimaguni": "The shaded cells in a marine area are divided.",
     "bkShadeDivide": "Shaded cells are divided in a room.",
-    "bkShadeGt2.norinori": "A room has three or mode shaded cells.",
+    "bkShadeGt2.norinori": "A room has three or more shaded cells.",
     "bkShadeGt4.lits": "A room has five or more shaded cells.",
     "bkShadeLt2.norinori": "A room has only one shaded cell.",
     "bkShadeLt4.lits": "A room has three or less shaded cells.",
