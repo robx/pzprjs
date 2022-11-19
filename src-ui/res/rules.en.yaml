@@ -359,7 +359,11 @@ ayeheya: "You're given a board divided into rooms. Shade some cells on the board
   \ be a horizontal or vertical line of unshaded cells that goes through 2 or more\
   \ region borders.\n5. All unshaded cells on the board from an orthogonally connected\
   \ area."
-balance: ""
+balance: "Draw lines through orthogonally adjacent cells to form a loop that goes\
+  \ through every circle.\n1. The loop cannot branch off or cross itself.\n2. The\
+  \ straight line segments coming out of a white circle must have equal length.\n\
+  3. The straight line segments coming out of a black circle must have different lengths.\n\
+  4. Numbers indicate the sum of the length of the line segments."
 cave: "Shade some cells on the board to form a cave.\n1. All shaded cells are connected\
   \ through other shaded cells to the outside of the grid.\n2. Numbers cannot be shaded.\n\
   3. Clues represent the total number of unshaded cells that can be seen in a straight\
@@ -369,19 +373,29 @@ barns: "Draw a loop that goes through every cell.\n1. Two perpendicular line seg
   \ may intersect each other only on icy cells, but they may not turn at their intersection\
   \ or otherwise overlap.\n2. The loop may not turn on icy cells.\n3. Lines cannot\
   \ go through bold borders."
-bdblock: ""
+bdblock: "Draw lines over the dotted lines to divide the board into several blocks.\n\
+  1. All identical numbers must be in the same block, and there can be no blocks without\
+  \ numbers.\n2. Dots represent a point where 3 or 4 lines meet. The outside border\
+  \ counts as a line.\n3. All possible dots are given, meaning lines cannot branch\
+  \ or cross at points without a dot.\n4. Lines can not form dead-ends."
 bonsan: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other circles.\n\
   3. A number indicates how many spaces the circle must move.\n4. The circles must\
   \ have 180° rotational symmetry around the board’s center."
-bosanowa: ""
+bosanowa: "Place a positive number inside every circle.\n1. Each number must be equal\
+  \ to the sum of the differences between itself and each orthogonally adjacent number."
 box: "Shade some cells on the board.\n1. Each row and column has a certain value,\
   \ indicated by the circled numbers in the right and bottom of the grid.\n2. The\
   \ numbers at the top indicate the sum of the values of the rows which have a shaded\
   \ cell in that column.\n3. The numbers on the left indicate the sum of the values\
   \ of the columns which have a shaded cell in that row."
-skyscrapers: ""
+skyscrapers: "Place a number in each cell.\n1. Numbers must be between 1 and N, where\
+  \ N is the width of the board.\n2. Each row and column contains exactly one of each\
+  \ number.\n3. Every number inside the grid represents a building, with a height\
+  \ equal to the number. A clue outside the grid represents how many building can\
+  \ be seen in the corresponding row or column from that direction, where higher buildings\
+  \ hide all lower buildings behind it."
 castle: "Draw lines through orthogonally adjacent cells to form a loop.\n1. Lines\
   \ cannot go through bold borders.\n2. White cells must be inside the loop, and black\
   \ cells must be outside the loop.\n3. A number with an arrow indicates the number\
@@ -455,7 +469,10 @@ fivecells: "Divide the board into pentominoes (blocks of 5 cells).\n1. A number 
 fourcells: "Divide the board into tetrominoes (blocks of 4 cells).\n1. A number indicates\
   \ the amount of edges surrounding the cell which contain a border.\n2. All borders\
   \ must be used to divide two blocks, there can not be any dead-ends."
-geradeweg: ""
+geradeweg: "Draw lines through orthogonally adjacent cells to form a loop that goes\
+  \ through every circle.\n1. The loop cannot branch off or cross itself.\n2. Every\
+  \ straight line segment that touches a clue must have a length equal to the clue’s\
+  \ value.\n3. A question mark can be replaced with any number."
 goishi: ""
 gokigen: "Draw a diagonal line in every cell, connecting two opposite corners.\n1.\
   \ A number indicates how many lines meet at that corner.\n2. Lines cannot form loops."
@@ -568,7 +585,9 @@ kurodoko: "Shade some cells on the board.\n1. Shaded cells cannot be horizontall
   \ total number of unshaded cells that can be seen in a straight line vertically\
   \ or horizontally, including itself.\n4. All unshaded cells on the board from an\
   \ orthogonally connected area."
-kurotto: ""
+kurotto: "Shade some cells on the board.\n1. Cells with circles cannot be shaded.\n\
+  2. Numbers indicate the sum of the size of all blocks that share at least one border\
+  \ with the circle."
 kusabi: ""
 lightup: "Place lights in some empty cells so that every non-black cell is illuminated.\n\
   1. Lights illuminate the cell they’re in as well as all cells seen in a straight\
@@ -577,7 +596,8 @@ lightup: "Place lights in some empty cells so that every non-black cell is illum
   \ to) four cells surrounding the clue."
 lits: "Place a tetromino in every outlined region.\n1. There can not be a 2x2 square\
   \ of cells occupied by a tetromino.\n2. Two identical tetrominoes cannot share an\
-  \ edge.\n3. All tetrominoes form an orthogonally connected area."
+  \ edge, counting rotations and reflections as the same.\n3. All tetrominoes form\
+  \ an orthogonally contiguous area."
 lookair: ""
 loopsp: ""
 loute: "Divide the grid into regions of orthogonally connected cells.\n1. Each region\
@@ -599,7 +619,9 @@ meander: "Place a number in each cell to make a path in each region. Some number
   2. Each region contains exactly one of each number.\n3. Two equal numbers cannot\
   \ be horizontally, vertically or diagonally adjacent.\n4. Within each region, two\
   \ consecutive numbers must be orthogonally adjacent."
-mejilink: ""
+mejilink: "Draw lines over the dotted lines to form a loop.\n1. The loop cannot branch\
+  \ off or cross itself.\n2. The amount of cells in a region must equal the number\
+  \ of borders surrounding it that don’t belong to the loop."
 minarism: "Place a number in each cell.\n1. Numbers must be between 1 and N, where\
   \ N is the width of the board.\n2. Each row and column contains exactly one of each\
   \ number.\n3. An arrow points from a larger number to a smaller number.\n4. A number\
@@ -610,8 +632,17 @@ mines: "Locate the cells containing a mine in the grid.\n1. Numbers indicate the
 midloop: "Draw lines through orthogonally adjacent cells to form a loop that goes\
   \ through every circle.\n1. The loop cannot branch off or cross itself.\n2. Each\
   \ circle marks the center of the straight line segment it lies on."
-mochikoro: ""
-mochinyoro: ""
+mochikoro: "Shade some cells on the board to form regions of unshaded cells.\n1. All\
+  \ regions must be rectangular in shape.\n2. A region can have no more than one number.\n\
+  3. A number indicates the size of the region that contains it.\n4. You cannot shade\
+  \ a cell with a number.\n5. The shaded cells cannot form a 2x2 square.\n6. All unshaded\
+  \ rectangles form a diagonally contiguous area."
+mochinyoro: "Shade some cells on the board to form regions of unshaded cells.\n1.\
+  \ Shaded blocks must not form rectangles or squares.\n2. All regions must be rectangular\
+  \ in shape.\n3. A region can have no more than one number.\n4. A number indicates\
+  \ the size of the region that contains it.\n5. You cannot shade a cell with a number.\n\
+  6. The shaded cells cannot form a 2x2 square.\n7. All unshaded rectangles form a\
+  \ diagonally contiguous area."
 moonsun: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The loop\
   \ cannot branch off or cross itself.\n2. Every region must be visited exactly once.\n\
   3. Within a region, the loop must pass through all moons and no suns, or all suns\
@@ -641,10 +672,23 @@ norinori: "Shade some cells on the board.\n1. Each shaded cell is orthogonally a
   \ shaded cells."
 numlin: "Draw paths going through the cells to connect identical numbers.\n1. Two\
   \ paths cannot occupy the same cell."
-nuribou: ""
-nurikabe: ""
+nuribou: "Shade some cells on the board to form regions of unshaded cells.\n1. Each\
+  \ region contains exactly one number.\n2. A number indicates the size of the region\
+  \ that contains it.\n3. You cannot shade a cell with a number.\n4. Shaded cells\
+  \ must form rectangular blocks with a width of 1.\n5. Two blocks of the same size\
+  \ cannot be diagonally adjacent."
+nurikabe: "Shade some cells on the board to form regions of unshaded cells.\n1. Each\
+  \ region contains exactly one number.\n2. A number indicates the size of the region\
+  \ that contains it.\n3. You cannot shade a cell with a number.\n4. The shaded cells\
+  \ cannot form a 2x2 square.\n5. All shaded cells form an orthogonally contiguous\
+  \ area."
 nurimaze: ""
-nurimisaki: ""
+nurimisaki: "Shade some cells on the board.\n1. There cannot be a 2x2 square of all\
+  \ shaded or unshaded cells.\n2. Circles cannot be shaded.\n3. Circles must be orthogonally\
+  \ adjacent to exactly one unshaded cell.\n3. Clues represent the total number of\
+  \ unshaded cells that can be seen in a straight line vertically or horizontally,\
+  \ including itself.\n4. All unshaded cells on the board from an orthogonally connected\
+  \ area."
 onsen: ""
 paintarea: "You're given a grid divided into tiles. Shade some tiles on the board.\n\
   1. A tile is either completely shaded or unshaded.\n2. There can not be a 2x2 square\
@@ -691,7 +735,7 @@ shikaku: "Draw lines over the dotted lines to divide the board into rectangles.\
 shimaguni: "Shade some cells on the board to form islands.\n1. All regions contain\
   \ exactly one island, which is an orthogonally connected group of shaded cells.\n\
   2. A number indicates the size of the island in the region.\n3. Shaded cells cannot\
-  \ be adjacent across region borders.\n4. Two regions which share a border must not\
+  \ be adjacent across region borders.\n4. Two regions which share a border must have\
   \ islands of different sizes."
 shugaku: ""
 shwolf: ""
@@ -774,7 +818,8 @@ yajilin-regions: "Shade some cells on the board, and draw a single loop that goe
   2. Shaded cells cannot be orthogonally adjacent.\n3. A number indicates the amount\
   \ of shaded cells in the outlined region."
 yajitatami: ""
-yinyang: ""
+yinyang: "Place a black or white circle in every cell. Some circles are given.\n1.\
+  \ All circles of the same color must be orthogonally contiguous."
 yosenabe: "Draw lines to move every circle into one of the pots (denoted by a group\
   \ of gray cells).\n1. A circle can be moved horizontally or vertically, but cannot\
   \ make a turn.\n2. Movement lines cannot cross or overlap each other. Lines can\
