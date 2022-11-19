@@ -165,6 +165,10 @@ ui.debug.addDebugData("tapa", {
 				"mouse,rightx77, 17,1"
 			],
 			result: "pzprv3/tapa/1/9/1,1,1,1 3,1,1 -,-,- 5,1 -,- 8 0 - . /"
+		},
+		{
+			input: ["editmode,clear", "mouse,left,5,1,11,1"],
+			result: "pzprv3/tapa/1/9/1,1,1,1 3,1,1 . . . . 0 - . /"
 		}
 	]
 });
