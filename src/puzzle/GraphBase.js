@@ -579,7 +579,7 @@ pzpr.classmgr.makeCommon({
 
 			for (var i = 0; i < npaths; i++) {
 				var currentThetaDeg = (thetaStartDeg + i * spacingDeg) % 360,
-					LCoord = (maxY - Math.pow(10, (-2 * i) / npaths) * ydiff) * 127,
+					LCoord = (maxY - Math.pow(10, (-2.5 * i) / npaths) * ydiff) * 127,
 					aCoord = Math.sin((currentThetaDeg * Math.PI) / 180) * abRadius,
 					bCoord = Math.cos((currentThetaDeg * Math.PI) / 180) * abRadius;
 
