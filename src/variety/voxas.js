@@ -342,18 +342,11 @@
 		},
 
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "t") {
-				this.puzzle.setConfig("voxas_tatami", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("voxas_tatami", false);
-			}
+			this.decodeConfigFlag("t", "voxas_tatami");
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("voxas_tatami")) {
-				this.writeLine("t");
-			}
+			this.encodeConfigFlag("t", "voxas_tatami");
 		}
 	},
 

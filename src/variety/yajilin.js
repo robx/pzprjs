@@ -666,28 +666,13 @@
 		},
 
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "m") {
-				this.puzzle.setConfig("koburin_minesweeper", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("koburin_minesweeper", false);
-			}
-
-			if (this.dataarray[this.lineseek] === "b") {
-				this.puzzle.setConfig("disptype_yajilin", 2);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("disptype_yajilin", 1);
-			}
+			this.decodeConfigFlag("m", "koburin_minesweeper");
+			this.decodeConfigFlag("b", "disptype_yajilin", 2, 1);
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("koburin_minesweeper")) {
-				this.writeLine("m");
-			}
-			if (this.puzzle.getConfig("disptype_yajilin") === 2) {
-				this.writeLine("b");
-			}
+			this.encodeConfigFlag("m", "koburin_minesweeper");
+			this.encodeConfigFlag("b", "disptype_yajilin", 2, 1);
 		}
 	},
 	//---------------------------------------------------------

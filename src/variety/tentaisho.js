@@ -567,18 +567,11 @@
 		},
 
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "c") {
-				this.puzzle.setConfig("nuriuzu_connect", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("nuriuzu_connect", false);
-			}
+			this.decodeConfigFlag("c", "nuriuzu_connect");
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("nuriuzu_connect")) {
-				this.writeLine("c");
-			}
+			this.encodeConfigFlag("c", "nuriuzu_connect");
 		}
 	},
 

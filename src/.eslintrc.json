@@ -20,8 +20,7 @@
     "no-use-before-define":             // Error for using variable before definition
         ["error", {"functions":false, "classes":false}],
     "comma-dangle": ["error", "never"], // Error for trailing comma
-    "no-redeclare": "warn",             // Warn redefine variable (TODO: make this rule error)
-    //"block-scoped-var": "warn",       // Warn var declaration inside block scope
+    "no-redeclare": "off",
     "no-empty": "off",                  // Allow empty block statements
     "no-constant-condition":            // Allow constant condition in conditions
         ["error", {"checkLoops": false}],

@@ -1,5 +1,4 @@
 // Variety.js v3.4.1
-/* global Set:false */
 
 (function() {
 	var _info = {},
@@ -46,76 +45,8 @@
 	});
 	delete variety.extend;
 
-	/*
-	 * To avoid fragmentation, I'm disabling all old genres for the time being,
-	 * to try to avoid having 3 websites to choose from (puzz.link, pzv.jp and this one).
-	 *
-	 * To remove the inhibitor, delete all references to `inhibited` and `allowedGenres`.
-	 *
-	 * -X_Sheep
-	 */
-	var inhibited = false;
-	if (pzpr.env.browser) {
-		inhibited =
-			window.location.protocol !== "file:" &&
-			window.location.host.indexOf("localhost") === -1;
-	} else if (pzpr.env.node) {
-		inhibited = process.env.VERCEL;
-	}
-	var allowedGenres = new Set([
-		"dotchi",
-		"crossstitch",
-		"ovotovata",
-		"lohkous",
-		"chainedb",
-		"canal",
-		"cbanana",
-		"oneroom",
-		"bdwalk",
-		"voxas",
-		"tontti",
-		"rassi",
-		"parquet",
-		"lapaz",
-		"tren",
-		"pentominous",
-		"hinge",
-		"tajmahal",
-		"statuepark",
-		"statuepark-aux",
-		"railpool",
-		"coral",
-		"nuriuzu",
-		"ququ",
-		"coffeemilk",
-		"nothree",
-		"disloop",
-		"lither",
-		"snakepit",
-		"squarejam",
-		"context",
-		"pentopia",
-		"numrope",
-		"yajisoko",
-		"dominion",
-		"roundtrip",
-		"cts",
-		"vslither",
-		"tslither",
-		"antmill",
-		"kaidan",
-		"anglers",
-		"heyablock",
-		"koburin",
-		"mirrorbk",
-		"takoyaki"
-	]);
-
 	(function(Genre, obj) {
 		for (var pzprid in obj) {
-			if (inhibited && !allowedGenres.has(pzprid)) {
-				continue;
-			}
 			_info[pzprid] = new Genre(pzprid, obj[pzprid]);
 			try {
 				Object.freeze(_info[pzprid]);
