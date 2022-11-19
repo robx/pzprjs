@@ -550,7 +550,10 @@ paintarea: ""
 pencils: ""
 pipelink: ""
 pipelinkr: ""
-putteria: ""
+putteria: "Place some numbers on the board.\n1. Each region should only contain 1\
+  \ number.\n2. The number in the region should be equal to the size of the region.\n\
+  3. Numbers cannot be orthogonally adjacent.\n4. Identical numbers cannot be placed\
+  \ in the same row or column."
 rectslider: ""
 reflect: ""
 renban: ""
