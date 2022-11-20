@@ -7,9 +7,6 @@ var pzpr = require("../../");
 var puzzle = new pzpr.Puzzle();
 
 describe("Variety:yajilin", function() {
-	afterEach(function() {
-		puzzle.setConfig("irowake", false);
-	});
 	it("Clues are considered completed correctly", function() {
 		puzzle.open("yajilin/7/1/41b30a");
 		puzzle.setMode("play");
@@ -31,6 +28,8 @@ describe("Variety:yajilin", function() {
 		puzzle.mouse.inputPath("left", 1, 5, 3, 5);
 
 		puzzle.irowake();
+
+		puzzle.setConfig("irowake", false);
 
 		var items = puzzle.board.linegraph.components;
 		assert.notEqual(items[0].color, items[1].color);
