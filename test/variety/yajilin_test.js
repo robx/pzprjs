@@ -7,6 +7,9 @@ var pzpr = require("../../");
 var puzzle = new pzpr.Puzzle();
 
 describe("Variety:yajilin", function() {
+	afterEach(function() {
+		puzzle.setConfig("irowake", false);
+	});
 	it("Clues are considered completed correctly", function() {
 		puzzle.open("yajilin/7/1/41b30a");
 		puzzle.setMode("play");
@@ -17,5 +20,21 @@ describe("Variety:yajilin", function() {
 		puzzle.mouse.inputPath("right", 13, 1);
 		assert.equal(puzzle.board.cell[0].isCmp(), true);
 		assert.equal(puzzle.board.cell[3].isCmp(), true);
+	});
+	it("Check irowake adds different color", function() {
+		puzzle.open("yajilin/2/3/");
+		puzzle.setConfig("irowake", true);
+		puzzle.irowake();
+
+		puzzle.mouse.inputPath("left", 1, 1, 3, 1);
+		puzzle.mouse.inputPath("left", 1, 3, 3, 3);
+		puzzle.mouse.inputPath("left", 1, 5, 3, 5);
+
+		puzzle.irowake();
+
+		var items = puzzle.board.linegraph.components;
+		assert.notEqual(items[0].color, items[1].color);
+		assert.notEqual(items[0].color, items[2].color);
+		assert.notEqual(items[1].color, items[2].color);
 	});
 });
