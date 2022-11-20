@@ -905,10 +905,9 @@ sukoro: "Place a number between 1 and 4 into some of the cells. Some numbers are
   3. All numbers form an orthogonally contiguous area."
 sukororoom: "Place a number between 1 and 4 into some of the cells. Some numbers are\
   \ given.\n1. Each number is equal to the amount of (up to 4) orthogonally adjacent\
-  \ cells that also contain a number.\n2. Identical numbers cannot be orthogonally\
-  \ adjacent.\n3. Every outlined region must be completely filled with number or remain\
-  \ empty.\n4. Numbers cannot repeat within a region.\n5. All numbers form an orthogonally\
-  \ contiguous area."
+  \ cells that also contain a number.\n2. Every outlined region must be completely\
+  \ filled with numbers or remain empty.\n3. Numbers cannot repeat within a region.\n\
+  4. All numbers form an orthogonally contiguous area."
 symmarea: "Divide the grid into regions.\n1. A number indicates the size of the region,\
   \ in cells. Regions can have any amount of identical numbers, or none at all.\n\
   2. Two regions of the same size cannot be orthogonally adjacent.\n3. Every region\
