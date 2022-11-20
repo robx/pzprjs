@@ -448,11 +448,13 @@
 			this.decodeAreaRoom();
 			this.decodeCellQues_nurimaze();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeAreaRoom();
 			this.encodeCellQues_nurimaze();
 			this.encodeCellAns();
+			this.encodeBorderLine();
 		},
 
 		decodeCellQues_nurimaze: function() {
