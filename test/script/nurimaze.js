@@ -167,10 +167,7 @@ ui.debug.addDebugData("nurimaze", {
 				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
 		},
 		{
-			input: [
-				"ansclear",
-				"playmode,line"
-			]
+			input: ["ansclear", "playmode,line"]
 		},
 		{
 			input: ["mouse,left, 7,3, 1,3, 1,5, 7,5"],
