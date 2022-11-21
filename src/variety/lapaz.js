@@ -195,7 +195,7 @@
 		gridcolor_type: "LIGHT",
 		bgcellcolor_func: "qsub1",
 
-		qanscolor: "rgb(0, 80, 0)",
+		qanscolor: "black",
 
 		paint: function() {
 			this.drawBGCells();
