@@ -165,6 +165,22 @@ ui.debug.addDebugData("nurimaze", {
 			input: ["mouse,left, 7,3, 1,3, 1,5, 7,5"],
 			result:
 				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+		},
+		{
+			input: [
+				"ansclear",
+				"playmode,line"
+			]
+		},
+		{
+			input: ["mouse,left, 7,3, 1,3, 1,5, 7,5"],
+			result:
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /0 0 0 /1 1 1 /1 1 1 /0 0 0 0 /1 0 0 0 /"
+		},
+		{
+			input: ["mouse,left, 7,3, 1,3, 1,5, 7,5"],
+			result:
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
 		}
 	]
 });
