@@ -118,22 +118,11 @@
 		},
 
 		posthook: {
-			qans: function() {
-				this.rebuildAroundCell();
-			},
 			qnum: function(val) {
 				if (val !== -1) {
 					this.setQues(0);
 				}
 			}
-		},
-
-		rebuildAroundCell: function() {
-			this.getdir4cblist().forEach(function(t) {
-				if (t[1] && !t[1].isnull) {
-					t[1].updateGhostBorder();
-				}
-			});
 		},
 
 		setValid: function(inputData) {
@@ -146,14 +135,26 @@
 			}
 			this.drawaround();
 			this.board.roommgr.rebuild();
+		},
+
+		getBorder: function(cell2) {
+			return this.reldirbd(this.getdir(cell2, 2), 1);
 		}
 	},
 	Border: {
 		isGrid: function() {
-			return this.sidecell[0].isValid() && this.sidecell[1].isValid();
+			return (
+				this.sidecell[0] !== null &&
+				this.sidecell[0].isValid() &&
+				this.sidecell[1] !== null &&
+				this.sidecell[1].isValid()
+			);
 		},
 		isBorder: function() {
-			return this.qans > 0 || this.isQuesBorder();
+			return this.qans > 0 || this.isShadeBorder() || this.isQuesBorder();
+		},
+		isShadeBorder: function() {
+			return this.sidecell[0].isShade() || this.sidecell[1].isShade();
 		},
 		isQuesBorder: function() {
 			return !!(this.sidecell[0].isEmpty() ^ this.sidecell[1].isEmpty());
@@ -166,48 +167,25 @@
 			qsub: function() {
 				return !this.isGrid();
 			}
-		},
-
-		isCmp: function() {
-			return !!this.qcmp;
-		},
-
-		updateGhostBorder: function() {
-			if (!this.inside) {
-				return;
-			}
-
-			var cell1 = this.sidecell[0],
-				cell2 = this.sidecell[1];
-			if (cell1.isShade() || cell2.isShade()) {
-				this.setQcmp(1);
-			} else {
-				this.setQcmp(0);
-			}
-			this.draw();
 		}
 	},
 	Board: {
 		hasborder: 2,
 
 		cols: 8,
-		rows: 8,
-
-		rebuildInfo: function() {
-			this.common.rebuildInfo.call(this);
-			this.border.each(function(border) {
-				border.updateGhostBorder();
-			});
-		}
+		rows: 8
 	},
 	AreaRoomGraph: {
 		enabled: true,
 		relation: {
-			"border.qcmp": "separator",
+			"cell.qans": "node",
 			"border.qans": "separator"
 		},
+		isedgevalidbynodeobj: function(cell1, cell2) {
+			return this.isedgevalidbylinkobj(cell1.getBorder(cell2));
+		},
 		isedgevalidbylinkobj: function(border) {
-			return !border.isBorder() && !border.qcmp;
+			return !border.isBorder();
 		}
 	},
 	//---------------------------------------------------------
@@ -218,7 +196,6 @@
 		bgcellcolor_func: "qsub1",
 
 		qanscolor: "rgb(0, 80, 0)",
-		qcmpcolor: "rgb(0, 80, 0)",
 
 		paint: function() {
 			this.drawBGCells();
@@ -262,11 +239,9 @@
 			if (border.isQuesBorder()) {
 				return this.quescolor;
 			}
-
-			if (!border.isBorder() && border.isCmp() && border.trial) {
-				return this.trialcolor;
+			if (border.sidecell[0].isShade() || border.sidecell[1].isShade()) {
+				return this.qanscolor;
 			}
-
 			return this.getBorderColor_qans(border);
 		}
 	},
