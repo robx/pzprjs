@@ -16,7 +16,7 @@
 			edit: ["number", "clear", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
 		},
-		mouseinput: function() {
+		mouseinput_auto: function() {
 			// オーバーライド
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -24,12 +24,24 @@
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
-					this.inputqnum_tapa();
+					this.inputqnum();
 				}
 			}
 		},
+		mouseinput_clear: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
 
-		inputqnum_tapa: function() {
+			cell.setQnums([]);
+			cell.setQans(0);
+			cell.setQsub(0);
+			cell.draw();
+			this.mouseCell = cell;
+		},
+
+		inputqnum: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
 				return;
