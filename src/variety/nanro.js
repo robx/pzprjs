@@ -20,6 +20,9 @@
 				this.dragnumber_nanro();
 			}
 		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -170,6 +173,15 @@
 			component.number = filled;
 			component.numcnt = nums[filled] + circlecnt;
 			component.numkind = numkind;
+			console.log(
+				component.clist[0].id +
+					"=" +
+					component.number +
+					" " +
+					component.numcnt +
+					" " +
+					component.numkind
+			);
 		}
 	},
 
