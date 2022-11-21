@@ -718,12 +718,12 @@ moonsun: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The
   \ used regions."
 nagare: "Draw lines through orthogonally adjacent cells to form a directional loop.\n\
   1. The loop cannot branch off or cross itself.\n2. The loop cannot go through a\
-  \ shaded cell.\n3. All black arrows must be visited by the loop and travel in the\
-  \ indicated direction, without turning inside that cell.\n4. White arrows in shaded\
-  \ cells represent fans, which blow wind for all cells in the given direction, up\
-  \ to the next shaded cell. The loop cannot travel against the wind.\n5. When entering\
-  \ a cell that has wind, the loop must immediately turn in the direction of the wind.\n\
-  6. A cell which is pointed to by multiple fans cannot be entered by the loop."
+  \ shaded cell.\n3. The loop must visit all black arrows and travel in the indicated\
+  \ direction, without turning inside the cell.\n4. White arrows in shaded cells represent\
+  \ fans, which blow wind for all cells in the given direction, up to the next shaded\
+  \ cell. The loop cannot travel against the wind.\n5. When entering a cell that has\
+  \ wind, the loop must immediately turn in the direction of the wind.\n6. A cell\
+  \ which is pointed to by two opposing fans cannot be entered by the loop."
 nagenawa: "Draw lines through the center of some cells to make rectangular loops.\n\
   1. Loops may cross each other, but may not overlap or share a corner.\n2. Numbers\
   \ indicate how many cells in the outlined region are used by a loop."
