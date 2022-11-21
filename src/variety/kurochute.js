@@ -103,10 +103,10 @@
 		},
 
 		getQuesNumberColor: function(cell) {
-			if (cell.qcmp === 1) {
-				return this.qcmpcolor;
-			} else if (cell.error === 1) {
+			if (cell.error === 1) {
 				return this.errcolor1;
+			} else if (cell.qcmp === 1) {
+				return this.qcmpcolor;
 			}
 			return this.quescolor;
 		}
