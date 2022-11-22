@@ -4,10 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+<link rel="manifest" href="./site.webmanifest">
+<link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
 <link rel="stylesheet" href="./css/ui.css?<%= git.hash %>" type="text/css">
+<script type="text/javascript">
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister()
+      }
+    })
+  });
+}
+</script>
 <script type="text/javascript" src="./js/pzpr.js?<%= git.hash %>"></script>
 <script type="text/javascript" src="./js/pzpr-ui.js?<%= git.hash %>"></script>
-<title>pzprxs player</title>
+<title>puzz.link player</title>
 </head>
 
 <body>
@@ -28,6 +44,8 @@
      <li class="link" data-linktype="duplicate" id="menu_duplicate"><a target="_blank">__duplicate__</a></li>
      <hr>
      <li data-popup="imagesave" id="menu_imagesave"><span>__imagesave__</span></li>
+     <hr>
+     <li data-popup="network" id="menu_network"><span>__network.title__</span></li>
    </menu></li>
    <li id="menu_edit"><span>__menu_edit__</span><menu label="__menu_edit__">
      <li data-popup="adjust" id="menu_adjust"><span>__adjust__</span></li>
@@ -48,7 +66,6 @@
        <li data-value="2"><span>__font.serif__</span></li>
      </menu></li>
      <hr>
-     <li class="check" data-config="dispqnumbg"><span>__dispqnumbg__</span></li>
      <li class="check" data-config="undefcell"><span>__undefcell__</span></li>
      <li class="check" data-config="cursor"><span>__cursor__</span></li>
      <li class="check" data-config="trialmarker"><span>__trialmarker__</span></li>
@@ -90,7 +107,7 @@
      <hr>
      <li data-popup="about"><span>__about__</span></li>
      <li class="link"><a target="_blank" href="https://hosted.weblate.org/projects/pzprjs/">__translate__</a></li>
-     <li class="link"><a target="_blank" href="https://github.com/x-sheep/pzprjs/issues">__issues__</a></li>
+     <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__issues__</a></li>
    </menu></li>
   </menu>
   <div id="usepanel" style="display:none;">
@@ -295,6 +312,12 @@
       <label>
         <input type="checkbox">
         <span>__context_marks__</span>
+      </label>
+    </div>
+    <div class="config" data-config="dispqnumbg">
+      <label>
+        <input type="checkbox">
+        <span>__dispqnumbg__</span>
       </label>
     </div>
     <div class="config" data-config="keypopup">
@@ -630,7 +653,7 @@
   <div class="popup" id="about">
     <div class="titlebar">__about.title__</div>
     <form name="about">
-      <p><a href="https://github.com/x-sheep/pzprjs">github.com/x-sheep/pzprjs</a> version <%= git.hash %></p>
+      <p><a href="https://github.com/robx/pzprjs">github.com/robx/pzprjs</a> version <%= git.hash %></p>
       <p>based on <span>__about.pzv__</span> by <span>__about.author__</span></p>
       <button type="button" class="btn btn-ok" data-button-exec="close">OK</button>
     </form>

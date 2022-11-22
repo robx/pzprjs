@@ -133,6 +133,7 @@ function toBGimage(pid) {
 		"kropki",
 		"maxi",
 		"midloop",
+		"mirrorbk",
 		"moonsun",
 		"nondango",
 		"nonogram",

@@ -733,18 +733,11 @@
 
 	"FileIO@pentopia": {
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "t") {
-				this.puzzle.setConfig("pentopia_transparent", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("pentopia_transparent", false);
-			}
+			this.decodeConfigFlag("t", "pentopia_transparent");
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("pentopia_transparent")) {
-				this.writeLine("t");
-			}
+			this.encodeConfigFlag("t", "pentopia_transparent");
 		}
 	},
 

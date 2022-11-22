@@ -266,18 +266,11 @@
 		},
 
 		decodeConfig: function() {
-			if (this.dataarray[this.lineseek] === "r") {
-				this.puzzle.setConfig("aquarium_regions", true);
-				this.readLine();
-			} else {
-				this.puzzle.setConfig("aquarium_regions", false);
-			}
+			this.decodeConfigFlag("r", "aquarium_regions");
 		},
 
 		encodeConfig: function() {
-			if (this.puzzle.getConfig("aquarium_regions")) {
-				this.writeLine("r");
-			}
+			this.encodeConfigFlag("r", "aquarium_regions");
 		}
 	},
 

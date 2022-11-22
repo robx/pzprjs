@@ -378,18 +378,18 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkOverThreeCells@heteromino",
+			"checkTouchDifferent@heteromino",
+			"checkLessThreeCells@heteromino",
 			"checkRoomRect@nawabari",
 			"checkNoNumber@nawabari",
 			"checkDoubleNumber@nawabari",
-			"checkOverThreeCells@heteromino",
 			"checkOverFourCells@fourcells",
 			"checkOverFiveCells@fivecells",
 			"checkdir4BorderAns@!heteromino",
 			"checkBorderDeadend+",
-			"checkLessThreeCells@heteromino",
 			"checkLessFourCells@fourcells",
-			"checkLessFiveCells@fivecells",
-			"checkTouchDifferent@heteromino"
+			"checkLessFiveCells@fivecells"
 		],
 
 		checkOverThreeCells: function() {
