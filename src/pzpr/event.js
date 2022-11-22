@@ -20,6 +20,20 @@
 	// 起動時処理実行処理
 	//----------------------------------------------------------------------
 	function postload(e) {
+		if (navigator && "serviceWorker" in navigator) {
+			navigator.serviceWorker.getRegistrations().then(function(registrations) {
+				registrations.forEach(function(registration) {
+					registration.unregister();
+				});
+
+				if (registrations.length > 0 && location) {
+					setTimeout(function() {
+						location.reload();
+					}, 500);
+				}
+			});
+		}
+
 		if (preinit) {
 			preinit = false;
 			for (var i = 0; i < loadfun.length; i++) {

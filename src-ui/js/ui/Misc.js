@@ -155,6 +155,7 @@ function toBGimage(pid) {
 		"statuepark",
 		"symmarea",
 		"tajmahal",
+		"takoyaki",
 		"tapaloop",
 		"tents",
 		"tslither",
