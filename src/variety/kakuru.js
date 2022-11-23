@@ -116,6 +116,7 @@
 					this.inputData--;
 				}
 				if (this.inputData >= 1 && this.inputData <= 9) {
+					cell.clrSnum();
 					cell.setAnum(this.inputData);
 				} else {
 					return;
