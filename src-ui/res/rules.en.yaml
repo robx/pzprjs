@@ -840,7 +840,7 @@ sashigane: "Divide the grid into regions of orthogonally connected cells.\n1. Ea
 satogaeri: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other circles.\n\
-  3. A number indicates how many spaces the circle must move.\n5. Each region must\
+  3. A number indicates how many spaces the circle must move.\n4. Each region must\
   \ have exactly one circle."
 scrin: "Place several rectangles into the grid, where the corners are located on the\
   \ dots.\n1. Rectangles cannot overlap or have a border in common.\n2. A rectangle\
