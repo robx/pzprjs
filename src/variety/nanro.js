@@ -20,6 +20,9 @@
 				this.dragnumber_nanro();
 			}
 		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
