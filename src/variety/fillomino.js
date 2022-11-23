@@ -483,10 +483,6 @@
 		initBoardSize: function(col, row) {
 			this.common.initBoardSize.call(this, col, row);
 
-			if (this.puzzle.playeronly) {
-				return;
-			}
-
 			var odd = (col * row) % 5;
 			if (odd >= 1) {
 				this.getc(this.minbx + 1, this.minby + 1).ques = 7;
@@ -651,6 +647,10 @@
 	"Encode@pentominous": {
 		decodePzpr: function(type) {
 			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				bd.cell[c].setQues(0);
+			}
+
 			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
 				if (val === 12) {
 					bd.cell[c].ques = 7;
