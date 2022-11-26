@@ -37,22 +37,6 @@
 					}
 				}
 			}
-		},
-
-		inputShade: function() {
-			var cell = this.getcell();
-			if (this.mousestart) {
-				if (this.inputData === null) {
-					this.inputData = cell.qnum === -1 ? 0 : 1 - cell.ques;
-				}
-
-				cell.setQues(this.inputData);
-				if (cell.qnum === -1) {
-					cell.setQnum(-2);
-				}
-
-				cell.draw();
-			}
 		}
 	},
 
@@ -223,11 +207,24 @@
 	},
 	FileIO: {
 		decodeData: function() {
-			this.decodeCellQnum();
+			this.decodeCell(function(cell, ca) {
+				if (ca === ".") {
+					return;
+				}
+				var inp = ca.split(",");
+				cell.ques = +inp[0];
+				cell.qnum = +inp[1];
+			});
 			this.decodeCellAns();
 		},
 		encodeData: function() {
-			this.encodeCellQnum();
+			this.encodeCell(function(cell) {
+				if (cell.qnum !== -1) {
+					return cell.ques + "," + cell.qnum + " ";
+				} else {
+					return ". ";
+				}
+			});
 			this.encodeCellAns();
 		}
 	},
