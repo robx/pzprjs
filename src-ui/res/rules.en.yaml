@@ -1021,3 +1021,7 @@ yosenabe: "Draw lines to move every circle into one of the pots (denoted by a gr
   \ also not go through the start- or endpoint of other circles.\n3. Numbers indicate\
   \ the sum of the values on the circles that are moved into the pot.\n4. A pot without\
   \ a number must have at least one circle."
+lightshadow: "Shade some cells on the board to form shaded and unshaded areas.\n1.\
+  \ Each orthogonally connected area contains exactly one clue.\n2. The color of clued\
+  \ cells cannot be changed.\n3. A clue represents the size of the area of shaded\
+  \ or unshaded cells that the clue belongs to."
