@@ -37,6 +37,57 @@
 					}
 				}
 			}
+		},
+
+		inputcell: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.inputData === null) {
+				this.decIC(cell);
+			}
+
+			this.mouseCell = cell;
+			this.initFirstCell(cell);
+
+			if (!cell.allowShade()) {
+				return;
+			}
+
+			cell.setQans(this.inputData);
+			cell.draw();
+		},
+		decIC: function(cell) {
+			if (
+				this.inputMode === "shade" ||
+				(this.btn === "left" && this.puzzle.getConfig("use") === 1)
+			) {
+				this.inputData = cell.qans !== 1 ? 1 : 0;
+			} else if (
+				this.inputMode === "unshade" ||
+				(this.btn === "right" && this.puzzle.getConfig("use") === 1)
+			) {
+				this.inputData = cell.qans !== 2 ? 2 : 0;
+			} else if (this.puzzle.getConfig("use") === 2) {
+				if (this.btn === "left") {
+					if (cell.qans === 1) {
+						this.inputData = 2;
+					} else if (cell.qans === 2) {
+						this.inputData = 0;
+					} else {
+						this.inputData = 1;
+					}
+				} else if (this.btn === "right") {
+					if (cell.qans === 1) {
+						this.inputData = 0;
+					} else if (cell.qans === 2) {
+						this.inputData = 1;
+					} else {
+						this.inputData = 2;
+					}
+				}
+			}
 		}
 	},
 
@@ -77,15 +128,6 @@
 
 	Cell: {
 		numberRemainsUnshaded: true,
-		isShade: function() {
-			return (
-				!this.isnull &&
-				(this.qans === 1 || (this.qnum !== -1 && this.ques === 1))
-			);
-		},
-		isUnshade: function() {
-			return !this.isnull && !this.isShade();
-		},
 		maxnum: function() {
 			return this.board.cols * this.board.rows;
 		}
@@ -93,11 +135,17 @@
 
 	AreaShadeGraph: {
 		relation: { "cell.qans": "node", "cell.ques": "node" },
-		enabled: true
-	},
-	AreaUnshadeGraph: {
-		relation: { "cell.qans": "node", "cell.ques": "node" },
-		enabled: true
+		enabled: true,
+		isnodevalid: function(cell) {
+			return cell.qnum !== -1 || cell.qans !== 0;
+		},
+		isedgevalidbynodeobj: function(nodeobj1, nodeobj2) {
+			var shade1 =
+				nodeobj1.qans === 1 || (nodeobj1.qnum !== -1 && nodeobj1.ques === 1);
+			var shade2 =
+				nodeobj2.qans === 1 || (nodeobj2.qnum !== -1 && nodeobj2.ques === 1);
+			return shade1 === shade2;
+		}
 	},
 
 	Graphic: {
@@ -215,7 +263,9 @@
 				cell.ques = +inp[0];
 				cell.qnum = +inp[1];
 			});
-			this.decodeCellAns();
+			this.decodeCell(function(cell, ca) {
+				cell.qans = +ca;
+			});
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
@@ -225,32 +275,67 @@
 					return ". ";
 				}
 			});
-			this.encodeCellAns();
+			this.encodeCell(function(cell) {
+				return cell.qans + " ";
+			});
 		}
 	},
 
 	AnsCheck: {
-		checklist: ["checkNumberSize", "doneShadingDecided"],
+		checklist: [
+			"checkDoubleNumberInShade",
+			"checkShadeSizeGt",
+			"checkShadeSizeLt",
+			"checkNoNumberInShade",
+			"checkEmptyCell+"
+		],
 
-		checkNumberSize: function() {
-			for (var i = 0; i < this.board.cell.length; i++) {
-				var cell = this.board.cell[i];
-				var qnum = cell.qnum;
-				if (qnum <= 0) {
-					continue;
-				}
-
-				var block = cell.isShade() ? cell.sblk : cell.ublk;
-				var d = block.clist.length;
-
-				if (d !== qnum) {
-					this.failcode.add("bkSizeNe");
-					if (this.checkOnly) {
-						return;
-					}
-					block.clist.seterr(1);
-				}
-			}
+		checkNoNumberInShade: function() {
+			this.checkAllBlock(
+				this.board.sblkmgr,
+				function(cell) {
+					return cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a !== 0;
+				},
+				"bkNoNum"
+			);
+		},
+		checkDoubleNumberInShade: function() {
+			this.checkAllBlock(
+				this.board.sblkmgr,
+				function(cell) {
+					return cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a < 2;
+				},
+				"bkNumGe2"
+			);
+		},
+		checkShadeSizeGt: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return n <= 0 || n >= a;
+				},
+				"bkSizeGt"
+			);
+		},
+		checkShadeSizeLt: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return n <= 0 || n <= a;
+				},
+				"bkSizeLt"
+			);
+		},
+		checkEmptyCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.noNum() && cell.qans === 0;
+			}, "ceEmpty");
 		}
 	}
 });
