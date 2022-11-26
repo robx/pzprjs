@@ -24,8 +24,8 @@
 						return;
 					}
 					if (cell === this.cursor.getc() || this.btn === "left") {
-						if (cell.qans === 1) {
-							cell.setQues(1);
+						if (cell.qnum === -1) {
+							cell.setQues(cell.qans === 1 ? 1 : 0);
 						}
 						this.inputqnum();
 					} else {
@@ -117,9 +117,7 @@
 					cell.ques = 0;
 					cell.draw();
 				} else {
-					if (cell.qans === 1) {
-						cell.setQues(1);
-					}
+					cell.setQues(cell.qans === 1 ? 1 : 0);
 					this.key_inputqnum(ca);
 				}
 			}
