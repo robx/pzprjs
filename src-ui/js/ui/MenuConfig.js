@@ -20,7 +20,7 @@
 			this.list = {};
 
 			/* 正解自動判定機能 */
-			this.add("autocheck_mode", "simple", {
+			this.add("autocheck_mode", "guarded", {
 				option: ["off", "simple", "guarded"]
 			});
 
