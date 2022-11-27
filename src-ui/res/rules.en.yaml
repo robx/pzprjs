@@ -806,7 +806,7 @@ pipelinkr: "Draw a loop that goes through every cell.\n1. Two perpendicular line
 putteria: "Place one number in a cell of each region on the board.\n1. The number\
   \ in the region should be equal to the size of the region.\n2. Numbers cannot be\
   \ orthogonally adjacent.\n3. Identical numbers cannot be placed in the same row\
-  \ or column.\n4. Crosses cannot contain numbers."
+  \ or column.\n4. Cells marked with a cross cannot contain a number."
 rectslider: "Draw lines to move some of the panels.\n1. A panel can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other panels.\n\
