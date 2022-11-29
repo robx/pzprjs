@@ -158,6 +158,7 @@ ui.toolarea = {
 				: "none";
 		this.setdisplay("trialmode");
 		this.setdisplay("network");
+		this.setdisplay("autocheck_mode");
 
 		/* 共通：キャプションの設定 */
 		/* --------------------- */
@@ -207,6 +208,33 @@ ui.toolarea = {
 				str = ui.i18n("check");
 			}
 			getEL("btncheck").textContent = str;
+		}
+		if (idname === "autocheck_mode") {
+			var checkMode = ui.menuconfig.get("autocheck_mode");
+
+			if (!ui.puzzle.playeronly) {
+				checkMode = "off";
+			} else if (
+				checkMode === "guarded" &&
+				!ui.puzzle.checker.supportsGuarded
+			) {
+				checkMode = "simple";
+			}
+
+			var classes = getEL("btncheck").classList;
+			classes.remove("btn-ok", "btn-mono", "btn-info");
+
+			switch (checkMode) {
+				case "guarded":
+					classes.add("btn-info");
+					break;
+				case "simple":
+					classes.add("btn-ok");
+					break;
+				case "off":
+					classes.add("btn-mono");
+					break;
+			}
 		}
 
 		var trial = ui.puzzle.board.trialstage > 0;

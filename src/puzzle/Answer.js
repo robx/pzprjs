@@ -18,6 +18,7 @@ pzpr.classmgr.makeCommon({
 		failcodemode: void 0,
 		failcode: void 0,
 		_info: void 0,
+		supportsGuarded: false,
 		checklist: [],
 
 		//---------------------------------------------------------------------------
@@ -31,6 +32,9 @@ pzpr.classmgr.makeCommon({
 				var item = checklist[i],
 					isexist = true,
 					prio = 0;
+				if (item.startsWith("done")) {
+					this.supportsGuarded = true;
+				}
 				if (item.match("@")) {
 					isexist = pzpr.util.checkpid(
 						item.substr(item.indexOf("@") + 1),
