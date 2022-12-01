@@ -8,7 +8,7 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["number", "clear"],
+			edit: ["number", "clear", "shade", "unshade"],
 			play: ["shade", "unshade"]
 		},
 
@@ -51,37 +51,54 @@
 			this.mouseCell = cell;
 			this.initFirstCell(cell);
 
-			if (!cell.allowShade()) {
-				return;
+			if (this.puzzle.playmode && cell.allowShade()) {
+				cell.setQans(this.inputData);
+			} else if (this.puzzle.editmode) {
+				if (this.inputData === 0) {
+					cell.setQnum(-1);
+				} else {
+					cell.setQues(2 - this.inputData);
+					if (cell.qnum === -1) {
+						cell.setQnum(-2);
+					}
+				}
 			}
-
-			cell.setQans(this.inputData);
 			cell.draw();
 		},
 		decIC: function(cell) {
+			var value = this.puzzle.playmode
+				? cell.qans
+				: cell.qnum === -1
+				? 0
+				: 2 - cell.ques;
+
 			if (
 				this.inputMode === "shade" ||
-				(this.btn === "left" && this.puzzle.getConfig("use") === 1)
+				(this.inputMode === "auto" &&
+					this.btn === "left" &&
+					this.puzzle.getConfig("use") === 1)
 			) {
-				this.inputData = cell.qans !== 1 ? 1 : 0;
+				this.inputData = value !== 1 ? 1 : 0;
 			} else if (
 				this.inputMode === "unshade" ||
-				(this.btn === "right" && this.puzzle.getConfig("use") === 1)
+				(this.inputMode === "auto" &&
+					this.btn === "right" &&
+					this.puzzle.getConfig("use") === 1)
 			) {
-				this.inputData = cell.qans !== 2 ? 2 : 0;
+				this.inputData = value !== 2 ? 2 : 0;
 			} else if (this.puzzle.getConfig("use") === 2) {
 				if (this.btn === "left") {
-					if (cell.qans === 1) {
+					if (value === 1) {
 						this.inputData = 2;
-					} else if (cell.qans === 2) {
+					} else if (value === 2) {
 						this.inputData = 0;
 					} else {
 						this.inputData = 1;
 					}
 				} else if (this.btn === "right") {
-					if (cell.qans === 1) {
+					if (value === 1) {
 						this.inputData = 0;
-					} else if (cell.qans === 2) {
+					} else if (value === 2) {
 						this.inputData = 1;
 					} else {
 						this.inputData = 2;
@@ -117,7 +134,9 @@
 					cell.ques = 0;
 					cell.draw();
 				} else {
-					cell.setQues(cell.qans === 1 ? 1 : 0);
+					if (cell.qans) {
+						cell.setQues(cell.qans === 1 ? 1 : 0);
+					}
 					this.key_inputqnum(ca);
 				}
 			}
