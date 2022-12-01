@@ -50,6 +50,26 @@ ui.debug.addDebugData("lightshadow", {
 			label: "Input color with keys",
 			input: ["cursor,1,3", "key,3,w", "cursor,3,3", "key,q"],
 			result: "pzprv3/lightshadow/2/2/1,-2 0,4 /1,3 0,-2 /0 0 /0 0 /"
+		},
+		{
+			label: "Change to shade",
+			input: ["editmode,shade", "mouse,left,3,1"],
+			result: "pzprv3/lightshadow/2/2/1,-2 1,4 /1,3 0,-2 /0 0 /0 0 /"
+		},
+		{
+			label: "Clear shade",
+			input: ["mouse,left,3,1,1,1"],
+			result: "pzprv3/lightshadow/2/2/. . /1,3 0,-2 /0 0 /0 0 /"
+		},
+		{
+			label: "Change to unshade",
+			input: ["editmode,unshade", "mouse,left,1,3", "mouse,left,1,1"],
+			result: "pzprv3/lightshadow/2/2/0,-2 . /0,3 0,-2 /0 0 /0 0 /"
+		},
+		{
+			label: "Clear unshade",
+			input: ["mouse,left,3,3"],
+			result: "pzprv3/lightshadow/2/2/0,-2 . /0,3 . /0 0 /0 0 /"
 		}
 	]
 });
