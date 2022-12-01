@@ -128,6 +128,9 @@
 		numberRemainsUnshaded: true,
 		maxnum: function() {
 			return this.board.cols * this.board.rows;
+		},
+		isDot: function() {
+			return !this.puzzle.execConfig("undefcell") && this.qans === 2;
 		}
 	},
 
@@ -156,6 +159,7 @@
 			this.drawGrid();
 
 			this.drawQuesNumbers();
+			this.drawDotCells();
 
 			this.drawChassis();
 
@@ -163,7 +167,12 @@
 		},
 
 		getBGCellColor: function(cell) {
-			if (cell.qans === 0 && cell.qsub !== 1 && cell.qnum === -1) {
+			if (
+				this.puzzle.execConfig("undefcell") &&
+				cell.qans === 0 &&
+				cell.qsub !== 1 &&
+				cell.qnum === -1
+			) {
 				return this.undefcolor;
 			} else if (cell.error === 1 || cell.qinfo === 1) {
 				return this.errbcolor1;

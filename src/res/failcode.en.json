@@ -280,7 +280,7 @@
     "ceDark.lightup": "A cell is not shined.",
     "ceDirection.compass": "The number of cells in the direction is wrong.",
     "ceEmpty.kaidan": "There is an empty cell.",
-    "ceEmpty.lightshadow": "There is an empty cell.",
+    "ceEmpty.lightshadow": "There is an undetermined cell.",
     "ceEmpty.shugaku": "There is an empty cell.",
     "ceEmpty.yajilin-regions": "There is an empty cell.",
     "ceEmpty.yajilin": "There is an empty cell.",
