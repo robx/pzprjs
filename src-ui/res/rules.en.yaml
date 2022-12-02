@@ -770,11 +770,11 @@ nurimaze: "You're given a grid divided into tiles. Shade some tiles on the board
   \ G that doesn't require backtracking. Circles must be part of this path, while\
   \ triangles must not."
 nurimisaki: "Shade some cells on the board.\n1. There cannot be a 2x2 square of all\
-  \ shaded or unshaded cells.\n2. Circles cannot be shaded.\n3. Circles must be orthogonally\
-  \ adjacent to exactly one unshaded cell.\n3. Clues represent the total number of\
-  \ unshaded cells that can be seen in a straight line vertically or horizontally,\
-  \ including itself.\n4. All unshaded cells on the board from an orthogonally connected\
-  \ area."
+  \ shaded or unshaded cells.\n2. Circles mark every instance of a cell which is unshaded\
+  \ and orthogonally adjacent to exactly one other unshaded cell.\n3. Clues represent\
+  \ the total number of unshaded cells that can be seen in a straight line vertically\
+  \ or horizontally, including itself.\n4. All unshaded cells on the board from an\
+  \ orthogonally connected area."
 onsen: "Draw lines through the center of some cells to form multiple loops.\n1. Loops\
   \ cannot branch or overlap, and cannot cross themselves or each other.\n2. Every\
   \ loop goes through exactly one circle.\n3. Every outlined room must be visited\
