@@ -92,7 +92,7 @@
 		},
 		getCircleFillColor: function(cell) {
 			if (cell.qnum === 1 || cell.anum === 1) {
-				return this.getBGCellColor(cell);
+				return this.getBGCellColor(cell) || "white";
 			}
 			return null;
 		},
@@ -161,6 +161,32 @@
 	},
 
 	AnsCheck: {
-		checklist: []
+		checklist: [
+			"checkSize",
+			// TODO | O
+			// TODO symbols in row/column
+			// TODO | -
+			"checkSingleObject+"
+		],
+
+		checkSize: function() {
+			this.checkAllArea(
+				this.board.nblkmgr,
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"bkSizeGt2"
+			);
+		},
+
+		checkSingleObject: function() {
+			this.checkAllArea(
+				this.board.nblkmgr,
+				function(w, h, a, n) {
+					return a > 1;
+				},
+				"bkSizeLt2"
+			);
+		}
 	}
 });
