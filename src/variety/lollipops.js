@@ -195,11 +195,12 @@
 				if (group.clist.length < 2) {
 					continue;
 				}
-				if (
-					group.clist.length === 2 &&
-					(group.clist[0].getNum() === 1 || group.clist[1].getNum() === 1)
-				) {
-					continue;
+				if (group.clist.length === 2) {
+					var n1 = group.clist[0].getNum();
+					var n2 = group.clist[1].getNum();
+					if (n1 !== n2 && (n1 === 1 || n2 === 1)) {
+						continue;
+					}
 				}
 
 				this.failcode.add("bkSizeGt2");
@@ -222,7 +223,7 @@
 				var n1 = group.clist[0].getNum();
 				var n2 = group.clist[1].getNum();
 
-				if (n1 !== 1 && n2 !== 1) {
+				if (n1 === n2 || (n1 !== 1 && n2 !== 1)) {
 					continue;
 				}
 
