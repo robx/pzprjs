@@ -1025,3 +1025,8 @@ lightshadow: "Shade some cells on the board to form shaded and unshaded areas.\n
   \ Each orthogonally connected area contains exactly one clue.\n2. The color of clued\
   \ cells cannot be changed.\n3. A clue represents the size of the area of shaded\
   \ or unshaded cells that the clue belongs to."
+lollipops: "Place several lollipops of size 1x2 into the grid.\n1. A lollipop consists\
+  \ of a circle and a connected horizontal or vertical line. Some parts are given.\n\
+  2. Two lollipops cannot be orthogonally adjacent.\n3. Two cells with the same symbol\
+  \ (horizontal line, circle or vertical line) cannot share a row or column, unless\
+  \ another symbol is between them."
