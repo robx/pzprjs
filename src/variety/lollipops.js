@@ -15,6 +15,8 @@
 				this.inputDot();
 			}
 
+			// TODO implement line drag
+
 			if (this.mouseend && this.notInputted()) {
 				this.mouseCell = null;
 				this.inputqnum();
@@ -74,8 +76,8 @@
 			this.drawBorders();
 
 			this.drawDotCells();
-			this.drawCircles();
 			this.drawTateyokos();
+			this.drawCircles();
 
 			this.drawChassis();
 
@@ -162,21 +164,66 @@
 
 	AnsCheck: {
 		checklist: [
-			"checkSize",
-			// TODO | O
+			"checkAdjacent",
+			"checkBarDirection",
 			// TODO symbols in row/column
-			// TODO | -
 			"checkSingleObject+"
 		],
 
-		checkSize: function() {
-			this.checkAllArea(
-				this.board.nblkmgr,
-				function(w, h, a, n) {
-					return a <= 2;
-				},
-				"bkSizeGt2"
-			);
+		checkAdjacent: function() {
+			var groups = this.board.nblkmgr.components;
+			for (var r = 0; r < groups.length; r++) {
+				var group = groups[r];
+
+				if (group.clist.length < 1) {
+					continue;
+				}
+				if (
+					group.clist.length === 2 &&
+					(group.clist[0].getNum() === 1 || group.clist[1].getNum() === 1)
+				) {
+					continue;
+				}
+
+				if (this.checkOnly) {
+					break;
+				}
+				this.failcode.add("bkSizeGt2");
+				group.clist.seterr(1);
+			}
+		},
+
+		checkBarDirection: function() {
+			var groups = this.board.nblkmgr.components;
+			for (var r = 0; r < groups.length; r++) {
+				var group = groups[r];
+
+				if (group.clist.length !== 2) {
+					continue;
+				}
+
+				var n1 = group.clist[0].getNum();
+				var n2 = group.clist[1].getNum();
+
+				if (n1 !== 1 && n2 !== 1) {
+					continue;
+				}
+
+				var d = group.clist.getRectSize();
+
+				if (d.rows === 2 && (n1 === 2 || n2 === 2)) {
+					continue;
+				}
+				if (d.cols === 2 && (n1 === 3 || n2 === 3)) {
+					continue;
+				}
+
+				if (this.checkOnly) {
+					break;
+				}
+				this.failcode.add("baDir");
+				group.clist.seterr(1);
+			}
 		},
 
 		checkSingleObject: function() {

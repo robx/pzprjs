@@ -27,6 +27,7 @@
     "arNotPtCnr.loute": "An arrow doesn't point at the corner of an area.",
     "asLblockNe.triplace": "The number of straight areas below or to the right is not correct.",
     "asShadeNe.tilepaint": "The number of shaded cells underward or rightward is not correct.",
+    "baDir.lollipops": "A stick has the wrong orientation.",
     "bankGt": "A piece appears too many times on the board.",
     "bankInvalid": "The board contains an invalid piece.",
     "bankLt": "Some pieces are not used on the board.",
