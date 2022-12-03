@@ -69,7 +69,22 @@
 		enabled: true
 	},
 
-	// TODO board rotation
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			if (!(key & this.TURN)) {
+				return;
+			}
+			var clist = this.board.cellinside(d.x1, d.y1, d.x2, d.y2);
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				if (cell.qnum > 1) {
+					cell.setQnum(5 - cell.qnum);
+				} else if (cell.anum > 1) {
+					cell.setAnum(5 - cell.anum);
+				}
+			}
+		}
+	},
 
 	Graphic: {
 		paint: function() {
