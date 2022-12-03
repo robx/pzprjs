@@ -202,10 +202,10 @@
 					continue;
 				}
 
+				this.failcode.add("bkSizeGt2");
 				if (this.checkOnly) {
 					break;
 				}
-				this.failcode.add("bkSizeGt2");
 				group.clist.seterr(1);
 			}
 		},
@@ -235,10 +235,10 @@
 					continue;
 				}
 
+				this.failcode.add("baDir");
 				if (this.checkOnly) {
 					break;
 				}
-				this.failcode.add("baDir");
 				group.clist.seterr(1);
 			}
 		},
