@@ -63,7 +63,10 @@
 		numberAsObject: true,
 		disInputHatena: true,
 
-		maxnum: 3
+		maxnum: 3,
+		draw: function() {
+			this.drawaround();
+		}
 	},
 	AreaNumberGraph: {
 		enabled: true
@@ -122,13 +125,6 @@
 				: this.getAnsNumberColor(cell);
 		},
 
-		getBarValue: function(cell) {
-			if (cell.qnum !== -1) {
-				return cell.qnum === 1 ? 0 : cell.qnum + 10;
-			}
-			return cell.anum === 1 ? 0 : cell.anum + 10;
-		},
-
 		drawTateyokos: function() {
 			var g = this.vinc("cell_tateyoko", "crispEdges");
 			var lm = Math.max(this.cw / 8, 3) / 2; //LineWidth
@@ -138,20 +134,40 @@
 				var cell = clist[i],
 					px = cell.bx * this.bw,
 					py = cell.by * this.bh;
-				var qa = this.getBarValue(cell);
+				var qa = cell.getNum();
 
 				g.vid = "c_bar1_" + cell.id;
-				if (qa === 11 || qa === 12) {
+				if (qa === 2) {
+					var h = this.bh;
+					if (cell.adjacent.top.getNum() === 1) {
+						h += this.bh / 4;
+						py -= this.bh / 4;
+					}
+					if (cell.adjacent.bottom.getNum() === 1) {
+						h += this.bh / 4;
+						py += this.bh / 4;
+					}
+
 					g.fillStyle = this.getBarColor(cell, true);
-					g.fillRectCenter(px, py, lm + this.addlw / 2, this.bh);
+					g.fillRectCenter(px, py, lm + this.addlw / 2, h);
 				} else {
 					g.vhide();
 				}
 
 				g.vid = "c_bar2_" + cell.id;
-				if (qa === 11 || qa === 13) {
+				if (qa === 3) {
+					var w = this.bw;
+					if (cell.adjacent.left.getNum() === 1) {
+						w += this.bw / 4;
+						px -= this.bw / 4;
+					}
+					if (cell.adjacent.right.getNum() === 1) {
+						w += this.bw / 4;
+						px += this.bw / 4;
+					}
+
 					g.fillStyle = this.getBarColor(cell, false);
-					g.fillRectCenter(px, py, this.bw, lm + this.addlw / 2);
+					g.fillRectCenter(px, py, w, lm + this.addlw / 2);
 				} else {
 					g.vhide();
 				}
