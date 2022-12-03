@@ -69,6 +69,8 @@
 		enabled: true
 	},
 
+	// TODO board rotation
+
 	Graphic: {
 		paint: function() {
 			this.drawBGCells();
@@ -166,7 +168,7 @@
 		checklist: [
 			"checkAdjacent",
 			"checkBarDirection",
-			// TODO symbols in row/column
+			"checkIdentical",
 			"checkSingleObject+"
 		],
 
@@ -175,7 +177,7 @@
 			for (var r = 0; r < groups.length; r++) {
 				var group = groups[r];
 
-				if (group.clist.length < 1) {
+				if (group.clist.length < 2) {
 					continue;
 				}
 				if (
@@ -223,6 +225,36 @@
 				}
 				this.failcode.add("baDir");
 				group.clist.seterr(1);
+			}
+		},
+
+		checkIdentical: function() {
+			var bd = this.board;
+			var hasError = false;
+			this.checkRowsCols(function(clist) {
+				var found = null;
+
+				for (var idx = 0; idx < clist.length; idx++) {
+					var cell = clist[idx];
+					if (!cell.isNum()) {
+						continue;
+					}
+
+					if (found && found.getNum() === cell.getNum()) {
+						if (this.checkOnly) {
+							return false;
+						}
+						hasError = true;
+						bd.cellinside(found.bx, found.by, cell.bx, cell.by).seterr(1);
+					}
+					found = cell;
+				}
+
+				return true;
+			}, "nmDupRow");
+
+			if (hasError) {
+				this.failcode.add("nmDupRow");
 			}
 		},
 
