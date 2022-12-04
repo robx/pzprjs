@@ -130,6 +130,7 @@ function toBGimage(pid) {
 		"heteromino",
 		"kaidan",
 		"kropki",
+		"lollipops",
 		"maxi",
 		"midloop",
 		"mirrorbk",
