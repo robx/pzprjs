@@ -23,7 +23,13 @@
 				this.mouseCell = null;
 
 				if (this.notInputted()) {
-					this.inputqnum();
+					if (!this.puzzle.getConfig("mouseonly")) {
+						this.inputqnum();
+					} else if (this.btn === "left") {
+						this.inputFixedNumber(1);
+					} else if (this.puzzle.playmode) {
+						this.inputDot();
+					}
 				}
 			}
 		},
@@ -84,6 +90,10 @@
 		enableplay: true,
 
 		keyinput: function(ca) {
+			if (this.puzzle.getConfig("mouseonly")) {
+				return;
+			}
+
 			if (ca === "1" || ca === "q" || ca === "a" || ca === "z") {
 				ca = "1";
 			} else if (ca === "2" || ca === "w" || ca === "s" || ca === "x") {
@@ -144,7 +154,7 @@
 
 			this.drawChassis();
 
-			this.drawCursor();
+			this.drawCursor(true, !this.puzzle.getConfig("mouseonly"));
 		},
 
 		getCircleStrokeColor: function(cell) {
