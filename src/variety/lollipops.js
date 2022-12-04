@@ -15,12 +15,52 @@
 				this.inputDot();
 			}
 
-			// TODO implement line drag
-
-			if (this.mouseend && this.notInputted()) {
-				this.mouseCell = null;
-				this.inputqnum();
+			if (this.btn === "left") {
+				this.inputTateyoko();
 			}
+
+			if (this.mouseend) {
+				this.mouseCell = null;
+
+				if (this.notInputted()) {
+					this.inputqnum();
+				}
+			}
+		},
+		inputTateyoko: function() {
+			var cell = this.getcell();
+			if (cell.getNum() === 1) {
+				cell = this.mouseCell;
+			}
+			if (!cell || cell.isnull) {
+				return;
+			}
+
+			if (this.mouseCell !== cell) {
+				this.firstPoint.set(this.inputPoint);
+			} else if (this.firstPoint.bx !== null) {
+				var val = null,
+					dx = this.inputPoint.bx - this.firstPoint.bx,
+					dy = this.inputPoint.by - this.firstPoint.by;
+				if (Math.abs(dy) >= 0.4) {
+					val = 2;
+				} else if (Math.abs(dx) >= 0.4) {
+					val = 3;
+				}
+
+				if (val !== null) {
+					if (cell.getNum() === val) {
+						val = -1;
+					}
+
+					cell.setNum(val);
+					cell.draw();
+
+					this.mousereset();
+				}
+			}
+
+			this.mouseCell = cell;
 		},
 		inputDot: function() {
 			var cell = this.getcell();
