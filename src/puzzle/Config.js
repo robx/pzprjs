@@ -45,6 +45,7 @@
 			this.add("context_marks", true);
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
 			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
+			this.add("mouseonly", false); /* lollipops: Alternative mouse input */
 
 			this.add("squarecell", true); /* セルは正方形にする */
 
@@ -372,6 +373,9 @@
 				case "dispqnumbg":
 					exec = pid === "yinyang";
 					break;
+				case "mouseonly":
+					exec = pid === "lollipops";
+					break;
 				case "undefcell":
 					exec = pid === "shugaku";
 					break;
@@ -455,6 +459,7 @@
 				case "disptype_yajilin":
 				case "disptype_interbd":
 				case "dispqnumbg":
+				case "mouseonly":
 					puzzle.redraw();
 					break;
 
