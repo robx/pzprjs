@@ -61,6 +61,7 @@
 			); /* shakashaka: 三角形の入力補助 (for 2つ以上の壁に接したCell) */
 
 			this.add("bgcolor", false); /* slither 背景色入力 */
+			this.add("altline", false); /* slither 背景色入力 */
 			this.add(
 				"singlenum",
 				!pzpr.env.API.touchevent
@@ -357,6 +358,9 @@
 				case "bgcolor":
 					exec = pid === "slither";
 					break;
+				case "altline":
+					exec = pid === "slither";
+					break;
 				case "irowake":
 					exec = puzzle.painter.irowake;
 					break;
@@ -455,6 +459,7 @@
 				case "disptype_yajilin":
 				case "disptype_interbd":
 				case "dispqnumbg":
+				case "altline":
 					puzzle.redraw();
 					break;
 

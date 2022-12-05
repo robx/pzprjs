@@ -112,6 +112,7 @@
 
 		paint: function() {
 			this.drawBGCells();
+			this.drawBorders();
 			this.drawLines();
 			this.drawBaseMarks();
 			this.drawQuesNumbers();
@@ -122,6 +123,18 @@
 		repaintParts: function(blist) {
 			this.range.crosses = blist.crossinside();
 			this.drawBaseMarks();
+		},
+
+		getBorderColor: function(border) {
+			if (
+				this.puzzle.execConfig("altline") &&
+				!border.isLine() &&
+				border.qsub !== 2
+			) {
+				return "rgb(220,220,200)";
+			} else {
+				return null;
+			}
 		}
 	},
 

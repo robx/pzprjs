@@ -15,6 +15,7 @@
 |`dispqnumbg`|`boolean`|`false`|Set background color of question circles silver for `'Yin Yang'`|
 |`undefcell`|`boolean`|`true`|Set background color of undetermined cell for `'School Trip'`|
 |`squarecell`|`boolean`|`true`|Set cell on the board always square|
+|`altline`|`boolean`|`false`|Alternative display mode for `'Slitherlink'`|
 
 ## List of config for input method
 
