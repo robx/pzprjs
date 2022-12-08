@@ -149,7 +149,9 @@
 			return this.board.cols * this.board.rows;
 		},
 		isDot: function() {
-			return !this.puzzle.execConfig("undefcell") && this.qans === 2;
+			return (
+				this.qans === 2 && (!this.puzzle.execConfig("undefcell") || this.trial)
+			);
 		}
 	},
 
@@ -171,6 +173,7 @@
 	Graphic: {
 		gridcolor_type: "DARK",
 		undefcolor: "silver",
+		trialcolor: "rgb(80, 0, 80)",
 
 		paint: function() {
 			this.drawBGCells();
