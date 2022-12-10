@@ -1030,3 +1030,6 @@ lollipops: "Place several lollipops of size 1x2 into the grid.\n1. A lollipop co
   2. Two lollipops cannot be orthogonally adjacent.\n3. Two cells with the same symbol\
   \ (horizontal line, circle or vertical line) cannot share a row or column, unless\
   \ another symbol is between them."
+familyphoto: "Divide the grid into rectangular regions of orthogonally connected cells.\n\
+  1. Each region must contain exactly one number, which indicates how many circles\
+  \ are in the region.\n2. Orthogonally adjacent circles must be in the same region."
