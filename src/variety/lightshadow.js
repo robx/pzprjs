@@ -155,6 +155,10 @@
 		}
 	},
 
+	Board: {
+		disable_subclear: true
+	},
+
 	AreaShadeGraph: {
 		relation: { "cell.qans": "node", "cell.ques": "node" },
 		enabled: true,
@@ -189,15 +193,15 @@
 		},
 
 		getBGCellColor: function(cell) {
+			if (cell.error === 1 || cell.qinfo === 1) {
+				return this.errbcolor1;
+			}
 			if (
 				this.puzzle.execConfig("undefcell") &&
 				cell.qans === 0 &&
-				cell.qsub !== 1 &&
 				cell.qnum === -1
 			) {
 				return this.undefcolor;
-			} else if (cell.error === 1 || cell.qinfo === 1) {
-				return this.errbcolor1;
 			}
 			return null;
 		},
@@ -212,6 +216,27 @@
 				return this.shadecolor;
 			}
 			return this.common.getShadedCellColor.call(this, cell);
+		},
+
+		drawDotCells: function() {
+			var g = this.vinc("cell_dot", "auto");
+
+			var dsize = Math.max(this.cw * 0.06, 2);
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_dot_" + cell.id;
+				if (cell.qnum === -1 && cell.qans === 0 && cell.error) {
+					g.fillStyle = this.errcolor1;
+					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize * 2);
+				} else if (cell.isDot()) {
+					g.fillStyle = !cell.trial ? this.qanscolor : this.trialcolor;
+					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 
