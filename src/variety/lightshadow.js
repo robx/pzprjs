@@ -160,7 +160,7 @@
 	},
 
 	AreaShadeGraph: {
-		relation: { "cell.qans": "node", "cell.ques": "node" },
+		relation: { "cell.qans": "node", "cell.ques": "node", "cell.qnum": "node" },
 		enabled: true,
 		isnodevalid: function(cell) {
 			return cell.qnum !== -1 || cell.qans !== 0;
