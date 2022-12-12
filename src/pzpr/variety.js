@@ -209,6 +209,7 @@
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
 			lapaz: [0, 0, "La Paz", "La Paz"],
+			lightshadow: [0, 0, "Light and Shadow", "Light and Shadow"],
 			lightup: [
 				0,
 				1,

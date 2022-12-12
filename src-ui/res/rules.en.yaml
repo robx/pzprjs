@@ -601,9 +601,10 @@ kazunori: "Place a number into every cell.\n1. Each region contains every number
 kinkonkan: "Place a mirror in some of the cells by drawing a diagonal line connecting\
   \ two opposite corners.\n1. Every outlined region contains exactly one mirror.\n\
   2. Symbols outside the grid indicate a light source. The light travels as a beam\
-  \ into the grid and is reflected by the mirrors.\n3. A light beam that starts from\
-  \ a letter must finish at another instance of the same letter.\n4. Numbers indicate\
-  \ how many times the light beam is reflected by a mirror."
+  \ into the grid and is reflected by the mirrors. Every mirror must be used at least\
+  \ once.\n3. A light beam that starts from a letter must finish at another instance\
+  \ of the same letter.\n4. Numbers indicate how many times the light beam is reflected\
+  \ by a mirror."
 kouchoku: "Draw lines between every node to form a loop.\n1. Lines go straight from\
   \ node to node, and can be drawn at any angle.\n2. The loop can not branch off.\
   \ Nodes must be visited exactly once.\n3. The loop may intersect itself if the two\
@@ -786,7 +787,7 @@ paintarea: "You're given a grid divided into tiles. Shade some tiles on the boar
   \ of all shaded or all unshaded cells.\n3. Numbers indicate how many of the (up\
   \ to 4) orthogonally adjacent cells are shaded, excluding itself.\n4. All shaded\
   \ cells form an orthogonally contiguous area."
-pencils: "Place several pencils of into the grid, and draw lines into the other cells.\n\
+pencils: "Place several pencils into the grid, and draw lines into the other cells.\n\
   1. A pencil consists of a rectangle with a width of 1. One of the short ends is\
   \ attached to the pencil tip, which occupies another cell.\n2. Lines must start\
   \ at a pencil tip, and cannot connect to other pencil tips.\n3. Lines cannot branch\
@@ -1014,7 +1015,8 @@ yajitatami: "Draw lines over the dotted lines to divide the board into several r
   \ A number also indicates the size of its region.\n5. Region borders must not form\
   \ 4-way intersections."
 yinyang: "Place a black or white circle in every cell. Some circles are given.\n1.\
-  \ All circles of the same color must be orthogonally contiguous."
+  \ All circles of the same color must be orthogonally contiguous.\n2. There can not\
+  \ be a 2x2 square of all black or all white circles."
 yosenabe: "Draw lines to move every circle into one of the pots (denoted by a group\
   \ of gray cells).\n1. A circle can be moved horizontally or vertically, but cannot\
   \ make a turn.\n2. Movement lines cannot cross or overlap each other. Lines can\
@@ -1030,3 +1032,6 @@ lollipops: "Place several lollipops of size 1x2 into the grid.\n1. A lollipop co
   2. Two lollipops cannot be orthogonally adjacent.\n3. Two cells with the same symbol\
   \ (horizontal line, circle or vertical line) cannot share a row or column, unless\
   \ another symbol is between them."
+familyphoto: "Divide the grid into rectangular regions of orthogonally connected cells.\n\
+  1. Each region must contain exactly one number, which indicates how many circles\
+  \ are in the region.\n2. Orthogonally adjacent circles must be in the same region."
