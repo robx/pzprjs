@@ -213,5 +213,10 @@
 				}
 			}
 		}
+	},
+	FailCode: {
+		bkNoNum: "bkNoNum.shikaku",
+		bkNumGe2: "bkNumGe2.shikaku",
+		bkNotRect: "bkNotRect.shikaku"
 	}
 });
