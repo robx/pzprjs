@@ -121,26 +121,6 @@
 			} else {
 				this.setQans(1);
 			}
-		},
-
-		getdir8clist: function() {
-			var list = [];
-			var cells = [
-				this.relcell(-2, -2),
-				this.relcell(0, -2),
-				this.relcell(2, -2),
-				this.relcell(-2, 0),
-				this.relcell(2, 0),
-				this.relcell(-2, 2),
-				this.relcell(0, 2),
-				this.relcell(2, 2)
-			];
-			for (var i = 0; i < 8; i++) {
-				if (cells[i].group === "cell" && !cells[i].isnull) {
-					list.push([cells[i], i + 1]);
-				} /* i+1==dir */
-			}
-			return list;
 		}
 	},
 
