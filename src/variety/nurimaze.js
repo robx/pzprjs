@@ -295,6 +295,11 @@
 	LineGraph: {
 		enabled: true
 	},
+	BorderList: {
+		subclear: function() {
+			this.propclear(["sub", "info", "ans"], true);
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
