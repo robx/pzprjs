@@ -732,7 +732,10 @@ pzpr.classmgr.makeCommon({
 					count = 0;
 				}
 			}
-			if (count > 0) {
+			if (count > 0 || cm === "") {
+				// cm == "" && count == 0 happens for 1xn / nx1 boards
+				// with no potential crosses. This is encoded as "0" as
+				// "all 0 of the 0 potential crosses are not crosses"
 				cm += count.toString(36);
 			}
 

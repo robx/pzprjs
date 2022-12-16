@@ -357,7 +357,7 @@
     "laIsolate": "アルファベットにつながっていない線があります。",
     "laLenNe.herugolf": "ボールが移動途中に止まっています。",
     "laLenNe": "数字と線の長さが違います。",
-    "laLoop.rassi": "線がループになっています。",
+    "laLoop": "線がループになっています。",
     "laMoveOver.herugolf": "ボールが指示された打数を超えて動いています。",
     "laOnBorder": "線が境界線をまたいでいます。",
     "laOnHole.herugolf": "ホールの上を線が通過しています。",

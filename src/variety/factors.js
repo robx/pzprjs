@@ -175,7 +175,11 @@
 				var room = rooms[r],
 					clist = room.clist;
 				var product = clist.getProduct();
-				if (product === 0 || product === room.top.qnum) {
+				if (
+					product === 0 ||
+					product === room.top.qnum ||
+					room.top.qnum === -1
+				) {
 					continue;
 				}
 

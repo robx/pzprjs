@@ -134,7 +134,9 @@ ui.keypopup = {
 		anglers: [122, 0],
 		heyablock: [10, 0],
 		koburin: [4, 0],
-		mirrorbk: [10, 0]
+		mirrorbk: [10, 0],
+		takoyaki: [4, 0],
+		lightshadow: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
