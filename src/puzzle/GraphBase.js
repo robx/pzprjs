@@ -570,7 +570,11 @@ pzpr.classmgr.makeCommon({
 					aCoord = Math.sin((currentThetaDeg * Math.PI) / 180) * abRadius,
 					bCoord = Math.cos((currentThetaDeg * Math.PI) / 180) * abRadius;
 
-				paths[i].color = this.puzzle.painter.labToRgbStr(LCoord,aCoord,bCoord);
+				paths[i].color = this.puzzle.painter.labToRgbStr(
+					LCoord,
+					aCoord,
+					bCoord
+				);
 			}
 
 			for (var i = npaths - 1; i > 0; i--) {

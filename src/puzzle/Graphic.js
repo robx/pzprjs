@@ -592,7 +592,7 @@
 			//---------------------------------------------------------------------------
 			// pc.getNewLineColor() 新しい色を返す
 			//---------------------------------------------------------------------------
-			labToRgbStr: function(LCoord,aCoord,bCoord) {
+			labToRgbStr: function(LCoord, aCoord, bCoord) {
 				var delta = 6 / 29,
 					Xn = 95.0489,
 					Yn = 100,
@@ -634,7 +634,7 @@
 					bCoord =
 						Math.cos((this.currentColorTheta * Math.PI) / 180) * abRadius;
 
-				return this.labToRgbStr(LCoord,aCoord,bCoord);
+				return this.labToRgbStr(LCoord, aCoord, bCoord);
 			},
 			//---------------------------------------------------------------------------
 			// pc.repaintBlocks()  色分け時にブロックを再描画する
