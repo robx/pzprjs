@@ -592,14 +592,7 @@
 			//---------------------------------------------------------------------------
 			// pc.getNewLineColor() 新しい色を返す
 			//---------------------------------------------------------------------------
-			getNewLineColor: function() {
-				var LCoord = this.puzzle.painter.maxYdeg * 127;
-				if (typeof this.currentColorTheta === "undefined") {
-					this.currentColorTheta = Math.random() * 360;
-				} else {
-					this.currentColorTheta += 137.28;
-				}
-
+			labToRgbStr: function(LCoord,aCoord,bCoord) {
 				var delta = 6 / 29,
 					Xn = 95.0489,
 					Yn = 100,
@@ -612,12 +605,6 @@
 						return 3 * Math.pow(delta, 2) * (value - 4 / 29);
 					}
 				};
-
-				var abRadius = 127,
-					aCoord =
-						Math.sin((this.currentColorTheta * Math.PI) / 180) * abRadius,
-					bCoord =
-						Math.cos((this.currentColorTheta * Math.PI) / 180) * abRadius;
 
 				var Ladj = (LCoord + 16) / 116,
 					X = Xn * fInv(Ladj + aCoord / 500),
@@ -632,6 +619,22 @@
 				g = Math.max(Math.min(g * 2.55, 255), 0) | 0;
 				b = Math.max(Math.min(b * 2.55, 255), 0) | 0;
 				return "rgb(" + r + "," + g + "," + b + ")";
+			},
+			getNewLineColor: function() {
+				var LCoord = this.puzzle.painter.maxYdeg * 127;
+				if (typeof this.currentColorTheta === "undefined") {
+					this.currentColorTheta = Math.random() * 360;
+				} else {
+					this.currentColorTheta += 137.28;
+				}
+
+				var abRadius = 127,
+					aCoord =
+						Math.sin((this.currentColorTheta * Math.PI) / 180) * abRadius,
+					bCoord =
+						Math.cos((this.currentColorTheta * Math.PI) / 180) * abRadius;
+
+				return this.labToRgbStr(LCoord,aCoord,bCoord);
 			},
 			//---------------------------------------------------------------------------
 			// pc.repaintBlocks()  色分け時にブロックを再描画する

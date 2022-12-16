@@ -562,19 +562,6 @@ pzpr.classmgr.makeCommon({
 				maxY = this.puzzle.painter.maxYdeg,
 				ydiff = maxY - minY;
 
-			var delta = 6 / 29,
-				Xn = 95.0489,
-				Yn = 100,
-				Zn = 108.884;
-
-			var fInv = function(value) {
-				if (value > delta) {
-					return Math.pow(value, 3);
-				} else {
-					return 3 * Math.pow(delta, 2) * (value - 4 / 29);
-				}
-			};
-
 			var abRadius = 127;
 
 			for (var i = 0; i < npaths; i++) {
@@ -583,19 +570,7 @@ pzpr.classmgr.makeCommon({
 					aCoord = Math.sin((currentThetaDeg * Math.PI) / 180) * abRadius,
 					bCoord = Math.cos((currentThetaDeg * Math.PI) / 180) * abRadius;
 
-				var Ladj = (LCoord + 16) / 116,
-					X = Xn * fInv(Ladj + aCoord / 500),
-					Y = Yn * fInv(Ladj),
-					Z = Zn * fInv(Ladj - bCoord / 500);
-
-				var r = 2.041369 * X - 0.5649464 * Y - 0.3446944 * Z,
-					g = -0.969266 * X + 1.8760108 * Y + 0.041556 * Z,
-					b = 0.0134474 * X - 0.1183897 * Y + 1.0154096 * Z;
-
-				r = Math.max(Math.min(r * 2.55, 255), 0) | 0;
-				g = Math.max(Math.min(g * 2.55, 255), 0) | 0;
-				b = Math.max(Math.min(b * 2.55, 255), 0) | 0;
-				paths[i].color = "rgb(" + r + "," + g + "," + b + ")";
+				paths[i].color = this.puzzle.painter.labToRgbStr(LCoord,aCoord,bCoord);
 			}
 
 			for (var i = npaths - 1; i > 0; i--) {
