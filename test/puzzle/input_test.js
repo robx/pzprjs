@@ -46,6 +46,9 @@ function execinput(puzzle, str) {
 		case "ansclear":
 			puzzle.ansclear();
 			break;
+		case "subclear":
+			puzzle.subclear();
+			break;
 		case "playmode":
 		case "editmode":
 			puzzle.setMode(strs[0]);

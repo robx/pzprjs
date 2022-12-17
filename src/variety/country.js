@@ -455,12 +455,15 @@
 		gridcolor_type: "SLIGHT",
 
 		paint: function() {
-			if (this.pid === "country" || this.pid === "ovotovata") {
+			if (this.pid === "country") {
 				this.drawGrid();
-			} else {
+			} else if (this.pid !== "ovotovata") {
 				this.drawDashedGrid();
 			}
 			this.drawBGCells();
+			if (this.pid === "ovotovata") {
+				this.drawGrid();
+			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||

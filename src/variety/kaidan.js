@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaidan"], {
+})(["kaidan", "takoyaki"], {
 	MouseEvent: {
 		use: true,
 		RBShadeCell: true,
@@ -53,7 +53,7 @@
 				return;
 			}
 
-			if (cell.lcnt === 1 && this.btn === "left") {
+			if (this.pid === "kaidan" && cell.lcnt === 1 && this.btn === "left") {
 				cell.setLineVal(+!cell.line);
 				cell.draw();
 			} else if (cell.isNum()) {
@@ -92,6 +92,14 @@
 			this.edgeCell = new this.klass.Address();
 			this.common.initialize.call(this);
 		},
+
+		mousereset: function() {
+			this.edgeCell.reset();
+			this.edgeData = {};
+			this.common.mousereset.call(this);
+		}
+	},
+	"MouseEvent@kaidan": {
 		inputLine: function() {
 			var cell = this.getcell();
 			var addcmp = false;
@@ -162,18 +170,13 @@
 			if (!cell.isnull) {
 				this.edgeCell.set(cell);
 			}
-		},
-		mousereset: function() {
-			this.edgeCell.reset();
-			this.edgeData = {};
-			this.common.mousereset.call(this);
 		}
 	},
 
 	KeyEvent: {
 		enablemake: true
 	},
-	Border: {
+	"Border@kaidan": {
 		prehook: {
 			line: function(num) {
 				return (num && this.isLineNG()) || this.checkFormCurve(num);
@@ -190,6 +193,9 @@
 				}
 			}
 		}
+	},
+	"Border@takoyaki": {
+		enableLineNG: true
 	},
 
 	Cell: {
@@ -214,6 +220,14 @@
 			}
 		}
 	},
+	"Cell@takoyaki": {
+		noLP: function(dir) {
+			return this.isNum();
+		},
+		allowShade: function() {
+			return this.qnum === -1;
+		}
+	},
 
 	Board: {
 		cols: 8,
@@ -226,7 +240,7 @@
 		enabled: true,
 		makeClist: true
 	},
-	AreaUnshadeGraph: {
+	"AreaUnshadeGraph@kaidan": {
 		enabled: true,
 		relation: { "cell.qnum": "node", "cell.qans": "node" },
 		isnodevalid: function(cell) {
@@ -255,7 +269,9 @@
 			this.drawCrosses();
 
 			this.drawLines();
-			this.drawLineEnds();
+			if (this.pid === "kaidan") {
+				this.drawLineEnds();
+			}
 			this.drawPekes();
 
 			this.drawChassis();
@@ -271,19 +287,41 @@
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
 					px,
-					py;
+					py,
+					shrink = this.pid === "kaidan" && cell.lcnt;
 				g.vid = "c_MB2_" + cell.id;
 				if (cell.qsub > 0) {
 					px = cell.bx * this.bw;
 					py = cell.by * this.bh;
 					g.lineWidth = (1 + this.cw / 40) | 0;
 					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
-					g.strokeCross(px, py, rsize * (cell.lcnt ? 0.5 : 1));
+					g.strokeCross(px, py, rsize * (shrink ? 0.5 : 1));
 				} else {
 					g.vhide();
 				}
 			}
 		},
+
+		getQuesNumberColor: function(cell) {
+			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
+		},
+		getCircleStrokeColor: function(cell) {
+			if (cell.qans === 1) {
+				if (cell.error === 1) {
+					return this.errcolor1;
+				} else if (cell.trial) {
+					return this.trialcolor;
+				} else {
+					return this.quescolor;
+				}
+			}
+			return null;
+		},
+		getCircleFillColor: function(cell) {
+			return null;
+		}
+	},
+	"Graphic@kaidan": {
 		drawLines: function() {
 			var g = this.vinc("line", "crispEdges");
 			var mx = this.bw / 2;
@@ -361,26 +399,10 @@
 					g.vhide();
 				}
 			}
-		},
-
-		getQuesNumberColor: function(cell) {
-			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
-		},
-		getCircleStrokeColor: function(cell) {
-			if (cell.qans === 1) {
-				if (cell.error === 1) {
-					return this.errcolor1;
-				} else if (cell.trial) {
-					return this.trialcolor;
-				} else {
-					return this.quescolor;
-				}
-			}
-			return null;
-		},
-		getCircleFillColor: function(cell) {
-			return null;
 		}
+	},
+	"Graphic@takoyaki": {
+		irowake: true
 	},
 
 	Encode: {
@@ -424,19 +446,6 @@
 	},
 
 	AnsCheck: {
-		checklist: [
-			"checkLineOverlap",
-			"checkLineOnShadeCell",
-			"checkAdjacentShadeCell",
-			"checkDir4ShadeOver",
-			"checkConnectUnshade",
-			"checkShortEnds",
-			"checkLengthConsecutive",
-			"checkDir4ShadeLess",
-			"checkMissingEnd",
-			"checkEmptyCell_kaidan+"
-		],
-
 		checkDir4ShadeOver: function() {
 			this.checkDir4Cell(
 				function(cell) {
@@ -454,7 +463,23 @@
 				1,
 				"nmShadeLt"
 			);
-		},
+		}
+	},
+
+	"AnsCheck@kaidan#1": {
+		checklist: [
+			"checkLineOverlap",
+			"checkLineOnShadeCell",
+			"checkAdjacentShadeCell",
+			"checkDir4ShadeOver",
+			"checkConnectUnshade",
+			"checkShortEnds",
+			"checkLengthConsecutive",
+			"checkDir4ShadeLess",
+			"checkMissingEnd",
+			"checkEmptyCell_kaidan+"
+		],
+
 		checkLengthConsecutive: function() {
 			this.checkSideCell(function(cell1, cell2) {
 				return (
@@ -505,5 +530,109 @@
 				return cell.lcnt === 0 && !cell.isShade() && cell.noNum();
 			}, "ceEmpty");
 		}
+	},
+
+	"AnsCheck@takoyaki#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkLineOnShadeCell",
+			"checkAdjacentShadeCell",
+			"checkLoop",
+			"checkNumberOfMiddle",
+			"checkDir4ShadeOver",
+			"checkCirclesInUniqueRowsCols",
+			"checkEndpoints",
+			"checkNoMiddle",
+			"checkDir4ShadeLess",
+			"checkEmptyCell+"
+		],
+
+		checkLineOnShadeCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum !== -1 && (cell.lcnt > 0 || cell.qans === 1);
+			}, "lnOnShade");
+		},
+
+		checkEmptyCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.noNum();
+			}, "ceEmpty");
+		},
+		checkCirclesInUniqueRowsCols: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				paths[r].id = r + 1;
+			}
+			this.checkDifferentNumberInLine();
+		},
+		isDifferentNumberInClist: function(clist) {
+			return this.isIndividualObject(clist, function(cell) {
+				return cell.qans === 1 && cell.path ? cell.path.id : -1;
+			});
+		},
+		checkNumberOfMiddle: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				var circles = path.clist.filter(function(c) {
+					return c.lcnt >= 2 && c.qans === 1;
+				});
+				if (circles.length <= 1) {
+					continue;
+				}
+
+				this.failcode.add("csGt1");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
+				circles.seterr(1);
+			}
+		},
+		checkLoop: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				if (path.circuits === 0) {
+					continue;
+				}
+
+				this.failcode.add("laLoop");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
+			}
+		},
+		checkNoMiddle: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				var circles = path.clist.filter(function(c) {
+					return c.lcnt >= 2 && c.qans === 1;
+				});
+				if (circles.length) {
+					continue;
+				}
+
+				this.failcode.add("csLt1");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
+			}
+		},
+		checkEndpoints: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qans !== 1 && cell.lcnt === 1;
+			}, "cuEndpoint");
+		}
+	},
+	"FailCode@takoyaki": {
+		lnOnShade: "lnOnShade"
 	}
 });

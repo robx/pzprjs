@@ -109,8 +109,7 @@
 			"checkNoNumber",
 			"checkGatheredObject",
 			"checkSingleShadeCell",
-			"checkSameNumberInBlock",
-			"doneShadingDecided"
+			"checkSameNumberInBlock"
 		],
 		checkOverShadeCell: function() {
 			this.checkAllArea(
