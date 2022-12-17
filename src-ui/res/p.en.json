@@ -51,6 +51,7 @@
     "lattice.menu": "Check lattice point",
     "singlenum.menu": "Single number in a region",
     "discolor": "Disable color",
+    "mouseonly": "Enable mouse-only input",
     "autocheck": "Answer check",
     "autocheck.off": "Manual",
     "autocheck.guarded": "Automatic (guarded)",

@@ -601,9 +601,10 @@ kazunori: "Place a number into every cell.\n1. Each region contains every number
 kinkonkan: "Place a mirror in some of the cells by drawing a diagonal line connecting\
   \ two opposite corners.\n1. Every outlined region contains exactly one mirror.\n\
   2. Symbols outside the grid indicate a light source. The light travels as a beam\
-  \ into the grid and is reflected by the mirrors.\n3. A light beam that starts from\
-  \ a letter must finish at another instance of the same letter.\n4. Numbers indicate\
-  \ how many times the light beam is reflected by a mirror."
+  \ into the grid and is reflected by the mirrors. Every mirror must be used at least\
+  \ once.\n3. A light beam that starts from a letter must finish at another instance\
+  \ of the same letter.\n4. Numbers indicate how many times the light beam is reflected\
+  \ by a mirror."
 kouchoku: "Draw lines between every node to form a loop.\n1. Lines go straight from\
   \ node to node, and can be drawn at any angle.\n2. The loop can not branch off.\
   \ Nodes must be visited exactly once.\n3. The loop may intersect itself if the two\
@@ -770,11 +771,11 @@ nurimaze: "You're given a grid divided into tiles. Shade some tiles on the board
   \ G that doesn't require backtracking. Circles must be part of this path, while\
   \ triangles must not."
 nurimisaki: "Shade some cells on the board.\n1. There cannot be a 2x2 square of all\
-  \ shaded or unshaded cells.\n2. Circles cannot be shaded.\n3. Circles must be orthogonally\
-  \ adjacent to exactly one unshaded cell.\n3. Clues represent the total number of\
-  \ unshaded cells that can be seen in a straight line vertically or horizontally,\
-  \ including itself.\n4. All unshaded cells on the board from an orthogonally connected\
-  \ area."
+  \ shaded or unshaded cells.\n2. Circles mark every instance of a cell which is unshaded\
+  \ and orthogonally adjacent to exactly one other unshaded cell.\n3. Clues represent\
+  \ the total number of unshaded cells that can be seen in a straight line vertically\
+  \ or horizontally, including itself.\n4. All unshaded cells on the board from an\
+  \ orthogonally connected area."
 onsen: "Draw lines through the center of some cells to form multiple loops.\n1. Loops\
   \ cannot branch or overlap, and cannot cross themselves or each other.\n2. Every\
   \ loop goes through exactly one circle.\n3. Every outlined room must be visited\
@@ -786,7 +787,7 @@ paintarea: "You're given a grid divided into tiles. Shade some tiles on the boar
   \ of all shaded or all unshaded cells.\n3. Numbers indicate how many of the (up\
   \ to 4) orthogonally adjacent cells are shaded, excluding itself.\n4. All shaded\
   \ cells form an orthogonally contiguous area."
-pencils: "Place several pencils of into the grid, and draw lines into the other cells.\n\
+pencils: "Place several pencils into the grid, and draw lines into the other cells.\n\
   1. A pencil consists of a rectangle with a width of 1. One of the short ends is\
   \ attached to the pencil tip, which occupies another cell.\n2. Lines must start\
   \ at a pencil tip, and cannot connect to other pencil tips.\n3. Lines cannot branch\
@@ -806,7 +807,7 @@ pipelinkr: "Draw a loop that goes through every cell.\n1. Two perpendicular line
 putteria: "Place one number in a cell of each region on the board.\n1. The number\
   \ in the region should be equal to the size of the region.\n2. Numbers cannot be\
   \ orthogonally adjacent.\n3. Identical numbers cannot be placed in the same row\
-  \ or column.\n4. Crosses cannot contain numbers."
+  \ or column.\n4. Cells marked with a cross cannot contain a number."
 rectslider: "Draw lines to move some of the panels.\n1. A panel can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other panels.\n\
@@ -840,7 +841,7 @@ sashigane: "Divide the grid into regions of orthogonally connected cells.\n1. Ea
 satogaeri: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other circles.\n\
-  3. A number indicates how many spaces the circle must move.\n5. Each region must\
+  3. A number indicates how many spaces the circle must move.\n4. Each region must\
   \ have exactly one circle."
 scrin: "Place several rectangles into the grid, where the corners are located on the\
   \ dots.\n1. Rectangles cannot overlap or have a border in common.\n2. A rectangle\
@@ -1014,10 +1015,23 @@ yajitatami: "Draw lines over the dotted lines to divide the board into several r
   \ A number also indicates the size of its region.\n5. Region borders must not form\
   \ 4-way intersections."
 yinyang: "Place a black or white circle in every cell. Some circles are given.\n1.\
-  \ All circles of the same color must be orthogonally contiguous."
+  \ All circles of the same color must be orthogonally contiguous.\n2. There can not\
+  \ be a 2x2 square of all black or all white circles."
 yosenabe: "Draw lines to move every circle into one of the pots (denoted by a group\
   \ of gray cells).\n1. A circle can be moved horizontally or vertically, but cannot\
   \ make a turn.\n2. Movement lines cannot cross or overlap each other. Lines can\
   \ also not go through the start- or endpoint of other circles.\n3. Numbers indicate\
   \ the sum of the values on the circles that are moved into the pot.\n4. A pot without\
   \ a number must have at least one circle."
+lightshadow: "Shade some cells on the board to form shaded and unshaded areas.\n1.\
+  \ Each orthogonally connected area contains exactly one clue.\n2. The color of clued\
+  \ cells cannot be changed.\n3. A clue represents the size of the area of shaded\
+  \ or unshaded cells that the clue belongs to."
+lollipops: "Place several lollipops of size 1x2 into the grid.\n1. A lollipop consists\
+  \ of a circle and a connected horizontal or vertical line. Some parts are given.\n\
+  2. Two lollipops cannot be orthogonally adjacent.\n3. Two cells with the same symbol\
+  \ (horizontal line, circle or vertical line) cannot share a row or column, unless\
+  \ another symbol is between them."
+familyphoto: "Divide the grid into rectangular regions of orthogonally connected cells.\n\
+  1. Each region must contain exactly one number, which indicates how many circles\
+  \ are in the region.\n2. Orthogonally adjacent circles must be in the same region."

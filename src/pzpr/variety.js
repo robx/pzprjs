@@ -137,6 +137,7 @@
 			doubleback: [0, 0, "Double Back", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
+			familyphoto: [0, 0, "家族写真", "Family Photo"],
 			fillmat: [1, 0, "フィルマット", "Fillmat", "fillmat"],
 			fillomino: [
 				0,
@@ -209,6 +210,7 @@
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
 			lapaz: [0, 0, "La Paz", "La Paz"],
+			lightshadow: [0, 0, "Light and Shadow", "Light and Shadow"],
 			lightup: [
 				0,
 				1,
@@ -220,6 +222,7 @@
 			lither: [0, 0, "Litherslink", "Litherslink"],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
 			lohkous: [0, 0, "Lohkous", "Lohkous"],
+			lollipops: [0, 0, "ペロペロキャンディ", "Lollipops"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],

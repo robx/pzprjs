@@ -131,6 +131,7 @@ function toBGimage(pid) {
 		"icewalk",
 		"kaidan",
 		"kropki",
+		"lollipops",
 		"maxi",
 		"midloop",
 		"mirrorbk",

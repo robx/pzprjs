@@ -21,11 +21,7 @@
 	if (location.search === "?en" || location.search === "?ja") {
 		self.doclang = location.search.substr(1, 2);
 	}
-	if (
-		location.hostname === "puzz.link" ||
-		location.pathname === "/list" ||
-		location.host.indexOf("vercel.app") >= 0
-	) {
+	if (location.hostname === "puzz.link" || location.pathname === "/list") {
 		// puzz.link serves p.html at puzz.link/p
 		self.phtml = "p";
 	}
