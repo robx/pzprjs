@@ -622,9 +622,9 @@
 			},
 			getNewLineColor: function() {
 				var lFloor = 60,
-					maxL = lFloor + this.puzzle.painter.maxYdeg * (100-lFloor),
-					minL = lFloor + this.puzzle.painter.minYdeg * (100-lFloor),
-					LCoord = Math.random()*(maxL-minL) + minL;
+					maxL = lFloor + this.puzzle.painter.maxYdeg * (100 - lFloor),
+					minL = lFloor + this.puzzle.painter.minYdeg * (100 - lFloor),
+					LCoord = Math.random() * (maxL - minL) + minL;
 
 				if (typeof this.currentColorTheta === "undefined") {
 					this.currentColorTheta = Math.random() * 360;
@@ -634,7 +634,7 @@
 
 				var maxabRadius = 127,
 					minabRadius = 75,
-					abRadius = Math.random()*(maxabRadius-minabRadius)+minabRadius,
+					abRadius = Math.random() * (maxabRadius - minabRadius) + minabRadius,
 					aCoord =
 						Math.sin((this.currentColorTheta * Math.PI) / 180) * abRadius,
 					bCoord =
