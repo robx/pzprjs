@@ -558,15 +558,17 @@ pzpr.classmgr.makeCommon({
 			var thetaStartDeg = Math.random() * 360,
 				spacingDeg = 360 / npaths;
 
-			var minY = this.puzzle.painter.minYdeg,
-				maxY = this.puzzle.painter.maxYdeg,
-				ydiff = maxY - minY;
-
-			var abRadius = 127;
+			var lFloor = 60,
+				lLevels = 3,
+				maxL = lFloor + this.puzzle.painter.maxYdeg * (100-lFloor),
+				minL = lFloor + this.puzzle.painter.minYdeg * (100-lFloor),
+				maxabRadius = 127,
+				minabRadius = 75;
 
 			for (var i = 0; i < npaths; i++) {
 				var currentThetaDeg = (thetaStartDeg + i * spacingDeg) % 360,
-					LCoord = (maxY - Math.pow(10, (-2.5 * i) / npaths) * ydiff) * 127,
+					LCoord = (i % lLevels)*(maxL-minL)/(lLevels-1)+minL,
+					abRadius = Math.random()*(maxabRadius-minabRadius)+minabRadius,
 					aCoord = Math.sin((currentThetaDeg * Math.PI) / 180) * abRadius,
 					bCoord = Math.cos((currentThetaDeg * Math.PI) / 180) * abRadius;
 
