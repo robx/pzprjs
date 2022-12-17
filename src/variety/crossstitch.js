@@ -467,6 +467,7 @@
 		gridcolor_type: "DLIGHT",
 
 		qcmpcolor: "rgb(127,127,127)",
+		mb2color: "rgb(127,127,255)",
 
 		errcolor1: "red",
 
@@ -483,6 +484,73 @@
 			this.drawDots();
 
 			this.drawTarget();
+		},
+
+		drawMBs: function() {
+			var g = this.vinc("cell_mb", "auto", true);
+			g.lineWidth = 1;
+
+			var rsize = this.cw * 0.35;
+			var srsize = rsize * 0.8;
+			var clist = this.range.cells;
+
+			var radRight = 0,
+				radBottom = 0.5 * Math.PI,
+				radLeft = Math.PI,
+				radTop = 1.5 * Math.PI;
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				if (cell.qsub & 1) {
+					var px = cell.bx * this.bw;
+					var py = cell.by * this.bh;
+					g.vid = "c_MB_" + cell.id;
+					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
+					g.strokeCircle(px, py, rsize);
+				} else {
+					g.vid = "c_MB_" + cell.id;
+					g.vhide();
+				}
+
+				if (cell.qsub & 2) {
+					var px1 = (cell.bx - 1) * this.bw;
+					var py1 = (cell.by - 1) * this.bh;
+					var px2 = (cell.bx + 1) * this.bw;
+					var py2 = (cell.by + 1) * this.bh;
+					g.vid = "c_ca_" + cell.id;
+					g.strokeStyle = !cell.trial ? this.mb2color : "rgb(192, 192, 192)";
+					g.arc(px1, py1, srsize, radRight, radBottom, false);
+					g.stroke();
+					g.vid = "c_cc_" + cell.id;
+					g.arc(px2, py2, srsize, radTop, radLeft, true);
+					g.stroke();
+				} else {
+					g.vid = "c_ca_" + cell.id;
+					g.vhide();
+					g.vid = "c_cc_" + cell.id;
+					g.vhide();
+				}
+
+				if (cell.qsub & 4) {
+					var px1 = (cell.bx + 1) * this.bw;
+					var py1 = (cell.by - 1) * this.bh;
+					var px2 = (cell.bx - 1) * this.bw;
+					var py2 = (cell.by + 1) * this.bh;
+					g.vid = "c_cb_" + cell.id;
+					g.strokeStyle = !cell.trial ? this.mb2color : "rgb(192, 192, 192)";
+					g.arc(px1, py1, srsize, radLeft, radBottom, true);
+					g.stroke();
+					g.vid = "c_cd_" + cell.id;
+					g.arc(px2, py2, srsize, radTop, radRight, false);
+					g.stroke();
+				} else {
+					g.vid = "c_cb_" + cell.id;
+					g.vhide();
+					g.vid = "c_cd_" + cell.id;
+					g.vhide();
+				}
+			}
 		},
 
 		drawBaseMarks: function() {
@@ -582,9 +650,9 @@
 		decodeData: function() {
 			this.decodeCellDirecQnum();
 			this.decodeCell(function(cell, ca) {
-				if (ca[0] === "o") {
+				if (ca.charCodeAt(0) > 110 && ca.charCodeAt(0) <= 117) {
+					cell.qsub = ca.charCodeAt(0) - 110;
 					ca = ca.substr(1);
-					cell.qsub = 1;
 				}
 				if (ca === "c") {
 					cell.qcmp = 1;
@@ -600,8 +668,8 @@
 			this.encodeCellDirecQnum();
 			this.encodeCell(function(cell) {
 				var s = "";
-				if (cell.qsub === 1) {
-					s += "o";
+				if (cell.qsub > 0) {
+					s += String.fromCharCode(110 + cell.qsub);
 				}
 				if (cell.qans > 30) {
 					s += "" + cell.qans - 30;
