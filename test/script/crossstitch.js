@@ -56,9 +56,29 @@ ui.debug.addDebugData("crossstitch", {
 	],
 	inputs: [
 		{
+			label: "Input number clues",
+			input: [
+				"newboard,5,1",
+				"editmode",
+				"mouse,left,1,1",
+				"cursor,3,1",
+				"mouse,leftx2,3,1",
+				"cursor,5,1",
+				"mouse,leftx3,5,1",
+				"cursor,7,1",
+				"mouse,right,7,1",
+				"editmode,shade",
+				"mouse,left,9,1"
+			],
+			result:
+				"pzprv3/crossstitch/1/5/# 0,- 0,0 0,4 # /. . . . . /0 0 0 0 0 0 /0 0 0 0 0 0 /"
+		},
+
+		{
+			label: "Input number and arrow clue",
 			input: [
 				"newboard,3,3",
-				"editmode",
+				"editmode,auto",
 				"cursor,5,3",
 				"key,1",
 				"mouse,left,5,3,3,3"
@@ -98,9 +118,42 @@ ui.debug.addDebugData("crossstitch", {
 		},
 		{
 			label: "Add dots",
-			input: ["mouse,left,4,0", "mouse,right,4,2"],
+			input: [
+				"mouse,left,4,0",
+				"mouse,right,4,2",
+				"playmode,dot",
+				"mouse,left,6,0"
+			],
 			result:
-				"pzprv3/crossstitch/3/3/. . . /. . 3,1 /. . . /1 . . /o o1 c /2 . 1 /0 0 1 0 /0 0 2 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/crossstitch/3/3/. . . /. . 3,1 /. . . /1 . . /o o1 c /2 . 1 /0 0 1 1 /0 0 2 0 /0 0 0 0 /0 0 0 0 /"
+		},
+
+		{
+			label: "Click slash",
+			input: [
+				"newboard,3,3",
+				"editmode,shade",
+				"mouse,left,1,1",
+				"playmode,line",
+				"setconfig,use,2",
+				"mouse,left,1,1",
+				"mouse,left,1,3",
+				"mouse,left,2,2,4,0"
+			],
+			result:
+				"pzprv3/crossstitch/3/3/# . . /. . . /. . . /. 2 . /1 . . /. . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
+		},
+		{
+			label: "Drag pekes",
+			input: [
+				"playmode,auto",
+				"mouse,right,2,2,4,4,6,2,4,0",
+				"playmode,peke",
+				"mouse,left,0,4,2,6",
+				"mouse,left,2,4,0,6"
+			],
+			result:
+				"pzprv3/crossstitch/3/3/# . . /. . . /. . . /. 2 p /1 p r /t . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
 		}
 	]
 });
