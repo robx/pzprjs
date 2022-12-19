@@ -42,6 +42,24 @@
 			}
 		},
 
+		inputFixedQsub: function(val) {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = !(cell.qsub & val);
+			}
+			if (this.inputData) {
+				cell.setQsub(cell.qsub | val);
+			} else {
+				cell.setQsub(cell.qsub & ~val);
+			}
+			cell.draw();
+			this.mouseCell = cell;
+		},
+
 		inputqnum_main: function(cell) {
 			var order = [-1, -3, -2, 0];
 
@@ -520,9 +538,11 @@
 					var py2 = (cell.by + 1) * this.bh;
 					g.vid = "c_ca_" + cell.id;
 					g.strokeStyle = !cell.trial ? this.mb2color : "rgb(192, 192, 192)";
+					g.beginPath();
 					g.arc(px1, py1, srsize, radRight, radBottom, false);
 					g.stroke();
 					g.vid = "c_cc_" + cell.id;
+					g.beginPath();
 					g.arc(px2, py2, srsize, radTop, radLeft, true);
 					g.stroke();
 				} else {
@@ -539,9 +559,11 @@
 					var py2 = (cell.by + 1) * this.bh;
 					g.vid = "c_cb_" + cell.id;
 					g.strokeStyle = !cell.trial ? this.mb2color : "rgb(192, 192, 192)";
+					g.beginPath();
 					g.arc(px1, py1, srsize, radLeft, radBottom, true);
 					g.stroke();
 					g.vid = "c_cd_" + cell.id;
+					g.beginPath();
 					g.arc(px2, py2, srsize, radTop, radRight, false);
 					g.stroke();
 				} else {
