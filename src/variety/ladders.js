@@ -37,6 +37,21 @@
 
 		isLine: function() {
 			return this.qans;
+		},
+
+		prehook: {
+			qans: function() {
+				if (this.isLine()) {
+					this.board.segment.removeSegmentByAddr(this.bx, this.by);
+				}
+			}
+		},
+		posthook: {
+			qans: function(val) {
+				if (val) {
+					this.board.segment.addSegmentByAddr(this.bx, this.by, val);
+				}
+			}
 		}
 	},
 	Board: {
@@ -68,6 +83,11 @@
 			if (this.isStale) {
 				this.rebuildInfo();
 			}
+		},
+
+		getSegment: function(bx, by) {
+			var cell = this.getc(bx, by);
+			return cell.isnull ? null : cell.segment;
 		}
 	},
 	BoardExec: {
@@ -104,11 +124,10 @@
 		name: "RoomList",
 
 		rebuild: function() {
-			this.segments = new this.klass.SegmentList();
-
 			var rooms = this.board.roommgr.components;
 			for (var i = 0; i < rooms.length; i++) {
 				var room = new this.klass.Room();
+				room.seglist = new this.klass.SegmentList();
 				room.top = rooms[i].top;
 				room.top.roomitem = room;
 				this.add(room);
@@ -149,12 +168,12 @@
 					? this.board.getc(bx, by + 2)
 					: this.board.getc(bx + 2, by);
 
-				this.sideobj[0] = c1.isVert ? null : c1.room.top.roomitem;
-				this.sideobj[1] = c2.isVert ? null : c2.room.top.roomitem;
+				this.sideobj[0] = c1.isnull ? null : c1.room.top.roomitem;
+				this.sideobj[1] = c2.isnull ? null : c2.room.top.roomitem;
 			} else {
 				this.sideobj[0] = this.sideobj[1] = null;
 			}
-			this.isvalid = !this.sideobj[0] || !this.sideobj[1];
+			this.isvalid = this.sideobj[0] && this.sideobj[1];
 		},
 
 		seterr: function(num) {
@@ -171,10 +190,13 @@
 			this.klass.PieceList.prototype.add.call(this, seg);
 			if (this === bd.segment) {
 				seg.isnull = !seg.isvalid;
-				bd.getx(seg.bx1, seg.by1).seglist.add(seg);
-				bd.getx(seg.bx2, seg.by2).seglist.add(seg);
-				if (bd.isenableInfo()) {
-					bd.linegraph.modifyInfo(seg, "segment");
+				if (!seg.isnull) {
+					bd.getc(seg.bx, seg.by).segment = seg;
+					seg.sideobj[0].seglist.add(seg);
+					seg.sideobj[1].seglist.add(seg);
+					if (bd.isenableInfo()) {
+						bd.linegraph.modifyInfo(seg, "segment");
+					}
 				}
 			}
 		},
@@ -184,13 +206,13 @@
 			}
 			var bd = this.board;
 			this.klass.PieceList.prototype.remove.call(this, seg);
-			if (this === bd.segment) {
-				seg.isnull = true;
-				bd.getx(seg.bx1, seg.by1).seglist.remove(seg);
-				bd.getx(seg.bx2, seg.by2).seglist.remove(seg);
+			if (this === bd.segment && !seg.isnull) {
+				seg.sideobj[0].seglist.remove(seg);
+				seg.sideobj[1].seglist.remove(seg);
 				if (bd.isenableInfo()) {
 					bd.linegraph.modifyInfo(seg, "segment");
 				}
+				seg.isnull = true;
 			}
 		},
 
@@ -216,12 +238,13 @@
 		addSegmentByAddr: function(bx, by, value) {
 			this.add(new this.klass.Segment(bx, by, value));
 		},
-		removeSegmentByAddr: function(bx, by, value) {
-			this.remove(this.board.getSegment(bx, by, value));
+		removeSegmentByAddr: function(bx, by) {
+			this.remove(this.board.getSegment(bx, by));
 		}
 	},
 	LineGraph: {
 		enabled: true,
+		coloring: false,
 		relation: { segment: "link" },
 
 		pointgroup: "room",
@@ -229,17 +252,7 @@
 
 		isedgevalidbylinkobj: function(seg) {
 			return !seg.isnull;
-		},
-
-		repaintNodes: function(components) {
-			var segs_all = new this.klass.SegmentList();
-			for (var i = 0; i < components.length; i++) {
-				segs_all.extend(components[i].getedgeobjs());
-			}
-			this.puzzle.painter.repaintLines(segs_all);
-		},
-		coloring: false,
-		countprop: "l2cnt"
+		}
 	},
 
 	Graphic: {
