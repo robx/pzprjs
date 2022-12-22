@@ -282,6 +282,7 @@
 			rassi: [0, 0, "Rassi Silai", "Rassi Silai", "country"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
+			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [

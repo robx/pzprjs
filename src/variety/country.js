@@ -12,7 +12,8 @@
 		"detour",
 		"dotchi",
 		"ovotovata",
-		"rassi"
+		"rassi",
+		"remlen"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -211,6 +212,44 @@
 			}
 		}
 	},
+	"MouseEvent@remlen": {
+		inputModes: {
+			edit: ["border", "number", "clear", "info-line"],
+			play: ["line", "peke", "diraux", "clear", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				if (this.mousestart || this.mousemove) {
+					this.inputdiraux_mousemove();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode && this.btn === "right") {
+				if (this.mousestart) {
+					this.inputdiraux_mousedown();
+				} else if (this.inputData === 2 || this.inputData === 3) {
+					this.inputpeke();
+				} else if (this.mousemove) {
+					this.inputdiraux_mousemove();
+				}
+			} else if (this.puzzle.playmode && this.btn === "left") {
+				if (this.mousestart || this.mousemove) {
+					this.inputLine();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputborder();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputqnum();
+				}
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -239,6 +278,12 @@
 	"Cell@country,onsen,maxi,detour": {
 		maxnum: function() {
 			return Math.min(999, this.room.clist.length);
+		}
+	},
+	"Cell@remlen": {
+		disInputHatena: true,
+		maxnum: function() {
+			return Math.min(999, this.board.cols * this.board.rows);
 		}
 	},
 	"Cell@country": {
@@ -302,7 +347,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@onsen,maxi,detour": {
+	"Board@onsen,maxi,detour,remlen": {
 		cols: 8,
 		rows: 8,
 
@@ -319,10 +364,10 @@
 	LineGraph: {
 		enabled: true
 	},
-	"LineGraph@onsen,maxi,detour,rassi": {
+	"LineGraph@onsen,maxi,detour,rassi,remlen": {
 		makeClist: true
 	},
-	"LineBlockGraph:LineGraph@onsen,maxi,detour": {
+	"LineBlockGraph:LineGraph@onsen,maxi,detour,remlen": {
 		enabled: true,
 		relation: { "border.line": "link", "border.ques": "separator" },
 		makeClist: true,
@@ -372,7 +417,7 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
-	"AreaRoomGraph@country,maxi,detour": {
+	"AreaRoomGraph@country,maxi,detour,remlen": {
 		hastop: true
 	},
 	"AreaRoomGraph@ovotovata": {
@@ -468,7 +513,8 @@
 				this.pid === "country" ||
 				this.pid === "maxi" ||
 				this.pid === "detour" ||
-				this.pid === "ovotovata"
+				this.pid === "ovotovata" ||
+				this.pid === "remlen"
 			) {
 				this.drawQuesNumbers();
 			} else if (this.pid === "moonsun") {
@@ -486,6 +532,10 @@
 			}
 			this.drawLines();
 			this.drawPekes();
+
+			if (this.pid === "remlen") {
+				this.drawBorderAuxDir();
+			}
 
 			this.drawChassis();
 
@@ -594,7 +644,7 @@
 			return this.getBorderColor_ques(border);
 		}
 	},
-	"Graphic@maxi,detour": {
+	"Graphic@maxi,detour,remlen": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
 	"Graphic@dotchi": {
@@ -621,7 +671,8 @@
 				this.pid === "country" ||
 				this.pid === "maxi" ||
 				this.pid === "detour" ||
-				this.pid === "ovotovata"
+				this.pid === "ovotovata" ||
+				this.pid === "remlen"
 			) {
 				this.decodeRoomNumber16();
 			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
@@ -647,7 +698,8 @@
 				this.pid === "country" ||
 				this.pid === "maxi" ||
 				this.pid === "detour" ||
-				this.pid === "ovotovata"
+				this.pid === "ovotovata" ||
+				this.pid === "remlen"
 			) {
 				this.encodeRoomNumber16();
 			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
@@ -719,9 +771,13 @@
 			} else {
 				this.decodeCellQnum();
 			}
-			this.decodeBorderLine();
-			if (this.pid !== "onsen" && this.pid !== "simpleloop") {
-				this.decodeCellQsub();
+			if (this.pid === "remlen") {
+				this.decodeBorderArrowAns();
+			} else {
+				this.decodeBorderLine();
+				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
+					this.decodeCellQsub();
+				}
 			}
 		},
 		encodeData: function() {
@@ -741,9 +797,13 @@
 			} else {
 				this.encodeCellQnum();
 			}
-			this.encodeBorderLine();
-			if (this.pid !== "onsen" && this.pid !== "simpleloop") {
-				this.encodeCellQsub();
+			if (this.pid === "remlen") {
+				this.encodeBorderArrowAns();
+			} else {
+				this.encodeBorderLine();
+				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
+					this.encodeCellQsub();
+				}
 			}
 		},
 		decodeEmpty: function() {
@@ -933,6 +993,18 @@
 			"checkLoop",
 			"checkLinesInRoom",
 			"checkAroundEnd",
+			"checkNoLine"
+		]
+	},
+	"AnsCheck@remlen#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkRememberedLength",
+
+			"checkDeadendLine+",
+			"checkOneLoop",
 			"checkNoLine"
 		]
 	},
@@ -1611,6 +1683,35 @@
 					paths[r].setedgeerr(1);
 				}
 			}
+		}
+	},
+	"AnsCheck@remlen": {
+		checkRememberedLength: function() {
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			if (paths.length !== 1 || paths[0].circuits !== 1) {
+				return;
+			}
+			var start = paths[0].clist[0];
+			var walks = [];
+			for (var dir = 1; dir <= 4; dir++) {
+				if (start.reldirbd(dir, 1).isLine()) {
+					walks.push(this.walkLine(start, dir));
+				}
+			}
+
+			if (
+				walks.length !== 2 ||
+				walks[0].length === 0 ||
+				walks[1].length === 0
+			) {
+				return;
+			}
+		},
+		walkLine: function(start, dir) {
+			var ret = [];
+			// TODO
+			return ret;
 		}
 	}
 });
