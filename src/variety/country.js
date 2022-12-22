@@ -1707,10 +1707,46 @@
 			) {
 				return;
 			}
+
+			this.failcode.add("blRemLength");
+			if (this.checkOnly) {
+				return;
+			}
+			this.board.border.setnoerr();
+			var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
+			for (var i = 0; i < walk.length; i++) {
+				walk[i].path.setedgeerr(1);
+				// TODO alternate display of error
+				walk[i].cell.room.top.seterr(1);
+				walk[i].cell.reldirbd(walk[i].dir, 1).seterr(1);
+			}
 		},
 		walkLine: function(start, dir) {
 			var ret = [];
-			// TODO
+			var addr = start.getaddr();
+			do {
+				var prev = addr.getc();
+
+				addr.movedir(dir, 2);
+				var lpath = addr.getc().lpath;
+
+				var num = prev.room.top.getNum();
+				if (prev.lpath !== lpath && num !== -1 && lpath.clist.length !== num) {
+					ret.push({ cell: prev, dir: dir, path: lpath });
+				}
+
+				var adb = addr.getc().adjborder;
+				if (dir !== 1 && adb.bottom.isLine()) {
+					dir = 2;
+				} else if (dir !== 2 && adb.top.isLine()) {
+					dir = 1;
+				} else if (dir !== 3 && adb.right.isLine()) {
+					dir = 4;
+				} else if (dir !== 4 && adb.left.isLine()) {
+					dir = 3;
+				}
+			} while (!addr.equals(start));
+
 			return ret;
 		}
 	}
