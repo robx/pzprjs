@@ -1035,3 +1035,8 @@ lollipops: "Place several lollipops of size 1x2 into the grid.\n1. A lollipop co
 familyphoto: "Divide the grid into rectangular regions of orthogonally connected cells.\n\
   1. Each region must contain exactly one number, which indicates how many circles\
   \ are in the region.\n2. Orthogonally adjacent circles must be in the same region."
+cocktail: "Shade some cells on the board to form blocks.\n1. Regions contain no more\
+  \ than one block, which is an orthogonally connected group of shaded cells.\n2.\
+  \ A number indicates the size of the block in the region.\n3. Shaded cells cannot\
+  \ be adjacent across region borders.\n4. The shaded cells cannot form a 2x2 square.\n\
+  5. All blocks form a diagonally contiguous area."
