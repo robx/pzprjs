@@ -50,7 +50,11 @@ pzpr.variety.each(function(pid) {
 								pid !== "yajitatami" &&
 								pid !== "doubleback" &&
 								pid !== "lapaz" &&
-								pid !== "yajisoko"
+								pid !== "yajisoko" &&
+								pid !== "fillomino" &&
+								pid !== "symmarea" &&
+								pid !== "pentominous" &&
+								pid !== "snakepit"
 							) {
 								assert_equal_board(bd, bd2);
 							}

@@ -49,6 +49,7 @@
     "bdPassStar.nuriuzu": "A star overlaps a shaded cell.",
     "bdPassStar.tentaisho": "A line goes over a star.",
     "bdUnequal.antmill": "A cross clue does not overlap exactly 1 shaded cell.",
+    "bdUnused.fillomino": "A given border does not divide two regions.",
     "bdUnused.lohkous": "There is an unused border.",
     "bdUnused.mirrorbk": "A mirror does not divide two regions.",
     "bdUnused.tren": "A border is not adjacent to a block.",
