@@ -14,7 +14,7 @@
 	// マウス入力系
 	MouseEvent: {
 		inputModes: {
-			edit: ["number", "clear"],
+			edit: ["number", "border", "clear"],
 			play: ["copynum", "number", "clear", "border", "subline"]
 		},
 		mouseinput_other: function() {
@@ -36,6 +36,10 @@
 				} else if (this.btn === "right") {
 					this.inputQsubLine();
 				}
+			}
+
+			if (this.puzzle.editmode && this.mousemove) {
+				this.inputborder();
 			}
 
 			if (this.mouseend && this.notInputted()) {
@@ -84,7 +88,7 @@
 	},
 	"MouseEvent@pentominous": {
 		inputModes: {
-			edit: ["empty", "letter", "letter-", "clear"],
+			edit: ["empty", "letter", "letter-", "border", "clear"],
 			play: ["copyletter", "letter", "letter-", "clear", "border", "subline"]
 		},
 
@@ -115,7 +119,7 @@
 	},
 	"MouseEvent@snakepit": {
 		inputModes: {
-			edit: ["number", "circle-unshade", "shade", "empty", "clear"],
+			edit: ["number", "circle-unshade", "shade", "empty", "border", "clear"],
 			play: ["copynum", "number", "clear", "border", "subline"]
 		},
 
@@ -375,6 +379,10 @@
 	},
 	Border: {
 		posthook: {
+			ques: function() {
+				this.sidecell[0].rebuildAroundCell();
+				this.sidecell[1].rebuildAroundCell();
+			},
 			qans: function(num) {
 				this.sidecell[0].rebuildAroundCell();
 				this.sidecell[1].rebuildAroundCell();
@@ -431,7 +439,9 @@
 		},
 
 		isQuesBorder: function() {
-			return this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty();
+			return (
+				this.ques || this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty()
+			);
 		}
 	},
 	Board: {
@@ -454,6 +464,7 @@
 		relation: {
 			"cell.qnum": "node",
 			"cell.anum": "node",
+			"border.ques": "separator",
 			"border.qans": "separator"
 		},
 		enabled: true,
@@ -505,6 +516,7 @@
 			"cell.ques": "node",
 			"cell.qnum": "node",
 			"cell.anum": "node",
+			"border.ques": "separator",
 			"border.qans": "separator",
 			"border.qcmp": "separator"
 		},
@@ -606,18 +618,18 @@
 			this.drawChassis();
 
 			this.drawCursor();
+		},
+
+		getBorderColor: function(border) {
+			if (border.isQuesBorder()) {
+				return border.error === 1 ? this.errcolor1 : "black";
+			}
+
+			return this.getBorderColor_qans(border);
 		}
 	},
 
 	"Graphic@pentominous": {
-		getBorderColor: function(border) {
-			if (border.isQuesBorder()) {
-				return "black";
-			}
-
-			return this.getBorderColor_qans(border);
-		},
-
 		getNumberTextCore: function(num) {
 			return num === -2 ? "?" : this.klass.Cell.prototype.letters[num] || "";
 		}
@@ -632,9 +644,21 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
+			this.decodeBorder();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16();
+			this.encodeBorderIfPresent();
+		},
+
+		encodeBorderIfPresent: function() {
+			if (
+				this.board.border.some(function(b) {
+					return b.ques === 1;
+				})
+			) {
+				this.encodeBorder();
+			}
 		},
 
 		decodeKanpen: function() {
@@ -658,22 +682,26 @@
 					bd.cell[c].qnum = val;
 				}
 			});
+			this.decodeBorder();
 		},
 		encodePzpr: function(type) {
 			var bd = this.board;
 			this.genericEncodeNumber16(bd.cell.length, function(c) {
 				return bd.cell[c].isEmpty() ? 12 : bd.cell[c].qnum;
 			});
+			this.encodeBorderIfPresent();
 		}
 	},
 	"Encode@snakepit": {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodeQues();
+			this.decodeBorder();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16();
 			this.encodeQues();
+			this.encodeBorderIfPresent();
 		},
 		decodeNumber16: function() {
 			var bd = this.board;
@@ -729,6 +757,41 @@
 
 			this.encodeCellAnumsub();
 			this.encodeBorderAns();
+		},
+
+		decodeBorderAns: function() {
+			this.decodeBorder(function(border, ca) {
+				if (ca === "-X") {
+					border.qsub = 1;
+					border.ques = 1;
+				} else if (ca === "X") {
+					border.ques = 1;
+				} else if (ca === "2") {
+					border.qans = 1;
+					border.qsub = 1;
+				} else if (ca === "1") {
+					border.qans = 1;
+				} else if (ca === "-1") {
+					border.qsub = 1;
+				}
+			});
+		},
+		encodeBorderAns: function() {
+			this.encodeBorder(function(border) {
+				if (border.ques === 1 && border.qsub === 1) {
+					return "-X ";
+				} else if (border.ques === 1) {
+					return "X ";
+				} else if (border.qans === 1 && border.qsub === 1) {
+					return "2 ";
+				} else if (border.qans === 1) {
+					return "1 ";
+				} else if (border.qsub === 1) {
+					return "-1 ";
+				} else {
+					return "0 ";
+				}
+			});
 		},
 
 		kanpenOpen: function() {
@@ -818,6 +881,7 @@
 			"checkLargeArea",
 			"checkNumKinds",
 			"checkRoomSymm@symmarea",
+			"checkGivenLines",
 			"checkNoNumCell_fillomino+"
 		],
 
@@ -884,14 +948,42 @@
 					return cell.noNum();
 				}, "ceNoNum");
 			}
+		},
+
+		checkGivenLines: function() {
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (border.isnull || !border.ques) {
+					continue;
+				}
+				var a1 = border.sidecell[0].nblk,
+					a2 = border.sidecell[1].nblk;
+				if (
+					a1 !== a2 ||
+					a1.numkind > 1 ||
+					a2.numkind > 1 ||
+					a1.number !== a2.number
+				) {
+					continue;
+				}
+				this.failcode.add("bdUnused");
+				if (this.checkOnly) {
+					break;
+				}
+				borders.setnoerr();
+				border.seterr(1);
+				a1.clist.seterr(1);
+			}
 		}
 	},
 
-	"AnsCheck@pentominous": {
+	"AnsCheck@pentominous#1": {
 		checklist: [
 			"checkSmallArea",
 			"checkLetterBlock",
 			"checkDifferentShapeBlock",
+			"checkGivenLines",
 			"checkLargeArea"
 		],
 
