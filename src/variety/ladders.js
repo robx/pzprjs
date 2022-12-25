@@ -118,7 +118,8 @@
 	},
 	Room: {
 		group: "room",
-		top: null
+		top: null,
+		path: null
 	},
 	"RoomList:PieceList": {
 		name: "RoomList",
@@ -143,6 +144,7 @@
 	},
 	Segment: {
 		group: "segment",
+		path: null,
 		initialize: function(bx, by, value) {
 			this.isnull = true;
 
