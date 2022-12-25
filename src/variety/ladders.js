@@ -30,6 +30,8 @@
 	},
 
 	Cell: {
+		segment: null,
+
 		minnum: 0,
 		maxnum: function() {
 			return this.room.clist.length;
@@ -209,12 +211,13 @@
 			var bd = this.board;
 			this.klass.PieceList.prototype.remove.call(this, seg);
 			if (this === bd.segment && !seg.isnull) {
+				seg.isnull = true;
+				bd.getc(seg.bx, seg.by).segment = null;
 				seg.sideobj[0].seglist.remove(seg);
 				seg.sideobj[1].seglist.remove(seg);
 				if (bd.isenableInfo()) {
 					bd.linegraph.modifyInfo(seg, "segment");
 				}
-				seg.isnull = true;
 			}
 		},
 
