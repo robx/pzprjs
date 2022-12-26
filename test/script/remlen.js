@@ -1,7 +1,7 @@
 /* remlen.js */
 
 ui.debug.addDebugData("remlen", {
-	url: "4/4/1qotl013i",
+	url: "4/4/1qotl0/13i",
 	failcheck: [
 		[
 			"blRemLength",

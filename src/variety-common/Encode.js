@@ -851,7 +851,9 @@ pzpr.classmgr.makeCommon({
 
 			if (found || !skipnone) {
 				this.outbstr += cm;
+				return true;
 			}
+			return false;
 		},
 		decodeIce: function() {
 			this.decodeBinary("ques", 6);
@@ -863,7 +865,7 @@ pzpr.classmgr.makeCommon({
 			this.decodeBinary("ques", 7);
 		},
 		encodeEmpty: function() {
-			this.encodeBinary("ques", 7, true);
+			return this.encodeBinary("ques", 7, true);
 		},
 
 		//---------------------------------------------------------------------------

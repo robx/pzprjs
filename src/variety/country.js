@@ -63,7 +63,7 @@
 			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@doubleback,simpleloop,rassi": {
+	"MouseEvent@doubleback,simpleloop,rassi,remlen": {
 		mouseinput_other: function() {
 			if (this.inputMode === "empty") {
 				this.inputempty();
@@ -212,9 +212,9 @@
 			}
 		}
 	},
-	"MouseEvent@remlen": {
+	"MouseEvent@remlen#2": {
 		inputModes: {
-			edit: ["border", "number", "clear", "info-line"],
+			edit: ["border", "number", "clear", "empty", "info-line"],
 			play: ["line", "peke", "diraux", "clear", "info-line"]
 		},
 		mouseinput_other: function() {
@@ -224,6 +224,8 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.clickdiraux();
 				}
+			} else if (this.inputMode === "empty") {
+				this.inputempty();
 			}
 		},
 		mouseinput_auto: function() {
@@ -314,7 +316,7 @@
 			return this.qnum === 2;
 		}
 	},
-	"Cell@doubleback,simpleloop,rassi": {
+	"Cell@doubleback,simpleloop,rassi,remlen": {
 		noLP: function(dir) {
 			return this.isEmpty();
 		}
@@ -324,7 +326,7 @@
 			return Math.max(this.board.cols, this.board.rows) - 1;
 		}
 	},
-	"Border@doubleback,simpleloop,dotchi": {
+	"Border@doubleback,simpleloop,dotchi,remlen": {
 		enableLineNG: true
 	},
 	"Border@moonsun,dotchi#1": {
@@ -618,12 +620,12 @@
 			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
 		}
 	},
-	"Graphic@doubleback,rassi": {
+	"Graphic@doubleback,rassi,remlen": {
 		getBGCellColor: function(cell) {
 			return cell.ques === 7 ? "darkgray" : this.getBGCellColor_error1(cell);
 		}
 	},
-	"Graphic@simpleloop,doubleback,rassi": {
+	"Graphic@simpleloop,doubleback,rassi,remlen": {
 		getBorderColor: function(border) {
 			var cell1 = border.sidecell[0],
 				cell2 = border.sidecell[1];
@@ -667,6 +669,13 @@
 			if (this.pid !== "simpleloop") {
 				this.decodeBorder();
 			}
+			if (this.pid === "remlen") {
+				if (this.outbstr[0] !== "/") {
+					this.decodeEmpty();
+				} else {
+					this.outbstr = this.outbstr.substr(1);
+				}
+			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
@@ -693,6 +702,9 @@
 			}
 			if (this.pid !== "simpleloop") {
 				this.encodeBorder();
+			}
+			if (this.pid === "remlen" && !this.encodeEmpty()) {
+				this.outbstr += "/";
 			}
 			if (
 				this.pid === "country" ||
@@ -855,6 +867,32 @@
 					ca = ".";
 				}
 				return ca + " ";
+			});
+		}
+	},
+	"FileIO@remlen": {
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "# ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else {
+					return ". ";
+				}
 			});
 		}
 	},
@@ -1761,7 +1799,11 @@
 				} else if (dir !== 4 && adb.left.isLine()) {
 					dir = 3;
 				}
-			} while (!addr.equals(start) && addr.getc().lcnt === 2);
+			} while (
+				!addr.equals(start) &&
+				addr.getc().lcnt === 2 &&
+				!addr.getc().isEmpty()
+			);
 
 			return ret;
 		}
