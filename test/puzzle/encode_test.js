@@ -34,34 +34,6 @@ pzpr.variety.each(function(pid) {
 						testdata[pid].url;
 					assert.equal(urlstr, expurl);
 				});
-				it("pzpr invalid URL", function() {
-					puzzle.open(pid + "/" + testdata[pid].url);
-					var bd = puzzle.board,
-						bd2 = bd.freezecopy();
-					var urlstr = puzzle.getURL();
-					assert.doesNotThrow(function() {
-						puzzle.open(urlstr + urlstr, function() {
-							if (
-								pid.indexOf("-aux") === -1 &&
-								pid !== "icebarn" &&
-								pid !== "icelom" &&
-								pid !== "icelom2" &&
-								pid !== "mejilink" &&
-								pid !== "yajitatami" &&
-								pid !== "doubleback" &&
-								pid !== "lapaz" &&
-								pid !== "yajisoko" &&
-								pid !== "fillomino" &&
-								pid !== "symmarea" &&
-								pid !== "pentominous" &&
-								pid !== "snakepit"
-							) {
-								assert_equal_board(bd, bd2);
-							}
-						});
-						assert.equal(puzzle.ready, true);
-					});
-				});
 				if (!pzpr.variety(pid).exists.kanpen) {
 					return;
 				}
