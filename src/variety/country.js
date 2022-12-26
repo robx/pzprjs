@@ -1689,36 +1689,45 @@
 		checkRememberedLength: function() {
 			var bd = this.board;
 			var paths = bd.linegraph.components;
-			if (paths.length !== 1 || paths[0].circuits !== 1) {
-				return;
-			}
-			var start = paths[0].clist[0];
-			var walks = [];
-			for (var dir = 1; dir <= 4; dir++) {
-				if (start.reldirbd(dir, 1).isLine()) {
-					walks.push(this.walkLine(start, dir));
+			for (var r = 0; r < paths.length; r++) {
+				var walks = [];
+				var starts =
+					paths[r].circuits === 1
+						? [paths[r].clist[0]]
+						: paths[r].clist.filter(function(cell) {
+								return cell.lcnt === 1;
+						  });
+				if (starts.length > 2) {
+					continue;
 				}
-			}
+				for (var s = 0; s < starts.length; s++) {
+					for (var dir = 1; dir <= 4; dir++) {
+						if (starts[s].reldirbd(dir, 1).isLine()) {
+							walks.push(this.walkLine(starts[s], dir));
+						}
+					}
+				}
 
-			if (
-				walks.length !== 2 ||
-				walks[0].length === 0 ||
-				walks[1].length === 0
-			) {
-				return;
-			}
+				if (
+					walks.length !== 2 ||
+					walks[0].length === 0 ||
+					walks[1].length === 0
+				) {
+					continue;
+				}
 
-			this.failcode.add("blRemLength");
-			if (this.checkOnly) {
-				return;
-			}
-			this.board.border.setnoerr();
-			var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
-			for (var i = 0; i < walk.length; i++) {
-				walk[i].path.setedgeerr(1);
-				// TODO alternate display of error
-				walk[i].cell.room.top.seterr(1);
-				walk[i].cell.reldirbd(walk[i].dir, 1).seterr(1);
+				this.failcode.add("blRemLength");
+				if (this.checkOnly) {
+					return;
+				}
+				this.board.border.setnoerr();
+				var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
+				for (var i = 0; i < walk.length; i++) {
+					walk[i].path.setedgeerr(1);
+					// TODO alternate display of error
+					walk[i].cell.room.top.seterr(1);
+					walk[i].cell.reldirbd(walk[i].dir, 1).seterr(1);
+				}
 			}
 		},
 		walkLine: function(start, dir) {
@@ -1731,7 +1740,14 @@
 				var lpath = addr.getc().lpath;
 
 				var num = prev.room.top.getNum();
-				if (prev.lpath !== lpath && num !== -1 && lpath.clist.length !== num) {
+				if (
+					prev.lpath !== lpath &&
+					num !== -1 &&
+					lpath.clist.length !== num &&
+					!lpath.clist.some(function(c) {
+						return c.lcnt !== 2;
+					})
+				) {
 					ret.push({ cell: prev, dir: dir, path: lpath });
 				}
 
@@ -1745,7 +1761,7 @@
 				} else if (dir !== 4 && adb.left.isLine()) {
 					dir = 3;
 				}
-			} while (!addr.equals(start));
+			} while (!addr.equals(start) && addr.getc().lcnt === 2);
 
 			return ret;
 		}
