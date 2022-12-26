@@ -258,6 +258,7 @@
     "blNoNumber.ovotovata": "A line that exits a numbered region turns at the wrong position.",
     "blPassTwice.onsen": "A line passes a room more than once.",
     "blPassTwice.rassi": "A room has more than one line.",
+    "blRemLength": "A number does not indicate the length of the visit in the next room.",
     "blWrongTurns.detour": "A room has the wrong number of turns.",
     "bnIllegalPos.yosenabe": "There is a number out of a crock.",
     "brNoLine.kouchoku": "There is no segment.",
