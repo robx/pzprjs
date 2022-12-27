@@ -32,5 +32,24 @@ ui.debug.addDebugData("remlen", {
 			"pzprv3.2/remlen/4/4/0 0 0 /0 1 1 /1 0 1 /0 1 1 /1 1 1 0 /1 1 0 1 /0 1 0 0 /1 . . . /3 . . . /. . . . /. . . . /1l 1l 1l /0 1 0 /0 0 0 /1r 0 1 /1 0 0 1u /1 1 1d 1 /1d 1 1d 1u /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Click to input marks",
+			input: [
+				"newboard,4,2",
+				"playmode",
+				"mouse,left,2,1",
+				"mouse,leftx2,4,1",
+				"mouse,leftx3,6,1"
+			],
+			result:
+				"pzprv3.2/remlen/2/4/0 0 0 /0 0 0 /0 0 0 0 /. . . . /. . . . /-1 l r /0 0 0 /0 0 0 0 /"
+		},
+		{
+			label: "Drag in diraux mode",
+			input: ["playmode,diraux", "mouse,left,1,1,1,3,3,3"],
+			result:
+				"pzprv3.2/remlen/2/4/0 0 0 /0 0 0 /0 0 0 0 /. . . . /. . . . /-1 l r /r 0 0 /d 0 0 0 /"
+		}
+	]
 });
