@@ -552,9 +552,38 @@ pzpr.classmgr.makeCommon({
 		// graph.newIrowake()  線の情報が再構築された際、線に色をつける
 		//---------------------------------------------------------------------------
 		newIrowake: function() {
-			var paths = this.components;
-			for (var i = 0; i < paths.length; i++) {
-				paths[i].color = this.puzzle.painter.getNewLineColor();
+			var paths = this.components,
+				npaths = paths.length;
+
+			var thetaStartDeg = Math.random() * 360,
+				spacingDeg = 360 / npaths;
+
+			var lFloor = 60,
+				lLevels = 3,
+				maxL = lFloor + this.puzzle.painter.maxYdeg * (100 - lFloor),
+				minL = lFloor + this.puzzle.painter.minYdeg * (100 - lFloor),
+				maxabRadius = 127,
+				minabRadius = 75;
+
+			for (var i = 0; i < npaths; i++) {
+				var currentThetaDeg = (thetaStartDeg + i * spacingDeg) % 360,
+					LCoord = ((i % lLevels) * (maxL - minL)) / (lLevels - 1) + minL,
+					abRadius = Math.random() * (maxabRadius - minabRadius) + minabRadius,
+					aCoord = Math.sin((currentThetaDeg * Math.PI) / 180) * abRadius,
+					bCoord = Math.cos((currentThetaDeg * Math.PI) / 180) * abRadius;
+
+				paths[i].color = this.puzzle.painter.labToRgbStr(
+					LCoord,
+					aCoord,
+					bCoord
+				);
+			}
+
+			for (var i = npaths - 1; i > 0; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var temp = paths[i].color;
+				paths[i].color = paths[j].color;
+				paths[j].color = temp;
 			}
 		}
 	},

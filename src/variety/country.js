@@ -455,7 +455,15 @@
 		gridcolor_type: "SLIGHT",
 
 		paint: function() {
+			if (this.pid === "country") {
+				this.drawGrid();
+			} else if (this.pid !== "ovotovata") {
+				this.drawDashedGrid();
+			}
 			this.drawBGCells();
+			if (this.pid === "ovotovata") {
+				this.drawGrid();
+			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
@@ -471,11 +479,6 @@
 				this.drawCircles();
 			}
 
-			if (this.pid === "country" || this.pid === "ovotovata") {
-				this.drawGrid();
-			} else {
-				this.drawDashedGrid();
-			}
 			this.drawBorders();
 
 			if (this.pid !== "onsen") {
@@ -560,13 +563,26 @@
 			}
 		}
 	},
-	"Graphic@doubleback,simpleloop,rassi": {
+	"Graphic@simpleloop": {
 		getBGCellColor: function(cell) {
 			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
-		},
+		}
+	},
+	"Graphic@doubleback,rassi": {
+		getBGCellColor: function(cell) {
+			return cell.ques === 7 ? "darkgray" : this.getBGCellColor_error1(cell);
+		}
+	},
+	"Graphic@simpleloop,doubleback,rassi": {
 		getBorderColor: function(border) {
 			var cell1 = border.sidecell[0],
 				cell2 = border.sidecell[1];
+			if (cell1.ques === 7 && cell2.ques === 7) {
+				return null;
+			}
+			if (this.pid === "simpleloop" && (cell1.ques === 7 || cell2.ques === 7)) {
+				return null;
+			}
 			if (
 				border.inside &&
 				!cell1.isnull &&

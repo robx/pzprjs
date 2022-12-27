@@ -5,10 +5,14 @@ module.exports = function(grunt){
   var fs = require('fs');
   var rulesEN = grunt.file.readYAML('src-ui/res/rules.en.yaml');
   var rulesJA = grunt.file.readYAML('src-ui/res/rules.ja.yaml');
+  var historyEN = grunt.file.readYAML('src-ui/res/history.en.yaml');
+  var historyJA = grunt.file.readYAML('src-ui/res/history.ja.yaml');
 
   var rulesMTime = Math.max(
     fs.statSync('src-ui/res/rules.en.yaml').mtime,
-    fs.statSync('src-ui/res/rules.ja.yaml').mtime
+    fs.statSync('src-ui/res/rules.ja.yaml').mtime,
+    fs.statSync('src-ui/res/history.en.yaml').mtime,
+    fs.statSync('src-ui/res/history.ja.yaml').mtime
   );
   var pMTime = Math.max(
     fs.statSync('src-ui/res/p.en.json').mtime,
@@ -59,27 +63,6 @@ module.exports = function(grunt){
         ]
       }
     },
-    move: {
-      p: {
-        src: 'dist/p.html',
-        dest: 'dist/p.template',
-      },
-    },
-    newer: {
-      options: {
-        override: function(detail, include) {
-          if(detail.task === 'concat' && detail.target === 'samples') {
-            include(rulesMTime > detail.time);
-          } else if(detail.task === 'concat' && detail.target === 'ui') {
-            include(pMTime > detail.time);
-          } else if(detail.task === 'concat' && detail.target === 'pzpr') {
-            include(failcodeMTime > detail.time);
-          }else{
-            include(false);
-          }
-        }
-      }
-    },
 
     concat: {
       options: {
@@ -109,8 +92,8 @@ module.exports = function(grunt){
             var pid = filepath.split('/').pop().split('.')[0];
 
             var ruleResult = [
-              rulesEN[pid] || '',
-              rulesJA[pid] || ''
+              { rules: rulesEN[pid] || '', history: historyEN[pid] || '' },
+              { rules: rulesJA[pid] || '', history: historyJA[pid] || '' }
             ];
 
             return "ui.debug.addRules('" + pid + "', " + JSON.stringify(ruleResult) + ");\n" + src;
@@ -167,10 +150,9 @@ module.exports = function(grunt){
   
   grunt.registerTask('default', ['build']);
   grunt.registerTask('release', ['build']);
-  grunt.registerTask('vercel', ['build', 'move']);
   grunt.registerTask('build',        ['build:pzpr', 'build:variety', 'build:samples', 'build:ui']);
-  grunt.registerTask('build:pzpr',   ['newer:concat:pzpr', 'newer:uglify:pzpr']);
-  grunt.registerTask('build:ui',     ['newer:copy:ui', 'newer:concat:ui', 'newer:uglify:ui']);
-  grunt.registerTask('build:variety',['newer:uglify:variety']);
-  grunt.registerTask('build:samples',['newer:concat:samples', 'newer:uglify:samples']);
+  grunt.registerTask('build:pzpr',   ['concat:pzpr', 'uglify:pzpr']);
+  grunt.registerTask('build:ui',     ['copy:ui', 'concat:ui', 'uglify:ui']);
+  grunt.registerTask('build:variety',['uglify:variety']);
+  grunt.registerTask('build:samples',['concat:samples', 'uglify:samples']);
 };

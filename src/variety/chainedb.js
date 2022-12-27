@@ -205,8 +205,7 @@
 			"checkUniqueShapes",
 			"checkNoNumberInShade",
 			"checkNumberAndShadeSize",
-			"checkNoChain",
-			"doneShadingDecided"
+			"checkNoChain"
 		],
 
 		checkNoNumberInShade: function() {

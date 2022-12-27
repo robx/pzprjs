@@ -38,6 +38,7 @@ ui.keypopup = {
 		sukoro: [4, 4],
 		sukororoom: [4, 4],
 		lookair: [5, 0],
+		hebi: [5, 5],
 		tawa: [6, 0],
 		hashikake: [8, 0],
 		tapa: [8, 0],
@@ -51,7 +52,6 @@ ui.keypopup = {
 		ayeheya: [10, 0],
 		kurodoko: [10, 0],
 		nagenawa: [10, 0],
-		ringring: [10, 0],
 		numlin: [10, 0],
 		nurikabe: [10, 0],
 		nuribou: [10, 0],
@@ -134,7 +134,13 @@ ui.keypopup = {
 		anglers: [122, 0],
 		heyablock: [10, 0],
 		koburin: [4, 0],
-		mirrorbk: [10, 0]
+		mirrorbk: [10, 0],
+		takoyaki: [4, 0],
+		lightshadow: [10, 0],
+		familyphoto: [10, 0],
+		icelom: [10, 0],
+		icelom2: [10, 0],
+		icewalk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -357,6 +363,12 @@ ui.keypopup = {
 		if (cap !== null) {
 			itemlist.push(["-", cap]);
 		}
+		if (pid === "familyphoto") {
+			itemlist.push(["q", "●"]);
+		}
+		if (pid === "icelom" || pid === "icelom2" || pid === "icewalk") {
+			itemlist.push(["q", { text: "■", color: "rgb(192,224,255)" }]);
+		}
 		this.generate_main(itemlist, 4);
 	},
 	gentable51: function(mode) {
@@ -390,7 +402,23 @@ ui.keypopup = {
 	},
 	gentable5: function(mode) {
 		this.generate_main(
-			["1", "2", "3", "4", "5", null, "0", " ", ["-", "?"]],
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				null,
+				"0",
+				" ",
+				[
+					"-",
+					{
+						text: mode === 1 ? "?" : "・",
+						color: mode === 3 ? "rgb(255, 96, 191)" : ""
+					}
+				]
+			],
 			3
 		);
 	},

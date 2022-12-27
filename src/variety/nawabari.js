@@ -351,7 +351,9 @@
 					cell.qnum = +ca;
 				}
 			});
-			this.decodeBorderAns();
+			this.decodeBorderAns(
+				this.pid === "fourcells" && this.filever === 0 ? 1 : null
+			);
 		},
 		encodeData: function() {
 			if (this.pid === "fourcells") {
@@ -376,18 +378,18 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkOverThreeCells@heteromino",
+			"checkTouchDifferent@heteromino",
+			"checkLessThreeCells@heteromino",
 			"checkRoomRect@nawabari",
 			"checkNoNumber@nawabari",
 			"checkDoubleNumber@nawabari",
-			"checkOverThreeCells@heteromino",
 			"checkOverFourCells@fourcells",
 			"checkOverFiveCells@fivecells",
 			"checkdir4BorderAns@!heteromino",
 			"checkBorderDeadend+",
-			"checkLessThreeCells@heteromino",
 			"checkLessFourCells@fourcells",
-			"checkLessFiveCells@fivecells",
-			"checkTouchDifferent@heteromino"
+			"checkLessFiveCells@fivecells"
 		],
 
 		checkOverThreeCells: function() {

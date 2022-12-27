@@ -79,7 +79,7 @@
 		// menuconfig.sync()  URL形式などによって変化する可能性がある設定値を同期する
 		//---------------------------------------------------------------------------
 		sync: function() {
-			var idname = null;
+			var idname = [];
 			switch (ui.puzzle.pid) {
 				case "yajilin":
 					idname = "disptype_yajilin";
@@ -112,7 +112,7 @@
 					idname = "pentopia_transparent";
 					break;
 				case "koburin":
-					idname = "koburin_minesweeper";
+					idname = ["disptype_yajilin", "koburin_minesweeper"];
 					break;
 				case "akichi":
 					idname = "akichi_maximum";
@@ -121,8 +121,12 @@
 					idname = "context_marks";
 					break;
 			}
-			if (!!idname) {
-				this.set(idname, ui.puzzle.getConfig(idname));
+
+			if (typeof idname === "string") {
+				idname = [idname];
+			}
+			for (var i in idname) {
+				this.set(idname[i], ui.puzzle.getConfig(idname[i]));
 			}
 
 			this.set("variant", ui.puzzle.getConfig("variant"));

@@ -20,6 +20,9 @@
 				this.dragnumber_nanro();
 			}
 		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -135,6 +138,7 @@
 		relation: {
 			"cell.qnum": "info",
 			"cell.anum": "info",
+			"cell.qsub": "info",
 			"border.ques": "separator"
 		},
 
@@ -150,7 +154,8 @@
 			var clist = component.clist;
 			var nums = [];
 			var numkind = 0,
-				filled = -1;
+				filled = -1,
+				circlecnt = 0;
 			for (var i = 0; i < clist.length; i++) {
 				var num = clist[i].getNum();
 				if (num !== -1) {
@@ -161,10 +166,12 @@
 					} else {
 						nums[num]++;
 					}
+				} else if (clist[i].qsub === 1) {
+					circlecnt++;
 				}
 			}
 			component.number = filled;
-			component.numcnt = nums[filled];
+			component.numcnt = nums[filled] + circlecnt;
 			component.numkind = numkind;
 		}
 	},

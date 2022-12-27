@@ -1,5 +1,4 @@
 // Variety.js v3.4.1
-/* global Set:false */
 
 (function() {
 	var _info = {},
@@ -46,76 +45,8 @@
 	});
 	delete variety.extend;
 
-	/*
-	 * To avoid fragmentation, I'm disabling all old genres for the time being,
-	 * to try to avoid having 3 websites to choose from (puzz.link, pzv.jp and this one).
-	 *
-	 * To remove the inhibitor, delete all references to `inhibited` and `allowedGenres`.
-	 *
-	 * -X_Sheep
-	 */
-	var inhibited = false;
-	if (pzpr.env.browser) {
-		inhibited =
-			window.location.protocol !== "file:" &&
-			window.location.host.indexOf("localhost") === -1;
-	} else if (pzpr.env.node) {
-		inhibited = process.env.VERCEL;
-	}
-	var allowedGenres = new Set([
-		"dotchi",
-		"crossstitch",
-		"ovotovata",
-		"lohkous",
-		"chainedb",
-		"canal",
-		"cbanana",
-		"oneroom",
-		"bdwalk",
-		"voxas",
-		"tontti",
-		"rassi",
-		"parquet",
-		"lapaz",
-		"tren",
-		"pentominous",
-		"hinge",
-		"tajmahal",
-		"statuepark",
-		"statuepark-aux",
-		"railpool",
-		"coral",
-		"nuriuzu",
-		"ququ",
-		"coffeemilk",
-		"nothree",
-		"disloop",
-		"lither",
-		"snakepit",
-		"squarejam",
-		"context",
-		"pentopia",
-		"numrope",
-		"yajisoko",
-		"dominion",
-		"roundtrip",
-		"cts",
-		"vslither",
-		"tslither",
-		"antmill",
-		"kaidan",
-		"anglers",
-		"heyablock",
-		"koburin",
-		"mirrorbk",
-		"akichi"
-	]);
-
 	(function(Genre, obj) {
 		for (var pzprid in obj) {
-			if (inhibited && !allowedGenres.has(pzprid)) {
-				continue;
-			}
 			_info[pzprid] = new Genre(pzprid, obj[pzprid]);
 			try {
 				Object.freeze(_info[pzprid]);
@@ -207,6 +138,7 @@
 			doubleback: [0, 0, "Double Back", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
+			familyphoto: [0, 0, "家族写真", "Family Photo"],
 			fillmat: [1, 0, "フィルマット", "Fillmat", "fillmat"],
 			fillomino: [
 				0,
@@ -251,6 +183,7 @@
 			icebarn: [1, 0, "アイスバーン", "Icebarn", "icebarn"],
 			icelom: [0, 0, "アイスローム", "Icelom", "icebarn"],
 			icelom2: [0, 0, "アイスローム２", "Icelom 2", "icebarn"],
+			icewalk: [0, 0, "アイスウォーク", "Ice Walk"],
 			ichimaga: [0, 0, "イチマガ", "Ichimaga", "ichimaga"],
 			ichimagam: [0, 0, "磁石イチマガ", "Magnetic Ichimaga", "ichimaga"],
 			ichimagax: [
@@ -278,6 +211,7 @@
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
 			lapaz: [0, 0, "La Paz", "La Paz"],
+			lightshadow: [0, 0, "Light and Shadow", "Light and Shadow"],
 			lightup: [
 				0,
 				1,
@@ -289,6 +223,7 @@
 			lither: [0, 0, "Litherslink", "Litherslink"],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
 			lohkous: [0, 0, "Lohkous", "Lohkous"],
+			lollipops: [0, 0, "ペロペロキャンディ", "Lollipops"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],
@@ -398,6 +333,7 @@
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
 			symmarea: [0, 0, "シンメトリーエリア", "Symmetry Area", "fillomino"],
 			tajmahal: [0, 0, "タージ・マハル", "Taj Mahal", "kouchoku"],
+			takoyaki: [0, 0, "たこ焼き", "Takoyaki", "kaidan"],
 			tapa: [0, 0, "Tapa", "Tapa"],
 			tapaloop: [0, 0, "Tapa-Like Loop", "Tapa-Like Loop"],
 			tasquare: [0, 0, "たすくえあ", "Tasquare"],

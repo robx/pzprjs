@@ -11,13 +11,13 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "shade", "undef", "direc"],
-			play: ["line", "completion", "dot", "subcircle", "info-line"]
+			play: ["line", "completion", "peke", "dot", "subcircle", "info-line"]
 		},
 		mouseinput_auto: function() {
 			var puzzle = this.puzzle;
 			if (puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
-					this.inputslash();
+					this.inputslash(this.btn === "right");
 				} else if (this.mouseend && this.notInputted()) {
 					var cell = this.getcell();
 					if (!this.firstCell.isnull && cell !== this.firstCell) {
@@ -40,6 +40,24 @@
 					this.inputqnum();
 				}
 			}
+		},
+
+		inputFixedQsub: function(val) {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = !(cell.qsub & val);
+			}
+			if (this.inputData) {
+				cell.setQsub(cell.qsub | val);
+			} else {
+				cell.setQsub(cell.qsub & ~val);
+			}
+			cell.draw();
+			this.mouseCell = cell;
 		},
 
 		inputqnum_main: function(cell) {
@@ -95,7 +113,7 @@
 					: { 0: 33, 31: 0, 32: 31, 33: 32 })[cell.qans]
 			);
 		},
-		inputslash: function() {
+		inputslash: function(isMark) {
 			var cell = this.getcell();
 			if (cell.isnull) {
 				return;
@@ -107,42 +125,56 @@
 			}
 			// まだ入力していないセルの場合
 			else if (this.firstPoint.bx !== null) {
-				var val = null,
+				var move = null,
 					path = 0,
 					dx = this.inputPoint.bx - this.firstPoint.bx,
 					dy = this.inputPoint.by - this.firstPoint.by;
 				if (dx * dy > 0 && Math.abs(dx) >= 0.5 && Math.abs(dy) >= 0.5) {
-					val = 31;
+					move = true;
 					path = cell.parity() ? 2 : 1;
 				} else if (dx * dy < 0 && Math.abs(dx) >= 0.5 && Math.abs(dy) >= 0.5) {
-					val = 32;
+					move = false;
 					path = cell.parity() ? 1 : 2;
 				}
 
 				if (this.inputData !== null && Math.abs(this.inputData) !== path) {
-					val = null;
+					move = null;
 				}
 
-				if (val !== null) {
-					if (this.inputData === null) {
-						this.inputData =
-							val === cell.qans || cell.qans === 33 ? -path : path;
-					}
-					if (this.inputData < 0) {
-						if (val === cell.qans) {
-							val = 0;
-						} else if (cell.qans === 33) {
-							val = val === 31 ? 32 : 31;
-						} else {
-							val = null;
+				if (move !== null) {
+					if (!isMark) {
+						var val = move ? 31 : 32;
+
+						if (this.inputData === null) {
+							this.inputData =
+								val === cell.qans || cell.qans === 33 ? -path : path;
 						}
-					} else if (cell.qans !== 0 && cell.qans !== val) {
-						val = 33;
+						if (this.inputData < 0) {
+							if (val === cell.qans) {
+								val = 0;
+							} else if (cell.qans === 33) {
+								val = val === 31 ? 32 : 31;
+							} else {
+								val = null;
+							}
+						} else if (cell.qans !== 0 && cell.qans !== val) {
+							val = 33;
+						}
+						if (val !== null) {
+							cell.setQans(val);
+						}
+					} else {
+						var val = move ? 2 : 4;
+						if (this.inputData === null) {
+							this.inputData = cell.qsub & val ? -path : path;
+						}
+						if (this.inputData > 0) {
+							cell.setQsub(cell.qsub | val);
+						} else {
+							cell.setQsub(cell.qsub & ~val);
+						}
 					}
-					if (val !== null) {
-						cell.setQans(val);
-						cell.draw();
-					}
+					cell.draw();
 					this.firstPoint.reset();
 				}
 			}
@@ -164,6 +196,9 @@
 
 			cell.drawaround();
 			return true;
+		},
+		inputpeke: function() {
+			this.inputslash(true);
 		},
 
 		inputqcmp: function() {
@@ -198,10 +233,8 @@
 			if (this.inputData === null) {
 				if (this.btn === "left") {
 					this.inputData = { 0: 1, 1: 2, 2: 0 }[dot.getDot()];
-				} else if (this.btn === "right") {
-					this.inputData = { 0: 2, 1: 0, 2: 1 }[dot.getDot()];
 				} else {
-					return;
+					this.inputData = { 0: 2, 1: 0, 2: 1 }[dot.getDot()];
 				}
 			}
 			dot.setDot(this.inputData);
@@ -467,6 +500,7 @@
 		gridcolor_type: "DLIGHT",
 
 		qcmpcolor: "rgb(127,127,127)",
+		mb2color: "rgb(127,127,255)",
 
 		errcolor1: "red",
 
@@ -483,6 +517,79 @@
 			this.drawDots();
 
 			this.drawTarget();
+		},
+
+		drawMBs: function() {
+			var g = this.vinc("cell_mb", "auto", true);
+
+			var rsize = this.cw * 0.35;
+			var srsize = rsize * 0.8;
+			var clist = this.range.cells;
+
+			var radRight = 0,
+				radBottom = 0.5 * Math.PI,
+				radLeft = Math.PI,
+				radTop = 1.5 * Math.PI;
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				if (cell.qsub & 1) {
+					var px = cell.bx * this.bw;
+					var py = cell.by * this.bh;
+					g.vid = "c_MB_" + cell.id;
+					g.lineWidth = 1;
+					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
+					g.strokeCircle(px, py, rsize);
+				} else {
+					g.vid = "c_MB_" + cell.id;
+					g.vhide();
+				}
+
+				if (cell.qsub & 2) {
+					var px1 = (cell.bx - 1) * this.bw;
+					var py1 = (cell.by - 1) * this.bh;
+					var px2 = (cell.bx + 1) * this.bw;
+					var py2 = (cell.by + 1) * this.bh;
+					g.vid = "c_ca_" + cell.id;
+					g.lineWidth = 1.5;
+					g.strokeStyle = !cell.trial ? this.mb2color : "rgb(192, 192, 192)";
+					g.beginPath();
+					g.arc(px1, py1, srsize, radRight, radBottom, false);
+					g.stroke();
+					g.vid = "c_cc_" + cell.id;
+					g.beginPath();
+					g.arc(px2, py2, srsize, radTop, radLeft, true);
+					g.stroke();
+				} else {
+					g.vid = "c_ca_" + cell.id;
+					g.vhide();
+					g.vid = "c_cc_" + cell.id;
+					g.vhide();
+				}
+
+				if (cell.qsub & 4) {
+					var px1 = (cell.bx + 1) * this.bw;
+					var py1 = (cell.by - 1) * this.bh;
+					var px2 = (cell.bx - 1) * this.bw;
+					var py2 = (cell.by + 1) * this.bh;
+					g.vid = "c_cb_" + cell.id;
+					g.lineWidth = 1.5;
+					g.strokeStyle = !cell.trial ? this.mb2color : "rgb(192, 192, 192)";
+					g.beginPath();
+					g.arc(px1, py1, srsize, radLeft, radBottom, true);
+					g.stroke();
+					g.vid = "c_cd_" + cell.id;
+					g.beginPath();
+					g.arc(px2, py2, srsize, radTop, radRight, false);
+					g.stroke();
+				} else {
+					g.vid = "c_cb_" + cell.id;
+					g.vhide();
+					g.vid = "c_cd_" + cell.id;
+					g.vhide();
+				}
+			}
 		},
 
 		drawBaseMarks: function() {
@@ -582,9 +689,9 @@
 		decodeData: function() {
 			this.decodeCellDirecQnum();
 			this.decodeCell(function(cell, ca) {
-				if (ca[0] === "o") {
+				if (ca.charCodeAt(0) > 110 && ca.charCodeAt(0) <= 117) {
+					cell.qsub = ca.charCodeAt(0) - 110;
 					ca = ca.substr(1);
-					cell.qsub = 1;
 				}
 				if (ca === "c") {
 					cell.qcmp = 1;
@@ -600,8 +707,8 @@
 			this.encodeCellDirecQnum();
 			this.encodeCell(function(cell) {
 				var s = "";
-				if (cell.qsub === 1) {
-					s += "o";
+				if (cell.qsub > 0) {
+					s += String.fromCharCode(110 + cell.qsub);
 				}
 				if (cell.qans > 30) {
 					s += "" + cell.qans - 30;

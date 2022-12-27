@@ -389,6 +389,7 @@ select,
 textarea {
   font-size: 1em;
   line-height: 1;
+  color: inherit; /* work around iOS 15 blue buttons */
 }
 input[type="button"],
 button {

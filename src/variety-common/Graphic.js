@@ -859,7 +859,7 @@ pzpr.classmgr.makeCommon({
 				for (var k = 0; k < 4; k++) {
 					g.fillStyle = this.getQuesNumberColor(cell, k);
 					g.vid = "cell_text_" + cell.id + "_" + k;
-					if (k < n && nums[k] !== -1) {
+					if (k < n && nums[k] !== -1 && n <= 4) {
 						var opt = opts[n - 1],
 							px = (bx + opt.pos[k].x) * bw,
 							py = (by + opt.pos[k].y) * bh;

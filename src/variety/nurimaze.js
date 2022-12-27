@@ -14,7 +14,7 @@
 		use: true,
 		inputModes: {
 			edit: ["border", "mark-circle", "mark-triangle"],
-			play: ["shade", "unshade"]
+			play: ["shade", "unshade", "line", "info-line"]
 		},
 		mouseinput: function() {
 			// オーバーライド
@@ -292,6 +292,14 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
+	LineGraph: {
+		enabled: true
+	},
+	BorderList: {
+		subclear: function() {
+			this.propclear(["sub", "info", "ans"], true);
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -300,6 +308,8 @@
 		bgcellcolor_func: "qsub1",
 		errbcolor2: "rgb(192, 192, 255)",
 		bbcolor: "rgb(96, 96, 96)",
+
+		irowake: true,
 
 		paint: function() {
 			this.drawBGCells();
@@ -316,6 +326,8 @@
 			this.drawBoxBorders(true);
 
 			this.drawTarget();
+
+			this.drawLines();
 		},
 
 		drawQuesMarks: function() {
@@ -441,11 +453,13 @@
 			this.decodeAreaRoom();
 			this.decodeCellQues_nurimaze();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeAreaRoom();
 			this.encodeCellQues_nurimaze();
 			this.encodeCellAns();
+			this.encodeBorderLine();
 		},
 
 		decodeCellQues_nurimaze: function() {
