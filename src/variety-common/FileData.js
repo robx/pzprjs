@@ -302,7 +302,7 @@ pzpr.classmgr.makeCommon({
 		// fio.decodeBorderArrowAns() Decode lines and dir. aux. marks
 		// fio.encodeBorderArrowAns() Encode lines and dir. aux. marks
 		//---------------------------------------------------------------------------
-		decodeBorderAns: function() {
+		decodeBorderAns: function(hasborder) {
 			this.decodeBorder(function(border, ca) {
 				if (ca === "2") {
 					border.qans = 1;
@@ -312,9 +312,9 @@ pzpr.classmgr.makeCommon({
 				} else if (ca === "-1") {
 					border.qsub = 1;
 				}
-			});
+			}, hasborder);
 		},
-		encodeBorderAns: function() {
+		encodeBorderAns: function(hasborder) {
 			this.encodeBorder(function(border) {
 				if (border.qans === 1 && border.qsub === 1) {
 					return "2 ";
@@ -325,7 +325,7 @@ pzpr.classmgr.makeCommon({
 				} else {
 					return "0 ";
 				}
-			});
+			}, hasborder);
 		},
 		decodeBorderArrowAns: function() {
 			this.decodeBorder(function(border, ca) {

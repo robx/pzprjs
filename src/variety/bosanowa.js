@@ -632,7 +632,7 @@
 				if (ca !== ".") {
 					cell.qsub = +ca;
 				}
-			});
+			}, 1);
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
@@ -649,7 +649,7 @@
 			});
 			this.encodeBorder(function(cell) {
 				return cell.qsub !== -1 ? cell.qsub + " " : ". ";
-			});
+			}, 1);
 		}
 	},
 

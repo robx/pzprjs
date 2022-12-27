@@ -262,12 +262,12 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnum();
-			this.decodeBorderAns();
+			this.decodeBorderAns(1);
 			this.decodeCellAns();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
-			this.encodeBorderAns();
+			this.encodeBorderAns(1);
 			this.encodeCellAns();
 		},
 		decodeCellQnum: function() {
