@@ -105,6 +105,7 @@ ui.misc = {
 
 function toBGimage(pid) {
 	var imgs = [
+		"akichi",
 		"angleloop",
 		"aquarium",
 		"araf",
