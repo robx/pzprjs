@@ -79,6 +79,9 @@
 			return this.isnull || this.ques === 6;
 		}
 	},
+	Cross: {
+		l2cnt: 0
+	},
 	Board: {
 		hasborder: 2
 	},
