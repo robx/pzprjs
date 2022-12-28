@@ -15,6 +15,8 @@
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				this.inputTateyoko();
+				// TODO disallow placing more than one per drag
+				// TODO peke marks
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
 					this.inputborder();
@@ -402,18 +404,57 @@
 	AnsCheck: {
 		checklist: [
 			"checkBarExist",
+			"checkAdjacentLadder",
+			"checkInvalidLadder",
+			"checkLadderBorders",
 			"checkLadderCount+",
 			"checkConnectRoom"
-			// TODO adjacent ladders
-			// TODO useless ladders
 		],
 
 		checkBarExist: function() {
-			this.board.rebuildIfStale();
-			if (this.board.linegraph.components.length > 0) {
-				return;
+			if (
+				!this.board.cell.some(function(cell) {
+					return cell.isLine();
+				})
+			) {
+				this.failcode.add("brNoLine");
 			}
-			this.failcode.add("brNoLine");
+		},
+
+		checkInvalidLadder: function() {
+			var bd = this.board;
+			bd.rebuildIfStale();
+			this.checkAllCell(function(cell) {
+				if (!cell.isLine()) {
+					return false;
+				}
+				var seg = bd.getSegment(cell.bx, cell.by);
+				if (!seg || !seg.isvalid) {
+					return true;
+				}
+				return seg.sideobj[0] === seg.sideobj[1];
+			}, "ceInvalidLadder");
+		},
+
+		checkAdjacentLadder: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				var bar = Math.abs(cell1.bx - cell2.bx) === 2 ? 13 : 12;
+				return cell1.qans === bar && cell2.qans === bar;
+			}, "lnAdjacent");
+		},
+
+		checkLadderBorders: function() {
+			var bd = this.board;
+			bd.rebuildIfStale();
+			this.checkAllCell(function(cell) {
+				if (!cell.isLine()) {
+					return false;
+				}
+				var adj = cell.adjborder;
+				var b1 = cell.qans === 12 ? adj.top : adj.left;
+				var b2 = cell.qans === 12 ? adj.bottom : adj.right;
+				return (b1.inside && !b1.isBorder()) || (b2.inside && !b2.isBorder());
+			}, "lnNoBorder");
 		},
 
 		checkLadderCount: function() {
@@ -433,13 +474,17 @@
 			var bd = this.board;
 			bd.rebuildIfStale();
 			var paths = bd.linegraph.components;
-			if (paths.length > 0 && paths[0].nodes.length !== bd.room.length) {
+			if (paths.length === 0 || paths[0].nodes.length !== bd.room.length) {
 				this.failcode.add("lnPlLoop");
 				if (this.checkOnly) {
 					return;
 				}
 
-				paths[0].nodes[0].obj.setinfo();
+				if (paths.length > 0) {
+					paths[0].nodes[0].obj.setinfo();
+				} else if (bd.room.length > 0) {
+					bd.room[0].setinfo();
+				}
 			}
 		}
 	}
