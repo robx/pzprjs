@@ -93,6 +93,7 @@
 		},
 
 		rebuildInfo: function() {
+			var bd = this;
 			this.cell.each(function(cell) {
 				cell.roomitem = null;
 			});
@@ -103,8 +104,14 @@
 			this.room.allclear();
 
 			this.room.rebuild();
-
 			this.linegraph.rebuild();
+
+			this.cell.each(function(cell) {
+				if (cell.isLine()) {
+					bd.segment.addSegmentByAddr(cell.bx, cell.by, cell.qans);
+				}
+			});
+
 			this.isStale = false;
 		},
 
@@ -315,6 +322,7 @@
 
 			this.drawQuesNumbers();
 
+			// TODO override, draw double lines
 			this.drawTateyokos();
 			this.drawBorders();
 
@@ -358,16 +366,50 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeAreaRoom();
+			this.decodeCellQnum();
+			this.decodeCellBar();
 		},
 		encodeData: function() {
 			this.encodeAreaRoom();
+			this.encodeCellQnum();
+			this.encodeCellBar();
+		},
+		decodeCellBar: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "1") {
+					cell.qans = 12;
+				} else if (ca === "2") {
+					cell.qans = 13;
+				}
+			});
+		},
+		encodeCellBar: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques !== 1) {
+					if (cell.qans === 0) {
+						return "0 ";
+					} else if (cell.qans === 12) {
+						return "1 ";
+					} else if (cell.qans === 13) {
+						return "2 ";
+					}
+				}
+				return ". ";
+			});
 		}
 	},
 
 	AnsCheck: {
-		checklist: ["checkBarExist", "checkLadderCount", "checkConnectRoom"],
+		checklist: [
+			"checkBarExist",
+			"checkLadderCount+",
+			"checkConnectRoom"
+			// TODO adjacent ladders
+			// TODO useless ladders
+		],
 
 		checkBarExist: function() {
+			this.board.rebuildIfStale();
 			if (this.board.linegraph.components.length > 0) {
 				return;
 			}
