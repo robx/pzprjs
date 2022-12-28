@@ -57,6 +57,11 @@
 		enableLineNG: true,
 		isLineNG: function() {
 			return !this.inside;
+		},
+		posthook: {
+			line: function() {
+				this.board.roommgr.isStale = true;
+			}
 		}
 	},
 	Cell: {
@@ -67,6 +72,7 @@
 				}
 			},
 			ques: function(val) {
+				this.board.roommgr.isStale = true;
 				if (val === 6 && this.qnum !== -1) {
 					this.setQnum(-1);
 				}
@@ -186,6 +192,12 @@
 		},
 
 		checkWalkLength: function(flag, code) {
+			if (this.board.roommgr.isStale) {
+				// TODO The room manager will break in certain conditions.
+				// It is rebuilt here as a workaround.
+				this.board.roommgr.isStale = false;
+				this.board.roommgr.rebuild();
+			}
 			for (var i = 0; i < this.board.cell.length; i++) {
 				var cell = this.board.cell[i];
 				var qnum = cell.qnum;
