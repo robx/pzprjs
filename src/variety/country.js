@@ -286,6 +286,15 @@
 		disInputHatena: true,
 		maxnum: function() {
 			return Math.min(999, this.board.cols * this.board.rows);
+		},
+		seterr: function(num) {
+			if (this.board.isenableSetError()) {
+				if (num > 0) {
+					this.error |= num;
+				} else {
+					this.error = num;
+				}
+			}
 		}
 	},
 	"Cell@country": {
@@ -361,6 +370,13 @@
 		getOverlappingBorders: function() {
 			var d = this.getRectSize();
 			return this.board.borderinside(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1);
+		}
+	},
+	"CellList@remlen": {
+		seterr: function(num) {
+			for (var i = 0; i < this.length; i++) {
+				this[i].seterr(num);
+			}
 		}
 	},
 	LineGraph: {
@@ -657,6 +673,14 @@
 		gridcolor_type: "LIGHT",
 		bgcellcolor_func: "icebarn",
 		icecolor: "rgb(204,204,204)"
+	},
+	"Graphic@remlen#2": {
+		getBGCellColor_error1: function(cell) {
+			return cell.error > 0 && cell.error & 1 ? this.errbcolor1 : null;
+		},
+		getQuesNumberColor: function(cell) {
+			return cell.error > 0 && cell.error & 2 ? this.errcolor1 : this.quescolor;
+		}
 	},
 
 	//---------------------------------------------------------
@@ -1758,13 +1782,12 @@
 				if (this.checkOnly) {
 					return;
 				}
-				this.board.border.setnoerr();
 				var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
 				for (var i = 0; i < walk.length; i++) {
-					walk[i].path.setedgeerr(1);
-					// TODO alternate display of error
-					walk[i].cell.room.top.seterr(1);
-					walk[i].cell.reldirbd(walk[i].dir, 1).seterr(1);
+					walk[i].path.clist.seterr(1);
+					walk[i].cell.room.top.seterr(2);
+					// TODO display border error
+					walk[i].cell.reldirbd(walk[i].dir, 1).seterr(2);
 				}
 			}
 		},
