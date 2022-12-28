@@ -946,7 +946,7 @@ pzpr.classmgr.makeCommon({
 					this.inputData = +(val > 0);
 					this.firstPoint.reset();
 
-					if (this.pid === "tatamibari") {
+					if (this.pid === "tatamibari" || this.pid === "ladders") {
 						this.mousereset();
 					}
 				}

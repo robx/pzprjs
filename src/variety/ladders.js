@@ -8,15 +8,22 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["border", "number", "clear", "info-blk"],
-			play: ["info-blk"]
+			edit: ["border", "number", "clear", "info-line"],
+			play: ["bar", "peke", "info-line"]
 		},
 
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				this.inputTateyoko();
-				// TODO disallow placing more than one per drag
-				// TODO peke marks
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left") {
+						this.inputTateyoko();
+					} else if (this.btn === "right") {
+						this.inputpeke();
+					}
+				}
+				if (this.mouseend && this.notInputted()) {
+					this.inputpeke_ifborder();
+				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
 					this.inputborder();
@@ -25,7 +32,7 @@
 				}
 			}
 		},
-		dispInfoBlk: function() {
+		dispInfoLine: function() {
 			var cell = this.getcell();
 			this.mousereset();
 			if (cell.isnull) {
@@ -33,6 +40,7 @@
 			}
 			this.board.rebuildIfStale();
 
+			// TODO consider allowing the segment itself to be highlighted, depending on where the cell was clicked
 			cell.room.top.roomitem.setinfo();
 		}
 	},
@@ -63,7 +71,7 @@
 
 		prehook: {
 			qans: function() {
-				if (this.isLine()) {
+				if (this.isLine() && !this.board.isStale) {
 					this.board.segment.removeSegmentByAddr(this.bx, this.by);
 					// TODO fix properly
 					this.board.isStale = true;
@@ -72,7 +80,7 @@
 		},
 		posthook: {
 			qans: function(val) {
-				if (val) {
+				if (val && !this.board.isStale) {
 					this.board.segment.addSegmentByAddr(this.bx, this.by, val);
 				}
 			}
@@ -327,6 +335,7 @@
 			// TODO override, draw double lines
 			this.drawTateyokos();
 			this.drawBorders();
+			this.drawPekes();
 
 			this.drawChassis();
 
@@ -370,11 +379,13 @@
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
 			this.decodeCellBar();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCellBar();
+			this.encodeBorderLine();
 		},
 		decodeCellBar: function() {
 			this.decodeCell(function(cell, ca) {
