@@ -523,6 +523,9 @@
 			} else if (this.pid !== "ovotovata") {
 				this.drawDashedGrid();
 			}
+			if (this.pid === "remlen") {
+				this.drawBorderDirBG();
+			}
 			this.drawBGCells();
 			if (this.pid === "ovotovata") {
 				this.drawGrid();
@@ -680,6 +683,25 @@
 		},
 		getQuesNumberColor: function(cell) {
 			return cell.error > 0 && cell.error & 2 ? this.errcolor1 : this.quescolor;
+		},
+		drawBorderDirBG: function() {
+			this.vinc("border_bg", "auto", true);
+			var g = this.context;
+
+			var rsize = this.cw * 0.25;
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i];
+
+				g.vid = "bdbg_" + border.id;
+				if (border.error === 2) {
+					g.strokeStyle = this.errcolor1;
+					g.lineWidth = this.lw + this.addlw;
+					g.strokeCross(border.bx * this.bw, border.by * this.bh, rsize);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 
@@ -1786,7 +1808,6 @@
 				for (var i = 0; i < walk.length; i++) {
 					walk[i].path.clist.seterr(1);
 					walk[i].cell.room.top.seterr(2);
-					// TODO display border error
 					walk[i].cell.reldirbd(walk[i].dir, 1).seterr(2);
 				}
 			}
