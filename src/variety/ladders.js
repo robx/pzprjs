@@ -8,8 +8,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["border", "number", "clear"],
-			play: []
+			edit: ["border", "number", "clear", "info-blk"],
+			play: ["info-blk"]
 		},
 
 		mouseinput_auto: function() {
@@ -22,6 +22,16 @@
 					this.inputqnum();
 				}
 			}
+		},
+		dispInfoBlk: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull) {
+				return;
+			}
+			this.board.rebuildIfStale();
+
+			cell.room.top.roomitem.setinfo();
 		}
 	},
 
@@ -41,10 +51,20 @@
 			return this.qans;
 		},
 
+		setinfo: function(num) {
+			if (num > 0 && this.qinfo > 0) {
+				this.qinfo |= num;
+			} else {
+				this.qinfo = num;
+			}
+		},
+
 		prehook: {
 			qans: function() {
 				if (this.isLine()) {
 					this.board.segment.removeSegmentByAddr(this.bx, this.by);
+					// TODO fix properly
+					this.board.isStale = true;
 				}
 			}
 		},
@@ -53,6 +73,13 @@
 				if (val) {
 					this.board.segment.addSegmentByAddr(this.bx, this.by, val);
 				}
+			}
+		}
+	},
+	CellList: {
+		setinfo: function(num) {
+			for (var i = 0; i < this.length; i++) {
+				this[i].setinfo(num);
 			}
 		}
 	},
@@ -121,7 +148,22 @@
 	Room: {
 		group: "room",
 		top: null,
-		path: null
+		path: null,
+
+		setinfo: function() {
+			this.board.cell.setinfo(-1);
+			var rooms = this.path ? this.path.getnodeobjs() : [this];
+
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				room.top.room.clist.setinfo(1);
+				for (var s = 0; s < room.seglist.length; s++) {
+					room.seglist[s].getc().setinfo(2);
+				}
+			}
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
+		}
 	},
 	"RoomList:PieceList": {
 		name: "RoomList",
@@ -184,6 +226,10 @@
 			if (this.board.isenableSetError()) {
 				this.error = num;
 			}
+		},
+
+		getc: function() {
+			return this.board.getc(this.bx, this.by);
 		}
 	},
 	"SegmentList:PieceList": {
@@ -275,6 +321,27 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getBGCellColor_error1: function(cell) {
+			var err = cell.error || cell.qinfo;
+			return err > 0 && err & 1 ? this.errbcolor1 : null;
+		},
+
+		getBarColor: function(cell, vert) {
+			var color = "";
+			this.addlw = 0;
+			if (cell.error || (cell.qinfo > 0 && cell.qinfo & 2)) {
+				color = this.errlinecolor;
+				this.addlw = 1;
+			} else if (cell.qinfo === -1 || cell.qinfo === 1) {
+				color = this.noerrcolor;
+			} else if (cell.trial) {
+				color = this.trialcolor;
+			} else {
+				color = this.linecolor;
+			}
+			return color;
 		}
 	},
 
