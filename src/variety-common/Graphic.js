@@ -2153,7 +2153,7 @@ pzpr.classmgr.makeCommon({
 				d = this.range;
 
 			g.vid = "text_stpos";
-			var cell = bd.startpos.getc();
+			var cell = bd.startpos ? bd.startpos.getc() : bd.emptycell;
 			if (
 				cell.bx >= d.x1 &&
 				d.x2 >= cell.bx &&

@@ -13,7 +13,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		input: function(cell) {
-			if (!this.partner.equals(cell)) {
+			if (!this.partner || !this.partner.equals(cell)) {
 				if (!this.equals(cell)) {
 					this.set(cell);
 				} else {

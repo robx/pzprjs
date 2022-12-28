@@ -1,6 +1,3 @@
-//
-// パズル固有スクリプト部 ひとりにしてくれ hitori.js
-//
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
