@@ -1040,3 +1040,7 @@ cocktail: "Shade some cells on the board to form blocks.\n1. Regions contain no 
   \ A number indicates the size of the block in the region.\n3. Shaded cells cannot\
   \ be adjacent across region borders.\n4. The shaded cells cannot form a 2x2 square.\n\
   5. All blocks form a diagonally contiguous area."
+remlen: "Draw lines through orthogonally adjacent cells to form a directional loop.\n\
+  1. All unshaded cells must be visited.\n2. The loop cannot branch off or cross itself.\n\
+  3. Each time the loop exits a region containing a number, its visit to the next\
+  \ region must consist of exactly that number of cells."
