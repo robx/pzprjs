@@ -365,7 +365,14 @@
 	},
 
 	AnsCheck: {
-		checklist: ["checkLadderCount", "checkConnectRoom"],
+		checklist: ["checkBarExist", "checkLadderCount", "checkConnectRoom"],
+
+		checkBarExist: function() {
+			if (this.board.linegraph.components.length > 0) {
+				return;
+			}
+			this.failcode.add("brNoLine");
+		},
 
 		checkLadderCount: function() {
 			this.checkAllBlock(
@@ -381,8 +388,17 @@
 		},
 
 		checkConnectRoom: function() {
-			this.board.rebuildIfStale();
-			// TODO implement
+			var bd = this.board;
+			bd.rebuildIfStale();
+			var paths = bd.linegraph.components;
+			if (paths.length > 0 && paths[0].nodes.length !== bd.room.length) {
+				this.failcode.add("lnPlLoop");
+				if (this.checkOnly) {
+					return;
+				}
+
+				paths[0].nodes[0].obj.setinfo();
+			}
 		}
 	}
 });
