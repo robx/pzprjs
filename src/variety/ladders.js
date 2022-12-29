@@ -40,7 +40,6 @@
 			}
 			this.board.rebuildIfStale();
 
-			// TODO consider allowing the segment itself to be highlighted, depending on where the cell was clicked
 			cell.room.top.roomitem.setinfo();
 		}
 	},
@@ -209,7 +208,7 @@
 		initialize: function(bx, by, value) {
 			this.isnull = true;
 
-			this.sideobj = [null, null]; // 2つの端点を指すオブジェクトを保持する
+			this.sideobj = [null, null];
 
 			this.bx = null;
 			this.by = null;
@@ -337,7 +336,7 @@
 
 		drawTateyokos: function() {
 			var g = this.vinc("cell_tateyoko", "crispEdges");
-			var lm = Math.max(this.cw / 8, 3) / 2; //LineWidth
+			var lm = Math.max(this.cw / 9, 2) / 2; //LineWidth
 
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
@@ -349,26 +348,62 @@
 				if (qa === 12) {
 					g.vid = "c_bar1a_" + cell.id;
 					g.fillStyle = this.getBarColor(cell, true);
-					g.fillRectCenter(px - this.bw / 3, py, lm + this.addlw / 2, this.bh);
+					g.fillRectCenter(px - this.bw / 2, py, lm + this.addlw / 2, this.bh);
 					g.vid = "c_bar1b_" + cell.id;
-					g.fillRectCenter(px + this.bw / 3, py, lm + this.addlw / 2, this.bh);
+					g.fillRectCenter(px + this.bw / 2, py, lm + this.addlw / 2, this.bh);
+					g.vid = "c_bar1c_" + cell.id;
+					g.fillRectCenter(
+						px,
+						py - this.bh / 3,
+						this.bw / 2,
+						lm + this.addlw / 2
+					);
+					g.vid = "c_bar1d_" + cell.id;
+					g.fillRectCenter(
+						px,
+						py + this.bh / 3,
+						this.bw / 2,
+						lm + this.addlw / 2
+					);
 				} else {
 					g.vid = "c_bar1a_" + cell.id;
 					g.vhide();
 					g.vid = "c_bar1b_" + cell.id;
+					g.vhide();
+					g.vid = "c_bar1c_" + cell.id;
+					g.vhide();
+					g.vid = "c_bar1d_" + cell.id;
 					g.vhide();
 				}
 
 				if (qa === 13) {
 					g.vid = "c_bar2a_" + cell.id;
 					g.fillStyle = this.getBarColor(cell, false);
-					g.fillRectCenter(px, py - this.bh / 3, this.bw, lm + this.addlw / 2);
+					g.fillRectCenter(px, py - this.bh / 2, this.bw, lm + this.addlw / 2);
 					g.vid = "c_bar2b_" + cell.id;
-					g.fillRectCenter(px, py + this.bh / 3, this.bw, lm + this.addlw / 2);
+					g.fillRectCenter(px, py + this.bh / 2, this.bw, lm + this.addlw / 2);
+					g.vid = "c_bar2c_" + cell.id;
+					g.fillRectCenter(
+						px - this.bw / 3,
+						py,
+						lm + this.addlw / 2,
+						this.bh / 2
+					);
+					g.vid = "c_bar2d_" + cell.id;
+					g.fillRectCenter(
+						px + this.bw / 3,
+						py,
+						lm + this.addlw / 2,
+						this.bh / 2
+					);
 				} else {
 					g.vid = "c_bar2a_" + cell.id;
 					g.vhide();
 					g.vid = "c_bar2b_" + cell.id;
+					g.vhide();
+					g.vid = "c_bar2c_" + cell.id;
+					g.vhide();
+					g.vid = "c_bar2d_" + cell.id;
 					g.vhide();
 				}
 			}
