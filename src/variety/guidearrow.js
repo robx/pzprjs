@@ -82,7 +82,7 @@
 		},
 
 		inputarrow_cell_main: function(cell, dir) {
-			cell.setQnum(cell.qdir !== dir ? dir : -1);
+			cell.setQnum(cell.qnum !== dir ? dir : -1);
 		}
 	},
 	AreaUnshadeGraph: {
