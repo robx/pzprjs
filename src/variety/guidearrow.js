@@ -256,6 +256,7 @@
 			this.board.goalpos.bx = 2 * this.decodeOneNumber16() - 1;
 			this.board.goalpos.by = 2 * this.decodeOneNumber16() - 1;
 			this.decode4Cell();
+			this.board.isStale = true;
 		},
 		encodePzpr: function(type) {
 			this.outbstr += this.writeNumber16((this.board.goalpos.bx + 1) / 2);
@@ -269,6 +270,7 @@
 			this.decodeG();
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.board.isStale = true;
 		},
 		encodeData: function() {
 			this.encodeG();
@@ -291,12 +293,18 @@
 	AnsCheck: {
 		checklist: [
 			"checkAdjacentShadeCell",
+			"checkShadedClue",
 			"checkConnectUnshadeRB",
-			// TODO check clue shaded
 			"checkActualDirection",
 			"checkLoop",
 			"doneShadingDecided"
 		],
+
+		checkShadedClue: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isShade() && !cell.allowShade();
+			}, "csOnArrow");
+		},
 		checkActualDirection: function() {
 			this.board.buildGoalDirections();
 			this.checkAllCell(function(cell) {

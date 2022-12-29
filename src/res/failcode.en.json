@@ -348,7 +348,7 @@
     "csNotOnShade.tawa": "There are no shaded cells under a shaded cell.",
     "csNotRect": "A mass of shaded cells is not rectangle.",
     "csNotSquare": "A group of shaded cells is not a square.",
-    "csOnArrow.pentopia": "A cell with a clue is shaded.",
+    "csOnArrow": "A cell with a clue is shaded.",
     "csRect.mochikoro": "There is a block of shaded cells that is a rectangle.",
     "csUpper.stostone": "Shaded cells remain in the upper half of the board after the blocks have fallen.",
     "csWidthGt1.nuribou": "There is a mass of shaded cells whose width is more than one.",
