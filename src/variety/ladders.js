@@ -239,12 +239,6 @@
 			this.isvalid = this.sideobj[0] && this.sideobj[1];
 		},
 
-		seterr: function(num) {
-			if (this.board.isenableSetError()) {
-				this.error = num;
-			}
-		},
-
 		getc: function() {
 			return this.board.getc(this.bx, this.by);
 		}
@@ -291,11 +285,6 @@
 			// Segmentのclearとは配列を空にすること
 			for (var i = this.length - 1; i >= 0; i--) {
 				this.remove(this[i]);
-			}
-		},
-		errclear: function() {
-			for (var i = 0; i < this.length; i++) {
-				this[i].error = 0;
 			}
 		},
 
