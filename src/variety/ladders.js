@@ -437,16 +437,14 @@
 		},
 		encodeCellBar: function() {
 			this.encodeCell(function(cell) {
-				if (cell.ques !== 1) {
-					if (cell.qans === 0) {
-						return "0 ";
-					} else if (cell.qans === 12) {
+				switch (cell.qans) {
+					case 12:
 						return "1 ";
-					} else if (cell.qans === 13) {
+					case 13:
 						return "2 ";
-					}
+					default:
+						return "0 ";
 				}
-				return ". ";
 			});
 		}
 	},

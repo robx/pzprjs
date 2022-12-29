@@ -102,7 +102,7 @@ pzpr.variety.each(function(pid) {
 							var resultstr = data.result.replace(/\//g, "\n");
 							assert.equal(filestr, resultstr);
 						} else if (typeof data.result === "function") {
-							data.result(puzzle);
+							data.result(puzzle, assert);
 						}
 					});
 				} else {
