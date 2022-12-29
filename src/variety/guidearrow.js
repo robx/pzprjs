@@ -68,21 +68,55 @@
 				return;
 			}
 
+			if (this.notInputted()) {
+				if (cell !== this.cursor.getc()) {
+					this.setcursor(cell);
+				} else if (!this.draggingSG) {
+					this.inputqnum();
+				}
+			}
 			if (this.draggingSG) {
 				this.draggingSG = false;
 				cell.draw();
-			} else if (this.notInputted()) {
-				if (cell !== this.cursor.getc()) {
-					this.setcursor(cell);
-				} else {
-					// TODO cursor support
-					this.inputqnum();
-				}
 			}
 		},
 
 		inputarrow_cell_main: function(cell, dir) {
 			cell.setQnum(cell.qnum !== dir ? dir : -1);
+		}
+	},
+	KeyEvent: {
+		enablemake: true,
+		moveTarget: function(ca) {
+			if (ca.match(/shift/)) {
+				return false;
+			}
+			return this.moveTCell(ca);
+		},
+
+		keyinput: function(ca) {
+			if (ca === "g") {
+				var cell = this.cursor.getc();
+				this.board.goalpos.input(cell);
+				cell.setQnum(-1);
+				cell.draw();
+				this.prev = cell;
+				this.cancelDefault = true;
+				return;
+			}
+
+			if (ca === "1" || ca === "w" || ca === "shift+up") {
+				ca = "1";
+			} else if (ca === "2" || ca === "s" || ca === "shift+right") {
+				ca = "4";
+			} else if (ca === "3" || ca === "z" || ca === "shift+down") {
+				ca = "2";
+			} else if (ca === "4" || ca === "a" || ca === "shift+left") {
+				ca = "3";
+			} else if (ca === "5" || ca === "q" || ca === " ") {
+				ca = " ";
+			}
+			this.key_inputqnum(ca);
 		}
 	},
 	AreaUnshadeGraph: {
@@ -211,6 +245,7 @@
 			this.drawHatenas();
 
 			this.drawChassis();
+			this.drawTarget();
 		}
 	},
 
