@@ -330,10 +330,9 @@
 			this.drawBGCells();
 			this.drawGrid();
 
+			this.drawTateyokos();
 			this.drawQuesNumbers();
 
-			// TODO override, draw double lines
-			this.drawTateyokos();
 			this.drawBorders();
 			this.drawPekes();
 
@@ -345,6 +344,46 @@
 		getBGCellColor_error1: function(cell) {
 			var err = cell.error || cell.qinfo;
 			return err > 0 && err & 1 ? this.errbcolor1 : null;
+		},
+
+		drawTateyokos: function() {
+			var g = this.vinc("cell_tateyoko", "crispEdges");
+			var lm = Math.max(this.cw / 8, 3) / 2; //LineWidth
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				var qa = cell.qans;
+
+				if (qa === 12) {
+					g.vid = "c_bar1a_" + cell.id;
+					g.fillStyle = this.getBarColor(cell, true);
+					g.fillRectCenter(px - this.bw / 3, py, lm + this.addlw / 2, this.bh);
+					g.vid = "c_bar1b_" + cell.id;
+					g.fillRectCenter(px + this.bw / 3, py, lm + this.addlw / 2, this.bh);
+				} else {
+					g.vid = "c_bar1a_" + cell.id;
+					g.vhide();
+					g.vid = "c_bar1b_" + cell.id;
+					g.vhide();
+				}
+
+				if (qa === 13) {
+					g.vid = "c_bar2a_" + cell.id;
+					g.fillStyle = this.getBarColor(cell, false);
+					g.fillRectCenter(px, py - this.bh / 3, this.bw, lm + this.addlw / 2);
+					g.vid = "c_bar2b_" + cell.id;
+					g.fillRectCenter(px, py + this.bh / 3, this.bw, lm + this.addlw / 2);
+				} else {
+					g.vid = "c_bar2a_" + cell.id;
+					g.vhide();
+					g.vid = "c_bar2b_" + cell.id;
+					g.vhide();
+				}
+			}
+			this.addlw = 0;
 		},
 
 		getBarColor: function(cell, vert) {
