@@ -137,6 +137,10 @@ ui.keypopup = {
 		mirrorbk: [10, 0],
 		takoyaki: [4, 0],
 		lightshadow: [10, 0],
+		familyphoto: [10, 0],
+		icelom: [10, 0],
+		icelom2: [10, 0],
+		icewalk: [10, 0],
 		ladders: [10, 0]
 	},
 
@@ -359,6 +363,12 @@ ui.keypopup = {
 		}
 		if (cap !== null) {
 			itemlist.push(["-", cap]);
+		}
+		if (pid === "familyphoto") {
+			itemlist.push(["q", "●"]);
+		}
+		if (pid === "icelom" || pid === "icelom2" || pid === "icewalk") {
+			itemlist.push(["q", { text: "■", color: "rgb(192,224,255)" }]);
 		}
 		this.generate_main(itemlist, 4);
 	},

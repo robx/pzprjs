@@ -128,6 +128,7 @@ function toBGimage(pid) {
 		"easyasabc",
 		"geradeweg",
 		"heteromino",
+		"icewalk",
 		"kaidan",
 		"kropki",
 		"lollipops",
