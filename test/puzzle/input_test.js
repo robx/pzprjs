@@ -97,10 +97,12 @@ pzpr.variety.each(function(pid) {
 					it(label, function() {
 						var action = data.input || [];
 						action.forEach(a => execinput(puzzle, a));
-						if (!!data.result) {
+						if (typeof data.result === "string") {
 							var filestr = puzzle.getFileData();
 							var resultstr = data.result.replace(/\//g, "\n");
 							assert.equal(filestr, resultstr);
+						} else if (typeof data.result === "function") {
+							data.result(puzzle);
 						}
 					});
 				} else {
