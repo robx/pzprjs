@@ -1,4 +1,3 @@
-/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -92,6 +91,7 @@
 	Board: {
 		cols: 8,
 		rows: 8,
+		hasborder: 1,
 		isStale: true,
 
 		goalpos: null,
@@ -103,6 +103,10 @@
 			this.goalpos.init(1, 1);
 			this.enableInfo();
 		},
+		ansclear: function() {
+			this.isStale = true;
+			return this.common.ansclear.call(this);
+		},
 
 		buildGoalDirections: function() {
 			if (!this.isStale) {
@@ -113,31 +117,34 @@
 				cell.actualdir = 0;
 			});
 
-			this.goalpos.getc().actualdir = -1;
+			var goal = this.goalpos.getc();
+			goal.actualdir = -1;
 
-			var cells = new Set();
-			cells.add([this.goalpos.getc(), 0]);
-			while (cells.size > 0) {
-				var pair = cells.values().next().value;
-				var c = pair[0],
-					prevdir = pair[1];
+			var next = this.cell.filter(function(c) {
+				return !c.isShade();
+			});
+			var cell, action;
 
-				var items = c.getdir4cblist();
-				items.forEach(function(tuple) {
-					var adjc = tuple[0];
-					// TODO this prevdir system is fundamentally broken
-					if (tuple[2] === prevdir || adjc.isShade()) {
-						return;
+			do {
+				action = new this.klass.CellList();
+
+				while ((cell = next.pop())) {
+					if (cell.actualdir) {
+						continue;
 					}
-					var invdir = [0, 2, 1, 4, 3][tuple[2]];
-					if (!adjc.actualdir) {
-						cells.add([adjc, invdir]);
+					var adjpairs = cell.getdir4clist().filter(function(pair) {
+						var c = pair[0];
+						return (!c.actualdir && !c.isShade()) || c.equals(goal);
+					});
+					if (adjpairs.length === 1) {
+						var adj = adjpairs[0][0];
+						action.add(adj);
+						cell.actualdir = cell.getdir(adj, 2);
 					}
-					adjc.actualdir |= 1 << invdir;
-				});
+				}
 
-				cells.delete(pair);
-			}
+				next = action;
+			} while (action.length > 0);
 			this.puzzle.redraw();
 		}
 	},
@@ -159,6 +166,7 @@
 			var bd = this.board;
 			bd.isStale = true;
 
+			this.adjustCellArrow(key, d);
 			this.posinfo_goal = this.getAfterPos(key, d, bd.goalpos.getc());
 		},
 		adjustBoardData2: function(key, d) {
@@ -189,7 +197,7 @@
 	Graphic: {
 		gridcolor_type: "LIGHT",
 
-		shadecolor: "#444444",
+		shadecolor: "#222222",
 		enablebcolor: true,
 		bgcellcolor_func: "qsub1",
 
@@ -200,14 +208,9 @@
 
 			this.drawStartGoal(); // TODO restyle Goal
 			this.drawCellArrows(); // TODO restyle arrows
-			// this.drawHatenas();
-			this.drawQuesNumbers();
+			this.drawHatenas();
 
 			this.drawChassis();
-		},
-
-		getQuesNumberText: function(cell) {
-			return this.getNumberTextCore(cell.actualdir);
 		}
 	},
 
@@ -262,18 +265,25 @@
 		checkActualDirection: function() {
 			this.board.buildGoalDirections();
 			this.checkAllCell(function(cell) {
-				return cell.qnum > 0 && !(cell.actualdir & (1 << cell.qnum));
-			}, "ceDirMismatch");
+				return (
+					cell.qnum > 0 && cell.actualdir > 0 && cell.qnum !== cell.actualdir
+				);
+			}, "ceDirection");
 		},
 		checkLoop: function() {
-			this.board.buildGoalDirections();
-			this.checkAllCell(function(cell) {
-				return (
-					!cell.isShade() &&
-					cell.actualdir > 0 &&
-					cell.actualdir & (cell.actualdir - 1)
-				);
-			}, "cuLoop");
+			var bd = this.board,
+				ublks = bd.ublkmgr.components;
+			for (var r = 0; r < ublks.length; r++) {
+				if (ublks[r].circuits === 0) {
+					continue;
+				}
+
+				this.failcode.add("cuLoop");
+				if (this.checkOnly) {
+					return;
+				}
+				this.searchloop(ublks[r], bd.ublkmgr).seterr(1);
+			}
 		}
 	}
 });

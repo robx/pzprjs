@@ -325,7 +325,7 @@
     "cuConnOut": "盤面の辺に到達できない白マスがあります。",
     "cuDivide": "白マスが分断されています。",
     "cuDivideRB": "白マスが分断されています。",
-    "cuLoop.nurimaze": "白マスで輪っかができています。",
+    "cuLoop": "白マスで輪っかができています。",
     "cuLower.stostone": "ブロックを落とした後の空間が盤面の下半分にあります。",
     "cuNoLine.icebarn": "通過していない白マスがあります。",
     "cuNoLine.nagenawa": "白マスの上に線が引かれていません。",
