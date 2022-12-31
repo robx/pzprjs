@@ -140,6 +140,11 @@
 	Board: {
 		hasborder: 1
 	},
+	BoardExec: {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? this.FLIPX : this.ALLOWALL;
+		}
+	},
 
 	AreaRoomGraph: {
 		enabled: true,

@@ -286,6 +286,9 @@
 		hasborder: 1
 	},
 	BoardExec: {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? this.FLIPX : this.ALLOWALL;
+		},
 		adjustBoardData: function(key, d) {
 			var trans = {};
 			switch (key) {

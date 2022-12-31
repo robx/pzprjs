@@ -135,6 +135,11 @@
 		cols: 8,
 		rows: 8
 	},
+	"BoardExec@cojun": {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? this.FLIPX : this.ALLOWALL;
+		}
+	},
 
 	AreaRoomGraph: {
 		enabled: true

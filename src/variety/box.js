@@ -151,6 +151,9 @@
 		hasexcell: 1
 	},
 	BoardExec: {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? 0 : this.ALLOWALL;
+		},
 		adjustBoardData: function(key, d) {
 			this.adjustExCellTopLeft_1(key, d);
 		},
