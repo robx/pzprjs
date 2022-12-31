@@ -1040,3 +1040,18 @@ cocktail: "Shade some cells on the board to form blocks.\n1. Regions contain no 
   \ A number indicates the size of the block in the region.\n3. Shaded cells cannot\
   \ be adjacent across region borders.\n4. The shaded cells cannot form a 2x2 square.\n\
   5. All blocks form a diagonally contiguous area."
+remlen: "Draw lines through orthogonally adjacent cells to form a directional loop.\n\
+  1. All unshaded cells must be visited.\n2. The loop cannot branch off or cross itself.\n\
+  3. Each time the loop exits a region containing a number, its visit to the next\
+  \ region must consist of exactly that number of cells."
+ladders: "Draw ladders of length 1 through the centers of some cells.\n1. Each ladder\
+  \ overlaps two borders of distinct regions.\n2. The endpoints of two ladders cannot\
+  \ touch.\n3. Numbers indicate how many ladders overlap this region.\n4. A ladder\
+  \ connects the two regions on each endpoint, but not the region it overlaps. All\
+  \ regions must be connected with each other."
+guidearrow: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
+  \ or vertically adjacent.\n2. All unshaded cells on the board from an orthogonally\
+  \ connected area.\n3. Unshaded cells cannot form a loop. This includes 2x2 squares.\n\
+  4. Cells with a clue cannot be shaded.\n5. An arrow indicates the only direction\
+  \ in which one could begin a path to the star without going through a shaded cell\
+  \ or backtracking."
