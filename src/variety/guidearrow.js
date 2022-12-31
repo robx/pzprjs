@@ -240,12 +240,40 @@
 			this.drawGrid();
 			this.drawShadedCells();
 
-			this.drawStartGoal(); // TODO restyle Goal
+			this.drawGoalStar();
 			this.drawCellArrows(); // TODO restyle arrows
 			this.drawHatenas();
 
 			this.drawChassis();
 			this.drawTarget();
+		},
+
+		drawGoalStar: function() {
+			var g = this.vinc("cell_sg", "auto");
+			var bd = this.board,
+				d = this.range,
+				cell = bd.goalpos.getc();
+
+			if (
+				cell.bx >= d.x1 &&
+				d.x2 >= cell.bx &&
+				cell.by >= d.y1 &&
+				d.y2 >= cell.by
+			) {
+				g.vid = "text_glpos";
+				if (!cell.isnull) {
+					g.fillStyle = this.puzzle.mouse.draggingSG ? "red" : this.quescolor;
+					this.fillStar(
+						g,
+						cell.bx * this.bw,
+						cell.by * this.bh,
+						this.bw * 0.75,
+						this.bh * 0.75
+					);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 
