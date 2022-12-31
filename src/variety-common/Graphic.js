@@ -241,11 +241,11 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawCellArrows() 矢印だけをCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawCellArrows: function() {
+		drawCellArrows: function(wide, outline) {
 			var g = this.vinc("cell_arrow", "auto");
 			var al, aw, tl, tw;
 
-			if (this.pid !== "nagare") {
+			if (!wide) {
 				al = this.cw * 0.4; // ArrowLength
 				aw = this.cw * 0.03; // ArrowWidth
 				tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
@@ -268,7 +268,8 @@ pzpr.classmgr.makeCommon({
 
 				g.vid = "c_arrow_" + cell.id;
 				if (!!color) {
-					g.fillStyle = color;
+					g.lineWidth = 1.5;
+					g.strokeStyle = g.fillStyle = color;
 					g.beginPath();
 					var px = cell.bx * this.bw,
 						py = cell.by * this.bh;
@@ -358,7 +359,11 @@ pzpr.classmgr.makeCommon({
 							);
 							break;
 					}
-					g.fill();
+					if (outline) {
+						g.stroke();
+					} else {
+						g.fill();
+					}
 				} else {
 					g.vhide();
 				}

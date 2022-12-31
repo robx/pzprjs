@@ -241,7 +241,7 @@
 			this.drawShadedCells();
 
 			this.drawGoalStar();
-			this.drawCellArrows(); // TODO restyle arrows
+			this.drawCellArrows(true, true);
 			this.drawHatenas();
 
 			this.drawChassis();
