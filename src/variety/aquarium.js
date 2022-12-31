@@ -164,6 +164,9 @@
 	},
 
 	BoardExec: {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? this.FLIPX : this.ALLOWALL;
+		},
 		adjustBoardData: function(key, d) {
 			this.adjustExCellTopLeft_1(key, d);
 		},
