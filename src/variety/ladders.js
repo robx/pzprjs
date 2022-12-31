@@ -72,8 +72,7 @@
 			qans: function() {
 				if (this.isLine() && !this.board.isStale) {
 					this.board.segment.removeSegmentByAddr(this.bx, this.by);
-					// TODO fix properly
-					this.board.isStale = true;
+					this.board.linegraph.rebuild();
 				}
 			}
 		},
