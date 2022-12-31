@@ -9,7 +9,7 @@
 		use: true,
 		inputModes: {
 			edit: ["border", "number", "clear", "info-line"],
-			play: ["bar", "peke", "info-line"]
+			play: ["bar", "peke", "subcircle", "subcross", "info-line"]
 		},
 
 		mouseinput_auto: function() {
@@ -22,7 +22,9 @@
 					}
 				}
 				if (this.mouseend && this.notInputted()) {
-					this.inputpeke_ifborder();
+					if (!this.inputpeke_ifborder()) {
+						this.inputMB();
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -317,6 +319,7 @@
 			this.drawBGCells();
 			this.drawGrid();
 
+			this.drawMBs();
 			this.drawTateyokos();
 			this.drawQuesNumbers();
 
@@ -442,12 +445,14 @@
 			this.decodeCellQnum();
 			this.decodeCellBar();
 			this.decodeBorderLine();
+			this.decodeCellQsub();
 		},
 		encodeData: function() {
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCellBar();
 			this.encodeBorderLine();
+			this.encodeCellQsub();
 		},
 		decodeCellBar: function() {
 			this.decodeCell(function(cell, ca) {

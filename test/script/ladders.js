@@ -40,10 +40,14 @@ ui.debug.addDebugData("ladders", {
 				"editmode",
 				"mouse,left,2,0,2,2",
 				"mouse,left,4,0,4,2",
-				"playmode",
+				"mouse,right,1,1",
+				"playmode,info-line",
+				"mouse,left,1,1",
+				"playmode,auto",
+				"mouse,left,1,1",
 				"mouse,left,2,1,4,1"
 			],
-			result: "pzprv3/ladders/1/3/3/0 1 2 /. . . /0 2 0 /0 0 /"
+			result: "pzprv3/ladders/1/3/3/0 1 2 /1 . . /0 2 0 /0 0 /1 0 0 /"
 		},
 		{
 			input: ["playmode,info-line", "mouse,left,1,1"],
