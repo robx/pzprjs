@@ -44,6 +44,12 @@
 			FLIPX: FLIP | 1,
 			FLIPY: FLIP | 2,
 
+			ALLOWALL: TURN | FLIP | 3,
+
+			allowedOperations: function(isplaymode) {
+				return this.ALLOWALL;
+			},
+
 			boardtype: {
 				expandup: [REDUCE | UP, EXPAND | UP],
 				expanddn: [REDUCE | DN, EXPAND | DN],

@@ -258,7 +258,7 @@
 			this.checkLinesInArea(
 				this.board.roommgr,
 				function(w, h, a, n) {
-					return n <= 0 || n >= a;
+					return n < 0 || n >= a;
 				},
 				"bkLineGt"
 			);
@@ -267,7 +267,7 @@
 			this.checkLinesInArea(
 				this.board.roommgr,
 				function(w, h, a, n) {
-					return n <= 0 || n <= a;
+					return n < 0 || n <= a;
 				},
 				"bkLineLt"
 			);

@@ -141,6 +141,7 @@ ui.keypopup = {
 		icelom: [10, 0],
 		icelom2: [10, 0],
 		icewalk: [10, 0],
+		ladders: [10, 0],
 		akichi: [10, 0]
 	},
 
