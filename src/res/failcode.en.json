@@ -493,7 +493,7 @@
     "lnOverlap.tontti": "A line overlaps a number.",
     "lnPassOver.kouchoku": "A segment passes over a clue.",
     "lnPlLine": "There are multiple lines.",
-    "lnPlLoop.crossstitch": "There are more than two loops.",
+    "lnPlLoop.crossstitch": "There aren't exactly two loops.",
     "lnPlLoop.ladders": "Not all regions are connected.",
     "lnPlLoop.tajmahal": "There is a square that is not connected to the other squares.",
     "lnPlLoop": "There are multiple loops.",
