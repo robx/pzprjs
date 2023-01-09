@@ -82,7 +82,7 @@ oneroom: "You're given a board divided into rooms. Shade some cells on the board
   \ between two unshaded cells forms a door. There can be no more than one door between\
   \ any two rooms.\n4. All unshaded cells within a room form an orthogonally connected\
   \ area. It's possible for a room to have no unshaded cells.\n5. All unshaded cells\
-  \ on the board from an orthogonally connected area."
+  \ on the board form an orthogonally connected area."
 
 
 ovotovata: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
@@ -171,7 +171,7 @@ nuriuzu: "Shade some cells on the board.\n1. The unshaded areas must form blocks
 nothree: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
   \ vertically adjacent.\n2. A circle overlaps exactly one shaded cell.\n3. Three\
   \ consecutive shaded cells in a row/column must have different distances between\
-  \ them.\n4. All unshaded cells on the board from an orthogonally connected area."
+  \ them.\n4. All unshaded cells on the board form an orthogonally connected area."
 coffeemilk: "Draw lines between the circles to form groups.\n1. Lines must be horizontal\
   \ or vertical, and cannot turn.\n2. Lines cannot cross each other.\n3. Each group\
   \ of circles must contain exactly one gray circle, and an equal amount of white\
@@ -210,7 +210,7 @@ lither: "Draw lines along the edges of some cells to form trees.\n1. There must 
 context: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
   \ vertically adjacent.\n2. An unshaded number shows the amount of orthogonally adjacent\
   \ shaded cells.\n3. A shaded number shows the amount of diagonally adjacent shaded\
-  \ cells.\n4. All unshaded cells on the board from an orthogonally connected area."
+  \ cells.\n4. All unshaded cells on the board form an orthogonally connected area."
 vslither: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot\
   \ branch off or cross itself.\n2. A number indicates the amount of vertices surrounding\
   \ the cell that are visited by the loop."
@@ -315,7 +315,7 @@ akichi: "You're given a board divided into rooms. Shade some cells on the board.
   1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number indicates\
   \ the size of the largest group of connected unshaded cells within its region.\n\
   3. There cannot be a horizontal or vertical line of unshaded cells that goes through\
-  \ 2 or more region borders.\n4. All unshaded cells on the board from an orthogonally\
+  \ 2 or more region borders.\n4. All unshaded cells on the board form an orthogonally\
   \ connected area."
 aho: "Draw lines over the dotted lines to divide the board into several blocks.\n\
   1. Each block contains exactly one black circle.\n2. A number indicates the size\
@@ -361,7 +361,7 @@ ayeheya: "You're given a board divided into rooms. Shade some cells on the board
   \ the amount of shaded cells in a region.\n3. The shaded cells within each region\
   \ must have 180° rotational symmetry around the region’s center.\n4. There cannot\
   \ be a horizontal or vertical line of unshaded cells that goes through 2 or more\
-  \ region borders.\n5. All unshaded cells on the board from an orthogonally connected\
+  \ region borders.\n5. All unshaded cells on the board form an orthogonally connected\
   \ area."
 balance: "Draw lines through orthogonally adjacent cells to form a loop that goes\
   \ through every circle.\n1. The loop cannot branch off or cross itself.\n2. The\
@@ -372,7 +372,7 @@ cave: "Shade some cells on the board to form a cave.\n1. All shaded cells are co
   \ through other shaded cells to the outside of the grid.\n2. Numbers cannot be shaded.\n\
   3. Clues represent the total number of unshaded cells that can be seen in a straight\
   \ line vertically or horizontally, including itself.\n4. All unshaded cells on the\
-  \ board from an orthogonally connected area."
+  \ board form an orthogonally connected area."
 barns: "Draw a loop that goes through every cell.\n1. Two perpendicular line segments\
   \ may intersect each other only on icy cells, but they may not turn at their intersection\
   \ or otherwise overlap.\n2. The loop may not turn on icy cells.\n3. Lines cannot\
@@ -426,7 +426,7 @@ country: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The
   3. A number indicates how many cells inside the country are visited by the loop.\n\
   4. Two adjacent cells in different countries cannot both be unused by the loop."
 creek: "Shade some cells on the board.\n1. Numbers indicate the amount of shaded cells\
-  \ which overlap the clue.\n2. All unshaded cells on the board from an orthogonally\
+  \ which overlap the clue.\n2. All unshaded cells on the board form an orthogonally\
   \ connected area."
 curvedata: "Draw orthogonal lines between cells to form figures.\n1. Every unshaded\
   \ cell must have a line. Shaded cells cannot contain lines.\n2. Lines cannot go\
@@ -536,10 +536,10 @@ heyawake: "You're given a board divided into rooms. Shade some cells on the boar
   1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number indicates\
   \ the amount of shaded cells in a region.\n3. There cannot be a horizontal or vertical\
   \ line of unshaded cells that goes through 2 or more region borders.\n4. All unshaded\
-  \ cells on the board from an orthogonally connected area."
+  \ cells on the board form an orthogonally connected area."
 hitori: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or\
   \ vertically adjacent.\n2. A row or column may not contain two unshaded cells with\
-  \ identical numbers.\n3. All unshaded cells on the board from an orthogonally connected\
+  \ identical numbers.\n3. All unshaded cells on the board form an orthogonally connected\
   \ area."
 icebarn: "Draw a line that starts at the IN arrow, and goes through every arrow before\
   \ reaching the OUT arrow.\n1. Two perpendicular line segments may intersect each\
@@ -632,12 +632,12 @@ kropki: "Place a number in each cell.\n1. Numbers must be between 1 and N, where
 kurochute: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
   \ or vertically adjacent.\n2. Numbers cannot be shaded.\n3. There must exist exactly\
   \ one shaded cell with the indicated distance in a straight line vertically or horizontally\
-  \ from each number.\n4. All unshaded cells on the board from an orthogonally connected\
+  \ from each number.\n4. All unshaded cells on the board form an orthogonally connected\
   \ area."
 kurodoko: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
   \ or vertically adjacent.\n2. Numbers cannot be shaded.\n3. Clues represent the\
   \ total number of unshaded cells that can be seen in a straight line vertically\
-  \ or horizontally, including itself.\n4. All unshaded cells on the board from an\
+  \ or horizontally, including itself.\n4. All unshaded cells on the board form an\
   \ orthogonally connected area."
 kurotto: "Shade some cells on the board.\n1. Cells with circles cannot be shaded.\n\
   2. Numbers indicate the sum of the size of all blocks that share at least one border\
@@ -775,7 +775,7 @@ nurimisaki: "Shade some cells on the board.\n1. There cannot be a 2x2 square of 
   \ shaded or unshaded cells.\n2. Circles mark every instance of a cell which is unshaded\
   \ and orthogonally adjacent to exactly one other unshaded cell.\n3. Clues represent\
   \ the total number of unshaded cells that can be seen in a straight line vertically\
-  \ or horizontally, including itself.\n4. All unshaded cells on the board from an\
+  \ or horizontally, including itself.\n4. All unshaded cells on the board form an\
   \ orthogonally connected area."
 onsen: "Draw lines through the center of some cells to form multiple loops.\n1. Loops\
   \ cannot branch or overlap, and cannot cross themselves or each other.\n2. Every\
@@ -981,7 +981,7 @@ usoone: "You're given a board divided into region. Shade some cells on the board
   \ be shaded.\n3. A number indicates how many of the (up to 4) orthogonally adjacent\
   \ cells are shaded. However, every region contains exactly one incorrect number,\
   \ which must not indicate the amount of shaded cells.\n4. All unshaded cells on\
-  \ the board from an orthogonally connected area."
+  \ the board form an orthogonally connected area."
 view: "Place a number into some of the cells. Some numbers are given.\n1. Each number\
   \ is equal to the total number of empty cells that can be seen in a straight line\
   \ vertically or horizontally.\n2. Identical numbers cannot be orthogonally adjacent.\n\
@@ -998,7 +998,7 @@ wblink: "Draw lines between the circles to form pairs.\n1. Lines must be horizon
 yajikazu: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
   \ or vertically adjacent.\n2. A number indicates the amount of shaded cells in the\
   \ given direction. If a clue is shaded, the number becomes meaningless (it may be\
-  \ true or false).\n3. All unshaded cells on the board from an orthogonally connected\
+  \ true or false).\n3. All unshaded cells on the board form an orthogonally connected\
   \ area."
 yajilin: "Shade some cells on the board, and draw a single loop that goes through\
   \ all remaining cells.\n1. The loop cannot branch off or cross itself.\n2. Shaded\
@@ -1051,7 +1051,7 @@ ladders: "Draw ladders of length 1 through the centers of some cells.\n1. Each l
   \ connects the two regions on each endpoint, but not the region it overlaps. All\
   \ regions must be connected with each other."
 guidearrow: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
-  \ or vertically adjacent.\n2. All unshaded cells on the board from an orthogonally\
+  \ or vertically adjacent.\n2. All unshaded cells on the board form an orthogonally\
   \ connected area.\n3. Unshaded cells cannot form a loop. This includes 2x2 squares.\n\
   4. Cells with a clue cannot be shaded.\n5. An arrow indicates the only direction\
   \ in which one could begin a path to the star without going through a shaded cell\
