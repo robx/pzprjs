@@ -185,6 +185,7 @@
     "nuriuzu_connect": "All shaded cells must be connected",
     "pentopia_transparent": "Transparent mode (clues may be shaded)",
     "koburin_minesweeper": "Minesweeper mode (numbers include diagonal cells)",
+    "akichi_maximum": "Maximum numbers may be reduced",
     "variant": "This puzzle uses variant rules",
     "time": "Time:",
     "check": "Check",
