@@ -585,7 +585,6 @@
     "nmMidpoint.snakepit": "A grey cell is not a middle part of a snake.",
     "nmMinesNe.mines": "The number of mines in the surrounding cells is not equal to the number.",
     "nmMissing.lohkous": "There is no segment of the given length in the room.",
-    "nmMissing.slashpack": "A number is missing in a block.",
     "nmMissRow.easyasabc": "There are missing letters in a row or column.",
     "nmMoveNe.tren": "A block cannot move in the correct number of spaces.",
     "nmNoLine.amibo": "No bar connects to a white circle.",
