@@ -152,6 +152,7 @@ function toBGimage(pid) {
 		"satogaeri",
 		"scrin",
 		"simpleloop",
+		"slashpack",
 		"snake",
 		"squarejam",
 		"starbattle",

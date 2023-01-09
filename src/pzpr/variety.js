@@ -314,6 +314,7 @@
 			shwolf: [0, 0, "ヤギとオオカミ", "Goats and Wolves", "kramma"],
 			simpleloop: [0, 0, "Simple Loop", "Simple Loop", "country"],
 			slalom: [1, 1, "スラローム", "Slalom", "", { alias: "suraromu" }],
+			slashpack: [0, 0, "Slash Pack", "Slash Pack"],
 			slither: [
 				0,
 				1,
