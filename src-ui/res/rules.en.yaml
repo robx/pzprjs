@@ -508,11 +508,11 @@ hashikake: "Draw bridges to connect the islands into one network.\n1. Bridges mu
   2. Bridges cannot intersect.\n3. There can be at most two bridges between each pair\
   \ of islands.\n4. Numbers indicate the total amount of bridges that are connected\
   \ to that island."
-hebi: "Place number into some of the empty cells to form snakes.\n1. Each snake consists\
+hebi: "Place numbers into some of the empty cells to form snakes.\n1. Each snake consists\
   \ of a sequence of 5 consecutive numbers which are orthogonally adjacent.\n2. Two\
   \ snakes cannot share a border.\n3. The number 1 denotes the snake's head. Snakes\
   \ are facing in the direction away from its second number. Snakes cannot look directly\
-  \ at other snakes (unless separated by a black cell).\n4. Numbers on black cells\
+  \ at other snakes, unless separated by a black cell.\n4. Numbers on black cells\
   \ indicate the first number seen in the given direction, or 0 if there are no numbers\
   \ in that direction. Arrows don't point past other black cells."
 herugolf: "Draw lines to move all of the balls into a hole, marked by an H.\n1. A\
