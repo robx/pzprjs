@@ -892,8 +892,10 @@ ui.popupmgr.addpopup("turnflip", {
 	formname: "turnflip",
 
 	reset: function() {
-		this.form.turnl.disabled = ui.puzzle.pid === "tawa";
-		this.form.turnr.disabled = ui.puzzle.pid === "tawa";
+		var exec = ui.puzzle.board.exec;
+		var allowed = exec.allowedOperations(false);
+		this.form.turnl.disabled = !(allowed & exec.TURN);
+		this.form.turnr.disabled = !(allowed & exec.TURN);
 	},
 
 	adjust: function(e) {

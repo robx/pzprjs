@@ -16,7 +16,11 @@
 			play: ["border", "subline", "bgcolor", "bgcolor1", "bgcolor2", "clear"]
 		},
 		mouseinput_clear: function() {
-			this.input51_fixed();
+			if (this.puzzle.playmode) {
+				this.inputclean_cell();
+			} else {
+				this.input51_fixed();
+			}
 		},
 		mouseinput_number: function() {
 			if (this.mousestart) {
