@@ -98,6 +98,7 @@
     "bkMajorBarGt.juosan": "The number of majority of vertical or horizontal bars is greater than the number of the area.",
     "bkMajorBarLt.juosan": "The number of majority of vertical or horizontal bars is less than the number of the area.",
     "bkMirror.mirrorbk": "The two blocks divided by a mirror are not reflections of each other.",
+    "bkMissingNum": "A block doesn't contain every number.",
     "bkMixed.sukoro": "A room includes both numbered and non-numbered cells.",
     "bkMixed.sukororoom": "A room includes both numbered and non-numbered cells.",
     "bkMixed.view": "A room includes both numbered and non-numbered cells.",
