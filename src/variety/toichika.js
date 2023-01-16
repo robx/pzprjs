@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["toichika", "toichika2"], {
+})(["toichika", "toichika2", "news"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -126,6 +126,7 @@
 			cell.draw();
 		}
 	},
+	// TODO pencil numbers for NEWS and possibly for Toichika2
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -133,7 +134,7 @@
 		enablemake: true,
 		enableplay: true
 	},
-	"KeyEvent@toichika": {
+	"KeyEvent@toichika,news": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -165,6 +166,24 @@
 		keyinput: function(ca) {
 			if (ca === "q" || ca === "-") {
 				ca = "s1";
+			}
+			this.key_inputqnum(ca);
+		}
+	},
+	"KeyEvent@news#1": {
+		key_toichika: function(ca) {
+			if (ca === "n" || ca === "shift+up") {
+				ca = "1";
+			} else if (ca === "s" || ca === "shift+down") {
+				ca = "2";
+			} else if (ca === "w" || ca === "shift+left") {
+				ca = "3";
+			} else if (ca === "e" || ca === "shift+right") {
+				ca = "4";
+			} else if (ca === "5" || ca === "q" || ca === "-") {
+				ca = "s1";
+			} else if (ca === "6" || ca === " ") {
+				ca = " ";
 			}
 			this.key_inputqnum(ca);
 		}
@@ -219,19 +238,36 @@
 			return !this.isnull && this.anum === this.temp.anum;
 		}
 	},
+	"Cell@news": {
+		isRelativeValid: function(other) {
+			switch (this.getNum()) {
+				case this.UP:
+					return this.by < other.by;
+				case this.DN:
+					return this.by > other.by;
+				case this.LT:
+					return this.bx < other.bx;
+				case this.RT:
+					return this.bx > other.bx;
+				default:
+					return true;
+			}
+		}
+	},
 	Board: {
 		hasborder: 1
 	},
 	CellList: {
 		checkCmp: function() {
+			var expected = this.pid === "news" ? 2 : 1;
 			return (
 				this.filter(function(cell) {
 					return cell.isNum();
-				}).length === 1
+				}).length === expected
 			);
 		}
 	},
-	"BoardExec@toichika": {
+	"BoardExec@toichika,news": {
 		adjustBoardData: function(key, d) {
 			this.adjustCellArrow(key, d);
 		}
@@ -308,6 +344,16 @@
 		hideHatena: true,
 		textoption: { ratio: 0.45, position: 5 }
 	},
+	"Graphic@news": {
+		getNumberTextCore: function(num) {
+			return num === -2 ? "?" : " NSWE"[num] || "";
+		},
+		getBGCellColor: function(cell) {
+			return cell.error === 2
+				? "rgb(255,255,127)"
+				: this.getBGCellColor_qcmp(cell);
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -322,7 +368,7 @@
 		}
 	},
 
-	"Encode@toichika": {
+	"Encode@toichika,news": {
 		decodePzpr: function(type) {
 			this.decodeBorder();
 			this.decode4Cell_toichika();
@@ -652,8 +698,79 @@
 		}
 	},
 
+	"AnsCheck@news": {
+		checklist: [
+			"checkTripleNumber",
+			"checkDifferentNumberInLine",
+			"checkRelativePositions",
+			"checkDirectionOfArrow",
+			"checkNoNumber"
+		],
+		// TODO variant
+
+		checkTripleNumber: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a < 3;
+				},
+				"bkNumGe3"
+			);
+		},
+
+		checkRelativePositions: function() {
+			var ainfo = this.getPairArrowsInfo();
+			for (var i = 0; i < ainfo.length; i++) {
+				if (ainfo[i].length !== 2) {
+					continue;
+				}
+
+				for (var c = 0; c <= 1; c++) {
+					var c0 = ainfo[i][c],
+						c1 = ainfo[i][1 - c];
+
+					if (!c0.isRelativeValid(c1)) {
+						this.failcode.add("arNotRelative");
+						if (this.checkOnly) {
+							return;
+						}
+						c0.seterr(1);
+						if (c1.error !== 1) {
+							c1.seterr(2);
+						}
+					}
+				}
+			}
+		},
+
+		getPairArrowsInfo: function() {
+			if (this._info.parrow) {
+				return this._info.parrow;
+			}
+			var ainfo = [];
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var clist = rooms[r].clist.filter(function(cell) {
+					return cell.isNum();
+				});
+				if (clist.length >= 1 && clist.length <= 2) {
+					ainfo.push(clist);
+				}
+			}
+			return (this._info.parrow = ainfo);
+		}
+	},
+
 	"FailCode@toichika2": {
 		bkNumGe2: "bkNumGe2",
 		bkNoNum: "bkNoNum"
+	},
+	"FailCode@news": {
+		arAlone: "bkNumLt2.news",
+		bkNoNum: "bkNoNum.nikoji",
+		nmDupRow: "nmDupRow.easyasabc"
 	}
 });
