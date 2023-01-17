@@ -127,6 +127,7 @@
 		}
 	},
 	// TODO pencil numbers for NEWS and possibly for Toichika2
+	// TODO Blank input mode for NEWS
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -239,6 +240,12 @@
 		}
 	},
 	"Cell@news": {
+		isNum: function() {
+			return this.qnum > 0 || this.anum > 0;
+		},
+		isEmpty: function() {
+			return this.qnum === -2;
+		},
 		isRelativeValid: function(other) {
 			switch (this.getNum()) {
 				case this.UP:
@@ -334,6 +341,9 @@
 				this.drawAnsNumbers();
 				this.drawQuesNumbers();
 			}
+			if (this.pid === "news") {
+				this.drawXCells();
+			}
 
 			this.drawChassis();
 
@@ -346,12 +356,35 @@
 	},
 	"Graphic@news": {
 		getNumberTextCore: function(num) {
-			return num === -2 ? "?" : " NSWE"[num] || "";
+			if (num > 0) {
+				return "NSWE"[num - 1];
+			}
+			return null;
 		},
 		getBGCellColor: function(cell) {
 			return cell.error === 2
 				? "rgb(255,255,127)"
 				: this.getBGCellColor_qcmp(cell);
+		},
+		drawXCells: function() {
+			var g = this.vinc("cell_x", "auto", true);
+
+			var rsize = this.cw * 0.2;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_x_" + cell.id;
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				if (cell.isEmpty()) {
+					g.strokeStyle = this.quescolor;
+					g.lineWidth = 2;
+					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 	"AreaNumberGraph@news": {
