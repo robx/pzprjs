@@ -354,6 +354,12 @@
 				: this.getBGCellColor_qcmp(cell);
 		}
 	},
+	"AreaNumberGraph@news": {
+		enabled: true,
+		isnodevalid: function(cell) {
+			return !cell.isNumberObj();
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -372,8 +378,10 @@
 		decodePzpr: function(type) {
 			this.decodeBorder();
 			this.decode4Cell_toichika();
+			this.decodeConfig();
 		},
 		encodePzpr: function(type) {
+			this.encodeConfig();
 			this.encodeBorder();
 			this.encode4Cell_toichika();
 		},
@@ -430,19 +438,42 @@
 			}
 
 			this.outbstr += cm;
+		},
+		decodeConfig: function() {},
+		encodeConfig: function() {}
+	},
+	"Encode@news#1": {
+		decodeConfig: function() {
+			this.puzzle.setConfig("tren_new", this.checkpflag("n"));
+		},
+		encodeConfig: function() {
+			this.outpflag = this.puzzle.getConfig("tren_new") ? "n" : null;
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfig();
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
 			this.decodeCellAnumsub();
 		},
 		encodeData: function() {
+			this.encodeConfig();
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
+		},
+		decodeConfig: function() {},
+		encodeConfig: function() {}
+	},
+	"FileIO@news": {
+		decodeConfig: function() {
+			this.decodeConfigFlag("n", "tren_new");
+		},
+
+		encodeConfig: function() {
+			this.encodeConfigFlag("n", "tren_new");
 		}
 	},
 
@@ -703,10 +734,10 @@
 			"checkTripleNumber",
 			"checkDifferentNumberInLine",
 			"checkRelativePositions",
+			"checkConnectEmpty",
 			"checkDirectionOfArrow",
 			"checkNoNumber"
 		],
-		// TODO variant
 
 		checkTripleNumber: function() {
 			this.checkAllBlock(
@@ -743,6 +774,12 @@
 						}
 					}
 				}
+			}
+		},
+
+		checkConnectEmpty: function() {
+			if (this.puzzle.getConfig("tren_new")) {
+				this.checkOneArea(this.board.nblkmgr, "bkDivide");
 			}
 		},
 

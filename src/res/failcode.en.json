@@ -73,7 +73,7 @@
     "bkDifferentPosition.nikoji": "Two areas with equal letters have the letter in different positions.",
     "bkDifferentShape.dbchoco": "The two shapes inside a block are different.",
     "bkDifferentShape.nikoji": "Two areas with equal letters have different shapes.",
-    "bkDivide.tren": "The unused cells are divided.",
+    "bkDivide": "The unused cells are divided.",
     "bkDoubleBn.yosenabe": "There is two or more numbers in a crock.",
     "bkDupNum.hakoiri": "A box has duplicate shapes.",
     "bkDupNum.hebi": "A snake has duplicate numbers.",
