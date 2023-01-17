@@ -128,6 +128,7 @@
 	},
 	// TODO pencil numbers for NEWS and possibly for Toichika2
 	// TODO Blank input mode for NEWS
+	// TODO Aux Circles for NEWS playmode
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -390,7 +391,7 @@
 	"AreaNumberGraph@news": {
 		enabled: true,
 		isnodevalid: function(cell) {
-			return !cell.isNumberObj();
+			return cell.getNum() < 0;
 		}
 	},
 
