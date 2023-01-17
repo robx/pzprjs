@@ -126,9 +126,7 @@
 			cell.draw();
 		}
 	},
-	// TODO pencil numbers for NEWS and possibly for Toichika2
 	// TODO Blank input mode for NEWS
-	// TODO Aux Circles for NEWS playmode
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -182,9 +180,11 @@
 				ca = "3";
 			} else if (ca === "e" || ca === "shift+right") {
 				ca = "4";
-			} else if (ca === "5" || ca === "q" || ca === "-") {
+			} else if (ca === "5" || ca === "x" || ca === "-") {
 				ca = "s1";
-			} else if (ca === "6" || ca === " ") {
+			} else if (ca === "6" || ca === "o" || ca === "z") {
+				ca = "s2";
+			} else if (ca === "7") {
 				ca = " ";
 			}
 			this.key_inputqnum(ca);
@@ -241,6 +241,8 @@
 		}
 	},
 	"Cell@news": {
+		enableSubNumberArray: true,
+		numberWithMB: true,
 		isNum: function() {
 			return this.qnum > 0 || this.anum > 0;
 		},
@@ -264,6 +266,10 @@
 	},
 	Board: {
 		hasborder: 1
+	},
+	"Board@news": {
+		rows: 8,
+		cols: 8
 	},
 	CellList: {
 		checkCmp: function() {
@@ -331,6 +337,7 @@
 
 		paint: function() {
 			this.drawBGCells();
+			this.drawTargetSubNumber();
 			this.drawGrid();
 			this.drawBorders();
 
@@ -344,6 +351,8 @@
 			}
 			if (this.pid === "news") {
 				this.drawXCells();
+				this.drawMBs();
+				this.drawSubNumbers();
 			}
 
 			this.drawChassis();
@@ -382,6 +391,30 @@
 					g.strokeStyle = this.quescolor;
 					g.lineWidth = 2;
 					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		drawMBs: function() {
+			var g = this.vinc("cell_mb", "auto", true);
+			g.lineWidth = 1;
+
+			var rsize = this.cw * 0.35;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					px,
+					py;
+				if (cell.qsub > 0) {
+					px = cell.bx * this.bw;
+					py = cell.by * this.bh;
+					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
+				}
+
+				g.vid = "c_MB1_" + cell.id;
+				if (cell.qsub === 2) {
+					g.strokeCircle(px, py, rsize);
 				} else {
 					g.vhide();
 				}
