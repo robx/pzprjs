@@ -143,7 +143,8 @@ ui.keypopup = {
 		icewalk: [10, 0],
 		ladders: [10, 0],
 		akichi: [10, 0],
-		slashpack: [10, 0]
+		slashpack: [10, 0],
+		news: [123, 123]
 	},
 
 	//---------------------------------------------------------------------------
@@ -269,6 +270,8 @@ ui.keypopup = {
 			this.generate_cts(mode);
 		} else if (type === 122) {
 			this.generate_anglers(mode);
+		} else if (type === 123) {
+			this.generate_news(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -711,6 +714,23 @@ ui.keypopup = {
 				" "
 			],
 			5
+		);
+	},
+	generate_news: function(mode) {
+		var mbcolor = ui.puzzle.painter.mbcolor;
+		this.generate_main(
+			[
+				mode === 3 ? ["s2", { text: "○", color: mbcolor }] : " ",
+				["n", "N"],
+				" ",
+				["w", "W"],
+				["s1", mode === 3 ? { text: "⋅", color: mbcolor } : "×"],
+				["e", "E"],
+				" ",
+				["s", "S"],
+				" "
+			],
+			3
 		);
 	},
 

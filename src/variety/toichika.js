@@ -134,7 +134,7 @@
 		enablemake: true,
 		enableplay: true
 	},
-	"KeyEvent@toichika,news": {
+	"KeyEvent@toichika": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -171,14 +171,14 @@
 		}
 	},
 	"KeyEvent@news#1": {
-		key_toichika: function(ca) {
-			if (ca === "n" || ca === "shift+up") {
+		keyinput: function(ca) {
+			if (ca === "n") {
 				ca = "1";
-			} else if (ca === "s" || ca === "shift+down") {
+			} else if (ca === "s") {
 				ca = "2";
-			} else if (ca === "w" || ca === "shift+left") {
+			} else if (ca === "w") {
 				ca = "3";
-			} else if (ca === "e" || ca === "shift+right") {
+			} else if (ca === "e") {
 				ca = "4";
 			} else if (ca === "5" || ca === "x" || ca === "-") {
 				ca = "s1";
