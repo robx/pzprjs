@@ -152,6 +152,7 @@
 				if (val !== -1) {
 					this.setQans(0);
 				}
+				this.board.maxFoundNumber = -1;
 			}
 		},
 
@@ -179,10 +180,32 @@
 	},
 
 	Board: {
+		maxFoundNumber: -1,
 		hasborder: 2,
+
+		initBoardSize: function(col, row) {
+			this.common.initBoardSize.call(this, col, row);
+			this.maxFoundNumber = -1;
+		},
 
 		addExtraInfo: function() {
 			this.bordergraph = this.addInfoList(this.klass.BorderGraph);
+		},
+
+		getMaxFoundNumber: function() {
+			if (this.maxFoundNumber !== -1) {
+				return this.maxFoundNumber;
+			}
+
+			var max = -1;
+			for (var id = 0; id < this.cell.length; id++) {
+				var cell = this.cell[id];
+				if (cell.isNum()) {
+					max = Math.max(max, cell.getNum());
+				}
+			}
+
+			return (this.maxFoundNumber = max);
 		}
 	},
 	BoardExec: {
@@ -424,6 +447,7 @@
 			"checkLineOnNumber",
 			"checkAllNumbersPresent",
 			"checkDifferentNumberInRoom",
+			"checkOverNumberCount",
 			"checkDeadEndDiagonal+"
 		],
 
@@ -447,14 +471,14 @@
 		},
 
 		checkAllNumbersPresent: function() {
-			var max = -1;
+			this.checkNumberCount(-1, "bkMissingNum");
+		},
+		checkOverNumberCount: function() {
+			this.checkNumberCount(+1, "bkOverNum");
+		},
 
-			for (var id = 0; id < this.board.cell.length; id++) {
-				var cell = this.board.cell[id];
-				if (cell.isNum()) {
-					max = Math.max(max, cell.getNum());
-				}
-			}
+		checkNumberCount: function(flag, code) {
+			var max = this.board.getMaxFoundNumber();
 
 			var areas = this.board.bordergraph.components;
 			for (var id = 0; id < areas.length; id++) {
@@ -464,11 +488,14 @@
 					return border.isvert && border.sidecell[0].isNum();
 				}).length;
 
-				if (count >= max) {
+				if (flag < 0 && count >= max) {
+					continue;
+				}
+				if (flag > 0 && count <= max) {
 					continue;
 				}
 
-				this.failcode.add("bkMissingNum");
+				this.failcode.add(code);
 				if (this.checkOnly) {
 					break;
 				}

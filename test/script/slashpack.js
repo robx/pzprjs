@@ -20,6 +20,12 @@ ui.debug.addDebugData("slashpack", {
 			"pzprv3/slashpack/6/6/1 2 . 3 . 1 /. . 3 . . . /1 . . . 2 . /. 2 . . . 3 /2 . . . . . /. . 1 . 3 . /. . 1 . . . /2 1 . 1 . . /. 1 1 2 . 2 /1 . 1 1 2 . /. 1 2 1 2 1 /. . . . . . /"
 		],
 		[
+			"bkOverNum",
+			"pzprv3/slashpack/2/2/. 1 /- . /. . /. . /",
+			{ skiprules: true }
+		],
+		[null, "pzprv3/slashpack/2/2/. 1 /- . /1 . /. 1 /", { skiprules: true }],
+		[
 			null,
 			"pzprv3/slashpack/6/6/1 2 . 3 . 1 /. . 3 . . . /1 . . . 2 . /. 2 . . . 3 /2 . . . . . /. . 1 . 3 . /. . 1 . . . /2 1 . 1 . . /. . 1 2 . 2 /1 . . 1 2 . /. 1 2 1 2 1 /. . . . . . /"
 		]
