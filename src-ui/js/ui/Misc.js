@@ -148,6 +148,7 @@ function toBGimage(pid) {
 		"pentopia",
 		"ququ",
 		"rassi",
+		"remlen",
 		"roundtrip",
 		"satogaeri",
 		"scrin",
