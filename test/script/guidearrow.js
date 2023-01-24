@@ -32,5 +32,26 @@ ui.debug.addDebugData("guidearrow", {
 			"pzprv3/guidearrow/4/4/5 5/. . . 3 /4 . . . /. . . . /. 4 . . /+ # + + /+ + + # /+ # + + /# + + # /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,2,2", "editmode", "cursor,3,1", "key,g"],
+			result: "pzprv3/guidearrow/2/2/3 1/. . /. . /. . /. . /"
+		},
+		{
+			input: ["cursor,3,3", "key,shift+up"],
+			result: "pzprv3/guidearrow/2/2/3 1/. . /. 1 /. . /. . /"
+		},
+		{
+			input: ["playmode", "mouse,left,1,1"],
+			result: "pzprv3/guidearrow/2/2/3 1/. . /. 1 /# . /. . /"
+		},
+		{
+			input: ["ansclear", "editmode", "mouse,left,3,1,1,1"],
+			result: "pzprv3/guidearrow/2/2/1 1/. . /. 1 /. . /. . /"
+		},
+		{
+			input: ["mouse,left,1,3,1,1"],
+			result: "pzprv3/guidearrow/2/2/1 1/. . /1 1 /. . /. . /"
+		}
+	]
 });
