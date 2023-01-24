@@ -164,6 +164,11 @@
 			this.fallstate = afterstate;
 		}
 	},
+	"BoardExec@stostone": {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? this.FLIPX | this.FLIPY : this.ALLOWALL;
+		}
+	},
 
 	"CellList@stostone": {
 		fall: function() {

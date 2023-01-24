@@ -825,7 +825,7 @@
 			var bd = this.board,
 				paths1 = bd.linegraph.components,
 				paths2 = bd.line2graph.components;
-			if (paths1.length + paths2.length > 2) {
+			if (paths1.length + paths2.length !== 2) {
 				this.failcode.add("lnPlLoop");
 				bd.cell.setnoerr();
 				if (paths1.length > 1) {

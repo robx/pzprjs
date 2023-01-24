@@ -105,6 +105,7 @@ ui.misc = {
 
 function toBGimage(pid) {
 	var imgs = [
+		"akichi",
 		"angleloop",
 		"aquarium",
 		"araf",
@@ -129,6 +130,7 @@ function toBGimage(pid) {
 		"geradeweg",
 		"heteromino",
 		"icewalk",
+		"ladders",
 		"kaidan",
 		"kropki",
 		"lollipops",
@@ -146,10 +148,12 @@ function toBGimage(pid) {
 		"pentopia",
 		"ququ",
 		"rassi",
+		"remlen",
 		"roundtrip",
 		"satogaeri",
 		"scrin",
 		"simpleloop",
+		"slashpack",
 		"snake",
 		"squarejam",
 		"starbattle",

@@ -84,6 +84,7 @@
 		},
 		{
 			aho: [0, 0, "アホになり切れ", "Aho-ni-Narikire", "shikaku"],
+			akichi: [0, 0, "Akichiwake", "Akichiwake", "heyawake"],
 			amibo: [0, 0, "あみぼー", "Amibo", "amibo"],
 			angleloop: [0, 0, "鋭直鈍ループ", "Angle Loop", "kouchoku"],
 			anglers: [0, 0, "フィッシング", "Anglers"],
@@ -210,6 +211,7 @@
 			kurodoko: [0, 1, "黒どこ(黒マスはどこだ)", "Kurodoko"],
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
+			ladders: [0, 0, "はしごをかけろ", "Ladders"],
 			lapaz: [0, 0, "La Paz", "La Paz"],
 			lightshadow: [0, 0, "Light and Shadow", "Light and Shadow"],
 			lightup: [
@@ -284,6 +286,7 @@
 			rassi: [0, 0, "Rassi Silai", "Rassi Silai", "country"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
+			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
@@ -313,6 +316,7 @@
 			shwolf: [0, 0, "ヤギとオオカミ", "Goats and Wolves", "kramma"],
 			simpleloop: [0, 0, "Simple Loop", "Simple Loop", "country"],
 			slalom: [1, 1, "スラローム", "Slalom", "", { alias: "suraromu" }],
+			slashpack: [0, 0, "Slash Pack", "Slash Pack"],
 			slither: [
 				0,
 				1,

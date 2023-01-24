@@ -12,7 +12,8 @@
 		"detour",
 		"dotchi",
 		"ovotovata",
-		"rassi"
+		"rassi",
+		"remlen"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -62,7 +63,7 @@
 			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@doubleback,simpleloop,rassi": {
+	"MouseEvent@doubleback,simpleloop,rassi,remlen": {
 		mouseinput_other: function() {
 			if (this.inputMode === "empty") {
 				this.inputempty();
@@ -211,6 +212,46 @@
 			}
 		}
 	},
+	"MouseEvent@remlen#2": {
+		inputModes: {
+			edit: ["border", "number", "clear", "empty", "info-line"],
+			play: ["line", "peke", "diraux", "clear", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				if (this.mousestart || this.mousemove) {
+					this.inputdiraux_mousemove();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			} else if (this.inputMode === "empty") {
+				this.inputempty();
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode && this.btn === "right") {
+				if (this.mousestart) {
+					this.inputdiraux_mousedown();
+				} else if (this.inputData === 2 || this.inputData === 3) {
+					this.inputpeke();
+				} else if (this.mousemove) {
+					this.inputdiraux_mousemove();
+				}
+			} else if (this.puzzle.playmode && this.btn === "left") {
+				if (this.mousestart || this.mousemove) {
+					this.inputLine();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputborder();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputqnum();
+				}
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -241,6 +282,21 @@
 			return Math.min(999, this.room.clist.length);
 		}
 	},
+	"Cell@remlen": {
+		disInputHatena: true,
+		maxnum: function() {
+			return Math.min(999, this.board.cols * this.board.rows);
+		},
+		seterr: function(num) {
+			if (this.board.isenableSetError()) {
+				if (num > 0) {
+					this.error |= num;
+				} else {
+					this.error = num;
+				}
+			}
+		}
+	},
 	"Cell@country": {
 		minnum: function() {
 			return this.puzzle.getConfig("country_empty") ? 0 : 1;
@@ -269,7 +325,7 @@
 			return this.qnum === 2;
 		}
 	},
-	"Cell@doubleback,simpleloop,rassi": {
+	"Cell@doubleback,simpleloop,rassi,remlen": {
 		noLP: function(dir) {
 			return this.isEmpty();
 		}
@@ -279,7 +335,7 @@
 			return Math.max(this.board.cols, this.board.rows) - 1;
 		}
 	},
-	"Border@doubleback,simpleloop,dotchi": {
+	"Border@doubleback,simpleloop,dotchi,remlen": {
 		enableLineNG: true
 	},
 	"Border@moonsun,dotchi#1": {
@@ -302,7 +358,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@onsen,maxi,detour": {
+	"Board@onsen,maxi,detour,remlen": {
 		cols: 8,
 		rows: 8,
 
@@ -316,13 +372,20 @@
 			return this.board.borderinside(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1);
 		}
 	},
+	"CellList@remlen": {
+		seterr: function(num) {
+			for (var i = 0; i < this.length; i++) {
+				this[i].seterr(num);
+			}
+		}
+	},
 	LineGraph: {
 		enabled: true
 	},
-	"LineGraph@onsen,maxi,detour,rassi": {
+	"LineGraph@onsen,maxi,detour,rassi,remlen": {
 		makeClist: true
 	},
-	"LineBlockGraph:LineGraph@onsen,maxi,detour": {
+	"LineBlockGraph:LineGraph@onsen,maxi,detour,remlen": {
 		enabled: true,
 		relation: { "border.line": "link", "border.ques": "separator" },
 		makeClist: true,
@@ -372,7 +435,7 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
-	"AreaRoomGraph@country,maxi,detour": {
+	"AreaRoomGraph@country,maxi,detour,remlen": {
 		hastop: true
 	},
 	"AreaRoomGraph@ovotovata": {
@@ -460,6 +523,9 @@
 			} else if (this.pid !== "ovotovata") {
 				this.drawDashedGrid();
 			}
+			if (this.pid === "remlen") {
+				this.drawBorderDirBG();
+			}
 			this.drawBGCells();
 			if (this.pid === "ovotovata") {
 				this.drawGrid();
@@ -468,7 +534,8 @@
 				this.pid === "country" ||
 				this.pid === "maxi" ||
 				this.pid === "detour" ||
-				this.pid === "ovotovata"
+				this.pid === "ovotovata" ||
+				this.pid === "remlen"
 			) {
 				this.drawQuesNumbers();
 			} else if (this.pid === "moonsun") {
@@ -486,6 +553,10 @@
 			}
 			this.drawLines();
 			this.drawPekes();
+
+			if (this.pid === "remlen") {
+				this.drawBorderAuxDir();
+			}
 
 			this.drawChassis();
 
@@ -568,12 +639,12 @@
 			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
 		}
 	},
-	"Graphic@doubleback,rassi": {
+	"Graphic@doubleback,rassi,remlen": {
 		getBGCellColor: function(cell) {
 			return cell.ques === 7 ? "darkgray" : this.getBGCellColor_error1(cell);
 		}
 	},
-	"Graphic@simpleloop,doubleback,rassi": {
+	"Graphic@simpleloop,doubleback,rassi,remlen": {
 		getBorderColor: function(border) {
 			var cell1 = border.sidecell[0],
 				cell2 = border.sidecell[1];
@@ -594,7 +665,7 @@
 			return this.getBorderColor_ques(border);
 		}
 	},
-	"Graphic@maxi,detour": {
+	"Graphic@maxi,detour,remlen": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
 	"Graphic@dotchi": {
@@ -605,6 +676,33 @@
 		gridcolor_type: "LIGHT",
 		bgcellcolor_func: "icebarn",
 		icecolor: "rgb(204,204,204)"
+	},
+	"Graphic@remlen#2": {
+		getBGCellColor_error1: function(cell) {
+			return cell.error > 0 && cell.error & 1 ? this.errbcolor1 : null;
+		},
+		getQuesNumberColor: function(cell) {
+			return cell.error > 0 && cell.error & 2 ? this.errcolor1 : this.quescolor;
+		},
+		drawBorderDirBG: function() {
+			this.vinc("border_bg", "auto", true);
+			var g = this.context;
+
+			var rsize = this.cw * 0.25;
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i];
+
+				g.vid = "bdbg_" + border.id;
+				if (border.error === 2) {
+					g.strokeStyle = this.errcolor1;
+					g.lineWidth = this.lw + this.addlw;
+					g.strokeCross(border.bx * this.bw, border.by * this.bh, rsize);
+				} else {
+					g.vhide();
+				}
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -617,11 +715,19 @@
 			if (this.pid !== "simpleloop") {
 				this.decodeBorder();
 			}
+			if (this.pid === "remlen") {
+				if (this.outbstr[0] !== "/") {
+					this.decodeEmpty();
+				} else {
+					this.outbstr = this.outbstr.substr(1);
+				}
+			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
 				this.pid === "detour" ||
-				this.pid === "ovotovata"
+				this.pid === "ovotovata" ||
+				this.pid === "remlen"
 			) {
 				this.decodeRoomNumber16();
 			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
@@ -643,11 +749,15 @@
 			if (this.pid !== "simpleloop") {
 				this.encodeBorder();
 			}
+			if (this.pid === "remlen" && !this.encodeEmpty()) {
+				this.outbstr += "/";
+			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
 				this.pid === "detour" ||
-				this.pid === "ovotovata"
+				this.pid === "ovotovata" ||
+				this.pid === "remlen"
 			) {
 				this.encodeRoomNumber16();
 			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
@@ -719,9 +829,13 @@
 			} else {
 				this.decodeCellQnum();
 			}
-			this.decodeBorderLine();
-			if (this.pid !== "onsen" && this.pid !== "simpleloop") {
-				this.decodeCellQsub();
+			if (this.pid === "remlen") {
+				this.decodeBorderArrowAns();
+			} else {
+				this.decodeBorderLine();
+				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
+					this.decodeCellQsub();
+				}
 			}
 		},
 		encodeData: function() {
@@ -741,9 +855,13 @@
 			} else {
 				this.encodeCellQnum();
 			}
-			this.encodeBorderLine();
-			if (this.pid !== "onsen" && this.pid !== "simpleloop") {
-				this.encodeCellQsub();
+			if (this.pid === "remlen") {
+				this.encodeBorderArrowAns();
+			} else {
+				this.encodeBorderLine();
+				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
+					this.encodeCellQsub();
+				}
 			}
 		},
 		decodeEmpty: function() {
@@ -795,6 +913,32 @@
 					ca = ".";
 				}
 				return ca + " ";
+			});
+		}
+	},
+	"FileIO@remlen": {
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "# ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else {
+					return ". ";
+				}
 			});
 		}
 	},
@@ -933,6 +1077,18 @@
 			"checkLoop",
 			"checkLinesInRoom",
 			"checkAroundEnd",
+			"checkNoLine"
+		]
+	},
+	"AnsCheck@remlen#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkRememberedLength",
+
+			"checkDeadendLine+",
+			"checkOneLoop",
 			"checkNoLine"
 		]
 	},
@@ -1611,6 +1767,89 @@
 					paths[r].setedgeerr(1);
 				}
 			}
+		}
+	},
+	"AnsCheck@remlen": {
+		checkRememberedLength: function() {
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var walks = [];
+				var starts =
+					paths[r].circuits === 1
+						? [paths[r].clist[0]]
+						: paths[r].clist.filter(function(cell) {
+								return cell.lcnt === 1;
+						  });
+				if (starts.length > 2) {
+					continue;
+				}
+				for (var s = 0; s < starts.length; s++) {
+					for (var dir = 1; dir <= 4; dir++) {
+						if (starts[s].reldirbd(dir, 1).isLine()) {
+							walks.push(this.walkLine(starts[s], dir));
+						}
+					}
+				}
+
+				if (
+					walks.length !== 2 ||
+					walks[0].length === 0 ||
+					walks[1].length === 0
+				) {
+					continue;
+				}
+
+				this.failcode.add("blRemLength");
+				if (this.checkOnly) {
+					return;
+				}
+				var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
+				for (var i = 0; i < walk.length; i++) {
+					walk[i].path.clist.seterr(1);
+					walk[i].cell.room.top.seterr(2);
+					walk[i].cell.reldirbd(walk[i].dir, 1).seterr(2);
+				}
+			}
+		},
+		walkLine: function(start, dir) {
+			var ret = [];
+			var addr = start.getaddr();
+			do {
+				var prev = addr.getc();
+
+				addr.movedir(dir, 2);
+				var lpath = addr.getc().lpath;
+
+				var num = prev.room.top.getNum();
+				if (
+					prev.lpath !== lpath &&
+					num !== -1 &&
+					lpath.clist.length !== num &&
+					!lpath.clist.some(function(c) {
+						return c.lcnt !== 2;
+					})
+				) {
+					ret.push({ cell: prev, dir: dir, path: lpath });
+				}
+
+				var adb = addr.getc().adjborder;
+				if (dir !== 1 && adb.bottom.isLine()) {
+					dir = 2;
+				} else if (dir !== 2 && adb.top.isLine()) {
+					dir = 1;
+				} else if (dir !== 3 && adb.right.isLine()) {
+					dir = 4;
+				} else if (dir !== 4 && adb.left.isLine()) {
+					dir = 3;
+				}
+			} while (
+				!addr.equals(start) &&
+				addr.getc().lcnt === 2 &&
+				!addr.getc().isEmpty()
+			);
+
+			return ret;
 		}
 	}
 });

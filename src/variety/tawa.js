@@ -193,6 +193,10 @@
 		}
 	},
 	BoardExec: {
+		allowedOperations: function(isplaymode) {
+			return this.FLIPX | (!isplaymode ? this.FLIPY : 0);
+		},
+
 		// 拡大縮小・回転反転時の関数
 		execadjust: function(name) {
 			var bd = this.board;

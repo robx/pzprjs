@@ -115,6 +115,10 @@
 				variant: true,
 				volatile: true
 			}); /* koburin: Orthogonal and diagonal clues */
+			this.add("akichi_maximum", false, {
+				variant: true,
+				volatile: true
+			}); /* akichi: Numbers don't need to be attained */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -428,6 +432,9 @@
 					break;
 				case "koburin_minesweeper":
 					exec = pid === "koburin";
+					break;
+				case "akichi_maximum":
+					exec = pid === "akichi";
 					break;
 				default:
 					exec = !!this.list[name];
