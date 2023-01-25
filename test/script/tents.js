@@ -96,6 +96,18 @@ ui.debug.addDebugData("tents", {
 			label: "Drag from an empty space to a tree to remove the line",
 			input: ["playmode,auto", "mouse,left,3,1,3,3"],
 			result: "pzprv3/tents/2/3/. . . . /. . . . /. . 1 . /0 0 /0 0 /0 0 0 /"
+		},
+
+		{
+			label: "Number completion",
+			input: [
+				"newboard,2,2",
+				"editmode,number",
+				"mouse,rightx2,3,-1",
+				"playmode",
+				"mouse,left,3,-1"
+			],
+			result: "pzprv3/tents/2/2/. . c2 /. . . /. . . /0 /0 /0 0 /"
 		}
 	]
 });
