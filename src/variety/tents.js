@@ -193,34 +193,6 @@
 		keyinput: function(ca) {
 			this.key_inputexcell(ca);
 			this.key_inputqnum(ca);
-		},
-		key_inputexcell: function(ca) {
-			var excell = this.cursor.getex(),
-				qn = excell.qnum;
-			var max = excell.getmaxnum();
-
-			if ("0" <= ca && ca <= "9") {
-				var num = +ca;
-
-				if (qn <= 0 || this.prev !== excell) {
-					if (num <= max) {
-						excell.setQnum(num);
-					}
-				} else {
-					if (qn * 10 + num <= max) {
-						excell.setQnum(qn * 10 + num);
-					} else if (num <= max) {
-						excell.setQnum(num);
-					}
-				}
-			} else if (ca === " " || ca === "-") {
-				excell.setQnum(-1);
-			} else {
-				return;
-			}
-
-			this.prev = excell;
-			this.cursor.draw();
 		}
 	},
 

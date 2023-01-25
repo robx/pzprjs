@@ -195,6 +195,42 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//---------------------------------------------------------------------------
+		// kc.key_inputexcell()  Input for excell clues
+		//---------------------------------------------------------------------------
+		key_inputexcell: function(ca) {
+			var excell = this.cursor.getex();
+			if (excell.isnull) {
+				return;
+			}
+
+			var qn = excell.qnum,
+				max = excell.getmaxnum();
+
+			if ("0" <= ca && ca <= "9") {
+				var num = +ca;
+
+				if (qn <= 0 || this.prev !== excell) {
+					if (num <= max) {
+						excell.setQnum(num);
+					}
+				} else {
+					if (qn * 10 + num <= max) {
+						excell.setQnum(qn * 10 + num);
+					} else if (num <= max) {
+						excell.setQnum(num);
+					}
+				}
+			} else if (ca === " " || ca === "-") {
+				excell.setQnum(-1);
+			} else {
+				return;
+			}
+
+			this.prev = excell;
+			this.cursor.draw();
+		},
+
+		//---------------------------------------------------------------------------
 		// kc.key_inputarrow()  四方向の矢印などを設定する
 		// kc.key_inputdirec()  四方向の矢印つき数字の矢印を設定する
 		//---------------------------------------------------------------------------
