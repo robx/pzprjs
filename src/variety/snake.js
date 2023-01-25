@@ -62,43 +62,11 @@
 		enablemake: true,
 
 		keyinput: function(ca) {
-			if (!this.key_inputexcell(ca)) {
+			if (!this.cursor.getex().isnull) {
+				this.key_inputexcell(ca);
+			} else {
 				this.key_inputqnum(ca);
 			}
-		},
-
-		key_inputexcell: function(ca) {
-			var excell = this.cursor.getex(),
-				qn = excell.qnum;
-
-			if (excell.isnull) {
-				return false;
-			}
-			var max = excell.getmaxnum();
-
-			if ("0" <= ca && ca <= "9") {
-				var num = +ca;
-
-				if (qn <= 0 || this.prev !== excell) {
-					if (num <= max) {
-						excell.setQnum(num);
-					}
-				} else {
-					if (qn * 10 + num <= max) {
-						excell.setQnum(qn * 10 + num);
-					} else if (num <= max) {
-						excell.setQnum(num);
-					}
-				}
-			} else if (ca === " " || ca === "-") {
-				excell.setQnum(-1);
-			} else {
-				return true;
-			}
-
-			this.prev = excell;
-			this.cursor.draw();
-			return true;
 		}
 	},
 
