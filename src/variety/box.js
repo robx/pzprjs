@@ -41,6 +41,13 @@
 			} else {
 				this.inputqnum_main(excell);
 			}
+		},
+
+		getNewNumber: function(cell, val) {
+			if (this.btn === "right" && val === 0) {
+				return cell.getmaxnum();
+			}
+			return this.common.getNewNumber.call(this, cell, val);
 		}
 	},
 
@@ -88,34 +95,6 @@
 
 		keyinput: function(ca) {
 			this.key_inputexcell(ca);
-		},
-		key_inputexcell: function(ca) {
-			var excell = this.cursor.getex(),
-				qn = excell.qnum;
-			var max = excell.getmaxnum();
-
-			if ("0" <= ca && ca <= "9") {
-				var num = +ca;
-
-				if (qn <= 0 || this.prev !== excell) {
-					if (num <= max) {
-						excell.setQnum(num);
-					}
-				} else {
-					if (qn * 10 + num <= max) {
-						excell.setQnum(qn * 10 + num);
-					} else if (num <= max) {
-						excell.setQnum(num);
-					}
-				}
-			} else if (ca === " " || ca === "-") {
-				excell.setQnum(0);
-			} else {
-				return;
-			}
-
-			this.prev = excell;
-			this.cursor.draw();
 		}
 	},
 
@@ -131,6 +110,10 @@
 		qnum: 0,
 
 		disInputHatena: true,
+
+		setQnum: function(val) {
+			this.common.setQnum.call(this, Math.max(0, val));
+		},
 
 		maxnum: function() {
 			var bx = this.bx,
