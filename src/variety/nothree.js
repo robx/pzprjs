@@ -168,6 +168,7 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkShadeOverNum",
 			"checkConnectUnshadeRB",
