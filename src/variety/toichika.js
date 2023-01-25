@@ -25,7 +25,10 @@
 				if (this.mousestart || this.mousemove) {
 					if (this.btn === "left") {
 						this.inputarrow_cell();
-					} else if (this.btn === "right") {
+					} else if (
+						this.btn === "right" &&
+						(this.pid === "toichika" || this.mousemove)
+					) {
 						this.inputDot();
 					}
 				} else if (this.mouseend && this.notInputted()) {
