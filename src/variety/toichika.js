@@ -54,12 +54,14 @@
 				return;
 			}
 
+			var dot = cell.numberWithMB ? 2 : 1;
+
 			if (this.inputData === null) {
-				this.inputData = cell.qsub === 1 ? 0 : 1;
+				this.inputData = cell.qsub === dot ? 0 : 1;
 			}
 
 			cell.setAnum(-1);
-			cell.setQsub(this.inputData === 1 ? 1 : 0);
+			cell.setQsub(this.inputData === 1 ? dot : 0);
 			this.mouseCell = cell;
 			cell.draw();
 		},
@@ -126,7 +128,12 @@
 			cell.draw();
 		}
 	},
-	// TODO Blank input mode for NEWS
+	"MouseEvent@news": {
+		inputModes: {
+			edit: ["border", "arrow", "clear"],
+			play: ["arrow", "objblank", "numexist", "clear"]
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -245,6 +252,9 @@
 		numberWithMB: true,
 		isNum: function() {
 			return this.qnum > 0 || this.anum > 0;
+		},
+		isDot: function() {
+			return this.qsub === 2;
 		},
 		isEmpty: function() {
 			return this.qnum === -2;
@@ -413,7 +423,7 @@
 				}
 
 				g.vid = "c_MB1_" + cell.id;
-				if (cell.qsub === 2) {
+				if (cell.qsub === 1) {
 					g.strokeCircle(px, py, rsize);
 				} else {
 					g.vhide();
