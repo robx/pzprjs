@@ -40,5 +40,11 @@ ui.debug.addDebugData("news", {
 			"pzprv3/news/4/4/4/0 0 0 0 /0 1 1 2 /1 1 3 2 /1 3 3 2 /. 4 . . /. . . . /3 . . . /. 2 . . /. . . . /2 . 4 1 /. . 1 2 /. . . . /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Keyboard input",
+			input: ["newboard,2,2", "editmode", "key,n,right,e,down,x"],
+			result: "pzprv3/news/2/2/1/0 0 /0 0 /1 4 /. - /. . /. . /"
+		}
+	]
 });

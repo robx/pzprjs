@@ -190,10 +190,10 @@
 				ca = "3";
 			} else if (ca === "e") {
 				ca = "4";
-			} else if (ca === "5" || ca === "x" || ca === "-") {
-				ca = "s1";
 			} else if (ca === "6" || ca === "o" || ca === "z") {
-				ca = "s2";
+				ca = "s1";
+			} else if (ca === "5" || ca === "x" || ca === "-") {
+				ca = this.puzzle.playmode ? "s2" : "s1";
 			} else if (ca === "7") {
 				ca = " ";
 			}
