@@ -1056,3 +1056,8 @@ guidearrow: "Shade some cells on the board.\n1. Shaded cells cannot be horizonta
   4. Cells with a clue cannot be shaded.\n5. An arrow indicates the only direction\
   \ in which one could begin a path to the star without going through a shaded cell\
   \ or backtracking."
+news: "Place a letter N, E, W, or S in some of the cells.\n1. Each region contains\
+  \ exactly two letters.\n2. Letters may not repeat in a row or column.\n3. Cells\
+  \ with a cross must remain unused.\n4. Each letter must be further in the direction\
+  \ it represents than the other letter in its region. N represents north, E represents\
+  \ east, W represents west, and S represents south."
