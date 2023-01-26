@@ -11,7 +11,7 @@
 		RBShadeCell: true,
 		use: true,
 		inputModes: {
-			edit: ["info-blk"],
+			edit: ["info-blk", "arrow", "clear"],
 			play: ["shade", "unshade", "info-blk"]
 		},
 		mouseinput_auto: function() {
@@ -83,6 +83,19 @@
 
 		inputarrow_cell_main: function(cell, dir) {
 			cell.setQnum(cell.qnum !== dir ? dir : -1);
+		},
+
+		mouseinput_clear: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.puzzle.editmode) {
+				cell.setQnum(-1);
+			}
+			cell.setQans(0);
+			cell.setQsub(0);
+			cell.draw();
 		}
 	},
 	KeyEvent: {

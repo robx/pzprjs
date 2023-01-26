@@ -50,8 +50,12 @@ ui.debug.addDebugData("guidearrow", {
 			result: "pzprv3/guidearrow/2/2/1 1/. . /. 1 /. . /. . /"
 		},
 		{
-			input: ["mouse,left,1,3,1,1"],
-			result: "pzprv3/guidearrow/2/2/1 1/. . /1 1 /. . /. . /"
+			input: ["mouse,left,1,3,1,1", "playmode", "mouse,left,3,1"],
+			result: "pzprv3/guidearrow/2/2/1 1/. . /1 1 /. # /. . /"
+		},
+		{
+			input: ["editmode,clear", "mouse,left,1,1,3,1,3,3"],
+			result: "pzprv3/guidearrow/2/2/1 1/. . /1 . /. . /. . /"
 		}
 	]
 });
