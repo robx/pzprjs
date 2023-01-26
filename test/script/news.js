@@ -45,6 +45,10 @@ ui.debug.addDebugData("news", {
 			label: "Keyboard input",
 			input: ["newboard,2,2", "editmode", "key,n,right,e,down,x"],
 			result: "pzprv3/news/2/2/1/0 0 /0 0 /1 4 /. - /. . /. . /"
+		},
+		{
+			input: ["editmode,empty", "mouse,left,1,3"],
+			result: "pzprv3/news/2/2/1/0 0 /0 0 /1 4 /- - /. . /. . /"
 		}
 	]
 });
