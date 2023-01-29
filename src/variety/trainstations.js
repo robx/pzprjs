@@ -8,19 +8,32 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear", "info-line"],
-			play: ["line", "peke", "clear", "info-line"]
+			play: ["line", "peke", "clear", "diraux", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				if (this.mousestart || this.mousemove) {
+					this.inputdiraux_mousemove();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left") {
+				if (this.btn === "left") {
+					if (this.mousestart || this.mousemove) {
 						this.inputLine();
-					} else if (this.btn === "right") {
-						this.inputpeke();
+					} else if (this.mouseend && this.notInputted()) {
+						this.clickdiraux();
 					}
-				} else if (this.mouseend && this.notInputted()) {
-					if (this.inputpeke_ifborder()) {
-						return;
+				} else if (this.btn === "right") {
+					if (this.mousestart) {
+						this.inputdiraux_mousedown();
+					} else if (this.inputData === 2 || this.inputData === 3) {
+						this.inputpeke();
+					} else if (this.mousemove) {
+						this.inputdiraux_mousemove();
 					}
 				}
 			} else if (this.puzzle.editmode) {
@@ -72,6 +85,7 @@
 			this.drawCircledNumbers();
 			this.draw11s();
 			this.drawPekes();
+			this.drawBorderAuxDir();
 
 			this.drawChassis();
 
@@ -149,11 +163,11 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnum();
-			this.decodeBorderLine();
+			this.decodeBorderArrowAns();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
-			this.encodeBorderLine();
+			this.encodeBorderArrowAns();
 		}
 	},
 
