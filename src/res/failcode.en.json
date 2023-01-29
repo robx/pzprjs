@@ -462,6 +462,7 @@
     "lnCrossPencil.pencils": "A line crosses a pencil.",
     "lnCurveOnCir.pipelink": "A line turns on a circle.",
     "lnCurveOnIce": "A line turns on ice.",
+    "lnCurveOnNum": "A line turns on a station.",
     "lnDeadEnd": "There is a dead-end line.",
     "lnDeadEndAround.rassi": "Two line ends are adjacent.",
     "lnDivide.familyphoto": "A line divides two circles.",
