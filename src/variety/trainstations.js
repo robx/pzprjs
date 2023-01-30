@@ -52,10 +52,40 @@
 		maxnum: function() {
 			var bd = this.board;
 			return bd.cols * bd.rows;
+		},
+		isNum: function() {
+			return !this.isnull && this.qnum !== 0 && this.qnum !== -1;
+		},
+		posthook: {
+			qnum: function(val) {
+				this.board.maxFoundNumber = -1;
+			}
 		}
 	},
 	Board: {
-		hasborder: 1
+		hasborder: 1,
+		maxFoundNumber: -1,
+
+		initBoardSize: function(col, row) {
+			this.common.initBoardSize.call(this, col, row);
+			this.maxFoundNumber = -1;
+		},
+
+		getMaxFoundNumber: function() {
+			if (this.maxFoundNumber !== -1) {
+				return this.maxFoundNumber;
+			}
+
+			var max = -1;
+			for (var id = 0; id < this.cell.length; id++) {
+				var cell = this.cell[id];
+				if (cell.isNum()) {
+					max = Math.max(max, cell.getNum());
+				}
+			}
+
+			return (this.maxFoundNumber = max);
+		}
 	},
 	LineGraph: {
 		enabled: true,
@@ -176,6 +206,7 @@
 			"checkBranchLine",
 			"checkCrossOutOfMark",
 			"checkCurveOnNumber",
+			"checkNumberConsecutive",
 
 			"checkNotCrossOnMark",
 			"checkDeadendLine+",
@@ -197,6 +228,21 @@
 			this.checkAllCell(function(cell) {
 				return cell.isLineCurve() && cell.qnum !== -1 && cell.qnum !== 0;
 			}, "lnCurveOnNum");
+		},
+
+		checkNumberConsecutive: function() {
+			var max = this.board.getMaxFoundNumber();
+
+			this.checkLineShape(function(path) {
+				var cell1 = path.cells[0],
+					cell2 = path.cells[1];
+				if (cell1.isnull || cell2.isnull) {
+					return null;
+				}
+
+				var diff = Math.abs(cell1.qnum - cell2.qnum);
+				return diff !== 1 && diff !== max - 1;
+			}, "nmNotConseq");
 		}
 	}
 });
