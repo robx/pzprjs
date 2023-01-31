@@ -44,7 +44,13 @@
 		}
 	},
 	KeyEvent: {
-		enablemake: true
+		enablemake: true,
+		getNewNumber: function(cell, ca, cur) {
+			if (ca === "q") {
+				return cur === 0 ? -1 : 0;
+			}
+			return this.common.getNewNumber.call(this, cell, ca, cur);
+		}
 	},
 
 	Cell: {
