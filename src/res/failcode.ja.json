@@ -405,7 +405,7 @@
     "lnCross": "線が交差しています。",
     "lnCrossExCir.pipelink": "○の部分以外で線が交差しています。",
     "lnCrossExIce": "氷の部分以外で線が交差しています。",
-    "lnCrossExMk.reflect": "十字以外の場所で線が交差しています。",
+    "lnCrossExMk": "十字以外の場所で線が交差しています。",
     "lnCrossOnNum.pipelink": "○の部分で線が交差しています。",
     "lnCrossPencil.pencils": "線が鉛筆の軸と交差しています。",
     "lnCurveOnCir.pipelink": "○の部分で線が曲がっています。",
