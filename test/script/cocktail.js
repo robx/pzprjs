@@ -28,5 +28,22 @@ ui.debug.addDebugData("cocktail", {
 			"pzprv3/cocktail/6/6/8/0 0 0 0 1 1 /2 2 3 3 1 1 /4 4 3 3 5 5 /4 4 3 3 5 5 /6 6 7 7 5 5 /6 6 7 7 5 5 /4 . . . 3 . /. . 1 . . . /2 . . . 5 . /. . . . . . /1 . 3 . . . /. . . . . . /# # # # + # /+ + + + # # /+ # + # + + /+ # + + # # /# + # # + # /+ + # + # # /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,3,3",
+				"playmode",
+				"mouse,left,1,1,3,1",
+				"mouse,left,5,3",
+				"mouse,left,1,5",
+				"playmode,info-blk",
+				"mouse,left,5,3"
+			],
+			result: function(puzzle, assert) {
+				var bd = puzzle.board;
+				assert.equal(bd.getc(5, 3).qinfo, 1);
+				assert.equal(bd.getc(1, 5).qinfo, 0);
+			}
+		}
+	]
 });
