@@ -1061,3 +1061,8 @@ news: "Place a letter N, E, W, or S in some of the cells.\n1. Each region contai
   \ with a cross must remain unused.\n4. Each letter must be further in the direction\
   \ it represents than the other letter in its region. N represents north, E represents\
   \ east, W represents west, and S represents south."
+trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot branch\
+  \ off or overlap.\n2. All cells where the loop crosses itself are given. The loop\
+  \ cannot cross itself in other places.\n3. Numbers denote train stations. The stations\
+  \ must be visited in ascending order.\n4. The loop cannot turn while visiting a\
+  \ station."
