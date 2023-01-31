@@ -720,11 +720,11 @@ ui.keypopup = {
 		var mbcolor = ui.puzzle.painter.mbcolor;
 		this.generate_main(
 			[
-				mode === 3 ? ["s2", { text: "○", color: mbcolor }] : " ",
+				mode === 3 ? ["z", { text: "○", color: mbcolor }] : " ",
 				["n", "N"],
 				" ",
 				["w", "W"],
-				["s1", mode === 3 ? { text: "⋅", color: mbcolor } : "×"],
+				["x", mode === 3 ? { text: "⋅", color: mbcolor } : "×"],
 				["e", "E"],
 				" ",
 				["s", "S"],
