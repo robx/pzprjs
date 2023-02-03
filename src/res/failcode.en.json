@@ -591,6 +591,7 @@
     "nmMissRow.easyasabc": "There are missing letters in a row or column.",
     "nmMoveNe.tren": "A block cannot move in the correct number of spaces.",
     "nmNoLine.amibo": "No bar connects to a white circle.",
+    "nmNoLine.coffeemilk": "A white or black circle doesn't have a line.",
     "nmNoLine.firefly": "There is a lonely firefly.",
     "nmNoLine.ichimaga": "A circle doesn't start any line.",
     "nmNoLine.kusabi": "A circle is not connected another object.",
