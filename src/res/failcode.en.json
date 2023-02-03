@@ -594,7 +594,7 @@
     "nmNoLine.coffeemilk": "A white or black circle doesn't have a line.",
     "nmNoLine.firefly": "There is a lonely firefly.",
     "nmNoLine.ichimaga": "A circle doesn't start any line.",
-    "nmNoLine.kusabi": "A circle is not connected another object.",
+    "nmNoLine.kusabi": "A circle is not connected to another object.",
     "nmNoLine.wblink": "A circle doesn't start any line.",
     "nmNoLine": "A number is not connected to another number.",
     "nmNoMove.bonsan": "A circle doesn't start any line.",
