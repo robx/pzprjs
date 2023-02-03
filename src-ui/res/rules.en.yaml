@@ -779,10 +779,11 @@ nurimisaki: "Shade some cells on the board.\n1. There cannot be a 2x2 square of 
   \ orthogonally connected area."
 onsen: "Draw lines through the center of some cells to form multiple loops.\n1. Loops\
   \ cannot branch or overlap, and cannot cross themselves or each other.\n2. Every\
-  \ loop goes through exactly one circle.\n3. Every outlined room must be visited\
-  \ by at least one loop.\n4. A loop can enter and exit a room no more than once.\n\
-  5. The loop must visit the same amount of cells in every room it enters.\n6. A number\
-  \ indicates how many cells the loop visits in each room."
+  \ loop goes through exactly one circle.\n3. Every circle must be visited by a loop.\n\
+  4. Every outlined room must be visited by at least one loop.\n5. A loop can enter\
+  \ and exit a room no more than once.\n6. The loop must visit the same amount of\
+  \ cells in every room it enters.\n7. A number indicates how many cells the loop\
+  \ visits in each room."
 paintarea: "You're given a grid divided into tiles. Shade some tiles on the board.\n\
   1. A tile is either completely shaded or unshaded.\n2. There can not be a 2x2 square\
   \ of all shaded or all unshaded cells.\n3. Numbers indicate how many of the (up\
@@ -1061,3 +1062,8 @@ news: "Place a letter N, E, W, or S in some of the cells.\n1. Each region contai
   \ with a cross must remain unused.\n4. Each letter must be further in the direction\
   \ it represents than the other letter in its region. N represents north, E represents\
   \ east, W represents west, and S represents south."
+trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot branch\
+  \ off or overlap.\n2. All cells where the loop crosses itself are given. The loop\
+  \ cannot cross itself in other places.\n3. Numbers denote train stations. The stations\
+  \ must be visited in ascending order.\n4. The loop cannot turn while visiting a\
+  \ station."
