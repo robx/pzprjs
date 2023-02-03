@@ -270,5 +270,7 @@
     "about.title": "About puzz.link",
     "about.pzv": "PUZ-PRE v3",
     "about.author": "happa",
-    "network.title": "Network play"
+    "network.title": "Network play",
+    "network.start": "Start",
+    "network.share": "Share this link to play with someone:"
 }
