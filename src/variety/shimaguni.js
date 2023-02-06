@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["shimaguni", "chocona", "stostone", "hinge", "heyablock"], {
+})(["shimaguni", "chocona", "stostone", "hinge", "heyablock", "cocktail"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -28,6 +28,22 @@
 					this.inputqnum();
 				}
 			}
+		}
+	},
+	"MouseEvent@cocktail": {
+		inputModes: {
+			edit: ["border", "number", "clear", "info-blk"],
+			play: ["shade", "unshade", "info-blk"]
+		},
+		dispInfoBlk: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull || !cell.isShade()) {
+				return;
+			}
+			cell.blk8.clist.setinfo(1);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
 		}
 	},
 
@@ -54,7 +70,7 @@
 			return Math.min(999, this.room.clist.length);
 		}
 	},
-	"Cell@chocona,hinge,heyablock": {
+	"Cell@chocona,hinge,heyablock,cocktail": {
 		minnum: 0
 	},
 	"Cell@stostone": {
@@ -101,9 +117,12 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@shimaguni,stostone,heyablock": {
+	"Board@shimaguni,stostone,heyablock,cocktail": {
 		addExtraInfo: function() {
 			this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
+			if (this.pid === "cocktail") {
+				this.sblk8mgr = this.addInfoList(this.klass.AreaShade8Graph);
+			}
 		}
 	},
 	"Board@stostone": {
@@ -231,7 +250,7 @@
 			component.hinge = null;
 		}
 	},
-	"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock": {
+	"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail": {
 		// Same as LITS AreaTetrominoGraph
 		enabled: true,
 		relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -258,6 +277,30 @@
 	AreaRoomGraph: {
 		enabled: true,
 		hastop: true
+	},
+	"AreaShade8Graph:AreaShadeGraph@cocktail": {
+		enabled: true,
+		setComponentRefs: function(obj, component) {
+			obj.blk8 = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.blk8nodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.blk8nodes = [];
+		},
+
+		getSideObjByNodeObj: function(cell) {
+			var list = cell.getdir8clist(),
+				cells = [];
+			for (var i = 0; i < list.length; i++) {
+				var cell2 = list[i][0];
+				if (this.isnodevalid(cell2)) {
+					cells.push(cell2);
+				}
+			}
+			return cells;
+		}
 	},
 
 	//---------------------------------------------------------
@@ -417,9 +460,10 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	"AnsCheck@shimaguni,stostone,heyablock#1": {
+	"AnsCheck@shimaguni,stostone,heyablock,cocktail#1": {
 		checklist: [
 			"checkSideAreaShadeCell",
+			"check2x2ShadeCell@cocktail",
 			"checkSeqBlocksInRoom",
 			"checkFallenBlock@stostone",
 			"checkConnectUnshade@heyablock",
@@ -427,7 +471,8 @@
 			"checkSideAreaLandSide@shimaguni",
 			"checkRemainingSpace@stostone",
 			"checkCountinuousUnshadeCell@heyablock",
-			"checkNoShadeCellInArea",
+			"checkConnect8Shade@cocktail",
+			"checkNoShadeCellInArea@!cocktail",
 			"doneShadingDecided@heyablock"
 		]
 	},
@@ -444,7 +489,7 @@
 			"checkShadeCellCount"
 		]
 	},
-	"AnsCheck@shimaguni,stostone,heyablock": {
+	"AnsCheck@shimaguni,stostone,heyablock,cocktail": {
 		checkSideAreaShadeCell: function() {
 			this.checkSideAreaCell(
 				function(cell1, cell2) {
@@ -700,6 +745,11 @@
 				clist.seterr(1);
 			}
 			return result;
+		}
+	},
+	"AnsCheck@cocktail#2": {
+		checkConnect8Shade: function() {
+			this.checkOneArea(this.board.sblk8mgr, "csDivide");
 		}
 	},
 
