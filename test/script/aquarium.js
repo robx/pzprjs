@@ -39,5 +39,32 @@ ui.debug.addDebugData("aquarium", {
 			null,
 			"pzprv3/aquarium/4/4/0 1 0 /1 1 1 /1 1 1 /0 0 1 /1 0 0 1 /0 0 1 0 /0 1 0 0 /. . . . 3 /2 . . # # /1 . . # . /3 # . # # /. # # # # /"
 		]
+	],
+	inputs: [
+		{
+			input: ["newboard,2,2", "editmode,number", "mouse,rightx2,3,-1"],
+			result: "pzprv3/aquarium/2/2/0 /0 /0 0 /. . 2 /. . . /. . . /"
+		},
+		{
+			input: ["playmode", "mouse,left,3,-1", "mouse,right,3,3"],
+			result: "pzprv3/aquarium/2/2/0 /0 /0 0 /. . c2 /. . . /. . + /"
+		},
+
+		{
+			input: [
+				"newboard,2,2",
+				"editmode,auto",
+				"cursor,-1,-1",
+				"key,right",
+				"key,down",
+				"key,0"
+			],
+			result: "pzprv3/aquarium/2/2/0 /0 /0 0 /. 0 . /. . . /. . . /"
+		},
+		{
+			label: "Don't move cursor through grid",
+			input: ["key,down", "key,left", "key,1", "key,up"],
+			result: "pzprv3/aquarium/2/2/0 /0 /0 0 /. 0 . /. . . /. . . /"
+		}
 	]
 });

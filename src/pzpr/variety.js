@@ -120,6 +120,7 @@
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
 			chainedb: [0, 0, "チェンブロ", "Chained Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
+			cocktail: [0, 0, "カクテルランプ", "Cocktail Lamp", "shimaguni"],
 			coffeemilk: [0, 0, "コーヒー牛乳", "Coffee Milk", "wblink"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
 			compass: [0, 0, "Compass", "Compass", "compass"],
@@ -154,6 +155,7 @@
 			geradeweg: [0, 0, "グラーデヴェグ", "Geradeweg"],
 			goishi: [0, 1, "碁石ひろい", "Goishi"],
 			gokigen: [1, 0, "ごきげんななめ", "Slant", "gokigen"],
+			guidearrow: [0, 0, "ガイドアロー", "Guide Arrow"],
 			haisu: [0, 0, "Haisu", "Haisu"],
 			hakoiri: [1, 0, "はこいり○△□", "Hakoiri-masashi"],
 			hanare: [0, 0, "はなれ組", "Hanare-gumi", "hanare"],
@@ -286,6 +288,7 @@
 			rassi: [0, 0, "Rassi Silai", "Rassi Silai", "country"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
+			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [

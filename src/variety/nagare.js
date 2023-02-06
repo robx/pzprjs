@@ -339,7 +339,7 @@
 			this.drawDashedGrid();
 			this.drawQuesCells();
 
-			this.drawCellArrows();
+			this.drawCellArrows(true);
 
 			this.drawLines();
 			this.drawPekes();

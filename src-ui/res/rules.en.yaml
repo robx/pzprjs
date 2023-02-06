@@ -397,7 +397,7 @@ box: "Shade some cells on the board.\n1. Each row and column has a certain value
 skyscrapers: "Place a number in each cell.\n1. Numbers must be between 1 and N, where\
   \ N is the width of the board.\n2. Each row and column contains exactly one of each\
   \ number.\n3. Every number inside the grid represents a building, with a height\
-  \ equal to the number. A clue outside the grid represents how many building can\
+  \ equal to the number. A clue outside the grid represents how many buildings can\
   \ be seen in the corresponding row or column from that direction, where higher buildings\
   \ hide all lower buildings behind it."
 castle: "Draw lines through orthogonally adjacent cells to form a loop.\n1. Lines\
@@ -430,7 +430,7 @@ creek: "Shade some cells on the board.\n1. Numbers indicate the amount of shaded
   \ connected area."
 curvedata: "Draw orthogonal lines between cells to form figures.\n1. Every unshaded\
   \ cell must have a line. Shaded cells cannot contain lines.\n2. Lines cannot go\
-  \ through bold borders.\n3. Every shape must overlap exactly one clue.\n4. Clues\
+  \ through bold borders.\n3. Every figure must overlap exactly one clue.\n4. Clues\
   \ indicate the shape of the figure that overlaps it, without rotation or reflection.\
   \ The length of each line segment can be expanded or reduced, as long as it is at\
   \ least 1."
@@ -779,10 +779,11 @@ nurimisaki: "Shade some cells on the board.\n1. There cannot be a 2x2 square of 
   \ orthogonally connected area."
 onsen: "Draw lines through the center of some cells to form multiple loops.\n1. Loops\
   \ cannot branch or overlap, and cannot cross themselves or each other.\n2. Every\
-  \ loop goes through exactly one circle.\n3. Every outlined room must be visited\
-  \ by at least one loop.\n4. A loop can enter and exit a room no more than once.\n\
-  5. The loop must visit the same amount of cells in every room it enters.\n6. A number\
-  \ indicates how many cells the loop visits in each room."
+  \ loop goes through exactly one circle.\n3. Every circle must be visited by a loop.\n\
+  4. Every outlined room must be visited by at least one loop.\n5. A loop can enter\
+  \ and exit a room no more than once.\n6. The loop must visit the same amount of\
+  \ cells in every room it enters.\n7. A number indicates how many cells the loop\
+  \ visits in each room."
 paintarea: "You're given a grid divided into tiles. Shade some tiles on the board.\n\
   1. A tile is either completely shaded or unshaded.\n2. There can not be a 2x2 square\
   \ of all shaded or all unshaded cells.\n3. Numbers indicate how many of the (up\
@@ -1056,3 +1057,13 @@ guidearrow: "Shade some cells on the board.\n1. Shaded cells cannot be horizonta
   4. Cells with a clue cannot be shaded.\n5. An arrow indicates the only direction\
   \ in which one could begin a path to the star without going through a shaded cell\
   \ or backtracking."
+news: "Place a letter N, E, W, or S in some of the cells.\n1. Each region contains\
+  \ exactly two letters.\n2. Letters may not repeat in a row or column.\n3. Cells\
+  \ with a cross must remain unused.\n4. Each letter must be further in the direction\
+  \ it represents than the other letter in its region. N represents north, E represents\
+  \ east, W represents west, and S represents south."
+trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot branch\
+  \ off or overlap.\n2. All cells where the loop crosses itself are given. The loop\
+  \ cannot cross itself in other places.\n3. Numbers denote train stations. The stations\
+  \ must be visited in ascending order.\n4. The loop cannot turn while visiting a\
+  \ station."

@@ -241,11 +241,11 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawCellArrows() 矢印だけをCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawCellArrows: function() {
+		drawCellArrows: function(wide, outline) {
 			var g = this.vinc("cell_arrow", "auto");
 			var al, aw, tl, tw;
 
-			if (this.pid !== "nagare") {
+			if (!wide) {
 				al = this.cw * 0.4; // ArrowLength
 				aw = this.cw * 0.03; // ArrowWidth
 				tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
@@ -268,7 +268,8 @@ pzpr.classmgr.makeCommon({
 
 				g.vid = "c_arrow_" + cell.id;
 				if (!!color) {
-					g.fillStyle = color;
+					g.lineWidth = 1.5;
+					g.strokeStyle = g.fillStyle = color;
 					g.beginPath();
 					var px = cell.bx * this.bw,
 						py = cell.by * this.bh;
@@ -358,7 +359,11 @@ pzpr.classmgr.makeCommon({
 							);
 							break;
 					}
-					g.fill();
+					if (outline) {
+						g.stroke();
+					} else {
+						g.fill();
+					}
 				} else {
 					g.vhide();
 				}
@@ -2153,7 +2158,7 @@ pzpr.classmgr.makeCommon({
 				d = this.range;
 
 			g.vid = "text_stpos";
-			var cell = bd.startpos.getc();
+			var cell = bd.startpos ? bd.startpos.getc() : bd.emptycell;
 			if (
 				cell.bx >= d.x1 &&
 				d.x2 >= cell.bx &&
@@ -2193,6 +2198,42 @@ pzpr.classmgr.makeCommon({
 					g.vhide();
 				}
 			}
+		},
+
+		fillStar: function(g, px, py, sizeX, sizeY) {
+			// 星を描画するときの頂点の位置
+			var starXOffset = [
+				0,
+				0.235,
+				0.95,
+				0.38,
+				0.588,
+				0,
+				-0.588,
+				-0.38,
+				-0.95,
+				-0.235
+			];
+			var starYOffset = [
+				-1,
+				-0.309,
+				-0.309,
+				0.124,
+				0.809,
+				0.4,
+				0.809,
+				0.124,
+				-0.309,
+				-0.309
+			];
+
+			g.beginPath();
+			g.moveTo(px, py - sizeY);
+			for (var p = 1; p < 10; p++) {
+				g.lineTo(px + sizeX * starXOffset[p], py + sizeY * starYOffset[p]);
+			}
+			g.closePath();
+			g.fill();
 		},
 
 		//--------------------------------------------------------------------------

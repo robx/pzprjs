@@ -2,32 +2,6 @@
 // パズル固有スクリプト部 スターバトル版 starbattle.js
 //
 (function() {
-	// 星を描画するときの頂点の位置
-	var starXOffset = [
-		0,
-		0.235,
-		0.95,
-		0.38,
-		0.588,
-		0,
-		-0.588,
-		-0.38,
-		-0.95,
-		-0.235
-	];
-	var starYOffset = [
-		-1,
-		-0.309,
-		-0.309,
-		0.124,
-		0.809,
-		0.4,
-		0.809,
-		0.124,
-		-0.309,
-		-0.309
-	];
-
 	(function(pidlist, classbase) {
 		if (typeof module === "object" && module.exports) {
 			module.exports = [pidlist, classbase];
@@ -411,7 +385,7 @@
 					g.vid = "c_star_" + cell.id;
 					if (cell.qans === 1) {
 						g.fillStyle = !cell.trial ? this.qanscolor : this.trialcolor;
-						this.dispStar(
+						this.fillStar(
 							g,
 							cell.bx * this.bw,
 							cell.by * this.bh,
@@ -453,7 +427,7 @@
 				);
 
 				g.vid = "bd_star";
-				this.dispStar(
+				this.fillStar(
 					g,
 					(bd.maxby - 1) * this.bw,
 					-this.bh,
@@ -486,16 +460,6 @@
 				} else {
 					g.vhide();
 				}
-			},
-
-			dispStar: function(g, px, py, sizeX, sizeY) {
-				g.beginPath();
-				g.moveTo(px, py - sizeY);
-				for (var p = 1; p < 10; p++) {
-					g.lineTo(px + sizeX * starXOffset[p], py + sizeY * starYOffset[p]);
-				}
-				g.closePath();
-				g.fill();
 			}
 		},
 

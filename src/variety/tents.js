@@ -13,7 +13,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "mark-tree", "clear"],
-			play: ["mark-tent", "objblank", "subline", "peke"]
+			play: ["mark-tent", "objblank", "subline", "peke", "completion"]
 		},
 
 		mouseinput_other: function() {
@@ -40,6 +40,7 @@
 				if (this.mousestart) {
 					this.placedTent = false;
 					this.firstPoint.reset();
+					this.inputqcmp();
 				}
 
 				var cell = this.getcell();
@@ -184,6 +185,18 @@
 
 		inputDot: function() {
 			this.inputcell_tents(this.getcell(), 2);
+		},
+
+		inputqcmp: function() {
+			var excell = this.getcell_excell();
+			if (excell.isnull || excell.noNum() || excell.group !== "excell") {
+				return;
+			}
+
+			excell.setQcmp(+!excell.qcmp);
+			excell.draw();
+
+			this.mousereset();
 		}
 	},
 
@@ -193,34 +206,6 @@
 		keyinput: function(ca) {
 			this.key_inputexcell(ca);
 			this.key_inputqnum(ca);
-		},
-		key_inputexcell: function(ca) {
-			var excell = this.cursor.getex(),
-				qn = excell.qnum;
-			var max = excell.getmaxnum();
-
-			if ("0" <= ca && ca <= "9") {
-				var num = +ca;
-
-				if (qn <= 0 || this.prev !== excell) {
-					if (num <= max) {
-						excell.setQnum(num);
-					}
-				} else {
-					if (qn * 10 + num <= max) {
-						excell.setQnum(qn * 10 + num);
-					} else if (num <= max) {
-						excell.setQnum(num);
-					}
-				}
-			} else if (ca === " " || ca === "-") {
-				excell.setQnum(-1);
-			} else {
-				return;
-			}
-
-			this.prev = excell;
-			this.cursor.draw();
 		}
 	},
 
@@ -394,6 +379,15 @@
 			this.drawTarget();
 		},
 
+		getQuesNumberColor: function(cell) {
+			if (cell.error === 1) {
+				return this.errcolor1;
+			} else if (cell.qcmp) {
+				return this.qcmpcolor;
+			}
+			return this.quescolor;
+		},
+
 		drawBorderQsubs: function() {
 			var g = this.vinc("border_qsub", "crispEdges", true);
 
@@ -562,6 +556,10 @@
 				if (ca === ".") {
 					return;
 				} else if (obj.group === "excell" && !obj.isnull) {
+					if (ca[0] === "c") {
+						obj.qcmp = 1;
+						ca = ca.substring(1);
+					}
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
 					if (+ca > 0) {
@@ -578,7 +576,7 @@
 		encodeData: function() {
 			this.encodeCellExCell(function(obj) {
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
-					return obj.qnum + " ";
+					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
 				} else if (obj.group === "cell") {
 					if (obj.qnum !== -1) {
 						return obj.qnum + " ";

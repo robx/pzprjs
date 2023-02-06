@@ -1,6 +1,3 @@
-//
-// パズル固有スクリプト部 ひとりにしてくれ hitori.js
-//
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -168,6 +165,7 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkShadeOverNum",
 			"checkConnectUnshadeRB",

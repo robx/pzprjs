@@ -669,6 +669,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// cell.getdir4clist()   上下左右4方向の存在するセルを返す
 		// cell.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
+		// cell.getdir8clist()   Get orthogonally and diagonally adjacent cells
 		//---------------------------------------------------------------------------
 		getdir4clist: function() {
 			var adc = this.adjacent,
@@ -693,6 +694,25 @@ pzpr.classmgr.makeCommon({
 				} /* i+1==dir */
 			}
 			return cblist;
+		},
+		getdir8clist: function() {
+			var list = [];
+			var cells = [
+				this.relcell(-2, -2),
+				this.relcell(0, -2),
+				this.relcell(2, -2),
+				this.relcell(-2, 0),
+				this.relcell(2, 0),
+				this.relcell(-2, 2),
+				this.relcell(0, 2),
+				this.relcell(2, 2)
+			];
+			for (var i = 0; i < 8; i++) {
+				if (cells[i].group === "cell" && !cells[i].isnull) {
+					list.push([cells[i], i + 1]);
+				} /* i+1==dir */
+			}
+			return list;
 		},
 
 		//------------------------------------------------------------------------------------
