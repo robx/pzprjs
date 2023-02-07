@@ -49,7 +49,11 @@ pzpr.env = (function() {
 	};
 
 	var api = {
-		touchevent: isbrowser && (!!window.ontouchstart || !!document.createTouch),
+		touchevent:
+			isbrowser &&
+			(!!window.ontouchstart ||
+				!!document.createTouch ||
+				!!navigator.maxTouchPoints),
 		pointerevent: isbrowser && !!window.PointerEvent,
 		mspointerevent: isbrowser && !!window.MSPointerEvent,
 		maxWidth:
