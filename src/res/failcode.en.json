@@ -16,7 +16,7 @@
     "arAgainstWind.nagare": "The direction of the arrow is against the wind.",
     "arAlone.toichika": "There is no paired arrow in the direction of an arrow.",
     "arAlone.toichika2": "A number can not see an identical number.",
-    "arBlkEdge.loute": "An arrow is not at the edge of the area.",
+    "arBlkEdge.loute": "An arrow is not at the endpoint of an area.",
     "arBlocked.toichika2": "Other numbers are between a pair of numbers.",
     "arDistance.toichika2": "A pair of numbers does not have the correct distance.",
     "arDistanceGt.pentopia": "There is a shaded cell closer to a clue in an unmarked direction.",
