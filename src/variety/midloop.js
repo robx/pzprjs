@@ -71,8 +71,6 @@
 					dot.setDot(2);
 				} else if (ca === " " || ca === "-" || ca === "0") {
 					dot.setDot(0);
-				} else {
-					return;
 				}
 				dot.draw();
 			}

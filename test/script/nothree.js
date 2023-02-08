@@ -31,5 +31,25 @@ ui.debug.addDebugData("nothree", {
 			null,
 			"pzprv3/nothree/6/6/...1......./........1../.1.1......./.........../.........../.......1.1./.........../1.1....1.1./....1....../.......1.../.........../+ + # + # + /+ # + + + + /+ + + + + + /+ # + + # + /# + # + + + /+ + + + # + /"
 		]
+	],
+	inputs: [
+		{
+			label: "Input one dot in auto mode",
+			input: ["newboard,3,3", "editmode", "mouse,left,4,1,4,5"],
+			result:
+				"pzprv3/nothree/3/3/...1./...../...../...../...../. . . /. . . /. . . /"
+		},
+		{
+			label: "Input multiple dots in unshaded circles mode",
+			input: ["editmode,circle-unshade", "mouse,left,1,4,5,4"],
+			result:
+				"pzprv3/nothree/3/3/...1./...../...../11111/...../. . . /. . . /. . . /"
+		},
+		{
+			label: "Input with keyboard",
+			input: ["cursor,5,5", "key,1", "cursor,4,1", "key, "],
+			result:
+				"pzprv3/nothree/3/3/...../...../...../11111/....1/. . . /. . . /. . . /"
+		}
 	]
 });

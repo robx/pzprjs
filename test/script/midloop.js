@@ -39,5 +39,25 @@ ui.debug.addDebugData("midloop", {
 			null,
 			"pzprv3/midloop/4/4/....2../......./..2..../......2/.2...../......./......./0 1 1 /0 0 0 /1 0 0 /1 1 1 /0 1 0 1 /0 1 0 1 /1 0 0 1 /"
 		]
+	],
+	inputs: [
+		{
+			label: "Input one dot in auto mode",
+			input: ["newboard,3,3", "editmode", "mouse,left,4,1,4,5"],
+			result:
+				"pzprv3/midloop/3/3/...2./...../...../...../...../0 0 /0 0 /0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			label: "Input multiple dots in shaded circles mode",
+			input: ["editmode,circle-shade", "mouse,left,1,4,5,4"],
+			result:
+				"pzprv3/midloop/3/3/...2./...../...../2.2.2/...../0 0 /0 0 /0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			label: "Input with keyboard",
+			input: ["cursor,5,5", "key,1", "cursor,4,1", "key, "],
+			result:
+				"pzprv3/midloop/3/3/...../...../...../2.2.2/....2/0 0 /0 0 /0 0 /0 0 0 /0 0 0 /"
+		}
 	]
 });
