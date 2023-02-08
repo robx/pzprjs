@@ -671,7 +671,8 @@ loopsp: "Draw multiple loops so that every cell is used by at least one loop.\n1
   \ same loop.\n5. Lines cannot intersect on a circle."
 loute: "Divide the grid into regions of orthogonally connected cells.\n1. Each region\
   \ must be an L shape with a width of one cell.\n2. A circle must be located in the\
-  \ corner of an L shape.\n3. Arrows point toward the corner of its L shape."
+  \ corner of an L shape.\n3. Arrows must be located on the ends of an L shape, and\
+  \ point towards the corner."
 makaro: "Place a number in each empty cell. Some numbers are given.\n1. Numbers must\
   \ be between 1 and N, where N is the size of the region.\n2. Each region contains\
   \ exactly one of each number.\n3. Two equal numbers cannot be orthogonally adjacent.\n\
@@ -838,8 +839,9 @@ roma: "Place an arrow in every empty cell. Some arrows are given.\n1. Every outl
   \ circled goals."
 sashigane: "Divide the grid into regions of orthogonally connected cells.\n1. Each\
   \ region must be an L shape with a width of one cell.\n2. A circle must be located\
-  \ in the corner of an L shape.\n3. Arrows point toward the corner of its L shape.\n\
-  4. A number indicates the amount of cells contained in the L shape."
+  \ in the corner of an L shape.\n3. Arrows must be located on the ends of an L shape,\
+  \ and point towards the corner.\n4. A number indicates the amount of cells contained\
+  \ in the L shape."
 satogaeri: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other circles.\n\
