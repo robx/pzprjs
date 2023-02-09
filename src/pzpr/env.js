@@ -49,13 +49,13 @@ pzpr.env = (function() {
 	};
 
 	var api = {
-		touchevent:
-			isbrowser &&
-			(!!window.ontouchstart ||
-				!!document.createTouch ||
-				!!navigator.maxTouchPoints),
+		touchevent: isbrowser && (!!window.ontouchstart || !!document.createTouch),
 		pointerevent: isbrowser && !!window.PointerEvent,
 		mspointerevent: isbrowser && !!window.MSPointerEvent,
+		lowaccuracy:
+			isbrowser &&
+			!!window.matchMedia &&
+			window.matchMedia("(pointer: coarse)").matches,
 		maxWidth:
 			isbrowser &&
 			(ChromeVersion || 1000) >= 18 &&

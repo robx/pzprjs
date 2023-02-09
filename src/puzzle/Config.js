@@ -18,6 +18,8 @@
 		init: function() {
 			this.list = {};
 
+			var touchDevice = pzpr.env.API.lowaccuracy || pzpr.env.API.touchevent;
+
 			/* 盤面表示設定 */
 			this.add("font", 1, {
 				option: [1, 2]
@@ -50,7 +52,7 @@
 			this.add("squarecell", true); /* セルは正方形にする */
 
 			/* 入力方法設定 */
-			this.add("use", !pzpr.env.API.touchevent ? 1 : 2, {
+			this.add("use", !touchDevice ? 1 : 2, {
 				option: [1, 2]
 			}); /* 黒マスの入力方法 */
 			this.add("use_tri", 1, {
@@ -64,7 +66,7 @@
 			this.add("bgcolor", false); /* slither 背景色入力 */
 			this.add(
 				"singlenum",
-				!pzpr.env.API.touchevent
+				!touchDevice
 			); /* hanare: 部屋に回答数字を一つだけ入力 */
 			this.add("singleregion", true); /* parquet: Unshade all other regions */
 			this.add("enline", true); /* kouchoku: 線は点の間のみ引ける */
