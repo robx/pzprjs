@@ -54,8 +54,8 @@ pzpr.env = (function() {
 		mspointerevent: isbrowser && !!window.MSPointerEvent,
 		lowaccuracy:
 			isbrowser &&
-			!!window.matchMedia &&
-			window.matchMedia("(pointer: coarse)").matches,
+			window.matchMedia &&
+			!!window.matchMedia("(pointer: coarse)").matches,
 		maxWidth:
 			isbrowser &&
 			(ChromeVersion || 1000) >= 18 &&
