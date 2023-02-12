@@ -296,6 +296,15 @@
 		"AreaUnshadeGraph@heyablock,martini": {
 			enabled: true
 		},
+		"AreaUnshadeGraph@martini#1": {
+			setExtraData: function(component) {
+				this.common.setExtraData.call(this, component);
+
+				component.circlecount = component.clist.filter(function(c) {
+					return c.qnum !== 0 && c.qnum !== -1;
+				}).length;
+			}
+		},
 		AreaRoomGraph: {
 			enabled: true,
 			hastop: true
@@ -467,7 +476,9 @@
 				return num <= 0 ? "" : this.getNumberTextCore(num);
 			},
 			getCircleFillColor: function(cell) {
-				return cell.qnum === 0 ? "black" : this.getCircleFillColor_qnum(cell);
+				return cell.qnum === 0
+					? this.getCircleStrokeColor(cell)
+					: this.getCircleFillColor_qnum(cell);
 			}
 		},
 
@@ -525,10 +536,13 @@
 		},
 		"AnsCheck@cocktail,martini#1": {
 			checklist: [
+				"checkUnshadeOnCircle@martini",
 				"checkSideAreaShadeCell",
 				"check2x2ShadeCell@cocktail",
 				"checkSeqBlocksInRoom",
 				"checkShadeCellCount@!martini",
+				"checkCircleCount@martini",
+				"checkShadeOnCircle@martini",
 				"checkConnect8Shade"
 			]
 		},
@@ -808,6 +822,39 @@
 			}
 		},
 		"AnsCheck@cocktail,martini#2": {
+			checkShadeOnCircle: function() {
+				this.checkAllCell(function(cell) {
+					return !cell.isShade() && cell.qnum === 0;
+				}, "circleUnshade");
+			},
+
+			checkUnshadeOnCircle: function() {
+				this.checkAllCell(function(cell) {
+					return cell.isShade() && cell.qnum !== -1 && cell.qnum !== 0;
+				}, "circleShade");
+			},
+
+			checkCircleCount: function() {
+				for (var i = 0; i < this.board.cell.length; i++) {
+					var cell = this.board.cell[i];
+					var qnum = cell.qnum;
+					if (qnum <= 0 || cell.isShade()) {
+						continue;
+					}
+
+					var block = cell.isShade() ? cell.sblk : cell.ublk;
+					// TODO split into lt/gt checks
+
+					if (cell.ublk.circlecount !== qnum) {
+						this.failcode.add("bkSizeNe");
+						if (this.checkOnly) {
+							return;
+						}
+						block.clist.seterr(1);
+					}
+				}
+			},
+
 			checkConnect8Shade: function() {
 				this.checkOneArea(this.board.sblk8mgr, "csDivide");
 			}
