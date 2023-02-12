@@ -538,10 +538,11 @@
 			checklist: [
 				"checkUnshadeOnCircle@martini",
 				"checkSideAreaShadeCell",
+				"checkUnderCircleCount@martini",
 				"check2x2ShadeCell@cocktail",
 				"checkSeqBlocksInRoom",
 				"checkShadeCellCount@!martini",
-				"checkCircleCount@martini",
+				"checkOverCircleCount@martini",
 				"checkShadeOnCircle@martini",
 				"checkConnect8Shade"
 			]
@@ -834,7 +835,15 @@
 				}, "circleShade");
 			},
 
-			checkCircleCount: function() {
+			checkOverCircleCount: function() {
+				this.checkCircleCount(+1, "bkSizeGt");
+			},
+
+			checkUnderCircleCount: function() {
+				this.checkCircleCount(-1, "bkSizeLt");
+			},
+
+			checkCircleCount: function(flag, code) {
 				for (var i = 0; i < this.board.cell.length; i++) {
 					var cell = this.board.cell[i];
 					var qnum = cell.qnum;
@@ -842,16 +851,20 @@
 						continue;
 					}
 
-					var block = cell.isShade() ? cell.sblk : cell.ublk;
-					// TODO split into lt/gt checks
+					var count = cell.ublk.circlecount;
 
-					if (cell.ublk.circlecount !== qnum) {
-						this.failcode.add("bkSizeNe");
-						if (this.checkOnly) {
-							return;
-						}
-						block.clist.seterr(1);
+					if (flag < 0 && count >= qnum) {
+						continue;
 					}
+					if (flag > 0 && count <= qnum) {
+						continue;
+					}
+
+					this.failcode.add(code);
+					if (this.checkOnly) {
+						return;
+					}
+					cell.ublk.clist.seterr(1);
 				}
 			},
 
