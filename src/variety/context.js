@@ -210,9 +210,9 @@
 		checklist: [
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
+			"checkConnectUnshadeRB",
 			"checkShadeCountDiag",
 			"checkUnshadeCountAdj",
-			"checkConnectUnshade",
 			"doneShadingDecided"
 		],
 
