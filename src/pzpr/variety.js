@@ -231,6 +231,7 @@
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],
 			makaro: [0, 0, "マカロ", "Makaro"],
+			martini: [0, 0, "マティーニ", "Martini", "shimaguni"],
 			mashu: [0, 1, "ましゅ", "Masyu", "", { kanpen: "masyu", alias: "pearl" }],
 			maxi: [0, 0, "Maxi Loop", "Maxi Loop", "country"],
 			meander: [0, 0, "にょろにょろナンバー", "Meandering Numbers", "ripple"],
