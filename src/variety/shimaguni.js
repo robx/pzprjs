@@ -538,12 +538,12 @@
 			checklist: [
 				"checkUnshadeOnCircle@martini",
 				"checkSideAreaShadeCell",
+				"checkShadeOnCircle@martini",
 				"checkUnderCircleCount@martini",
 				"check2x2ShadeCell@cocktail",
 				"checkSeqBlocksInRoom",
 				"checkShadeCellCount@!martini",
 				"checkOverCircleCount@martini",
-				"checkShadeOnCircle@martini",
 				"checkConnect8Shade"
 			]
 		},
