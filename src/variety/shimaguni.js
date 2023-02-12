@@ -509,20 +509,27 @@
 
 		//---------------------------------------------------------
 		// 正解判定処理実行部
-		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini#1": {
+		"AnsCheck@shimaguni,stostone,heyablock#1": {
+			checklist: [
+				"checkSideAreaShadeCell",
+				"checkSeqBlocksInRoom",
+				"checkFallenBlock@stostone",
+				"checkConnectUnshade@heyablock",
+				"checkShadeCellCount",
+				"checkSideAreaLandSide@shimaguni",
+				"checkRemainingSpace@stostone",
+				"checkCountinuousUnshadeCell@heyablock",
+				"checkNoShadeCellInArea",
+				"doneShadingDecided@heyablock"
+			]
+		},
+		"AnsCheck@cocktail,martini#1": {
 			checklist: [
 				"checkSideAreaShadeCell",
 				"check2x2ShadeCell@cocktail",
 				"checkSeqBlocksInRoom",
-				"checkFallenBlock@stostone",
-				"checkConnectUnshade@heyablock",
 				"checkShadeCellCount@!martini",
-				"checkSideAreaLandSide@shimaguni",
-				"checkRemainingSpace@stostone",
-				"checkCountinuousUnshadeCell@heyablock",
-				"checkConnect8Shade@cocktail,martini",
-				"checkNoShadeCellInArea@!cocktail,!martini",
-				"doneShadingDecided@heyablock"
+				"checkConnect8Shade"
 			]
 		},
 		"AnsCheck@chocona#1": {
