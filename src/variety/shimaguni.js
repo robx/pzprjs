@@ -83,6 +83,18 @@
 		"Cell@chocona,hinge,heyablock,cocktail": {
 			minnum: 0
 		},
+		"Cell@martini": {
+			minnum: 0,
+			maxnum: function() {
+				return this.board.rows * this.board.cols;
+			},
+			allowShade: function() {
+				return this.qnum === -1 || this.qnum === 0;
+			},
+			allowUnshade: function() {
+				return this.qnum !== 0;
+			}
+		},
 		"Cell@stostone": {
 			getFallableLength: function() {
 				if (!this.base.stone) {
@@ -127,10 +139,10 @@
 		Board: {
 			hasborder: 1
 		},
-		"Board@shimaguni,stostone,heyablock,cocktail": {
+		"Board@shimaguni,stostone,heyablock,cocktail,martini": {
 			addExtraInfo: function() {
 				this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
-				if (this.pid === "cocktail") {
+				if (this.pid === "cocktail" || this.pid === "martini") {
 					this.sblk8mgr = this.addInfoList(this.klass.AreaShade8Graph);
 				}
 			}
@@ -260,7 +272,7 @@
 				component.hinge = null;
 			}
 		},
-		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail": {
+		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini": {
 			// Same as LITS AreaTetrominoGraph
 			enabled: true,
 			relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -281,14 +293,17 @@
 		"AreaStoneGraph@stostone": {
 			coloring: true
 		},
-		"AreaUnshadeGraph@heyablock": {
+		"AreaUnshadeGraph@heyablock,martini": {
 			enabled: true
 		},
 		AreaRoomGraph: {
 			enabled: true,
 			hastop: true
 		},
-		"AreaShade8Graph:AreaShadeGraph@cocktail": {
+		"AreaRoomGraph@martini": {
+			hastop: false
+		},
+		"AreaShade8Graph:AreaShadeGraph@cocktail,martini": {
 			enabled: true,
 			setComponentRefs: function(obj, component) {
 				obj.blk8 = component;
@@ -329,7 +344,11 @@
 				}
 				this.drawShadedCells();
 
-				this.drawQuesNumbers();
+				if (this.pid === "martini") {
+					this.drawCircledNumbers();
+				} else {
+					this.drawQuesNumbers();
+				}
 
 				this.drawBorders();
 				if (this.pid === "stostone") {
@@ -441,6 +460,16 @@
 				return this.common.getQuesNumberColor_mixed.call(this, cell);
 			}
 		},
+		"Graphic@martini": {
+			hideHatena: true,
+			shadecolor: "#444444",
+			getNumberText: function(cell, num) {
+				return num <= 0 ? "" : this.getNumberTextCore(num);
+			},
+			getCircleFillColor: function(cell) {
+				return cell.qnum === 0 ? "black" : this.getCircleFillColor_qnum(cell);
+			}
+		},
 
 		//---------------------------------------------------------
 		// URLエンコード/デコード処理
@@ -452,6 +481,16 @@
 			encodePzpr: function(type) {
 				this.encodeBorder();
 				this.encodeRoomNumber16();
+			}
+		},
+		"Encode@martini": {
+			decodePzpr: function(type) {
+				this.decodeBorder();
+				this.decodeNumber16();
+			},
+			encodePzpr: function(type) {
+				this.encodeBorder();
+				this.encodeNumber16();
 			}
 		},
 		//---------------------------------------------------------
@@ -470,19 +509,19 @@
 
 		//---------------------------------------------------------
 		// 正解判定処理実行部
-		"AnsCheck@shimaguni,stostone,heyablock,cocktail#1": {
+		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini#1": {
 			checklist: [
 				"checkSideAreaShadeCell",
 				"check2x2ShadeCell@cocktail",
 				"checkSeqBlocksInRoom",
 				"checkFallenBlock@stostone",
 				"checkConnectUnshade@heyablock",
-				"checkShadeCellCount",
+				"checkShadeCellCount@!martini",
 				"checkSideAreaLandSide@shimaguni",
 				"checkRemainingSpace@stostone",
 				"checkCountinuousUnshadeCell@heyablock",
-				"checkConnect8Shade@cocktail",
-				"checkNoShadeCellInArea@!cocktail",
+				"checkConnect8Shade@cocktail,martini",
+				"checkNoShadeCellInArea@!cocktail,!martini",
 				"doneShadingDecided@heyablock"
 			]
 		},
@@ -503,7 +542,7 @@
 				"checkShadeCellCount"
 			]
 		},
-		"AnsCheck@shimaguni,stostone,heyablock,cocktail": {
+		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini": {
 			checkSideAreaShadeCell: function() {
 				this.checkSideAreaCell(
 					function(cell1, cell2) {
@@ -761,7 +800,7 @@
 				return result;
 			}
 		},
-		"AnsCheck@cocktail#2": {
+		"AnsCheck@cocktail,martini#2": {
 			checkConnect8Shade: function() {
 				this.checkOneArea(this.board.sblk8mgr, "csDivide");
 			}
