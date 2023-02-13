@@ -1071,3 +1071,6 @@ trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot br
   \ cannot cross itself in other places.\n3. Numbers denote train stations. The stations\
   \ must be visited in ascending order.\n4. The loop cannot turn while visiting a\
   \ station."
+sumfusuma: "Divide the grid into regions.\n1. A circle must divide two different regions.\n\
+  2. A number on a circle indicates the sum of the sizes of the two adjacent regions.\n\
+  3. Two regions of the same size cannot be orthogonally adjacent."
