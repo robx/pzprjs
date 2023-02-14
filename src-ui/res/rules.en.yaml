@@ -378,10 +378,11 @@ barns: "Draw a loop that goes through every cell.\n1. Two perpendicular line seg
   \ or otherwise overlap.\n2. The loop may not turn on icy cells.\n3. Lines cannot\
   \ go through bold borders."
 bdblock: "Draw lines over the dotted lines to divide the board into several blocks.\n\
-  1. All identical numbers must be in the same block, and there can be no blocks without\
-  \ numbers.\n2. Dots represent a point where 3 or 4 lines meet. The outside border\
-  \ counts as a line.\n3. All possible dots are given, meaning lines cannot branch\
-  \ or cross at points without a dot.\n4. Lines can not form dead-ends."
+  1. All identical numbers must be in the same block, and different numbers must be\
+  \ in different blocks. There can be no blocks without numbers.\n2. Dots represent\
+  \ a point where 3 or 4 lines meet. The outside border counts as a line.\n3. All\
+  \ possible dots are given, meaning lines cannot branch or cross at points without\
+  \ a dot.\n4. Lines can not form dead-ends."
 bonsan: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally\
   \ or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap\
   \ each other. Lines can also not go through the start- or endpoint of other circles.\n\
@@ -574,10 +575,11 @@ ichimagax: "Draw lines over the dotted lines to connect the circles into one net
 interbd: "Shade some cells to divide the grid into countries.\n1. Some cells have\
   \ a number. The number indicates the amount of shaded cells orthogonally adjacent\
   \ to this cell.\n2. Some cells have a color. All identical colors must be in the\
-  \ same country, and there can be no countries without colors.\n3. Cells with numbers\
-  \ or symbols cannot be shaded.\n4. Gray cells can be of any color, as long as it\
-  \ exists elsewhere in the grid.\n5. All shaded cells must be used to divide countries,\
-  \ i.e. each shaded cell must be adjacent to 2 or more different countries.\n"
+  \ same country, and different colors must be in different countries. There can be\
+  \ no countries without colors.\n3. Cells with numbers or symbols cannot be shaded.\n\
+  4. Gray cells can be of any color, as long as it exists elsewhere in the grid.\n\
+  5. All shaded cells must be used to divide countries, i.e. each shaded cell must\
+  \ be adjacent to 2 or more different countries.\n"
 juosan: "Draw an orthogonal line in every cell, connecting two opposite edges and\
   \ going through the center.\n1. There cannot be a run of 3 or more parallel lines.\n\
   2. Numbers indicate either the amount of cells with a horizontal line, the amount\
@@ -1069,3 +1071,6 @@ trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot br
   \ cannot cross itself in other places.\n3. Numbers denote train stations. The stations\
   \ must be visited in ascending order.\n4. The loop cannot turn while visiting a\
   \ station."
+sumfusuma: "Divide the grid into regions.\n1. A circle must divide two different regions.\n\
+  2. A number on a circle indicates the sum of the sizes of the two adjacent regions.\n\
+  3. Two regions of the same size cannot be orthogonally adjacent."
