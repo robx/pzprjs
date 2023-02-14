@@ -40,5 +40,22 @@ ui.debug.addDebugData("trainstations", {
 			"pzprv3/trainstations/6/6/. 3 . . . . /. . . . 0 . /. . . . . . /1 . . . . 4 /. . 0 2 . . /. . . . . . /1 1 1r 0 1 /1 1 0 1 1 /1 0 1 0 1 /0 1 0 1l 0 /0 1 1 1 0 /1 0 1 1 1l /1 0 0 1 1 1 /0 0 1 0 1 0 /1 1 0 1 0 1 /1 0 1 0 1 1 /1d 1 1 0 0 1 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,5,1",
+				"editmode",
+				"key,q",
+				"mouse,leftx2,3,1",
+				"mouse,leftx3,5,1",
+				"mouse,leftx4,7,1",
+				"mouse,rightx2,9,1"
+			],
+			result: "pzprv3/trainstations/1/5/0 - 0 1 5 /0 0 0 0 /"
+		},
+		{
+			input: ["playmode,diraux", "mouse,left,2,1", "mouse,left,3,1,5,1"],
+			result: "pzprv3/trainstations/1/5/0 - 0 1 5 /l r 0 0 /"
+		}
+	]
 });
