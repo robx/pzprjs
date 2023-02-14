@@ -424,7 +424,7 @@
 					exec = pid === "voxas";
 					break;
 				case "tren_new":
-					exec = pid === "tren";
+					exec = pid === "tren" || pid === "news";
 					break;
 				case "nuriuzu_connect":
 					exec = pid === "nuriuzu";

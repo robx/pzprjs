@@ -103,6 +103,7 @@
 					idname = "voxas_tatami";
 					break;
 				case "tren":
+				case "news":
 					idname = "tren_new";
 					break;
 				case "nuriuzu":
