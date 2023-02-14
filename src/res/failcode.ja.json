@@ -60,7 +60,7 @@
     "bkDifferentPosition.nikoji": "文字の位置が異なります。",
     "bkDifferentShape.dbchoco": "ブロック内で、白マスと灰色マスのカタマリの形が異なっています。",
     "bkDifferentShape.nikoji": "同じ文字のブロックの形が異なります。",
-    "bkDivide.tren": "クルマのないマスが分断されています。",
+    "bkDivide": "クルマのないマスが分断されています。",
     "bkDoubleBn.yosenabe": "鍋に数字が２つ以上書いてあります。",
     "bkDupNum.hakoiri": "1つのハコに同じ記号が複数入っています。",
     "bkDupNum.hebi": "同じ数字が入っています。",

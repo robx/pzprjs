@@ -145,7 +145,8 @@ ui.keypopup = {
 		akichi: [10, 0],
 		slashpack: [10, 0],
 		remlen: [10, 0],
-		cocktail: [10, 0]
+		cocktail: [10, 0],
+		news: [123, 123]
 	},
 
 	//---------------------------------------------------------------------------
@@ -271,6 +272,8 @@ ui.keypopup = {
 			this.generate_cts(mode);
 		} else if (type === 122) {
 			this.generate_anglers(mode);
+		} else if (type === 123) {
+			this.generate_news(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -713,6 +716,23 @@ ui.keypopup = {
 				" "
 			],
 			5
+		);
+	},
+	generate_news: function(mode) {
+		var mbcolor = ui.puzzle.painter.mbcolor;
+		this.generate_main(
+			[
+				mode === 3 ? ["z", { text: "○", color: mbcolor }] : " ",
+				["n", "N"],
+				" ",
+				["w", "W"],
+				["x", mode === 3 ? { text: "⋅", color: mbcolor } : "×"],
+				["e", "E"],
+				" ",
+				["s", "S"],
+				" "
+			],
+			3
 		);
 	},
 
