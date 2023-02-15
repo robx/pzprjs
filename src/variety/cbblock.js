@@ -678,14 +678,14 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"checkBorderDeadend",
 			"checkSingleBlock",
 			"checkSmallNumberArea@dbchoco",
 			"checkBlockNotRect@cbblock",
 			"checkDifferentShapeBlock@cbblock",
 			"checkLargeBlock",
 			"checkEqualShapes@dbchoco",
-			"checkLargeNumberArea@dbchoco"
+			"checkLargeNumberArea@dbchoco",
+			"checkBorderDeadend"
 		],
 
 		checkBlockNotRect: function() {
