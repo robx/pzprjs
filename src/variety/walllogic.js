@@ -166,6 +166,7 @@
 				cell.setQnum(-1);
 			}
 			cell.setAnum(-1);
+			cell.draw();
 		}
 	},
 
