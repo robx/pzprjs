@@ -147,7 +147,8 @@ ui.keypopup = {
 		remlen: [10, 0],
 		cocktail: [10, 0],
 		news: [123, 123],
-		dbchoco: [10, 0]
+		dbchoco: [10, 0],
+		nurimisaki: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -365,7 +366,8 @@ ui.keypopup = {
 			pid === "heyabon" ||
 			pid === "yosenabe" ||
 			pid === "herugolf" ||
-			pid === "kazunori"
+			pid === "kazunori" ||
+			pid === "nurimisaki"
 		) {
 			cap = "○";
 		}
