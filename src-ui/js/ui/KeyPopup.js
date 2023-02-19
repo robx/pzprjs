@@ -146,7 +146,8 @@ ui.keypopup = {
 		slashpack: [10, 0],
 		remlen: [10, 0],
 		cocktail: [10, 0],
-		news: [123, 123]
+		news: [123, 123],
+		dbchoco: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -374,8 +375,19 @@ ui.keypopup = {
 		if (pid === "familyphoto") {
 			itemlist.push(["q", "●"]);
 		}
-		if (pid === "icelom" || pid === "icelom2" || pid === "icewalk") {
-			itemlist.push(["q", { text: "■", color: "rgb(192,224,255)" }]);
+		if (
+			pid === "icelom" ||
+			pid === "icelom2" ||
+			pid === "icewalk" ||
+			pid === "dbchoco"
+		) {
+			itemlist.push([
+				"q",
+				{
+					text: "■",
+					color: pid === "dbchoco" ? "rgb(204,204,204)" : "rgb(192,224,255)"
+				}
+			]);
 		}
 		this.generate_main(itemlist, 4);
 	},
