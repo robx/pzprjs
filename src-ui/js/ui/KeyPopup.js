@@ -375,7 +375,9 @@ ui.keypopup = {
 			pid === "kazunori" ||
 			pid === "nurimisaki" ||
 			pid === "amibo" ||
-			pid === "firefly"
+			pid === "firefly" ||
+			pid === "shikaku" ||
+			pid === "aho"
 		) {
 			cap = "○";
 		}
