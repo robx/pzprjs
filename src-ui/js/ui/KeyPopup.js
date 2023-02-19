@@ -85,7 +85,7 @@ ui.keypopup = {
 		kakuru: [10, 10],
 		kazunori: [10, 10],
 		skyscrapers: [10, 10],
-		kropki: [10, 10],
+		kropki: [0, 10],
 		tilepaint: [51, 0],
 		triplace: [51, 0],
 		kakuro: [51, 10],
