@@ -154,7 +154,14 @@ ui.keypopup = {
 		aquarium: [10, 0],
 		snake: [10, 0],
 		tents: [10, 0],
-		armyants: [10, 0]
+		armyants: [10, 0],
+		araf: [10, 0],
+		bosanowa: [10, 10],
+		meander: [10, 10],
+		juosan: [10, 0],
+		walllogic: [10, 0],
+		mines: [8, 0],
+		pencils: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -359,8 +366,6 @@ ui.keypopup = {
 			pid === "crossstitch" ||
 			pid === "yajisoko"
 		) {
-		} else if (!ui.puzzle.painter.hideHatena) {
-			cap = "?";
 		} else if (pid === "tasquare") {
 			cap = "□";
 		} else if (pid === "rectslider") {
@@ -377,9 +382,12 @@ ui.keypopup = {
 			pid === "amibo" ||
 			pid === "firefly" ||
 			pid === "shikaku" ||
-			pid === "aho"
+			pid === "aho" ||
+			pid === "bosanowa"
 		) {
 			cap = "○";
+		} else if (!ui.puzzle.painter.hideHatena) {
+			cap = "?";
 		}
 		if (cap !== null) {
 			itemlist.push(["-", cap]);
@@ -458,7 +466,8 @@ ui.keypopup = {
 		this.generate_main(["1", "2", "3", "4", "5", "6", "0", " ", ["-", "?"]], 3);
 	},
 	gentable8: function(mode) {
-		if (ui.puzzle.pid !== "tapa" && ui.puzzle.pid !== "tapaloop") {
+		var pid = ui.puzzle.pid;
+		if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines") {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4
