@@ -161,7 +161,8 @@ ui.keypopup = {
 		juosan: [10, 0],
 		walllogic: [10, 0],
 		mines: [8, 0],
-		pencils: [10, 0]
+		pencils: [10, 0],
+		minarism: [10, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -383,7 +384,8 @@ ui.keypopup = {
 			pid === "firefly" ||
 			pid === "shikaku" ||
 			pid === "aho" ||
-			pid === "bosanowa"
+			pid === "bosanowa" ||
+			pid === "minarism"
 		) {
 			cap = "○";
 		} else if (!ui.puzzle.painter.hideHatena) {
