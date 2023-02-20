@@ -258,7 +258,7 @@
     "bkUCGe2.dosufuwa": "An area has two or more balloons.",
     "bkUnknown.lohkous": "A room has a segment of invalid length.",
     "bkUnshade.lapaz": "A 1x1 region is unshaded.",
-    "bkUnshadeConsecGt3": "Unshaded cells are continued for three consecutive rooms.",
+    "bkUnshadeConsecGt3": "There is a line of consecutive unshaded cells that goes through 2 region borders.",
     "bkWidthGt1": "The width of the tatami is not one.",
     "bkWrongNum.armyants": "The numbers on the ant are wrong.",
     "blLineDiff.onsen": "The length of the path in a room is different in some rooms.",
