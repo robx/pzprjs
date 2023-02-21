@@ -162,7 +162,8 @@ ui.keypopup = {
 		walllogic: [10, 0],
 		mines: [8, 0],
 		pencils: [10, 0],
-		minarism: [10, 10]
+		minarism: [10, 10],
+		trainstations: [124, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -290,6 +291,8 @@ ui.keypopup = {
 			this.generate_anglers(mode);
 		} else if (type === 123) {
 			this.generate_news(mode);
+		} else if (type === 124) {
+			this.generate_trainstations(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -768,6 +771,13 @@ ui.keypopup = {
 				" "
 			],
 			3
+		);
+	},
+
+	generate_trainstations: function(mode) {
+		this.generate_main(
+			["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ", ["q", "╋"]],
+			4
 		);
 	},
 

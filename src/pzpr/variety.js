@@ -352,6 +352,7 @@
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
 			tontti: [0, 0, "Tonttiraja", "Tonttiraja"],
+			trainstations: [0, 0, "Train Stations", "Train Stations"],
 			tren: [0, 0, "パーキング", "Tren"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
 			tslither: [0, 0, "Touch Slitherlink", "Touch Slitherlink", "vslither"],
