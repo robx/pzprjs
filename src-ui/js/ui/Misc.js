@@ -159,7 +159,7 @@ function toBGimage(pid) {
 		"squarejam",
 		"starbattle",
 		"statuepark",
-		"sumfusuma",
+		"wafusuma",
 		"symmarea",
 		"tajmahal",
 		"takoyaki",

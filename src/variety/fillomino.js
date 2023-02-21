@@ -9,7 +9,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["fillomino", "symmarea", "pentominous", "snakepit", "sumfusuma"], {
+})(["fillomino", "symmarea", "pentominous", "snakepit", "wafusuma"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -145,7 +145,7 @@
 			this.inputIcebarn();
 		}
 	},
-	"MouseEvent@sumfusuma": {
+	"MouseEvent@wafusuma": {
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["copynum", "number", "clear", "border", "subline"]
@@ -226,7 +226,7 @@
 		enablemake: true,
 		enableplay: true,
 		moveTarget: function(ca) {
-			if (this.pid === "sumfusuma" && this.puzzle.editmode) {
+			if (this.pid === "wafusuma" && this.puzzle.editmode) {
 				return this.moveTBorder(ca);
 			} else if (
 				this.puzzle.playmode &&
@@ -351,7 +351,7 @@
 			return null;
 		}
 	},
-	"KeyEvent@sumfusuma": {
+	"KeyEvent@wafusuma": {
 		keyinput: function(ca) {
 			if (this.puzzle.editmode) {
 				this.key_inputmark(ca);
@@ -375,7 +375,7 @@
 			border.draw();
 		}
 	},
-	"TargetCursor@sumfusuma": {
+	"TargetCursor@wafusuma": {
 		adjust_modechange: function() {
 			this.bx -= (this.bx + 1) % 2;
 			this.by -= (this.by + 1) % 2;
@@ -553,7 +553,7 @@
 			);
 		}
 	},
-	"Border@sumfusuma": {
+	"Border@wafusuma": {
 		minnum: 3,
 		maxnum: function() {
 			return this.board.cols * this.board.rows;
@@ -565,7 +565,7 @@
 			return false;
 		}
 	},
-	"CellList@sumfusuma": {
+	"CellList@wafusuma": {
 		hasLooseBorder: function() {
 			for (var i = 0; i < this.length; i++) {
 				var cell = this[i];
@@ -781,7 +781,7 @@
 		fontsizeratio: 0.65
 	},
 
-	"Graphic@sumfusuma": {
+	"Graphic@wafusuma": {
 		paint: function() {
 			this.drawBGCells();
 			this.drawTargetSubNumber();
@@ -930,7 +930,7 @@
 			});
 		}
 	},
-	"Encode@sumfusuma": {
+	"Encode@wafusuma": {
 		decodePzpr: function(type) {
 			var bds = this.board.border;
 			this.genericDecodeNumber16(bds.length, function(r, val) {
@@ -947,7 +947,7 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			if (this.puzzle.pid === "sumfusuma") {
+			if (this.puzzle.pid === "wafusuma") {
 				this.decodeBorder(function(border, ca) {
 					if (ca !== ".") {
 						border.qnum = +ca;
@@ -966,7 +966,7 @@
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
-			if (this.puzzle.pid === "sumfusuma") {
+			if (this.puzzle.pid === "wafusuma") {
 				this.encodeBorder(function(border) {
 					return border.qnum === -1 ? ". " : border.qnum + " ";
 				});
@@ -1104,9 +1104,9 @@
 			"checkSideAreaNumberSize",
 			"checkLargeArea",
 			"checkNumKinds",
-			"checkCircleSum@sumfusuma",
+			"checkCircleSum@wafusuma",
 			"checkRoomSymm@symmarea",
-			"checkLineOnCircle@sumfusuma",
+			"checkLineOnCircle@wafusuma",
 			"checkGivenLines",
 			"checkNoNumCell_fillomino+"
 		],
@@ -1366,7 +1366,7 @@
 			}
 		}
 	},
-	"AnsCheck@sumfusuma": {
+	"AnsCheck@wafusuma": {
 		checkCircleSum: function() {
 			var borders = this.board.border;
 			for (var id = 0; id < borders.length; id++) {
