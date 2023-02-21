@@ -337,6 +337,7 @@
 			sudoku: [0, 1, "数独", "Sudoku"],
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
+			sumfusuma: [0, 0, "和フスマ", "Sum Fusuma", "fillomino"],
 			symmarea: [0, 0, "シンメトリーエリア", "Symmetry Area", "fillomino"],
 			tajmahal: [0, 0, "タージ・マハル", "Taj Mahal", "kouchoku"],
 			takoyaki: [0, 0, "たこ焼き", "Takoyaki", "kaidan"],
