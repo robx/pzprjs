@@ -350,6 +350,9 @@ pzpr.classmgr.makeCommon({
 				case "bar":
 					this.inputTateyoko();
 					break;
+				case "empty":
+					this.inputempty();
+					break;
 				case "info-line":
 					if (this.mousestart) {
 						this.dispInfoLine();

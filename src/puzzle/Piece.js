@@ -588,6 +588,18 @@ pzpr.classmgr.makeCommon({
 			return !this.isnull && this.ques !== 7;
 		},
 
+		setValid: function(inputData) {
+			this.setQues(inputData);
+			this.setQnum(-1);
+			this.setQans(0);
+			this.setQsub(0);
+			for (var dir in this.adjborder) {
+				this.adjborder[dir].setQans(0);
+			}
+			this.drawaround();
+			this.board.roommgr.rebuild();
+		},
+
 		//---------------------------------------------------------------------------
 		// cell.isDeparture()   オブジェクトを動かすパズルで移動元セルかどうか判定する
 		// cell.isDestination() オブジェクトを動かすパズルで移動先セルかどうか判定する
