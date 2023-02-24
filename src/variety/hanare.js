@@ -72,11 +72,6 @@
 	"MouseEvent@putteria": {
 		inputModes: { edit: ["border", "number", "empty"], play: ["objblank"] },
 
-		mouseinput_other: function() {
-			if (this.inputMode === "empty") {
-				this.inputempty();
-			}
-		},
 		inputempty: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {

@@ -18,8 +18,6 @@
 		mouseinput_other: function() {
 			if (this.inputMode === "objblank") {
 				this.inputDot();
-			} else if (this.inputMode === "empty") {
-				this.inputFixedNumber(-2);
 			}
 		},
 		mouseinput_auto: function() {
@@ -137,6 +135,9 @@
 		inputModes: {
 			edit: ["border", "arrow", "empty", "clear"],
 			play: ["arrow", "objblank", "numexist", "clear"]
+		},
+		inputempty: function() {
+			this.inputFixedNumber(-2);
 		}
 	},
 

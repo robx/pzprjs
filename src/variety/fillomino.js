@@ -97,24 +97,7 @@
 				this.inputqnum();
 			} else if (this.inputMode === "copyletter") {
 				this.dragnumber_fillomino();
-			} else if (this.inputMode === "empty") {
-				this.inputempty();
 			}
-		}
-	},
-	"MouseEvent@pentominous,snakepit#2": {
-		inputempty: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-			if (this.inputData === null) {
-				this.inputData = cell.isEmpty() ? 0 : 7;
-			}
-
-			cell.setQues(this.inputData);
-			cell.drawaround();
-			this.mouseCell = cell;
 		}
 	},
 	"MouseEvent@snakepit": {
@@ -126,8 +109,6 @@
 		mouseinput: function() {
 			if (this.inputMode === "circle-unshade") {
 				this.inputCircle();
-			} else if (this.inputMode === "empty") {
-				this.inputempty();
 			} else {
 				this.common.mouseinput.call(this);
 			}
@@ -460,17 +441,6 @@
 			anum: function(num) {
 				return !this.isValid();
 			}
-		},
-
-		setValid: function(inputData) {
-			this.setQues(inputData);
-			this.setQnum(-1);
-			this.adjborder.top.qans = 0;
-			this.adjborder.bottom.qans = 0;
-			this.adjborder.right.qans = 0;
-			this.adjborder.left.qans = 0;
-			this.drawaround();
-			this.board.roommgr.rebuild();
 		},
 
 		minnum: 0,
