@@ -39,25 +39,6 @@
 					this.inputempty();
 				}
 			}
-		},
-		// taken from simpleloop
-		mouseinput_other: function() {
-			if (this.inputMode === "empty") {
-				this.inputempty();
-			}
-		},
-		inputempty: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-			if (this.inputData === null) {
-				this.inputData = cell.isEmpty() ? 0 : 7;
-			}
-
-			cell.setQues(this.inputData);
-			cell.drawaround();
-			this.mouseCell = cell;
 		}
 	},
 

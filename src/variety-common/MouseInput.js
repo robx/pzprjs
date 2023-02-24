@@ -955,6 +955,20 @@ pzpr.classmgr.makeCommon({
 			this.mouseCell = cell;
 		},
 
+		inputempty: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = cell.isEmpty() ? 0 : 7;
+			}
+
+			cell.setValid(this.inputData);
+			this.mouseCell = cell;
+		},
+
 		//---------------------------------------------------------------------------
 		// mv.dispInfoBlk()  ひとつながりの黒マスを赤く表示する
 		// mv.dispInfoUblk()

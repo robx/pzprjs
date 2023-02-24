@@ -29,24 +29,6 @@
 					}
 				}
 			}
-		},
-		mouseinput_other: function() {
-			if (this.inputMode === "empty") {
-				this.inputempty();
-			}
-		},
-		inputempty: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-
-			if (this.inputData === null) {
-				this.inputData = cell.isEmpty() ? 0 : 7;
-			}
-
-			cell.setValid(this.inputData);
-			this.mouseCell = cell;
 		}
 	},
 	"MouseEvent@nawabari": {
@@ -106,17 +88,6 @@
 				}
 			}
 			return cnt;
-		},
-
-		setValid: function(inputData) {
-			this.setQues(inputData);
-			this.setQnum(-1);
-			this.adjborder.top.qans = 0;
-			this.adjborder.bottom.qans = 0;
-			this.adjborder.right.qans = 0;
-			this.adjborder.left.qans = 0;
-			this.drawaround();
-			this.board.roommgr.rebuild();
 		}
 	},
 	"Cell@nawabari": {

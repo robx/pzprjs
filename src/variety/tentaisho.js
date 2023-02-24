@@ -19,9 +19,6 @@
 			if (this.inputMode === "bgpaint") {
 				this.inputBGcolor1();
 			}
-			if (this.inputMode === "empty") {
-				this.inputEmpty();
-			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -120,19 +117,6 @@
 				dot.draw();
 			}
 			this.prevPos = pos;
-		},
-		inputEmpty: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-
-			if (this.inputData === null) {
-				this.inputData = cell.isEmpty() ? 0 : 7;
-			}
-
-			cell.setValid(this.inputData);
-			this.mouseCell = cell;
 		}
 	},
 

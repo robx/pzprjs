@@ -63,26 +63,6 @@
 			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@doubleback,simpleloop,rassi,remlen": {
-		mouseinput_other: function() {
-			if (this.inputMode === "empty") {
-				this.inputempty();
-			}
-		},
-		inputempty: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-			if (this.inputData === null) {
-				this.inputData = cell.isEmpty() ? 0 : 7;
-			}
-
-			cell.setQues(this.inputData);
-			cell.drawaround();
-			this.mouseCell = cell;
-		}
-	},
 	"MouseEvent@dotchi": {
 		inputModes: {
 			edit: ["border", "circle-shade", "circle-unshade", "clear", "info-line"],
@@ -224,8 +204,6 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.clickdiraux();
 				}
-			} else if (this.inputMode === "empty") {
-				this.inputempty();
 			}
 		},
 		mouseinput_auto: function() {
