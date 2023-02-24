@@ -37,6 +37,11 @@ ui.debug.addDebugData("trainstations", {
 		],
 		[
 			null,
+			"pzprv3/trainstations/3/3/. . # /. 0 . /# . . /1 0 /1 1 /0 1 /1 1 0 /0 1 1 /",
+			{ skiprules: true }
+		],
+		[
+			null,
 			"pzprv3/trainstations/6/6/. 3 . . . . /. . . . 0 . /. . . . . . /1 . . . . 4 /. . 0 2 . . /. . . . . . /1 1 1r 0 1 /1 1 0 1 1 /1 0 1 0 1 /0 1 0 1l 0 /0 1 1 1 0 /1 0 1 1 1l /1 0 0 1 1 1 /0 0 1 0 1 0 /1 1 0 1 0 1 /1 0 1 0 1 1 /1d 1 1 0 0 1 /"
 		]
 	],
@@ -56,6 +61,16 @@ ui.debug.addDebugData("trainstations", {
 		{
 			input: ["playmode,diraux", "mouse,left,2,1", "mouse,left,3,1,5,1"],
 			result: "pzprv3/trainstations/1/5/0 - 0 1 5 /l r 0 0 /"
+		},
+		{
+			input: [
+				"newboard,5,1",
+				"editmode,empty",
+				"mouse,left,5,1",
+				"playmode,auto",
+				"mouse,left,1,1,9,1"
+			],
+			result: "pzprv3/trainstations/1/5/. . # . . /1 0 0 1 /"
 		}
 	]
 });
