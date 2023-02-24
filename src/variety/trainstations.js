@@ -7,7 +7,7 @@
 })(["trainstations"], {
 	MouseEvent: {
 		inputModes: {
-			edit: ["number", "clear", "info-line"],
+			edit: ["number", "empty", "clear", "info-line"],
 			play: ["line", "peke", "clear", "diraux", "info-line"]
 		},
 		mouseinput_other: function() {
@@ -53,6 +53,9 @@
 		}
 	},
 
+	Border: {
+		enableLineNG: true
+	},
 	Cell: {
 		minnum: 0,
 		maxnum: function() {
@@ -66,6 +69,9 @@
 			qnum: function(val) {
 				this.board.maxFoundNumber = -1;
 			}
+		},
+		noLP: function(dir) {
+			return this.isEmpty();
 		}
 	},
 	Board: {
@@ -113,6 +119,15 @@
 			}
 			return null;
 		},
+		getBorderColor: function(border) {
+			if (border.sidecell[0].isEmpty() || border.sidecell[1].isEmpty()) {
+				return this.quescolor;
+			}
+			return null;
+		},
+		getBGCellColor: function(cell) {
+			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
+		},
 
 		paint: function() {
 			this.drawBGCells();
@@ -123,6 +138,7 @@
 			this.drawPekes();
 			this.drawBorderAuxDir();
 
+			this.drawBorders();
 			this.drawChassis();
 
 			this.drawTarget();
@@ -191,18 +207,38 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
+			this.decodeEmpty();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16();
+			this.encodeEmpty();
 		}
 	},
 	FileIO: {
 		decodeData: function() {
-			this.decodeCellQnum();
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
 			this.decodeBorderArrowAns();
 		},
 		encodeData: function() {
-			this.encodeCellQnum();
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "# ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else {
+					return ". ";
+				}
+			});
 			this.encodeBorderArrowAns();
 		}
 	},
