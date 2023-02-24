@@ -56,25 +56,6 @@
 			} else {
 				this.inputFixedQsub(1);
 			}
-		},
-
-		mouseinput_other: function() {
-			if (this.inputMode === "empty") {
-				this.inputempty();
-			}
-		},
-		inputempty: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-
-			if (this.inputData === null) {
-				this.inputData = cell.isEmpty() ? 0 : 7;
-			}
-
-			cell.setValid(this.inputData);
-			this.mouseCell = cell;
 		}
 	},
 
@@ -123,18 +104,6 @@
 					this.setQues(0);
 				}
 			}
-		},
-
-		setValid: function(inputData) {
-			this.setQues(inputData);
-			this.setQnum(-1);
-			this.setQans(0);
-			this.setQsub(0);
-			for (var dir in this.adjborder) {
-				this.adjborder[dir].setQans(0);
-			}
-			this.drawaround();
-			this.board.roommgr.rebuild();
 		},
 
 		getBorder: function(cell2) {
