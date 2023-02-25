@@ -325,8 +325,8 @@
 
 			if (
 				walks.length !== 2 ||
-				walks[0].length === 0 ||
-				walks[1].length === 0
+				walks[0].clist.length === 0 ||
+				walks[1].clist.length === 0
 			) {
 				return;
 			}
@@ -335,15 +335,22 @@
 			if (this.checkOnly) {
 				return;
 			}
-			var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
-			for (var i = 0; i < walk.length; i++) {
-				walk[i].cell.seterr(1);
-			}
+			bd.border.setnoerr();
+			var walk =
+				walks[0].clist.length + walks[0].blist.length <
+				walks[1].clist.length + walks[1].blist.length
+					? walks[0]
+					: walks[1];
+			walk.clist.seterr(1);
+			walk.blist.seterr(1);
 		},
 
 		walkLine: function(start, dir) {
-			var ret = [];
+			var clist = new this.klass.CellList();
+			var blist = new this.klass.BorderList();
+			var current = new this.klass.BorderList();
 			var num = start.qnum;
+			var prev = start;
 			var addr = start.getaddr();
 			do {
 				var cell = addr.getc();
@@ -352,13 +359,19 @@
 				} else if (cell.qnum > 0) {
 					num++;
 					if (cell.qnum !== num) {
-						ret.push({ cell: cell });
+						clist.add(prev);
+						clist.add(cell);
+						blist.extend(current);
 					}
+					prev = cell;
+					current = new this.klass.BorderList();
 				} else if (cell.qnum === -2) {
 					num++;
 				}
 
-				addr.movedir(dir, 2);
+				addr.movedir(dir, 1);
+				current.add(addr.getb());
+				addr.movedir(dir, 1);
 
 				var next = addr.getc();
 				var adb = next.adjborder;
@@ -380,7 +393,7 @@
 				!addr.getc().isEmpty()
 			);
 
-			return ret;
+			return { clist: clist, blist: blist };
 		}
 	}
 });
