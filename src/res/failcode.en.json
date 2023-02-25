@@ -607,6 +607,7 @@
     "nmNotConsecNeighbors.ripple": "A number is not the neighbor of its consecutive numbers.",
     "nmNotConseq.kouchoku": "Equal letters are not connected directly.",
     "nmNotConseq.trainstations": "A number doesn't connect to the next consecutive number.",
+    "nmNotConseqFull.trainstations": "A number doesn't connect to the next consecutive number.",
     "nmNotLink.kazunori": "A number doesn't link to other cells in the room.",
     "nmNotSeq.numrope": "The numbers on a line are not consecutive.",
     "nmNumberNe.sukoro": "The number of numbers placed in four adjacent cells is not equal to the number.",

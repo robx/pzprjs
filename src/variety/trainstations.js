@@ -304,7 +304,7 @@
 
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (cell.isValid() && cell.lcnt !== 2) {
+				if (cell.isValid() && cell.lcnt & 1) {
 					return;
 				}
 				if (cell.qnum > 0 && (start.isnull || start.qnum > cell.qnum)) {
@@ -315,7 +315,61 @@
 			if (start.isnull) {
 				return;
 			}
-			// TODO trace path in both directions from start, and check for strict increase
+
+			var walks = [];
+			for (var dir = 1; dir <= 4; dir++) {
+				if (start.reldirbd(dir, 1).isLine()) {
+					walks.push(this.walkLine(start, dir));
+				}
+			}
+
+			if (
+				walks.length !== 2 ||
+				walks[0].length === 0 ||
+				walks[1].length === 0
+			) {
+				return;
+			}
+
+			this.failcode.add("nmNotConseqFull");
+			if (this.checkOnly) {
+				return;
+			}
+			var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
+			for (var i = 0; i < walk.length; i++) {
+				walk[i].path.clist.seterr(1);
+				walk[i].cell.room.top.seterr(2);
+				walk[i].cell.reldirbd(walk[i].dir, 1).seterr(2);
+			}
+		},
+
+		walkLine: function(start, dir) {
+			var ret = [];
+			var addr = start.getaddr();
+			do {
+				// var prev = addr.getc();
+
+				addr.movedir(dir, 2);
+				
+				// TODO check for strict increase. push into ret
+
+				var adb = addr.getc().adjborder;
+				if (dir !== 1 && adb.bottom.isLine()) {
+					dir = 2;
+				} else if (dir !== 2 && adb.top.isLine()) {
+					dir = 1;
+				} else if (dir !== 3 && adb.right.isLine()) {
+					dir = 4;
+				} else if (dir !== 4 && adb.left.isLine()) {
+					dir = 3;
+				}
+			} while (
+				!addr.equals(start) &&
+				addr.getc().lcnt === 2 &&
+				!addr.getc().isEmpty()
+			);
+
+			return ret;
 		}
 	}
 });
