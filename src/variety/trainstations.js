@@ -347,7 +347,9 @@
 			var addr = start.getaddr();
 			do {
 				var cell = addr.getc();
-				if (cell.qnum > 0) {
+				if (addr.equals(start)) {
+					/* Skip the start point */
+				} else if (cell.qnum > 0) {
 					num++;
 					if (cell.qnum !== num) {
 						ret.push({ cell: cell });
@@ -362,6 +364,7 @@
 				var adb = next.adjborder;
 
 				if (next.lcnt === 4) {
+					/* Go straight at a crossing */
 				} else if (dir !== 1 && adb.bottom.isLine()) {
 					dir = 2;
 				} else if (dir !== 2 && adb.top.isLine()) {
