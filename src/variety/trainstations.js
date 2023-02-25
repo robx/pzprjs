@@ -7,7 +7,7 @@
 })(["trainstations"], {
 	MouseEvent: {
 		inputModes: {
-			edit: ["number", "empty", "clear", "info-line"],
+			edit: ["number", "undef", "empty", "clear", "info-line"],
 			play: ["line", "peke", "clear", "diraux", "info-line"]
 		},
 		mouseinput_other: function() {
@@ -88,11 +88,11 @@
 				return this.maxFoundNumber;
 			}
 
-			var max = -1;
+			var max = 0;
 			for (var id = 0; id < this.cell.length; id++) {
 				var cell = this.cell[id];
 				if (cell.isNum()) {
-					max = Math.max(max, cell.getNum());
+					max++;
 				}
 			}
 
@@ -245,6 +245,7 @@
 
 	AnsCheck: {
 		checklist: [
+			"checkNumberRange",
 			"checkBranchLine",
 			"checkCrossOutOfMark",
 			"checkCurveOnNumber",
@@ -253,8 +254,16 @@
 			"checkNotCrossOnMark",
 			"checkDeadendLine+",
 			"checkOneLoop",
+			"checkNumberFullSequence",
 			"checkNoLine"
 		],
+
+		checkNumberRange: function() {
+			var max = this.board.getMaxFoundNumber();
+			this.checkAllCell(function(cell) {
+				return cell.qnum > max;
+			}, "nmRange");
+		},
 
 		checkCrossOutOfMark: function() {
 			this.checkAllCell(function(cell) {
@@ -278,13 +287,121 @@
 			this.checkLineShape(function(path) {
 				var cell1 = path.cells[0],
 					cell2 = path.cells[1];
-				if (cell1.isnull || cell2.isnull) {
+				if (
+					cell1.isnull ||
+					cell2.isnull ||
+					cell1.qnum === -2 ||
+					cell2.qnum === -2
+				) {
 					return null;
 				}
 
 				var diff = Math.abs(cell1.qnum - cell2.qnum);
 				return diff !== 1 && diff !== max - 1;
 			}, "nmNotConseq");
+		},
+
+		checkNumberFullSequence: function() {
+			var bd = this.board,
+				paths = bd.linegraph.components,
+				path = paths[0];
+			if (paths.length !== 1 || path.circuits !== 1) {
+				return;
+			}
+			var start = bd.emptycell;
+
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.isValid() && cell.lcnt & 1) {
+					return;
+				}
+				if (cell.qnum > 0 && (start.isnull || start.qnum > cell.qnum)) {
+					start = cell;
+				}
+			}
+
+			if (start.isnull) {
+				return;
+			}
+
+			var walks = [];
+			for (var dir = 1; dir <= 4; dir++) {
+				if (start.reldirbd(dir, 1).isLine()) {
+					walks.push(this.walkLine(start, dir));
+				}
+			}
+
+			if (
+				walks.length !== 2 ||
+				walks[0].clist.length === 0 ||
+				walks[1].clist.length === 0
+			) {
+				return;
+			}
+
+			this.failcode.add("nmNotConseqFull");
+			if (this.checkOnly) {
+				return;
+			}
+			bd.border.setnoerr();
+			var walk =
+				walks[0].clist.length + walks[0].blist.length <
+				walks[1].clist.length + walks[1].blist.length
+					? walks[0]
+					: walks[1];
+			walk.clist.seterr(1);
+			walk.blist.seterr(1);
+		},
+
+		walkLine: function(start, dir) {
+			var clist = new this.klass.CellList();
+			var blist = new this.klass.BorderList();
+			var current = new this.klass.BorderList();
+			var num = start.qnum;
+			var prev = start;
+			var addr = start.getaddr();
+			do {
+				var cell = addr.getc();
+				if (addr.equals(start)) {
+					/* Skip the start point */
+				} else if (cell.qnum > 0) {
+					num++;
+					if (cell.qnum !== num) {
+						clist.add(prev);
+						clist.add(cell);
+						blist.extend(current);
+					}
+					prev = cell;
+					current = new this.klass.BorderList();
+				} else if (cell.qnum === -2) {
+					num++;
+				}
+
+				addr.movedir(dir, 1);
+				current.add(addr.getb());
+				addr.movedir(dir, 1);
+
+				var next = addr.getc();
+				var adb = next.adjborder;
+
+				if (next.lcnt === 4) {
+					/* Go straight at a crossing */
+				} else if (dir !== 1 && adb.bottom.isLine()) {
+					dir = 2;
+				} else if (dir !== 2 && adb.top.isLine()) {
+					dir = 1;
+				} else if (dir !== 3 && adb.right.isLine()) {
+					dir = 4;
+				} else if (dir !== 4 && adb.left.isLine()) {
+					dir = 3;
+				}
+			} while (
+				!addr.equals(start) &&
+				addr.getc().lcnt > 1 &&
+				!addr.getc().isEmpty()
+			);
+
+			return { clist: clist, blist: blist };
 		}
 	}
 });
