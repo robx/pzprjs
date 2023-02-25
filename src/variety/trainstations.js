@@ -88,11 +88,11 @@
 				return this.maxFoundNumber;
 			}
 
-			var max = -1;
+			var max = 0;
 			for (var id = 0; id < this.cell.length; id++) {
 				var cell = this.cell[id];
 				if (cell.isNum()) {
-					max = Math.max(max, cell.getNum());
+					max++;
 				}
 			}
 
@@ -245,6 +245,7 @@
 
 	AnsCheck: {
 		checklist: [
+			"checkNumberRange",
 			"checkBranchLine",
 			"checkCrossOutOfMark",
 			"checkCurveOnNumber",
@@ -256,6 +257,13 @@
 			"checkNumberFullSequence",
 			"checkNoLine"
 		],
+
+		checkNumberRange: function() {
+			var max = this.board.getMaxFoundNumber();
+			this.checkAllCell(function(cell) {
+				return cell.qnum > max;
+			}, "nmRange");
+		},
 
 		checkCrossOutOfMark: function() {
 			this.checkAllCell(function(cell) {
