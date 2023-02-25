@@ -42,12 +42,12 @@ ui.debug.addDebugData("trainstations", {
 		],
 		[
 			"nmNotConseqFull",
-			"pzprv3/trainstations/4/4/. . 1 . /. . - . /. . 2 . /. . - . /1 1 1 /0 1 1 /0 1 1 /1 1 1 /1 0 0 1 /1 1 0 0 /1 0 0 1 /",
+			"pzprv3/trainstations/4/4/# . 1 . /. 0 - . /. 0 2 . /# . - . /0 1 1 /1 1 1 /1 1 1 /0 1 1 /0 1 0 1 /1 1 0 0 /0 1 0 1 /",
 			{ skiprules: true }
 		],
 		[
 			null,
-			"pzprv3/trainstations/4/4/. . 4 . /. . - . /. . 2 . /. . - . /1 1 1 /0 1 1 /0 1 1 /1 1 1 /1 0 0 1 /1 1 0 0 /1 0 0 1 /",
+			"pzprv3/trainstations/4/4/# . 4 . /. 0 - . /. 0 2 . /# . - . /0 1 1 /1 1 1 /1 1 1 /0 1 1 /0 1 0 1 /1 1 0 0 /0 1 0 1 /",
 			{ skiprules: true }
 		],
 		[

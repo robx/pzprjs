@@ -337,24 +337,32 @@
 			}
 			var walk = walks[0].length < walks[1].length ? walks[0] : walks[1];
 			for (var i = 0; i < walk.length; i++) {
-				walk[i].path.clist.seterr(1);
-				walk[i].cell.room.top.seterr(2);
-				walk[i].cell.reldirbd(walk[i].dir, 1).seterr(2);
+				walk[i].cell.seterr(1);
 			}
 		},
 
 		walkLine: function(start, dir) {
 			var ret = [];
+			var num = start.qnum;
 			var addr = start.getaddr();
 			do {
-				// var prev = addr.getc();
+				var cell = addr.getc();
+				if (cell.qnum > 0) {
+					num++;
+					if (cell.qnum !== num) {
+						ret.push({ cell: cell });
+					}
+				} else if (cell.qnum === -2) {
+					num++;
+				}
 
 				addr.movedir(dir, 2);
-				
-				// TODO check for strict increase. push into ret
 
-				var adb = addr.getc().adjborder;
-				if (dir !== 1 && adb.bottom.isLine()) {
+				var next = addr.getc();
+				var adb = next.adjborder;
+
+				if (next.lcnt === 4) {
+				} else if (dir !== 1 && adb.bottom.isLine()) {
 					dir = 2;
 				} else if (dir !== 2 && adb.top.isLine()) {
 					dir = 1;
@@ -365,7 +373,7 @@
 				}
 			} while (
 				!addr.equals(start) &&
-				addr.getc().lcnt === 2 &&
+				addr.getc().lcnt > 1 &&
 				!addr.getc().isEmpty()
 			);
 
