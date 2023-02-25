@@ -253,6 +253,7 @@
 			"checkNotCrossOnMark",
 			"checkDeadendLine+",
 			"checkOneLoop",
+			"checkNumberFullSequence",
 			"checkNoLine"
 		],
 
@@ -278,13 +279,43 @@
 			this.checkLineShape(function(path) {
 				var cell1 = path.cells[0],
 					cell2 = path.cells[1];
-				if (cell1.isnull || cell2.isnull) {
+				if (
+					cell1.isnull ||
+					cell2.isnull ||
+					cell1.qnum === -2 ||
+					cell2.qnum === -2
+				) {
 					return null;
 				}
 
 				var diff = Math.abs(cell1.qnum - cell2.qnum);
 				return diff !== 1 && diff !== max - 1;
 			}, "nmNotConseq");
+		},
+
+		checkNumberFullSequence: function() {
+			var bd = this.board,
+				paths = bd.linegraph.components,
+				path = paths[0];
+			if (paths.length !== 1 || path.circuits !== 1) {
+				return;
+			}
+			var start = bd.emptycell;
+
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.isValid() && cell.lcnt !== 2) {
+					return;
+				}
+				if (cell.qnum > 0 && (start.isnull || start.qnum > cell.qnum)) {
+					start = cell;
+				}
+			}
+
+			if (start.isnull) {
+				return;
+			}
+			// TODO trace path in both directions from start, and check for strict increase
 		}
 	}
 });
