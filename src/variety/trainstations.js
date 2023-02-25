@@ -7,7 +7,7 @@
 })(["trainstations"], {
 	MouseEvent: {
 		inputModes: {
-			edit: ["number", "empty", "clear", "info-line"],
+			edit: ["number", "undef", "empty", "clear", "info-line"],
 			play: ["line", "peke", "clear", "diraux", "info-line"]
 		},
 		mouseinput_other: function() {
