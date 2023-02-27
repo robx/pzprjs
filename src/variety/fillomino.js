@@ -38,7 +38,7 @@
 				}
 			}
 
-			if (this.puzzle.editmode && this.mousemove) {
+			if (this.puzzle.editmode && this.mousemove && this.pid !== "wafusuma") {
 				this.inputborder();
 			}
 
