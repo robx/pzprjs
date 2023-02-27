@@ -9,7 +9,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["fillomino", "symmarea", "pentominous", "snakepit"], {
+})(["fillomino", "symmarea", "pentominous", "snakepit", "wafusuma"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -126,6 +126,80 @@
 			this.inputIcebarn();
 		}
 	},
+	"MouseEvent@wafusuma": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["copynum", "number", "clear", "border", "subline"]
+		},
+		inputqnum: function() {
+			if (this.puzzle.editmode) {
+				this.inputmark_mouseup();
+			} else {
+				this.common.inputqnum.call(this);
+			}
+		},
+		inputmark_mouseup: function() {
+			var pos = this.getpos(0.33);
+			if (!pos.isinside()) {
+				return;
+			}
+
+			if (!this.cursor.equals(pos)) {
+				this.setcursor(pos);
+				pos.draw();
+			} else {
+				var border = pos.getb();
+				if (border.isnull) {
+					return;
+				}
+
+				var qn = border.qnum,
+					min = border.getminnum(),
+					max = border.maxnum();
+				if (this.btn === "left") {
+					if (qn === -1) {
+						border.setQnum(-2);
+					} else if (qn === -2) {
+						border.setQnum(min);
+					} else if (qn >= max) {
+						border.setQnum(-1);
+					} else {
+						border.setQnum(qn + 1);
+					}
+				} else if (this.btn === "right") {
+					if (qn === -1) {
+						border.setQnum(max);
+					} else if (qn === min) {
+						border.setQnum(-2);
+					} else if (qn === -2) {
+						border.setQnum(-1);
+					} else {
+						border.setQnum(qn - 1);
+					}
+				}
+				border.draw();
+			}
+		},
+		inputFixedNumber: function(num) {
+			if (this.puzzle.playmode) {
+				return this.common.inputFixedNumber.call(this, num);
+			}
+
+			var border = this.getpos(0.33).getb();
+			if (border.isnull || border === this.mouseCell) {
+				return;
+			}
+			var val = border.qnum;
+			if (this.inputData === null) {
+				this.inputData = val === num ? -1 : num;
+			}
+			if (val !== num || this.inputData === -1) {
+				border.setQnum(this.inputData);
+				border.draw();
+			}
+			this.mouseCell = border;
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -133,7 +207,12 @@
 		enablemake: true,
 		enableplay: true,
 		moveTarget: function(ca) {
-			if (this.puzzle.playmode && (this.isCTRL || this.isX || this.isZ)) {
+			if (this.pid === "wafusuma" && this.puzzle.editmode) {
+				return this.moveTBorder(ca);
+			} else if (
+				this.puzzle.playmode &&
+				(this.isCTRL || this.isX || this.isZ)
+			) {
 				return this.move_fillomino(ca);
 			}
 			return this.moveTCell(ca);
@@ -253,6 +332,36 @@
 			return null;
 		}
 	},
+	"KeyEvent@wafusuma": {
+		keyinput: function(ca) {
+			if (this.puzzle.editmode) {
+				this.key_inputmark(ca);
+			} else if (this.puzzle.playmode) {
+				this.key_inputqnum(ca);
+			}
+		},
+		key_inputmark: function(ca) {
+			var border = this.cursor.getb();
+			if (border.isnull) {
+				return;
+			}
+
+			var val = this.getNewNumber(border, ca, border.qnum);
+			if (val === null) {
+				return;
+			}
+			border.setQnum(val);
+
+			this.prev = border;
+			border.draw();
+		}
+	},
+	"TargetCursor@wafusuma": {
+		adjust_modechange: function() {
+			this.bx -= (this.bx + 1) % 2;
+			this.by -= (this.by + 1) % 2;
+		}
+	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
@@ -269,6 +378,16 @@
 			anum: function() {
 				this.rebuildAroundCell();
 			}
+		},
+
+		isSameBlock: function(other) {
+			if (this.getNum() !== -1 && this.eqblk === other.eqblk) {
+				return true;
+			}
+			if (this.nblk === other.nblk) {
+				return this.nblk.complete;
+			}
+			return false;
 		},
 
 		rebuildAroundCell: function() {
@@ -329,16 +448,6 @@
 	},
 	"Cell@snakepit": {
 		minnum: 2,
-
-		isSameBlock: function(other) {
-			if (this.getNum() !== -1 && this.eqblk === other.eqblk) {
-				return true;
-			}
-			if (this.nblk === other.nblk) {
-				return this.nblk.complete;
-			}
-			return false;
-		},
 
 		equalcount: function() {
 			var cell = this;
@@ -412,6 +521,38 @@
 			return (
 				this.ques || this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty()
 			);
+		}
+	},
+	"Border@wafusuma": {
+		minnum: 3,
+		maxnum: function() {
+			return this.board.cols * this.board.rows;
+		},
+		isBorder: function() {
+			return this.qans > 0;
+		},
+		isQuesBorder: function() {
+			return false;
+		}
+	},
+	"CellList@wafusuma": {
+		hasLooseBorder: function() {
+			for (var i = 0; i < this.length; i++) {
+				var cell = this[i];
+				if (
+					cell.adjborder.right.qnum !== -1 &&
+					cell.isSameBlock(cell.adjacent.right)
+				) {
+					return true;
+				}
+				if (
+					cell.adjborder.bottom.qnum !== -1 &&
+					cell.isSameBlock(cell.adjacent.bottom)
+				) {
+					return true;
+				}
+			}
+			return false;
 		}
 	},
 	Board: {
@@ -531,6 +672,7 @@
 			component.number =
 				numkind === 1 ? filled : numkind === 0 ? clist.length : -1;
 			component.complete = clist.length === component.number;
+			component.looseborders = null;
 		},
 
 		getComponentRefs: function(cell) {
@@ -607,6 +749,60 @@
 
 	"Graphic@snakepit": {
 		fontsizeratio: 0.65
+	},
+
+	"Graphic@wafusuma": {
+		paint: function() {
+			this.drawBGCells();
+			this.drawTargetSubNumber();
+			this.drawDashedGrid();
+
+			this.drawBorders();
+			this.drawCursor(this.puzzle.playmode);
+			this.drawQuesNumbersBD();
+
+			this.drawSubNumbers();
+			this.drawAnsNumbers();
+
+			this.drawBorderQsubs();
+
+			this.drawChassis();
+		},
+
+		drawQuesNumbersBD: function() {
+			var g = this.vinc("border_nums", "auto", true);
+
+			var csize = this.cw * 0.27;
+
+			g.lineWidth = 1;
+			g.strokeStyle = this.quescolor;
+
+			var option = { ratio: 0.45 };
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i],
+					px = border.bx * this.bw,
+					py = border.by * this.bh;
+
+				// ○の描画
+				g.vid = "b_cp_" + border.id;
+				if (border.qnum !== -1) {
+					g.fillStyle = border.error === 1 ? this.errbcolor1 : "white";
+					g.shapeCircle(px, py, csize);
+				} else {
+					g.vhide();
+				}
+
+				// 数字の描画
+				g.vid = "border_text_" + border.id;
+				if (border.qnum > 0) {
+					g.fillStyle = this.quescolor;
+					this.disptext("" + border.qnum, px, py, option);
+				} else {
+					g.vhide();
+				}
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -704,10 +900,32 @@
 			});
 		}
 	},
+	"Encode@wafusuma": {
+		decodePzpr: function(type) {
+			var bds = this.board.border;
+			this.genericDecodeNumber16(bds.length, function(r, val) {
+				bds[r].qnum = val;
+			});
+		},
+		encodePzpr: function(type) {
+			var bds = this.board.border;
+			this.genericEncodeNumber16(bds.length, function(r) {
+				return bds[r].qnum;
+			});
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			this.decodeCellQnum();
+			if (this.puzzle.pid === "wafusuma") {
+				this.decodeBorder(function(border, ca) {
+					if (ca !== ".") {
+						border.qnum = +ca;
+					}
+				});
+			} else {
+				this.decodeCellQnum();
+			}
 			if (this.puzzle.pid === "snakepit") {
 				this.decodeCell(function(cell, ca) {
 					cell.ques = ca !== "." ? +ca : 0;
@@ -718,7 +936,13 @@
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
-			this.encodeCellQnum();
+			if (this.puzzle.pid === "wafusuma") {
+				this.encodeBorder(function(border) {
+					return border.qnum === -1 ? ". " : border.qnum + " ";
+				});
+			} else {
+				this.encodeCellQnum();
+			}
 			if (this.puzzle.pid === "snakepit") {
 				this.encodeCell(function(cell) {
 					return cell.ques >= 0 ? cell.ques + " " : ". ";
@@ -850,7 +1074,9 @@
 			"checkSideAreaNumberSize",
 			"checkLargeArea",
 			"checkNumKinds",
+			"checkCircleSum@wafusuma",
 			"checkRoomSymm@symmarea",
+			"checkLineOnCircle@wafusuma",
 			"checkGivenLines",
 			"checkNoNumCell_fillomino+"
 		],
@@ -924,7 +1150,7 @@
 			var borders = this.board.border;
 			for (var id = 0; id < borders.length; id++) {
 				var border = borders[id];
-				if (border.isnull || !border.ques) {
+				if (border.isnull || !border.isBorder()) {
 					continue;
 				}
 				var a1 = border.sidecell[0].nblk,
@@ -1107,6 +1333,73 @@
 						break;
 					}
 				}
+			}
+		}
+	},
+	"AnsCheck@wafusuma": {
+		checkCircleSum: function() {
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (
+					border.isnull ||
+					border.qnum <= 0 ||
+					border.sidecell[0].isSameBlock(border.sidecell[1])
+				) {
+					continue;
+				}
+
+				var sum = 0;
+				for (var side = 0; side <= 1 && sum !== -1; side++) {
+					var cell = border.sidecell[side];
+					if (cell.nblk.looseborders === null) {
+						cell.nblk.looseborders = cell.nblk.clist.hasLooseBorder();
+					}
+
+					if (cell.getNum() !== -1) {
+						sum += cell.getNum();
+					} else if (cell.nblk.looseborders) {
+						sum = -1;
+					} else if (cell.nblk.numkind <= 1) {
+						sum += cell.nblk.number;
+					} else {
+						sum = -1;
+					}
+				}
+
+				if (sum === -1 || sum === border.qnum) {
+					continue;
+				}
+
+				this.failcode.add("nmSumNe");
+				if (this.checkOnly) {
+					break;
+				}
+				borders.setnoerr();
+				border.seterr(1);
+				for (var side = 0; side <= 1; side++) {
+					border.sidecell[side].nblk.clist.seterr(1);
+				}
+			}
+		},
+
+		checkLineOnCircle: function() {
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (
+					border.isnull ||
+					border.qnum === -1 ||
+					!border.sidecell[0].isSameBlock(border.sidecell[1])
+				) {
+					continue;
+				}
+
+				this.failcode.add("bdUnusedCircle");
+				if (this.checkOnly) {
+					break;
+				}
+				border.seterr(1);
 			}
 		}
 	}
