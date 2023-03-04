@@ -41,6 +41,12 @@ ui.notify = {
 						ui.popupmgr,
 						ui.popupmgr.titlebardown
 					);
+					pzpr.util.addEvent(
+						el,
+						"touchstart",
+						ui.popupmgr,
+						ui.popupmgr.titlebardown
+					);
 				}
 			}
 		});

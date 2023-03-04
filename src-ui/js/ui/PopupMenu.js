@@ -29,7 +29,9 @@ ui.popupmgr = {
 
 	setEvents: function() {
 		ui.event.addEvent(_doc, "mousemove", this, this.titlebarmove);
+		ui.event.addEvent(_doc, "touchmove", this, this.titlebarmove);
 		ui.event.addEvent(_doc, "mouseup", this, this.titlebarup);
+		ui.event.addEvent(_doc, "touchend", this, this.titlebarup);
 	},
 
 	//---------------------------------------------------------------------------
