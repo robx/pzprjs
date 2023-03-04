@@ -298,6 +298,7 @@ div div.titlebar {
   cursor: pointer;
   text-align: left;
   font-size: 1em;
+  touch-action: manipulation;
 }
 div.popup form {
   margin: 4pt 4pt 4pt 4pt;
