@@ -293,7 +293,7 @@ div div.titlebar {
   background: #999999
     linear-gradient(to right bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
   margin: 0pt;
-  padding: 1pt 12pt 1pt 8pt;
+  padding: 6pt 12pt 6pt 8pt;
   color: white;
   cursor: pointer;
   text-align: left;
