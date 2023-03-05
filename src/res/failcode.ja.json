@@ -5,6 +5,7 @@
     "anLineLt.castle": "矢印の方向にあるループの長さが数字よりも短いです。",
     "anNoAdjBd.yajitatami": "矢印の方向に境界線がありません。",
     "anNoArrow": "矢印がない数字のマスがあります。",
+    "anNoShade": "矢印の１マス先に黒マスがありません。",
     "anNumberNe.crossstitch": "ループが交わっているマスの数が正しくありません。",
     "anNumberNe.hebi": "矢印の先にある数字が正しくありません。",
     "anShadeNe": "矢印の方向にある黒マスの数が正しくありません。",

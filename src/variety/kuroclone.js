@@ -131,9 +131,11 @@
 	AnsCheck: {
 		checklist: [
 			"checkSideAreaShadeCell",
+			"checkUnitExists",
 			"checkArrowNumber",
 			"checkUnitsCount",
-			"checkUnitsShape"
+			"checkUnitsShape",
+			"checkNumberHasArrow"
 		],
 
 		// From shimaguni.js
@@ -145,6 +147,26 @@
 				false,
 				"cbShade"
 			);
+		},
+
+		// Check unit exists toward arrow
+		checkUnitExists: function() {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (!cell.isValidNum() || cell.qdir === 0) {
+					continue;
+				}
+				var pos = cell.getaddr();
+				var cell2 = pos.movedir(cell.qdir, 2).getc();
+				if (!cell2.isShade()) {
+					this.failcode.add("anNoShade");
+					if (this.checkOnly) {
+						break;
+					}
+					cell.seterr(1);
+				}
+			}
 		},
 
 		// Check unit size pointed by arrow
@@ -162,15 +184,14 @@
 					if (cell2.sblk.clist.length === cell.qnum) {
 						continue;
 					}
-				}
-
-				this.failcode.add("anUnitNe");
-				if (this.checkOnly) {
-					break;
-				}
-				cell.seterr(1);
-				if (cell2.sblk) {
-					cell2.sblk.clist.seterr(1);
+					this.failcode.add("anUnitNe");
+					if (this.checkOnly) {
+						break;
+					}
+					cell.seterr(1);
+					if (cell2.sblk) {
+						cell2.sblk.clist.seterr(1);
+					}
 				}
 			}
 		},
@@ -221,12 +242,5 @@
 			});
 			return Array.from(set);
 		}
-	},
-
-	FailCode: {
-		cbShade: "cbShade",
-		anUnitNe: "anUnitNe.kuroclone",
-		bkUnitNe2: "bkUnitNe2.kuroclone",
-		bkDifferentShape: "bkDifferentShape.kuroclone"
 	}
 });
