@@ -62,7 +62,9 @@
 	Cell: {
 		numberRemainsUnshaded: true,
 		minmum: 1,
-		maxnum: 99
+		maxnum: function() {
+			return (this.board.cols * this.board.rows) >> 1;
+		}
 	},
 	Board: {
 		hasborder: 1
@@ -154,7 +156,7 @@
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (!cell.isValidNum() || cell.qdir === 0) {
+				if (cell.qdir === 0) {
 					continue;
 				}
 				var pos = cell.getaddr();
