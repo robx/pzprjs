@@ -156,7 +156,7 @@
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (cell.qdir === 0) {
+				if (!cell.isNum() || cell.qdir === 0) {
 					continue;
 				}
 				var pos = cell.getaddr();
