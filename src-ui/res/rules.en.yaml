@@ -636,11 +636,11 @@ kurochute: "Shade some cells on the board.\n1. Shaded cells cannot be horizontal
   \ one shaded cell with the indicated distance in a straight line vertically or horizontally\
   \ from each number.\n4. All unshaded cells on the board form an orthogonally connected\
   \ area."
-kuroclone: "1. Shade some cells on the board. Numbers cannot be shaded.\n2. Each region\
-  \ must include just two units (shaded blocks), and these units must have same shapes,\
-  \ counting rotation and reflection.\n3. A number indicates the size of an unit that be\
-  \ placed on the next cell pointed by its arrow.\n4. Shaded cells must not be adjacent \
-  \ across borders."
+kuroclone: "Shade some cells on the board.\n1. Numbers cannot be shaded.\n2. Each\
+  \ region must include exactly two units (shaded blocks), and these units must have\
+  \ same shapes, counting rotations and reflections as the same.\n3. A number indicates\
+  \ the size of the unit that occupies the adjacent cell in the indicated direction.\n\
+  4. Shaded cells must not be adjacent across borders."
 kurodoko: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
   \ or vertically adjacent.\n2. Numbers cannot be shaded.\n3. Clues represent the\
   \ total number of unshaded cells that can be seen in a straight line vertically\
