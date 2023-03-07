@@ -134,6 +134,7 @@ function toBGimage(pid) {
 		"ladders",
 		"kaidan",
 		"kropki",
+		"kuroclone",
 		"lollipops",
 		"maxi",
 		"midloop",
