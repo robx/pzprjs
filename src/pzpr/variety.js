@@ -209,6 +209,7 @@
 			kramman: [0, 0, "新・快刀乱麻", "New KaitoRamma", "kramma"],
 			kropki: [0, 0, "Kropki", "Kropki", "minarism"],
 			kurochute: [0, 1, "クロシュート", "Kurochute"],
+			kuroclone: [0, 0, "クロクローン", "Kuroclone"],
 			kurodoko: [0, 1, "黒どこ(黒マスはどこだ)", "Kurodoko"],
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],

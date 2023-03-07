@@ -198,6 +198,7 @@
 			"lookair",
 			"paintarea",
 			"chocona",
+			"kuroclone",
 			"kurochute",
 			"mejilink",
 			"pipelink",
