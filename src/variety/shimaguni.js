@@ -56,6 +56,29 @@
 				this.puzzle.redraw();
 			}
 		},
+		"MouseEvent@martini": {
+			inputModes: {
+				edit: [
+					"border",
+					"number",
+					"circle-shade",
+					"circle-unshade",
+					"clear",
+					"info-blk"
+				],
+				play: ["shade", "unshade", "info-blk"]
+			},
+			mouseinput: function() {
+				switch (this.inputMode) {
+					case "circle-unshade":
+						return this.inputFixedNumber(-2);
+					case "circle-shade":
+						return this.inputFixedNumber(0);
+					default:
+						return this.common.mouseinput.call(this);
+				}
+			}
+		},
 
 		//---------------------------------------------------------
 		// キーボード入力系
