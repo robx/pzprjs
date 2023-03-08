@@ -377,10 +377,9 @@
 				this.drawShadedCells();
 
 				if (this.pid === "martini") {
-					this.drawCircledNumbers();
-				} else {
-					this.drawQuesNumbers();
+					this.drawCircles();
 				}
+				this.drawQuesNumbers();
 
 				this.drawBorders();
 				if (this.pid === "stostone") {
@@ -495,6 +494,8 @@
 		"Graphic@martini": {
 			hideHatena: true,
 			shadecolor: "#444444",
+			circleratio: [0.35, 0.3],
+			textoption: { ratio: 0.5 },
 			getNumberText: function(cell, num) {
 				return num <= 0 ? "" : this.getNumberTextCore(num);
 			},
