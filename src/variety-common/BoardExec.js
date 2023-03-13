@@ -74,7 +74,7 @@ pzpr.classmgr.makeCommon({
 			// Just return current qdir when undo/redo
 			// to avoid double conversion at redo time
 			if (this.puzzle.opemgr.disrec) {
-				return {1: 1, 2: 2, 3: 3, 4: 4}
+				return { 1: 1, 2: 2, 3: 3, 4: 4 };
 			}
 			switch (key) {
 				case this.FLIPY:
