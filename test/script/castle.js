@@ -48,5 +48,24 @@ ui.debug.addDebugData("castle", {
 			null,
 			"pzprv3/castle/5/5/. . . 3,0,2 2,1,0 /. . . . . /. . . . . /. 1,1,1 . 1,0,2 . /. . . . . /-1 -1 0 0 /0 1 1 1 /1 0 1 1 /0 0 0 0 /1 1 0 0 /0 -1 0 0 0 /0 1 0 -1 1 /1 0 1 0 -1 /1 0 1 0 -1 /"
 		]
+	],
+	inputs: [
+		{
+			label: "Input color with Q",
+			input: [
+				"newboard,3,2",
+				"editmode",
+				"cursor,1,1",
+				"key,q,right,q,q,right,q,q,q"
+			],
+			result:
+				"pzprv3/castle/2/3/0,-,0 0,-,2 0,-,1 /0,-1,0 0,-1,0 0,-1,0 /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			label: "Input color with B,W,G",
+			input: ["cursor,1,3", "key,g,right,w,right,b"],
+			result:
+				"pzprv3/castle/2/3/0,-,0 0,-,2 0,-,1 /0,-,0 0,-,1 0,-,2 /0 0 /0 0 /0 0 0 /"
+		}
 	]
 });

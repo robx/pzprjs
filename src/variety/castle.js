@@ -80,12 +80,26 @@
 		},
 
 		keyinput: function(ca) {
-			if (ca === "q") {
+			if (ca === "q" || ca === "g" || ca === "w" || ca === "b") {
 				var cell = this.cursor.getc();
+				var ques =
+					ca === "q"
+						? [2, 0, 1][cell.ques]
+						: ca === "g"
+						? 0
+						: ca === "w"
+						? 1
+						: 2;
 				if (cell.qnum === -1) {
+					// It's not a clue. Convert it to a clue with no number, using
+					// the specified given color if g/w/b is pressed.
 					cell.setQnum(-2);
+					if (ca !== "q") {
+						cell.setQues(ques);
+					}
 				} else {
-					cell.setQues([2, 0, 1][cell.ques]);
+					// It's already a clue; just set the right color.
+					cell.setQues(ques);
 				}
 
 				this.prev = cell;
