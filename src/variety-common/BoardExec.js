@@ -71,6 +71,11 @@ pzpr.classmgr.makeCommon({
 		},
 		getTranslateDir: function(key) {
 			var trans = {};
+			// Just return current qdir when undo/redo
+			// to avoid double conversion at redo time
+			if (this.puzzle.opemgr.disrec) {
+				return {1: 1, 2: 2, 3: 3, 4: 4}
+			}
 			switch (key) {
 				case this.FLIPY:
 					trans = { 1: 2, 2: 1 };
