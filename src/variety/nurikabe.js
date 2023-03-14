@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ぬりかべ・ぬりぼう・モチコロ・モチにょろ版 nurikabe.js
+// パズル固有スクリプト部 ぬりかべ・ぬりぼう・モチコロ・モチにょろ・Canal View・海苔ぬり版 nurikabe.js
 //
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nurikabe", "nuribou", "mochikoro", "mochinyoro", "canal"], {
+})(["nurikabe", "nuribou", "mochikoro", "mochinyoro", "canal", "norinuri"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -230,7 +230,7 @@
 			this.drawTarget();
 		}
 	},
-	"Graphic@nuribou,mochikoro,mochinyoro": {
+	"Graphic@nuribou,mochikoro,mochinyoro,norinuri": {
 		bgcellcolor_func: "qsub1",
 		enablebcolor: true
 	},
@@ -400,6 +400,16 @@
 			"doneShadingDecided"
 		]
 	},
+	"AnsCheck@norinuri#1": {
+		checklist: [
+			"checkOverShadeCell",
+			"checkSingleShadeCell",
+			"checkNoNumberInUnshade",
+			"checkDoubleNumberInUnshade",
+			"checkNumberAndUnshadeSize",
+			"doneShadingDecided"
+		]
+	},
 	AnsCheck: {
 		checkDoubleNumberInUnshade: function() {
 			this.checkAllBlock(
@@ -471,7 +481,7 @@
 			}
 		}
 	},
-	"AnsCheck@nurikabe,nuribou": {
+	"AnsCheck@nurikabe,nuribou,norinuri": {
 		checkNoNumberInUnshade: function() {
 			this.checkAllBlock(
 				this.board.ublkmgr,
@@ -528,7 +538,26 @@
 			}
 		}
 	},
-
+	"AnsCheck@norinuri": {
+		checkOverShadeCell: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"csGt2"
+			);
+		},
+		checkSingleShadeCell: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a >= 2;
+				},
+				"csLt2"
+			);
+		}
+	},
 	"FailCode@mochikoro,mochinyoro": {
 		cuNotRect: "cuNotRect.mochikoro",
 		csRect: "csRect.mochikoro",
