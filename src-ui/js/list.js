@@ -194,6 +194,7 @@
 		],
 		omopa: [
 			"nuribou",
+			"norinuri",
 			"tawa",
 			"lookair",
 			"paintarea",

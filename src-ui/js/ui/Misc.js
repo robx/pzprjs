@@ -142,6 +142,7 @@ function toBGimage(pid) {
 		"moonsun",
 		"nondango",
 		"nonogram",
+		"norinuri",
 		"nurimisaki",
 		"nuriuzu",
 		"oneroom",

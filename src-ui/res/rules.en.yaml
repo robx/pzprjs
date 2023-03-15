@@ -1079,3 +1079,7 @@ trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot br
 wafusuma: "Divide the grid into regions.\n1. A circle must divide two different regions.\n\
   2. A number on a circle indicates the sum of the sizes of the two adjacent regions.\n\
   3. Two regions of the same size cannot be orthogonally adjacent."
+norinuri: "Shade some cells on the board to form regions of unshaded cells.\n1. Each\
+  \ region contains exactly one number.\n2. A number indicates the size of the region\
+  \ that contains it.\n3. You cannot shade a cell with a number.\n4. All shaded cells\
+  \ are orthogonally adjacent to exactly one other shaded cell."
