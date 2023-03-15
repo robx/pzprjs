@@ -330,7 +330,7 @@
 					var cell = clist[i],
 						val = tques[cell.ques];
 					if (!!val) {
-						cell.setQues(val);
+						cell.ques = val;
 					}
 				}
 			}
