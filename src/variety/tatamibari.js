@@ -82,7 +82,7 @@
 					var cell = clist[i],
 						val = tques[cell.qnum];
 					if (!!val) {
-						cell.setQnum(val);
+						cell.qnum = val;
 					}
 				}
 			}

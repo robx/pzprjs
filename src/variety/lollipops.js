@@ -134,9 +134,9 @@
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
 				if (cell.qnum > 1) {
-					cell.setQnum(5 - cell.qnum);
+					cell.qnum = 5 - cell.qnum;
 				} else if (cell.anum > 1) {
-					cell.setAnum(5 - cell.anum);
+					cell.anum = 5 - cell.anum;
 				}
 			}
 		}
