@@ -1079,3 +1079,9 @@ trainstations: "Draw a loop that goes through every cell.\n1. The loop cannot br
 wafusuma: "Divide the grid into regions.\n1. A circle must divide two different regions.\n\
   2. A number on a circle indicates the sum of the sizes of the two adjacent regions.\n\
   3. Two regions of the same size cannot be orthogonally adjacent."
+martini: "Shade some cells on the board to form blocks of orthogonally adjacent cells.\n\
+  1. Black circles must overlap a block, while white circles must not overlap a block.\n\
+  2. Outlined regions contain no more than one block.\n3. Shaded cells cannot be adjacent\
+  \ across region borders.\n4. All blocks form a diagonally contiguous area.\n5. Orthogonally\
+  \ adjacent unshaded cells form areas, which can go over region borders. Numbers\
+  \ indicate the amount of white circles in the area."
