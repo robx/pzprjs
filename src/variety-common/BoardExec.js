@@ -35,7 +35,7 @@ pzpr.classmgr.makeCommon({
 				var cell = clist[i];
 				var val = trans[cell.qdir];
 				if (!!val) {
-					cell.setQdir(val);
+					cell.qdir = val;
 				}
 			}
 		},
@@ -46,11 +46,11 @@ pzpr.classmgr.makeCommon({
 				var cell = clist[i];
 				var val = trans[cell.qnum];
 				if (!!val) {
-					cell.setQnum(val);
+					cell.qnum = val;
 				}
 				var val = trans[cell.anum];
 				if (!!val) {
-					cell.setAnum(val);
+					cell.anum = val;
 				}
 			}
 		},
@@ -64,7 +64,7 @@ pzpr.classmgr.makeCommon({
 						val;
 					val = trans[border.qdir];
 					if (!!val) {
-						border.setQdir(val);
+						border.qdir = val;
 					}
 				}
 			}

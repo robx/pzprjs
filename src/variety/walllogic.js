@@ -326,7 +326,7 @@
 				var cell = clist[i];
 				var val = trans[cell.anum];
 				if (!!val) {
-					cell.setAnum(val);
+					cell.anum = val;
 				}
 			}
 		}

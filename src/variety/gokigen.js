@@ -222,7 +222,7 @@
 				var clist = this.board.cell;
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i];
-					cell.setQans({ 0: 0, 31: 32, 32: 31 }[cell.qans]);
+					cell.qans = { 0: 0, 31: 32, 32: 31 }[cell.qans];
 				}
 			}
 		}
