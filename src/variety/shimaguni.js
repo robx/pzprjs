@@ -44,7 +44,9 @@
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
-			},
+			}
+		},
+		"MouseEvent@cocktail,martini#2": {
 			dispInfoBlk: function() {
 				var cell = this.getcell();
 				this.mousereset();

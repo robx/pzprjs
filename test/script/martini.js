@@ -58,6 +58,22 @@ ui.debug.addDebugData("martini", {
 		{
 			input: ["mouse,right,1,1,5,1,5,3"],
 			result: "pzprv3/martini/2/3/1/0 0 0 /0 0 0 /0 - 2 /. . . /# + + /. . + /"
+		},
+		{
+			input: [
+				"newboard,3,3",
+				"playmode",
+				"mouse,left,1,1,3,1",
+				"mouse,left,5,3",
+				"mouse,left,1,5",
+				"playmode,info-blk",
+				"mouse,left,5,3"
+			],
+			result: function(puzzle, assert) {
+				var bd = puzzle.board;
+				assert.equal(bd.getc(5, 3).qinfo, 1);
+				assert.equal(bd.getc(1, 5).qinfo, 0);
+			}
 		}
 	]
 });
