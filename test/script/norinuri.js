@@ -4,7 +4,7 @@ ui.debug.addDebugData("norinuri", {
 	url: "6/6/1i5h4s1h5p4",
 	failcheck: [
 		[
-			"cslLt2",
+			"csLt2",
 			"pzprv3/norinuri/6/6/1 . . . 5 . /. 4 . . . . /. . . . . . /. . . 1 . . /5 . . . . . /. . . . . 4 /. # . . . . /# . . . . . /# . . . . . /. . . . . . /. . . . . . /. . . . . . /"
 		],
 		[
