@@ -62,7 +62,7 @@ ui.debug.addDebugData("evolmino", {
 				"pzprv3/evolmino/2/4/. # 0 . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /. . . . /. + 0 . /"
 		},
 		{
-			label: "Arrow line",
+			label: "Arrow line normal",
 			input: [
 				"newboard,3,3",
 				"editmode",
@@ -80,17 +80,28 @@ ui.debug.addDebugData("evolmino", {
 		},
 		{
 			label: "Arrow line stretch",
-			input: ["mouse,left,5,3,5,5", "mouse,left,1,1,3,1"],
+			input: ["mouse,left,5,3,5,5", "mouse,left,3,1,1,1"],
 			result:
 				"pzprv3/evolmino/3/3/. . . /. . . /. . . /2 2 /0 0 /0 0 /0 0 2 /0 0 2 /. . . /. . . /. . . /"
 		},
 		{
-			label: "Arrow line merge",
+			label: "Arrow line merge forward",
 			input: [
 				"newboard,3,3",
 				"mouse,left,1,1,3,1,5,1",
 				"mouse,left,5,5,3,5,1,5",
 				"mouse,left,5,1,5,3,5,5"
+			],
+			result:
+				"pzprv3/evolmino/3/3/. . . /. . . /. . . /2 2 /0 0 /1 1 /0 0 2 /0 0 2 /. . . /. . . /. . . /"
+		},
+		{
+			label: "Arrow line merge reverse",
+			input: [
+				"newboard,3,3",
+				"mouse,left,1,1,3,1,5,1",
+				"mouse,left,5,5,3,5,1,5",
+				"mouse,left,5,5,5,3,5,1"
 			],
 			result:
 				"pzprv3/evolmino/3/3/. . . /. . . /. . . /2 2 /0 0 /1 1 /0 0 2 /0 0 2 /. . . /. . . /. . . /"
@@ -118,10 +129,26 @@ ui.debug.addDebugData("evolmino", {
 				"pzprv3/evolmino/3/3/. . . /. . 0 /. . . /0 0 /0 0 /1 0 /1 2 0 /1 2 0 /. . . /. . . /. . . /"
 		},
 		{
+			label: "Arrow line not loop reverse",
+			input: [
+				"newboard,3,3",
+				"mouse,left,3,1,3,3,3,5",
+				"mouse,left,3,1,1,1,1,3,1,5,3,5"
+			],
+			result:
+				"pzprv3/evolmino/3/3/. . . /. . . /. . . /2 0 /0 0 /0 0 /1 2 0 /1 2 0 /. . . /. . . /. . . /"
+		},
+		{
 			label: "Arrow line not shaded",
 			input: ["newboard,3,3", "mouse,right,3,3", "mouse,left,1,1,3,1,3,3"],
 			result:
 				"pzprv3/evolmino/3/3/. . . /. # . /. . . /2 0 /0 0 /0 0 /0 0 0 /0 0 0 /. . . /. . . /. . . /"
+		},
+		{
+			label: "Arrow line not shaded reverse",
+			input: ["mouse,left,1,1,1,3,3,3"],
+			result:
+				"pzprv3/evolmino/3/3/. . . /. # . /. . . /2 0 /0 0 /0 0 /1 0 0 /0 0 0 /. . . /. . . /. . . /"
 		}
 	]
 });

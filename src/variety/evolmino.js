@@ -140,18 +140,20 @@
 			var dir = this.prevPos.getdir(pos, 2);
 			if (!border.isnull && !this.mousestart) {
 				if (this.inputData === null) {
-					// add/stretch input mode
+					// 1: forward input mode (from empty or arrow head)
 					if (
-						!border.isLine() &&
 						(cell0.lcnt === 0 || cell0.isDestination()) &&
-						(cell.lcnt === 0 || cell.isDeparture())
+						(cell.lcnt === 0 || cell.isDeparture() || cell === cell0.prevcell)
 					) {
 						this.inputData = 1;
 						this.mouseCell = cell0;
 					}
-					// remove/shrink input mode
-					if (border.isLine() && cell0.lcnt === 1) {
-						this.inputData = 0;
+					// 2: reverse input mode (from arrow tail)
+					if (
+						cell0.isDeparture() &&
+						(cell.lcnt === 0 || cell.isDestination() || cell === cell0.nextcell)
+					) {
+						this.inputData = 2;
 						this.mouseCell = cell0;
 					}
 				}
@@ -163,7 +165,7 @@
 						(cell.lcnt === 0 ||
 							(cell.isDeparture() && cell0.path !== cell.path))
 					) {
-						// add/stretch arrow (mergable with another arrow)
+						// add/expand arrow (mergable with another arrow)
 						border.setLine(dir);
 						this.mouseCell = cell;
 					} else if (
@@ -176,9 +178,24 @@
 						border.removeLine();
 						this.mouseCell = cell;
 					}
-				} else if (this.inputData === 0) {
-					if (border.isLine() && cell0 === this.mouseCell && cell0.lcnt === 1) {
-						// remove/shrink arrow
+				} else if (this.inputData === 2) {
+					if (
+						!border.isLine() &&
+						cell0 === this.mouseCell &&
+						cell0.isDeparture() &&
+						(cell.lcnt === 0 ||
+							(cell.isDestination() && cell0.path !== cell.path))
+					) {
+						// expand arrow from tail (mergeable with another arrow)
+						var rdir = { 0: 0, 1: 2, 2: 1, 3: 4, 4: 3 };
+						border.setLine(rdir[dir]);
+						this.mouseCell = cell;
+					} else if (
+						border.isLine() &&
+						cell0 === this.mouseCell &&
+						cell0.path === cell.path &&
+						cell0.isDeparture()
+					) {
 						border.removeLine();
 						this.mouseCell = cell;
 					}
