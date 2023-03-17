@@ -12,6 +12,7 @@
 	//---------------------------------------------------------
 	// Mouse input processing
 	MouseEvent: {
+		use: true,
 		inputModes: {
 			edit: ["arrow", "shade", "mark-rect"],
 			play: ["mark-rect", "objblank"]
@@ -43,11 +44,27 @@
 				if (this.mousestart || this.mousemove) {
 					this.inputevol();
 				} else if (this.mouseend && this.notInputted()) {
-					this.inputcell("edit", this.btn);
+					if (this.puzzle.getConfig("use") === 1) {
+						if (this.btn === "left") {
+							this.inputcell("edit", "rect");
+						} else {
+							this.inputcell("edit", "shade");
+						}
+					} else if (this.puzzle.getConfig("use") === 2) {
+						this.inputcell("edit", this.btn);
+					}
 				}
 			} else if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
-					this.inputcell("play", this.btn);
+					if (this.puzzle.getConfig("use") === 1) {
+						if (this.btn === "left") {
+							this.inputcell("play", "rect");
+						} else {
+							this.inputcell("play", "dot");
+						}
+					} else if (this.puzzle.getConfig("use") === 2) {
+						this.inputcell("play", this.btn);
+					}
 				}
 			}
 		},
@@ -77,8 +94,8 @@
 		// cell's state transition table
 		// 1: EMPTY, 2: BLACK, 3: Q_RECT, 4: A_RECT, 5: DOT
 		trans_table: {
-			edit_left: { 1: 2, 2: 3, 3: 1, 4: 2, 5: 2 },
-			edit_right: { 1: 3, 3: 2, 2: 1, 4: 3, 5: 3 },
+			edit_left: { 1: 3, 3: 2, 2: 1, 4: 3, 5: 3 },
+			edit_right: { 1: 2, 2: 3, 3: 1, 4: 2, 5: 2 },
 			edit_shade: { 1: 2, 2: 1, 3: 2, 4: 2, 5: 2 },
 			edit_rect: { 1: 3, 2: 3, 3: 1, 4: 3, 5: 3 },
 			play_left: { 1: 4, 2: 4, 3: 4, 4: 5, 5: 1 },
@@ -100,13 +117,13 @@
 		set_cell_state: function(cell, state) {
 			// undo/redo behavior changes depending on state rotation direction
 			if (this.btn === "left") {
-				cell.setQnum(state === 3 ? 1 : -1);
 				cell.setQues(state === 2 ? 1 : 0);
+				cell.setQnum(state === 3 ? 1 : -1);
 				cell.setQsub(state === 5 ? 1 : 0);
 				cell.setAnum(state === 4 ? 1 : -1);
 			} else if (this.btn === "right") {
-				cell.setQues(state === 2 ? 1 : 0);
 				cell.setQnum(state === 3 ? 1 : -1);
+				cell.setQues(state === 2 ? 1 : 0);
 				cell.setAnum(state === 4 ? 1 : -1);
 				cell.setQsub(state === 5 ? 1 : 0);
 			}

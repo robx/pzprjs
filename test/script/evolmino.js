@@ -31,6 +31,7 @@ ui.debug.addDebugData("evolmino", {
 			label: "Left click cycle",
 			input: [
 				"newboard,4,2",
+				"setconfig,use,2",
 				"editmode",
 				"mouse,leftx1,3,1",
 				"mouse,leftx2,5,1",
@@ -41,12 +42,13 @@ ui.debug.addDebugData("evolmino", {
 				"mouse,leftx3,7,3"
 			],
 			result:
-				"pzprv3/evolmino/2/4/. # 0 . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /. . . . /. 0 + . /"
+				"pzprv3/evolmino/2/4/. 0 # . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /. . . . /. 0 + . /"
 		},
 		{
 			label: "Right click cycle",
 			input: [
 				"newboard,4,2",
+				"setconfig,use,2",
 				"editmode",
 				"mouse,rightx1,3,1",
 				"mouse,rightx2,5,1",
@@ -57,11 +59,16 @@ ui.debug.addDebugData("evolmino", {
 				"mouse,rightx3,7,3"
 			],
 			result:
-				"pzprv3/evolmino/2/4/. 0 # . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /. . . . /. + 0 . /"
+				"pzprv3/evolmino/2/4/. # 0 . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /. . . . /. + 0 . /"
 		},
 		{
 			label: "Arrow line",
-			input: ["newboard,3,3", "editmode", "mouse,left,1,1,3,1,5,1,5,3,5,5"],
+			input: [
+				"newboard,3,3",
+				"editmode",
+				"setconfig,use,1",
+				"mouse,left,1,1,3,1,5,1,5,3,5,5"
+			],
 			result:
 				"pzprv3/evolmino/3/3/. . . /. . . /. . . /2 2 /0 0 /0 0 /0 0 2 /0 0 2 /. . . /. . . /. . . /"
 		},
@@ -90,7 +97,7 @@ ui.debug.addDebugData("evolmino", {
 		},
 		{
 			label: "Arrow line split",
-			input: ["mouse,left,5,3"],
+			input: ["mouse,right,5,3"],
 			result:
 				"pzprv3/evolmino/3/3/. . . /. . # /. . . /2 2 /0 0 /1 1 /0 0 0 /0 0 0 /. . . /. . . /. . . /"
 		},
@@ -102,17 +109,17 @@ ui.debug.addDebugData("evolmino", {
 				"mouse,left,1,3,3,3,5,3"
 			],
 			result:
-				"pzprv3/evolmino/3/3/. . . /. . # /. . . /0 0 /0 0 /0 0 /0 2 0 /0 2 0 /. . . /. . . /. . . /"
+				"pzprv3/evolmino/3/3/. . . /. . 0 /. . . /0 0 /0 0 /0 0 /0 2 0 /0 2 0 /. . . /. . . /. . . /"
 		},
 		{
 			label: "Arrow line not loop",
 			input: ["mouse,left,3,5,1,5,1,3,1,1,3,1"],
 			result:
-				"pzprv3/evolmino/3/3/. . . /. . # /. . . /0 0 /0 0 /1 0 /1 2 0 /1 2 0 /. . . /. . . /. . . /"
+				"pzprv3/evolmino/3/3/. . . /. . 0 /. . . /0 0 /0 0 /1 0 /1 2 0 /1 2 0 /. . . /. . . /. . . /"
 		},
 		{
 			label: "Arrow line not shaded",
-			input: ["newboard,3,3", "mouse,left,3,3", "mouse,left,1,1,3,1,3,3"],
+			input: ["newboard,3,3", "mouse,right,3,3", "mouse,left,1,1,3,1,3,3"],
 			result:
 				"pzprv3/evolmino/3/3/. . . /. # . /. . . /2 0 /0 0 /0 0 /0 0 0 /0 0 0 /. . . /. . . /. . . /"
 		}
