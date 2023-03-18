@@ -140,20 +140,20 @@
 			var dir = this.prevPos.getdir(pos, 2);
 			if (!border.isnull && !this.mousestart) {
 				if (this.inputData === null) {
-					// 1: forward input mode (from empty or arrow head)
 					if (
 						(cell0.lcnt === 0 || cell0.isDestination()) &&
 						(cell.lcnt === 0 || cell.isDeparture() || cell === cell0.prevcell)
 					) {
-						this.inputData = 1;
+						this.inputData = 1; // forward input mode
 						this.mouseCell = cell0;
-					}
-					// 2: reverse input mode (from arrow tail)
-					if (
+					} else if (
 						cell0.isDeparture() &&
 						(cell.lcnt === 0 || cell.isDestination() || cell === cell0.nextcell)
 					) {
-						this.inputData = 2;
+						this.inputData = 2; // backward input mode
+						this.mouseCell = cell0;
+					} else if (border.isLine()) {
+						this.inputData = 3; // detele mode
 						this.mouseCell = cell0;
 					}
 				}
@@ -198,6 +198,10 @@
 					) {
 						border.removeLine();
 						this.mouseCell = cell;
+					}
+				} else if (this.inputData === 3) {
+					if (border.isLine()) {
+						border.removeLine();
 					}
 				}
 				border.draw();
@@ -378,10 +382,10 @@
 	Graphic: {
 		gridcolor_type: "LIGHT",
 		// color settings
-		sq_qcolor: "rgba(255, 255, 255, 0.5)",
-		sq_anscolor: "rgba(0, 160, 0, 0.5)",
-		sq_errorcolor: "rgba(192, 0, 0, 0.5)",
-		sq_trialcolor: "rgba(128, 128, 128, 0.5)",
+		sq_qcolor: "black",
+		sq_anscolor: "rgba(0, 160, 0, 0.8)",
+		sq_errorcolor: "rgba(192, 0, 0, 0.8)",
+		sq_trialcolor: "rgba(128, 128, 128, 0.8)",
 		dot_anscolor: "rgba(0, 160, 0, 0.5)",
 		dot_trialcolor: "rgba(128, 128, 128, 0.5)",
 
@@ -433,7 +437,7 @@
 				// arrow part
 				g.vid = "b_arrow_" + border.id;
 				if (!!color && dir !== 0) {
-					if (dir === 1) {
+					if (dir === border.UP) {
 						g.setOffsetLinePath(
 							px,
 							py - tipofs,
@@ -445,7 +449,7 @@
 							tiph,
 							true
 						);
-					} else if (dir === 2) {
+					} else if (dir === border.DN) {
 						g.setOffsetLinePath(
 							px,
 							py + tipofs,
@@ -457,7 +461,7 @@
 							-tiph,
 							true
 						);
-					} else if (dir === 3) {
+					} else if (dir === border.LT) {
 						g.setOffsetLinePath(
 							px - tipofs,
 							py,
@@ -469,7 +473,7 @@
 							tipw,
 							true
 						);
-					} else if (dir === 4) {
+					} else if (dir === border.RT) {
 						g.setOffsetLinePath(
 							px + tipofs,
 							py,
@@ -491,17 +495,16 @@
 		},
 
 		drawSquare: function() {
-			var g = this.vinc("cell_square", "crispEdges", true);
+			var g = this.vinc("cell_square", "auto", true);
 			var rw = this.bw * 0.7 - 1;
 			var rh = this.bh * 0.7 - 1;
-			g.lineWidth = 1;
-			g.strokeStyle = "black";
+			g.lineWidth = 2;
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
 				g.vid = "c_sq_" + cell.id;
 				if (cell.qnum === 1 || cell.anum === 1) {
-					g.fillStyle =
+					g.strokeStyle =
 						cell.error === 1
 							? this.sq_errorcolor
 							: cell.qnum === 1
@@ -509,7 +512,7 @@
 							: !cell.trial
 							? this.sq_anscolor
 							: this.sq_trialcolor;
-					g.shapeRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
+					g.strokeRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
 				} else {
 					g.vhide();
 				}
