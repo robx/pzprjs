@@ -459,6 +459,11 @@ easyasabc: "Place letters from the given range into some of the cells.\n1. Each 
   \ and column contains exactly one of each letter. Some cells remain empty.\n2. A\
   \ clue outside the grid represents the first letter seen in the corresponding row\
   \ or column from that direction (ignoring empty cells)."
+evolmino: "Place squares in some of the empty cells.\n1. Each block (adjacent squares,\
+  \ including only one square) must have just one cell which is placed on an arrow.\n
+  2. Each arrow must pass through more than one blocks.\n3. When tracing an arrow\
+  \ from the start to the end, the second and subsequent blocks must have the same shape\
+  \ as the previous block (without being rotated and reflected) with one additional square."
 factors: "Place a number in each cell.\n1. Numbers must be between 1 and N, where\
   \ N is the width of the board.\n2. Each row and column contains exactly one of each\
   \ number.\n3. Clues indicate the product of all numbers inside the region. Note\

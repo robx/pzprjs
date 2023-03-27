@@ -128,6 +128,7 @@ function toBGimage(pid) {
 		"dotchi",
 		"doubleback",
 		"easyasabc",
+		"evolmino",
 		"geradeweg",
 		"heteromino",
 		"icewalk",
