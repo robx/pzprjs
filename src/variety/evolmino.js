@@ -660,7 +660,6 @@
 		// Cell  : # = shaded, 0 = square, + = dot, . = empty
 		// Border: 0 = empty, 1 = up/left, 2 = down/right
 		decodeData: function() {
-			// todo: 問題セルデータデコード
 			this.decodeCell(function(cell, ca) {
 				if (ca === "#") {
 					cell.ques = 1;
@@ -732,8 +731,8 @@
 	AnsCheck: {
 		checklist: [
 			"checkValidArrow",
-			"checkBlockOnArrow",
 			"checkBlockOnlyOneArrow",
+			"checkBlockOnArrow",
 			"checkArrowThroughBlocks",
 			"checkEvolution"
 		],

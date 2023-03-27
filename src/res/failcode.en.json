@@ -20,7 +20,7 @@
     "arAlone.toichika2": "A number can not see an identical number.",
     "arBlkEdge.loute": "An arrow is not at the endpoint of an area.",
     "arBlocked.toichika2": "Other numbers are between a pair of numbers.",
-    "arBlockLt2.evolmino": "The arrow pass through less than two blocks.",
+    "arBlockLt2.evolmino": "The arrow passes through less than two blocks.",
     "arDistance.toichika2": "A pair of numbers does not have the correct distance.",
     "arDistanceGt.pentopia": "There is a shaded cell closer to a clue in an unmarked direction.",
     "arDistanceNe.pentopia": "The shaded cells pointed to by a clue are at different distances.",
