@@ -320,7 +320,7 @@
 						val;
 					val = trans[border.qsub - 10];
 					if (!!val) {
-						border.setQsub(val + 10);
+						border.qsub = val + 10;
 					}
 				}
 			}

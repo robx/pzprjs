@@ -90,6 +90,19 @@ pzpr.variety.each(function(pid) {
 				}
 				assert_equal_board(bd, bd2);
 			});
+
+			it("turn right undo redo", function() {
+				var bd = puzzle.board;
+				var bd1 = bd.freezecopy();
+				bd.operate("turnr");
+				var bd2 = bd.freezecopy();
+				puzzle.undo();
+				puzzle.redo();
+				assert_equal_board(bd, bd2);
+				puzzle.undo();
+				assert_equal_board(bd, bd1);
+				assert.equal(puzzle.check()[0], null);
+			});
 		});
 		describe("Flip", function() {
 			var puzzle = new pzpr.Puzzle().open(testdata[pid].fullfile);

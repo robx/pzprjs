@@ -65,7 +65,7 @@
 				var clist = this.board.cellinside(d.x1, d.y1, d.x2, d.y2);
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i];
-					cell.setQans(tans[cell.qans]);
+					cell.qans = tans[cell.qans];
 				}
 			}
 		}

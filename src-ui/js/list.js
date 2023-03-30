@@ -246,7 +246,8 @@
 			"toichika",
 			"cbblock",
 			"nondango",
-			"onsen"
+			"onsen",
+			"evolmino"
 		],
 		orig: ["mochinyoro", "ayeheya", "aho"],
 		genre: [

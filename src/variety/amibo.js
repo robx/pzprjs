@@ -116,7 +116,7 @@
 				var clist = this.board.cell;
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i];
-					cell.setQans(tans[cell.qans]);
+					cell.qans = tans[cell.qans];
 				}
 			}
 		}

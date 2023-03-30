@@ -459,6 +459,12 @@ easyasabc: "Place letters from the given range into some of the cells.\n1. Each 
   \ and column contains exactly one of each letter. Some cells remain empty.\n2. A\
   \ clue outside the grid represents the first letter seen in the corresponding row\
   \ or column from that direction (ignoring empty cells)."
+evolmino: "Place squares in some of the unshaded cells.\n1. Orthogonally adjacent\
+  \ squares form blocks. Every block must have exactly one square overlapping an arrow.\n\
+  2. Each arrow must pass through two or more blocks.\n3. When following an arrow\
+  \ from the start to the end, the second and subsequent blocks must have the same\
+  \ shape as the previous block (without changing orientation) with one additional\
+  \ square."
 factors: "Place a number in each cell.\n1. Numbers must be between 1 and N, where\
   \ N is the width of the board.\n2. Each row and column contains exactly one of each\
   \ number.\n3. Clues indicate the product of all numbers inside the region. Note\
@@ -637,8 +643,8 @@ kurochute: "Shade some cells on the board.\n1. Shaded cells cannot be horizontal
   \ from each number.\n4. All unshaded cells on the board form an orthogonally connected\
   \ area."
 kuroclone: "Shade some cells on the board.\n1. Numbers cannot be shaded.\n2. Each\
-  \ region must include exactly two units (shaded blocks), and these units must have\
-  \ same shapes, counting rotations and reflections as the same.\n3. A number indicates\
+  \ region must include exactly two units (shaded blocks) and these units must have\
+  \ the same shape, counting rotations and reflections as the same.\n3. A number indicates\
   \ the size of the unit that occupies the adjacent cell in the indicated direction.\n\
   4. Shaded cells must not be adjacent across borders."
 kurodoko: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally\
@@ -1083,3 +1089,9 @@ norinuri: "Shade some cells on the board to form regions of unshaded cells.\n1. 
   \ region contains exactly one number.\n2. A number indicates the size of the region\
   \ that contains it.\n3. You cannot shade a cell with a number.\n4. All shaded cells\
   \ are orthogonally adjacent to exactly one other shaded cell."
+martini: "Shade some cells on the board to form blocks of orthogonally adjacent cells.\n\
+  1. Black circles must overlap a block, while white circles must not overlap a block.\n\
+  2. Outlined regions contain no more than one block.\n3. Shaded cells cannot be adjacent\
+  \ across region borders.\n4. All blocks form a diagonally contiguous area.\n5. Orthogonally\
+  \ adjacent unshaded cells form areas, which can go over region borders. Numbers\
+  \ indicate the amount of white circles in the area."
