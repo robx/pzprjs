@@ -55,6 +55,7 @@ ui.keypopup = {
 		numlin: [10, 0],
 		nurikabe: [10, 0],
 		nuribou: [10, 0],
+		norinuri: [10, 0],
 		mochikoro: [10, 0],
 		mochinyoro: [10, 0],
 		shikaku: [10, 0],
