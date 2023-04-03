@@ -247,6 +247,7 @@
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
 			nagare: [0, 0, "流れるループ", "Nagareru-Loop"],
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
+			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
 			nanro: [0, 1, "ナンロー", "Nanro"],
 			nawabari: [1, 0, "なわばり", "Territory", "nawabari"],
 			news: [0, 0, "NEWS", "NEWS", "toichika"],
