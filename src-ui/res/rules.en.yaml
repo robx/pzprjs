@@ -1095,3 +1095,20 @@ martini: "Shade some cells on the board to form blocks of orthogonally adjacent 
   \ across region borders.\n4. All blocks form a diagonally contiguous area.\n5. Orthogonally\
   \ adjacent unshaded cells form areas, which can go over region borders. Numbers\
   \ indicate the amount of white circles in the area."
+nanameguri: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The\
+  \ loop cannot branch off or cross itself. Cells can not be entered more than once.\n\
+  2. Every outlined region must be visited exactly once.\n3. The loop must visit every\
+  \ cell containing a diagonal line.\n4. The loop cannot go through diagonal lines."
+battleship: "Place every ship from the fleet into the grid. Ships can be rotated or\
+  \ mirrored.\n1. All ships must be used exactly once. There cannot be ships in the\
+  \ grid that aren't present in the bank.\n2. Two ships cannot be orthogonally or\
+  \ diagonally adjacent.\n3. Numbers outside the grid indicate how many cells in the\
+  \ row or column are occupied by ships.\n4. Some ship segments are given (corner\
+  \ pieces, centers, or single-length boats), along with their orientation. Gray cells\
+  \ represent ship segments of unknown shape.\n5. Cells marked with water cannot be\
+  \ used by ships."
+tontonbeya: "Place a triangle, square or circle in every empty cell.\n1. All instances\
+  \ of the same symbol within a room must be adjacent. This is called a cluster.\n\
+  2. A room can have 1, 2 or 3 different clusters. These must all have the same size.\n\
+  3. Every cluster is orthogonally adjacent to exactly one other cluster using the\
+  \ same symbol in a different room."
