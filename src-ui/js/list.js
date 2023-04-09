@@ -300,7 +300,8 @@
 			"crossstitch",
 			"chainedb",
 			"canal",
-			"railpool"
+			"railpool",
+			"circlesquare"
 		]
 	};
 	var tabstate = {

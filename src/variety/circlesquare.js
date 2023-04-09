@@ -1,5 +1,5 @@
 //
-// circlesquare.js
+// パズル固有スクリプト部 Circles and Squares版 circlesquare.js
 //
 
 (function(pidlist, classbase) {
@@ -9,6 +9,8 @@
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
 })(["circlesquare"], {
+	//---------------------------------------------------------
+	// マウス入力系
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -29,10 +31,14 @@
 		}
 	},
 
+	//---------------------------------------------------------
+	// キーボード入力系
 	KeyEvent: {
 		enablemake: true
 	},
 
+	//---------------------------------------------------------
+	// 盤面管理系
 	Cell: {
 		numberAsObject: true,
 		disInputHatena: true,
@@ -44,7 +50,6 @@
 			return this.qnum !== 2;
 		}
 	},
-
 	AreaShadeGraph: {
 		enabled: true
 	},
@@ -52,6 +57,8 @@
 		enabled: true
 	},
 
+	//---------------------------------------------------------
+	// 画像表示系
 	Graphic: {
 		enablebcolor: true,
 		bgcellcolor_func: "qsub1",
@@ -72,6 +79,8 @@
 		}
 	},
 
+	//---------------------------------------------------------
+	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeCircle();
@@ -80,7 +89,7 @@
 			this.encodeCircle();
 		}
 	},
-
+	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnum();
@@ -92,6 +101,8 @@
 		}
 	},
 
+	//---------------------------------------------------------
+	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
 			"checkShadeCellExist",
@@ -102,18 +113,21 @@
 			"checkUnshadeSquare"
 		],
 
+		// Check black circle is shaded
 		checkShadeOnCircle: function() {
 			this.checkAllCell(function(cell) {
 				return cell.qnum === 2 && !cell.isShade();
 			}, "circleUnshade");
 		},
 
+		// Check white circle is unshaded
 		checkUnshadeOnCircle: function() {
 			this.checkAllCell(function(cell) {
 				return cell.qnum === 1 && cell.isShade();
 			}, "circleShade");
 		},
 
+		// Check a mass of unshaded cells is a square
 		checkUnshadeSquare: function() {
 			this.checkAllArea(
 				this.board.ublkmgr,
