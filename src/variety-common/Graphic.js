@@ -395,11 +395,17 @@ pzpr.classmgr.makeCommon({
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i];
 					g.vid = "c_slash_" + slash + "_" + cell.id;
-					if (cell.qans === 33 || cell.qans === (slash ? 32 : 31)) {
+
+					var isQues = cell.ques >= 31 && cell.ques <= 33;
+					var value = isQues ? cell.ques : cell.qans;
+
+					if (value === 33 || value === (slash ? 32 : 31)) {
 						var info = cell.qinfo || cell.error,
 							addwidth = 0,
 							color;
-						if (cell.trial && this.puzzle.execConfig("irowake")) {
+						if (isQues) {
+							addwidth = -basewidth / 2;
+						} else if (cell.trial && this.puzzle.execConfig("irowake")) {
 							addwidth = -basewidth / 2;
 						} else if (
 							(this.pid === "gokigen" || this.pid === "wagiri") &&
@@ -408,7 +414,9 @@ pzpr.classmgr.makeCommon({
 							addwidth = basewidth / 2;
 						}
 
-						if (this.pid !== "kinkonkan" && info > 0) {
+						if (isQues) {
+							color = this.quescolor;
+						} else if (this.pid !== "kinkonkan" && info > 0) {
 							if (info & (slash ? 4 : 8)) {
 								color = this.noerrcolor;
 							} else if (info & 1) {
@@ -418,7 +426,7 @@ pzpr.classmgr.makeCommon({
 							}
 						} else if (info === -1) {
 							color = this.noerrcolor;
-						} else if (irowake && cell.qans === 33) {
+						} else if (irowake && value === 33) {
 							color =
 								!!slash === cell.parity() ? cell.path.color : cell.path2.color;
 						} else if (irowake && cell.path && cell.path.color) {
