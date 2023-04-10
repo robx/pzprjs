@@ -460,7 +460,7 @@
 		},
 
 		getBorderColor: function(border) {
-			this.addlw = -this.lw / 2;
+			this.addlw = -this.lw / 3;
 			return border.isBorder() ? this.quescolor : null;
 		},
 
