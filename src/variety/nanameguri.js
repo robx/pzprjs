@@ -17,7 +17,12 @@
 			var puzzle = this.puzzle;
 			if (puzzle.playmode) {
 				if (this.btn === "left") {
-					this.inputLine();
+					if (this.mousestart || this.mousemove) {
+						this.inputLine();
+					} else if (this.mouseend && this.notInputted()) {
+						this.prevPos.reset();
+						this.inputpeke();
+					}
 				} else if (this.btn === "right") {
 					this.inputpeke();
 				}
