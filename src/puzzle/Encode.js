@@ -43,16 +43,16 @@ pzpr.classmgr.makeCommon({
 				puzzle = this.puzzle,
 				bd = puzzle.board;
 
+			if (pzl.variant !== null) {
+				puzzle.setConfig("variant", true);
+				puzzle.setConfig("variantid", pzl.variant);
+			}
 			if (pzl.type === pzl.URL_PZPRFILE) {
 				new puzzle.klass.FileIO().filedecode(pzl.body);
 				return;
 			}
 
 			bd.initBoardSize(pzl.cols, pzl.rows);
-			if (pzl.variant !== null) {
-				puzzle.setConfig("variant", true);
-				puzzle.setConfig("variantid", pzl.variant);
-			}
 
 			if (!!pzl.body) {
 				this.pflag = pzl.pflag;

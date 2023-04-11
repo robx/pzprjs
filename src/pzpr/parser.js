@@ -158,6 +158,10 @@
 			}
 			// ぱずぷれv3の場合
 			else {
+				if (url.startsWith("v:/")) {
+					url = url.substring(3);
+					this.variant = true;
+				}
 				var qs = url.indexOf("/", url.indexOf("?"));
 				var first = "";
 				if (qs > -1) {
