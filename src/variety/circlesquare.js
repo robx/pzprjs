@@ -14,8 +14,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["circle-shade", "circle-unshade", "clear"],
-			play: ["shade", "unshade", "clear"]
+			edit: ["circle-shade", "circle-unshade", "clear", "info-blk"],
+			play: ["shade", "unshade", "clear", "info-blk"]
 		},
 
 		mouseinput_auto: function() {

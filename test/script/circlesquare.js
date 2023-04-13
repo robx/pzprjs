@@ -25,7 +25,7 @@ ui.debug.addDebugData("circlesquare", {
 		],
 		[
 			null,
-			"pzprv3/circlesquare/5/5/. . . . 2 /1 1 . . 1 /. . 2 . . /. 2 2 . . /. . . 1 . /# # # # # /+ + # + . /+ + # + . /# # # # # /# . # + # /"
+			"pzprv3/circlesquare/5/5/. . . . 2 /1 1 . . 1 /. . 2 . . /. 2 2 . . /. . . 1 . /# # # # # /+ + # + + /+ + # + + /# # # # # /# + # + # /"
 		]
 	],
 	inputs: []
