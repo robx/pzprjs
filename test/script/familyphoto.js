@@ -39,7 +39,7 @@ ui.debug.addDebugData("familyphoto", {
 				"editmode,mark-circle",
 				"mouse,left,1,3"
 			],
-			result: "pzprv3/familyphoto/2/2/. . /# # /0 /0 /0 0 /"
+			result: "pzprv3/familyphoto/2/2/. . /# #4 /0 /0 /0 0 /"
 		}
 	]
 });

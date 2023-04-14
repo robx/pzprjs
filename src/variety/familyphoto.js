@@ -130,11 +130,13 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCell(function(cell, ca) {
-				if (ca === "#") {
+				if (ca.charAt(0) === "#") {
 					cell.ques = 6;
-				} else if (ca === "-") {
+					ca = ca.substr(1);
+				}
+				if (ca === "-") {
 					cell.qnum = -2;
-				} else if (ca !== ".") {
+				} else if (+ca > 0) {
 					cell.qnum = +ca;
 				}
 			});
@@ -142,15 +144,21 @@
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
+				var ca = "";
 				if (cell.ques === 6) {
-					return "# ";
-				} else if (cell.qnum === -2) {
-					return "- ";
-				} else if (cell.qnum >= 0) {
-					return cell.qnum + " ";
-				} else {
-					return ". ";
+					ca += "#";
 				}
+
+				if (cell.qnum === -2) {
+					ca += "-";
+				} else if (cell.qnum > 0) {
+					ca += cell.qnum.toString();
+				}
+
+				if (ca === "") {
+					ca = ".";
+				}
+				return ca + " ";
 			});
 			this.encodeBorderAns();
 		}
