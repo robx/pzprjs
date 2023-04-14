@@ -578,10 +578,12 @@
 		decodeData: function() {
 			this.decodeQnums();
 			this.decodeBorderLine();
+			this.decodeCellQsub();
 		},
 		encodeData: function() {
 			this.encodeQnums();
 			this.encodeBorderLine();
+			this.encodeCellQsub();
 		}
 	},
 	"FileIO@disloop": {
