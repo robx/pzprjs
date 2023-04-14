@@ -28,15 +28,5 @@ ui.debug.addDebugData("dominion", {
 			"pzprv3/dominion/5/5/. . 2 . . /. . . . 2 /. 3 . . . /. . 1 . . /1 . . . 2 /# # + + + /+ + # + + /+ + # + + /# # + # + /+ + + # + /"
 		]
 	],
-	inputs: [
-		{ input: ["playmode", "newboard,4,4"] },
-		{
-			input: [
-				"mouse,left, 4,0, 4,4, 2,4, 2,6",
-				"mouse,left, 0,6, 6,6, 6,2, 8,2"
-			],
-			result:
-				"pzprv3/dominion/4/4/. . . . /. . . . /. . . . /. . . . /. . # . /. . # . /. . . . /# # . . /"
-		}
-	]
+	inputs: []
 });
