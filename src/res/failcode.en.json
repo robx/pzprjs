@@ -386,6 +386,7 @@
     "cuNoLine.nagenawa": "There is no line on the unshaded cell.",
     "cuNotRect.mochikoro": "There is a block of unshaded cells that is not a rectangle.",
     "cuNotRectx.shakashaka": "A white area is not rectangle.",
+    "cuNotSquare": "An unshaded area is not a square.",
     "cuNotTop.dosufuwa": "A balloon is not on the top of the row or under another balloon.",
     "cuOutside.castle": "An unshaded cell is outside of the loop.",
     "cuRect": "A mass of unshaded cells is a rectangle.",

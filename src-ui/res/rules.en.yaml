@@ -1112,3 +1112,4 @@ tontonbeya: "Place a triangle, square or circle in every empty cell.\n1. All ins
   2. A room can have 1, 2 or 3 different clusters. These must all have the same size.\n\
   3. Every cluster is orthogonally adjacent to exactly one other cluster using the\
   \ same symbol in a different room."
+circlesquare: "Shade some cells on the board.\n1. Black circles must be shaded, while white circles must not be shaded.\n2. The shaded cells cannot form a 2x2 square. \n3. All shaded cells form an orthogonally contiguous area.\n4. All unshaded areas must form squares."
