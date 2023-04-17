@@ -48,6 +48,9 @@
 		},
 		allowUnshade: function() {
 			return this.qnum !== 2;
+		},
+		isShadeDecided: function() {
+			return this.isnull || this.isShade() || this.qsub > 0;
 		}
 	},
 	AreaShadeGraph: {
@@ -110,7 +113,8 @@
 			"checkShadeOnCircle",
 			"check2x2ShadeCell",
 			"checkConnectShade",
-			"checkUnshadeSquare"
+			"checkUnshadeSquare",
+			"doneShadingDecided"
 		],
 
 		// Check black circle is shaded
