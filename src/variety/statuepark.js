@@ -8,7 +8,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["statuepark", "statuepark-aux", "pentopia"], {
+})(["statuepark", "statuepark-aux", "pentopia", "battleship"], {
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -132,6 +132,73 @@
 		}
 	},
 
+	"MouseEvent@battleship": {
+		inputModes: {
+			edit: ["number", "clear", "completion"],
+			play: ["shade", "unshade", "clear", "completion"]
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputcell();
+				}
+				if (this.notInputted() && this.mousestart) {
+					this.inputqcmp();
+				}
+			} else if (this.puzzle.editmode && this.mousestart) {
+				if (this.mousestart) {
+					if (!this.inputqnum_excell()) {
+						this.inputqnum();
+					}
+				}
+				if (this.notInputted()) {
+					if (this.btn === "left") {
+						this.inputpiece();
+					} else {
+						this.inputqcmp();
+					}
+				}
+			}
+		},
+		mouseinput_number: function() {
+			if (this.mousestart) {
+				this.inputqnum_excell();
+			}
+		},
+		inputqnum_excell: function() {
+			var excell = this.getcell_excell();
+			if (excell.isnull || excell.group !== "excell") {
+				return false;
+			}
+
+			if (excell !== this.cursor.getex()) {
+				this.setcursor(excell);
+			} else {
+				this.inputqnum_main(excell);
+			}
+			return true;
+		},
+
+		inputqcmp: function() {
+			var piece = this.getbank();
+			if (piece) {
+				piece.setQcmp(piece.qcmp ? 0 : 1);
+				piece.draw();
+				return;
+			}
+
+			var excell = this.getcell_excell();
+			if (excell.isnull || excell.noNum() || excell.group !== "excell") {
+				return;
+			}
+
+			excell.setQcmp(+!excell.qcmp);
+			excell.draw();
+
+			this.mousereset();
+		}
+	},
+
 	KeyEvent: {
 		enablemake: true
 	},
@@ -166,6 +233,15 @@
 			}
 		}
 	},
+	"KeyEvent@battleship": {
+		keyinput: function(ca) {
+			if (!this.cursor.getex().isnull) {
+				this.key_inputexcell(ca);
+			} else {
+				this.key_inputqnum(ca);
+			}
+		}
+	},
 	TargetCursor: {
 		setaddr: function(pos) {
 			if (this.bankpiece !== null) {
@@ -188,6 +264,48 @@
 				ret.push([block.clist.getBlockShapes().canon, block.clist]);
 			}
 			return ret;
+		}
+	},
+	"Board@battleship": {
+		hasexcell: 1,
+
+		UP: 1,
+		DN: 2,
+		LT: 3,
+		RT: 4,
+		CENTER: 5,
+		SINGLE: 6,
+		UPLT: 7,
+		UPRT: 8,
+		DNLT: 9,
+		DNRT: 10,
+
+		getShape: function(top, bottom, left, right) {
+			if ((top && bottom) || (left && right)) {
+				return this.CENTER;
+			} else if (top) {
+				if (left) {
+					return this.DNRT;
+				}
+				if (right) {
+					return this.DNLT;
+				}
+				return this.DN;
+			} else if (bottom) {
+				if (left) {
+					return this.UPRT;
+				}
+				if (right) {
+					return this.UPLT;
+				}
+				return this.UP;
+			} else if (left) {
+				return this.RT;
+			} else if (right) {
+				return this.LT;
+			} else {
+				return this.SINGLE;
+			}
 		}
 	},
 
@@ -306,8 +424,85 @@
 			var pieces = this.pieces.map(function(p) {
 				return p.serialize();
 			});
-			return !this.puzzle.pzpr.util.sameArray(this.presets[0].constant, pieces);
+			return !this.puzzle.pzpr.util.sameArray(this.defaultPreset(), pieces);
 		}
+	},
+
+	"Bank@battleship": {
+		defaultPreset: function() {
+			return this.presets[1].constant;
+		},
+		presets: [
+			{
+				name: "preset.fleet3",
+				shortkey: "3",
+				constant: ["11g", "11g", "11g", "21o", "21o", "31s"]
+			},
+			{
+				name: "preset.fleet4",
+				shortkey: "4",
+				constant: [
+					"11g",
+					"11g",
+					"11g",
+					"11g",
+					"21o",
+					"21o",
+					"21o",
+					"31s",
+					"31s",
+					"41u"
+				]
+			},
+			{
+				name: "preset.fleet5",
+				shortkey: "5",
+				constant: [
+					"11g",
+					"11g",
+					"11g",
+					"11g",
+					"11g",
+					"21o",
+					"21o",
+					"21o",
+					"21o",
+					"31s",
+					"31s",
+					"31s",
+					"41u",
+					"41u",
+					"51v"
+				]
+			},
+			{
+				name: "preset.pentominoes",
+				shortkey: "p",
+				constant: [
+					"337k",
+					"15v",
+					"24as",
+					"24bo",
+					"23fg",
+					"337i",
+					"23rg",
+					"334u",
+					"335s",
+					"33bk",
+					"24bk",
+					"337o"
+				]
+			},
+			{
+				name: "preset.copy_answer",
+				func: "copyAnswer"
+			},
+			{
+				name: "preset.zero",
+				shortkey: "z",
+				constant: []
+			}
+		]
 	},
 
 	BankPiece: {
@@ -443,6 +638,56 @@
 			}
 		}
 	},
+	"Cell@battleship": {
+		numberAsObject: true,
+		minnum: 0,
+		maxnum: 10,
+
+		posthook: {
+			qnum: function() {
+				this.drawaround();
+				if (this.qnum !== -1 && this.qans) {
+					this.setQans(0);
+				}
+			},
+			qans: function() {
+				this.drawaround();
+			},
+			qsub: function() {
+				this.drawaround();
+			}
+		},
+
+		allowShade: function() {
+			return this.qnum === -1;
+		},
+
+		isShade: function() {
+			var isClue = this.qnum !== -1 && this.qnum !== 0;
+			return !this.isnull && (isClue || this.qans === 1);
+		},
+		isUnshade: function() {
+			return !this.isnull && !this.isShade();
+		},
+
+		getShape: function() {
+			return this.board.getShape(
+				this.adjacent.top.isShade(),
+				this.adjacent.bottom.isShade(),
+				this.adjacent.left.isShade(),
+				this.adjacent.right.isShade()
+			);
+		},
+
+		isAdjacentDecided: function() {
+			return (
+				this.adjacent.top.isShadeDecided() &&
+				this.adjacent.bottom.isShadeDecided() &&
+				this.adjacent.left.isShadeDecided() &&
+				this.adjacent.right.isShadeDecided()
+			);
+		}
+	},
 	"BoardExec@pentopia": {
 		adjustBoardData: function(key, d) {
 			this.adjustCellQnumArrow(key, d);
@@ -497,8 +742,76 @@
 		}
 	},
 
+	"ExCell@battleship": {
+		disInputHatena: true,
+
+		maxnum: function() {
+			var bx = this.bx,
+				by = this.by;
+			if (bx === -1 && by === -1) {
+				return 0;
+			}
+			return by === -1 ? this.board.rows : this.board.cols;
+		},
+		minnum: 0,
+		isShade: function() {
+			return false;
+		},
+		isShadeDecided: function() {
+			return true;
+		}
+	},
+	"BoardExec@battleship": {
+		adjustBoardData: function(key, d) {
+			this.adjustCellQnumArrow(key, d);
+			this.adjustExCellTopLeft_1(key, d);
+		},
+		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d);
+		},
+		getTranslateDir: function(key) {
+			var trans = {};
+			switch (key) {
+				case this.FLIPY:
+					trans = { 1: 2, 2: 1, 7: 9, 8: 10, 9: 7, 10: 8 };
+					break; // 上下反転
+				case this.FLIPX:
+					trans = { 3: 4, 4: 3, 7: 8, 8: 7, 9: 10, 10: 9 };
+					break; // 左右反転
+				case this.TURNR:
+					trans = {
+						1: 4,
+						2: 3,
+						3: 1,
+						4: 2,
+						7: 8,
+						8: 10,
+						9: 7,
+						10: 9
+					};
+					break; // 右90°回転
+				case this.TURNL:
+					trans = {
+						1: 3,
+						2: 4,
+						3: 2,
+						4: 1,
+						7: 9,
+						8: 7,
+						9: 10,
+						10: 8
+					};
+					break; // 左90°回転
+			}
+			return trans;
+		}
+	},
+
 	AreaShadeGraph: {
 		enabled: true
+	},
+	"AreaShadeGraph@battleship": {
+		relation: { "cell.qnum": "node", "cell.qans": "node" }
 	},
 	"AreaUnshadeGraph@statuepark": {
 		enabled: true
@@ -670,6 +983,200 @@
 		}
 	},
 
+	"Graphic@battleship": {
+		bcolor: "rgb(191, 191, 255)",
+		bgcellcolor_func: "qsub1",
+		paint: function() {
+			this.drawBGCells();
+			this.drawBoardPieces();
+			this.drawWaterClues();
+			this.drawGrid();
+
+			this.drawNumbersExCell();
+
+			this.drawChassis();
+			this.drawBank();
+
+			this.drawTarget();
+		},
+
+		getQuesNumberColor: function(cell) {
+			if (cell.error === 1) {
+				return this.errcolor1;
+			} else if (cell.qcmp) {
+				return this.qcmpcolor;
+			}
+			return this.quescolor;
+		},
+
+		getShadedCellColor: function(cell) {
+			if (cell.qnum !== -1 && cell.qnum !== 0) {
+				if ((cell.error || cell.qinfo) === 1) {
+					return this.errcolor1;
+				}
+				return this.quescolor;
+			} else if (cell.qans) {
+				if ((cell.error || cell.qinfo) === 1) {
+					return this.errcolor2;
+				}
+				return this.qanscolor;
+			}
+			return null;
+		},
+
+		drawWaterClues: function() {
+			var g = this.vinc("cell_water", "auto");
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				g.vid = "c_water_" + cell.id;
+				if (cell.qnum === 0) {
+					g.fillStyle = this.quescolor;
+					// TODO improve
+					this.disptext("~", px, py, this.textoption);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		drawBoardPieces: function() {
+			var g = this.vinc("cell_bpiece", "auto");
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					color = this.getShadedCellColor(cell),
+					px = cell.bx * this.bw,
+					py = cell.by * this.bh,
+					r = this.bw * 0.9;
+
+				var isCircled =
+					cell.qnum !== -2 && (cell.isAdjacentDecided() || cell.qnum > 0);
+
+				var shape =
+					cell.qnum === -2
+						? this.board.SINGLE
+						: cell.qnum !== -1
+						? cell.qnum
+						: cell.getShape();
+
+				var vid = "c_piece_" + cell.id;
+
+				this.drawSinglePiece(g, vid, px, py, r, shape, color, isCircled);
+			}
+		},
+
+		drawSinglePiece: function(g, vid, px, py, r, shape, color, isCircled) {
+			g.vid = vid + "_circle";
+			if (color && isCircled) {
+				g.fillStyle = color;
+				g.fillCircle(px, py, r);
+			} else {
+				g.vhide();
+			}
+
+			g.vid = vid;
+			if (!!color) {
+				g.fillStyle = color;
+
+				g.beginPath();
+				g.moveTo(px + r, py);
+
+				if (
+					shape === this.board.DN ||
+					shape === this.board.RT ||
+					shape === this.board.DNRT ||
+					shape === this.board.SINGLE
+				) {
+					if (isCircled) {
+						g.arc(px, py, r, 0, 0.5 * Math.PI, false);
+					}
+				} else {
+					g.lineTo(px + r, py + r);
+				}
+				g.lineTo(px, py + r);
+
+				if (
+					shape === this.board.DN ||
+					shape === this.board.LT ||
+					shape === this.board.DNLT ||
+					shape === this.board.SINGLE
+				) {
+					if (isCircled) {
+						g.arc(px, py, r, 0.5 * Math.PI, Math.PI, false);
+					}
+				} else {
+					g.lineTo(px - r, py + r);
+				}
+				g.lineTo(px - r, py);
+
+				if (
+					shape === this.board.UP ||
+					shape === this.board.LT ||
+					shape === this.board.UPLT ||
+					shape === this.board.SINGLE
+				) {
+					if (isCircled) {
+						g.arc(px, py, r, Math.PI, 1.5 * Math.PI, false);
+					}
+				} else {
+					g.lineTo(px - r, py - r);
+				}
+				g.lineTo(px, py - r);
+
+				if (
+					shape === this.board.UP ||
+					shape === this.board.RT ||
+					shape === this.board.UPRT ||
+					shape === this.board.SINGLE
+				) {
+					if (isCircled) {
+						g.arc(px, py, r, 1.5 * Math.PI, 2 * Math.PI, false);
+					}
+				} else {
+					g.lineTo(px + r, py - r);
+				}
+				g.lineTo(px + r, py);
+				g.fill();
+			} else {
+				g.vhide();
+			}
+		},
+
+		drawBankPiece: function(g, piece, idx) {
+			var str = piece ? piece.str : "";
+			var w = piece ? piece.w : 0;
+			var br = this.bankratio;
+			var r = this.cw * br * 0.5 - 1;
+
+			this.maxpiececount = Math.max(str.length, this.maxpiececount);
+			for (var i = 0; i < this.maxpiececount; i++) {
+				var vid = "pb_piece_" + idx + "_" + i;
+
+				if (piece) {
+					var x = i % w,
+						y = (i / w) | 0;
+
+					var top = str[i - w] === "1",
+						bottom = str[i + w] === "1",
+						left = x > 0 && str[i - 1] === "1",
+						right = x < w - 1 && str[i + 1] === "1";
+
+					var shape = this.board.getShape(top, bottom, left, right);
+					var color = str[i] === "1" ? this.getBankPieceColor(piece) : null;
+					var px = this.cw * br * (piece.x + 0.25 + x) + r;
+					var py = this.ch * br * (piece.y + 0.25 + y) + r;
+					py += (this.board.rows + 0.5) * this.ch + 1;
+					this.drawSinglePiece(g, vid, px, py, r, shape, color, true);
+				} else {
+					this.drawSinglePiece(g, vid, 0, 0, r, 0, null);
+				}
+			}
+		}
+	},
+
 	Encode: {
 		decodePzpr: function(type) {
 			if (this.outbstr[0] !== "/") {
@@ -698,6 +1205,20 @@
 			this.encodePieceBank();
 		}
 	},
+	"Encode@battleship": {
+		decodePzpr: function(type) {
+			if (this.outbstr[0] !== "/") {
+				this.decodeNumber16ExCell();
+				this.decodeNumber16();
+			}
+			this.decodePieceBank();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16ExCell();
+			this.encodeNumber16();
+			this.encodePieceBank();
+		}
+	},
 
 	"Encode@statuepark-aux": {
 		decodePzpr: function(type) {
@@ -715,6 +1236,7 @@
 		decodeData: function() {
 			this.decodePieceBank();
 			this.decodeConfig();
+			// TODO decode excell
 			this.decodeCellQnum();
 			this.decodeCellAns();
 			this.decodePieceBankQcmp();
@@ -722,6 +1244,7 @@
 		encodeData: function() {
 			this.encodePieceBank();
 			this.encodeConfig();
+			// TODO encode excell
 			this.encodeCellQnum();
 			this.encodeCellAns();
 			this.encodePieceBankQcmp();
@@ -775,26 +1298,7 @@
 		}
 	},
 
-	"AnsCheck@pentopia": {
-		checklist: [
-			"checkShadeOnArrow",
-			"checkBankPiecesAvailable",
-			"checkShadeDiagonal",
-			"checkShadeDirCloser",
-			"checkShadeDirUnequal",
-			"checkShadeDirExist",
-			"checkBankPiecesInvalid+"
-		],
-
-		checkShadeOnArrow: function() {
-			if (this.puzzle.getConfig("pentopia_transparent")) {
-				return;
-			}
-			this.checkAllCell(function(cell) {
-				return cell.isShade() && cell.qnum !== -1;
-			}, "csOnArrow");
-		},
-
+	"AnsCheck@pentopia,battleship#1": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -827,6 +1331,27 @@
 					clist.seterr(1);
 				}
 			}
+		}
+	},
+
+	"AnsCheck@pentopia": {
+		checklist: [
+			"checkShadeOnArrow",
+			"checkBankPiecesAvailable",
+			"checkShadeDiagonal",
+			"checkShadeDirCloser",
+			"checkShadeDirUnequal",
+			"checkShadeDirExist",
+			"checkBankPiecesInvalid+"
+		],
+
+		checkShadeOnArrow: function() {
+			if (this.puzzle.getConfig("pentopia_transparent")) {
+				return;
+			}
+			this.checkAllCell(function(cell) {
+				return cell.isShade() && cell.qnum !== -1;
+			}, "csOnArrow");
 		},
 
 		getShadeDirs: function() {
@@ -947,6 +1472,51 @@
 					}
 				}
 			}
+		}
+	},
+
+	"AnsCheck@battleship": {
+		checklist: [
+			// TODO check shape matching
+			"checkBankPiecesAvailable",
+			"checkBankPiecesInvalid",
+			"checkShadeDiagonal",
+			"checkShadeCount",
+			"checkBankPiecesUsed"
+		],
+
+		checkShadeCount: function() {
+			this.checkRowsCols(this.isExCellCount, "exShadeNe");
+		},
+
+		isExCellCount: function(clist) {
+			var d = clist.getRectSize(),
+				bd = this.board;
+			var count = clist.filter(function(c) {
+				return c.isShade();
+			}).length;
+
+			var result = true;
+
+			if (d.x1 === d.x2) {
+				var exc = bd.getex(d.x1, -1);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+			if (d.y1 === d.y2) {
+				var exc = bd.getex(-1, d.y1);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+
+			if (!result) {
+				clist.seterr(1);
+			}
+			return result;
 		}
 	}
 });
