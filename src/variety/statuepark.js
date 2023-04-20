@@ -435,12 +435,12 @@
 		presets: [
 			{
 				name: "preset.fleet3",
-				shortkey: "3",
+				shortkey: "c",
 				constant: ["11g", "11g", "11g", "21o", "21o", "31s"]
 			},
 			{
 				name: "preset.fleet4",
-				shortkey: "4",
+				shortkey: "d",
 				constant: [
 					"11g",
 					"11g",
@@ -456,7 +456,7 @@
 			},
 			{
 				name: "preset.fleet5",
-				shortkey: "5",
+				shortkey: "e",
 				constant: [
 					"11g",
 					"11g",
