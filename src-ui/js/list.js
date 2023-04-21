@@ -301,7 +301,8 @@
 			"chainedb",
 			"canal",
 			"railpool",
-			"circlesquare"
+			"circlesquare",
+			"simplegako"
 		]
 	};
 	var tabstate = {

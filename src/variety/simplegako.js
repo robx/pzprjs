@@ -50,6 +50,10 @@
 				return;
 			}
 
+			if (this.inputData === -2) {
+				this.inputData = -1;
+			}
+
 			if (cell.qnum === -1) {
 				cell.clrSnum();
 				cell.setAnum(this.inputData);
@@ -70,7 +74,6 @@
 	// 盤面管理系
 	Cell: {
 		enableSubNumberArray: true,
-		disInputHatena: true,
 		maxnum: function() {
 			return this.board.cols + this.board.rows - 1;
 		}
@@ -84,8 +87,6 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
-		hideHatena: true,
-
 		paint: function() {
 			this.drawBGCells();
 			this.drawTargetSubNumber();
