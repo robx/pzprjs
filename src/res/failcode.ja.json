@@ -503,6 +503,7 @@
     "nmConnWallLt.walllogic": "数字に繋がる線が短いです。",
     "nmCountGt.nanro": "入っている数字の数が数字より多いです。",
     "nmCountLt.nanro": "入っている数字の数が数字より少ないです。",
+    "nmCountNe.simplegako": "同じ行と列にある同じ数字の個数がそのマスの数字と異なります。",
     "nmDiffDistNe.hanare": "２つの数字の差とその間隔が正しくありません。",
     "nmDiffDistNe.putteria": "２つの数字の差とその間隔が正しくありません。",
     "nmDivEq2.kropki": "黒まるのない両側の数字が2倍になっています。",
