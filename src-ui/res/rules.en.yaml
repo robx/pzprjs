@@ -1112,3 +1112,5 @@ tontonbeya: "Place a triangle, square or circle in every empty cell.\n1. All ins
   2. A room can have 1, 2 or 3 different clusters. These must all have the same size.\n\
   3. Every cluster is orthogonally adjacent to exactly one other cluster using the\
   \ same symbol in a different room."
+simplegako: "Place a number into each cell such that each number indicates how many\
+  \ copies of itself appear in the same row or column, including itself."
