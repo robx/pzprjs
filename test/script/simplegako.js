@@ -4,12 +4,16 @@ ui.debug.addDebugData("simplegako", {
 	url: "4/4/k5g12g2k",
 	failcheck: [
 		[
-			"ceNoNum",
-			"pzprv3/simplegako/4/4/. . . . /. 5 . 1 /2 . 2 . /. . . . /5 5 5 . /5 . 5 . /. . . . /5 5 5 . /"
+			"nmCountLt",
+			"pzprv3/simplegako/4/4/. . . . /. 5 . 1 /2 . 2 . /. . . . /5 5 . . /5 . . . /. 5 . . /5 5 . . /"
 		],
 		[
-			"nmCountNe",
-			"pzprv3/simplegako/4/4/. . . . /. 5 . 1 /2 . 2 . /. . . . /3 5 3 5 /3 . 3 . /. 5 . 5 /2 5 1 5 /"
+			"nmCountGt",
+			"pzprv3/simplegako/4/4/. . . . /. 5 . 1 /2 . 2 . /. . . . /5 5 5 . /5 . 5 . /. 2 . . /5 5 5 . /"
+		],
+		[
+			"ceNoNum",
+			"pzprv3/simplegako/4/4/. . . . /. 5 . 1 /2 . 2 . /. . . . /5 5 5 . /5 . 5 . /. 1 . . /5 5 5 . /"
 		],
 		[
 			null,

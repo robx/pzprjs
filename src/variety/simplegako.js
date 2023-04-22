@@ -19,14 +19,14 @@
 
 		mouseinput_other: function() {
 			if (this.inputMode === "copynum") {
-				this.dragnumber_shimplegako();
+				this.dragnumber_simplegako();
 			}
 		},
 
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
-					this.dragnumber_shimplegako();
+					this.dragnumber_simplegako();
 				}
 				if (this.mouseend && this.notInputted()) {
 					this.mouseCell = this.board.emptycell;
@@ -38,7 +38,7 @@
 			}
 		},
 
-		dragnumber_shimplegako: function() {
+		dragnumber_simplegako: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
 				return;
@@ -127,9 +127,25 @@
 	//---------------------------------------------------------
 	// 正解判定処理実行部
 	AnsCheck: {
-		checklist: ["checkNoNumCell", "checkRowsColsSameNumber"],
+		checklist: [
+			"checkRowsColsTooManyNumber",
+			"checkRowsColsNotEnoughNumber",
+			"checkNoNumCell"
+		],
 
-		checkRowsColsSameNumber: function() {
+		checkRowsColsTooManyNumber: function() {
+			this.checkRowsColsNumber(function(count, num) {
+				return count > num;
+			}, "nmCountGt");
+		},
+
+		checkRowsColsNotEnoughNumber: function() {
+			this.checkRowsColsNumber(function(count, num) {
+				return count < num;
+			}, "nmCountLt");
+		},
+
+		checkRowsColsNumber: function(evalfunc, code) {
 			var bd = this.board;
 			for (var i = 0; i < bd.cell.length; i++) {
 				var cell = bd.cell[i];
@@ -148,8 +164,8 @@
 					this.countNumberInClist(num, clistbx) +
 					this.countNumberInClist(num, clistby) -
 					1;
-				if (count !== num) {
-					this.failcode.add("nmCountNe");
+				if (evalfunc(count, num)) {
+					this.failcode.add(code);
 					if (this.checkOnly) {
 						break;
 					}
