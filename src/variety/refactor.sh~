@@ -1,0 +1,6 @@
+STR = '\(function\(pidlist, classbase\) \{\s*if \(typeof module === "object" && module.exports\) {\s*module.exports = \[pidlist, classbase\];\s*} else \{\s*pzpr.classmgr.makeCustom\(pidlist, classbase\);\s*\}\s*\}\)'
+
+for file in *.js
+do
+    rg -U $STR file
+done
