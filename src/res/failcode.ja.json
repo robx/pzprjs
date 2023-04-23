@@ -235,7 +235,7 @@
     "bkUnitNe2.kuroclone": "ユニットの数が２つでない部屋があります。",
     "bkUnknown.lohkous": "領域内に数字と異なる長さのセグメントがあります。",
     "bkUnshade.lapaz": "1x1の領域が黒く塗られていません。",
-    "bkUnshadeConsecGt3": "白マスが3部屋連続で続いています。",
+    "bkUnshadeConsecGt3": "白マスが２つ以上の太線を連続してまたいでいます。",
     "bkWidthGt1": "幅が１マスではないタタミがあります。",
     "bkWrongNum.armyants": "アリの数字がおかしいです。",
     "blLineDiff.onsen": "各部屋で線が通過するマスの数が違います。",
@@ -714,5 +714,18 @@
     "laCurve.kaidan": "長方形どうしが重なっています。",
     "lnOnShade.kaidan": "長方形と「〇」が重なっています。",
     "lnLenLt.anglers": "線が短すぎます。",
-    "bdUnused.mirrorbk": "鏡に接する2マスが同じブロックに含まれています。"
+    "bdUnused.mirrorbk": "鏡に接する2マスが同じブロックに含まれています。",
+    "bkSizeGt.martini": "数字が白丸の個数より小さいです。",
+    "bkSizeLt.martini": "数字が白丸の個数より大きいです。",
+    "ceDirection.guidearrow": "矢印の方向に出発しても★にたどり着けません。",
+    "ceIntersect.nanameguri": "線がナナメの太線をまたいでいます。",
+    "lnIsolate.icewalk": "線が数字を通っていません。",
+    "bdUnusedCircle.wafusuma": "丸がある辺に線が引かれていません。",
+    "bkNumGe3.news": "領域内に文字が3つ以上あります。",
+    "bkNumLt2.news": "領域内に文字が1つしかありません。",
+    "bkOverNum": "領域に含まれる数字の数が多すぎます。",
+    "bdUnused.fillomino": "線が余分になっています。",
+    "lnCurveOnNum": "線が駅のマスで曲がっています。",
+    "lnIsolate.anglers": "線が魚のマスを通っていません。",
+    "lnIsolate.nanameguri": "線がナナメの太線があるマスを通っていません。"
 }
