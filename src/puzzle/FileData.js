@@ -2,7 +2,7 @@
 
 (function() {
 	function throwNoImplementation() {
-		throw "no implementation";
+		throw Error("no implementation");
 	}
 
 	//---------------------------------------------------------------------------
@@ -108,7 +108,7 @@
 						break;
 
 					default:
-						throw "invalid filetype";
+						throw Error("invalid filetype");
 				}
 
 				pzl.type = filetype;

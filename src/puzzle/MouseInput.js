@@ -405,7 +405,7 @@ pzpr.classmgr.makeCommon({
 				this.inputMode = mode;
 				this.savedInputMode[this.puzzle.editmode ? "edit" : "play"] = mode;
 			} else {
-				throw "Invalid input mode :" + mode;
+				throw Error("Invalid input mode :" + mode);
 			}
 		},
 		getInputModeList: function(type) {

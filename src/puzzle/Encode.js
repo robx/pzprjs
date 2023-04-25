@@ -110,11 +110,11 @@ pzpr.classmgr.makeCommon({
 					break;
 
 				case pzl.URL_PZPRAPP:
-					throw "no implementation";
+					throw Error("no implementation");
 
 				case pzl.URL_KANPENP:
 					if (!puzzle.info.exists.kanpen) {
-						throw "no implementation";
+						throw Error("no implementation");
 					}
 					this.encodePzpr(pzl.URL_PZPRAPP);
 					this.outpflag = this.outpflag || "";
@@ -134,7 +134,7 @@ pzpr.classmgr.makeCommon({
 					break;
 
 				default:
-					throw "invalid URL Type";
+					throw Error("invalid URL Type");
 			}
 
 			pzl.pid = pid;
@@ -150,22 +150,22 @@ pzpr.classmgr.makeCommon({
 
 		// オーバーライド用
 		decodePzpr: function(type) {
-			throw "no implementation";
+			throw Error("no implementation");
 		},
 		encodePzpr: function(type) {
-			throw "no implementation";
+			throw Error("no implementation");
 		},
 		decodeKanpen: function() {
-			throw "no implementation";
+			throw Error("no implementation");
 		},
 		encodeKanpen: function() {
-			throw "no implementation";
+			throw Error("no implementation");
 		},
 		decodeHeyaApp: function() {
-			throw "no implementation";
+			throw Error("no implementation");
 		},
 		encodeHeyaApp: function() {
-			throw "no implementation";
+			throw Error("no implementation");
 		}
 	}
 });

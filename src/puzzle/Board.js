@@ -616,7 +616,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		operate: function(type) {
 			if (this.trialstage > 0 && this.exec.isBoardOp(type)) {
-				throw "board operations are not possible in trial mode";
+				throw Error("board operations are not possible in trial mode");
 			}
 			this.exec.execadjust(type);
 		},

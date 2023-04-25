@@ -227,7 +227,7 @@
 				} else if (key === this.FLIPX) {
 					bd.shape = { 0: 0, 1: 2, 2: 1, 3: 3 }[bd.shape];
 				} else {
-					throw "Tawamurenga can't accept turning operation!";
+					throw Error("Tawamurenga can't accept turning operation!");
 				}
 			} else if (key & this.EXPAND) {
 				switch (key & 0x0f) {

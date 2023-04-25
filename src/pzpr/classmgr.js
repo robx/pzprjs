@@ -171,7 +171,7 @@ pzpr.classmgr = {
 	setPuzzleClass: function(puzzle, newpid, callback) {
 		if (!pzpr.variety(newpid).valid) {
 			puzzle.emit("fail-open");
-			throw "Invalid Puzzle Variety Selected";
+			throw Error("Invalid Puzzle Variety Selected");
 		}
 
 		/* 今のパズルと別idの時 */
