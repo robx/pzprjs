@@ -111,8 +111,6 @@
 			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
 				if (this.btn === "left") {
 					this.dragnumber_tontonbeya();
-				} else if (this.btn === "right") {
-					this.inputQsubLine();
 				}
 			}
 

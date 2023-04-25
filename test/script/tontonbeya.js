@@ -33,6 +33,32 @@ ui.debug.addDebugData("tontonbeya", {
 			label: "Do not input dots with rightclick",
 			input: ["newboard,1,2", "playmode", "mouse,right,1,1"],
 			result: "pzprv3/tontonbeya/2/1/1/0 /0 /. /. /3 /. /"
+		},
+		{
+			label: "Input fixed numbers",
+			input: [
+				"newboard,3,2",
+				"editmode,mark-circle",
+				"mouse,left,1,1",
+				"editmode,mark-triangle",
+				"mouse,left,3,1",
+				"editmode,mark-rect",
+				"mouse,left,5,1"
+			],
+			result:
+				"pzprv3/tontonbeya/2/3/1/0 0 0 /0 0 0 /1 2 3 /. . . /. . . /. . . /"
+		},
+		{
+			label: "Drag numbers",
+			input: [
+				"playmode,auto",
+				"mouse,left,1,1,1,3",
+				"playmode,copysymbol",
+				"mouse,left,3,1,3,3",
+				"mouse,leftx2,5,3"
+			],
+			result:
+				"pzprv3/tontonbeya/2/3/1/0 0 0 /0 0 0 /1 2 3 /. . . /. . . /1 2 . /"
 		}
 	]
 });
