@@ -28,5 +28,11 @@ ui.debug.addDebugData("tontonbeya", {
 			"pzprv3/tontonbeya/4/4/4/0 0 1 1 /0 0 2 2 /3 2 2 2 /2 2 2 2 /. 1 2 . /. . . . /. . . . /. 3 1 . /1 . . 2 /1 1 1 2 /3 3 1 2 /3 . . 2 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Do not input dots with rightclick",
+			input: ["newboard,1,2", "playmode", "mouse,right,1,1"],
+			result: "pzprv3/tontonbeya/2/1/1/0 /0 /. /. /3 /. /"
+		}
+	]
 });

@@ -122,7 +122,6 @@
 
 			if (this.mouseend && this.notInputted()) {
 				this.mouseCell = this.board.emptycell;
-				// TODO disable inputting dots
 				this.inputqnum();
 			}
 		},
@@ -197,6 +196,9 @@
 
 		maxnum: 3
 	},
+	"Cell@tontonbeya": {
+		numberAsObject: false
+	},
 	Board: {
 		hasborder: 1
 	},
@@ -242,7 +244,6 @@
 			this.drawDotCells();
 			this.drawQnumMarks();
 			this.drawHatenas();
-			// TODO draw aux lines
 
 			this.drawChassis();
 
