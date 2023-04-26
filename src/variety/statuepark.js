@@ -1247,16 +1247,41 @@
 		decodeData: function() {
 			this.decodePieceBank();
 			this.decodeConfig();
-			// TODO decode excell
-			this.decodeCellQnum();
+			if (this.pid === "battleship") {
+				this.decodeCellExCell(function(obj, ca) {
+					if (ca[0] === "c") {
+						obj.qcmp = 1;
+						ca = ca.substring(1);
+					}
+
+					if (ca === "-") {
+						obj.qnum = -2;
+					} else if (ca !== ".") {
+						obj.qnum = +ca;
+					}
+				});
+			} else {
+				this.decodeCellQnum();
+			}
 			this.decodeCellAns();
 			this.decodePieceBankQcmp();
 		},
 		encodeData: function() {
 			this.encodePieceBank();
 			this.encodeConfig();
-			// TODO encode excell
-			this.encodeCellQnum();
+			if (this.pid === "battleship") {
+				this.encodeCellExCell(function(obj) {
+					if (obj.qnum >= 0) {
+						return (obj.qcmp ? "c" : "") + obj.qnum + " ";
+					} else if (obj.qnum === -2) {
+						return "- ";
+					} else {
+						return ". ";
+					}
+				});
+			} else {
+				this.encodeCellQnum();
+			}
 			this.encodeCellAns();
 			this.encodePieceBankQcmp();
 		},
