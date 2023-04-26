@@ -985,7 +985,9 @@
 
 	"Graphic@battleship": {
 		bcolor: "rgb(191, 191, 255)",
-		bgcellcolor_func: "qsub1",
+		qanscolor: "rgb(0, 80, 0)",
+		trialcolor: "rgb(80, 80, 80)",
+
 		paint: function() {
 			this.drawBGCells();
 			this.drawBoardPieces();
@@ -998,6 +1000,15 @@
 			this.drawBank();
 
 			this.drawTarget();
+		},
+
+		getBGCellColor: function(cell) {
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errbcolor1;
+			} else if (cell.qans === 1 || cell.qsub === 1) {
+				return this.bcolor;
+			}
+			return null;
 		},
 
 		getQuesNumberColor: function(cell) {
@@ -1019,7 +1030,7 @@
 				if ((cell.error || cell.qinfo) === 1) {
 					return this.errcolor2;
 				}
-				return this.qanscolor;
+				return cell.trial ? this.trialcolor : this.qanscolor;
 			}
 			return null;
 		},
