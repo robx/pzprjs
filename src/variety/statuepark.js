@@ -1513,13 +1513,30 @@
 
 	"AnsCheck@battleship": {
 		checklist: [
-			// TODO check shape matching
+			"checkShapeMatching",
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
 			"checkShadeDiagonal",
 			"checkShadeCount",
 			"checkBankPiecesUsed"
 		],
+
+		checkShapeMatching: function() {
+			this.checkAllCell(function(cell) {
+				if (cell.qnum < 0) {
+					return false;
+				}
+				if (cell.qnum === 0) {
+					return cell.isShade();
+				}
+
+				if (cell.qnum === cell.board.CENTER) {
+					// TODO special case for CENTER
+				}
+
+				return cell.qnum !== cell.getShape();
+			}, "csMismatch");
+		},
 
 		checkShadeCount: function() {
 			this.checkRowsCols(this.isExCellCount, "exShadeNe");
