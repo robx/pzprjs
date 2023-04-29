@@ -1513,15 +1513,16 @@
 
 	"AnsCheck@battleship": {
 		checklist: [
-			"checkShapeMatching",
+			"checkShapeExtra",
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
 			"checkShadeDiagonal",
+			"checkShapeMissing",
 			"checkShadeCount",
 			"checkBankPiecesUsed"
 		],
 
-		checkShapeMatching: function() {
+		checkShapeExtra: function() {
 			this.checkAllCell(function(cell) {
 				if (cell.qnum < 0) {
 					return false;
@@ -1530,10 +1531,21 @@
 					return cell.isShade();
 				}
 
-				if (cell.qnum === cell.board.CENTER) {
-					// TODO special case for CENTER
+				var shape = cell.getShape();
+
+				if (cell.qnum === cell.board.CENTER || shape === cell.board.SINGLE) {
+					return false;
 				}
 
+				return cell.qnum !== shape;
+			}, "csPieceExtra");
+		},
+
+		checkShapeMissing: function() {
+			this.checkAllCell(function(cell) {
+				if (cell.qnum <= 0) {
+					return false;
+				}
 				return cell.qnum !== cell.getShape();
 			}, "csMismatch");
 		},
