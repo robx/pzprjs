@@ -15,6 +15,7 @@
 			edit: ["border", "number"],
 			play: ["clear", "numexist", "numblank", "completion"]
 		},
+		// TODO add given magnets and shaded cells
 
 		mouseinput_number: function() {
 			if (this.mousestart) {
@@ -122,13 +123,13 @@
 
 		keyinput: function(ca) {
 			if (this.puzzle.playmode) {
-				if (ca === "q" || ca === "a" || ca === "z") {
+				if (ca === "q" || ca === "a" || ca === "z" || ca === "o") {
 					ca = "s1";
 				} else if (ca === "w" || ca === "s" || ca === "x") {
 					ca = "s2";
 				} else if (ca === "e" || ca === "d" || ca === "c") {
 					ca = " ";
-				} else if (ca === "+") { // TODO plus is never used
+				} else if (ca === "+") {
 					ca = "1";
 				} else if (ca === "-") {
 					ca = "2";
@@ -207,7 +208,27 @@
 
 	Cell: {
 		maxnum: 2,
-		numberWithMB: true
+		numberWithMB: true,
+
+		parity: function() {
+			return ((this.bx + this.by) & 2) === 0;
+		},
+		setNum: function(val) {
+			if (this.puzzle.editmode || this.qnum !== -1) {
+				this.common.setNum.call(this, val);
+				return;
+			}
+			var parity = this.parity();
+			var vals = val < -1 ? -val - 1 : 0;
+
+			this.room.clist.each(function(cell) {
+				var vala = val <= -1 ? -1 : cell.parity() === parity ? val : 3 - val;
+
+				cell.setAnum(vala);
+				cell.setQsub(vals);
+				cell.draw();
+			});
+		}
 	},
 
 	AreaRoomGraph: {
@@ -337,7 +358,7 @@
 			this.checkSameObjectInRoom(
 				this.board.roommgr,
 				function(cell) {
-					return cell.isNumberObj() ? 1 : 2;
+					return cell.anum > 0 ? 1 : 2;
 				},
 				"bkMixed"
 			);
