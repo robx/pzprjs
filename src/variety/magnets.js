@@ -20,6 +20,10 @@
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
+				var piece = this.getcell_excell();
+				if (!piece.isnull && piece.group === "cell") {
+					this.inputqnum();
+				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
 					this.inputborder();
@@ -176,18 +180,29 @@
 		}
 	},
 
+	Cell: {
+		maxnum: 2,
+		numberWithMB: true
+	},
+
+	AreaRoomGraph: {
+		enabled: true
+	},
+
 	Graphic: {
 		enablebcolor: true,
 		shadecolor: "#444444",
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawDotCells();
 
 			this.drawShadedCells();
 			this.drawGrid();
 
+			// TODO corner +/- decorations
 			this.drawNumbersExCell();
+			this.drawAnsNumbers();
+			this.drawMBs();
 
 			this.drawChassis(true);
 			this.drawBorders();
@@ -202,6 +217,17 @@
 				return this.qcmpcolor;
 			}
 			return this.quescolor;
+		},
+
+		getAnsNumberText: function(cell) {
+			// TODO replace with manual line drawings
+			if (cell.anum === 1) {
+				return "+";
+			}
+			if (cell.anum === 2) {
+				return "-";
+			}
+			return null;
 		},
 
 		getBoardCols: function() {
@@ -258,6 +284,68 @@
 				}
 				return ". ";
 			});
+		}
+	},
+
+	AnsCheck: {
+		checklist: [
+			"checkAdjacentDiffNumber",
+			"checkNoMixedRoom",
+			"checkPlusCount",
+			"checkMinusCount"
+		],
+
+		checkNoMixedRoom: function() {
+			this.checkSameObjectInRoom(
+				this.board.roommgr,
+				function(cell) {
+					return cell.isNumberObj() ? 1 : 2;
+				},
+				"bkMixed"
+			);
+		},
+
+		checkPlusCount: function() {
+			this.checkRowsCols(this.isPlusCount, "exPlusNe");
+		},
+		isPlusCount: function(clist) {
+			return this.isExCellCount(clist, 1, -3);
+		},
+		checkMinusCount: function() {
+			this.checkRowsCols(this.isMinusCount, "exMinusNe");
+		},
+		isMinusCount: function(clist) {
+			return this.isExCellCount(clist, 2, -1);
+		},
+
+		isExCellCount: function(clist, symbol, coord) {
+			var d = clist.getRectSize(),
+				bd = this.board;
+			var count = clist.filter(function(c) {
+				return c.anum === symbol;
+			}).length;
+
+			var result = true;
+
+			if (d.x1 === d.x2) {
+				var exc = bd.getex(d.x1, coord);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+			if (d.y1 === d.y2) {
+				var exc = bd.getex(coord, d.y1);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+
+			if (!result) {
+				clist.seterr(1);
+			}
+			return result;
 		}
 	}
 });
