@@ -11,15 +11,25 @@
 })(["magnets"], {
 	MouseEvent: {
 		use: true,
-		inputModes: { edit: ["border", "number"], play: ["clear"] },
+		inputModes: {
+			edit: ["border", "number"],
+			play: ["clear", "numexist", "numblank", "completion"]
+		},
 
 		mouseinput_number: function() {
 			if (this.mousestart) {
-				this.inputqnum_excell();
+				if (this.puzzle.editmode) {
+					this.inputqnum_excell();
+				} else {
+					this.inputqnum();
+				}
 			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
+				if (this.mousestart) {
+					this.inputqcmp();
+				}
 				var piece = this.getcell_excell();
 				if (!piece.isnull && piece.group === "cell") {
 					this.inputqnum();
@@ -111,7 +121,22 @@
 		},
 
 		keyinput: function(ca) {
-			this.key_inputexcell(ca);
+			if (this.puzzle.playmode) {
+				if (ca === "q" || ca === "a" || ca === "z") {
+					ca = "s1";
+				} else if (ca === "w" || ca === "s" || ca === "x") {
+					ca = "s2";
+				} else if (ca === "e" || ca === "d" || ca === "c") {
+					ca = " ";
+				} else if (ca === "+") { // TODO plus is never used
+					ca = "1";
+				} else if (ca === "-") {
+					ca = "2";
+				}
+				this.key_inputqnum(ca);
+			} else {
+				this.key_inputexcell(ca);
+			}
 		},
 
 		key_inputexcell: function(ca) {
@@ -199,7 +224,7 @@
 			this.drawShadedCells();
 			this.drawGrid();
 
-			// TODO corner +/- decorations
+			this.drawExCellDecorations();
 			this.drawNumbersExCell();
 			this.drawAnsNumbers();
 			this.drawMBs();
@@ -208,6 +233,19 @@
 			this.drawBorders();
 
 			this.drawCursor();
+		},
+
+		drawExCellDecorations: function() {
+			// TODO replace with manual line drawings
+			var g = this.vinc("deco", "crispEdges", true);
+			g.fillStyle = this.quescolor;
+
+			g.vid = "deco1";
+			this.disptext("-", -this.bw, -this.bh);
+			g.vid = "deco2";
+			this.disptext("+", -this.bw * 3, -this.bh);
+			g.vid = "deco3";
+			this.disptext("+", -this.bw, -this.bh * 3);
 		},
 
 		getQuesNumberColor: function(cell) {
