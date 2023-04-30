@@ -1,5 +1,5 @@
 //
-// nonogram.js
+// magnets.js
 //
 
 (function(pidlist, classbase) {
