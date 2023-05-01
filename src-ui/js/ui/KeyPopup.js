@@ -169,7 +169,8 @@ ui.keypopup = {
 		wafusuma: [10, 0],
 		kuroclone: [10, 0],
 		martini: [10, 0],
-		simplegako: [10, 10]
+		simplegako: [10, 10],
+		tontonbeya: [113, 113]
 	},
 
 	//---------------------------------------------------------------------------
@@ -592,22 +593,21 @@ ui.keypopup = {
 		);
 	},
 	generate_hakoiri: function(mode) {
-		this.generate_main(
-			[
-				["1", "○"],
-				["2", "△"],
-				["3", "□"],
-				[
-					"4",
-					{
-						text: mode === 1 ? "?" : "・",
-						color: mode === 3 ? "rgb(255, 96, 191)" : ""
-					}
-				],
-				" "
-			],
-			3
-		);
+		var pid = ui.puzzle.pid,
+			itemlist = [];
+
+		itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
+		if (pid === "hakoiri") {
+			itemlist.push([
+				"4",
+				{
+					text: mode === 1 ? "?" : "・",
+					color: mode === 3 ? "rgb(255, 96, 191)" : ""
+				}
+			]);
+		}
+		itemlist.push(" ");
+		this.generate_main(itemlist, 3);
 	},
 	generate_kusabi: function(mode) {
 		this.generate_main(
