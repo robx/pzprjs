@@ -481,7 +481,8 @@ firefly: "Draw a line from every firefly to make one connected network.\n1. A bl
   \ dot indicates where each firefly's path must start.\n2. A path cannot connect\
   \ directly between two black dots.\n3. Paths cannot branch, cross or go through\
   \ another path or firefly.\n4. A number indicates how many turns the firefly's path\
-  \ makes before reaching another firefly."
+  \ makes before reaching a firefly (possibly itself). Paths starting from empty circles\
+  \ can make any amount of turns."
 fivecells: "Divide the board into pentominoes (blocks of 5 cells).\n1. A number indicates\
   \ the amount of edges surrounding the cell which contain a border.\n2. All borders\
   \ must be used to divide two blocks, there can not be any dead-ends."
@@ -681,7 +682,8 @@ loopsp: "Draw multiple loops so that every cell is used by at least one loop.\n1
   \ at their intersection or otherwise overlap.\n2. Some cells have given loop segments.\
   \ These cells cannot have other lines added to them.\n3. Every loop goes through\
   \ at least one circle.\n4. All circles with identical numbers must be part of the\
-  \ same loop.\n5. Lines cannot intersect on a circle."
+  \ same loop, and different numbers must be in different loops.\n5. Lines cannot\
+  \ intersect on a circle."
 loute: "Divide the grid into regions of orthogonally connected cells.\n1. Each region\
   \ must be an L shape with a width of one cell.\n2. A circle must be located in the\
   \ corner of an L shape.\n3. Arrows must be located on the ends of an L shape, and\
