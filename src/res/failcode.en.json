@@ -685,7 +685,7 @@
     "nmTripRow.toichika2": "A number appears more than twice in the same row or column.",
     "nmUnpass.icebarn": "The line doesn't pass all of the number.",
     "nmUnshadeAdjNe.context": "The number of shaded cells orthogonally adjacent to an unshaded number is not correct.",
-    "nmVertexNe.vslither": "The number is not equal to the number of of visited vertices around it.",
+    "nmVertexNe.vslither": "The number is not equal to the number of visited vertices around it.",
     "nonCirclePromontory.kurodoko": "A dead end has no circle.",
     "nqAroundDup.kakuru": "There are same numbers around the pre-numbered cell.",
     "nqAroundSumNe.kakuru": "A sum of numbers around the pre-numbered cell is incorrect.",
