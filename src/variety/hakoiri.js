@@ -191,7 +191,7 @@
 	// 盤面管理系
 	Cell: {
 		numberAsObject: true,
-
+		enableSubNumberArray: true,
 		maxnum: 3
 	},
 	"Cell@tontonbeya": {
@@ -236,16 +236,25 @@
 
 		paint: function() {
 			this.drawBGCells();
+			this.drawTargetSubNumber();
 			this.drawGrid();
 			this.drawBorders();
 
 			this.drawDotCells();
 			this.drawQnumMarks();
 			this.drawHatenas();
+			this.drawSubNumbers();
 
 			this.drawChassis();
 
 			this.drawCursor();
+		},
+
+		getNumberTextCore: function(num) {
+			if (num > 0) {
+				return "○△◻"[num - 1];
+			}
+			return null;
 		},
 
 		drawQnumMarks: function() {
