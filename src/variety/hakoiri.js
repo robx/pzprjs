@@ -128,35 +128,32 @@
 			if (cell.isnull || cell === this.mouseCell) {
 				return;
 			}
-
 			if (this.inputData === null) {
 				this.inputData = cell.getNum();
 				if (this.inputData === -1) {
-					this.inputData = -2;
+					for (var sn = 0; sn < 4; sn++) {
+						if (cell.snum[sn] !== -1) {
+							this.inputData = cell.snum;
+						}
+					}
 				}
 				this.mouseCell = cell;
 				return;
-			} else if (this.inputData === -2) {
-				this.inputData = cell.getNum() === -1 ? -3 : -1;
 			}
 
-			if (this.inputData >= -1 && cell.qnum === -1) {
+			if (
+				this.inputData !== null &&
+				typeof this.inputData === "object" &&
+				cell.qnum === -1
+			) {
+				for (var sn = 0; sn < 4; sn++) {
+					cell.setSnum(sn, this.inputData[sn]);
+				}
+				cell.draw();
+			} else if (this.inputData >= -1 && cell.qnum === -1) {
 				cell.clrSnum();
 				cell.setAnum(this.inputData);
 				cell.draw();
-			} else if (this.inputData <= -3) {
-				var cell2 = this.mouseCell;
-				var border = this.board.getb(
-					(cell.bx + cell2.bx) >> 1,
-					(cell.by + cell2.by) >> 1
-				);
-				if (this.inputData === -3) {
-					this.inputData = border.qsub === 1 ? -5 : -4;
-				}
-				if (!border.isnull) {
-					border.setQsub(this.inputData === -4 ? 1 : 0);
-					border.draw();
-				}
 			}
 			this.mouseCell = cell;
 		}
@@ -191,7 +188,7 @@
 	// 盤面管理系
 	Cell: {
 		numberAsObject: true,
-
+		enableSubNumberArray: true,
 		maxnum: 3
 	},
 	"Cell@tontonbeya": {
@@ -236,16 +233,25 @@
 
 		paint: function() {
 			this.drawBGCells();
+			this.drawTargetSubNumber();
 			this.drawGrid();
 			this.drawBorders();
 
 			this.drawDotCells();
 			this.drawQnumMarks();
 			this.drawHatenas();
+			this.drawSubNumbers();
 
 			this.drawChassis();
 
 			this.drawCursor();
+		},
+
+		getNumberTextCore: function(num) {
+			if (num > 0) {
+				return "○△◻"[num - 1];
+			}
+			return null;
 		},
 
 		drawQnumMarks: function() {

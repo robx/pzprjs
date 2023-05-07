@@ -59,6 +59,25 @@ ui.debug.addDebugData("tontonbeya", {
 			],
 			result:
 				"pzprv3/tontonbeya/2/3/1/0 0 0 /0 0 0 /1 2 3 /. . . /. . . /1 2 . /"
+		},
+		{
+			label: "Drag snum",
+			input: [
+				"newboard,2,2",
+				"playmode,auto",
+				"cursor,1,1",
+				"key,1",
+				"cursor,3,1",
+				"key,shift,2,shift,3",
+				"mouse,left,3,1,1,1,1,3"
+			],
+			result:
+				"pzprv3/tontonbeya/2/2/1/0 0 /0 0 /. . /. . /1 .[2,3,,] /.[2,3,,] . /"
+		},
+		{
+			label: "Clear snum through drag",
+			input: ["mouse,left,3,3,1,3,1,1"],
+			result: "pzprv3/tontonbeya/2/2/1/0 0 /0 0 /. . /. . /. .[2,3,,] /. . /"
 		}
 	]
 });
