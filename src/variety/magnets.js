@@ -221,7 +221,12 @@
 			var parity = this.parity();
 			var vals = val < -1 ? -val - 1 : 0;
 
-			this.room.clist.each(function(cell) {
+			var list = this.room.clist;
+			if (list.length !== 2) {
+				list = new this.klass.CellList([this]);
+			}
+
+			list.each(function(cell) {
 				var vala = val <= -1 ? -1 : cell.parity() === parity ? val : 3 - val;
 
 				cell.setAnum(vala);
@@ -349,19 +354,47 @@
 	AnsCheck: {
 		checklist: [
 			"checkAdjacentDiffNumber",
-			"checkNoMixedRoom",
+			"checkNoTripleMagnet",
+			// TODO check magnet separated
+			"checkNoSingleMagnet",
 			"checkPlusCount",
 			"checkMinusCount"
 		],
 
-		checkNoMixedRoom: function() {
-			this.checkSameObjectInRoom(
-				this.board.roommgr,
-				function(cell) {
-					return cell.anum > 0 ? 1 : 2;
-				},
-				"bkMixed"
-			);
+		checkNoSingleMagnet: function() {
+			this.checkMagnetSize(-1, "bkNumLt2");
+		},
+		checkNoTripleMagnet: function() {
+			this.checkMagnetSize(+1, "bkNumGt2");
+		},
+
+		checkMagnetSize: function(flag, code) {
+			var rooms = this.board.roommgr.components;
+
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				if (room.clist.length < 2) {
+					continue;
+				}
+
+				var used = room.clist.filter(function(cell) {
+					return cell.isNum();
+				});
+
+				if (
+					used.length === 0 ||
+					(flag > 0 && used.length <= 2) ||
+					(flag < 0 && used.length !== 1)
+				) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				used.seterr(1);
+			}
 		},
 
 		checkPlusCount: function() {
