@@ -355,20 +355,26 @@
 		checklist: [
 			"checkAdjacentDiffNumber",
 			"checkNoTripleMagnet",
-			// TODO check magnet separated
 			"checkNoSingleMagnet",
 			"checkPlusCount",
 			"checkMinusCount"
 		],
 
 		checkNoSingleMagnet: function() {
-			this.checkMagnetSize(-1, "bkNumLt2");
+			this.checkAllCell(function(cell) {
+				if (!cell.isNum() || cell.room.clist.length === 1) {
+					return false;
+				}
+				for (var dir in cell.adjacent) {
+					var cell2 = cell.adjacent[dir];
+					if (cell2.room === cell.room && cell2.isNum()) {
+						return false;
+					}
+				}
+				return true;
+			}, "bkNumLt2");
 		},
 		checkNoTripleMagnet: function() {
-			this.checkMagnetSize(+1, "bkNumGt2");
-		},
-
-		checkMagnetSize: function(flag, code) {
 			var rooms = this.board.roommgr.components;
 
 			for (var r = 0; r < rooms.length; r++) {
@@ -381,15 +387,11 @@
 					return cell.isNum();
 				});
 
-				if (
-					used.length === 0 ||
-					(flag > 0 && used.length <= 2) ||
-					(flag < 0 && used.length !== 1)
-				) {
+				if (used.length <= 2) {
 					continue;
 				}
 
-				this.failcode.add(code);
+				this.failcode.add("bkNumGt2");
 				if (this.checkOnly) {
 					break;
 				}
