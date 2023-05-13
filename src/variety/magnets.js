@@ -47,7 +47,7 @@
 		inputqnum_excell: function() {
 			var excell = this.getcell_excell();
 			if (excell.isnull || excell.group !== "excell") {
-				return;
+				return this.inputqnum();
 			}
 
 			if (excell !== this.cursor.getex()) {
@@ -73,55 +73,9 @@
 	KeyEvent: {
 		enablemake: true,
 		enableplay: true,
-		moveTarget: function(ca) {
-			if (this.puzzle.playmode) {
-				return this.moveTCell(ca);
-			}
-
-			var cursor = this.cursor;
-			var excell0 = cursor.getex(),
-				dir = excell0.NDIR;
-			switch (ca) {
-				case "up":
-					if (cursor.miny < cursor.by) {
-						dir = excell0.UP;
-					}
-					break;
-				case "down":
-					if (
-						(cursor.bx < 0 && cursor.maxy > cursor.by) ||
-						(cursor.bx > 0 && cursor.by < -1)
-					) {
-						dir = excell0.DN;
-					}
-					break;
-				case "left":
-					if (cursor.minx < cursor.bx) {
-						dir = excell0.LT;
-					}
-					break;
-				case "right":
-					if (
-						(cursor.by < 0 && cursor.maxx > cursor.bx) ||
-						(cursor.by > 0 && cursor.bx < -1)
-					) {
-						dir = excell0.RT;
-					}
-					break;
-			}
-
-			if (dir !== excell0.NDIR) {
-				cursor.movedir(dir, 2);
-
-				excell0.draw();
-				cursor.draw();
-
-				return true;
-			}
-			return false;
-		},
 
 		keyinput: function(ca) {
+			// TODO check for excell/cell instead of using playmode
 			if (this.puzzle.playmode) {
 				if (ca === "q" || ca === "a" || ca === "z" || ca === "o") {
 					ca = "s1";
@@ -209,6 +163,7 @@
 	Cell: {
 		maxnum: 2,
 		numberWithMB: true,
+		disInputHatena: true,
 
 		parity: function() {
 			return ((this.bx + this.by) & 2) === 0;
@@ -240,6 +195,7 @@
 	},
 
 	AreaRoomGraph: {
+		// TODO investigate problem with vertical domino topped by invalid cell
 		enabled: true
 	},
 
@@ -254,6 +210,7 @@
 			this.drawExCellDecorations();
 			this.drawNumbersExCell();
 			this.drawAnsNumbers();
+			this.drawQuesNumbers();
 			this.drawMBs();
 
 			this.drawChassis(true);
@@ -298,12 +255,16 @@
 			return this.quescolor;
 		},
 
-		getAnsNumberText: function(cell) {
+		getNumberText: function(cell, num) {
+			if (cell.group === "excell") {
+				return this.getNumberTextCore(num);
+			}
+
 			// TODO replace with manual line drawings
-			if (cell.anum === 1) {
+			if (num === 1) {
 				return "+";
 			}
-			if (cell.anum === 2) {
+			if (num === 2) {
 				return "-";
 			}
 			return null;
@@ -343,15 +304,14 @@
 					}
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
-					// TODO decode givens
 					if (ca === "#") {
 						obj.ques = 7;
-					} else if (ca === "o") {
-						obj.qsub = 1;
-					} else if (ca === "x") {
-						obj.qsub = 2;
-					} else {
-						obj.anum = +ca;
+					} else if (ca[0] === "q") {
+						obj.qnum = +ca.substring(1);
+					} else if (ca[0] === "s") {
+						obj.qsub = +ca.substring(1);
+					} else if (ca[0] === "a") {
+						obj.anum = +ca.substring(1);
 					}
 				}
 			});
@@ -362,15 +322,14 @@
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
 					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
 				} else if (obj.group === "cell") {
-					// TODO encode givens
 					if (!obj.isValid()) {
 						return "# ";
-					} else if (obj.qsub === 1) {
-						return "o ";
-					} else if (obj.qsub === 2) {
-						return "x ";
+					} else if (obj.qnum !== -1) {
+						return "q" + obj.qnum + " ";
+					} else if (obj.qsub !== 0) {
+						return "s" + obj.qsub + " ";
 					} else if (obj.anum !== -1) {
-						return obj.anum + " ";
+						return "a" + obj.anum + " ";
 					}
 				}
 				return ". ";
