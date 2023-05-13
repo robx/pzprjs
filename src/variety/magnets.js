@@ -75,26 +75,30 @@
 		enableplay: true,
 
 		keyinput: function(ca) {
-			// TODO check for excell/cell instead of using playmode
-			if (this.puzzle.playmode) {
-				if (ca === "q" || ca === "a" || ca === "z" || ca === "o") {
-					ca = "s1";
-				} else if (ca === "w" || ca === "s" || ca === "x") {
-					ca = "s2";
-				} else if (ca === "e" || ca === "d" || ca === "c") {
-					ca = " ";
-				} else if (ca === "+") {
-					ca = "1";
-				} else if (ca === "-") {
-					ca = "2";
-				}
-				this.key_inputqnum(ca);
-			} else {
-				this.key_inputexcell(ca);
+			if (!this.cursor.getex().isnull) {
+				return this.key_inputexcell(ca);
 			}
+
+			// TODO input shaded cells with keyboard
+			if (ca === "q" || ca === "a" || ca === "z" || ca === "o") {
+				ca = this.puzzle.playmode ? "s1" : " ";
+			} else if (ca === "w" || ca === "s" || ca === "x") {
+				ca = this.puzzle.playmode ? "s2" : " ";
+			} else if (ca === "e" || ca === "d" || ca === "c") {
+				ca = " ";
+			} else if (ca === "+") {
+				ca = "1";
+			} else if (ca === "-") {
+				ca = "2";
+			}
+			this.key_inputqnum(ca);
 		},
 
 		key_inputexcell: function(ca) {
+			if (this.puzzle.playmode) {
+				return;
+			}
+
 			var excell = this.cursor.getex();
 
 			var val = this.getNewNumber(excell, ca, excell.qnum);
