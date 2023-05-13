@@ -286,12 +286,21 @@
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
 			this.decodeBorder();
-			// TODO decode invalid cells and givens
+			this.decodeCircle();
+			this.decodeEmpty();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16ExCell();
 			this.encodeBorder();
-			// TODO encode invalid cells and givens
+
+			if (
+				this.board.cell.some(function(cell) {
+					return cell.qnum !== -1 || !cell.isValid();
+				})
+			) {
+				this.encodeCircle();
+				this.encodeEmpty();
+			}
 		}
 	},
 
