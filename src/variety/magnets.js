@@ -12,10 +12,10 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["border", "number"],
+			edit: ["border", "number", "empty"],
 			play: ["clear", "numexist", "numblank", "completion"]
 		},
-		// TODO add given magnets and shaded cells
+		// TODO add given magnets and shaded cells by cursor
 
 		mouseinput_number: function() {
 			if (this.mousestart) {
@@ -218,6 +218,9 @@
 				this.common.setNum.call(this, val);
 				return;
 			}
+			if (this.puzzle.playmode && !this.isValid()) {
+				return;
+			}
 			var parity = this.parity();
 			var vals = val < -1 ? -val - 1 : 0;
 
@@ -246,8 +249,6 @@
 
 		paint: function() {
 			this.drawBGCells();
-
-			this.drawShadedCells();
 			this.drawGrid();
 
 			this.drawExCellDecorations();
@@ -259,6 +260,20 @@
 			this.drawBorders();
 
 			this.drawCursor();
+		},
+
+		getBGCellColor: function(cell) {
+			if (!cell.isValid()) {
+				return "darkgray";
+			}
+			return this.getBGCellColor_error1(cell);
+		},
+
+		getBorderColor: function(border) {
+			if (border.sidecell[0].isValid() !== border.sidecell[1].isValid()) {
+				return "black";
+			}
+			return this.getBorderColor_ques(border);
 		},
 
 		drawExCellDecorations: function() {
@@ -306,10 +321,12 @@
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
 			this.decodeBorder();
+			// TODO decode invalid cells and givens
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16ExCell();
 			this.encodeBorder();
+			// TODO encode invalid cells and givens
 		}
 	},
 
@@ -326,10 +343,15 @@
 					}
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
+					// TODO decode givens
 					if (ca === "#") {
-						obj.qans = 1;
-					} else if (ca === "+") {
+						obj.ques = 7;
+					} else if (ca === "o") {
 						obj.qsub = 1;
+					} else if (ca === "x") {
+						obj.qsub = 2;
+					} else {
+						obj.anum = +ca;
 					}
 				}
 			});
@@ -340,10 +362,15 @@
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
 					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
 				} else if (obj.group === "cell") {
-					if (obj.qans === 1) {
+					// TODO encode givens
+					if (!obj.isValid()) {
 						return "# ";
 					} else if (obj.qsub === 1) {
-						return "+ ";
+						return "o ";
+					} else if (obj.qsub === 2) {
+						return "x ";
+					} else if (obj.anum !== -1) {
+						return obj.anum + " ";
 					}
 				}
 				return ". ";
