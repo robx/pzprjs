@@ -100,6 +100,7 @@ ui.keypopup = {
 		tatamibari: [112, 0],
 		hakoiri: [113, 113],
 		kusabi: [114, 0],
+		aqre: [10, 0],
 		doppelblock: [10, 115],
 		interbd: [116, 0],
 		toichika2: [10, 10],
