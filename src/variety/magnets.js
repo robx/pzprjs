@@ -212,8 +212,8 @@
 
 			this.drawExCellDecorations();
 			this.drawNumbersExCell();
-			this.drawAnsNumbers();
-			this.drawQuesNumbers();
+			this.drawAnsSymbols();
+			this.drawQuesSymbols();
 			this.drawMBs();
 
 			this.drawChassis(true);
@@ -264,6 +264,45 @@
 			this.drawSinglePole(g, "deco3", -this.bw, -this.bh * 3, 1);
 		},
 
+		drawQuesSymbols: function() {
+			this.vinc("cell_symbol", "auto");
+			this.drawSymbols_com(
+				function(cell) {
+					return cell.qnum;
+				},
+				this.getQuesNumberColor_qnum,
+				"cell_symbol_"
+			);
+		},
+		drawAnsSymbols: function() {
+			this.vinc("cell_ans_symbol", "auto");
+			this.drawSymbols_com(
+				function(cell) {
+					return cell.anum;
+				},
+				this.getAnsNumberColor,
+				"cell_ans_symbol_"
+			);
+		},
+
+		drawSymbols_com: function(valuefunc, colorfunc, header) {
+			var g = this.context;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				var value = valuefunc.call(this, cell);
+				var vid = header + cell.id;
+				if (value >= 1) {
+					g.fillStyle = colorfunc.call(this, cell);
+					var x = cell.bx * this.bw;
+					var y = cell.by * this.bh;
+					this.drawSinglePole(g, vid, x, y, value);
+				} else {
+					this.drawSinglePole(g, vid, x, y, 0);
+				}
+			}
+		},
+
 		getQuesNumberColor: function(cell) {
 			if (cell.error === 1) {
 				return this.errcolor1;
@@ -271,21 +310,6 @@
 				return this.qcmpcolor;
 			}
 			return this.quescolor;
-		},
-
-		getNumberText: function(cell, num) {
-			if (cell.group === "excell") {
-				return this.getNumberTextCore(num);
-			}
-
-			// TODO replace with manual line drawings
-			if (num === 1) {
-				return "+";
-			}
-			if (num === 2) {
-				return "-";
-			}
-			return null;
 		},
 
 		getBoardCols: function() {
