@@ -477,8 +477,10 @@
 			"checkConnectObject",
 			"checkLineOverLetter",
 
+			"checkLineOverNest",
 			"checkBlackIntersect",
 			"checkWhiteNoIntersect",
+			"checkSingleCircle",
 			"checkCircleMatch",
 
 			"checkCircleOutsideNest",
@@ -634,14 +636,41 @@
 		}
 	},
 	"AnsCheck@oyakodori": {
+		checkLineOverNest: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt >= 2 && cell.ice();
+			}, "laOnIce");
+		},
 		checkBlackIntersect: function() {
-			// TODO
+			// var paths = this.board.linegraph.components;
+			// for (var r = 0; r < paths.length; r++) {
+			// 	var path = paths[r];
+			// 	// TODO
+			// }
 		},
 		checkWhiteNoIntersect: function() {
-			// TODO
+			// var paths = this.board.linegraph.components;
+			// for (var r = 0; r < paths.length; r++) {
+			// 	var path = paths[r];
+			// 	// TODO
+			// }
 		},
 		checkCircleOutsideNest: function() {
-			// TODO
+			this.checkAllCell(function(cell) {
+				return cell.isDestination() && !cell.ice();
+			}, "nmOutOfBk");
+		},
+		checkSingleCircle: function() {
+			this.checkAllBlock(
+				this.board.nestmgr,
+				function(cell) {
+					return cell.base.qnum !== -1;
+				},
+				function(w, h, a, n) {
+					return w * h === 1 || a !== 1;
+				},
+				"nmLt2"
+			);
 		},
 		checkCircleMatch: function() {
 			// TODO
