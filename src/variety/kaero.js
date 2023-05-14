@@ -57,7 +57,50 @@
 			play: ["line", "peke", "clear"]
 		},
 
-		// TODO input shade with auto mode
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left") {
+						this.inputLine();
+					} else if (this.btn === "right") {
+						this.inputpeke();
+					}
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputlight();
+				}
+			} else if (this.puzzle.editmode) {
+				var cell = this.getcell();
+				if (cell.isnull) {
+					return;
+				}
+
+				if (
+					this.mousestart &&
+					(this.btn !== "right" || cell === this.cursor.getc())
+				) {
+					this.inputData = -1;
+				}
+
+				if (
+					(this.mousestart &&
+						cell !== this.cursor.getc() &&
+						this.btn === "right") ||
+					(this.mousemove && this.inputData >= 0)
+				) {
+					this.inputShade();
+				} else if (this.mouseend && this.notInputted()) {
+					if (
+						cell !== this.cursor.getc() &&
+						this.inputMode === "auto" &&
+						this.btn === "left"
+					) {
+						this.setcursor(cell);
+					} else {
+						this.inputqnum(cell);
+					}
+				}
+			}
+		},
 
 		inputShade: function() {
 			this.inputIcebarn();
@@ -68,7 +111,19 @@
 	// キーボード入力系
 	KeyEvent: {
 		enablemake: true
-		// TODO input shade with keyboard
+	},
+
+	"KeyEvent@oyakodori": {
+		keyinput: function(ca) {
+			if (ca === "q") {
+				var cell = this.cursor.getc();
+				cell.setQues(cell.ques !== 6 ? 6 : 0);
+				this.prev = cell;
+				cell.draw();
+			} else {
+				this.key_inputqnum(ca);
+			}
+		}
 	},
 
 	//---------------------------------------------------------

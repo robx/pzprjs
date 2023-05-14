@@ -56,5 +56,21 @@ ui.debug.addDebugData("oyakodori", {
 			"pzprv3/oyakodori/4/4/. . 9 9 /4 4 3 . /. . . . /9 9 . 3 /0 0 0 /1 0 1 /0 0 1 /0 0 0 /0 1 1 0 /1 0 0 0 /0 0 0 1 /1 1 0 /0 0 1 /1 0 1 /0 1 0 /1 0 0 1 /0 1 0 0 /1 0 1 1 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Keyboard inputs",
+			input: ["newboard,3,1", "key,1,right,2,q,right,3,q"],
+			result: "pzprv3/oyakodori/1/3/3 12 9 /0 0 /0 0 /"
+		},
+		{
+			label: "Mouse edit",
+			input: ["newboard,3,1", "mouse,left,1,1", "mouse,right,5,1"],
+			result: "pzprv3/oyakodori/1/3/3 . 9 /0 0 /0 0 /"
+		},
+		{
+			label: "Mouse play",
+			input: ["playmode", "mouse,left,1,1,5,1"],
+			result: "pzprv3/oyakodori/1/3/3 . 9 /0 0 /1 1 /"
+		}
+	]
 });
