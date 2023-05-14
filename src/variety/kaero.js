@@ -189,6 +189,12 @@
 		enabled: true,
 		moveline: true
 	},
+	"LineGraph@oyakodori": {
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			component.blist = new this.klass.BorderList(component.getedgeobjs());
+		}
+	},
 
 	"AreaRoomGraph@kaero": {
 		enabled: true
@@ -317,6 +323,7 @@
 		bgcellcolor_func: "icebarn",
 		icecolor: "rgb(204,204,204)",
 		circleratio: [0.35, 0.3],
+		movelinecolor: "#444444",
 
 		getCircleFillColor: function(cell) {
 			var puzzle = this.puzzle;
@@ -666,18 +673,56 @@
 			}, "laOnIce");
 		},
 		checkBlackIntersect: function() {
-			// var paths = this.board.linegraph.components;
-			// for (var r = 0; r < paths.length; r++) {
-			// 	var path = paths[r];
-			// 	// TODO laShadeOnBorder
-			// }
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+
+				if (path.departure.qnum !== 2) {
+					continue;
+				}
+
+				var lines = path.blist.filter(function(border) {
+					return border.isBorder();
+				});
+
+				if (lines.length === 0) {
+					continue;
+				}
+
+				this.failcode.add("laShadeOnBorder");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				lines.seterr(1);
+				path.departure.seterr(1);
+			}
 		},
 		checkWhiteNoIntersect: function() {
-			// var paths = this.board.linegraph.components;
-			// for (var r = 0; r < paths.length; r++) {
-			// 	var path = paths[r];
-			// 	// TODO laUnshadeNoBorder
-			// }
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+
+				if (path.departure.qnum !== 1 || !path.destination.ice()) {
+					continue;
+				}
+
+				if (
+					path.blist.some(function(border) {
+						return border.isBorder();
+					})
+				) {
+					continue;
+				}
+
+				this.failcode.add("laUnshadeNoBorder");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.blist.seterr(1);
+				path.departure.seterr(1);
+			}
 		},
 		checkCircleOutsideNest: function() {
 			this.checkAllCell(function(cell) {
