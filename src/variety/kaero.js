@@ -95,7 +95,8 @@
 		}
 	},
 	"Cell@oyakodori": {
-		maxnum: 2
+		maxnum: 2,
+		disInputHatena: true
 	},
 	CellList: {
 		getDeparture: function() {
@@ -436,6 +437,28 @@
 			this.encodeBorderLine();
 		}
 	},
+	"FileIO@oyakodori": {
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === ".") {
+					return;
+				}
+				var num = +ca;
+				if (num & 8) {
+					cell.ques = 6;
+				}
+				cell.qnum = (num & ~8) - 2;
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				var num = (cell.qnum + 2) | (cell.ques === 6 ? 8 : 0);
+				return num !== 1 ? num + " " : ". ";
+			});
+		},
+		decodeCellQanssub: function() {},
+		encodeCellQanssub: function() {}
+	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
@@ -478,6 +501,7 @@
 			"checkLineOverLetter",
 
 			"checkLineOverNest",
+			"checkMultiCircle",
 			"checkBlackIntersect",
 			"checkWhiteNoIntersect",
 			"checkSingleCircle",
@@ -645,14 +669,14 @@
 			// var paths = this.board.linegraph.components;
 			// for (var r = 0; r < paths.length; r++) {
 			// 	var path = paths[r];
-			// 	// TODO
+			// 	// TODO laShadeOnBorder
 			// }
 		},
 		checkWhiteNoIntersect: function() {
 			// var paths = this.board.linegraph.components;
 			// for (var r = 0; r < paths.length; r++) {
 			// 	var path = paths[r];
-			// 	// TODO
+			// 	// TODO laUnshadeNoBorder
 			// }
 		},
 		checkCircleOutsideNest: function() {
@@ -672,8 +696,40 @@
 				"nmLt2"
 			);
 		},
+		checkMultiCircle: function() {
+			this.checkAllBlock(
+				this.board.nestmgr,
+				function(cell) {
+					return cell.base.qnum !== -1;
+				},
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"nmGt2"
+			);
+		},
 		checkCircleMatch: function() {
-			// TODO
+			var areas = this.board.nestmgr.components;
+			for (var id = 0; id < areas.length; id++) {
+				var area = areas[id],
+					clist = area.clist;
+				var items = clist.filter(function(cell) {
+					return cell.base.qnum !== -1;
+				});
+
+				if (items.length !== 2) {
+					continue;
+				}
+				if (items[0].base.qnum !== items[1].base.qnum) {
+					continue;
+				}
+
+				this.failcode.add("nmNumberEq");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
 		}
 	}
 });
