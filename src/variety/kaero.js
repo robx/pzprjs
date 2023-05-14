@@ -74,6 +74,11 @@
 					return;
 				}
 
+				if (this.btn === "left" && (this.mousestart || this.mousemove)) {
+					this.inputborder();
+					return;
+				}
+
 				if (
 					this.mousestart &&
 					(this.btn !== "right" || cell === this.cursor.getc())

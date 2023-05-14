@@ -64,13 +64,18 @@ ui.debug.addDebugData("oyakodori", {
 		},
 		{
 			label: "Mouse edit",
-			input: ["newboard,3,1", "mouse,left,1,1", "mouse,right,5,1"],
-			result: "pzprv3/oyakodori/1/3/3 . 9 /0 0 /0 0 /"
+			input: [
+				"newboard,3,1",
+				"mouse,left,1,1",
+				"mouse,right,5,1",
+				"mouse,left,4,0,4,2"
+			],
+			result: "pzprv3/oyakodori/1/3/3 . 9 /0 1 /0 0 /"
 		},
 		{
 			label: "Mouse play",
 			input: ["playmode", "mouse,left,1,1,5,1"],
-			result: "pzprv3/oyakodori/1/3/3 . 9 /0 0 /1 1 /"
+			result: "pzprv3/oyakodori/1/3/3 . 9 /0 1 /1 1 /"
 		}
 	]
 });
