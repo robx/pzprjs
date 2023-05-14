@@ -15,7 +15,6 @@
 			edit: ["border", "number", "empty"],
 			play: ["clear", "numexist", "numblank", "completion"]
 		},
-		// TODO add given magnets and shaded cells by cursor
 
 		mouseinput_number: function() {
 			if (this.mousestart) {
@@ -237,17 +236,32 @@
 			return this.getBorderColor_ques(border);
 		},
 
+		drawSinglePole: function(g, vid, px, py, value) {
+			g.vid = vid + "_h";
+			var lm = Math.max(this.cw / 12, 3) / 2; //LineWidth
+			var lp = this.bw * 0.7; //LineLength
+
+			if (value >= 1) {
+				g.fillRectCenter(px, py, lp, lm);
+			} else {
+				g.vhide();
+			}
+
+			g.vid = vid + "_v";
+			if (value === 1) {
+				g.fillRectCenter(px, py, lm, lp);
+			} else {
+				g.vhide();
+			}
+		},
+
 		drawExCellDecorations: function() {
-			// TODO replace with manual line drawings
 			var g = this.vinc("deco", "crispEdges", true);
 			g.fillStyle = this.quescolor;
 
-			g.vid = "deco1";
-			this.disptext("-", -this.bw, -this.bh);
-			g.vid = "deco2";
-			this.disptext("+", -this.bw * 3, -this.bh);
-			g.vid = "deco3";
-			this.disptext("+", -this.bw, -this.bh * 3);
+			this.drawSinglePole(g, "deco1", -this.bw, -this.bh, 2);
+			this.drawSinglePole(g, "deco2", -this.bw * 3, -this.bh, 1);
+			this.drawSinglePole(g, "deco3", -this.bw, -this.bh * 3, 1);
 		},
 
 		getQuesNumberColor: function(cell) {
