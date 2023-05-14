@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaero", "armyants"], {
+})(["kaero", "armyants", "oyakodori"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -51,11 +51,24 @@
 			cell.draw();
 		}
 	},
+	"MouseEvent@oyakodori": {
+		inputModes: {
+			edit: ["border", "circle-shade", "circle-unshade", "shade", "clear"],
+			play: ["line", "peke", "clear"]
+		},
+
+		// TODO input shade with auto mode
+
+		inputShade: function() {
+			this.inputIcebarn();
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
 		enablemake: true
+		// TODO input shade with keyboard
 	},
 
 	//---------------------------------------------------------
@@ -80,6 +93,9 @@
 			}
 			return dirinfo;
 		}
+	},
+	"Cell@oyakodori": {
+		maxnum: 2
 	},
 	CellList: {
 		getDeparture: function() {
@@ -162,6 +178,11 @@
 			this.antmgr = this.addInfoList(this.klass.AreaAntGraph);
 		}
 	},
+	"Board@oyakodori": {
+		addExtraInfo: function() {
+			this.nestmgr = this.addInfoList(this.klass.AreaNestGraph);
+		}
+	},
 
 	LineGraph: {
 		enabled: true,
@@ -203,6 +224,29 @@
 		}
 	},
 
+	"AreaNestGraph:AreaGraphBase": {
+		enabled: true,
+		relation: {
+			"cell.ques": "node",
+			"border.ques": "separator"
+		},
+		setComponentRefs: function(obj, component) {
+			obj.nest = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.nestnodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.nestnodes = [];
+		},
+		isedgevalidbylinkobj: function(border) {
+			return !border.isBorder();
+		},
+		isnodevalid: function(cell) {
+			return cell.ice();
+		}
+	},
+
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -223,8 +267,12 @@
 			this.drawDepartures();
 			this.drawLines();
 
-			this.drawCellSquare();
-			this.drawQuesNumbers();
+			if (this.pid === "oyakodori") {
+				this.drawCircles();
+			} else {
+				this.drawCellSquare();
+				this.drawQuesNumbers();
+			}
 
 			this.drawChassis();
 
@@ -264,12 +312,34 @@
 		}
 	},
 
+	"Graphic@oyakodori": {
+		bgcellcolor_func: "icebarn",
+		icecolor: "rgb(204,204,204)",
+		circleratio: [0.35, 0.3],
+
+		getCircleFillColor: function(cell) {
+			var puzzle = this.puzzle;
+			var isdrawmove = puzzle.execConfig("dispmove");
+			var num = (!isdrawmove ? cell : cell.base).qnum;
+			var err = (!isdrawmove ? cell : cell.base).error;
+			if (num === 1) {
+				return err === 1 ? this.errbcolor1 : "white";
+			} else if (num === 2) {
+				return err === 1 ? this.errcolor1 : this.quescolor;
+			}
+			return null;
+		}
+	},
+
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeBorder();
-			if (this.pid === "kaero") {
+			if (this.pid === "oyakodori") {
+				this.decodeCircle();
+				this.decodeIce();
+			} else if (this.pid === "kaero") {
 				this.decodeKaero();
 			} else {
 				this.decodeNumber16();
@@ -277,7 +347,10 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeBorder();
-			if (this.pid === "kaero") {
+			if (this.pid === "oyakodori") {
+				this.encodeCircle();
+				this.encodeIce();
+			} else if (this.pid === "kaero") {
 				this.encodeKaero();
 			} else {
 				this.encodeNumber16();
@@ -395,6 +468,21 @@
 
 			"checkDisconnectLine",
 			"checkNumberExist"
+		]
+	},
+	"AnsCheck@oyakodori#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkConnectObject",
+			"checkLineOverLetter",
+
+			"checkBlackIntersect",
+			"checkWhiteNoIntersect",
+			"checkCircleMatch",
+
+			"checkCircleOutsideNest",
+			"checkDisconnectLine"
 		]
 	},
 	"AnsCheck@kaero": {
@@ -543,6 +631,20 @@
 			if (!result) {
 				this.failcode.add("bsAnt");
 			}
+		}
+	},
+	"AnsCheck@oyakodori": {
+		checkBlackIntersect: function() {
+			// TODO
+		},
+		checkWhiteNoIntersect: function() {
+			// TODO
+		},
+		checkCircleOutsideNest: function() {
+			// TODO
+		},
+		checkCircleMatch: function() {
+			// TODO
 		}
 	}
 });

@@ -275,6 +275,7 @@
 			ovotovata: [0, 0, "Ovotovata", "Ovotovata", "country"],
 			oneroom: [0, 0, "ワンルームワンドア", "One Room One Door", "heyawake"],
 			onsen: [0, 0, "温泉めぐり", "Onsen-meguri", "country"],
+			oyakodori: [0, 0, "おやこどり", "Oyakodori", "kaero"],
 			paintarea: [1, 0, "ペイントエリア", "Paintarea"],
 			parquet: [0, 0, "Parquet", "Parquet"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],
