@@ -1120,3 +1120,10 @@ circlesquare: "Shade some cells on the board.\n1. Black circles must be shaded, 
   \ white circles must not be shaded.\n2. The shaded cells cannot form a 2x2 square.\
   \ \n3. All shaded cells form an orthogonally contiguous area.\n4. All unshaded areas\
   \ must form squares."
+oyakodori: "You're given a grid with small birds (black circles) and large birds (white\
+  \ circles). Draw lines to move each bird into a nest, represented by adjacent gray\
+  \ cells.\n1. Movement lines cannot cross or overlap each other. Lines can also not\
+  \ go through the start- or endpoint of other birds.\n2. Lines can not go through\
+  \ nests, but must stop there.\n3. Every nest that is used must have a small bird\
+  \ and a large bird.\n4. Black birds cannot fly over borders.\n5. White birds must\
+  \ fly over at least one border."
