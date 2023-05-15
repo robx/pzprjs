@@ -76,6 +76,17 @@ ui.debug.addDebugData("oyakodori", {
 			label: "Mouse play",
 			input: ["playmode", "mouse,left,1,1,5,1"],
 			result: "pzprv3/oyakodori/1/3/3 . 9 /0 1 /1 1 /"
+		},
+		{
+			label: "Prehook",
+			input: [
+				"ansclear",
+				"editmode",
+				"key,2",
+				"playmode",
+				"mouse,left,1,1,5,1"
+			],
+			result: "pzprv3/oyakodori/1/3/4 . 9 /0 1 /1 0 /"
 		}
 	]
 });

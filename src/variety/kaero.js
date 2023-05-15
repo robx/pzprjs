@@ -227,6 +227,22 @@
 			return this.isBorder();
 		}
 	},
+	"Border@oyakodori": {
+		prehook: {
+			line: function(num) {
+				if (!num || !this.puzzle.execConfig("dispmove")) {
+					return false;
+				}
+				var path = this.sidecell[0].path || this.sidecell[1].path;
+
+				if (path.departure.qnum !== 2) {
+					return false;
+				}
+
+				return this.isBorder();
+			}
+		}
+	},
 
 	Board: {
 		cols: 6,
