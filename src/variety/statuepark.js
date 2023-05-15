@@ -240,6 +240,17 @@
 			} else {
 				this.key_inputqnum(ca);
 			}
+		},
+
+		getNewNumber: function(cell, ca, cur) {
+			if (cell.group === "cell") {
+				if (ca === "a") {
+					return 10;
+				} else if (ca === "0" || ca === "w") {
+					return 0;
+				}
+			}
+			return this.common.getNewNumber.call(this, cell, ca, cur);
 		}
 	},
 	TargetCursor: {
@@ -987,6 +998,8 @@
 		bcolor: "rgb(191, 191, 255)",
 		qanscolor: "rgb(0, 80, 0)",
 		trialcolor: "rgb(80, 80, 80)",
+		errcolor1: "rgb(96, 0, 0)",
+		errcolor2: "rgb(192, 0, 0)",
 
 		paint: function() {
 			this.drawBGCells();

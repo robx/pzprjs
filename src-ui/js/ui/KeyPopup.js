@@ -169,7 +169,8 @@ ui.keypopup = {
 		wafusuma: [10, 0],
 		kuroclone: [10, 0],
 		martini: [10, 0],
-		simplegako: [10, 10]
+		simplegako: [10, 10],
+		battleship: [125, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -299,6 +300,8 @@ ui.keypopup = {
 			this.generate_news(mode);
 		} else if (type === 124) {
 			this.generate_trainstations(mode);
+		} else if (type === 125) {
+			this.generate_battleship(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -798,6 +801,37 @@ ui.keypopup = {
 				["q", "╋"]
 			],
 			4
+		);
+	},
+
+	generate_battleship: function(mode) {
+		this.generate_main(
+			[
+				["7", "7"],
+				["8", "8"],
+				["1", "1"],
+				"1",
+				"2",
+				"3",
+				["9", "9"],
+				["a", "a"],
+				["2", "2"],
+				"4",
+				"5",
+				"6",
+				["3", "3"],
+				["5", "5"],
+				["4", "4"],
+				"7",
+				"8",
+				"9",
+				["6", "6"],
+				["0", "0"],
+				["-", "?"],
+				" ",
+				"0"
+			],
+			6
 		);
 	},
 
