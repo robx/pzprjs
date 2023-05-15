@@ -359,6 +359,7 @@
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
+			tontonbeya: [0, 0, "とんとんべや", "Tontonbeya", "hakoiri"],
 			tontti: [0, 0, "Tonttiraja", "Tonttiraja"],
 			trainstations: [0, 0, "Train Stations", "Train Stations"],
 			tren: [0, 0, "パーキング", "Tren"],

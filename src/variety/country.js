@@ -538,7 +538,11 @@
 
 			this.drawChassis();
 
-			if (this.pid !== "rassi") {
+			if (
+				this.pid !== "rassi" &&
+				this.pid !== "doubleback" &&
+				this.pid !== "simpleloop"
+			) {
 				this.drawTarget();
 			}
 		}

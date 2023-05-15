@@ -172,6 +172,7 @@ function toBGimage(pid) {
 		"takoyaki",
 		"tapaloop",
 		"tents",
+		"tontonbeya",
 		"trainstations",
 		"tslither",
 		"voxas",
