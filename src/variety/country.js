@@ -1416,7 +1416,7 @@
 				var room = rooms[r];
 				var clist = room.clist;
 				var cnt = 0;
-				var qnumcell = room.clist.getQnumCell();
+				var qnumcell = room.top;
 				if (qnumcell.isnull) {
 					continue;
 				}
@@ -1451,7 +1451,7 @@
 				) {
 					continue;
 				}
-				var qnumcell = room.clist.getQnumCell();
+				var qnumcell = room.top;
 				if (qnumcell.isnull) {
 					continue;
 				}
@@ -1475,7 +1475,7 @@
 			var rooms = this.board.roommgr.components;
 			for (var r = 0; r < rooms.length; r++) {
 				var room = rooms[r];
-				var qnumcell = room.clist.getQnumCell();
+				var qnumcell = room.top;
 				if (qnumcell.isnull) {
 					continue;
 				}
