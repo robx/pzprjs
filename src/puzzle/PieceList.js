@@ -230,7 +230,7 @@ pzpr.classmgr.makeCommon({
 			var ret = null;
 			for (var i = 0, len = this.length; i < len; i++) {
 				if (this[i].isNum()) {
-					if(!single) {
+					if (!single) {
 						return this[i];
 					}
 					if (ret) {
