@@ -258,8 +258,8 @@
 	AnsCheck: {
 		checklist: [
 			"checkNoNumber",
-			"checkDoubleNumber",
 			"checkDirectionSize",
+			"checkDoubleNumber",
 			"checkBorderDeadend+"
 		],
 
@@ -268,7 +268,7 @@
 			for (var r = 0; r < rooms.length; r++) {
 				var room = rooms[r];
 				var clist = room.clist;
-				var cell = clist.getQnumCell();
+				var cell = clist.getQnumCell(true);
 				if (cell.isnull) {
 					continue;
 				}
