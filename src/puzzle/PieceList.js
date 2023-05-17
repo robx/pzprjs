@@ -226,11 +226,12 @@ pzpr.classmgr.makeCommon({
 		//--------------------------------------------------------------------------------
 		// clist.getQnumCell()  指定されたClistの中で一番左上にある数字のあるセルを返す
 		//--------------------------------------------------------------------------------
-		getQnumCell: function(single) {
+		singleQnumCell: false,
+		getQnumCell: function() {
 			var ret = null;
 			for (var i = 0, len = this.length; i < len; i++) {
 				if (this[i].isNum()) {
-					if (!single) {
+					if (!this.singleQnumCell) {
 						return this[i];
 					}
 					if (ret) {

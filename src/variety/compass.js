@@ -62,6 +62,9 @@
 		},
 		minnum: 0
 	},
+	CellList: {
+		singleQnumCell: true
+	},
 
 	Board: {
 		cols: 8,
@@ -268,7 +271,7 @@
 			for (var r = 0; r < rooms.length; r++) {
 				var room = rooms[r];
 				var clist = room.clist;
-				var cell = clist.getQnumCell(true);
+				var cell = clist.getQnumCell();
 				if (cell.isnull) {
 					continue;
 				}

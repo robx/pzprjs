@@ -59,6 +59,9 @@
 			return this.getNum() !== -1;
 		}
 	},
+	CellList: {
+		singleQnumCell: true
+	},
 	ExCell: {
 		noLP: function(dir) {
 			return false;
