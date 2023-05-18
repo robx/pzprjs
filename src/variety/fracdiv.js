@@ -278,10 +278,10 @@
 		},
 
 		drawSlash51Cells: function() {
-			var g = this.vinc("cell_ques51", "crispEdges", true);
+			var g = this.vinc("cell_ques51", "auto", true);
 
 			g.strokeStyle = this.quescolor;
-			g.lineWidth = 1;
+			g.lineWidth = 2;
 
 			var padx = this.bw / 3;
 			var pady = this.bh / 3;

@@ -72,6 +72,7 @@
     "bkArafTooSmall.araf": "An area is smaller than both numbers.",
     "bkBothMarksPassed.moonsun": "A line passes both the marks of the moon and the sun.",
     "bkCircleNe.familyphoto": "A number does not indicate the amount of circles in the area.",
+    "bkCircleNe.fracdiv": "A number does not indicate the ratio of circles and cells in the area.",
     "bkClue.toichika2": "A number does not match the clue for the country.",
     "bkDifferentLetters.nikoji": "Two areas with different letters have the same shape.",
     "bkDifferentOrientation.nikoji": "Two areas with equal letters have different orientation.",
