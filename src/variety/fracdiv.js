@@ -80,6 +80,10 @@
 			}
 		},
 		updateQnums: function() {
+			if (!this.isValid()) {
+				return;
+			}
+
 			this.qnums = this.is51cell()
 				? this.board.normalizeDiv(this.qnum, this.qnum2)
 				: [];
@@ -183,12 +187,65 @@
 		gridcolor_type: "SLIGHT",
 		bordercolor_func: "qans",
 
-		getQuesNumberText: function(cell) {
-			if (cell.is51cell()) {
-				return null;
-			}
+		dotPatterns: [
+			0x10, // 1
+			0x101, // 2
+			0x54, // 3
+			0x145, // 4
+			0x155, // 5
+			0x1c7, // 6
+			0x17d, // 7
+			0x1ef, // 8
+			0x1ff // 9
+		],
 
-			return this.getNumberText(cell, cell.qnum);
+		drawDotPatterns: function() {
+			var g = this.vinc("cell_dotps", "auto");
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				var pattern = cell.is51cell()
+					? 0
+					: this.dotPatterns[cell.qnum - 1] || 0;
+
+				var size =
+					cell.qnum === 1
+						? this.cw / 4
+						: cell.qnum < 6
+						? this.cw / 5
+						: this.cw / 6;
+				var dist = this.cw / 4;
+
+				g.fillStyle =
+					cell.error === 1 || cell.qinfo === 1
+						? this.errcolor1
+						: this.quescolor;
+
+				for (var d = 0; d < 9; d++) {
+					g.vid = "c_dotp_" + cell.id + "_" + d;
+					if (pattern & (1 << d)) {
+						var px = cell.bx * this.bw,
+							py = cell.by * this.bh;
+
+						if (d % 3 === 0) {
+							px -= dist;
+						} else if (d % 3 === 2) {
+							px += dist;
+						}
+						if (((d / 3) | 0) === 0) {
+							py -= dist;
+						} else if (((d / 3) | 0) === 2) {
+							py += dist;
+						}
+
+						g.fillCircle(px, py, size / 2);
+					} else {
+						g.vhide();
+					}
+				}
+			}
 		},
 
 		paint: function() {
@@ -196,7 +253,8 @@
 
 			this.drawQues51();
 			this.drawQuesNumbersOn51();
-			this.drawQuesNumbers();
+			this.drawDotPatterns();
+			// TODO draw hatenas
 
 			this.drawDashedGrid();
 			this.drawQansBorders();
