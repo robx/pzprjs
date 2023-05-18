@@ -289,7 +289,50 @@
 		}
 	},
 
-	// TODO url encode
+	Encode: {
+		decodePzpr: function(type) {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length * 2, function(c, val) {
+				var cell = bd.cell[c >> 1];
+
+				if (c & 1) {
+					if (val === -2) {
+						if (cell.qnum === 0) {
+							cell.ques = 7;
+							cell.qnum = -1;
+						} else {
+							cell.ques = 0;
+						}
+					} else {
+						cell.qnum2 = val;
+						if (cell.qnum === -2) {
+							cell.qnum === -1;
+						}
+					}
+				} else {
+					cell.qnum = val;
+					cell.ques = 51;
+				}
+			});
+		},
+		encodePzpr: function(type) {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length * 2, function(c) {
+				var cell = bd.cell[c >> 1];
+				if (c & 1) {
+					if (!cell.is51cell()) {
+						return cell.qnum === -1 && cell.ques === 0 ? -1 : -2;
+					}
+					return cell.qnum2 === -2 ? -1 : cell.qnum2;
+				}
+
+				if (cell.is51cell() && cell.qnum === -1) {
+					return -2;
+				}
+				return !cell.isValid() && !cell.is51cell() ? 0 : cell.qnum;
+			});
+		}
+	},
 
 	FileIO: {
 		decodeData: function() {
