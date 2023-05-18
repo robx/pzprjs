@@ -236,6 +236,42 @@
 		}
 	},
 
+	// TODO url encode
+
+	FileIO: {
+		decodeData: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca[0] === "d") {
+					cell.qnum = +ca.substring(1);
+				} else if (ca !== ".") {
+					var tokens = ca.split(",");
+					cell.ques = 51;
+					cell.qnum = +tokens[0];
+					cell.qnum2 = +tokens[1];
+				}
+			});
+
+			this.decodeBorderAns();
+		},
+		encodeData: function() {
+			this.encodeCell(function(cell) {
+				if (!cell.isValid()) {
+					return "# ";
+				}
+				if (cell.is51cell()) {
+					return cell.qnum + "," + cell.qnum2 + " ";
+				}
+				if (cell.qnum !== -1) {
+					return "d" + cell.qnum + " ";
+				}
+				return ". ";
+			});
+			this.encodeBorderAns();
+		}
+	},
+
 	AnsCheck: {
 		checklist: [
 			"checkNoNumber",
