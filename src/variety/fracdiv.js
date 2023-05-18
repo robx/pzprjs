@@ -50,6 +50,15 @@
 		}
 	},
 	TargetCursor: {
+		chtarget: function(mouse, dx, dy) {
+			if (mouse) {
+				this.targetdir = dx + dy < 0 ? 4 : 2;
+			} else {
+				this.targetdir = this.targetdir === 2 ? 4 : 2;
+			}
+
+			this.draw();
+		},
 		detectTarget: function(piece) {
 			var cell = piece || this.getobj();
 			if (!cell || cell.isnull) {
