@@ -126,6 +126,13 @@
 		cols: 8,
 		rows: 8,
 
+		rebuildInfo: function() {
+			this.common.rebuildInfo.call(this);
+			this.cell.each(function(cell) {
+				cell.updateQnums();
+			});
+		},
+
 		normalizeDiv: function(num, div) {
 			if (div === 0) {
 				return [0, 0];
