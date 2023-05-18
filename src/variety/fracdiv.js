@@ -203,6 +203,50 @@
 			return this.getBGCellColor_error1(cell);
 		},
 
+		drawSlash51Cells: function() {
+			var g = this.vinc("cell_ques51", "crispEdges", true);
+
+			g.strokeStyle = this.quescolor;
+			g.lineWidth = 1;
+
+			var padx = this.bw / 3;
+			var pady = this.bh / 3;
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_slash51b_" + cell.id;
+				if (cell.ques === 51) {
+					var px = cell.bx * this.bw,
+						py = cell.by * this.bh;
+					g.strokeLine(
+						px - this.bw + padx,
+						py + this.bh - pady,
+						px + this.bw - padx,
+						py - this.bh + pady
+					);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		drawTriangle1: function(px, py, num) {
+			var g = this.context;
+			var bw = this.bw + 1 - 0.5,
+				bh = this.bh + 1 - 0.5;
+			g.beginPath();
+			switch (num) {
+				case 2:
+					g.setOffsetLinePath(px, py, bw, -bh, -bw, bh, bw, bh, true);
+					break;
+				case 4:
+					g.setOffsetLinePath(px, py, -bw, -bh, bw, -bh, -bw, bh, true);
+					break;
+			}
+			g.fill();
+		},
+
 		drawQuesNumbersOn51_1: function(piece) {
 			var g = this.context,
 				val,
@@ -216,7 +260,7 @@
 
 			val = piece.ques === 51 ? piece.qnum : -1;
 
-			g.vid = [piece.group, piece.id, "text_ques51_rt"].join("_");
+			g.vid = [piece.group, piece.id, "text_ques51_num"].join("_");
 			if (val >= 0) {
 				option.position = this.TOPLEFT;
 				this.disptext("" + val, px, py, option);
@@ -226,7 +270,7 @@
 
 			val = piece.ques === 51 ? piece.qnum2 : -1;
 
-			g.vid = [piece.group, piece.id, "text_ques51_dn"].join("_");
+			g.vid = [piece.group, piece.id, "text_ques51_div"].join("_");
 			if (val >= 0) {
 				option.position = this.BOTTOMRIGHT;
 				this.disptext("" + val, px, py, option);
