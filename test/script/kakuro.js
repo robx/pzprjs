@@ -48,10 +48,11 @@ ui.debug.addDebugData("kakuro", {
 				"key,-",
 				"key,right",
 				"key,-",
-				"key,-"
+				"key,-",
+				"key,right,right,BS"
 			],
 			result:
-				"pzprv3/kakuro/2/5/0 -1 -1 -1 2 10 /-1 . . . . . /-1 . . . . . /. . . . . /. . . . . /"
+				"pzprv3/kakuro/2/5/0 -1 -1 -1 2 1 /-1 . . . . . /-1 . . . . . /. . . . . /. . . . . /"
 		},
 		{ input: ["newboard,2,2", "editmode"] },
 		{
