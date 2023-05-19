@@ -37,40 +37,42 @@ ui.debug.addDebugData("magnets", {
 				"mouse,left,4,0,4,2",
 				"cursor,3,1",
 				"mouse,leftx2,3,1",
-				"key,up,1"
+				"key,up,1",
+				"editmode,number",
+				"mouse,leftx2,5,-3"
 			],
 			result:
-				"pzprv3/magnets/1/4/0 1 0 /. . . . . . /. . . 1 . . /. . . q2 . . /"
+				"pzprv3/magnets/1/4/0 1 0 /. . . . 0 . /. . . 1 . . /. . . q2 . . /"
 		},
 		{
 			label: "Immutable magnets",
 			input: ["playmode", "cursor,3,1", "mouse,left,3,1"],
 			result:
-				"pzprv3/magnets/1/4/0 1 0 /. . . . . . /. . . 1 . . /. . . q2 . . /"
+				"pzprv3/magnets/1/4/0 1 0 /. . . . 0 . /. . . 1 . . /. . . q2 . . /"
 		},
 		{
 			label: "Autofill magnets",
 			input: ["cursor,5,1", "mouse,left,5,1"],
 			result:
-				"pzprv3/magnets/1/4/0 1 0 /. . . . . . /. . . 1 . . /. . . q2 a1 a2 /"
+				"pzprv3/magnets/1/4/0 1 0 /. . . . 0 . /. . . 1 . . /. . . q2 a1 a2 /"
 		},
 		{
 			label: "Autofill aux marks",
 			input: ["mouse,leftx2,5,1"],
 			result:
-				"pzprv3/magnets/1/4/0 1 0 /. . . . . . /. . . 1 . . /. . . q2 s1 s1 /"
+				"pzprv3/magnets/1/4/0 1 0 /. . . . 0 . /. . . 1 . . /. . . q2 s1 s1 /"
 		},
 		{
 			label: "Completion",
 			input: ["mouse,left,3,-1"],
 			result:
-				"pzprv3/magnets/1/4/0 1 0 /. . . . . . /. . . c1 . . /. . . q2 s1 s1 /"
+				"pzprv3/magnets/1/4/0 1 0 /. . . . 0 . /. . . c1 . . /. . . q2 s1 s1 /"
 		},
 		{
 			label: "Keyboard edits",
 			input: [
 				"newboard,4,1",
-				"editmode",
+				"editmode,auto",
 				"cursor,1,1",
 				"key,1,right,2,right,q,q,right,q"
 			],
