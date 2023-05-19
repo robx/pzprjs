@@ -238,6 +238,9 @@
 			if (!this.cursor.getex().isnull) {
 				this.key_inputexcell(ca);
 			} else {
+				if (ca === "BS") {
+					ca = " ";
+				}
 				this.key_inputqnum(ca);
 			}
 		},

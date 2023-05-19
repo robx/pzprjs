@@ -36,5 +36,16 @@ ui.debug.addDebugData("battleship", {
 			"pzprv3/battleship/6/6/c/. . 1 2 . . 2 /. . . . . . 0 /3 . . . . . . /0 . . . . . . /. 3 . . . . . /3 . . . . . . /. . . . . . . /+ + # + + + /# + # + + # /+ + + + + + /+ # + + + + /+ + + # # # /# + + + + + /0 0 0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Keyboard inputs",
+			input: [
+				"newboard,4,1",
+				"cursor,-1,1",
+				"key,1,right,2,right,a,right,1,0,right,a,BS"
+			],
+			result:
+				"pzprv3/battleship/1/4/d/. . . . . /1 2 10 0 . /. . . . /0 0 0 0 0 0 0 0 0 0 /"
+		}
+	]
 });
