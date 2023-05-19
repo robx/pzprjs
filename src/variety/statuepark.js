@@ -1057,14 +1057,17 @@
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
 					px = cell.bx * this.bw,
-					py = cell.by * this.bh;
-				g.vid = "c_water_" + cell.id;
-				if (cell.qnum === 0) {
-					g.fillStyle = this.quescolor;
-					// TODO improve
-					this.disptext("~", px, py, this.textoption);
-				} else {
-					g.vhide();
+					py = (cell.by - 0.1) * this.bh;
+
+				for (var w = 0; w < 3; w++) {
+					g.vid = "c_water_" + cell.id + "_" + w;
+					if (cell.qnum === 0) {
+						var wy = py + (w - 1) * this.bh * 0.35;
+						g.fillStyle = this.quescolor;
+						this.disptext("~", px, wy, this.textoption);
+					} else {
+						g.vhide();
+					}
 				}
 			}
 		},
