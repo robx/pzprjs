@@ -78,7 +78,14 @@
 				return this.key_inputexcell(ca);
 			}
 
-			// TODO input shaded cells with keyboard
+			if (this.puzzle.editmode && ca === "q") {
+				var cell = this.cursor.getc();
+				cell.setNum(-1);
+				cell.setQues(cell.ques === 0 ? 7 : 0);
+				cell.draw();
+				return;
+			}
+
 			if (ca === "q" || ca === "a" || ca === "z" || ca === "o") {
 				ca = this.puzzle.playmode ? "s1" : " ";
 			} else if (ca === "w" || ca === "s" || ca === "x") {
@@ -172,6 +179,9 @@
 			return ((this.bx + this.by) & 2) === 0;
 		},
 		setNum: function(val) {
+			if (this.puzzle.editmode && val !== -1) {
+				this.setQues(0);
+			}
 			if (this.puzzle.editmode || this.qnum !== -1) {
 				this.common.setNum.call(this, val);
 				return;

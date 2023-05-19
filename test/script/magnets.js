@@ -65,6 +65,23 @@ ui.debug.addDebugData("magnets", {
 			input: ["mouse,left,3,-1"],
 			result:
 				"pzprv3/magnets/1/4/0 1 0 /. . . . . . /. . . c1 . . /. . . q2 s1 s1 /"
+		},
+		{
+			label: "Keyboard edits",
+			input: [
+				"newboard,4,1",
+				"editmode",
+				"cursor,1,1",
+				"key,1,right,2,right,q,q,right,q"
+			],
+			result:
+				"pzprv3/magnets/1/4/0 0 0 /. . . . . . /. . . . . . /. . q1 q2 . # /"
+		},
+		{
+			label: "Keyboard overwrite invalid",
+			input: ["key,2,left,q"],
+			result:
+				"pzprv3/magnets/1/4/0 0 0 /. . . . . . /. . . . . . /. . q1 q2 # q2 /"
 		}
 	]
 });
