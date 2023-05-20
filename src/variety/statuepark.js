@@ -999,10 +999,11 @@
 
 	"Graphic@battleship": {
 		bcolor: "rgb(191, 191, 255)",
+		trialbcolor: "rgb(255, 191, 255)",
 		qanscolor: "rgb(0, 80, 0)",
-		trialcolor: "rgb(80, 80, 80)",
-		errcolor1: "rgb(96, 0, 0)",
+		hatenacolor: "rgb(100, 100, 100)",
 		errcolor2: "rgb(192, 0, 0)",
+		errcolor3: "rgb(96, 0, 0)",
 
 		paint: function() {
 			this.drawBGCells();
@@ -1022,7 +1023,7 @@
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errbcolor1;
 			} else if (cell.qans === 1 || cell.qsub === 1) {
-				return this.bcolor;
+				return cell.trial ? this.trialbcolor : this.bcolor;
 			}
 			return null;
 		},
@@ -1039,14 +1040,14 @@
 		getShadedCellColor: function(cell) {
 			if (cell.qnum !== -1 && cell.qnum !== 0) {
 				if ((cell.error || cell.qinfo) === 1) {
-					return this.errcolor1;
+					return this.errcolor3;
 				}
-				return this.quescolor;
+				return cell.qnum === -2 ? this.hatenacolor : this.quescolor;
 			} else if (cell.qans) {
 				if ((cell.error || cell.qinfo) === 1) {
 					return this.errcolor2;
 				}
-				return cell.trial ? this.trialcolor : this.qanscolor;
+				return this.qanscolor;
 			}
 			return null;
 		},
@@ -1087,7 +1088,7 @@
 
 				var shape =
 					cell.qnum === -2
-						? this.board.SINGLE
+						? this.board.CENTER
 						: cell.qnum !== -1
 						? cell.qnum
 						: cell.getShape();
