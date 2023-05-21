@@ -46,7 +46,12 @@ ui.debug.addDebugData("magnets", {
 		},
 		{
 			label: "Immutable magnets",
-			input: ["playmode", "cursor,3,1", "mouse,left,3,1"],
+			input: [
+				"playmode",
+				"setconfig,mouseonly,false",
+				"cursor,3,1",
+				"mouse,left,3,1"
+			],
 			result:
 				"pzprv3/magnets/1/4/0 1 0 /. . . . 0 . /. . . 1 . . /. . . q2 . . /"
 		},

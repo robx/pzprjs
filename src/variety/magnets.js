@@ -66,6 +66,40 @@
 			excell.draw();
 
 			this.mousereset();
+		},
+
+		inputqnum: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			if (this.puzzle.getConfig("mouseonly")) {
+				this.inputmouseonly(cell);
+			} else if (cell !== this.cursor.getc()) {
+				this.setcursor(cell);
+			} else {
+				this.inputqnum_main(cell);
+			}
+			this.mouseCell = cell;
+		},
+
+		inputmouseonly: function(cell) {
+			if (this.inputData === null) {
+				// TODO consider different behavior for L/R button mode
+				this.inputData = this.getNewNumber(cell, cell.getNum());
+
+				if (cell.parity() && (this.inputData === 1 || this.inputData === 2)) {
+					this.inputData = 3 - this.inputData;
+				}
+			}
+
+			if (this.inputData === 1 || this.inputData === 2) {
+				var value = !cell.parity() === (this.inputData === 1) ? 1 : 2;
+				cell.setNum(value);
+			} else {
+				cell.setNum(this.inputData);
+			}
 		}
 	},
 
@@ -76,6 +110,8 @@
 		keyinput: function(ca) {
 			if (!this.cursor.getex().isnull) {
 				return this.key_inputexcell(ca);
+			} else if (this.puzzle.getConfig("mouseonly")) {
+				return;
 			}
 
 			if (this.puzzle.editmode && ca === "q") {
@@ -229,7 +265,10 @@
 			this.drawChassis(true);
 			this.drawBorders();
 
-			this.drawCursor();
+			this.drawCursor(
+				true,
+				this.puzzle.editmode || !this.puzzle.getConfig("mouseonly")
+			);
 		},
 
 		getBGCellColor: function(cell) {
