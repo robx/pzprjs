@@ -89,6 +89,25 @@ ui.debug.addDebugData("magnets", {
 			input: ["key,2,left,q"],
 			result:
 				"pzprv3/magnets/1/4/0 0 0 /. . . . . . /. . . . . . /. . q1 q2 # q2 /"
+		},
+		{
+			label: "Alternate magnets",
+			input: [
+				"newboard,4,1",
+				"playmode,auto",
+				"setconfig,use,1",
+				"setconfig,mouseonly,true",
+				"mouse,right,1,1,7,1",
+				"mouse,left,1,1,3,1"
+			],
+			result:
+				"pzprv3/magnets/1/4/0 0 0 /. . . . . . /. . . . . . /. . a1 a2 s2 s2 /"
+		},
+		{
+			label: "Overwrite with rightclick",
+			input: ["mouse,right,1,1", "mouse,right,3,1", "mouse,right,5,1"],
+			result:
+				"pzprv3/magnets/1/4/0 0 0 /. . . . . . /. . . . . . /. . . . s1 s2 /"
 		}
 	]
 });
