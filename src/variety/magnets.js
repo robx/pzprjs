@@ -86,11 +86,21 @@
 
 		inputmouseonly: function(cell) {
 			if (this.inputData === null) {
-				// TODO consider different behavior for L/R button mode
-				this.inputData = this.getNewNumber(cell, cell.getNum());
+				var newVal = -1;
+				var num = cell.getNum();
 
-				if (cell.parity() && (this.inputData === 1 || this.inputData === 2)) {
-					this.inputData = 3 - this.inputData;
+				if (this.puzzle.getConfig("use") === 2) {
+					newVal = this.getNewNumber(cell, num);
+				} else if (this.btn === "left") {
+					newVal = num === 1 ? 2 : num === 2 ? -1 : 1;
+				} else if (num === -1 && cell.qsub !== 1) {
+					newVal = this.getNewNumber(cell, num);
+				}
+
+				if (cell.parity() && (newVal === 1 || newVal === 2)) {
+					this.inputData = 3 - newVal;
+				} else {
+					this.inputData = newVal;
 				}
 			}
 
