@@ -1118,8 +1118,8 @@ oyakodori: "You're given a grid with small birds (black circles) and large birds
   least one border."
 magnets: "Place several magnets into the grid. A magnet consists of a 1x2 domino and
   has a positive and negative pole.\n1. An outlined region contains one whole magnet,
-  or stays empty.\n2. Equal poles of different magnets cannot be adjacent.\n3. The
-  numbers around the grid indicate the number of positive/negative poles in that row/column."
+  or stays empty.\n2. Equal poles cannot be adjacent.\n3. The numbers around the grid
+  indicate the number of positive/negative poles in that row/column."
 fracdiv: "Draw lines over the dotted lines to divide the board into several blocks.\n
   1. Each block contains exactly one cell with a number.\n2. A number indicates the
   ratio of circles and cells in the area."
