@@ -89,7 +89,9 @@
 				var newVal = -1;
 				var num = cell.getNum();
 
-				if (this.puzzle.getConfig("use") === 2) {
+				if (cell.qnum !== -1) {
+					newVal = this.btn === "left" ? num : -1;
+				} else if (this.puzzle.getConfig("use") === 2) {
 					newVal = this.getNewNumber(cell, num);
 				} else if (this.btn === "left") {
 					newVal = num === 1 ? 2 : num === 2 ? -1 : 1;
@@ -120,7 +122,7 @@
 		keyinput: function(ca) {
 			if (!this.cursor.getex().isnull) {
 				return this.key_inputexcell(ca);
-			} else if (this.puzzle.getConfig("mouseonly")) {
+			} else if (this.puzzle.getConfig("mouseonly") && this.puzzle.playmode) {
 				return;
 			}
 

@@ -108,6 +108,18 @@ ui.debug.addDebugData("magnets", {
 			input: ["mouse,right,1,1", "mouse,right,3,1", "mouse,right,5,1"],
 			result:
 				"pzprv3/magnets/1/4/0 0 0 /. . . . . . /. . . . . . /. . . . s1 s2 /"
+		},
+		{
+			label: "Expand from given pole",
+			input: [
+				"editmode",
+				"cursor,1,1",
+				"key,1",
+				"playmode",
+				"mouse,left,1,1,3,1"
+			],
+			result:
+				"pzprv3/magnets/1/4/0 0 0 /. . . . . . /. . . . . . /. . q1 a2 s1 s2 /"
 		}
 	]
 });
