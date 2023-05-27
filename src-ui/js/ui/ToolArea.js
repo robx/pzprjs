@@ -274,6 +274,9 @@ ui.toolarea = {
 				if (idname === "bgcolor") {
 					disabled = ui.puzzle.editmode;
 				}
+				if (idname === "mouseonly") {
+					disabled = ui.puzzle.editmode && ui.puzzle.pid === "magnets";
+				}
 				if (ui.puzzle.config.getvariant(idname)) {
 					disabled = !ui.puzzle.editmode;
 				}

@@ -74,7 +74,7 @@
 				return;
 			}
 
-			if (this.puzzle.getConfig("mouseonly")) {
+			if (this.puzzle.getConfig("mouseonly") && this.puzzle.playmode) {
 				this.inputmouseonly(cell);
 			} else if (cell !== this.cursor.getc()) {
 				this.setcursor(cell);
