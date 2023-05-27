@@ -481,7 +481,8 @@ firefly: "Draw a line from every firefly to make one connected network.\n1. A bl
   \ dot indicates where each firefly's path must start.\n2. A path cannot connect\
   \ directly between two black dots.\n3. Paths cannot branch, cross or go through\
   \ another path or firefly.\n4. A number indicates how many turns the firefly's path\
-  \ makes before reaching another firefly."
+  \ makes before reaching a firefly (possibly itself). Paths starting from empty circles\
+  \ can make any amount of turns."
 fivecells: "Divide the board into pentominoes (blocks of 5 cells).\n1. A number indicates\
   \ the amount of edges surrounding the cell which contain a border.\n2. All borders\
   \ must be used to divide two blocks, there can not be any dead-ends."
@@ -681,7 +682,8 @@ loopsp: "Draw multiple loops so that every cell is used by at least one loop.\n1
   \ at their intersection or otherwise overlap.\n2. Some cells have given loop segments.\
   \ These cells cannot have other lines added to them.\n3. Every loop goes through\
   \ at least one circle.\n4. All circles with identical numbers must be part of the\
-  \ same loop.\n5. Lines cannot intersect on a circle."
+  \ same loop, and different numbers must be in different loops.\n5. Lines cannot\
+  \ intersect on a circle."
 loute: "Divide the grid into regions of orthogonally connected cells.\n1. Each region\
   \ must be an L shape with a width of one cell.\n2. A circle must be located in the\
   \ corner of an L shape.\n3. Arrows must be located on the ends of an L shape, and\
@@ -1118,3 +1120,10 @@ circlesquare: "Shade some cells on the board.\n1. Black circles must be shaded, 
   \ white circles must not be shaded.\n2. The shaded cells cannot form a 2x2 square.\
   \ \n3. All shaded cells form an orthogonally contiguous area.\n4. All unshaded areas\
   \ must form squares."
+oyakodori: "You're given a grid with small birds (black circles) and large birds (white\
+  \ circles). Draw lines to move each bird into a nest, represented by adjacent gray\
+  \ cells.\n1. Movement lines cannot cross or overlap each other. Lines can also not\
+  \ go through the start- or endpoint of other birds.\n2. Lines can not go through\
+  \ nests, but must stop there.\n3. Every nest that is used must have a small bird\
+  \ and a large bird.\n4. Black birds cannot fly over borders.\n5. White birds must\
+  \ fly over at least one border."

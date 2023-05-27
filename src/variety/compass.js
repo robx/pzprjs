@@ -62,6 +62,9 @@
 		},
 		minnum: 0
 	},
+	CellList: {
+		singleQnumCell: true
+	},
 
 	Board: {
 		cols: 8,
@@ -258,8 +261,8 @@
 	AnsCheck: {
 		checklist: [
 			"checkNoNumber",
-			"checkDoubleNumber",
 			"checkDirectionSize",
+			"checkDoubleNumber",
 			"checkBorderDeadend+"
 		],
 
