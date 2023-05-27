@@ -167,6 +167,7 @@
 	TargetCursor: {
 		initCursor: function() {
 			this.init(-1, -1);
+			this.adjust_init();
 		},
 		setminmax_customize: function() {
 			if (this.puzzle.editmode) {
