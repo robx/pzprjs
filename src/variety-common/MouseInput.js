@@ -794,6 +794,8 @@ pzpr.classmgr.makeCommon({
 				) {
 				} else if (this.inputData === 2) {
 					border.setPeke();
+				} else if (this.inputData === 3 && this.puzzle.execConfig("dispmove")) {
+					border.setQsub(0);
 				} else if (this.inputData === 3) {
 					border.removeLineAndQsub();
 				}
