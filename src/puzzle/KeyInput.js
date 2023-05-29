@@ -153,6 +153,8 @@ pzpr.classmgr.makeCommon({
 				key = "-";
 			} else if (keycode === 106) {
 				key = "*";
+			} else if (keycode === 107) {
+				key = "+";
 			}
 
 			var keylist = !!key ? [key] : [];

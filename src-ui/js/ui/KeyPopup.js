@@ -171,7 +171,8 @@ ui.keypopup = {
 		kuroclone: [10, 0],
 		martini: [10, 0],
 		simplegako: [10, 10],
-		tontonbeya: [113, 113]
+		tontonbeya: [113, 113],
+		magnets: [125, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -301,6 +302,8 @@ ui.keypopup = {
 			this.generate_news(mode);
 		} else if (type === 124) {
 			this.generate_trainstations(mode);
+		} else if (type === 125) {
+			this.generate_magnets(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -797,6 +800,28 @@ ui.keypopup = {
 				" ",
 				["-", "?"],
 				["q", "╋"]
+			],
+			4
+		);
+	},
+
+	generate_magnets: function(mode) {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				" ",
+				["q", { text: "■", color: "gray" }],
+				["1", "╋"],
+				["2", "━"]
 			],
 			4
 		);
