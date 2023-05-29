@@ -279,7 +279,7 @@ pzpr.classmgr.makeCommon({
 		// kc.setnum51()      モード別に数字を設定する
 		// kc.getnum51()      モード別に数字を取得する
 		//---------------------------------------------------------------------------
-		inputnumber51: function(ca, max_obj) {
+		inputnumber51: function(ca) {
 			var cursor = this.cursor;
 			if (ca === "shift") {
 				cursor.chtarget();
@@ -319,6 +319,9 @@ pzpr.classmgr.makeCommon({
 				if (val > max) {
 					return;
 				}
+			} else if (ca === "BS") {
+				var cur = this.getnum51(piece, target);
+				val = cur >= 10 ? (cur / 10) | 0 : def;
 			} else if (ca === "-" || ca === " ") {
 				val = def;
 			} else {

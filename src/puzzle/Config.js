@@ -380,7 +380,7 @@
 					exec = pid === "yinyang";
 					break;
 				case "mouseonly":
-					exec = pid === "lollipops";
+					exec = pid === "lollipops" || pid === "magnets";
 					break;
 				case "undefcell":
 					exec = pid === "shugaku" || pid === "lightshadow";

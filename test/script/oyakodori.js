@@ -65,17 +65,17 @@ ui.debug.addDebugData("oyakodori", {
 		{
 			label: "Mouse edit",
 			input: [
-				"newboard,3,1",
+				"newboard,4,1",
 				"mouse,left,1,1",
 				"mouse,right,5,1",
 				"mouse,left,4,0,4,2"
 			],
-			result: "pzprv3/oyakodori/1/3/3 . 9 /0 1 /0 0 /"
+			result: "pzprv3/oyakodori/1/4/3 . 9 . /0 1 0 /0 0 0 /"
 		},
 		{
 			label: "Mouse play",
 			input: ["playmode", "mouse,left,1,1,5,1"],
-			result: "pzprv3/oyakodori/1/3/3 . 9 /0 1 /1 1 /"
+			result: "pzprv3/oyakodori/1/4/3 . 9 . /0 1 0 /1 1 0 /"
 		},
 		{
 			label: "Prehook",
@@ -86,7 +86,26 @@ ui.debug.addDebugData("oyakodori", {
 				"playmode",
 				"mouse,left,1,1,5,1"
 			],
-			result: "pzprv3/oyakodori/1/3/4 . 9 /0 1 /1 0 /"
+			result: "pzprv3/oyakodori/1/4/4 . 9 . /0 1 0 /1 0 0 /"
+		},
+		{
+			label: "Draw peke",
+			input: ["mouse,right,4,1,6,1"],
+			result: "pzprv3/oyakodori/1/4/4 . 9 . /0 1 0 /1 -1 -1 /"
+		},
+		{
+			label: "Erase peke without erasing line",
+			input: ["mouse,right,6,1,2,1"],
+			result: "pzprv3/oyakodori/1/4/4 . 9 . /0 1 0 /1 0 0 /"
+		},
+		{
+			label: "Erase peke with erasing line",
+			input: [
+				"setconfig,dispmove,false",
+				"mouse,right,6,1",
+				"mouse,right,6,1,2,1"
+			],
+			result: "pzprv3/oyakodori/1/4/4 . 9 . /0 1 0 /0 0 0 /"
 		}
 	]
 });
