@@ -71,6 +71,7 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		disInputHatena: true,
 		shouldDraw51cell: function() {
 			if (!this.is51cell()) {
 				return false;
