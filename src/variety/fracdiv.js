@@ -71,6 +71,22 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		shouldDraw51cell: function() {
+			if (!this.is51cell()) {
+				return false;
+			}
+			if (!this.puzzle.playeronly) {
+				return true;
+			}
+
+			return (
+				this.qnum !== -1 &&
+				this.qnum !== -2 &&
+				this.qnum2 !== -1 &&
+				this.qnum2 !== -2
+			);
+		},
+
 		posthook: {
 			qnum: function() {
 				this.updateQnums();
@@ -253,8 +269,8 @@
 
 			this.drawQues51();
 			this.drawQuesNumbersOn51();
+			this.drawQuesNumbers();
 			this.drawDotPatterns();
-			// TODO draw hatenas
 
 			this.drawDashedGrid();
 			this.drawQansBorders();
@@ -291,7 +307,7 @@
 				var cell = clist[i];
 
 				g.vid = "c_slash51b_" + cell.id;
-				if (cell.ques === 51) {
+				if (cell.shouldDraw51cell()) {
 					var px = cell.bx * this.bw,
 						py = cell.by * this.bh;
 					g.strokeLine(
@@ -321,6 +337,13 @@
 			g.fill();
 		},
 
+		getQuesNumberText: function(cell) {
+			if (!cell.is51cell() || cell.shouldDraw51cell()) {
+				return null;
+			}
+			return this.getNumberText(cell, cell.qnum === -1 ? -2 : cell.qnum);
+		},
+
 		drawQuesNumbersOn51_1: function(piece) {
 			var g = this.context,
 				val,
@@ -332,7 +355,7 @@
 					? this.errcolor1
 					: this.quescolor;
 
-			val = piece.ques === 51 ? piece.qnum : -1;
+			val = piece.shouldDraw51cell() ? piece.qnum : -1;
 
 			g.vid = [piece.group, piece.id, "text_ques51_num"].join("_");
 			if (val >= 0) {
@@ -342,7 +365,7 @@
 				g.vhide();
 			}
 
-			val = piece.ques === 51 ? piece.qnum2 : -1;
+			val = piece.shouldDraw51cell() ? piece.qnum2 : -1;
 
 			g.vid = [piece.group, piece.id, "text_ques51_div"].join("_");
 			if (val >= 0) {
