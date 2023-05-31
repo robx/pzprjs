@@ -196,6 +196,14 @@
 			excell.draw();
 
 			this.mousereset();
+		},
+
+		getNewNumber: function(cell, val) {
+			if (cell.group === "cell" && cell.qans) {
+				return cell.getShape();
+			}
+
+			return this.common.getNewNumber.call(this, cell, val);
 		}
 	},
 
