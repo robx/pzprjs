@@ -141,6 +141,7 @@ ui.listener = {
 
 		ui.setdisplay("keypopup");
 		ui.setdisplay("bgcolor");
+		ui.setdisplay("mouseonly");
 		for (var key in ui.puzzle.config.getVariants()) {
 			ui.setdisplay(key);
 		}

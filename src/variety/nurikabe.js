@@ -96,6 +96,8 @@
 		updateViewClist: function() {
 			if (this.qnum === -1) {
 				this.complete = false;
+				this.updated = true;
+				this.viewclist = null;
 				return;
 			}
 			var clist = new this.klass.CellList();
@@ -107,14 +109,13 @@
 			this.complete &= this.extendShadeClistDir(clist, 0, 2);
 			this.viewclist = clist;
 			this.updated = true;
-
-			this.draw();
 		},
 		updateCluesDir: function(dx, dy) {
 			var c = this.relcell(dx, dy);
 			while (!!c && !c.isnull) {
 				if (c.qnum !== -1) {
 					c.updateViewClist();
+					c.draw();
 					return;
 				} else if (c.isShade()) {
 					c = c.relcell(dx, dy);

@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaero", "armyants"], {
+})(["kaero", "armyants", "oyakodori"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -51,11 +51,84 @@
 			cell.draw();
 		}
 	},
+	"MouseEvent@oyakodori": {
+		inputModes: {
+			edit: ["border", "circle-shade", "circle-unshade", "shade", "clear"],
+			play: ["line", "peke", "clear"]
+		},
+
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left") {
+						this.inputLine();
+					} else if (this.btn === "right") {
+						this.inputpeke();
+					}
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputlight();
+				}
+			} else if (this.puzzle.editmode) {
+				var cell = this.getcell();
+				if (cell.isnull) {
+					return;
+				}
+
+				if (this.btn === "left" && (this.mousestart || this.mousemove)) {
+					this.inputborder();
+					return;
+				}
+
+				if (
+					this.mousestart &&
+					(this.btn !== "right" || cell === this.cursor.getc())
+				) {
+					this.inputData = -1;
+				}
+
+				if (
+					(this.mousestart &&
+						cell !== this.cursor.getc() &&
+						this.btn === "right") ||
+					(this.mousemove && this.inputData >= 0)
+				) {
+					this.inputShade();
+				} else if (this.mouseend && this.notInputted()) {
+					if (
+						cell !== this.cursor.getc() &&
+						this.inputMode === "auto" &&
+						this.btn === "left"
+					) {
+						this.setcursor(cell);
+					} else {
+						this.inputqnum(cell);
+					}
+				}
+			}
+		},
+
+		inputShade: function() {
+			this.inputIcebarn();
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
 		enablemake: true
+	},
+
+	"KeyEvent@oyakodori": {
+		keyinput: function(ca) {
+			if (ca === "q") {
+				var cell = this.cursor.getc();
+				cell.setQues(cell.ques !== 6 ? 6 : 0);
+				this.prev = cell;
+				cell.draw();
+			} else {
+				this.key_inputqnum(ca);
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -80,6 +153,10 @@
 			}
 			return dirinfo;
 		}
+	},
+	"Cell@oyakodori": {
+		maxnum: 2,
+		disInputHatena: true
 	},
 	CellList: {
 		getDeparture: function() {
@@ -150,6 +227,22 @@
 			return this.isBorder();
 		}
 	},
+	"Border@oyakodori": {
+		prehook: {
+			line: function(num) {
+				if (!num || !this.puzzle.execConfig("dispmove")) {
+					return false;
+				}
+				var path = this.sidecell[0].path || this.sidecell[1].path;
+
+				if (path.departure.qnum !== 2) {
+					return false;
+				}
+
+				return this.isBorder();
+			}
+		}
+	},
 
 	Board: {
 		cols: 6,
@@ -162,10 +255,21 @@
 			this.antmgr = this.addInfoList(this.klass.AreaAntGraph);
 		}
 	},
+	"Board@oyakodori": {
+		addExtraInfo: function() {
+			this.nestmgr = this.addInfoList(this.klass.AreaNestGraph);
+		}
+	},
 
 	LineGraph: {
 		enabled: true,
 		moveline: true
+	},
+	"LineGraph@oyakodori": {
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			component.blist = new this.klass.BorderList(component.getedgeobjs());
+		}
 	},
 
 	"AreaRoomGraph@kaero": {
@@ -203,6 +307,29 @@
 		}
 	},
 
+	"AreaNestGraph:AreaGraphBase": {
+		enabled: true,
+		relation: {
+			"cell.ques": "node",
+			"border.ques": "separator"
+		},
+		setComponentRefs: function(obj, component) {
+			obj.nest = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.nestnodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.nestnodes = [];
+		},
+		isedgevalidbylinkobj: function(border) {
+			return !border.isBorder();
+		},
+		isnodevalid: function(cell) {
+			return cell.ice();
+		}
+	},
+
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -223,8 +350,12 @@
 			this.drawDepartures();
 			this.drawLines();
 
-			this.drawCellSquare();
-			this.drawQuesNumbers();
+			if (this.pid === "oyakodori") {
+				this.drawCircles();
+			} else {
+				this.drawCellSquare();
+				this.drawQuesNumbers();
+			}
 
 			this.drawChassis();
 
@@ -264,12 +395,35 @@
 		}
 	},
 
+	"Graphic@oyakodori": {
+		bgcellcolor_func: "icebarn",
+		icecolor: "rgb(204,204,204)",
+		circleratio: [0.35, 0.3],
+		movelinecolor: "#444444",
+
+		getCircleFillColor: function(cell) {
+			var puzzle = this.puzzle;
+			var isdrawmove = puzzle.execConfig("dispmove");
+			var num = (!isdrawmove ? cell : cell.base).qnum;
+			var err = (!isdrawmove ? cell : cell.base).error;
+			if (num === 1) {
+				return err === 1 ? this.errbcolor1 : "white";
+			} else if (num === 2) {
+				return err === 1 ? this.errcolor1 : this.quescolor;
+			}
+			return null;
+		}
+	},
+
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeBorder();
-			if (this.pid === "kaero") {
+			if (this.pid === "oyakodori") {
+				this.decodeCircle();
+				this.decodeIce();
+			} else if (this.pid === "kaero") {
 				this.decodeKaero();
 			} else {
 				this.decodeNumber16();
@@ -277,7 +431,10 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeBorder();
-			if (this.pid === "kaero") {
+			if (this.pid === "oyakodori") {
+				this.encodeCircle();
+				this.encodeIce();
+			} else if (this.pid === "kaero") {
 				this.encodeKaero();
 			} else {
 				this.encodeNumber16();
@@ -363,6 +520,28 @@
 			this.encodeBorderLine();
 		}
 	},
+	"FileIO@oyakodori": {
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === ".") {
+					return;
+				}
+				var num = +ca;
+				if (num & 8) {
+					cell.ques = 6;
+				}
+				cell.qnum = (num & ~8) - 2;
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				var num = (cell.qnum + 2) | (cell.ques === 6 ? 8 : 0);
+				return num !== 1 ? num + " " : ". ";
+			});
+		},
+		decodeCellQanssub: function() {},
+		encodeCellQanssub: function() {}
+	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
@@ -395,6 +574,24 @@
 
 			"checkDisconnectLine",
 			"checkNumberExist"
+		]
+	},
+	"AnsCheck@oyakodori#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkConnectObject",
+			"checkLineOverLetter",
+
+			"checkLineOverNest",
+			"checkMultiCircle",
+			"checkBlackIntersect",
+			"checkWhiteNoIntersect",
+			"checkSingleCircle",
+			"checkCircleMatch",
+
+			"checkCircleOutsideNest",
+			"checkDisconnectLine"
 		]
 	},
 	"AnsCheck@kaero": {
@@ -542,6 +739,117 @@
 			}
 			if (!result) {
 				this.failcode.add("bsAnt");
+			}
+		}
+	},
+	"AnsCheck@oyakodori": {
+		checkLineOverNest: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt >= 2 && cell.ice();
+			}, "laOnIce");
+		},
+		checkBlackIntersect: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+
+				if (path.departure.qnum !== 2) {
+					continue;
+				}
+
+				var lines = path.blist.filter(function(border) {
+					return border.isBorder();
+				});
+
+				if (lines.length === 0) {
+					continue;
+				}
+
+				this.failcode.add("laShadeOnBorder");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				lines.seterr(1);
+				path.departure.seterr(1);
+			}
+		},
+		checkWhiteNoIntersect: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+
+				if (path.departure.qnum !== 1 || !path.destination.ice()) {
+					continue;
+				}
+
+				if (
+					path.blist.some(function(border) {
+						return border.isBorder();
+					})
+				) {
+					continue;
+				}
+
+				this.failcode.add("laUnshadeNoBorder");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.blist.seterr(1);
+				path.departure.seterr(1);
+			}
+		},
+		checkCircleOutsideNest: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isDestination() && !cell.ice();
+			}, "nmOutOfBk");
+		},
+		checkSingleCircle: function() {
+			this.checkAllBlock(
+				this.board.nestmgr,
+				function(cell) {
+					return cell.base.qnum !== -1;
+				},
+				function(w, h, a, n) {
+					return w * h === 1 || a !== 1;
+				},
+				"nmLt2"
+			);
+		},
+		checkMultiCircle: function() {
+			this.checkAllBlock(
+				this.board.nestmgr,
+				function(cell) {
+					return cell.base.qnum !== -1;
+				},
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"nmGt2"
+			);
+		},
+		checkCircleMatch: function() {
+			var areas = this.board.nestmgr.components;
+			for (var id = 0; id < areas.length; id++) {
+				var area = areas[id],
+					clist = area.clist;
+				var items = clist.filter(function(cell) {
+					return cell.base.qnum !== -1;
+				});
+
+				if (items.length !== 2) {
+					continue;
+				}
+				if (items[0].base.qnum !== items[1].base.qnum) {
+					continue;
+				}
+
+				this.failcode.add("nmNumberEq");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
 			}
 		}
 	}

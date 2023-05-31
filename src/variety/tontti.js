@@ -60,18 +60,7 @@
 		}
 	},
 	CellList: {
-		getQnumCell: function() {
-			var ret = null;
-			for (var i = 0, len = this.length; i < len; i++) {
-				if (this[i].isNum()) {
-					if (ret) {
-						return this.board.emptycell;
-					}
-					ret = this[i];
-				}
-			}
-			return ret || this.board.emptycell;
-		}
+		singleQnumCell: true
 	},
 	ExCell: {
 		noLP: function(dir) {

@@ -172,7 +172,8 @@ ui.keypopup = {
 		martini: [10, 0],
 		simplegako: [10, 10],
 		tontonbeya: [113, 113],
-		battleship: [125, 0]
+		magnets: [125, 0],
+		battleship: [126, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -303,6 +304,8 @@ ui.keypopup = {
 		} else if (type === 124) {
 			this.generate_trainstations(mode);
 		} else if (type === 125) {
+			this.generate_magnets(mode);
+		} else if (type === 126) {
 			this.generate_battleship(mode);
 		}
 	},
@@ -800,6 +803,28 @@ ui.keypopup = {
 				" ",
 				["-", "?"],
 				["q", "╋"]
+			],
+			4
+		);
+	},
+
+	generate_magnets: function(mode) {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				" ",
+				["q", { text: "■", color: "gray" }],
+				["1", "╋"],
+				["2", "━"]
 			],
 			4
 		);
