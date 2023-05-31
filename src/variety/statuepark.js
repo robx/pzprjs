@@ -524,7 +524,19 @@
 				shortkey: "z",
 				constant: []
 			}
-		]
+		],
+
+		isSimpleBank: true,
+		rebuildExtraData: function() {
+			this.isSimpleBank = true;
+
+			for (var i = 0; i < this.pieces.length; i++) {
+				var piece = this.pieces[i];
+				if (piece.w > 1 && piece.h > 1) {
+					this.isSimpleBank = false;
+				}
+			}
+		}
 	},
 
 	BankPiece: {
@@ -702,6 +714,21 @@
 		},
 
 		isAdjacentDecided: function() {
+			if (this.board.bank.isSimpleBank) {
+				if (this.adjacent.top.isShade() || this.adjacent.bottom.isShade()) {
+					return (
+						this.adjacent.top.isShadeDecided() &&
+						this.adjacent.bottom.isShadeDecided()
+					);
+				}
+				if (this.adjacent.left.isShade() || this.adjacent.right.isShade()) {
+					return (
+						this.adjacent.left.isShadeDecided() &&
+						this.adjacent.right.isShadeDecided()
+					);
+				}
+			}
+
 			return (
 				this.adjacent.top.isShadeDecided() &&
 				this.adjacent.bottom.isShadeDecided() &&
