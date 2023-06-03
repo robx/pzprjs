@@ -42,10 +42,31 @@ ui.debug.addDebugData("battleship", {
 			input: [
 				"newboard,4,1",
 				"cursor,-1,1",
-				"key,1,right,2,right,a,right,1,0,right,a,BS"
+				"key,1,right,2,right,a,right,1,0,right,a,BS",
+				"mouse,left,-1,1"
 			],
 			result:
 				"pzprv3/battleship/1/4/d/. . . . . /1 2 10 0 . /. . . . /0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Mouse input",
+			input: ["cursor,-1,1", "mouse,left,-1,1", "playmode", "mouse,left,-1,1"],
+			result:
+				"pzprv3/battleship/1/4/d/. . . . . /c2 2 10 0 . /. . . . /0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Copy answer",
+			input: [
+				"newboard,4,1",
+				"playmode",
+				"mouse,left,1,1,5,1",
+				"editmode",
+				"cursor,7,1",
+				"mouse,leftx2,1,1",
+				"mouse,leftx2,3,1"
+			],
+			result:
+				"pzprv3/battleship/1/4/d/. . . . . /. 3 5 . . /. . # . /0 0 0 0 0 0 0 0 0 0 /"
 		}
 	]
 });

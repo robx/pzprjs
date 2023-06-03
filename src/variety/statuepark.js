@@ -146,10 +146,8 @@
 					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode && this.mousestart) {
-				if (this.mousestart) {
-					if (!this.inputqnum_excell()) {
-						this.inputqnum();
-					}
+				if (!this.inputqnum_excell()) {
+					this.inputqnum();
 				}
 				if (this.notInputted()) {
 					if (this.btn === "left") {
