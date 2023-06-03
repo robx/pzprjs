@@ -284,6 +284,9 @@
 					this.list.autocheck_once.val = newval !== "off";
 					break;
 
+				case "timer":
+					ui.toolarea.display();
+					break;
 				case "language":
 					ui.displayAll();
 					break;

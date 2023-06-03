@@ -26,6 +26,7 @@
 			}); /* 文字の描画 1:ゴシック 2:明朝 */
 			this.add("cursor", true); /* カーソルの表示 */
 			this.add("trialmarker", true); /* show trial marker */
+			this.add("timer", true); /* show timer */
 			this.add("irowake", false, { variety: true }); /* 線の色分け */
 			this.add("irowakeblk", false, { variety: true }); /* 黒マスの色分け */
 

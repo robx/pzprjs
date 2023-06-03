@@ -188,6 +188,7 @@
     "akichi_maximum": "最大値が数字より小さくても可",
     "variant": "変種ルール",
     "time": "経過時間：",
+    "timer.menu": "Show timer",
     "check": "チェック",
     "check.variant": "本家ルールでチェック",
     "undo": "戻",

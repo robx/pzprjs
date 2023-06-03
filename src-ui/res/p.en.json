@@ -189,6 +189,7 @@
     "akichi_maximum": "Maximum numbers may be reduced",
     "variant": "This puzzle uses variant rules",
     "time": "Time:",
+    "timer.menu": "Show timer",
     "check": "Check",
     "check.variant": "Check base type",
     "undo": "<-",
