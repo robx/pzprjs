@@ -247,6 +247,8 @@
 				return ui.keypopup.paneltype[1] !== 0 || ui.keypopup.paneltype[3] !== 0;
 			} else if (idname === "mode") {
 				return !ui.puzzle.playeronly;
+			} else if (idname === "timer") {
+				return ui.puzzle.playeronly;
 			} else if (idname === "inputmode") {
 				return (
 					ui.puzzle.mouse.getInputModeList("play").length > 1 ||
