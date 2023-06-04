@@ -190,8 +190,8 @@
 			/* 設定が保存されている場合は元に戻す */
 			ui.puzzle.config.init();
 			this.init();
-			var json_puzzle = localStorage["pzprv3_config:puzzle"];
-			var json_menu = localStorage["pzprv3_config:ui"];
+			var json_puzzle = localStorage.getItem("pzprv3_config:puzzle");
+			var json_menu = localStorage.getItem("pzprv3_config:ui");
 			if (!!json_puzzle) {
 				this.setAll(JSON.parse(json_puzzle));
 			}
@@ -200,10 +200,15 @@
 			}
 		},
 		save: function() {
-			localStorage["pzprv3_config:puzzle"] = JSON.stringify(
-				ui.puzzle.saveConfig()
-			);
-			localStorage["pzprv3_config:ui"] = JSON.stringify(this.getAll());
+			try {
+				localStorage.setItem(
+					"pzprv3_config:puzzle",
+					JSON.stringify(ui.puzzle.saveConfig())
+				);
+				localStorage.setItem("pzprv3_config:ui", JSON.stringify(this.getAll()));
+			} catch (ex) {
+				console.warn(ex);
+			}
 		},
 
 		//---------------------------------------------------------------------------
