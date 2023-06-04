@@ -53,6 +53,9 @@
 			if (ui.puzzle.playeronly) {
 				this.updatetime();
 			}
+
+			ui.menuconfig.save();
+
 			if (ui.menuconfig.get("autocheck_once")) {
 				var mode = ui.menuconfig.get("autocheck_mode");
 				this.autocheck(mode === "guarded");

@@ -138,7 +138,7 @@
 			var item = {
 				val: defvalue,
 				defval: defvalue,
-				volatile: !!extoption.volatile,
+				volatile: !!(extoption.volatile || extoption.variant),
 				extoption: extoption // stored for the benefit of ui.MenuConfig
 			};
 			if (!!extoption.option) {

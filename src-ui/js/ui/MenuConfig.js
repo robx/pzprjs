@@ -79,6 +79,7 @@
 		// menuconfig.sync()  URL形式などによって変化する可能性がある設定値を同期する
 		//---------------------------------------------------------------------------
 		sync: function() {
+			var dirty = this.isDirty;
 			var idname = [];
 			switch (ui.puzzle.pid) {
 				case "yajilin":
@@ -134,6 +135,8 @@
 			this.set("lrinvert", ui.puzzle.mouse.inversion);
 			this.set("autocmp", ui.puzzle.getConfig("autocmp"));
 			this.set("autoerr", ui.puzzle.getConfig("autoerr"));
+
+			this.isDirty = dirty;
 		},
 
 		//---------------------------------------------------------------------------
@@ -177,6 +180,13 @@
 			} else if (this.list[idname].puzzle) {
 				ui.puzzle.setConfig(argname, newval);
 			}
+			if (
+				!this.list[idname].volatile ||
+				(ui.puzzle.config.list[argname] &&
+					!ui.puzzle.config.list[argname].volatile)
+			) {
+				this.isDirty = true;
+			}
 
 			this.configevent(idname, newval);
 		},
@@ -198,8 +208,14 @@
 			if (!!json_menu) {
 				this.setAll(JSON.parse(json_menu));
 			}
+			this.isDirty = false;
 		},
+		isDirty: false,
 		save: function() {
+			if (!this.isDirty) {
+				return;
+			}
+
 			try {
 				localStorage.setItem(
 					"pzprv3_config:puzzle",
@@ -209,6 +225,7 @@
 			} catch (ex) {
 				console.warn(ex);
 			}
+			this.isDirty = false;
 		},
 
 		//---------------------------------------------------------------------------
