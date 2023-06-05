@@ -153,6 +153,7 @@
 			"hashikake",
 			"herugolf",
 			"shikaku",
+			"dbchoco",
 			"tentaisho",
 			"kakuro",
 			"sudoku",
@@ -160,7 +161,8 @@
 			"symmarea",
 			"ripple",
 			"akari",
-			"shakashaka"
+			"shakashaka",
+			"pencils"
 		],
 		testa: ["nagare", "dosufuwa", "usoone", "moonsun"],
 		trial: ["stostone", "armyants"],
@@ -269,9 +271,7 @@
 			"scrin",
 			"heteromino",
 			"yajilin-regions",
-			"dbchoco",
 			"geradeweg",
-			"pencils",
 			"curvedata",
 			"aquarium",
 			"compass",

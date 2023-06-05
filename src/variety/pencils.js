@@ -506,9 +506,6 @@
 		}
 	},
 	Board: {
-		cols: 8,
-		rows: 8,
-
 		hasborder: 1
 	},
 
