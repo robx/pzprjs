@@ -16,7 +16,8 @@
 	var self = v3index;
 
 	self.doclang =
-		JSON.parse(localStorage["pzprv3_config:ui"] || "{}").language || pzpr.lang;
+		JSON.parse(localStorage.getItem("pzprv3_config:ui") || "{}").language ||
+		pzpr.lang;
 
 	if (location.search === "?en" || location.search === "?ja") {
 		self.doclang = location.search.substr(1, 2);
@@ -72,9 +73,11 @@
 			self.doclang = lang;
 			self.translate();
 
-			var setting = JSON.parse(localStorage["pzprv3_config:ui"] || "{}");
+			var setting = JSON.parse(
+				localStorage.getItem("pzprv3_config:ui") || "{}"
+			);
 			setting.language = lang;
-			localStorage["pzprv3_config:ui"] = JSON.stringify(setting);
+			localStorage.setItem("pzprv3_config:ui", JSON.stringify(setting));
 		},
 		setTranslation: function() {
 			Array.prototype.slice

@@ -79,6 +79,7 @@
 		// menuconfig.sync()  URL形式などによって変化する可能性がある設定値を同期する
 		//---------------------------------------------------------------------------
 		sync: function() {
+			var dirty = this.isDirty;
 			var idname = [];
 			switch (ui.puzzle.pid) {
 				case "yajilin":
@@ -134,6 +135,8 @@
 			this.set("lrinvert", ui.puzzle.mouse.inversion);
 			this.set("autocmp", ui.puzzle.getConfig("autocmp"));
 			this.set("autoerr", ui.puzzle.getConfig("autoerr"));
+
+			this.isDirty = dirty;
 		},
 
 		//---------------------------------------------------------------------------
@@ -177,6 +180,13 @@
 			} else if (this.list[idname].puzzle) {
 				ui.puzzle.setConfig(argname, newval);
 			}
+			if (
+				!this.list[idname].volatile ||
+				(ui.puzzle.config.list[argname] &&
+					!ui.puzzle.config.list[argname].volatile)
+			) {
+				this.isDirty = true;
+			}
 
 			this.configevent(idname, newval);
 		},
@@ -190,20 +200,32 @@
 			/* 設定が保存されている場合は元に戻す */
 			ui.puzzle.config.init();
 			this.init();
-			var json_puzzle = localStorage["pzprv3_config:puzzle"];
-			var json_menu = localStorage["pzprv3_config:ui"];
+			var json_puzzle = localStorage.getItem("pzprv3_config:puzzle");
+			var json_menu = localStorage.getItem("pzprv3_config:ui");
 			if (!!json_puzzle) {
 				this.setAll(JSON.parse(json_puzzle));
 			}
 			if (!!json_menu) {
 				this.setAll(JSON.parse(json_menu));
 			}
+			this.isDirty = false;
 		},
+		isDirty: false,
 		save: function() {
-			localStorage["pzprv3_config:puzzle"] = JSON.stringify(
-				ui.puzzle.saveConfig()
-			);
-			localStorage["pzprv3_config:ui"] = JSON.stringify(this.getAll());
+			if (!this.isDirty) {
+				return;
+			}
+
+			try {
+				localStorage.setItem(
+					"pzprv3_config:puzzle",
+					JSON.stringify(ui.puzzle.saveConfig())
+				);
+				localStorage.setItem("pzprv3_config:ui", JSON.stringify(this.getAll()));
+			} catch (ex) {
+				console.warn(ex);
+			}
+			this.isDirty = false;
 		},
 
 		//---------------------------------------------------------------------------
