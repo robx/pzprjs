@@ -16,7 +16,8 @@
 	var self = v3index;
 
 	self.doclang =
-		JSON.parse(localStorage["pzprv3_config:ui"] || "{}").language || pzpr.lang;
+		JSON.parse(localStorage.getItem("pzprv3_config:ui") || "{}").language ||
+		pzpr.lang;
 
 	if (location.search === "?en" || location.search === "?ja") {
 		self.doclang = location.search.substr(1, 2);
@@ -72,9 +73,11 @@
 			self.doclang = lang;
 			self.translate();
 
-			var setting = JSON.parse(localStorage["pzprv3_config:ui"] || "{}");
+			var setting = JSON.parse(
+				localStorage.getItem("pzprv3_config:ui") || "{}"
+			);
 			setting.language = lang;
-			localStorage["pzprv3_config:ui"] = JSON.stringify(setting);
+			localStorage.setItem("pzprv3_config:ui", JSON.stringify(setting));
 		},
 		setTranslation: function() {
 			Array.prototype.slice
@@ -129,201 +132,4 @@
 
 	/* extern */
 	window.v3index = v3index;
-})();
-
-/*********************/
-/* Database function */
-/*********************/
-(function() {
-	var v3index = window.v3index;
-
-	var pstate = {
-		lunch: [
-			"nurikabe",
-			"tilepaint",
-			"norinori",
-			"nurimaze",
-			"heyawake",
-			"hitori",
-			"slither",
-			"mashu",
-			"yajilin",
-			"slalom",
-			"numlin",
-			"hashikake",
-			"herugolf",
-			"shikaku",
-			"tentaisho",
-			"kakuro",
-			"sudoku",
-			"fillomino",
-			"symmarea",
-			"ripple",
-			"akari",
-			"shakashaka"
-		],
-		testa: ["nagare", "dosufuwa", "usoone", "moonsun"],
-		trial: ["stostone", "armyants"],
-		lunch2: ["box", "lits", "kurodoko", "goishi"],
-		lunch3: ["minarism", "factors"],
-		nigun: [
-			"creek",
-			"mochikoro",
-			"tasquare",
-			"kurotto",
-			"shimaguni",
-			"yajikazu",
-			"cave",
-			"country",
-			"reflect",
-			"icebarn",
-			"firefly",
-			"kaero",
-			"yosenabe",
-			"bdblock",
-			"fivecells",
-			"sashigane",
-			"tatamibari",
-			"sukoro",
-			"gokigen",
-			"tateyoko",
-			"kinkonkan",
-			"hebi",
-			"makaro",
-			"juosan"
-		],
-		omopa: [
-			"nuribou",
-			"norinuri",
-			"tawa",
-			"lookair",
-			"paintarea",
-			"chocona",
-			"kuroclone",
-			"kurochute",
-			"mejilink",
-			"pipelink",
-			"loopsp",
-			"nagenawa",
-			"kouchoku",
-			"ringring",
-			"pipelinkr",
-			"barns",
-			"icelom",
-			"icelom2",
-			"wblink",
-			"kusabi",
-			"ichimaga",
-			"ichimagam",
-			"ichimagax",
-			"amibo",
-			"bonsan",
-			"heyabon",
-			"rectslider",
-			"nawabari",
-			"triplace",
-			"fourcells",
-			"kramma",
-			"kramman",
-			"shwolf",
-			"loute",
-			"fillmat",
-			"usotatami",
-			"yajitatami",
-			"kakuru",
-			"view",
-			"bosanowa",
-			"nanro",
-			"cojun",
-			"renban",
-			"sukororoom",
-			"hanare",
-			"kazunori",
-			"wagiri",
-			"shugaku",
-			"hakoiri",
-			"roma",
-			"toichika",
-			"cbblock",
-			"nondango",
-			"onsen",
-			"evolmino"
-		],
-		orig: ["mochinyoro", "ayeheya", "aho"],
-		genre: [
-			"tapa",
-			"arukone",
-			"yinyang",
-			"skyscrapers",
-			"kropki",
-			"starbattle",
-			"easyasabc",
-			"walllogic"
-		],
-		add: [
-			"angleloop",
-			"doubleback",
-			"nurimisaki",
-			"meander",
-			"satogaeri",
-			"scrin",
-			"heteromino",
-			"yajilin-regions",
-			"dbchoco",
-			"geradeweg",
-			"pencils",
-			"curvedata",
-			"aquarium",
-			"compass",
-			"castle",
-			"araf",
-			"maxi",
-			"midloop",
-			"balance",
-			"simpleloop",
-			"doppelblock",
-			"tents",
-			"detour",
-			"snake",
-			"nonogram",
-			"coral",
-			"putteria",
-			"haisu",
-			"nikoji",
-			"mines",
-			"interbd",
-			"toichika2",
-			"aqre",
-			"tapaloop",
-			"dotchi",
-			"ovotovata",
-			"crossstitch",
-			"chainedb",
-			"canal",
-			"railpool",
-			"circlesquare",
-			"simplegako"
-		]
-	};
-	var tabstate = {
-		lunch: "lunch",
-		lunch2: "lunch",
-		lunch3: "nigun",
-		testa: "nigun",
-		nigun: "nigun",
-		trial: "omopa",
-		omopa: "omopa",
-		orig: "extra",
-		genre: "extra",
-		add: "add"
-	};
-
-	var genres = {};
-	for (var state in pstate) {
-		pstate[state].forEach(function(pid) {
-			genres[pzpr.variety.toPID(pid)] = { state: state, tab: tabstate[state] };
-		});
-	}
-
-	v3index.extend({ variety: genres });
 })();

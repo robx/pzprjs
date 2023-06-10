@@ -99,14 +99,21 @@
 					newVal = this.getNewNumber(cell, num);
 				}
 
-				if (cell.parity() && (newVal === 1 || newVal === 2)) {
+				if (
+					!this.puzzle.getConfig("magnets_anti") &&
+					cell.parity() &&
+					(newVal === 1 || newVal === 2)
+				) {
 					this.inputData = 3 - newVal;
 				} else {
 					this.inputData = newVal;
 				}
 			}
 
-			if (this.inputData === 1 || this.inputData === 2) {
+			if (
+				!this.puzzle.getConfig("magnets_anti") &&
+				(this.inputData === 1 || this.inputData === 2)
+			) {
 				var value = !cell.parity() === (this.inputData === 1) ? 1 : 2;
 				cell.setNum(value);
 			} else {
@@ -388,8 +395,10 @@
 			this.decodeBorder();
 			this.decodeCircle();
 			this.decodeEmpty();
+			this.puzzle.setConfig("magnets_anti", this.checkpflag("a"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("magnets_anti") ? "a" : null;
 			this.encodeNumber16ExCell();
 			this.encodeBorder();
 
@@ -406,6 +415,7 @@
 
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("a", "magnets_anti");
 			this.decodeBorderQues();
 			this.decodeCellExCell(function(obj, ca) {
 				if (ca === ".") {
@@ -430,6 +440,7 @@
 			});
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("a", "magnets_anti");
 			this.encodeBorderQues();
 			this.encodeCellExCell(function(obj) {
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
@@ -452,12 +463,37 @@
 
 	AnsCheck: {
 		checklist: [
-			"checkAdjacentDiffNumber",
+			"checkAdjacentDiffNumber_magnets",
+			"checkEqualNumber_magnets",
 			"checkNoTripleMagnet",
 			"checkNoSingleMagnet",
 			"checkPlusCount",
 			"checkMinusCount"
 		],
+
+		checkAdjacentDiffNumber_magnets: function() {
+			if (!this.puzzle.getConfig("magnets_anti")) {
+				this.checkAdjacentDiffNumber();
+			}
+		},
+
+		checkEqualNumber_magnets: function() {
+			if (!this.puzzle.getConfig("magnets_anti")) {
+				return;
+			}
+
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return (
+						cell1.isValidNum() &&
+						cell2.isValidNum() &&
+						cell1.getNum() !== cell2.getNum()
+					);
+				},
+				false,
+				"nmAdjDiff"
+			);
+		},
 
 		checkNoSingleMagnet: function() {
 			this.checkAllCell(function(cell) {

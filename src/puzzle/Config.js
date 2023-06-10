@@ -26,6 +26,7 @@
 			}); /* 文字の描画 1:ゴシック 2:明朝 */
 			this.add("cursor", true); /* カーソルの表示 */
 			this.add("trialmarker", true); /* show trial marker */
+			this.add("timer", true); /* show timer */
 			this.add("irowake", false, { variety: true }); /* 線の色分け */
 			this.add("irowakeblk", false, { variety: true }); /* 黒マスの色分け */
 
@@ -121,6 +122,10 @@
 				variant: true,
 				volatile: true
 			}); /* akichi: Numbers don't need to be attained */
+			this.add("magnets_anti", false, {
+				variant: true,
+				volatile: true
+			}); /* magnets: Adjacent poles of different magnets must be equal */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -137,7 +142,7 @@
 			var item = {
 				val: defvalue,
 				defval: defvalue,
-				volatile: !!extoption.volatile,
+				volatile: !!(extoption.volatile || extoption.variant),
 				extoption: extoption // stored for the benefit of ui.MenuConfig
 			};
 			if (!!extoption.option) {
@@ -437,6 +442,9 @@
 					break;
 				case "akichi_maximum":
 					exec = pid === "akichi";
+					break;
+				case "magnets_anti":
+					exec = pid === "magnets";
 					break;
 				default:
 					exec = !!this.list[name];

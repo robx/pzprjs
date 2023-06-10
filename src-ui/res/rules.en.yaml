@@ -293,10 +293,10 @@ slashpack: "Draw diagonal lines through the center of some cells to divide the b
   on the board.\n4. Question marks can be replaced with any number, as long as it
   appears elsewhere on the grid."
 icewalk: "Draw a loop that goes through every numbered cell.\n1. Two perpendicular
-  line segments may intersect each other only on icy cells, but they may not turn
-  at their intersection or otherwise overlap.\n2. The loop may not turn on icy cells.\n
-  3. A number indicates how many cells make up the continuous non-icy section of the
-  loop that the number is on."
+  line segments may intersect each other only on icy cells, but the loop may not branch
+  or otherwise overlap.\n2. The loop may not turn on icy cells.\n3. A number indicates
+  how many cells make up the continuous non-icy section of the loop that the number
+  is on."
 mirrorbk: "Draw lines over the dotted lines to divide the board into regions.\n1.
   A number indicates the size of the region that contains it.\n2. Regions can have
   no more than 1 number.\n3. A thick line represents a mirror, and divides two regions.
@@ -370,9 +370,9 @@ cave: "Shade some cells on the board to form a cave.\n1. All shaded cells are co
   line vertically or horizontally, including itself.\n4. All unshaded cells on the
   board form an orthogonally connected area."
 barns: "Draw a loop that goes through every cell.\n1. Two perpendicular line segments
-  may intersect each other only on icy cells, but they may not turn at their intersection
-  or otherwise overlap.\n2. The loop may not turn on icy cells.\n3. Lines cannot go
-  through bold borders."
+  may intersect each other only on icy cells, but the loop may not branch or otherwise
+  overlap.\n2. The loop may not turn on icy cells.\n3. Lines cannot go through bold
+  borders."
 bdblock: "Draw lines over the dotted lines to divide the board into several blocks.\n
   1. All identical numbers must be in the same block, and different numbers must be
   in different blocks. There can be no blocks without numbers.\n2. Dots represent
@@ -545,21 +545,21 @@ hitori: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally 
   area."
 icebarn: "Draw a line that starts at the IN arrow, and goes through every arrow before
   reaching the OUT arrow.\n1. Two perpendicular line segments may intersect each other
-  only on icy cells, but they may not turn at their intersection or otherwise overlap.\n
-  2. The loop may not turn on icy cells.\n3. The loop cannot go against the direction
-  of an arrow.\n4. Connected icy cells are called an icebarn, and every icebarn must
-  be visited at least once."
+  only on icy cells, but the loop may not branch or otherwise overlap.\n2. The loop
+  may not turn on icy cells.\n3. The loop cannot go against the direction of an arrow.\n
+  4. Connected icy cells are called an icebarn, and every icebarn must be visited
+  at least once."
 icelom: "Draw a line that starts at the IN arrow, and goes through every white cell
   before reaching the OUT arrow.\n1. Two perpendicular line segments may intersect
-  each other only on icy cells, but they may not turn at their intersection or otherwise
-  overlap.\n2. The loop may not turn on icy cells.\n3. All numbers must be visited
-  in ascending order."
+  each other only on icy cells, but the loop may not branch or otherwise overlap.\n
+  2. The loop may not turn on icy cells.\n3. All numbers must be visited in ascending
+  order."
 icelom2: "Draw a line that starts at the IN arrow, and goes through every number before
   reaching the OUT arrow.\n1. Two perpendicular line segments may intersect each other
-  only on icy cells, but they may not turn at their intersection or otherwise overlap.\n
-  2. The loop may not turn on icy cells.\n3. All numbers must be visited in ascending
-  order.\n4. Connected icy cells are called an icebarn, and every icebarn must be
-  visited at least once."
+  only on icy cells, but the loop may not branch or otherwise overlap.\n2. The loop
+  may not turn on icy cells.\n3. All numbers must be visited in ascending order.\n
+  4. Connected icy cells are called an icebarn, and every icebarn must be visited
+  at least once."
 ichimaga: "Draw lines over the dotted lines to connect the circles into one network.\n
   1. A line must connect two circles, and can turn no more than once.\n2. Lines cannot
   branch or overlap.\n3. Numbers indicate the total amount of lines that are connected
@@ -812,9 +812,9 @@ pipelink: "Draw a loop that goes through every cell.\n1. Two perpendicular line 
   overlap.\n2. Some cells have given loop segments. These cells cannot have other
   lines added to them."
 pipelinkr: "Draw a loop that goes through every cell.\n1. Two perpendicular line segments
-  may intersect each other only inside a circle, but they may not turn at their intersection
-  or otherwise overlap.\n2. The loop cannot turn on a circle.\n3. Some cells have
-  given loop segments. These cells cannot have other lines added to them."
+  may intersect each other only inside a circle, but the loop may not branch or otherwise
+  overlap.\n2. The loop cannot turn on a circle.\n3. Some cells have given loop segments.
+  These cells cannot have other lines added to them."
 putteria: "Place one number in a cell of each region on the board.\n1. The number
   in the region should be equal to the size of the region.\n2. Numbers cannot be orthogonally
   adjacent.\n3. Identical numbers cannot be placed in the same row or column.\n4.
