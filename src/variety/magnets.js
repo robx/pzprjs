@@ -99,14 +99,21 @@
 					newVal = this.getNewNumber(cell, num);
 				}
 
-				if (cell.parity() && (newVal === 1 || newVal === 2)) {
+				if (
+					!this.puzzle.getConfig("magnets_anti") &&
+					cell.parity() &&
+					(newVal === 1 || newVal === 2)
+				) {
 					this.inputData = 3 - newVal;
 				} else {
 					this.inputData = newVal;
 				}
 			}
 
-			if (this.inputData === 1 || this.inputData === 2) {
+			if (
+				!this.puzzle.getConfig("magnets_anti") &&
+				(this.inputData === 1 || this.inputData === 2)
+			) {
 				var value = !cell.parity() === (this.inputData === 1) ? 1 : 2;
 				cell.setNum(value);
 			} else {
@@ -457,6 +464,7 @@
 	AnsCheck: {
 		checklist: [
 			"checkAdjacentDiffNumber_magnets",
+			"checkEqualNumber_magnets",
 			"checkNoTripleMagnet",
 			"checkNoSingleMagnet",
 			"checkPlusCount",
@@ -467,6 +475,24 @@
 			if (!this.puzzle.getConfig("magnets_anti")) {
 				this.checkAdjacentDiffNumber();
 			}
+		},
+
+		checkEqualNumber_magnets: function() {
+			if (!this.puzzle.getConfig("magnets_anti")) {
+				return;
+			}
+
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return (
+						cell1.isValidNum() &&
+						cell2.isValidNum() &&
+						cell1.getNum() !== cell2.getNum()
+					);
+				},
+				false,
+				"nmAdjDiff"
+			);
 		},
 
 		checkNoSingleMagnet: function() {
