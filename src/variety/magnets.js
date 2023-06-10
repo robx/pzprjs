@@ -388,8 +388,10 @@
 			this.decodeBorder();
 			this.decodeCircle();
 			this.decodeEmpty();
+			this.puzzle.setConfig("magnets_anti", this.checkpflag("a"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("magnets_anti") ? "a" : null;
 			this.encodeNumber16ExCell();
 			this.encodeBorder();
 
@@ -406,6 +408,7 @@
 
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("a", "magnets_anti");
 			this.decodeBorderQues();
 			this.decodeCellExCell(function(obj, ca) {
 				if (ca === ".") {
@@ -430,6 +433,7 @@
 			});
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("a", "magnets_anti");
 			this.encodeBorderQues();
 			this.encodeCellExCell(function(obj) {
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
@@ -452,12 +456,18 @@
 
 	AnsCheck: {
 		checklist: [
-			"checkAdjacentDiffNumber",
+			"checkAdjacentDiffNumber_magnets",
 			"checkNoTripleMagnet",
 			"checkNoSingleMagnet",
 			"checkPlusCount",
 			"checkMinusCount"
 		],
+
+		checkAdjacentDiffNumber_magnets: function() {
+			if (!this.puzzle.getConfig("magnets_anti")) {
+				this.checkAdjacentDiffNumber();
+			}
+		},
 
 		checkNoSingleMagnet: function() {
 			this.checkAllCell(function(cell) {

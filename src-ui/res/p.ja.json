@@ -186,6 +186,7 @@
     "pentopia_transparent": "Transparent (矢印のマスが黒マスになる場合もあります。)",
     "koburin_minesweeper": "マインスイーパモード (数字は斜めのマスを含みます)",
     "akichi_maximum": "最大値が数字より小さくても可",
+    "magnets_anti": "Anti-Magnets (adjacent poles of different magnets must be equal)",
     "variant": "変種ルール",
     "time": "経過時間：",
     "timer.menu": "Show timer",
