@@ -119,6 +119,9 @@
 				case "akichi":
 					idname = "akichi_maximum";
 					break;
+				case "magnets":
+					idname = "magnets_anti";
+					break;
 				case "context":
 					idname = "context_marks";
 					break;

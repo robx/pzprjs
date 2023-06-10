@@ -567,6 +567,7 @@
     "nmAdjacent": "Equal numbers are adjacent.",
     "nmAdjacentGt2.tontonbeya": "A cluster of symbols is adjacent to 2 or more clusters with the same symbol.",
     "nmAdjacentLt2.tontonbeya": "A cluster of symbols is not adjacent to another cluster with the same symbol.",
+    "nmAdjDiff.magnets": "Adjacent poles of different magnets are not equal.",
     "nmAkariNe.lightup": "The number is not equal to the number of Akari around it.",
     "nmAround.hakoiri": "Equal shapes touch.",
     "nmAround.kakuru": "Same numbers are adjacent.",

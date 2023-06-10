@@ -187,6 +187,7 @@
     "pentopia_transparent": "Transparent mode (clues may be shaded)",
     "koburin_minesweeper": "Minesweeper mode (numbers include diagonal cells)",
     "akichi_maximum": "Maximum numbers may be reduced",
+    "magnets_anti": "Anti-Magnets (adjacent poles of different magnets must be equal)",
     "variant": "This puzzle uses variant rules",
     "time": "Time:",
     "timer.menu": "Show timer",

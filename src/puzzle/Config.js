@@ -122,6 +122,10 @@
 				variant: true,
 				volatile: true
 			}); /* akichi: Numbers don't need to be attained */
+			this.add("magnets_anti", false, {
+				variant: true,
+				volatile: true
+			}); /* magnets: Adjacent poles of different magnets must be equal */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -438,6 +442,9 @@
 					break;
 				case "akichi_maximum":
 					exec = pid === "akichi";
+					break;
+				case "magnets_anti":
+					exec = pid === "magnets";
 					break;
 				default:
 					exec = !!this.list[name];
