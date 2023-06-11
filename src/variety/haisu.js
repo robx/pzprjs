@@ -225,6 +225,18 @@
 
 			this.startpos.draw();
 			this.goalpos.draw();
+		},
+
+		findHighestNumber: function() {
+			var ret = 1;
+
+			this.cell.each(function(cell) {
+				if (cell.qnum > ret) {
+					ret = cell.qnum;
+				}
+			});
+
+			return ret;
 		}
 	},
 	LineGraph: {
@@ -442,8 +454,10 @@
 					bd.cell[c].qnum = val;
 				}
 			});
+			this.puzzle.setConfig("bdwalk_height", !this.checkpflag("m"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = !this.puzzle.getConfig("bdwalk_height") ? "m" : null;
 			var bd = this.board;
 			this.encodeSG();
 			this.genericEncodeNumber16(bd.cell.length, function(c) {
@@ -502,11 +516,13 @@
 	},
 	"FileIO@bdwalk": {
 		decodeData: function() {
+			this.decodeConfig();
 			this.decodeSG();
 			this.decodeCellQnum();
 			this.decodeBorderArrowAns();
 		},
 		encodeData: function() {
+			this.encodeConfig();
 			this.encodeSG();
 			this.encodeCellQnum();
 			this.encodeBorderArrowAns();
@@ -538,6 +554,21 @@
 					return ". ";
 				}
 			});
+		},
+
+		decodeConfig: function() {
+			if (this.dataarray[this.lineseek] === "m") {
+				this.puzzle.setConfig("bdwalk_height", false);
+				this.readLine();
+			} else {
+				this.puzzle.setConfig("bdwalk_height", true);
+			}
+		},
+
+		encodeConfig: function() {
+			if (!this.puzzle.getConfig("bdwalk_height")) {
+				this.writeLine("m");
+			}
 		}
 	},
 
@@ -668,7 +699,8 @@
 			"bdwSkipElevator",
 			"bdwInvalidUp",
 			"bdwInvalidDown",
-			"bdwGroundFloor"
+			"bdwGroundFloor",
+			"bdwTopFloor"
 		],
 
 		// Walk the path starting at the given cell. Returns a list of errors.
@@ -678,7 +710,7 @@
 		// c0: The start of the path to highlight.
 		// c1: The end of the path to highlight.
 		// dir: The direction to start from when highlighting the path.
-		walkLine: function(fromcell) {
+		walkLine: function(fromcell, maxheight) {
 			var bd = this.board;
 			var ec = bd.emptycell;
 			var ret = [];
@@ -697,158 +729,96 @@
 			var prevcell = ec;
 			var nextaddr = new this.klass.Address();
 
-			// Contains the first number encountered. Resets when passing an elevator.
-			var currentfloorcell = ec;
-			var currentfloordir = ec.NDIR;
-
-			// Contains the first number encountered before passing one or more identical elevators.
-			var previousfloorcell = ec;
-			var previousfloordir = ec.NDIR;
+			var minfloor = 1;
+			var maxfloor = maxheight;
+			var avoid = -1;
+			var foundnum = false;
 
 			// The direction that the path started in.
 			var fromdir = ec.NDIR;
-
-			// Contains the first elevator from the previous sequence of identical elevators.
-			var previouselevatorcell = ec;
-			var previouselevatordir = ec.NDIR;
-
-			// Contains the most recent sequence of identical elevators.
-			// Note that two unknown elevators never count as equal.
-			var elevators = [ec];
-			var elevatordirs = [ec.NDIR];
-			var elevatortype = -1;
 
 			while (true) {
 				if (this.checkonly && ret.length > 0) {
 					return ret;
 				}
 
+				if (cell !== fromcell && cell.lcnt !== 2) {
+					break;
+				}
+
 				if (cell.qnum < -1) {
-					// When we encounter an elevator that's different from the last seen elevator,
-					// or an elevator after passing a number on the same floor, we clear the sequence.
-					if (
-						cell.qnum === -2 ||
-						!currentfloorcell.isnull ||
-						cell.qnum !== elevatortype
-					) {
-						var lowestfloor =
-							currentfloorcell.qnum !== -1
-								? currentfloorcell.qnum
-								: elevatortype === -4
-								? previousfloorcell.qnum - elevators.length
-								: -1;
-
-						// If we went down to the ground floor before hitting an unknown elevator,
-						// we must go up here. Override the elevatortype variable.
-						if (cell.qnum === -2 && lowestfloor === 1) {
-							elevatortype = -3;
-						} else {
-							elevatortype = cell.qnum;
-						}
-
-						previouselevatorcell = elevators[0];
-						previouselevatordir =
-							elevatordirs.length > 0 ? elevatordirs[0] : ec.NDIR;
-
-						elevators = [cell];
-						elevatordirs = [];
-						previousfloorcell = currentfloorcell;
-						previousfloordir = currentfloordir;
-						currentfloorcell = ec;
-					} else {
-						elevators.push(cell);
+					var lift = cell.qnum;
+					if (lift === -2 && maxfloor === 1) {
+						lift = -3;
+					} else if (lift === -2 && minfloor === maxheight) {
+						lift = -4;
 					}
 
-					// Check if we just went down below floor 1.
-					if (
-						cell.qnum === -4 &&
-						!previousfloorcell.isnull &&
-						previousfloorcell.qnum - elevators.length < 1
-					) {
+					avoid = -1;
+					if (lift === -2) {
+						if (minfloor === maxfloor) {
+							avoid = minfloor;
+						}
+						minfloor = 1;
+						maxfloor = maxheight;
+					} else if (lift === -3) {
+						maxfloor = maxheight;
+						minfloor++;
+					} else if (lift === -4) {
+						minfloor = 1;
+						maxfloor--;
+					}
+
+					if (minfloor > maxfloor) {
 						ret.push({
-							code: "bdwGroundFloor",
-							list: [cell],
-							c0: previousfloorcell,
-							c1: cell,
-							dir: previousfloordir
+							code: foundnum
+								? "bdwSkipElevator"
+								: minfloor > maxheight
+								? "bdwTopFloor"
+								: "bdwGroundFloor",
+							list: [],
+							c0: ec,
+							c1: ec,
+							dir: ec.NDIR
 						});
 					}
+					foundnum = false;
 				}
 
 				if (cell.qnum > 0) {
-					// Check for two consecutive numbers separated by an incorrect elevator
-					if (
-						!previousfloorcell.isnull &&
-						cell.qnum > previousfloorcell.qnum &&
-						elevatortype === -4
-					) {
-						ret.push({
-							code: "bdwInvalidUp",
-							list: elevators.slice(),
-							c0: previousfloorcell,
-							c1: cell,
-							dir: previousfloordir
-						});
-					} else if (
-						!previousfloorcell.isnull &&
-						cell.qnum < previousfloorcell.qnum &&
-						elevatortype === -3
-					) {
-						ret.push({
-							code: "bdwInvalidDown",
-							list: elevators.slice(),
-							c0: previousfloorcell,
-							c1: cell,
-							dir: previousfloordir
-						});
-					}
-
-					// Check if we have two unequal numbers without an elevator separating them
-					if (!currentfloorcell.isnull && currentfloorcell.qnum !== cell.qnum) {
-						ret.push({
-							code: "bdwMismatch",
-							list: [currentfloorcell, cell],
-							c0: currentfloorcell,
-							c1: cell,
-							dir: currentfloordir
-						});
-					}
-
-					// If the difference between the last two numbers is smaller
-					// than the amount of elevators used, we must've not
-					// changed floors at one of them.
-					var unused =
-						elevators.length - Math.abs(previousfloorcell.qnum - cell.qnum);
-					if (!previousfloorcell.isnull && !elevators[0].isnull && unused > 0) {
+					if (cell.qnum === avoid) {
 						ret.push({
 							code: "bdwSkipElevator",
-							list: elevators.slice(-unused),
-							c0: previousfloorcell,
+							list: [],
+							c0: cell,
 							c1: cell,
-							dir: previousfloordir
+							dir: ec.NDIR
 						});
 					}
-
-					// Check if we went up one or more times, then found a number that is too low.
-					if (elevatortype === -3 && cell.qnum - elevators.length < 1) {
+					if (cell.qnum < minfloor) {
 						ret.push({
-							code: "bdwGroundFloor",
-							list: [previouselevatorcell],
-							c0: !previouselevatorcell.isnull
-								? previouselevatorcell
-								: fromcell,
-							c1: elevators.slice(-cell.qnum)[0],
-							dir:
-								previouselevatordir !== ec.NDIR ? previouselevatordir : fromdir
+							code: foundnum
+								? "bdwMismatch"
+								: maxfloor === maxheight
+								? "bdwInvalidDown"
+								: "bdwSkipElevator",
+							list: [],
+							c0: cell,
+							c1: cell,
+							dir: ec.NDIR
+						});
+					} else if (cell.qnum > maxfloor) {
+						ret.push({
+							code: minfloor === 1 ? "bdwInvalidUp" : "bdwSkipElevator",
+							list: [],
+							c0: cell,
+							c1: cell,
+							dir: ec.NDIR
 						});
 					}
 
-					currentfloorcell = cell;
-					previousfloorcell = ec;
-				}
-
-				if (cell !== fromcell && cell.lcnt !== 2) {
-					break;
+					minfloor = maxfloor = cell.qnum;
+					foundnum = true;
 				}
 
 				// Find the next cell to move to, and keep track of direction used
@@ -865,16 +835,9 @@
 						addr.set(nextaddr);
 						prevcell = cell;
 
-						if (prevcell === currentfloorcell) {
-							currentfloordir = dir;
-						}
 						if (fromdir === ec.NDIR) {
 							fromdir = dir;
 						}
-						if (elevatordirs.length < elevators.length) {
-							elevatordirs.push(dir);
-						}
-
 						cell = addr.getc();
 						break;
 					} else {
@@ -892,6 +855,11 @@
 		},
 
 		checkBdWalkLines: function() {
+			var maxheight =
+				this.board.findHighestNumber() +
+				(this.puzzle.getConfig("bdwalk_height")
+					? this.board.rows * this.board.cols
+					: 0);
 			var checkSingleError = !this.puzzle.getConfig("multierr");
 			var error = false;
 
@@ -913,8 +881,8 @@
 					continue;
 				}
 
-				var errsa = this.walkLine(starts[0]);
-				var errsb = this.walkLine(starts[1]);
+				var errsa = this.walkLine(starts[0], maxheight);
+				var errsb = this.walkLine(starts[1], maxheight);
 
 				if (
 					(errsa !== null && errsa.length === 0) ||

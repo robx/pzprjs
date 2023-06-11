@@ -185,6 +185,7 @@
     "voxas_tatami": "タタミルール(境界の十字交差禁止)",
     "tren_new": "白マスひとつながりルールを追加",
     "nuriuzu_connect": "黒マスひとつながりルールを追加",
+    "bdwalk_height": "Maximum height is unknown",
     "pentopia_transparent": "Transparent (矢印のマスが黒マスになる場合もあります。)",
     "koburin_minesweeper": "マインスイーパモード (数字は斜めのマスを含みます)",
     "akichi_maximum": "最大値が数字より小さくても可",
