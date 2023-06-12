@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["loute", "sashigane"], {
+})(["loute", "sashigane", "sashikazune"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@loute": {
@@ -134,11 +134,32 @@
 			cell.draw();
 		}
 	},
+	"MouseEvent@sashikazune": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["border", "subline"]
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.btn === "left" && this.isBorderMode()) {
+						this.inputborder();
+					} else {
+						this.inputQsubLine();
+					}
+				}
+			} else if (this.puzzle.editmode) {
+				this.inputqnum();
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
-		enablemake: true,
+		enablemake: true
+	},
+	"KeyEvent@loute,sashigane": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -250,6 +271,13 @@
 			return this.qdir === 5;
 		}
 	},
+	"Cell@sashikazune": {
+		minnum: 1,
+		maxnum: 99, // TODO...
+		isCircle: function() {
+			return this.qnum === 1;
+		}
+	},
 
 	Board: {
 		cols: 8,
@@ -257,7 +285,7 @@
 
 		hasborder: 1
 	},
-	BoardExec: {
+	"BoardExec@loute,sashigane": {
 		adjustBoardData: function(key, d) {
 			this.adjustNumberArrow(key, d);
 		}
@@ -350,6 +378,8 @@
 				this.drawCircledNumbers();
 			} else if (this.pid === "loute") {
 				this.drawCircles();
+			} else {
+				this.drawQuesNumbers();
 			}
 
 			this.drawBorderQsubs();
@@ -381,9 +411,6 @@
 				}
 			}
 		}
-	},
-	"Grahpic@sashigane": {
-		hideHatena: true
 	},
 
 	//---------------------------------------------------------
@@ -529,6 +556,14 @@
 			this.outbstr += cm;
 		}
 	},
+	"Encode@sashikazune": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
@@ -561,6 +596,16 @@
 				}
 			});
 
+			this.encodeBorderAns();
+		}
+	},
+	"FileIO@sashikazune": {
+		decodeData: function() {
+			this.decodeCellQnum();
+			this.decodeBorderAns();
+		},
+		encodeData: function() {
+			this.encodeCellQnum();
 			this.encodeBorderAns();
 		}
 	},
@@ -675,5 +720,14 @@
 				rooms[id].clist.seterr(1);
 			}
 		}
+	},
+	"AnsCheck@sashikazune": {
+		checklist: [
+			"checkCircleCorner",
+			// TODO check distance
+			// TODO check maximum of 3 numbers
+			"checkBorderDeadend",
+			"checkLblock"
+		]
 	}
 });
