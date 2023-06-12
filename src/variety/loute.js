@@ -273,9 +273,8 @@
 	},
 	"Cell@sashikazune": {
 		minnum: 1,
-		maxnum: 99, // TODO...
-		isCircle: function() {
-			return this.qnum === 1;
+		maxnum: function() {
+			return Math.max(this.board.cols, this.board.rows);
 		}
 	},
 
@@ -303,9 +302,7 @@
 			component.shape = 0;
 
 			var clist = component.clist,
-				d = clist.getRectSize(),
-				bd = this.board;
-
+				d = clist.getRectSize();
 			/* 四角形のうち別エリアとなっている部分を調べる */
 			/* 幅が1なので座標自体は調べなくてよいはず      */
 			var subclist = this.board
@@ -326,33 +323,64 @@
 				}
 			} else {
 				component.shape = 1; /* 幅が1のL字型 */
-				for (var i = 0; i < clist.length; i++) {
-					clist[i].place = 1;
-				} /* L字型ブロックのセル */
+				this.setCellPlaces(clist, d, dl);
+			}
+		},
 
-				/* 端のセル */
-				var isUL = d.x1 === dl.x1 && d.y1 === dl.y1,
-					isUR = d.x2 === dl.x2 && d.y1 === dl.y1,
-					isDL = d.x1 === dl.x1 && d.y2 === dl.y2,
-					isDR = d.x2 === dl.x2 && d.y2 === dl.y2;
-				if (isUL || isDR) {
-					bd.getc(d.x1, d.y2).place = 2;
-					bd.getc(d.x2, d.y1).place = 2;
-				} else if (isDL || isUR) {
-					bd.getc(d.x1, d.y1).place = 2;
-					bd.getc(d.x2, d.y2).place = 2;
-				}
+		setCellPlaces: function(clist, d, dl) {
+			var bd = this.board;
+			for (var i = 0; i < clist.length; i++) {
+				clist[i].place = 1;
+			} /* L字型ブロックのセル */
 
-				/* 角のセル */
-				if (isUL) {
-					bd.getc(d.x2, d.y2).place = 3;
-				} else if (isDL) {
-					bd.getc(d.x2, d.y1).place = 3;
-				} else if (isUR) {
-					bd.getc(d.x1, d.y2).place = 3;
-				} else if (isDR) {
-					bd.getc(d.x1, d.y1).place = 3;
-				}
+			/* 端のセル */
+			var isUL = d.x1 === dl.x1 && d.y1 === dl.y1,
+				isUR = d.x2 === dl.x2 && d.y1 === dl.y1,
+				isDL = d.x1 === dl.x1 && d.y2 === dl.y2,
+				isDR = d.x2 === dl.x2 && d.y2 === dl.y2;
+			if (isUL || isDR) {
+				bd.getc(d.x1, d.y2).place = 2;
+				bd.getc(d.x2, d.y1).place = 2;
+			} else if (isDL || isUR) {
+				bd.getc(d.x1, d.y1).place = 2;
+				bd.getc(d.x2, d.y2).place = 2;
+			}
+
+			/* 角のセル */
+			if (isUL) {
+				bd.getc(d.x2, d.y2).place = 3;
+			} else if (isDL) {
+				bd.getc(d.x2, d.y1).place = 3;
+			} else if (isUR) {
+				bd.getc(d.x1, d.y2).place = 3;
+			} else if (isDR) {
+				bd.getc(d.x1, d.y1).place = 3;
+			}
+		}
+	},
+
+	"AreaRoomGraph@sashikazune": {
+		setCellPlaces: function(clist, d, dl) {
+			var bd = this.board;
+			var corner = null;
+
+			if (d.x1 === dl.x1 && d.y1 === dl.y1) {
+				corner = bd.getc(d.x2, d.y2);
+			} else if (d.x1 === dl.x1 && d.y2 === dl.y2) {
+				corner = bd.getc(d.x2, d.y1);
+			} else if (d.x2 === dl.x2 && d.y1 === dl.y1) {
+				corner = bd.getc(d.x1, d.y2);
+			} else if (d.x2 === dl.x2 && d.y2 === dl.y2) {
+				corner = bd.getc(d.x1, d.y1);
+			} else {
+				return;
+			}
+
+			for (var i = 0; i < clist.length; i++) {
+				var c2 = clist[i];
+				c2.place =
+					1 +
+					((Math.abs(c2.bx - corner.bx) + Math.abs(c2.by - corner.by)) >> 1);
 			}
 		}
 	},
@@ -723,11 +751,31 @@
 	},
 	"AnsCheck@sashikazune": {
 		checklist: [
-			"checkCircleCorner",
-			// TODO check distance
-			// TODO check maximum of 3 numbers
+			"checkNumberDistance",
+			"checkNumber3Count",
 			"checkBorderDeadend",
 			"checkLblock"
-		]
+		],
+
+		checkNumberDistance: function() {
+			this.checkAllCell(function(cell) {
+				return (
+					cell.isValidNum() && cell.place !== 0 && cell.place !== cell.getNum()
+				);
+			}, "nmDistNe");
+		},
+
+		checkNumber3Count: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a <= 3;
+				},
+				"bkNumGt3"
+			);
+		}
 	}
 });
