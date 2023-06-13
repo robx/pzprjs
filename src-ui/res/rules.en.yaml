@@ -1122,7 +1122,7 @@ magnets: "Place several magnets into the grid. A magnet consists of a 1x2 domino
   indicate the number of positive/negative poles in that row/column."
 fracdiv: "Draw lines over the dotted lines to divide the board into several blocks.\n
   1. Each block contains exactly one cell with a number.\n2. A number indicates the
-  ratio of circles and cells in the area."
+  ratio of circles to cells in the area."
 heyapin: "Place a pin in some grid vertices, including on the edge of the grid.\n
   1. A number in a region indicates how many pins overlap the region, either fully
   or partially.\n2. All regions must be joined by pins to form one connected network."
