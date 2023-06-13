@@ -76,7 +76,7 @@
 			if (!this.is51cell()) {
 				return false;
 			}
-			if (!this.puzzle.playeronly) {
+			if (!this.puzzle.playeronly && !this.outputImage) {
 				return true;
 			}
 
