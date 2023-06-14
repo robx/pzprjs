@@ -199,6 +199,11 @@
 		addExtraInfo: function() {}
 	},
 
+	"Board@dbchoco": {
+		cols: 10,
+		rows: 10
+	},
+
 	"Cell@dbchoco": {
 		maxnum: function() {
 			var bd = this.board;

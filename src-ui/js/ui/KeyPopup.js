@@ -173,6 +173,7 @@ ui.keypopup = {
 		simplegako: [10, 10],
 		tontonbeya: [113, 113],
 		magnets: [125, 0],
+		fracdiv: [51, 0],
 		battleship: [126, 0]
 	},
 

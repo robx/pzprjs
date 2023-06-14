@@ -155,6 +155,7 @@
 			firefly: [1, 0, "ホタルビーム", "Hotaru Beam"],
 			fivecells: [0, 0, "ファイブセルズ", "FiveCells", "nawabari"],
 			fourcells: [0, 0, "フォーセルズ", "FourCells", "nawabari"],
+			fracdiv: [0, 0, "分数分割", "Fractional Division"],
 			geradeweg: [0, 0, "グラーデヴェグ", "Geradeweg"],
 			goishi: [0, 1, "碁石ひろい", "Goishi"],
 			gokigen: [1, 0, "ごきげんななめ", "Slant", "gokigen"],
