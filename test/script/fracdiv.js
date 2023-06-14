@@ -47,8 +47,13 @@ ui.debug.addDebugData("fracdiv", {
 		},
 		{
 			label: "Number mode",
-			input: ["mouse,leftx2,3.1,0.1", "editmode,number", "mouse,rightx3,3,1"],
-			result: "pzprv3/fracdiv/1/3/d6 999,5 2,4 /0 0 /"
+			input: [
+				"mouse,leftx2,3.1,0.1",
+				"editmode,number",
+				"mouse,rightx3,3,1",
+				"mouse,leftx2,1,1"
+			],
+			result: "pzprv3/fracdiv/1/3/d7 999,5 2,4 /0 0 /"
 		},
 		{
 			label: "Erase",

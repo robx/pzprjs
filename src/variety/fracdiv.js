@@ -26,11 +26,6 @@
 				this.input51();
 			}
 		},
-		mouseinput_number: function() {
-			if (this.mousestart) {
-				this.inputqnum_cell51();
-			}
-		},
 		mouseinput_clear: function() {
 			this.input51_fixed();
 		}
