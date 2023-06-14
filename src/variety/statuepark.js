@@ -288,6 +288,7 @@
 	},
 	"Board@battleship": {
 		hasexcell: 1,
+		assumeAllUnshaded: false,
 
 		UP: 1,
 		DN: 2,
@@ -299,6 +300,24 @@
 		UPRT: 8,
 		DNLT: 9,
 		DNRT: 10,
+
+		rebuildInfo: function() {
+			this.common.rebuildInfo.call(this);
+			this.recountShaded();
+		},
+
+		recountShaded: function() {
+			var cells = this.cell.filter(function(c) {
+				return c.isShade();
+			});
+			var newValue = cells.length === this.bank.totalcells;
+			if (newValue !== this.assumeAllUnshaded) {
+				this.assumeAllUnshaded = newValue;
+				cells.each(function(c) {
+					c.draw();
+				});
+			}
+		},
 
 		getShape: function(top, bottom, left, right) {
 			if ((top && bottom) || (left && right)) {
@@ -525,14 +544,24 @@
 		],
 
 		isSimpleBank: true,
+		totalcells: 0,
 		rebuildExtraData: function() {
 			this.isSimpleBank = true;
+			this.totalcells = 0;
 
 			for (var i = 0; i < this.pieces.length; i++) {
 				var piece = this.pieces[i];
 				if (piece.w > 1 && piece.h > 1) {
 					this.isSimpleBank = false;
 				}
+				for (var j = 0; j < piece.str.length; j++) {
+					if (piece.str[j] === "1") {
+						this.totalcells++;
+					}
+				}
+			}
+			if (this.board) {
+				this.board.recountShaded();
 			}
 		}
 	},
@@ -681,9 +710,11 @@
 				if (this.qnum !== -1 && this.qans) {
 					this.setQans(0);
 				}
+				this.board.recountShaded();
 			},
 			qans: function() {
 				this.drawaround();
+				this.board.recountShaded();
 			},
 			qsub: function() {
 				this.drawaround();
@@ -1117,7 +1148,10 @@
 					r = this.bw * 0.9;
 
 				var isCircled =
-					cell.qnum !== -2 && (cell.isAdjacentDecided() || cell.qnum > 0);
+					cell.qnum !== -2 &&
+					(this.board.assumeAllUnshaded ||
+						cell.isAdjacentDecided() ||
+						cell.qnum > 0);
 
 				var shape =
 					cell.qnum === -2
