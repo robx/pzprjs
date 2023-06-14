@@ -769,7 +769,7 @@
 			this.checkAllBlock(
 				this.board.roommgr,
 				function(cell) {
-					return cell.isNum();
+					return cell.isNum() && cell.place !== 0;
 				},
 				function(w, h, a, n) {
 					return a <= 3;
