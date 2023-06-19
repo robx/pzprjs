@@ -657,7 +657,7 @@
     "nmLoop.snakepit": "スネークに端がありません。",
     "nmMidpoint.snakepit": "灰色のマスがスネークの端になっています。",
     "nmSame2x2.snakepit": "スネークが自分自身とタテヨコに接しています。",
-    "bkNotSquare.squarejam": "領域が正方形ではありません。",
+    "bkNotSquare": "領域が正方形ではありません。",
     "anShadeNe.yajisoko": "箱の数が正しくありません。",
     "bkSideNe.squarejam": "数字と領域の大きさが異なります。",
     "laOnNum.yajisoko": "線が箱を通り過ぎています。",

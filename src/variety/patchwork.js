@@ -17,12 +17,17 @@
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				// TODO fixup
 				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
+					// TODO do not border mode if starting on a number
+					// TODO right-click once to input peke
+					if (this.isBorderMode()) {
+						if (this.btn === "left") {
+							this.inputborder();
+						} else {
+							this.inputQsubLine();
+						}
 					} else {
-						this.inputQsubLine();
+						this.inputShade();
 					}
 				}
 			} else if (this.puzzle.editmode) {
@@ -120,12 +125,43 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			// TODO number fits
-			// TODO shaded adjacent
-			// TODO unshaded adjacent
+			"checkSideAreaShadeCell",
+			"checkShadeCellCount",
+			"checkSideAreaUnshadeCell",
 			"checkRoomSquare",
 			"checkBorderDeadend+"
 		],
+
+		checkShadeCellCount: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var clist = rooms[r].clist,
+					d = clist.getRectSize();
+
+				if (d.rows !== d.cols || d.rows * d.cols !== d.cnt) {
+					continue;
+				}
+
+				var count = clist.filter(function(cell) {
+					return cell.isShade();
+				}).length;
+
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					var qnum = cell.qnum;
+					if (qnum <= 0) {
+						continue;
+					}
+					if (qnum !== count) {
+						this.failcode.add("bkShadeNe");
+						if (this.checkOnly) {
+							return;
+						}
+						clist.seterr(1);
+					}
+				}
+			}
+		},
 
 		checkRoomSquare: function() {
 			this.checkAllArea(
@@ -134,6 +170,36 @@
 					return w === h && w * h === a;
 				},
 				"bkNotSquare"
+			);
+		},
+
+		checkSideAreaShadeCell: function() {
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return (
+						!cell1.isNum() &&
+						!cell2.isNum() &&
+						cell1.isShade() &&
+						cell2.isShade()
+					);
+				},
+				false,
+				"cbShade"
+			);
+		},
+
+		checkSideAreaUnshadeCell: function() {
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return (
+						!cell1.isNum() &&
+						!cell2.isNum() &&
+						!cell1.isShade() &&
+						!cell2.isShade()
+					);
+				},
+				false,
+				"cbUnshade"
 			);
 		}
 	}

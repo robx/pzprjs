@@ -165,7 +165,7 @@
     "bkNotRect": "There is a room whose shape is not a rectangle.",
     "bkNotRect3.shikaku": "An area whose size is not a multiple of three is not a rectangle.",
     "bkNotSeqNum.renban": "The numbers in the room are not consecutive.",
-    "bkNotSquare.squarejam": "An area is not a square.",
+    "bkNotSquare": "An area is not a square.",
     "bkNotSquare.tatamibari": "A tatami is not a square.",
     "bkNotSymmRoom.fillomino": "An area is not point symmetric.",
     "bkNotSymRoom.ayeheya": "The room is not point symmetric.",
