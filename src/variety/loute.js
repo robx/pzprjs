@@ -772,9 +772,9 @@
 					return cell.isNum() && cell.place !== 0;
 				},
 				function(w, h, a, n) {
-					return a <= 3;
+					return a <= 2;
 				},
-				"bkNumGt3"
+				"bkNumGt2"
 			);
 		}
 	}
