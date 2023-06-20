@@ -312,6 +312,7 @@
     "cbSameNum.nanro": "Adjacent blocks have the same number.",
     "cbShade.shimaguni": "Countries in different marine areas are adjacent.",
     "cbShade": "Shaded cells are adjacent over a border.",
+    "cbUnshade": "Unshaded cells are adjacent over a border.",
     "ceAddLine": "A cell with given lines has extra lines.",
     "ceDark.lightup": "A cell is not shined.",
     "ceDirection.compass": "The number of cells in the direction is wrong.",

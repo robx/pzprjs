@@ -149,7 +149,7 @@
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i];
 					var qnum = cell.qnum;
-					if (qnum <= 0) {
+					if (qnum < 0) {
 						continue;
 					}
 					if (qnum !== count) {
