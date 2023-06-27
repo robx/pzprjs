@@ -164,7 +164,14 @@
 		qanscolor: "rgb(96, 96, 96)",
 		shadecolor: "rgb(96, 96, 96)",
 		qcmpbgcolor: "rgb(96, 255, 160)",
-		bgcellcolor_func: "qcmp",
+		errbcolor2: "rgb(192, 192, 255)",
+
+		getBGCellColor: function(cell) {
+			if (cell.error === 2 || cell.qinfo === 2) {
+				return this.errbcolor2;
+			}
+			return this.getBGCellColor_qcmp(cell);
+		},
 
 		paint: function() {
 			this.drawBGCells();

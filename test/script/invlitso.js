@@ -13,7 +13,7 @@ ui.debug.addDebugData("invlitso", {
 		],
 		[
 			"bkShadeGt4",
-			"pzprv3/invlitso/4/4/3/0 0 0 0 /0 1 1 2 /0 1 2 2 /0 1 2 2 /. # # # /. . . # /. . . # /. . . . /"
+			"pzprv3/invlitso/4/4/3/0 0 0 0 /0 1 1 2 /0 1 2 2 /0 1 2 2 /. . # # /. . . # /. . . # /. . . . /"
 		],
 		[
 			"bkShadeDivide",
