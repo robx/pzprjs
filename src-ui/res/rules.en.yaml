@@ -1126,3 +1126,7 @@ fracdiv: "Draw lines over the dotted lines to divide the board into several bloc
 heyapin: "Place a pin in some grid vertices, including on the edge of the grid.\n
   1. A number in a region indicates how many pins overlap the region, either fully
   or partially.\n2. All regions must be joined by pins to form one connected network."
+invlitso: "Place a tetromino (a block of 4 unshaded cells) in every outlined region,
+  and shade the rest of the cells.\n1. The shaded cells cannot form a 2x2 square.\n
+  2. Two identical tetrominoes cannot share an edge, counting rotations and reflections
+  as the same.\n3. All shaded cells form an orthogonally contiguous area."
