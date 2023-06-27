@@ -1119,17 +1119,32 @@
 		drawWaterClues: function() {
 			var g = this.vinc("cell_water", "auto");
 			var clist = this.range.cells;
+			var rad1s = (210 * Math.PI) / 180,
+				rad1e = (315 * Math.PI) / 180,
+				rad2s = (135 * Math.PI) / 180,
+				rad2e = (30 * Math.PI) / 180;
+
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
 					px = cell.bx * this.bw,
-					py = (cell.by - 0.1) * this.bh;
+					rsize = this.bw / 3,
+					py = cell.by * this.bh;
 
 				for (var w = 0; w < 3; w++) {
 					g.vid = "c_water_" + cell.id + "_" + w;
 					if (cell.qnum === 0) {
-						var wy = py + (w - 1) * this.bh * 0.35;
-						g.fillStyle = this.quescolor;
-						this.disptext("~", px, wy, this.textoption);
+						var wy = py + (w - 1) * this.bh * 0.4,
+							px1 = px - rsize * Math.cos(rad1e),
+							py1 = wy - rsize * Math.sin(rad1e),
+							px2 = px - rsize * Math.cos(rad2s),
+							py2 = wy - rsize * Math.sin(rad2s);
+
+						g.lineWidth = (2 + this.cw / 30) | 0;
+						g.strokeStyle = this.quescolor;
+						g.beginPath();
+						g.arc(px1, py1, rsize, rad1s, rad1e, false);
+						g.arc(px2, py2, rsize, rad2s, rad2e, true);
+						g.stroke();
 					} else {
 						g.vhide();
 					}
