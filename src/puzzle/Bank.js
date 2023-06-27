@@ -58,6 +58,7 @@ pzpr.classmgr.makeCommon({
 				this.pieces.push(piece);
 			}
 
+			this.rebuildExtraData();
 			this.performLayout();
 		},
 
@@ -100,6 +101,8 @@ pzpr.classmgr.makeCommon({
 
 			this.height = nexty;
 		},
+
+		rebuildExtraData: function() {},
 
 		draw: function() {
 			this.puzzle.painter.range.bank = true;
@@ -237,6 +240,7 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 
+			this.board.bank.rebuildExtraData();
 			this.board.bank.performLayout();
 			this.puzzle.painter.resizeCanvas();
 			this.puzzle.emit("adjust");
@@ -257,6 +261,7 @@ pzpr.classmgr.makeCommon({
 				this.board.bank.pieces.push(piece);
 			}
 
+			this.board.bank.rebuildExtraData();
 			this.board.bank.performLayout();
 			this.puzzle.painter.resizeCanvas();
 			this.puzzle.emit("adjust");
