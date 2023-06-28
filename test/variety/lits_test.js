@@ -7,6 +7,13 @@ var pzpr = require("../../");
 var puzzle = new pzpr.Puzzle();
 
 describe("Variety:lits", function() {
+	it("opens old URLs", function() {
+		puzzle.open(
+			"http://indi.s58.xrea.com/lits/sa/q.html?/4/4/aabbaabcabbccccc"
+		);
+		var url = puzzle.getURL().split("?")[1];
+		assert.equal("lits/4/4/9q02jg", url);
+	});
 	it("Check shape of L tetrominos", function() {
 		var L = "2:010111";
 
