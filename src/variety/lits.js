@@ -75,15 +75,6 @@
 		}
 	},
 	"CellList@lits,invlitso": {
-		sort: function(cond) {
-			return Array.prototype.sort.call(
-				this,
-				cond ||
-					function(a, b) {
-						return a.id - b.id;
-					}
-			);
-		},
 		checkCmp: function() {
 			var scnt = 0,
 				sblk = null,
