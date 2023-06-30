@@ -6,7 +6,6 @@
 	}
 })(["ladders"], {
 	MouseEvent: {
-		use: true,
 		inputModes: {
 			edit: ["border", "number", "clear", "info-line"],
 			play: ["bar", "peke", "subcircle", "subcross", "info-line"]
