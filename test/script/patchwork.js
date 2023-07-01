@@ -28,5 +28,18 @@ ui.debug.addDebugData("patchwork", {
 			"pzprv3/patchwork/6/6/8 # # + # 3 /# # # 0 # # /# # # + + - /+ + + 1 # + /- + + # 1 - /+ + 0 + # 1 /0 0 1 1 0 /0 0 1 1 0 /0 0 1 0 1 /0 0 1 0 1 /0 0 1 1 0 /0 0 1 1 0 /0 0 0 1 0 0 /0 0 0 1 1 1 /1 1 1 0 0 1 /0 0 0 1 1 1 /0 0 0 1 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,3,2", "editmode", "mouse,rightx2,3,1"],
+			result: "pzprv3/patchwork/2/3/. 5 . /. . . /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			input: ["playmode", "mouse,left,1,1,1,3", "mouse,left,3,1,3,3"],
+			result: "pzprv3/patchwork/2/3/# 5 . /# . . /0 0 /0 0 /0 -1 0 /"
+		},
+		{
+			input: ["mouse,left,1.9,0,2.1,4","mouse,right,5,2,5,1,5,3"],
+			result: "pzprv3/patchwork/2/3/# 5 . /# . . /1 0 /1 0 /0 -1 -1 /"
+		}
+	]
 });
