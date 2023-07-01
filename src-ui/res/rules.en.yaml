@@ -1130,3 +1130,7 @@ invlitso: "Place a tetromino (a block of 4 unshaded cells) in every outlined reg
   and shade the rest of the cells.\n1. The shaded cells cannot form a 2x2 square.\n
   2. Two identical tetrominoes cannot share an edge, counting rotations and reflections
   as the same.\n3. All shaded cells form an orthogonally contiguous area."
+patchwork: "Divide the grid into square-shaped regions, then shade some cells.\n1.
+  A number indicates how many shaded cells are in the region. Regions can have any
+  amount of identical numbers, or none at all.\n2. Gray cells cannot be shaded.\n
+  3. Cells separated by a region border may not both be black or both be white."
