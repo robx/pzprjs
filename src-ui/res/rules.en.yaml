@@ -1134,3 +1134,7 @@ patchwork: "Divide the grid into square-shaped regions, then shade some cells.\n
   A number indicates how many shaded cells are in the region. Regions can have any
   amount of identical numbers, or none at all.\n2. Gray cells cannot be shaded.\n
   3. Cells separated by a region border may not both be black or both be white."
+sashikazune: "Divide the grid into regions of orthogonally connected cells.\n1. Each
+  region must be an L shape with a width of one cell.\n2. A number indicates the distance
+  between its cell and the corner of its L-shaped region. The number 1 is located
+  inside the corner cell.\n3. Regions can have no more than 2 numbers."
