@@ -17,15 +17,19 @@
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
+				if (this.mousestart) {
+					this.startsOnNumber = this.getcell().isNum();
+				}
+
 				if (this.mousestart || this.mousemove) {
-					// TODO do not border mode if starting on a number
-					// TODO right-click once to input peke
 					if (this.isBorderMode()) {
 						if (this.btn === "left") {
 							this.inputborder();
 						} else {
 							this.inputQsubLine();
 						}
+					} else if (this.startsOnNumber) {
+						this.inputQsubLine();
 					} else {
 						this.inputShade();
 					}
