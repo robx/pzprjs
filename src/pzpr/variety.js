@@ -200,6 +200,7 @@
 				"ichimaga"
 			],
 			interbd: [0, 0, "International Borders", "International Borders"],
+			invlitso: [0, 0, "Inverse LITSO", "Inverse LITSO", "lits"],
 			juosan: [0, 0, "縦横さん", "Juosan"],
 			kaero: [1, 0, "お家に帰ろう", "Return Home"],
 			kaidan: [0, 0, "かいだんしばり", "Stairwell"],

@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["lits", "norinori"], {
+})(["lits", "norinori", "invlitso"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -24,7 +24,7 @@
 			}
 		}
 	},
-	"MouseEvent@lits": {
+	"MouseEvent@lits,invlitso": {
 		inputModes: {
 			edit: ["border", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
@@ -63,36 +63,28 @@
 			}
 		}
 	},
-	"Cell@lits": {
+	"Cell@lits,invlitso": {
 		shape: null // AreaTetrominoGraph用
 	},
 	Board: {
 		hasborder: 1
 	},
-	"Board@lits": {
+	"Board@lits,invlitso": {
 		addExtraInfo: function() {
 			this.tetrograph = this.addInfoList(this.klass.AreaTetrominoGraph);
 		}
 	},
-	"CellList@lits": {
-		sort: function(cond) {
-			return Array.prototype.sort.call(
-				this,
-				cond ||
-					function(a, b) {
-						return a.id - b.id;
-					}
-			);
-		},
+	"CellList@lits,invlitso": {
 		checkCmp: function() {
 			var scnt = 0,
-				sblk = null;
+				sblk = null,
+				expect = this.pid === "lits" ? 1 : 0;
 			for (var i = 0; i < this.length; i++) {
-				if (this[i].qans === 1) {
+				if (this[i].qans === expect) {
 					scnt++;
 					if (!sblk) {
-						sblk = this[i].sblk;
-					} else if (sblk !== this[i].sblk) {
+						sblk = this[i].tetro;
+					} else if (sblk !== this[i].tetro) {
 						return false;
 					}
 				}
@@ -118,7 +110,9 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
-	"AreaTetrominoGraph:AreaShadeGraph@lits": {
+	"AreaTetrominoGraph:AreaShadeGraph@lits": {},
+	"AreaTetrominoGraph:AreaUnshadeGraph@invlitso": {},
+	"AreaTetrominoGraph@lits,invlitso#1": {
 		enabled: true,
 		relation: { "cell.qans": "node", "border.ques": "separator" },
 		setComponentRefs: function(obj, component) {
@@ -145,41 +139,7 @@
 			var len = clist.length,
 				shape = null;
 			if (len === 4) {
-				var cell0 = clist.sort()[0],
-					bx0 = cell0.bx,
-					by0 = cell0.by,
-					value = 0,
-					shape = null;
-				for (var i = 0; i < len; i++) {
-					value += ((clist[i].by - by0) >> 1) * 10 + ((clist[i].bx - bx0) >> 1);
-				}
-				switch (value) {
-					case 13:
-					case 15:
-					case 27:
-					case 31:
-					case 33:
-					case 49:
-					case 51:
-						shape = "L";
-						break;
-					case 6:
-					case 60:
-						shape = "I";
-						break;
-					case 14:
-					case 30:
-					case 39:
-					case 41:
-						shape = "T";
-						break;
-					case 20:
-					case 24:
-					case 38:
-					case 42:
-						shape = "S";
-						break;
-				}
+				shape = clist.getBlockShapes().canon;
 			}
 			component.shape = shape;
 		}
@@ -195,7 +155,14 @@
 		qanscolor: "rgb(96, 96, 96)",
 		shadecolor: "rgb(96, 96, 96)",
 		qcmpbgcolor: "rgb(96, 255, 160)",
-		bgcellcolor_func: "qcmp",
+		errbcolor2: "rgb(192, 192, 255)",
+
+		getBGCellColor: function(cell) {
+			if (cell.error === 2 || cell.qinfo === 2) {
+				return this.errbcolor2;
+			}
+			return this.getBGCellColor_qcmp(cell);
+		},
 
 		paint: function() {
 			this.drawBGCells();
@@ -287,14 +254,14 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	"AnsCheck@lits#1": {
+	"AnsCheck@lits,invlitso#1": {
 		checklist: [
 			"check2x2ShadeCell",
 			"checkOverShadeCellInArea",
 			"checkSeqBlocksInRoom",
 			"checkTetromino",
 			"checkConnectShade",
-			"checkNoShadeCellInArea",
+			"checkNoShadeCellInArea@lits",
 			"checkLessShadeCellInArea"
 		]
 	},
@@ -331,8 +298,35 @@
 				},
 				"bkShadeLt4"
 			);
+		}
+	},
+	"AnsCheck@invlitso": {
+		checkOverShadeCellInArea: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return cell.isUnshade();
+				},
+				function(w, h, a, n) {
+					return a >= 4;
+				},
+				"bkShadeGt4"
+			);
 		},
-
+		checkLessShadeCellInArea: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return cell.isUnshade();
+				},
+				function(w, h, a, n) {
+					return a <= 4;
+				},
+				"bkShadeLt4"
+			);
+		}
+	},
+	"AnsCheck@lits,invlitso#2": {
 		// 部屋の中限定で、黒マスがひとつながりかどうか判定する
 		checkSeqBlocksInRoom: function() {
 			var bd = this.board,

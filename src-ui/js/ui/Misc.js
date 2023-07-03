@@ -134,6 +134,7 @@ function toBGimage(pid) {
 		"geradeweg",
 		"heteromino",
 		"icewalk",
+		"invlitso",
 		"ladders",
 		"kaidan",
 		"kropki",
