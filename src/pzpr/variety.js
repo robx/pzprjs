@@ -176,6 +176,7 @@
 			heteromino: [0, 0, "ヘテロミノ", "Heteromino", "nawabari"],
 			heyablock: [0, 0, "へやブロ", "Heyablock", "shimaguni"],
 			heyabon: [1, 0, "へやぼん", "Heya-Bon", "bonsan"],
+			heyapin: [0, 0, "へやピン", "Heyapin"],
 			heyawake: [
 				0,
 				1,

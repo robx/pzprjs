@@ -198,6 +198,7 @@
     "bkOverNum": "A block contains too many numbers.",
     "bkPassTwice.country": "A line passes a country twice or more.",
     "bkPassTwice.moonsun": "A line passes a room twice or more.",
+    "bkPinNe.heyapin": "A number does not indicate the amount of pins overlapping the region.",
     "bkPlColor.interbd": "A country has more than one color.",
     "bkPlNum.kaero": "An area has more than one kind of letter.",
     "bkPlNum.kramma": "An area has both white and black circles.",
