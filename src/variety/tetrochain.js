@@ -125,7 +125,6 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
-		gridcolor_type: "LIGHT",
 		shadecolor: "#222222",
 
 		enablebcolor: true,
@@ -133,10 +132,9 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawGrid();
 			this.drawShadedCells();
+			this.drawGrid();
 			this.drawArrowNumbers();
-			this.drawBorders();
 			this.drawChassis();
 			this.drawTarget();
 		}
@@ -169,7 +167,7 @@
 	AnsCheck: {
 		checklist: [
 			"checkOverShadeCell",
-			// TODO equal blocks
+			"checkAdjacentShapes",
 			"checkUnderShadeCell",
 			"checkArrowNumber",
 			"checkConnect8Shade"
@@ -219,6 +217,48 @@
 		},
 		checkConnect8Shade: function() {
 			this.checkOneArea(this.board.sblk8mgr, "csDivide");
+		},
+
+		checkAdjacentShapes: function() {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.bx === bd.maxbx - 1 || cell.by === bd.maxby - 1) {
+					continue;
+				}
+
+				var i,
+					adc = cell.adjacent;
+				var cells = [
+					[cell, adc.right.adjacent.bottom],
+					[adc.right, adc.bottom]
+				];
+				for (i = 0; i < 2; i++) {
+					if (cells[i][0].isShade() && cells[i][1].isShade()) {
+						break;
+					}
+				}
+				if (i === 2) {
+					continue;
+				}
+
+				var block1 = cells[i][0].sblk,
+					block2 = cells[i][1].sblk;
+				if (
+					block1 === block2 ||
+					block1.clist.length !== 4 ||
+					this.isDifferentShapeBlock(block1, block2)
+				) {
+					continue;
+				}
+
+				this.failcode.add("bsSameShape");
+				if (this.checkOnly) {
+					break;
+				}
+				block1.clist.seterr(1);
+				block2.clist.seterr(1);
+			}
 		}
 	}
 });
