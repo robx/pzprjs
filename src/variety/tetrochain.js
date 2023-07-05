@@ -170,7 +170,8 @@
 			"checkAdjacentShapes",
 			"checkUnderShadeCell",
 			"checkArrowNumber",
-			"checkConnect8Shade"
+			"checkConnect8Shade",
+			"checkNumberHasArrow"
 		],
 
 		checkOverShadeCell: function() {
