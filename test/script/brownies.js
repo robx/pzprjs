@@ -22,6 +22,10 @@ ui.debug.addDebugData("brownies", {
 			"pzprv3/brownies/4/4/. . # 3 /. # . . /# 1 . . /. . -2 # /1 0 0 /0 0 0 /0 0 0 /0 0 0 /1 0 0 0 /1 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
 		],
 		[
+			"laOnBorder",
+			"pzprv3/brownies/4/4/. . # 3 /. # . . /# 1 . . /. . -2 # /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 1 0 0 /0 1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
+		],
+		[
 			"nmCircleNe",
 			"pzprv3/brownies/4/4/. . # 3 /. # . . /# 1 . . /. . -2 # /0 0 0 /0 0 0 /0 0 0 /0 0 0 /1 0 0 0 /1 0 0 1 /0 0 0 1 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
 		],
@@ -35,5 +39,31 @@ ui.debug.addDebugData("brownies", {
 			"pzprv3/brownies/4/4/. . # 3 /. # . . /# 1 . . /. . -2 # /0 0 0 /0 1 0 /0 0 0 /0 0 0 /1 0 0 0 /1 0 0 1 /0 0 0 1 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,3,2",
+				"editmode,shade",
+				"mouse,left,5,1",
+				"editmode,auto",
+				"cursor,5,3",
+				"key,6",
+				"cursor,1,3",
+				"key,q"
+			],
+			result:
+				"pzprv3/brownies/2/3/. . -2 /# . 6 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			input: [
+				"playmode",
+				"mouse,left,1,3,3,3",
+				"mouse,left,3,1",
+				"mouse,left,3,3",
+				"mouse,left,5,3"
+			],
+			result:
+				"pzprv3/brownies/2/3/. . -2 /# . 6 /0 0 /1 0 /0 0 0 /0 1 0 /16 0 16 /"
+		}
+	]
 });
