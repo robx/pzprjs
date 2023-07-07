@@ -1209,5 +1209,9 @@
 				return cell.qnum2 !== -1 && cell.lcnt > 0;
 			}, "laOnBorder");
 		}
+	},
+	"FailCode@brownies": {
+		nmConnected: "nmConnected.bonsan",
+		laOnNum: "laOnNum.bonsan"
 	}
 });
