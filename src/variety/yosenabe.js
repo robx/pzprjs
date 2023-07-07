@@ -679,6 +679,7 @@
 		}
 	},
 	"Graphic@brownies": {
+		hideHatena: true,
 		bgcellcolor_func: "qsub2",
 		circlefillcolor_func: "qcmp",
 		qcmpcolor: "gray",
