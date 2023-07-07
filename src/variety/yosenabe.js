@@ -130,11 +130,14 @@
 
 	MouseEvent: {
 		inputqcmp: function() {
-			// TODO support for given numbers in Brownies
 			var cell = this.getcell();
 			if (cell.isnull) {
 				return false;
 			}
+
+			return this.inputdark(cell);
+		},
+		inputdark: function(cell) {
 			var targetcell = !this.puzzle.execConfig("dispmove") ? cell : cell.base,
 				distance = 0.6,
 				dx = this.inputPoint.bx - cell.bx /* ここはtargetcellではなくcell */,
@@ -158,6 +161,21 @@
 		},
 		inputShade: function() {
 			this.inputFixedNumber(-2);
+		},
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull) {
+				return false;
+			}
+
+			if (cell.qnum2 !== -1) {
+				cell.setQcmp(+!cell.qcmp);
+				cell.draw();
+
+				this.mousereset();
+				return true;
+			}
+			return this.inputdark(cell);
 		}
 	},
 	"MouseEvent@yajisoko#1": {
@@ -662,9 +680,7 @@
 	},
 	"Graphic@brownies": {
 		bgcellcolor_func: "qsub2",
-		fontsizeratio: 0.75,
 		circlefillcolor_func: "qcmp",
-		circlebasecolor: "#CFCFCF",
 		qcmpcolor: "gray",
 		qsubcolor1: "rgb(224, 224, 255)",
 		qsubcolor2: "rgb(255, 255, 144)",
@@ -973,7 +989,7 @@
 				if (cell.qnum === -2) {
 					return "# ";
 				} else if (cell.qnum2 !== -1) {
-					return cell.qnum2 + "";
+					return cell.qnum2 + " ";
 				} else {
 					return ". ";
 				}
