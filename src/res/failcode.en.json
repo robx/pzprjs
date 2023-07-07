@@ -588,6 +588,7 @@
     "nmAround.ripple": "Equal numbers touch.",
     "nmBorderNe.nawabari": "The number is not equal to the number of border lines around it.",
     "nmBranch.snakepit": "A snake branches off.",
+    "nmCircleNe.brownies": "A number is not equal to the amount of circles in the surrounding cells.",
     "nmCircleNe.crossstitch": "A circled number is not equal to the amount of corners used by a loop.",
     "nmConnBarWrong.tateyoko": "The number of lines connected to a shaded cell is wrong.",
     "nmConnDiff.arukone": "Different alphabets are connected.",
