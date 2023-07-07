@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["yosenabe", "yajisoko"], {
+})(["yosenabe", "yajisoko", "brownies"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@yosenabe": {
@@ -150,11 +150,22 @@
 			return false;
 		}
 	},
-	"MouseEvent@yajisoko": {
+	"MouseEvent@brownies#1": {
+		inputModes: {
+			edit: ["number", "box", "shade", "clear"],
+			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
+		},
+		inputShade: function() {
+			this.inputFixedNumber(-2);
+		}
+	},
+	"MouseEvent@yajisoko#1": {
 		inputModes: {
 			edit: ["number", "direc", "box", "empty", "clear"],
 			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
-		},
+		}
+	},
+	"MouseEvent@yajisoko,brownies": {
 		mouseinput_other: function() {
 			if (this.inputMode === "box") {
 				this.inputFixedNumber(-3);
@@ -175,6 +186,10 @@
 					} else if (!this.inputpeke_ifborder()) {
 						this.inputBGcolor();
 					}
+				}
+			} else if (this.puzzle.editmode && this.pid === "brownies") {
+				if (this.mousestart) {
+					this.inputqnum();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -290,8 +305,24 @@
 			}
 		}
 	},
-	"KeyEvent@yajisoko": {
+	"KeyEvent@yajisoko,brownies": {
 		enablemake: true,
+		getNewNumber: function(cell, ca, cur) {
+			var ret = this.common.getNewNumber.call(this, cell, ca, cur);
+			if (
+				this.puzzle.execConfig("dispmove") &&
+				cur === -3 &&
+				cell.lcnt &&
+				ret !== null &&
+				ret !== -3
+			) {
+				// Cannot edit boxes, only remove them
+				return -1;
+			}
+			return ret;
+		}
+	},
+	"KeyEvent@yajisoko#1": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -311,21 +342,16 @@
 				ca = "s4";
 			}
 			this.key_inputqnum(ca);
-		},
-
-		getNewNumber: function(cell, ca, cur) {
-			var ret = this.common.getNewNumber.call(this, cell, ca, cur);
-			if (
-				this.puzzle.execConfig("dispmove") &&
-				cur === -3 &&
-				cell.lcnt &&
-				ret !== null &&
-				ret !== -3
-			) {
-				// Cannot edit boxes, only remove them
-				return -1;
+		}
+	},
+	"KeyEvent@brownies#1": {
+		keyinput: function(ca) {
+			if (ca === "q" || ca === "q1") {
+				ca = "s2";
+			} else if (ca === "w") {
+				ca = "-";
 			}
-			return ret;
+			this.key_inputqnum(ca);
 		}
 	},
 
@@ -356,12 +382,23 @@
 			}
 		}
 	},
-	"Cell@yajisoko": {
-		minnum: 0,
+	"Cell@yajisoko#1": {
 		maxnum: function() {
 			var bd = this.board;
 			return Math.max(bd.cols, bd.rows) - 1;
 		},
+		noLP: function() {
+			return this.qnum2 === -5;
+		}
+	},
+	"Cell@brownies#1": {
+		maxnum: 8,
+		noLP: function(dir) {
+			return this.qnum2 !== -1;
+		}
+	},
+	"Cell@yajisoko,brownies": {
+		minnum: 0,
 		getNum: function() {
 			return this.qnum === -2 ? -3 : this.qnum2;
 		},
@@ -375,9 +412,6 @@
 				this.setQnum(-1);
 				this.setQnum2(val);
 			}
-		},
-		noLP: function() {
-			return this.qnum2 === -5;
 		}
 	},
 	CellList: {
@@ -531,7 +565,7 @@
 			}
 		}
 	},
-	"Graphic@yajisoko": {
+	"Graphic@yajisoko,brownies": {
 		bgcellcolor_func: "qsub2",
 		fontsizeratio: 0.75,
 		circlefillcolor_func: "qcmp",
@@ -1008,6 +1042,25 @@
 		checkInvalidHasLine: function() {
 			this.checkAllCell(function(cell) {
 				return cell.qnum2 === -5 && cell.lcnt > 0;
+			}, "laOnBorder");
+		}
+	},
+
+	"AnsCheck@brownies": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkInvalidHasLine",
+			"checkConnectObject",
+			"checkLineOverLetter",
+			"checkCurveLine",
+
+			"checkDisconnectLine"
+		],
+
+		checkInvalidHasLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum2 !== -1 && cell.lcnt > 0;
 			}, "laOnBorder");
 		}
 	}
