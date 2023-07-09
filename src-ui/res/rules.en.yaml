@@ -1138,3 +1138,14 @@ sashikazune: "Divide the grid into regions of orthogonally connected cells.\n1. 
   region must be an L shape with a width of one cell.\n2. A number indicates the distance
   between its cell and the corner of its L-shaped region. The number 1 is located
   inside the corner cell.\n3. Regions can have no more than 2 numbers."
+tetrochain: "Place several tetrominoes (blocks of 4 cells) in the grid.\n1. Tetrominoes
+  cannot be orthogonally adjacent.\n2. Tetrominoes cannot overlap a number.\n3. A
+  number indicates the amount of cells used by tetrominoes in the given direction.\n
+  4. Two tetrominoes which touch each other at the corners must have different shapes,
+  counting rotations and reflections as the same.\n5. All tetrominoes form a diagonally
+  contiguous area."
+brownies: "Draw lines to move some of the circles.\n1. A circle can be moved horizontally
+  or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap
+  each other. Lines can also not go through the start- or endpoint of other circles.\n
+  3. Circles cannot be moved through shaded cells.\n4. Numbers indicate the amount
+  of circles in the orthogonally and diagonally adjacent cells."
