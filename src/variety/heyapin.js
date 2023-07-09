@@ -58,15 +58,11 @@
 		},
 
 		inputdot: function(fixed) {
-			var pos = this.getpos(0.25);
-			if (this.prevPos.equals(pos)) {
+			var cross = this.getcross();
+			if (this.prevPos.equals(cross)) {
 				return;
 			}
-			this.prevPos = pos;
-			var cross = pos.getx();
-			if (cross.isnull) {
-				return;
-			}
+			this.prevPos.set(cross);
 
 			if (this.inputData === null) {
 				if (fixed !== undefined) {
