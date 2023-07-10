@@ -85,6 +85,7 @@
 		{
 			aho: [0, 0, "アホになり切れ", "Aho-ni-Narikire", "shikaku"],
 			akichi: [0, 0, "Akichiwake", "Akichiwake", "heyawake"],
+			alter: [0, 0, "オルタネーション", "Alternation", "hakoiri"],
 			amibo: [0, 0, "あみぼー", "Amibo", "amibo"],
 			angleloop: [0, 0, "鋭直鈍ループ", "Angle Loop", "kouchoku"],
 			anglers: [0, 0, "フィッシング", "Anglers"],
