@@ -133,6 +133,7 @@ function toBGimage(pid) {
 		"evolmino",
 		"geradeweg",
 		"heteromino",
+		"heyapin",
 		"icewalk",
 		"invlitso",
 		"ladders",
