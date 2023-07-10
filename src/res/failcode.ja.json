@@ -557,7 +557,7 @@
     "nmShadeNe.paintarea": "数字の上下左右にある黒マスの数が間違っています。",
     "nmShadeNe.tawa": "数字の周りに入っている黒マスの数が違います。",
     "nmShadeViewNe.canal": "タテヨコに接する黒マスの個数の和が数字と異なります。",
-    "nmShapeNe.pentominous": "ブロックの形と文字が一致しません。",
+    "nmShapeNe": "ブロックの形と文字が一致しません。",
     "nmShootShadeNe1.kurochute": "数字の数だけ離れたマスのうち、1マスだけ黒マスになっていません。",
     "nmSightNe.easyasabc": "アルファベットが最も手前にありません。",
     "nmSightNe.skyscrapers": "見えるビルの数が正しくありません。",

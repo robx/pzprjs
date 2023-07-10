@@ -678,7 +678,7 @@
     "nmShadeNe.paintarea": "The number is not equal to the number of shaded cells in the four adjacent cells.",
     "nmShadeNe.tawa": "The number of shaded cells around a number is not correct.",
     "nmShadeViewNe.canal": "A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions.",
-    "nmShapeNe.pentominous": "A shape does not match the given letter.",
+    "nmShapeNe": "A shape does not match the given letter.",
     "nmShootShadeNe1.kurochute": "There is not exactly one shaded cell at the given distance from the number.",
     "nmSightNe.easyasabc": "The letter is not the closest.",
     "nmSightNe.roundtrip": "The length of the closest line segment is wrong.",
