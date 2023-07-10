@@ -175,6 +175,7 @@ ui.keypopup = {
 		magnets: [125, 0],
 		fracdiv: [51, 0],
 		battleship: [126, 0],
+		heyapin: [10, 0],
 		tetrochain: [10, 0]
 	},
 
