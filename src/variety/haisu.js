@@ -736,6 +736,7 @@
 			var nextaddr = new this.klass.Address();
 
 			var state = maxheight > 1 ? ANYWHERE : SINGLE;
+			// In case of state ABOVE or BELOW, floor is an exclusive bound.
 			var floor = 1;
 
 			// The direction that the path started in.
@@ -802,7 +803,22 @@
 					if (next === -2) {
 						state = state === SINGLE ? EXCEPT : ANYWHERE;
 					}
-					// TODO actually change state here for -3 and -4
+					if (next === -3) {
+						if (state === ABOVE) {
+							floor++;
+						} else if (state !== SINGLE) {
+							floor = 1;
+						}
+						state = ABOVE;
+					}
+					if (next === -4) {
+						if (state === BELOW) {
+							floor--;
+						} else if (state !== SINGLE) {
+							floor = maxheight;
+						}
+						state = BELOW;
+					}
 				}
 
 				if (next > 0) {
