@@ -22,7 +22,7 @@ ui.debug.addDebugData("bdwalk", {
 		[
 			null,
 			"pzprv3/bdwalk/1/5/1 1 9 1/2 - . D 1 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwSkipElevator",
@@ -42,7 +42,7 @@ ui.debug.addDebugData("bdwalk", {
 		[
 			null,
 			"pzprv3/bdwalk/1/6/1 1 11 1/. - 2 - D 1 /1 1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwGroundFloor",
