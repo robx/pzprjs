@@ -259,14 +259,17 @@
 		decodePzpr: function(type) {
 			this.decodeBorder();
 			this.decodeRoomNumber16();
+			this.puzzle.setConfig("heyapin_overlap", this.checkpflag("o"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("heyapin_overlap") ? "o" : null;
 			this.encodeBorder();
 			this.encodeRoomNumber16();
 		}
 	},
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("o", "heyapin_overlap");
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
 			this.decodeCross(function(cross, ca) {
@@ -274,6 +277,7 @@
 			});
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("o", "heyapin_overlap");
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCross(function(cross) {
@@ -282,7 +286,7 @@
 		}
 	},
 	AnsCheck: {
-		checklist: ["checkPinCount", "checkPinRoomConnect+"],
+		checklist: ["checkPinOverlap", "checkPinCount", "checkPinRoomConnect+"],
 		checkPinRoomConnect: function() {
 			this.checkOneArea(this.board.pingraph, "lnPlLoop");
 		},
@@ -305,6 +309,12 @@
 					room.clist.seterr(1);
 				}
 			}
+		},
+		checkPinOverlap: function() {
+			if (!this.puzzle.getConfig("heyapin_overlap")) {
+				return;
+			}
+			// TODO implement
 		}
 	},
 	FailCode: {
