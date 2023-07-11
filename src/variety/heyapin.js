@@ -314,7 +314,35 @@
 			if (!this.puzzle.getConfig("heyapin_overlap")) {
 				return;
 			}
-			// TODO implement
+
+			for (var i = 0; i < this.board.cross.length; i++) {
+				var cross = this.board.cross[i];
+				if (!cross.qans) {
+					continue;
+				}
+
+				var set = new Set();
+				var cells = this.board.cellinside(
+					cross.bx - 1,
+					cross.by - 1,
+					cross.bx + 1,
+					cross.by + 1
+				);
+
+				cells.each(function(cell) {
+					set.add(cell.room);
+				});
+
+				if (set.size >= 2) {
+					continue;
+				}
+
+				this.failcode.add("cxOverlap");
+				if (this.checkOnly) {
+					break;
+				}
+				cross.seterr(1);
+			}
 		}
 	},
 	FailCode: {
