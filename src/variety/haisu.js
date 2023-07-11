@@ -711,6 +711,12 @@
 		// c1: The end of the path to highlight.
 		// dir: The direction to start from when highlighting the path.
 		walkLine: function(fromcell, maxheight) {
+			var ANYWHERE = 0;
+			var EXCEPT = 1;
+			var SINGLE = 2;
+			var ABOVE = 3;
+			var BELOW = 4;
+
 			var bd = this.board;
 			var ec = bd.emptycell;
 			var ret = [];
@@ -729,154 +735,122 @@
 			var prevcell = ec;
 			var nextaddr = new this.klass.Address();
 
-			// Contains the first number encountered. Resets when passing an elevator.
-			var currentfloorcell = ec;
-			var currentfloordir = ec.NDIR;
-
-			// Contains the first number encountered before passing one or more identical elevators.
-			var previousfloorcell = ec;
-			var previousfloordir = ec.NDIR;
+			var state = maxheight > 1 ? ANYWHERE : SINGLE;
+			var floor = 1;
 
 			// The direction that the path started in.
 			var fromdir = ec.NDIR;
 
-			// Contains the first elevator from the previous sequence of identical elevators.
-			var previouselevatorcell = ec;
-			var previouselevatordir = ec.NDIR;
-
 			// Contains the most recent sequence of identical elevators.
 			// Note that two unknown elevators never count as equal.
-			var elevators = [ec];
-			var elevatordirs = [ec.NDIR];
-			var elevatortype = -1;
+			var elevators = [];
+			var elevatordirs = [];
 
 			while (true) {
 				if (this.checkonly && ret.length > 0) {
 					return ret;
 				}
 
-				if (cell.qnum < -1) {
-					// When we encounter an elevator that's different from the last seen elevator,
-					// or an elevator after passing a number on the same floor, we clear the sequence.
-					if (
-						cell.qnum === -2 ||
-						!currentfloorcell.isnull ||
-						cell.qnum !== elevatortype
-					) {
-						var lowestfloor =
-							currentfloorcell.qnum !== -1
-								? currentfloorcell.qnum
-								: elevatortype === -4
-								? previousfloorcell.qnum - elevators.length
-								: -1;
+				if (state === ABOVE && floor >= maxheight - 1) {
+					state = SINGLE;
+					floor = maxheight;
+				}
+				if (state === BELOW && floor <= 2) {
+					state = SINGLE;
+					floor = 1;
+				}
+				if (state === EXCEPT && (floor === 1 || floor === maxheight)) {
+					state = floor === 1 ? ABOVE : BELOW;
+				}
 
-						// If we went down to the ground floor before hitting an unknown elevator,
-						// we must go up here. Override the elevatortype variable.
-						if (cell.qnum === -2 && lowestfloor === 1) {
-							elevatortype = -3;
-						} else {
-							elevatortype = cell.qnum;
-						}
+				var next = cell.qnum;
+				if (next === -2 && state === SINGLE && floor === 1) {
+					next = -3; // unknown lift must go up
+				} else if (next === -2 && state === SINGLE && floor === maxheight) {
+					next = -4; // unknown lift must go down
+				}
 
-						previouselevatorcell = elevators[0];
-						previouselevatordir =
-							elevatordirs.length > 0 ? elevatordirs[0] : ec.NDIR;
-
-						elevators = [cell];
-						elevatordirs = [];
-						previousfloorcell = currentfloorcell;
-						previousfloordir = currentfloordir;
-						currentfloorcell = ec;
-					} else {
-						elevators.push(cell);
-					}
+				if (next < -1) {
+					// TODO consider when to clear this list
+					// if (!currentfloorcell.isnull || next !== elevatortype) {
+					// 	elevators = [cell];
+					// 	elevatordirs = [];
+					// }
+					elevators.push(cell);
 
 					// Check if we just went down below floor 1.
-					if (
-						cell.qnum === -4 &&
-						!previousfloorcell.isnull &&
-						previousfloorcell.qnum - elevators.length < 1
-					) {
+					if (next === -4 && state === SINGLE && floor === 1) {
 						ret.push({
 							code: "bdwGroundFloor",
 							list: [cell],
-							c0: previousfloorcell,
+							c0: elevators[0],
 							c1: cell,
-							dir: previousfloordir
+							dir: elevatordirs[0]
 						});
 					}
+					// Check if we went above the top floor
+					if (next === -3 && state === SINGLE && floor === maxheight) {
+						ret.push({
+							code: "bdwTopFloor",
+							list: [cell],
+							c0: elevators[0],
+							c1: cell,
+							dir: elevatordirs[0]
+						});
+					}
+
+					if (next === -2) {
+						state = state === SINGLE ? EXCEPT : ANYWHERE;
+					}
+					// TODO actually change state here for -3 and -4
 				}
 
-				if (cell.qnum > 0) {
+				if (next > 0) {
+					elevators.push(cell);
+
 					// Check for two consecutive numbers separated by an incorrect elevator
-					if (
-						!previousfloorcell.isnull &&
-						cell.qnum > previousfloorcell.qnum &&
-						elevatortype === -4
-					) {
+					if (state === ABOVE && next <= floor) {
 						ret.push({
 							code: "bdwInvalidUp",
 							list: elevators.slice(),
-							c0: previousfloorcell,
+							c0: elevators[0],
 							c1: cell,
-							dir: previousfloordir
+							dir: elevatordirs[0]
 						});
-					} else if (
-						!previousfloorcell.isnull &&
-						cell.qnum < previousfloorcell.qnum &&
-						elevatortype === -3
-					) {
+					} else if (state === BELOW && next >= floor) {
 						ret.push({
 							code: "bdwInvalidDown",
 							list: elevators.slice(),
-							c0: previousfloorcell,
+							c0: elevators[0],
 							c1: cell,
-							dir: previousfloordir
+							dir: elevatordirs[0]
 						});
 					}
 
 					// Check if we have two unequal numbers without an elevator separating them
-					if (!currentfloorcell.isnull && currentfloorcell.qnum !== cell.qnum) {
+					if (state === SINGLE && next !== floor) {
 						ret.push({
 							code: "bdwMismatch",
-							list: [currentfloorcell, cell],
-							c0: currentfloorcell,
+							list: elevators.slice(),
+							c0: elevators[0],
 							c1: cell,
-							dir: currentfloordir
+							dir: elevatordirs[0]
 						});
 					}
 
-					// If the difference between the last two numbers is smaller
-					// than the amount of elevators used, we must've not
-					// changed floors at one of them.
-					var unused =
-						elevators.length - Math.abs(previousfloorcell.qnum - cell.qnum);
-					if (!previousfloorcell.isnull && !elevators[0].isnull && unused > 0) {
+					// Check for single unknown elevator
+					if (state === EXCEPT && next === floor) {
 						ret.push({
 							code: "bdwSkipElevator",
-							list: elevators.slice(-unused),
-							c0: previousfloorcell,
+							list: elevators.slice(),
+							c0: elevators[0],
 							c1: cell,
-							dir: previousfloordir
+							dir: elevatordirs[0]
 						});
 					}
 
-					// Check if we went up one or more times, then found a number that is too low.
-					if (elevatortype === -3 && cell.qnum - elevators.length < 1) {
-						ret.push({
-							code: "bdwGroundFloor",
-							list: [previouselevatorcell],
-							c0: !previouselevatorcell.isnull
-								? previouselevatorcell
-								: fromcell,
-							c1: elevators.slice(-cell.qnum)[0],
-							dir:
-								previouselevatordir !== ec.NDIR ? previouselevatordir : fromdir
-						});
-					}
-
-					currentfloorcell = cell;
-					previousfloorcell = ec;
+					state = SINGLE;
+					floor = next;
 				}
 
 				if (cell !== fromcell && cell.lcnt !== 2) {
@@ -897,9 +871,6 @@
 						addr.set(nextaddr);
 						prevcell = cell;
 
-						if (prevcell === currentfloorcell) {
-							currentfloordir = dir;
-						}
 						if (fromdir === ec.NDIR) {
 							fromdir = dir;
 						}
@@ -997,7 +968,7 @@
 						c.setCrossBorderError();
 					});
 
-					if (err.c1 && !err.c1.isnull && err.dir !== 0) {
+					if (err.c0 && !err.c0.isnull && err.c1 && !err.c1.isnull && err.dir) {
 						err.c0.setWalkLineError(err.dir, err.c1);
 					}
 					failcode.add(err.code);
