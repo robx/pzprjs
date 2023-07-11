@@ -17,11 +17,13 @@ ui.debug.addDebugData("heyapin", {
 		],
 		[
 			"cxOverlap",
-			"pzprv3/heyapin/3/3/o/5/0 1 2 /0 3 4 /3 3 4 /4 . 2 /. . 1 /3 . . /1 1 1 0 /1 0 0 1 /1 0 0 0 /1 1 0 0 /"
+			"pzprv3/heyapin/3/3/o/5/0 1 2 /0 3 4 /3 3 4 /4 . 2 /. . 1 /3 . . /1 1 1 0 /1 0 0 1 /1 0 0 0 /1 1 0 0 /",
+			{ skiprules: true }
 		],
 		[
 			null,
-			"pzprv3/heyapin/3/3/o/5/0 1 2 /0 3 4 /3 3 4 /4 . 2 /. . 1 /3 . . /0 1 1 0 /0 1 0 1 /1 1 0 0 /0 0 0 0 /"
+			"pzprv3/heyapin/3/3/o/5/0 1 2 /0 3 4 /3 3 4 /4 . 2 /. . 1 /3 . . /0 1 1 0 /0 1 0 1 /1 1 0 0 /0 0 0 0 /",
+			{ skiprules: true }
 		],
 		[
 			null,

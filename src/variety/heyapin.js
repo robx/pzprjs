@@ -251,7 +251,14 @@
 			if (dot.trial) {
 				return this.trialcolor;
 			}
-			return dot.qans ? this.qanscolor : this.pekecolor;
+			if (!dot.qans) {
+				return this.pekecolor;
+			}
+			return dot.error === 1
+				? this.errcolor1
+				: dot.error === -1
+				? this.noerrcolor
+				: this.qanscolor;
 		}
 	},
 
@@ -341,6 +348,7 @@
 				if (this.checkOnly) {
 					break;
 				}
+				this.board.cross.setnoerr();
 				cross.seterr(1);
 			}
 		}
