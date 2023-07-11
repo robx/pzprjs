@@ -243,7 +243,7 @@
 
 		getPinFillColor: function(dot) {
 			if (dot.qans === 1) {
-				return "white";
+				return dot.error === 1 ? this.errbcolor1 : "white";
 			}
 			return null;
 		},
