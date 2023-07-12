@@ -393,7 +393,7 @@
 
 			"checkDeadendLine+",
 			"checkOneLoop",
-			"checkNoLine"
+			"checkNoLine+"
 		],
 
 		checkNumberExit: function() {
