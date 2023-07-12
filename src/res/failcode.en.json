@@ -321,6 +321,7 @@
     "ceAddLine": "A cell with given lines has extra lines.",
     "ceDark.lightup": "A cell is not shined.",
     "ceDirection.compass": "The number of cells in the direction is wrong.",
+    "ceDirection.mukkonn": "A line that exits a cell turns at the wrong position.",
     "ceDirection.guidearrow": "A cell does not follow the indicated direction towards the goal.",
     "ceEmpty.kaidan": "There is an empty cell.",
     "ceEmpty.lightshadow": "There is an undetermined cell.",

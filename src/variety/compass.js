@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["compass"], {
+})(["compass", "mukkonn"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -24,6 +24,31 @@
 						this.inputborder();
 					} else {
 						this.inputQsubLine();
+					}
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart) {
+					this.input51();
+				}
+			}
+		}
+	},
+	"MouseEvent@mukkonn": {
+		inputModes: {
+			edit: ["clear", "number", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.btn === "left") {
+					if (this.mousestart || this.mousemove) {
+						this.inputLine();
+					} else if (this.mouseend && this.notInputted()) {
+						this.inputpeke();
+					}
+				} else if (this.btn === "right") {
+					if (this.mousestart || this.mousemove) {
+						this.inputpeke();
 					}
 				}
 			} else if (this.puzzle.editmode) {
@@ -62,7 +87,30 @@
 		},
 		minnum: 0
 	},
-	CellList: {
+	"Cell@mukkonn": {
+		maxnum: function() {
+			return Math.max(this.board.cols, this.board.rows);
+		},
+
+		getSegmentDir: function(dir) {
+			var llist = new this.klass.PieceList();
+			var pos = this.getaddr().movedir(dir, 1);
+			while (1) {
+				var border = pos.getb();
+				if (!border || border.isnull) {
+					break;
+				}
+				if (border.isLine()) {
+					llist.add(border);
+				} else {
+					break;
+				}
+				pos.movedir(dir, 2);
+			}
+			return llist;
+		}
+	},
+	"CellList@compass": {
 		singleQnumCell: true
 	},
 
@@ -110,7 +158,10 @@
 		}
 	},
 
-	AreaRoomGraph: {
+	"AreaRoomGraph@compass": {
+		enabled: true
+	},
+	"LineGraph@mukkonn": {
 		enabled: true
 	},
 
@@ -127,8 +178,14 @@
 			this.drawBGCells();
 			this.drawQues51();
 
-			this.drawDashedGrid();
-			this.drawBorders();
+			if (this.pid === "compass") {
+				this.drawDashedGrid();
+				this.drawBorders();
+			} else {
+				this.drawGrid();
+				this.drawPekes();
+				this.drawLines();
+			}
 
 			this.drawQuesNumbersOn51();
 			this.drawBorderQsubs();
@@ -142,6 +199,9 @@
 			this.drawTargetTriangle();
 			this.drawSlash51Cells();
 		}
+	},
+	"Graphic@mukkonn": {
+		irowake: true
 	},
 
 	Encode: {
@@ -255,10 +315,20 @@
 			});
 		}
 	},
+	"FileIO@mukkonn": {
+		decodeData: function() {
+			this.decodeCellCompass();
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeCellCompass();
+			this.encodeBorderLine();
+		}
+	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
+	"AnsCheck@compass": {
 		checklist: [
 			"checkNoNumber",
 			"checkDirectionSize",
@@ -310,6 +380,56 @@
 						cell.seterr(1);
 						clist2.seterr(1);
 					}
+				}
+			}
+		}
+	},
+	"AnsCheck@mukkonn": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkNumberExit",
+
+			"checkDeadendLine+",
+			"checkOneLoop",
+			"checkNoLine"
+		],
+
+		checkNumberExit: function() {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				if (!cell.isNum()) {
+					continue;
+				}
+
+				for (var dir = 1; dir <= 4; dir++) {
+					var n = cell.getQnumDir(dir);
+					if (n < 0 || !cell.reldirbd(dir, 1).isLine()) {
+						continue;
+					}
+					var segments = cell.getSegmentDir(dir);
+					if (!segments || segments.length === n) {
+						continue;
+					}
+					if (
+						segments.length < n &&
+						!cell
+							.getaddr()
+							.movedir(dir, segments.length * 2)
+							.getc()
+							.isLineCurve()
+					) {
+						continue;
+					}
+
+					this.failcode.add("ceDirection");
+					if (this.checkOnly) {
+						return;
+					}
+					this.board.border.setnoerr();
+					cell.seterr(1);
+					segments.seterr(1);
 				}
 			}
 		}
