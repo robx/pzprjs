@@ -256,6 +256,10 @@
 		maxnum: 99,
 
 		setWalkLineError: function(initdir, target) {
+			if (this.isnull || target.isnull) {
+				return;
+			}
+
 			var addr = new this.klass.Address();
 			addr.set(this);
 			var cell = this;
@@ -290,6 +294,9 @@
 					} else {
 						addr.set(cell);
 					}
+				}
+				if (dir > 4) {
+					break;
 				}
 			}
 		}
@@ -742,10 +749,7 @@
 			// The direction that the path started in.
 			var fromdir = ec.NDIR;
 
-			// Contains the most recent sequence of identical elevators.
-			// Note that two unknown elevators never count as equal.
-			var elevators = [];
-			var elevatordirs = [];
+			var prevcells = [];
 
 			while (true) {
 				if (this.checkonly && ret.length > 0) {
@@ -772,26 +776,24 @@
 				}
 
 				if (next < -1) {
-					elevators.push(cell);
+					prevcells.push(cell);
 
 					// Check if we just went down below floor 1.
 					if (next === -4 && state === SINGLE && floor === 1) {
+						prevcells = [cell];
 						ret.push({
 							code: "bdwGroundFloor",
-							list: [cell],
-							c0: elevators[0],
-							c1: cell,
-							dir: elevatordirs[0]
+							list: prevcells.slice(),
+							dir: fromdir
 						});
 					}
 					// Check if we went above the top floor
 					if (next === -3 && state === SINGLE && floor === maxheight) {
+						prevcells = [cell];
 						ret.push({
 							code: "bdwTopFloor",
-							list: [cell],
-							c0: elevators[0],
-							c1: cell,
-							dir: elevatordirs[0]
+							list: prevcells.slice(),
+							dir: fromdir
 						});
 					}
 
@@ -815,39 +817,35 @@
 						state = BELOW;
 					}
 
-					var prevdir = (elevators[elevators.length - 2] || ec).qnum;
+					var prevdir = (prevcells[prevcells.length - 2] || ec).qnum;
 					if (prevdir < -1 && prevdir !== cell.qnum) {
-						elevators = [cell];
-						elevatordirs = [];
+						prevcells = [cell];
+						fromdir = ec.NDIR;
 					}
 				}
 
 				if (next > 0) {
-					elevators.push(cell);
+					prevcells.push(cell);
 
 					// Check for two consecutive numbers separated by an incorrect elevator
 					if (state === ABOVE && next <= floor) {
 						ret.push({
 							code: next === 1 ? "bdwSkipElevator" : "bdwInvalidDown",
-							list: elevators.slice(),
-							c0: elevators[0],
-							c1: cell,
-							dir: elevatordirs[0]
+							list: prevcells.slice(),
+							dir: fromdir
 						});
 					} else if (state === BELOW && next >= floor) {
 						ret.push({
 							code: next === maxheight ? "bdwSkipElevator" : "bdwInvalidUp",
-							list: elevators.slice(),
-							c0: elevators[0],
-							c1: cell,
-							dir: elevatordirs[0]
+							list: prevcells.slice(),
+							dir: fromdir
 						});
 					}
 
 					// Check if we have two unequal numbers without an elevator separating them
 					if (state === SINGLE && next !== floor) {
 						var code = "bdwMismatch";
-						var prevdir = (elevators[elevators.length - 2] || ec).qnum;
+						var prevdir = (prevcells[prevcells.length - 2] || ec).qnum;
 						switch (prevdir) {
 							case -2:
 								code = "bdwSkipElevator";
@@ -862,10 +860,8 @@
 
 						ret.push({
 							code: code,
-							list: elevators.slice(),
-							c0: elevators[0],
-							c1: cell,
-							dir: elevatordirs[0]
+							list: prevcells.slice(),
+							dir: fromdir
 						});
 					}
 
@@ -873,18 +869,16 @@
 					if (state === EXCEPT && next === floor) {
 						ret.push({
 							code: "bdwSkipElevator",
-							list: elevators.slice(),
-							c0: elevators[0],
-							c1: cell,
-							dir: elevatordirs[0]
+							list: prevcells.slice(),
+							dir: fromdir
 						});
 					}
 
 					state = SINGLE;
 					floor = next;
 
-					elevators = [cell];
-					elevatordirs = [];
+					prevcells = [cell];
+					fromdir = ec.NDIR;
 				}
 
 				if (cell !== fromcell && cell.lcnt !== 2) {
@@ -907,9 +901,6 @@
 
 						if (fromdir === ec.NDIR) {
 							fromdir = dir;
-						}
-						if (elevatordirs.length < elevators.length) {
-							elevatordirs.push(dir);
 						}
 
 						cell = addr.getc();
@@ -1002,8 +993,11 @@
 						c.setCrossBorderError();
 					});
 
-					if (err.c0 && !err.c0.isnull && err.c1 && !err.c1.isnull && err.dir) {
-						err.c0.setWalkLineError(err.dir, err.c1);
+					if (err.list.length > 0 && err.dir) {
+						err.list[0].setWalkLineError(
+							err.dir,
+							err.list[err.list.length - 1]
+						);
 					}
 					failcode.add(err.code);
 				});
