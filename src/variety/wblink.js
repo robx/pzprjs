@@ -15,25 +15,8 @@
 			edit: ["circle-shade", "circle-unshade", "circle-gray", "clear"],
 			play: ["line", "peke"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.btn === "left") {
-					if (this.mousestart || this.mousemove) {
-						this.inputLine();
-					} else if (this.mouseend && this.notInputted()) {
-						this.inputpeke();
-					}
-				} else if (this.btn === "right") {
-					if (this.mousestart || this.mousemove) {
-						this.inputpeke();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum();
-				}
-			}
-		},
+		autoedit_func: "qnum",
+		autoplay_func: "line",
 
 		mouseinput_other: function() {
 			switch (this.inputMode) {
