@@ -772,11 +772,6 @@
 				}
 
 				if (next < -1) {
-					// TODO consider when to clear this list
-					// if (!currentfloorcell.isnull || next !== elevatortype) {
-					// 	elevators = [cell];
-					// 	elevatordirs = [];
-					// }
 					elevators.push(cell);
 
 					// Check if we just went down below floor 1.
@@ -819,6 +814,12 @@
 						}
 						state = BELOW;
 					}
+
+					var prevdir = (elevators[elevators.length - 2] || ec).qnum;
+					if (prevdir < -1 && prevdir !== cell.qnum) {
+						elevators = [cell];
+						elevatordirs = [];
+					}
 				}
 
 				if (next > 0) {
@@ -845,9 +846,22 @@
 
 					// Check if we have two unequal numbers without an elevator separating them
 					if (state === SINGLE && next !== floor) {
-						// TODO this code should only appear if the last item was a number
+						var code = "bdwMismatch";
+						var prevdir = (elevators[elevators.length - 2] || ec).qnum;
+						switch (prevdir) {
+							case -2:
+								code = "bdwSkipElevator";
+								break;
+							case -3:
+								code = "bdwInvalidDown";
+								break;
+							case -4:
+								code = "bdwInvalidUp";
+								break;
+						}
+
 						ret.push({
-							code: "bdwMismatch",
+							code: code,
 							list: elevators.slice(),
 							c0: elevators[0],
 							c1: cell,

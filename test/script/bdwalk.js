@@ -5,17 +5,17 @@ ui.debug.addDebugData("bdwalk", {
 	failcheck: [
 		/* Specific test cases */
 		[
-			"bdwSkipElevator",
+			"bdwInvalidUp",
 			"pzprv3/bdwalk/3/3/1 1 1 5/4 . D /. . D /2 . D /1 1 /0 0 /1 1 /0 0 1 /0 0 1 /",
 			{ skiprules: false }
 		],
 		[
-			"bdwSkipElevator",
+			"bdwTopFloor",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/1 - . U 2 /1 1 1 1 /",
 			{ skiprules: false }
 		],
 		[
-			"bdwSkipElevator",
+			"bdwGroundFloor",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/2 - . D 1 /1 1 1 1 /",
 			{ skiprules: false }
 		],
@@ -25,12 +25,12 @@ ui.debug.addDebugData("bdwalk", {
 			{ skiprules: true }
 		],
 		[
-			"bdwSkipElevator",
+			"bdwTopFloor",
 			"pzprv3/bdwalk/1/6/m/1 1 11 1/. - 1 - U 2 /1 1 1 1 1 /",
 			{ skiprules: false }
 		],
 		[
-			"bdwSkipElevator",
+			"bdwGroundFloor",
 			"pzprv3/bdwalk/1/6/m/1 1 11 1/. - 2 - D 1 /1 1 1 1 1 /",
 			{ skiprules: false }
 		],
@@ -109,7 +109,7 @@ ui.debug.addDebugData("bdwalk", {
 			"pzprv3/bdwalk/4/4/m/1 1 7 3/. . U . /1 . . 1 /2 2 D . /- . 3 D /0 1 1 /0 0 0 /1 0 0 /0 0 0 /0 1 0 1 /0 1 0 0 /0 0 0 0 /"
 		],
 		[
-			"bdwGroundFloor",
+			"bdwInvalidUp",
 			"pzprv3/bdwalk/4/4/m/1 1 7 3/. . U . /1 . . 1 /2 2 D . /- . 3 D /0 0 0 /1 1 0 /1 0 0 /1 1 0 /1 0 0 0 /0 0 1 0 /1 0 1 0 /"
 		],
 		[
