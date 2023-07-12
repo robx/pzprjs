@@ -27,7 +27,7 @@
 			}
 		}
 	},
-	MouseEvent: {
+	"MouseEvent@loute,sashigane#1": {
 		mouseinput: function() {
 			// オーバーライド
 			if (this.inputMode === "undef" || this.inputMode === "circle-unshade") {
@@ -139,19 +139,8 @@
 			edit: ["number", "clear"],
 			play: ["border", "subline"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputQsubLine();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				this.inputqnum();
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "border"
 	},
 
 	//---------------------------------------------------------
