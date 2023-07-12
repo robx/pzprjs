@@ -828,7 +828,7 @@
 					// Check for two consecutive numbers separated by an incorrect elevator
 					if (state === ABOVE && next <= floor) {
 						ret.push({
-							code: "bdwInvalidDown",
+							code: next === 1 ? "bdwSkipElevator" : "bdwInvalidDown",
 							list: elevators.slice(),
 							c0: elevators[0],
 							c1: cell,
@@ -836,7 +836,7 @@
 						});
 					} else if (state === BELOW && next >= floor) {
 						ret.push({
-							code: "bdwInvalidUp",
+							code: next === maxheight ? "bdwSkipElevator" : "bdwInvalidUp",
 							list: elevators.slice(),
 							c0: elevators[0],
 							c1: cell,
