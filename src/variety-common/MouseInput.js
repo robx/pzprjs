@@ -979,9 +979,21 @@ pzpr.classmgr.makeCommon({
 				this.inputqnum();
 			}
 		},
+		mouseinputAutoEdit_areanum: function() {
+			if (this.mousestart || this.mousemove) {
+				this.inputborder();
+			} else if (this.mouseend && this.notInputted()) {
+				this.inputqnum();
+			}
+		},
 
 		mouseinputAutoPlay_cell: function() {
 			this.inputcell();
+		},
+		mouseinputAutoPlay_qnum: function() {
+			if (this.mousestart) {
+				this.inputqnum();
+			}
 		},
 
 		mouseinputAutoPlay_border: function() {

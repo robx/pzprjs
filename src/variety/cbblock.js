@@ -89,21 +89,8 @@
 			play: ["border", "subline"]
 		},
 
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputQsubLine();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "border"
 	},
 
 	"MouseEvent@mirrorbk": {
@@ -111,24 +98,8 @@
 			edit: ["number", "border"],
 			play: ["border", "subline"]
 		},
-
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputQsubLine();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputborder();
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "areanum",
+		autoplay_func: "border"
 	},
 
 	"KeyEvent@dbchoco": {
