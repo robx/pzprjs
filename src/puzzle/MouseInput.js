@@ -68,6 +68,17 @@ pzpr.classmgr.makeCommon({
 			this.mousemove = false;
 			this.mouseend = false;
 
+			var pc = this;
+			[
+				["mouseinputAutoEdit", this.autoedit_func],
+				["mouseinputAutoPlay", this.autoplay_func]
+			].forEach(function(item) {
+				if (pc[item[0]] !== pzpr.common.MouseEvent.prototype[item[0]]) {
+					return;
+				} // パズル個別の関数が定義されている場合はそのまま使用
+				pc[item[0]] = pc[item[0] + "_" + item[1]] || pc[item[0]];
+			});
+
 			if (this.puzzle.execConfig("dispmove") && !!cell0 && !cell0.isnull) {
 				cell0.draw();
 			}
@@ -389,7 +400,18 @@ pzpr.classmgr.makeCommon({
 			this.inputclean_cell();
 		},
 		//オーバーライド用
-		mouseinput_auto: function() {},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				this.mouseinputAutoPlay();
+			} else if (this.puzzle.editmode) {
+				this.mouseinputAutoEdit();
+			}
+		},
+		mouseinputAutoEdit: function() {},
+		mouseinputAutoPlay: function() {},
+		autoedit_func: "", // mouseinputAutoEdit
+		autoplay_func: "", // mouseinputAutoPlay
+
 		mouseinput_other: function() {},
 
 		//---------------------------------------------------------------------------
