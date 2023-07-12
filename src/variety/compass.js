@@ -17,46 +17,19 @@
 				this.inputqnum_cell51();
 			}
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputQsubLine();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.input51();
-				}
+		mouseinputAutoEdit: function() {
+			if (this.mousestart) {
+				this.input51();
 			}
-		}
+		},
+		autoplay_func: "border"
 	},
 	"MouseEvent@mukkonn": {
 		inputModes: {
 			edit: ["clear", "number", "info-line"],
 			play: ["line", "peke", "info-line"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.btn === "left") {
-					if (this.mousestart || this.mousemove) {
-						this.inputLine();
-					} else if (this.mouseend && this.notInputted()) {
-						this.inputpeke();
-					}
-				} else if (this.btn === "right") {
-					if (this.mousestart || this.mousemove) {
-						this.inputpeke();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.input51();
-				}
-			}
-		}
+		autoplay_func: "line"
 	},
 
 	//---------------------------------------------------------
