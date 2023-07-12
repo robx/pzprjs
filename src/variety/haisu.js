@@ -827,7 +827,7 @@
 					// Check for two consecutive numbers separated by an incorrect elevator
 					if (state === ABOVE && next <= floor) {
 						ret.push({
-							code: "bdwInvalidUp",
+							code: "bdwInvalidDown",
 							list: elevators.slice(),
 							c0: elevators[0],
 							c1: cell,
@@ -835,7 +835,7 @@
 						});
 					} else if (state === BELOW && next >= floor) {
 						ret.push({
-							code: "bdwInvalidDown",
+							code: "bdwInvalidUp",
 							list: elevators.slice(),
 							c0: elevators[0],
 							c1: cell,
@@ -845,6 +845,7 @@
 
 					// Check if we have two unequal numbers without an elevator separating them
 					if (state === SINGLE && next !== floor) {
+						// TODO this code should only appear if the last item was a number
 						ret.push({
 							code: "bdwMismatch",
 							list: elevators.slice(),
@@ -867,6 +868,9 @@
 
 					state = SINGLE;
 					floor = next;
+
+					elevators = [cell];
+					elevatordirs = [];
 				}
 
 				if (cell !== fromcell && cell.lcnt !== 2) {
