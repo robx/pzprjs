@@ -972,6 +972,55 @@ pzpr.classmgr.makeCommon({
 		},
 
 		//---------------------------------------------------------------------------
+		// Prefab auto modes
+		//---------------------------------------------------------------------------
+		mouseinputAutoEdit_qnum: function() {
+			if (this.mousestart) {
+				this.inputqnum();
+			}
+		},
+		mouseinputAutoEdit_areanum: function() {
+			if (this.mousestart || this.mousemove) {
+				this.inputborder();
+			} else if (this.mouseend && this.notInputted()) {
+				this.inputqnum();
+			}
+		},
+
+		mouseinputAutoPlay_cell: function() {
+			this.inputcell();
+		},
+		mouseinputAutoPlay_qnum: function() {
+			if (this.mousestart) {
+				this.inputqnum();
+			}
+		},
+
+		mouseinputAutoPlay_border: function() {
+			if (this.mousestart || this.mousemove) {
+				if (this.btn === "left" && this.isBorderMode()) {
+					this.inputborder();
+				} else {
+					this.inputQsubLine();
+				}
+			}
+		},
+
+		mouseinputAutoPlay_line: function() {
+			if (this.btn === "left") {
+				if (this.mousestart || this.mousemove) {
+					this.inputLine();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputpeke();
+				}
+			} else if (this.btn === "right") {
+				if (this.mousestart || this.mousemove) {
+					this.inputpeke();
+				}
+			}
+		},
+
+		//---------------------------------------------------------------------------
 		// mv.dispInfoBlk()  ひとつながりの黒マスを赤く表示する
 		// mv.dispInfoUblk()
 		// mv.dispInfoBlk8() ななめつながりの黒マスを赤く表示する

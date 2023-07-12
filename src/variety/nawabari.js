@@ -11,25 +11,8 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputQsubLine();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					if (this.pid === "heteromino") {
-						this.inputempty();
-					} else {
-						this.inputqnum();
-					}
-				}
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "border"
 	},
 	"MouseEvent@nawabari": {
 		inputModes: { edit: ["number", "clear"], play: ["border", "subline"] }
@@ -41,7 +24,10 @@
 		}
 	},
 	"MouseEvent@heteromino": {
-		inputModes: { edit: ["empty", "clear"], play: ["border", "subline"] }
+		inputModes: { edit: ["empty", "clear"], play: ["border", "subline"] },
+		mouseinputAutoEdit: function() {
+			this.inputempty();
+		}
 	},
 	"MouseEvent@fourcells,fivecells,heteromino": {
 		inputModes: {
