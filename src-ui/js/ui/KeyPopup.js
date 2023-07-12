@@ -182,7 +182,9 @@ ui.keypopup = {
 		brownies: [127, 0],
 		sashikazune: [10, 0],
 		patchwork: [10, 0],
-		waterwalk: [10, 0]
+		waterwalk: [10, 0],
+		compass: [10, 0],
+		mukkonn: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
