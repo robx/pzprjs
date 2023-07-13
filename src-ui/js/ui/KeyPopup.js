@@ -176,6 +176,8 @@ ui.keypopup = {
 		fracdiv: [51, 0],
 		battleship: [126, 0],
 		heyapin: [10, 0],
+		detour: [10, 0],
+		maxi: [10, 0],
 		tetrochain: [10, 0]
 	},
 

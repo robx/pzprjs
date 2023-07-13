@@ -12,11 +12,8 @@
 	// マウス入力系
 	MouseEvent: {
 		inputModes: { edit: ["number", "clear"], play: ["number", "clear"] },
-		mouseinput_auto: function() {
-			if (this.mousestart) {
-				this.inputqnum();
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "qnum"
 	},
 
 	//---------------------------------------------------------

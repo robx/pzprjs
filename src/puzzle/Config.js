@@ -126,6 +126,10 @@
 				variant: true,
 				volatile: true
 			}); /* magnets: Adjacent poles of different magnets must be equal */
+			this.add("heyapin_overlap", false, {
+				variant: true,
+				volatile: true
+			}); /* heyapin: Pins must overlap at least 2 regions */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -445,6 +449,9 @@
 					break;
 				case "magnets_anti":
 					exec = pid === "magnets";
+					break;
+				case "heyapin_overlap":
+					exec = pid === "heyapin";
 					break;
 				default:
 					exec = !!this.list[name];
