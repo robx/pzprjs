@@ -7,42 +7,42 @@ ui.debug.addDebugData("bdwalk", {
 		[
 			"bdwInvalidUp",
 			"pzprv3/bdwalk/1/6/11 1 1 1/. 2 D 1 D . /0 1 1 1 0 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwTopFloor",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/. U U U 3 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwSkipElevator",
 			"pzprv3/bdwalk/1/3/m/1 1 5 1/3 - 3 /1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwInvalidUp",
 			"pzprv3/bdwalk/1/4/m/1 1 7 1/4 D D 3 /1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwInvalidDown",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/1 U U 2 5 /1 1 1 0 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwInvalidUp",
 			"pzprv3/bdwalk/3/3/1 1 1 5/4 . D /. . D /2 . D /1 1 /0 0 /1 1 /0 0 1 /0 0 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwTopFloor",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/1 - . U 2 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwGroundFloor",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/2 - . D 1 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			null,
@@ -52,17 +52,17 @@ ui.debug.addDebugData("bdwalk", {
 		[
 			"bdwTopFloor",
 			"pzprv3/bdwalk/1/6/m/1 1 11 1/. - 1 - U 2 /1 1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwGroundFloor",
 			"pzprv3/bdwalk/1/6/m/1 1 11 1/. - 2 - D 1 /1 1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwSkipElevator",
 			"pzprv3/bdwalk/1/7/m/1 1 13 1/2 D 1 U D - 1 /1 1 1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			null,
@@ -72,32 +72,32 @@ ui.debug.addDebugData("bdwalk", {
 		[
 			"bdwSkipElevator",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/2 D . - 1 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwTopFloor",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/2 D - U 2 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwInvalidUp",
 			"pzprv3/bdwalk/1/3/m/1 1 5 1/. D 2 /1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwGroundFloor",
 			"pzprv3/bdwalk/1/6/m/1 1 11 1/2 D U D D 1 /1 1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwSkipElevator",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/1 U . - 2 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 		[
 			"bdwSkipElevator",
 			"pzprv3/bdwalk/1/5/m/1 1 9 1/2 D U - 2 /1 1 1 1 /",
-			{ skiprules: false }
+			{ skiprules: true }
 		],
 
 		/* Rule display */
