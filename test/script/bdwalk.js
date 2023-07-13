@@ -6,6 +6,31 @@ ui.debug.addDebugData("bdwalk", {
 		/* Specific test cases */
 		[
 			"bdwInvalidUp",
+			"pzprv3/bdwalk/1/6/11 1 1 1/. 2 D 1 D . /0 1 1 1 0 /",
+			{ skiprules: false }
+		],
+		[
+			"bdwTopFloor",
+			"pzprv3/bdwalk/1/5/m/1 1 9 1/. U U U 3 /1 1 1 1 /",
+			{ skiprules: false }
+		],
+		[
+			"bdwSkipElevator",
+			"pzprv3/bdwalk/1/3/m/1 1 5 1/3 - 3 /1 1 /",
+			{ skiprules: false }
+		],
+		[
+			"bdwInvalidUp",
+			"pzprv3/bdwalk/1/4/m/1 1 7 1/4 D D 3 /1 1 1 /",
+			{ skiprules: false }
+		],
+		[
+			"bdwInvalidDown",
+			"pzprv3/bdwalk/1/5/m/1 1 9 1/1 U U 2 5 /1 1 1 0 /",
+			{ skiprules: false }
+		],
+		[
+			"bdwInvalidUp",
 			"pzprv3/bdwalk/3/3/1 1 1 5/4 . D /. . D /2 . D /1 1 /0 0 /1 1 /0 0 1 /0 0 1 /",
 			{ skiprules: false }
 		],

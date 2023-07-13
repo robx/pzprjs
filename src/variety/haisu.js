@@ -764,9 +764,6 @@
 					state = SINGLE;
 					floor = 1;
 				}
-				if (state === EXCEPT && (floor === 1 || floor === maxheight)) {
-					state = floor === 1 ? ABOVE : BELOW;
-				}
 
 				var next = cell.qnum;
 				if (next === -2 && state === SINGLE && floor === 1) {
