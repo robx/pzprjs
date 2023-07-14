@@ -69,6 +69,7 @@
     "bdwInvalidUp.bdwalk": "The line goes up at a downward elevator.",
     "bdwMismatch.bdwalk": "The line goes through different numbers without switching floors.",
     "bdwSkipElevator.bdwalk": "The line doesn't change floors at an elevator.",
+    "bdwTopFloor.bdwalk": "The line goes above the top floor.",
     "bkArafEqual.araf": "An area is equal to a number.",
     "bkArafTooBig.araf": "An area is larger than both numbers.",
     "bkArafTooSmall.araf": "An area is smaller than both numbers.",

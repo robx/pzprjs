@@ -54,6 +54,7 @@
     "bdwInvalidUp.bdwalk": "▼のエレベーターで昇っています。",
     "bdwMismatch.bdwalk": "エレベーターのマスを通らずに階を移動しています。",
     "bdwSkipElevator.bdwalk": "エレベーターで階を移動していません。",
+    "bdwTopFloor.bdwalk": "The line goes above the top floor.",
     "bkArafEqual.araf": "面積が数字と一致しています。",
     "bkArafTooBig.araf": "面積が大きすぎるブロックがあります。",
     "bkArafTooSmall.araf": "面積が小さすぎるブロックがあります。",

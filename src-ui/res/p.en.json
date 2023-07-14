@@ -189,6 +189,7 @@
     "voxas_tatami": "Tatami rules (no 4-way intersections)",
     "tren_new": "All unused cells must be connected",
     "nuriuzu_connect": "All shaded cells must be connected",
+    "bdwalk_height": "Maximum height is unknown",
     "pentopia_transparent": "Transparent mode (clues may be shaded)",
     "koburin_minesweeper": "Minesweeper mode (numbers include diagonal cells)",
     "akichi_maximum": "Maximum numbers may be reduced",
