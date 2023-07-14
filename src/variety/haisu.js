@@ -356,11 +356,11 @@
 				this.drawBorders();
 			}
 
-			this.drawQuesNumbers();
-
 			this.drawLines();
 			this.drawPekes();
 			this.drawBorderAuxDir();
+
+			this.drawQuesNumbers();
 
 			this.drawChassis();
 
