@@ -110,6 +110,10 @@
 				variant: true,
 				volatile: true
 			}); /* nuriuzu: Rule variation for shaded connectivity */
+			this.add("bdwalk_height", false, {
+				variant: true,
+				volatile: true
+			}); /* bdwalk: Rule variation for allowing any height */
 			this.add("pentopia_transparent", false, {
 				variant: true,
 				volatile: true
@@ -437,6 +441,9 @@
 					break;
 				case "nuriuzu_connect":
 					exec = pid === "nuriuzu";
+					break;
+				case "bdwalk_height":
+					exec = pid === "bdwalk";
 					break;
 				case "pentopia_transparent":
 					exec = pid === "pentopia";

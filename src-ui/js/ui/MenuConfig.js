@@ -128,6 +128,9 @@
 				case "heyapin":
 					idname = "heyapin_overlap";
 					break;
+				case "bdwalk":
+					idname = "bdwalk_height";
+					break;
 			}
 
 			if (typeof idname === "string") {

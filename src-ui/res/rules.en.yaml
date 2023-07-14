@@ -1,11 +1,12 @@
-bdwalk: "You're given a top-down view of a building of unknown height. Grey cells
-  represent elevators.\n1. Draw a path from S to G that doesn't branch off or overlap
-  itself at any cell.\n2. The path must visit every number and elevator.\n3. The path
-  goes up one or more floors at an Up arrow, and goes down one or more floors at a
-  Down arrow.\n4. The path must change floors at an elevator without an arrow, but
-  this can be in either direction.\n5. A number indicates the floor that the path
-  should be on when passing through it.\n6. At no point does the path go below the
-  1st floor."
+bdwalk: "You're given a top-down view of a building. Grey cells\
+  \ represent elevators.\n1. Draw a path from S to G that doesn't branch off or overlap\
+  \ itself at any cell.\n2. The path must visit every number and elevator.\n3. The\
+  \ path goes up one or more floors at an Up arrow, and goes down one or more floors\
+  \ at a Down arrow.\n4. The path must change floors at an elevator without an arrow,\
+  \ but this can be in either direction.\n5. A number indicates the floor that the\
+  \ path should be on when passing through it.\n6. The height of the building is equal to \
+  \ the largest number on the grid. At no point does the path go below the 1st floor, or \
+  \ above the top floor."
 
 
 canal: "Shade some cells on the board.\n1. The number on a cell indicates how many

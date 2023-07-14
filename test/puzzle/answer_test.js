@@ -12,7 +12,8 @@ pzpr.variety.each(function(pid) {
 			var puzzle = new pzpr.Puzzle();
 			puzzle.setConfig("forceallcell", true);
 			testdata[pid].failcheck.forEach(function(testcase) {
-				it("Check: " + testcase[0], function() {
+				var idx = testdata[pid].failcheck.indexOf(testcase);
+				it("Check[" + idx + "]: " + testcase[0], function() {
 					puzzle.open(testcase[1]);
 					var failcode = puzzle.check(true);
 					var failcodePassive = puzzle.check(false);
