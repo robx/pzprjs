@@ -12,7 +12,6 @@
 	// マウス入力系
 	MouseEvent: {
 		draggingSG: false,
-		use: true,
 		inputModes: {
 			edit: ["border", "number"],
 			play: ["line", "peke", "diraux", "info-line"]
