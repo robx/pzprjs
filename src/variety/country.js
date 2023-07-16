@@ -59,13 +59,34 @@
 		}
 	},
 	"MouseEvent@nothing": {
-		use: true,
 		inputModes: {
 			edit: ["border", "clear", "info-line"],
 			play: ["line", "peke", "shade", "unshade", "clear", "info-line"]
 		},
 		inputShade: function() {
-			this.inputtile();
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.inputData === null) {
+				if (this.inputMode === "shade") {
+					this.inputData = cell.qsub !== 1 ? 1 : 0;
+				} else if (this.inputMode === "unshade") {
+					this.inputData = cell.qsub !== 2 ? 2 : 0;
+				} else {
+					this.inputData = (this.btn === "left" ? [1, 2, 0] : [2, 0, 1])[
+						cell.qsub
+					];
+				}
+			}
+
+			this.mouseCell = cell;
+			var clist = cell.room.clist;
+			for (var i = 0; i < clist.length; i++) {
+				var cell2 = clist[i];
+				cell2.setQsub(this.inputData);
+			}
+			clist.draw();
 		}
 	},
 	"MouseEvent@simpleloop": {
@@ -172,7 +193,7 @@
 						return;
 					}
 					if (this.pid === "nothing") {
-						this.inputtile();
+						this.inputShade();
 					} else {
 						this.inputMB();
 					}
@@ -524,9 +545,6 @@
 				this.drawBorderDirBG();
 				this.drawBGCells();
 			}
-			if (this.pid === "nothing") {
-				this.drawShadedCells();
-			}
 			if (
 				this.pid === "country" ||
 				this.pid === "maxi" ||
@@ -556,10 +574,6 @@
 			}
 
 			this.drawChassis();
-
-			if (this.pid === "nothing") {
-				this.drawBoxBorders(true);
-			}
 
 			if (
 				this.pid !== "rassi" &&
@@ -711,8 +725,8 @@
 		}
 	},
 	"Graphic@nothing": {
-		bgcellcolor_func: "qsub1",
-		bcolor: "rgb(255, 255, 144)"
+		bgcellcolor_func: "qsub2",
+		qsubcolor1: "silver"
 	},
 
 	//---------------------------------------------------------
@@ -845,7 +859,6 @@
 				this.decodeBorderLine();
 				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
 					this.decodeCellQsub();
-					// TODO override for All or Nothing
 				}
 			}
 		},
