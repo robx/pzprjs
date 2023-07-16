@@ -59,9 +59,13 @@
 		}
 	},
 	"MouseEvent@nothing": {
+		use: true,
 		inputModes: {
 			edit: ["border", "clear", "info-line"],
-			play: ["line", "peke", "clear", "info-line"]
+			play: ["line", "peke", "shade", "unshade", "clear", "info-line"]
+		},
+		inputShade: function() {
+			this.inputtile();
 		}
 	},
 	"MouseEvent@simpleloop": {
@@ -167,7 +171,11 @@
 					) {
 						return;
 					}
-					this.inputMB();
+					if (this.pid === "nothing") {
+						this.inputtile();
+					} else {
+						this.inputMB();
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.pid === "simpleloop") {
@@ -503,17 +511,21 @@
 		gridcolor_type: "SLIGHT",
 
 		paint: function() {
+			if (this.pid !== "remlen") {
+				this.drawBGCells();
+			}
+
 			if (this.pid === "country") {
 				this.drawGrid();
-			} else if (this.pid !== "ovotovata") {
+			} else {
 				this.drawDashedGrid();
 			}
 			if (this.pid === "remlen") {
 				this.drawBorderDirBG();
+				this.drawBGCells();
 			}
-			this.drawBGCells();
-			if (this.pid === "ovotovata") {
-				this.drawGrid();
+			if (this.pid === "nothing") {
+				this.drawShadedCells();
 			}
 			if (
 				this.pid === "country" ||
@@ -533,7 +545,7 @@
 
 			this.drawBorders();
 
-			if (this.pid !== "onsen") {
+			if (this.pid !== "onsen" && this.pid !== "nothing") {
 				this.drawMBs();
 			}
 			this.drawLines();
@@ -544,6 +556,10 @@
 			}
 
 			this.drawChassis();
+
+			if (this.pid === "nothing") {
+				this.drawBoxBorders(true);
+			}
 
 			if (
 				this.pid !== "rassi" &&
@@ -694,6 +710,10 @@
 			}
 		}
 	},
+	"Graphic@nothing": {
+		bgcellcolor_func: "qsub1",
+		bcolor: "rgb(255, 255, 144)"
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -825,6 +845,7 @@
 				this.decodeBorderLine();
 				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
 					this.decodeCellQsub();
+					// TODO override for All or Nothing
 				}
 			}
 		},
