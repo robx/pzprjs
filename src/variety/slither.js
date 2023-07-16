@@ -110,9 +110,7 @@
 
 		outlineShaded: function() {
 			this.border.each(function(border) {
-				// if (border) {
 				border.updateShaded();
-				// }
 			});
 		}
 	},
