@@ -13,7 +13,8 @@
 		"dotchi",
 		"ovotovata",
 		"rassi",
-		"remlen"
+		"remlen",
+		"nothing"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -54,6 +55,12 @@
 	"MouseEvent@doubleback": {
 		inputModes: {
 			edit: ["border", "clear", "info-line", "empty"],
+			play: ["line", "peke", "clear", "info-line"]
+		}
+	},
+	"MouseEvent@nothing": {
+		inputModes: {
+			edit: ["border", "clear", "info-line"],
 			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
@@ -541,6 +548,7 @@
 			if (
 				this.pid !== "rassi" &&
 				this.pid !== "doubleback" &&
+				this.pid !== "nothing" &&
 				this.pid !== "simpleloop"
 			) {
 				this.drawTarget();
@@ -1072,6 +1080,20 @@
 			"checkDeadendLine+",
 			"checkOneLoop",
 			"checkNoLine"
+		]
+	},
+	"AnsCheck@nothing#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkRoomPassOnce",
+
+			"checkRegionFullyVisited",
+			"checkSideAreaUnused",
+
+			"checkDeadendLine+",
+			"checkOneLoop"
 		]
 	},
 	AnsCheck: {
@@ -1832,6 +1854,61 @@
 			);
 
 			return ret;
+		}
+	},
+	"AnsCheck@nothing#2": {
+		checkSideAreaUnused: function() {
+			this.checkSideAreaSize(
+				this.board.roommgr,
+				function(area) {
+					if (
+						area.clist.some(function(cell) {
+							return cell.lcnt > 0;
+						})
+					) {
+						return 0;
+					}
+					return 1;
+				},
+				"cbNoLine"
+			);
+		},
+
+		checkRegionFullyVisited: function() {
+			var bd = this.board;
+			var rooms = bd.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var used = false,
+					empty = false,
+					other = false;
+
+				for (
+					var c = 0;
+					c < room.clist.length && !other && !(used && empty);
+					c++
+				) {
+					switch (room.clist[c].lcnt) {
+						case 0:
+							empty = true;
+							break;
+						case 2:
+							used = true;
+							break;
+						default:
+							other = true;
+							break;
+					}
+				}
+
+				if (used && empty && !other) {
+					this.failcode.add("bkLineNe");
+					if (this.checkOnly) {
+						break;
+					}
+					room.clist.seterr(1);
+				}
+			}
 		}
 	}
 });
