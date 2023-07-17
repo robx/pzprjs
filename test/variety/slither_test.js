@@ -1,4 +1,4 @@
-// test/variety/slitherlink_test.js
+// test/variety/slither_test.js
 
 var assert = require("assert");
 
