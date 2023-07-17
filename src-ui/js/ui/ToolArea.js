@@ -346,6 +346,9 @@ ui.toolarea = {
 	resetblocks: function() {
 		ui.puzzle.board.operate("resetpos");
 	},
+	outlineshaded: function() {
+		ui.puzzle.board.operate("outlineshaded");
+	},
 	flushexcell: function() {
 		ui.puzzle.board.flushexcell();
 	},
