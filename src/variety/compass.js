@@ -26,7 +26,7 @@
 	},
 	"MouseEvent@mukkonn": {
 		inputModes: {
-			edit: ["clear", "number", "info-line"],
+			edit: ["clear", "number", "empty", "info-line"],
 			play: ["line", "peke", "info-line"]
 		},
 		autoplay_func: "line"
@@ -81,7 +81,14 @@
 				pos.movedir(dir, 2);
 			}
 			return llist;
+		},
+
+		noLP: function(dir) {
+			return this.isEmpty();
 		}
+	},
+	"Border@mukkonn": {
+		enableLineNG: true
 	},
 	"CellList@compass": {
 		singleQnumCell: true
@@ -146,6 +153,9 @@
 		ttcolor: "rgb(255,255,127)",
 
 		bordercolor_func: "qans",
+		getBGCellColor: function(cell) {
+			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
+		},
 
 		paint: function() {
 			this.drawBGCells();
@@ -192,6 +202,12 @@
 			while (i < bstr.length && bd.cell[c]) {
 				var cell = bd.cell[c],
 					ca = bstr.charAt(i);
+				if (ca === "_") {
+					cell.ques = 7;
+					c++;
+					i++;
+					continue;
+				}
 				if (ca >= "g" && ca <= "z") {
 					c += parseInt(ca, 36) - 15;
 					i++;
@@ -217,7 +233,9 @@
 			for (var c = 0; c < bd.cell.length; c++) {
 				var pstr = "",
 					cell = bd.cell[c];
-				if (cell.ques === 51) {
+				if (cell.isEmpty()) {
+					pstr += "_";
+				} else if (cell.ques === 51) {
 					for (var dir = 1; dir <= 4; dir++) {
 						var qn = cell.getQnumDir(dir);
 						if (qn === -1) {
@@ -257,21 +275,27 @@
 			var bd = this.board;
 			bd.disableInfo(); /* mv.set51cell()用 */
 			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+					return;
+				}
 				if (ca === ".") {
 					return;
-				} else {
-					var inp = ca.split(",");
-					cell.set51cell();
-					cell.qnum = +inp[0];
-					cell.qnum2 = +inp[1];
-					cell.qnum3 = +inp[2];
-					cell.qnum4 = +inp[3];
 				}
+				var inp = ca.split(",");
+				cell.set51cell();
+				cell.qnum = +inp[0];
+				cell.qnum2 = +inp[1];
+				cell.qnum3 = +inp[2];
+				cell.qnum4 = +inp[3];
 			});
 			bd.enableInfo(); /* mv.set51cell()用 */
 		},
 		encodeCellCompass: function() {
 			this.encodeCell(function(cell) {
+				if (cell.isEmpty()) {
+					return "# ";
+				}
 				if (cell.ques === 51) {
 					return (
 						cell.qnum +
