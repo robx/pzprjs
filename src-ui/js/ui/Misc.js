@@ -146,6 +146,7 @@ function toBGimage(pid) {
 		"midloop",
 		"mirrorbk",
 		"moonsun",
+		"mrtile",
 		"nanameguri",
 		"nondango",
 		"nonogram",
