@@ -655,7 +655,7 @@ pzpr.classmgr.makeCommon({
 			if (piece.isnull) {
 				return 0;
 			} else if (piece.group === "cell") {
-				if (piece.ques !== 51 || piece.id === bd.cell.length - 1) {
+				if (piece.ques !== 51) {
 					return 0;
 				} else if (this.targetdirs === 2) {
 					var invalidRight = adc.right.isnull || adc.right.ques === 51;
