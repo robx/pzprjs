@@ -44,7 +44,16 @@ pzpr.classmgr.makeCommon({
 		qinfo: 0,
 		trial: 0, // TrialModeのstateを保持する変数
 
-		propques: ["ques", "qdir", "qnum", "qnum2", "qchar", "qnums"],
+		propques: [
+			"ques",
+			"qdir",
+			"qnum",
+			"qnum2",
+			"qnum3",
+			"qnum4",
+			"qchar",
+			"qnums"
+		],
 		propans: ["qans", "anum", "line", "trial"],
 		propsub: ["qsub", "qcmp", "snum"],
 		propinfo: ["error", "qinfo"],
