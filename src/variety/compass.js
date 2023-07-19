@@ -87,6 +87,11 @@
 			return this.isEmpty();
 		}
 	},
+	Border: {
+		isQuesBorder: function() {
+			return this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty();
+		}
+	},
 	"Border@mukkonn": {
 		enableLineNG: true
 	},
@@ -163,12 +168,12 @@
 
 			if (this.pid === "compass") {
 				this.drawDashedGrid();
-				this.drawBorders();
 			} else {
 				this.drawGrid();
 				this.drawPekes();
 				this.drawLines();
 			}
+			this.drawBorders();
 
 			this.drawQuesNumbersOn51();
 			this.drawBorderQsubs();
@@ -176,6 +181,14 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getBorderColor: function(border) {
+			if (border.isQuesBorder()) {
+				return "black";
+			}
+
+			return this.getBorderColor_qans(border);
 		},
 
 		drawQues51: function() {
