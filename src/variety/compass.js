@@ -8,14 +8,9 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		inputModes: { edit: ["clear", "number"], play: ["border", "subline"] },
+		inputModes: { edit: ["clear"], play: ["border", "subline"] },
 		mouseinput_clear: function() {
 			this.input51_fixed();
-		},
-		mouseinput_number: function() {
-			if (this.mousestart) {
-				this.inputqnum_cell51();
-			}
 		},
 		mouseinputAutoEdit: function() {
 			if (this.mousestart) {
@@ -26,7 +21,7 @@
 	},
 	"MouseEvent@mukkonn": {
 		inputModes: {
-			edit: ["clear", "number", "empty", "info-line"],
+			edit: ["clear", "empty", "info-line"],
 			play: ["line", "peke", "info-line"]
 		},
 		autoplay_func: "line"
