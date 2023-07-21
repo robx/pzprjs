@@ -8,7 +8,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["statuepark", "statuepark-aux", "pentopia", "battleship"], {
+})(["statuepark", "statuepark-aux", "pentopia", "battleship", "pentatouch"], {
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -25,7 +25,11 @@
 					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode && this.mousestart) {
-				this.inputqnum();
+				if (this.pid === "pentatouch") {
+					this.inputcrossMark();
+				} else {
+					this.inputqnum();
+				}
 				if (this.notInputted()) {
 					if (this.btn === "left") {
 						this.inputpiece();
@@ -205,6 +209,13 @@
 		}
 	},
 
+	"MouseEvent@pentatouch": {
+		inputModes: {
+			edit: ["completion"],
+			play: ["shade", "unshade", "clear", "completion"]
+		}
+	},
+
 	KeyEvent: {
 		enablemake: true
 	},
@@ -381,6 +392,10 @@
 			piece.deserializeRaw(clist.getBlockShapes().id);
 			return piece.serialize();
 		}
+	},
+
+	"Board@pentatouch": {
+		hascross: 1
 	},
 
 	Bank: {
@@ -905,15 +920,26 @@
 		circleratio: [0.3, 0.25]
 	},
 
+	"Graphic@pentatouch": {
+		enablebcolor: true,
+
+		shadecolor: "rgb(80, 80, 80)",
+		bgcellcolor_func: "qsub1",
+
+		crosssize: 0.15
+	},
+
 	Graphic: {
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
 			this.drawGrid();
 
-			if (this.pid === "statuepark") {
+			if (this.pid === "pentatouch") {
+				this.drawCrossMarks();
+			} else if (this.pid === "statuepark") {
 				this.drawCircles();
-			} else {
+			} else if (this.pid === "pentopia") {
 				this.drawArrowCombinations();
 				this.drawHatenas();
 			}
@@ -921,7 +947,9 @@
 			this.drawChassis();
 			this.drawBank();
 
-			this.drawTarget();
+			if (this.pid !== "pentatouch") {
+				this.drawTarget();
+			}
 		},
 
 		maxpiececount: 0,
@@ -1345,6 +1373,19 @@
 		}
 	},
 
+	"Encode@pentatouch": {
+		decodePzpr: function(type) {
+			if (this.outbstr[0] !== "/") {
+				this.decodeCrossMark();
+			}
+			this.decodePieceBank();
+		},
+		encodePzpr: function(type) {
+			this.encodeCrossMark();
+			this.encodePieceBank();
+		}
+	},
+
 	FileIO: {
 		decodeData: function() {
 			this.decodePieceBank();
@@ -1362,6 +1403,8 @@
 						obj.qnum = +ca;
 					}
 				});
+			} else if (this.pid === "pentatouch") {
+				this.decodeCrossNum();
 			} else {
 				this.decodeCellQnum();
 			}
@@ -1381,6 +1424,8 @@
 						return ". ";
 					}
 				});
+			} else if (this.pid === "pentatouch") {
+				this.encodeCrossNum();
 			} else {
 				this.encodeCellQnum();
 			}
@@ -1436,17 +1481,21 @@
 		}
 	},
 
-	"AnsCheck@pentopia,battleship#1": {
+	"AnsCheck@pentopia,battleship,pentatouch#1": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (cell.bx >= bd.maxbx - 1 || cell.by >= bd.maxby - 1) {
+				var bx = cell.bx,
+					by = cell.by;
+				if (bx >= bd.maxbx - 1 || by >= bd.maxby - 1) {
 					continue;
 				}
 
-				var bx = cell.bx,
-					by = cell.by;
+				if (this.pid === "pentatouch" && cell.relcross(1, 1).qnum === 1) {
+					continue;
+				}
+
 				var clist = bd.cellinside(bx, by, bx + 2, by + 2).filter(function(cc) {
 					return cc.isShade();
 				});
@@ -1688,6 +1737,50 @@
 				clist.seterr(1);
 			}
 			return result;
+		}
+	},
+	"AnsCheck@pentatouch": {
+		checklist: [
+			"checkBankPiecesAvailable",
+			"checkShadeDiagonal",
+			"checkBankPiecesInvalid+",
+			"checkCrossMissing",
+			"checkBankPiecesUsed"
+		],
+
+		checkCrossMissing: function() {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				var bx = cell.bx,
+					by = cell.by;
+				if (bx >= bd.maxbx - 1 || by >= bd.maxby - 1) {
+					continue;
+				}
+
+				var cross = cell.relcross(1, 1);
+
+				if (cross.qnum !== 1) {
+					continue;
+				}
+
+				var clist = bd.cellinside(bx, by, bx + 2, by + 2).filter(function(cc) {
+					return cc.isShade();
+				});
+				if (clist.length === 2) {
+					var ca = clist[0],
+						cb = clist[1];
+
+					if (ca.sblk !== cb.sblk) {
+						continue;
+					}
+				}
+				this.failcode.add("shNoDiag");
+				if (this.checkOnly) {
+					break;
+				}
+				cross.seterr(1);
+			}
 		}
 	}
 });

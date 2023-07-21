@@ -287,6 +287,7 @@
 			parquet: [0, 0, "Parquet", "Parquet"],
 			patchwork: [0, 0, "パッチワーク", "Patchwork"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],
+			pentatouch: [0, 0, "Penta Touch", "Penta Touch", "statuepark"],
 			pentominous: [0, 0, "Pentominous", "Pentominous", "fillomino"],
 			pentopia: [0, 0, "Pentopia", "Pentopia", "statuepark"],
 			pipelink: [1, 0, "パイプリンク", "Pipelink", "pipelink"],
