@@ -391,6 +391,7 @@
 						}
 						addr.movedir(dir, 1);
 						addr.getb().seterr(1);
+						this.board.border.setnoerr();
 					}
 				}
 			}
@@ -431,6 +432,7 @@
 						}
 						addr.movedir(dir, 1);
 						addr.getb().seterr(1);
+						this.board.border.setnoerr();
 					}
 				}
 			}
