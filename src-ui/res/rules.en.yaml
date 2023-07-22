@@ -1,12 +1,11 @@
-bdwalk: "You're given a top-down view of a building. Grey cells\
-  \ represent elevators.\n1. Draw a path from S to G that doesn't branch off or overlap\
-  \ itself at any cell.\n2. The path must visit every number and elevator.\n3. The\
-  \ path goes up one or more floors at an Up arrow, and goes down one or more floors\
-  \ at a Down arrow.\n4. The path must change floors at an elevator without an arrow,\
-  \ but this can be in either direction.\n5. A number indicates the floor that the\
-  \ path should be on when passing through it.\n6. The height of the building is equal to \
-  \ the largest number on the grid. At no point does the path go below the 1st floor, or \
-  \ above the top floor."
+bdwalk: "You're given a top-down view of a building. Grey cells represent elevators.\n
+  1. Draw a path from S to G that doesn't branch off or overlap itself at any cell.\n
+  2. The path must visit every number and elevator.\n3. The path goes up one or more
+  floors at an Up arrow, and goes down one or more floors at a Down arrow.\n4. The
+  path must change floors at an elevator without an arrow, but this can be in either
+  direction.\n5. A number indicates the floor that the path should be on when passing
+  through it.\n6. The height of the building is equal to  the largest number on the
+  grid. At no point does the path go below the 1st floor, or  above the top floor."
 
 
 canal: "Shade some cells on the board.\n1. The number on a cell indicates how many
@@ -1150,6 +1149,28 @@ brownies: "Draw lines to move some of the circles.\n1. A circle can be moved hor
   each other. Lines can also not go through the start- or endpoint of other circles.\n
   3. Circles cannot be moved through shaded cells.\n4. Numbers indicate the amount
   of circles in the orthogonally and diagonally adjacent cells."
+tetrominous: "Divide the grid into tetrominoes (regions of 4 cells). You can use each
+  tetromino any number of times (including zero).\n1. Two adjacent tetrominoes cannot
+  have the same shape, counting rotations and reflections as the same.\n2. A letter
+  indicates the shape of the tetromino it's contained in. A tetromino may contain
+  any number of identical letters."
+mrtile: "Shade some cells on the board to form blocks of any shape. Some shaded cells
+  are given.\n1. A number indicates the size of the block that contains it. A block
+  can have any amount of identical numbers.\n2. Every block must be diagonally adjacent
+  to at least one other block of the same shape, counting rotations and reflections
+  as the same."
+alter: "Place a triangle, square or circle in some of the cells.\n1. Each outlined
+  region contains exactly one of each possible symbol.\n2. Every row and column contains
+  exactly 2 kinds of symbol, which appear in alternating order."
+mukkonn: "Draw a loop that goes through every cell.\n1. The loop cannot branch off
+  or cross itself.\n2. When the loop exits a clued cell from a side with a number,
+  it must travel in a straight line for the indicated number of cells, and then turn.
+  e.g. A number 1 means that the loop must turn immediately after leaving that cell.
+  Numbers that aren't visited are meaningless."
+nothing: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The loop
+  cannot branch off or cross itself.\n2. If a country is visted by the loop, it must
+  visit all cells.\n3. Countries cannot be visited more than once.\n4. Two unused
+  countries cannot be orthogonally adjacent."
 myopia: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot 
   branch off or cross itself.\n2. Arrows point towards the lines closest to the clue. If a 
   clue has multiple arrows, the distance to the closest lline must be the same. Directions 
