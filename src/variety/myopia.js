@@ -308,10 +308,12 @@
 					}
 					if (addr.getb().isLine()) {
 						row[dir] =
-							(Math.abs(dir >= 3 ? addr.bx - cell0.bx : addr.by - cell0.by) + 1) / 2;
+							(Math.abs(dir >= 3 ? addr.bx - cell0.bx : addr.by - cell0.by) +
+								1) /
+							2;
 					}
 				}
-				console.log(row)
+				console.log(row);
 				ret.push(row);
 			}
 			return (this._info.lineDirs = ret);
@@ -364,7 +366,7 @@
 						clues[i][0].seterr(0x7c);
 
 						var addr = clues[i][0].getaddr();
-						for (var n = 0; n < (dist - 1); n++) {
+						for (var n = 0; n < dist - 1; n++) {
 							addr.movedir(dir, 2);
 							addr.getc().seterr(1);
 						}
@@ -404,16 +406,15 @@
 						clues[i][0].seterr(4 << dir);
 
 						var addr = clues[i][0].getaddr();
-						for (var n = 0; n < (dist - 1); n++) {
+						for (var n = 0; n < dist - 1; n++) {
 							addr.movedir(dir, 2);
 							addr.getc().seterr(1);
 						}
 						addr.movedir(dir, 1);
-						addr.getb().seterr(1)
+						addr.getb().seterr(1);
 					}
 				}
 			}
 		}
-
 	}
 });
