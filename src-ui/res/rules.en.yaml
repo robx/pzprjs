@@ -1150,3 +1150,7 @@ brownies: "Draw lines to move some of the circles.\n1. A circle can be moved hor
   each other. Lines can also not go through the start- or endpoint of other circles.\n
   3. Circles cannot be moved through shaded cells.\n4. Numbers indicate the amount
   of circles in the orthogonally and diagonally adjacent cells."
+myopia: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot 
+  branch off or cross itself.\n2. Arrows point towards the lines closest to the clue. If a 
+  clue has multiple arrows, the distance to the closest lline must be the same. Directions 
+  without an arrow must have a line further away, or not have a line in that direction."

@@ -251,6 +251,7 @@
 			mochikoro: [1, 0, "モチコロ", "Mochikoro", "nurikabe"],
 			mochinyoro: [1, 0, "モチにょろ", "Mochinyoro", "nurikabe"],
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
+			myopia: [0, 0, "Myopia", "Myopia", "myopia"],
 			nagare: [0, 0, "流れるループ", "Nagareru-Loop"],
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
