@@ -1173,5 +1173,5 @@ nothing: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The
   countries cannot be orthogonally adjacent."
 myopia: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot 
   branch off or cross itself.\n2. Arrows point towards the lines closest to the clue. If a 
-  clue has multiple arrows, the distance to the closest lline must be the same. Directions 
+  clue has multiple arrows, the distance to the closest line must be the same. Directions 
   without an arrow must have a line further away, or not have a line in that direction."

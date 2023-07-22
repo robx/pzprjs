@@ -28,7 +28,7 @@
     "arDistanceNe.pentopia": "The shaded cells pointed to by a clue are at different distances.",
     "arInvalid.evolmino": "The arrow is invalid.",
     "arNoLine": "A line doesn't go through some arrows.",
-    "arNoLineSeen": "This is no line in the direction of an arrow.",
+    "arNoLineSeen": "There is no line in the direction of an arrow.",
     "arNoShade.pentopia": "There is no shaded cell in the direction of an arrow.",
     "arNotMax.makaro": "An arrow doesn't point out biggest number.",
     "arNotPtCnr.loute": "An arrow doesn't point at the corner of an area.",
