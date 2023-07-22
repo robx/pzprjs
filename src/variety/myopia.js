@@ -113,6 +113,60 @@
 		}
 	},
 
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			this.adjustCellQnumArrow(key, d);
+		},
+		getTranslateDir: function(key) {
+			var trans = {};
+			switch (key) {
+				case this.FLIPY:
+					trans = { 1: 2, 2: 1, 5: 6, 6: 5, 9: 10, 10: 9, 13: 14, 14: 13 };
+					break;
+				case this.FLIPX:
+					trans = { 4: 8, 5: 9, 6: 10, 7: 11, 8: 4, 9: 5, 10: 6, 11: 7 };
+					break;
+				case this.TURNR:
+					trans = {
+						1: 8,
+						2: 4,
+						3: 12,
+						4: 1,
+						5: 9,
+						6: 5,
+						7: 13,
+						8: 2,
+						9: 10,
+						10: 6,
+						11: 14,
+						12: 3,
+						13: 11,
+						14: 7
+					};
+					break;
+				case this.TURNL:
+					trans = {
+						1: 4,
+						2: 8,
+						3: 12,
+						4: 2,
+						5: 6,
+						6: 10,
+						7: 14,
+						8: 1,
+						9: 5,
+						10: 9,
+						11: 13,
+						12: 3,
+						13: 7,
+						14: 11
+					};
+					break;
+			}
+			return trans;
+		}
+	},
+
 	Board: {
 		hasborder: 2,
 		borderAsLine: true,
