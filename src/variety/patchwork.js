@@ -11,6 +11,7 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
+		use: true,
 		inputModes: {
 			edit: ["number", "undef", "clear"],
 			play: ["border", "shade", "unshade", "subline"]
@@ -67,9 +68,8 @@
 
 	Graphic: {
 		hideHatena: true,
-		gridcolor_type: "DLIGHT",
 		icecolor: "rgb(204,204,204)",
-
+		shadecolor: "#222222",
 		bordercolor_func: "qans",
 
 		paint: function() {
