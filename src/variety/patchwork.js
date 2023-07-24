@@ -34,6 +34,14 @@
 					} else {
 						this.inputShade();
 					}
+				} else if (this.notInputted()) {
+					if (this.isBorderMode()) {
+						var border = this.getborder();
+						if (!border.isnull) {
+							border.setQsub(border.qsub === 1 ? 0 : 1);
+							border.draw();
+						}
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				this.inputqnum();
