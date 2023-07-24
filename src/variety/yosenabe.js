@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["yosenabe", "yajisoko"], {
+})(["yosenabe", "yajisoko", "brownies"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@yosenabe": {
@@ -134,6 +134,10 @@
 			if (cell.isnull) {
 				return false;
 			}
+
+			return this.inputdark(cell);
+		},
+		inputdark: function(cell) {
 			var targetcell = !this.puzzle.execConfig("dispmove") ? cell : cell.base,
 				distance = 0.6,
 				dx = this.inputPoint.bx - cell.bx /* ここはtargetcellではなくcell */,
@@ -150,11 +154,37 @@
 			return false;
 		}
 	},
-	"MouseEvent@yajisoko": {
+	"MouseEvent@brownies#1": {
+		inputModes: {
+			edit: ["number", "box", "shade", "clear"],
+			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
+		},
+		inputShade: function() {
+			this.inputFixedNumber(-2);
+		},
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull) {
+				return false;
+			}
+
+			if (cell.qnum2 !== -1) {
+				cell.setQcmp(+!cell.qcmp);
+				cell.draw();
+
+				this.mousereset();
+				return true;
+			}
+			return this.inputdark(cell);
+		}
+	},
+	"MouseEvent@yajisoko#1": {
 		inputModes: {
 			edit: ["number", "direc", "box", "empty", "clear"],
 			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
-		},
+		}
+	},
+	"MouseEvent@yajisoko,brownies": {
 		mouseinput_other: function() {
 			if (this.inputMode === "box") {
 				this.inputFixedNumber(-3);
@@ -175,6 +205,10 @@
 					} else if (!this.inputpeke_ifborder()) {
 						this.inputBGcolor();
 					}
+				}
+			} else if (this.puzzle.editmode && this.pid === "brownies") {
+				if (this.mousestart) {
+					this.inputqnum();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -290,8 +324,24 @@
 			}
 		}
 	},
-	"KeyEvent@yajisoko": {
+	"KeyEvent@yajisoko,brownies": {
 		enablemake: true,
+		getNewNumber: function(cell, ca, cur) {
+			var ret = this.common.getNewNumber.call(this, cell, ca, cur);
+			if (
+				this.puzzle.execConfig("dispmove") &&
+				cur === -3 &&
+				cell.lcnt &&
+				ret !== null &&
+				ret !== -3
+			) {
+				// Cannot edit boxes, only remove them
+				return -1;
+			}
+			return ret;
+		}
+	},
+	"KeyEvent@yajisoko#1": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -311,21 +361,16 @@
 				ca = "s4";
 			}
 			this.key_inputqnum(ca);
-		},
-
-		getNewNumber: function(cell, ca, cur) {
-			var ret = this.common.getNewNumber.call(this, cell, ca, cur);
-			if (
-				this.puzzle.execConfig("dispmove") &&
-				cur === -3 &&
-				cell.lcnt &&
-				ret !== null &&
-				ret !== -3
-			) {
-				// Cannot edit boxes, only remove them
-				return -1;
+		}
+	},
+	"KeyEvent@brownies#1": {
+		keyinput: function(ca) {
+			if (ca === "q" || ca === "q1") {
+				ca = "s2";
+			} else if (ca === "w") {
+				ca = "-";
 			}
-			return ret;
+			this.key_inputqnum(ca);
 		}
 	},
 
@@ -356,12 +401,23 @@
 			}
 		}
 	},
-	"Cell@yajisoko": {
-		minnum: 0,
+	"Cell@yajisoko#1": {
 		maxnum: function() {
 			var bd = this.board;
 			return Math.max(bd.cols, bd.rows) - 1;
 		},
+		noLP: function() {
+			return this.qnum2 === -5;
+		}
+	},
+	"Cell@brownies#1": {
+		maxnum: 8,
+		noLP: function(dir) {
+			return this.qnum2 !== -1;
+		}
+	},
+	"Cell@yajisoko,brownies": {
+		minnum: 0,
 		getNum: function() {
 			return this.qnum === -2 ? -3 : this.qnum2;
 		},
@@ -375,9 +431,6 @@
 				this.setQnum(-1);
 				this.setQnum2(val);
 			}
-		},
-		noLP: function() {
-			return this.qnum2 === -5;
 		}
 	},
 	CellList: {
@@ -625,6 +678,50 @@
 			return this.getNumberText(cell, cell.qnum2);
 		}
 	},
+	"Graphic@brownies": {
+		hideHatena: true,
+		bgcellcolor_func: "qsub2",
+		circlefillcolor_func: "qcmp",
+		qcmpcolor: "gray",
+		qsubcolor1: "rgb(224, 224, 255)",
+		qsubcolor2: "rgb(255, 255, 144)",
+		paint: function() {
+			this.drawBGCells();
+			this.drawGrid();
+
+			this.drawQuesCells();
+			this.drawQuesNumbers();
+
+			this.drawTip();
+			this.drawDepartures();
+			this.drawLines();
+
+			this.drawCircles();
+
+			this.drawPekes();
+
+			this.drawChassis();
+
+			this.drawTarget();
+		},
+
+		getQuesCellColor: function(cell) {
+			if (cell.qnum2 === -1) {
+				return null;
+			}
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errcolor1;
+			}
+			return this.quescolor;
+		},
+
+		getQuesNumberText: function(cell) {
+			return this.getNumberText(cell, cell.qnum2);
+		},
+		getQuesNumberColor: function(cell) {
+			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -749,6 +846,26 @@
 			this.encodeBinary("qnum2", -5, true);
 		}
 	},
+	"Encode@brownies": {
+		decodePzpr: function(type) {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				var cell = bd.cell[c];
+				if (val === 9) {
+					cell.qnum = -2;
+				} else if (val !== -1) {
+					cell.qnum2 = val;
+				}
+			});
+		},
+		encodePzpr: function(type) {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				var cell = bd.cell[c];
+				return cell.qnum === -2 ? 9 : cell.qnum2;
+			});
+		}
+	},
 	//---------------------------------------------------------
 	"FileIO@yosenabe": {
 		decodeData: function() {
@@ -842,6 +959,38 @@
 					var ca1 = "" + cell.qdir;
 					var ca2 = "" + cell.qnum2;
 					return [ca1, ",", ca2, " "].join("");
+				} else {
+					return ". ";
+				}
+			});
+		}
+	},
+	"FileIO@brownies": {
+		decodeData: function() {
+			this.decodeCellQnum2();
+			this.decodeBorderLine();
+			this.decodeCellQsubQcmp();
+		},
+		encodeData: function() {
+			this.encodeCellQnum2();
+			this.encodeBorderLine();
+			this.encodeCellQsubQcmp();
+		},
+		decodeCellQnum2: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum2 = +ca;
+				}
+			});
+		},
+		encodeCellQnum2: function() {
+			this.encodeCell(function(cell) {
+				if (cell.qnum === -2) {
+					return "# ";
+				} else if (cell.qnum2 !== -1) {
+					return cell.qnum2 + " ";
 				} else {
 					return ". ";
 				}
@@ -1010,5 +1159,59 @@
 				return cell.qnum2 === -5 && cell.lcnt > 0;
 			}, "laOnBorder");
 		}
+	},
+
+	"AnsCheck@brownies": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkInvalidHasLine",
+			"checkConnectObject",
+			"checkLineOverLetter",
+			"checkCurveLine",
+
+			"checkDir8Circle",
+
+			"checkDisconnectLine"
+		],
+
+		checkDir8Circle: function() {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c],
+					num = cell.qnum2;
+				if (num < 0) {
+					continue;
+				}
+
+				var count = 0,
+					list = cell.getdir8clist();
+				for (var i = 0; i < list.length; i++) {
+					var cell2 = list[i][0];
+					if ((cell2.lcnt === 1) ^ (cell2.qnum !== -1)) {
+						count++;
+					}
+				}
+
+				if (num === count) {
+					continue;
+				}
+
+				this.failcode.add("nmCircleNe");
+				if (this.checkOnly) {
+					break;
+				}
+				cell.seterr(1);
+			}
+		},
+
+		checkInvalidHasLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum2 !== -1 && cell.lcnt > 0;
+			}, "laOnBorder");
+		}
+	},
+	"FailCode@brownies": {
+		nmConnected: "nmConnected.bonsan",
+		laOnNum: "laOnNum.bonsan"
 	}
 });
