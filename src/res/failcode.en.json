@@ -236,6 +236,7 @@
     "bkSizeGt.lightshadow": "A number is smaller than the size of the area.",
     "bkSizeGt.martini": "A number is smaller than the amount of circles in the area.",
     "bkSizeGt2.lollipops": "Lollipops are adjacent.",
+    "bkSizeGt2.waterwalk": "A line goes through 3 or more water cells.",
     "bkSizeGt2": "The size of an area is larger than two.",
     "bkSizeGt3": "The size of an area is larger than three.",
     "bkSizeGt4": "The size of an area is larger than four.",
