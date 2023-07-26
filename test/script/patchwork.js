@@ -42,8 +42,8 @@ ui.debug.addDebugData("patchwork", {
 			result: "pzprv3/patchwork/2/3/# 5 . /# . . /1 0 /1 0 /0 -1 -1 /"
 		},
 		{
-			input: ["mouse,left,3,3", "mouse,right,4,3"],
-			result: "pzprv3/patchwork/2/3/# 5 . /# # . /1 0 /1 -1 /0 -1 -1 /"
+			input: ["mouse,leftx2,3,3", "mouse,left,4,3"],
+			result: "pzprv3/patchwork/2/3/# 5 . /# + . /1 0 /1 -1 /0 -1 -1 /"
 		}
 	]
 });

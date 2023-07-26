@@ -11,7 +11,6 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		use: true,
 		inputModes: {
 			edit: ["number", "undef", "clear"],
 			play: ["border", "shade", "unshade", "subline"]
@@ -23,14 +22,10 @@
 				}
 
 				if (this.mousestart || this.mousemove) {
-					if (this.isBorderMode()) {
-						if (this.btn === "left") {
-							this.inputborder();
-						} else {
-							this.inputQsubLine();
-						}
-					} else if (this.startsOnNumber) {
+					if (this.btn === "right" || this.startsOnNumber) {
 						this.inputQsubLine();
+					} else if (this.isBorderMode()) {
+						this.inputborder();
 					} else {
 						this.inputShade();
 					}
