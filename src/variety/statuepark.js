@@ -282,7 +282,7 @@
 		}
 	},
 
-	"Board@statuepark": {
+	"Board@statuepark,pentatouch": {
 		rows: 12,
 		cols: 12
 	},
