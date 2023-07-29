@@ -234,9 +234,9 @@
 
 		getQuesNumberColor: function(cell, i) {
 			if (cell.error & 1 || cell.error & (8 << i)) {
-				return cell.isShade() ? this.errbcolor1 : this.errcolor1;
+				return this.errcolor1;
 			}
-			return cell.isShade() ? "white" : this.quescolor;
+			return this.quescolor;
 		},
 
 		drawArrowCombinations: function() {
@@ -336,11 +336,11 @@
 		checklist: [
 			"checkBranchLine",
 			"checkCrossLine",
-			"checkOneLoop",
 			"checkLineDirExist",
 			"checkLineDirCloser",
 			"checkLineDirUnequal",
-			"checkDeadendLine+"
+			"checkDeadendLine+",
+			"checkOneLoop"
 		],
 
 		getLineDirs: function() {
