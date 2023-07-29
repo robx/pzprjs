@@ -364,7 +364,11 @@
 					}
 					if (addr.getb().isLine()) {
 						row[dir] =
-							(Math.abs(dir >= 3 ? addr.bx - cell0.bx : addr.by - cell0.by) +
+							(Math.abs(
+								dir === addr.LT || dir === addr.RT
+									? addr.bx - cell0.bx
+									: addr.by - cell0.by
+							) +
 								1) /
 							2;
 					}
