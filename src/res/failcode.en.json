@@ -303,7 +303,7 @@
     "bsNotEvol.evolmino": "The block doesn't have the same shape as the previous block with one additional square.",
     "bsSameNum.fillomino": "Adjacent areas have the same number.",
     "bsSameShape.chainedb": "A chain contains two identical blocks.",
-    "bsSameShape.lits": "Some Tetrominos that are the same shape are Adjacent.",
+    "bsSameShape.lits": "Some tetrominoes that have the same shape are adjacent.",
     "bsSameShape": "Two blocks that have the same shape are adjacent.",
     "bsSizeEq.fillmat": "Tatamis of the same size are adjacent.",
     "bsSnake.hebi": "Different snakes are adjacent.",
