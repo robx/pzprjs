@@ -381,6 +381,7 @@
 			wagiri: [0, 0, "ごきげんななめ・輪切", "Wagiri", "gokigen"],
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
+			wittgen: [0, 0, "Wittgenstein Briquet", "Wittgenstein Briquet", "kaidan"],
 			yajikazu: [1, 0, "やじさんかずさん", "Yajisan-Kazusan"],
 			yajilin: [
 				0,

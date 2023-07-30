@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaidan", "takoyaki"], {
+})(["kaidan", "takoyaki", "wittgen"], {
 	MouseEvent: {
 		use: true,
 		RBShadeCell: true,
@@ -53,13 +53,19 @@
 				return;
 			}
 
-			if (this.pid === "kaidan" && cell.lcnt === 1 && this.btn === "left") {
+			if (
+				(this.pid === "kaidan" || this.pid === "wittgen") &&
+				cell.lcnt === 1 &&
+				this.btn === "left"
+			) {
 				cell.setLineVal(+!cell.line);
 				cell.draw();
 			} else if (cell.isNum()) {
 				this.inputqcmp();
 			} else if (this.btn === "right" && this.inputpeke_ifborder()) {
 				return;
+			} else if (this.pid === "wittgen") {
+				this.inputBGcolor();
 			} else {
 				this.inputcell();
 			}
@@ -99,7 +105,7 @@
 			this.common.mousereset.call(this);
 		}
 	},
-	"MouseEvent@kaidan": {
+	"MouseEvent@kaidan,wittgen": {
 		inputLine: function() {
 			var cell = this.getcell();
 			var addcmp = false;
@@ -172,11 +178,20 @@
 			}
 		}
 	},
+	"MouseEvent@wittgen#2": {
+		inputModes: {
+			edit: ["number", "undef", "clear"],
+			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
+		},
+		inputShade: function() {
+			this.inputBGcolor();
+		}
+	},
 
 	KeyEvent: {
 		enablemake: true
 	},
-	"Border@kaidan": {
+	"Border@kaidan,wittgen": {
 		prehook: {
 			line: function(num) {
 				return (num && this.isLineNG()) || this.checkFormCurve(num);
@@ -262,14 +277,18 @@
 			this.drawBGCells();
 			this.drawGrid();
 
-			this.drawQuesCells();
+			if (this.pid !== "wittgen") {
+				this.drawQuesCells();
+			}
 			this.drawQuesNumbers();
 
-			this.drawCircles();
-			this.drawCrosses();
+			if (this.pid !== "wittgen") {
+				this.drawCircles();
+				this.drawCrosses();
+			}
 
 			this.drawLines();
-			if (this.pid === "kaidan") {
+			if (this.pid === "kaidan" || this.pid === "wittgen") {
 				this.drawLineEnds();
 			}
 			this.drawPekes();
@@ -321,7 +340,7 @@
 			return null;
 		}
 	},
-	"Graphic@kaidan": {
+	"Graphic@kaidan,wittgen": {
 		drawLines: function() {
 			var g = this.vinc("line", "crispEdges");
 			var mx = this.bw / 2;
@@ -404,6 +423,15 @@
 	"Graphic@takoyaki": {
 		irowake: true
 	},
+	"Graphic@wittgen#2": {
+		bgcellcolor_func: "qsub2",
+		getQuesNumberColor: function(cell) {
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errcolor1;
+			}
+			return cell.qcmp ? this.qcmpcolor : this.quescolor;
+		}
+	},
 
 	Encode: {
 		decodePzpr: function(type) {
@@ -463,6 +491,16 @@
 				1,
 				"nmShadeLt"
 			);
+		},
+		checkLineOverlap: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt > 2 || cell.isLineCurve();
+			}, "laCurve");
+		},
+		checkMissingEnd: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 1 && !cell.line;
+			}, "ceNoEnd");
 		}
 	},
 
@@ -513,17 +551,6 @@
 
 				return b1.line && b2.line;
 			}, "lnEnds");
-		},
-
-		checkLineOverlap: function() {
-			this.checkAllCell(function(cell) {
-				return cell.lcnt > 2 || cell.isLineCurve();
-			}, "laCurve");
-		},
-		checkMissingEnd: function() {
-			this.checkAllCell(function(cell) {
-				return cell.lcnt === 1 && !cell.line;
-			}, "ceNoEnd");
 		},
 		checkEmptyCell_kaidan: function() {
 			this.checkAllCell(function(cell) {
@@ -631,6 +658,9 @@
 				return cell.qans !== 1 && cell.lcnt === 1;
 			}, "cuEndpoint");
 		}
+	},
+	"AnsCheck@wittgen#1": {
+		checklist: ["checkLineOverlap", "checkMissingEnd"]
 	},
 	"FailCode@takoyaki": {
 		lnOnShade: "lnOnShade"
