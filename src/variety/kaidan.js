@@ -262,6 +262,17 @@
 			return !cell.noLP();
 		}
 	},
+	"AreaUnshadeGraph@wittgen": {
+		enabled: true,
+		relation: { "border.line": "block" },
+		isnodevalid: function(cell) {
+			return cell.lcnt === 0;
+		},
+		modifyOtherInfo: function(border, relation) {
+			this.setEdgeByNodeObj(border.sidecell[0]);
+			this.setEdgeByNodeObj(border.sidecell[1]);
+		}
+	},
 
 	Graphic: {
 		hideHatena: true,
@@ -660,7 +671,54 @@
 		}
 	},
 	"AnsCheck@wittgen#1": {
-		checklist: ["checkLineOverlap", "checkMissingEnd"]
+		checklist: [
+			"checkDir4BlockOver",
+			"checkConnectUnshade",
+			"checkLineOverlap",
+			"checkLineLength",
+			"checkDir4BlockLess",
+			"checkMissingEnd"
+		],
+		checkLineLength: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				if (path.clist.length === 3) {
+					continue;
+				}
+				if (
+					path.clist.length === 2 &&
+					(!path.clist[0].line || !path.clist[1].line)
+				) {
+					continue;
+				}
+
+				this.failcode.add("lnLengthNe3");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
+			}
+		},
+		checkDir4BlockOver: function() {
+			this.checkDir4Cell(
+				function(cell) {
+					return cell.lcnt;
+				},
+				2,
+				"nmLineGt"
+			);
+		},
+		checkDir4BlockLess: function() {
+			this.checkDir4Cell(
+				function(cell) {
+					return cell.lcnt;
+				},
+				1,
+				"nmLineLt"
+			);
+		}
 	},
 	"FailCode@takoyaki": {
 		lnOnShade: "lnOnShade"
