@@ -753,7 +753,7 @@
     "bkShadeGt4.invlitso": "領域に白マスが４つ以下しかありません。",
     "bkShadeLt4.invlitso": "領域に白マスが５つ以上あります。",
     "nmVertexNe.vslither": "ループが通る頂点の数が正しくありません。",
-    "csLt4": "",
+    "csLt4": "黒マスの数が４より少ないです。",
     "csGt4": "黒マスの数が４より多いです。",
     "exPlusNe.magnets": "列に入る「＋」の数が正しくありません。",
     "exMinusNe.magnets": "列に入る「－」の数が正しくありません。",
