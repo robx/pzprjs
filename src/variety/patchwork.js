@@ -36,6 +36,8 @@
 							border.setQsub(border.qsub === 1 ? 0 : 1);
 							border.draw();
 						}
+					} else if (this.btn === "right") {
+						this.inputShade();
 					}
 				}
 			} else if (this.puzzle.editmode) {
@@ -136,7 +138,8 @@
 			"checkShadeCellCount",
 			"checkSideAreaUnshadeCell",
 			"checkRoomSquare",
-			"checkBorderDeadend+"
+			"checkBorderDeadend+",
+			"doneShadingDecided"
 		],
 
 		checkShadeCellCount: function() {
