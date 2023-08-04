@@ -137,7 +137,16 @@
 	"MouseEvent@sashikazune": {
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["border", "subline"]
+			play: ["diraux", "border", "subline"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				this.inputarrow_cell();
+			}
+		},
+		inputarrow_cell_main: function(cell, dir) {
+			var value = 1 << (dir + 1);
+			cell.setQsub(cell.qsub ^ value);
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "border"
@@ -397,6 +406,7 @@
 				this.drawCircles();
 			} else {
 				this.drawQuesNumbers();
+				this.drawArrowAuxMarks();
 			}
 
 			this.drawBorderQsubs();
@@ -425,6 +435,55 @@
 					this.disptext("?", cell.bx * this.bw, cell.by * this.bh);
 				} else {
 					g.vhide();
+				}
+			}
+		}
+	},
+	"Graphic@sashikazune": {
+		fontsizeratio: 0.75,
+		drawArrowAuxMarks: function() {
+			var g = this.vinc("cell_ticks", "auto");
+			g.lineWidth = (1 + this.cw / 40) | 0;
+			var size = this.cw * 0.15;
+			if (size < 3) {
+				size = 3;
+			}
+
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				var bx = cell.bx,
+					by = cell.by,
+					px = bx * this.bw,
+					py = by * this.bh;
+				var color = "rgb(127,127,255)";
+				g.strokeStyle = color;
+				var tickMods = [
+					[-1, 1],
+					[1, 1],
+					[-1, 0],
+					[1, 0]
+				];
+				for (var m = 0; m < tickMods.length; m++) {
+					g.vid = "ut_cell" + m + "_" + cell.id;
+
+					if (cell.qsub & (1 << (m + 2))) {
+						var xmult = tickMods[m][0],
+							isvert = tickMods[m][1];
+						var c1 = !isvert ? px : py,
+							c2 = !isvert ? py : px,
+							p1 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 + size],
+							p2 = [c1 + xmult * this.bw - 0.5 * xmult * size, c2],
+							p3 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 - size];
+						g.beginPath();
+						g.moveTo(p1[+!!isvert], p1[+!isvert]);
+						g.lineTo(p2[+!!isvert], p2[+!isvert]);
+						g.lineTo(p3[+!!isvert], p3[+!isvert]);
+						g.moveTo(p2[+!!isvert], p2[+!isvert]);
+						g.closePath();
+						g.stroke();
+					} else {
+						g.vhide();
+					}
 				}
 			}
 		}
@@ -620,10 +679,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeBorderAns();
+			this.decodeCellQsub();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeBorderAns();
+			this.encodeCellQsub();
 		}
 	},
 
