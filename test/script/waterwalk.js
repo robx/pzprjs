@@ -43,5 +43,11 @@ ui.debug.addDebugData("waterwalk", {
 			null,
 			"pzprv3/waterwalk/5/5/5 . # # . /. . # # . /. . . . . /. # # 3 . /. # # . 6 /0 1 1 1 1 0 /0 0 1 0 0 0 /0 0 0 1 0 0 /0 1 0 1 0 0 /0 0 0 1 1 0 /0 0 0 0 0 /1 0 0 0 1 /1 1 1 0 1 /1 1 0 1 1 /0 0 1 0 1 /0 0 0 0 0 /"
 		]
+	],
+	inputs: [
+		{
+			input: ["newboard,2,2", "editmode,water", "mouse,left,1,1,3,1"],
+			result: "pzprv3/waterwalk/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /"
+		}
 	]
 });

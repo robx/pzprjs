@@ -39,6 +39,17 @@
 			}
 		}
 	},
+	"MouseEvent@waterwalk": {
+		inputModes: {
+			edit: ["water", "number", "clear", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "water") {
+				this.inputIcebarn();
+			}
+		}
+	},
 	KeyEvent: {
 		enablemake: true,
 

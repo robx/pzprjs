@@ -179,7 +179,8 @@ ui.keypopup = {
 		detour: [10, 0],
 		maxi: [10, 0],
 		tetrochain: [10, 0],
-		brownies: [127, 0]
+		brownies: [127, 0],
+		waterwalk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -426,6 +427,7 @@ ui.keypopup = {
 			pid === "icelom" ||
 			pid === "icelom2" ||
 			pid === "icewalk" ||
+			pid === "waterwalk" ||
 			pid === "dbchoco"
 		) {
 			itemlist.push([
