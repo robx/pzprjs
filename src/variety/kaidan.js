@@ -65,7 +65,7 @@
 			} else if (this.btn === "right" && this.inputpeke_ifborder()) {
 				return;
 			} else if (this.pid === "wittgen") {
-				this.inputBGcolor();
+				this.inputShade();
 			} else {
 				this.inputcell();
 			}
@@ -181,17 +181,24 @@
 	"MouseEvent@wittgen#2": {
 		inputModes: {
 			edit: ["number", "undef", "clear"],
-			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "completion"]
+			play: ["line", "peke", "subcircle", "objblank", "completion"]
 		},
 		inputShade: function() {
-			this.inputBGcolor();
+			if (this.puzzle.getConfig("use") === 2) {
+				this.inputBGcolor();
+			} else {
+				this.inputFixedQsub(this.btn === "left" ? 1 : 2);
+			}
+		},
+		inputDot: function() {
+			this.inputFixedQsub(2);
 		}
 	},
 
 	KeyEvent: {
 		enablemake: true
 	},
-	"Border@kaidan,wittgen": {
+	"Border@kaidan": {
 		prehook: {
 			line: function(num) {
 				return (num && this.isLineNG()) || this.checkFormCurve(num);
@@ -211,6 +218,27 @@
 	},
 	"Border@takoyaki": {
 		enableLineNG: true
+	},
+	"Border@wittgen": {
+		prehook: {
+			line: function(num) {
+				return (num && this.isLineNG()) || this.checkFormCurve(num);
+			}
+		},
+		posthook: {
+			line: function() {
+				for (var i in this.sidecell) {
+					var cell = this.sidecell[i];
+					if (cell.line && cell.lcnt !== 1) {
+						cell.setLineVal(0);
+					}
+					if (this.line && cell.qsub) {
+						cell.setQsub(0);
+					}
+					cell.draw();
+				}
+			}
+		}
 	},
 
 	Cell: {
@@ -241,6 +269,16 @@
 		},
 		allowShade: function() {
 			return this.qnum === -1;
+		}
+	},
+	"Cell@wittgen": {
+		isDot: function() {
+			return this.qsub === 2 && this.lcnt === 0;
+		},
+		prehook: {
+			qsub: function(num) {
+				return num && (this.isNum() || this.lcnt > 0);
+			}
 		}
 	},
 
@@ -275,14 +313,10 @@
 	},
 
 	Graphic: {
-		hideHatena: true,
-
 		gridcolor_type: "LIGHT",
 
-		fontShadecolor: "white",
 		fgcellcolor_func: "qnum",
 		qcmpcolor: "rgb(127,127,127)",
-		mbcolor: "rgb(127,127,255)",
 
 		paint: function() {
 			this.drawBGCells();
@@ -296,6 +330,9 @@
 			if (this.pid !== "wittgen") {
 				this.drawCircles();
 				this.drawCrosses();
+			} else {
+				this.drawDotCells();
+				this.drawMBs();
 			}
 
 			this.drawLines();
@@ -307,6 +344,30 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		}
+	},
+	"Graphic@kaidan,takoyaki#2": {
+		hideHatena: true,
+		mbcolor: "rgb(127,127,255)",
+		fontShadecolor: "white",
+		getQuesNumberColor: function(cell) {
+			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
+		},
+
+		getCircleStrokeColor: function(cell) {
+			if (cell.qans === 1) {
+				if (cell.error === 1) {
+					return this.errcolor1;
+				} else if (cell.trial) {
+					return this.trialcolor;
+				} else {
+					return this.quescolor;
+				}
+			}
+			return null;
+		},
+		getCircleFillColor: function(cell) {
+			return null;
 		},
 		drawCrosses: function() {
 			var g = this.vinc("cell_mb", "auto");
@@ -330,25 +391,6 @@
 					g.vhide();
 				}
 			}
-		},
-
-		getQuesNumberColor: function(cell) {
-			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
-		},
-		getCircleStrokeColor: function(cell) {
-			if (cell.qans === 1) {
-				if (cell.error === 1) {
-					return this.errcolor1;
-				} else if (cell.trial) {
-					return this.trialcolor;
-				} else {
-					return this.quescolor;
-				}
-			}
-			return null;
-		},
-		getCircleFillColor: function(cell) {
-			return null;
 		}
 	},
 	"Graphic@kaidan,wittgen": {
@@ -435,12 +477,33 @@
 		irowake: true
 	},
 	"Graphic@wittgen#2": {
-		bgcellcolor_func: "qsub2",
 		getQuesNumberColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errcolor1;
 			}
 			return cell.qcmp ? this.qcmpcolor : this.quescolor;
+		},
+		drawMBs: function() {
+			var g = this.vinc("cell_mb", "auto", true);
+			g.lineWidth = 1;
+
+			var rsize = this.cw * 0.35;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					px,
+					py;
+
+				g.vid = "c_MB1_" + cell.id;
+				if (cell.qsub === 1) {
+					px = cell.bx * this.bw;
+					py = cell.by * this.bh;
+					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
+					g.strokeCircle(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 
