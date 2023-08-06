@@ -521,7 +521,11 @@
 			this.decodeCell(function(cell, ca) {
 				var val = +ca;
 				if (val & 1) {
-					cell.qans = 1;
+					if (this.pid === "wittgen") {
+						cell.qsub = 2;
+					} else {
+						cell.qans = 1;
+					}
 				}
 				if (val & 2) {
 					cell.line = 1;
@@ -538,10 +542,10 @@
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCell(function(cell) {
-				return (
-					(cell.qans | (cell.line << 1) | (cell.qsub << 2) | (cell.qcmp << 3)) +
-					" "
-				);
+				var ans = this.pid === "wittgen" ? cell.qsub === 2 : cell.qans === 1;
+				var sub = cell.qsub === 1;
+
+				return (+ans | (cell.line << 1) | (+sub << 2) | (cell.qcmp << 3)) + " ";
 			});
 			this.encodeBorderLine();
 		}
