@@ -222,7 +222,29 @@
 	"Border@wittgen": {
 		prehook: {
 			line: function(num) {
-				return (num && this.isLineNG()) || this.checkFormCurve(num);
+				if (!num) {
+					return false;
+				}
+
+				if (this.isLineNG() || this.checkFormCurve(num)) {
+					return true;
+				}
+
+				var length = 0;
+
+				if (this.isVert() && this.relbd(-2, 0).path) {
+					length += this.relbd(-2, 0).path.clist.length;
+				}
+				if (this.isVert() && this.relbd(2, 0).path) {
+					length += this.relbd(2, 0).path.clist.length;
+				}
+				if (!this.isVert() && this.relbd(0, -2).path) {
+					length += this.relbd(0, -2).path.clist.length;
+				}
+				if (!this.isVert() && this.relbd(0, 2).path) {
+					length += this.relbd(0, 2).path.clist.length;
+				}
+				return length >= 3;
 			}
 		},
 		posthook: {
