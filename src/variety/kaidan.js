@@ -259,6 +259,15 @@
 					}
 					cell.draw();
 				}
+				if (this.path && this.path.clist.length === 3) {
+					for (var c = 0; c < 3; c++) {
+						var cell = this.path.clist[c];
+						if (cell.lcnt === 1) {
+							cell.setLineVal(1);
+							cell.draw();
+						}
+					}
+				}
 			}
 		}
 	},
