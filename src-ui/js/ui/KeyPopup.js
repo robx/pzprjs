@@ -180,6 +180,7 @@ ui.keypopup = {
 		maxi: [10, 0],
 		tetrochain: [10, 0],
 		brownies: [127, 0],
+		sashikazune: [10, 0],
 		patchwork: [10, 0]
 	},
 

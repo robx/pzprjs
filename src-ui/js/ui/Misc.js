@@ -164,6 +164,7 @@ function toBGimage(pid) {
 		"rassi",
 		"remlen",
 		"roundtrip",
+		"sashikazune",
 		"satogaeri",
 		"scrin",
 		"simplegako",

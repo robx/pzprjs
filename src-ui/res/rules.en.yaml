@@ -1171,3 +1171,22 @@ nothing: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The
   cannot branch off or cross itself.\n2. If a country is visted by the loop, it must
   visit all cells.\n3. Countries cannot be visited more than once.\n4. Two unused
   countries cannot be orthogonally adjacent."
+myopia: "Draw lines along the edges of some cells to form a loop.\n1. The loop cannot 
+  branch off or cross itself.\n2. Arrows point towards the lines closest to the clue. If a 
+  clue has multiple arrows, the distance to the closest line must be the same. Directions 
+  without an arrow must have a line further away, or not have a line in that direction."
+waterwalk: "Draw a loop that goes through every numbered cell.\n1. The loop cannot
+  branch off or cross itself.\n2. Blue cells represent water, while regular cells
+  represent ground. The loop may not go through more than 2 water cells in a row.\n
+  3. A number indicates how many cells make up the continuous grounded section of
+  the loop that the number is on."
+pentatouch: "Place every shape from the bank into the grid. Shapes can be rotated
+  or mirrored.\n1. All shapes must be used exactly once. There cannot be shapes in
+  the grid that aren't present in the bank.\n2. Two shapes cannot be orthogonally
+  adjacent.\n3. A dot indicates a place where two shapes are diagonally adjacent.
+  All possible dots are given, meaning that two shapes cannot be diagonally adjacent
+  in places without a dot."
+wittgen: "Place several rectangles of size 1x3 into the grid.\n1. A number indicates
+  the amount of rectangles in the 4 orthogonally adjacent cells.\n2. Rectangles cannot
+  overlap numbers.\n3. All cells not used by rectangles form an orthogonally contiguous
+  area."
