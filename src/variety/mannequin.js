@@ -103,8 +103,21 @@
 		}
 	},
 	Board: {
-		// TODO invalidate counts when placing any border, not just rebuilding new rooms
 		hasborder: 1
+	},
+	Border: {
+		posthook: {
+			ques: function() {
+				var room1 = this.sidecell[0].room,
+					room2 = this.sidecell[1].room;
+				if (room1) {
+					this.board.roommgr.setExtraData(room1);
+				}
+				if (room2 && room1 !== room2) {
+					this.board.roommgr.setExtraData(room2);
+				}
+			}
+		}
 	},
 	AreaUnshadeGraph: {
 		enabled: true
@@ -115,15 +128,7 @@
 
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
-
-			if (component.clist.scnt === 2) {
-				var start = component.clist.shade1,
-					end = component.clist.shade2;
-
-				component.distance = start.distanceTo(end);
-			} else {
-				component.distance = null;
-			}
+			component.distance = null;
 		}
 	},
 
@@ -217,11 +222,15 @@
 			var rooms = this.board.roommgr.components;
 			for (var r = 0; r < rooms.length; r++) {
 				var room = rooms[r];
-				if (
-					room.distance === null ||
-					!room.top.isNum() ||
-					room.distance === room.top.getNum() + 1
-				) {
+				if (room.clist.scnt !== 2 || !room.top.isValidNum()) {
+					continue;
+				}
+
+				if (room.distance === null) {
+					room.distance = room.clist.shade1.distanceTo(room.clist.shade2);
+				}
+
+				if (room.distance === room.top.getNum() + 1) {
 					continue;
 				}
 				this.failcode.add("bkShadeDistNe");
@@ -234,8 +243,16 @@
 		checkSideAreaValues: function() {
 			this.checkSideAreaSize(
 				this.board.roommgr,
-				function(area) {
-					return area.distance || 0;
+				function(room) {
+					if (room.clist.scnt !== 2) {
+						return 0;
+					}
+
+					if (room.distance === null) {
+						room.distance = room.clist.shade1.distanceTo(room.clist.shade2);
+					}
+
+					return room.distance;
 				},
 				"bsEqShade"
 			);
