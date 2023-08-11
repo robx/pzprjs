@@ -1,3 +1,5 @@
+/* global Set:false */
+
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -30,6 +32,52 @@
 			qans: function(num) {
 				this.board.roommgr.setExtraData(this.room);
 			}
+		},
+		distanceTo: function(end) {
+			/* Calculate Manhattan distance using Dijkstra's algorithm */
+
+			var visited = new Set();
+			var distances = {};
+			distances[this.id] = 0;
+
+			while (true) {
+				var current = null;
+				var minimum = -1;
+				for (var idx in distances) {
+					if (visited.has(+idx)) {
+						continue;
+					}
+
+					var dist = distances[idx];
+					if (minimum === -1 || dist < minimum) {
+						current = this.board.cell[+idx];
+						minimum = dist;
+					}
+				}
+
+				if (!current || current === end) {
+					break;
+				}
+
+				for (var dir in current.adjacent) {
+					var next = current.adjacent[dir];
+					if (next.isnull || visited.has(+next.id)) {
+						continue;
+					}
+					if (current.adjborder[dir].isBorder()) {
+						continue;
+					}
+					var olddist = distances[next.id];
+					var newdist = minimum + 1;
+					if (olddist === undefined || newdist < olddist) {
+						distances[next.id] = newdist;
+					}
+				}
+
+				visited.add(current.id);
+			}
+
+			return distances[end.id];
 		}
 	},
 	CellList: {
@@ -72,9 +120,7 @@
 				var start = component.clist.shade1,
 					end = component.clist.shade2;
 
-				// TODO implement pathfinding
-				component.distance =
-					(Math.abs(start.bx - end.bx) + Math.abs(start.by - end.by)) >> 1;
+				component.distance = start.distanceTo(end);
 			} else {
 				component.distance = null;
 			}
