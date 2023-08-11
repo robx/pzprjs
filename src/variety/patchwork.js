@@ -17,12 +17,8 @@
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if (this.mousestart) {
-					this.startsOnNumber = this.getcell().isNum();
-				}
-
 				if (this.mousestart || this.mousemove) {
-					if (this.btn === "right" || this.startsOnNumber) {
+					if (this.btn === "right") {
 						this.inputQsubLine();
 					} else if (this.isBorderMode()) {
 						this.inputborder();

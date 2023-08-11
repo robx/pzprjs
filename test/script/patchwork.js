@@ -34,20 +34,20 @@ ui.debug.addDebugData("patchwork", {
 			result: "pzprv3/patchwork/2/3/. 5 . /. . . /0 0 /0 0 /0 0 0 /"
 		},
 		{
-			input: ["playmode", "mouse,left,1,1,1,3", "mouse,left,3,1,3,3"],
-			result: "pzprv3/patchwork/2/3/# 5 . /# . . /0 0 /0 0 /0 -1 0 /"
+			input: ["playmode", "mouse,left,1,1,1,3"],
+			result: "pzprv3/patchwork/2/3/# 5 . /# . . /0 0 /0 0 /0 0 0 /"
 		},
 		{
 			input: ["mouse,left,1.9,0,2.1,4", "mouse,right,5,2,5,1,5,3"],
-			result: "pzprv3/patchwork/2/3/# 5 . /# . . /1 0 /1 0 /0 -1 -1 /"
+			result: "pzprv3/patchwork/2/3/# 5 . /# . . /1 0 /1 0 /0 0 -1 /"
 		},
 		{
 			input: ["mouse,leftx2,3,3", "mouse,left,4,3"],
-			result: "pzprv3/patchwork/2/3/# 5 . /# + . /1 0 /1 -1 /0 -1 -1 /"
+			result: "pzprv3/patchwork/2/3/# 5 . /# + . /1 0 /1 -1 /0 0 -1 /"
 		},
 		{
 			input: ["mouse,right,5,1", "mouse,left,5,2"],
-			result: "pzprv3/patchwork/2/3/# 5 + /# + . /1 0 /1 -1 /0 -1 0 /"
+			result: "pzprv3/patchwork/2/3/# 5 + /# + . /1 0 /1 -1 /0 0 0 /"
 		}
 	]
 });
