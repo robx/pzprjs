@@ -193,10 +193,10 @@
 			"checkNoShadeCellInArea++"
 		],
 		checkOverShadeCell: function() {
-			this.checkShadeCount(3, "csGt2");
+			this.checkShadeCount(3, "bkShadeGt2");
 		},
 		checkSingleShadeCell: function() {
-			this.checkShadeCount(1, "csLt2");
+			this.checkShadeCount(1, "bkShadeLt2");
 		},
 		checkNoShadeCellInArea: function() {
 			this.checkShadeCount(0, "bkNoShade");
@@ -205,7 +205,7 @@
 			var rooms = this.board.roommgr.components;
 			for (var r = 0; r < rooms.length; r++) {
 				var room = rooms[r];
-				if (flag === 3 && room.clist.scnt >= 2) {
+				if (flag === 3 && room.clist.scnt <= 2) {
 					continue;
 				}
 				if (flag !== room.clist.scnt) {
