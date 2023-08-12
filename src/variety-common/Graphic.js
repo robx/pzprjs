@@ -1122,23 +1122,23 @@ pzpr.classmgr.makeCommon({
 					var isRT = !RTin || adb.right.isBorder();
 
 					var isUL =
-						!UPin ||
-						!LTin ||
+						isUP ||
+						isLT ||
 						cell.relbd(-2, -1).isBorder() ||
 						cell.relbd(-1, -2).isBorder();
 					var isUR =
-						!UPin ||
-						!RTin ||
+						isUP ||
+						isRT ||
 						cell.relbd(2, -1).isBorder() ||
 						cell.relbd(1, -2).isBorder();
 					var isDL =
-						!DNin ||
-						!LTin ||
+						isDN ||
+						isLT ||
 						cell.relbd(-2, 1).isBorder() ||
 						cell.relbd(-1, 2).isBorder();
 					var isDR =
-						!DNin ||
-						!RTin ||
+						isDN ||
+						isRT ||
 						cell.relbd(2, 1).isBorder() ||
 						cell.relbd(1, 2).isBorder();
 
