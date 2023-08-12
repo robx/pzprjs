@@ -268,6 +268,29 @@
 						}
 					}
 				}
+				if (!this.line && this.isVert()) {
+					if (this.relbd(-2, 0).line) {
+						var cell = this.relcell(-3, 0);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+					if (this.relbd(2, 0).line) {
+						var cell = this.relcell(3, 0);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+				} else if (!this.line && this.isHorz()) {
+					if (this.relbd(0, -2).line) {
+						var cell = this.relcell(0, -3);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+					if (this.relbd(0, 2).line) {
+						var cell = this.relcell(0, 3);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+				}
 			}
 		}
 	},

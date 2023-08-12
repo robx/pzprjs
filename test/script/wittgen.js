@@ -79,12 +79,23 @@ ui.debug.addDebugData("wittgen", {
 		{
 			label: "Erase lines",
 			input: ["mouse,left,3,1,9,1", "playmode,objblank", "mouse,left,5,1,7,1"],
-			result: "pzprv3/wittgen/1/6/. . . . . . /2 0 1 1 0 2 /1 0 0 0 1 /"
+			result: "pzprv3/wittgen/1/6/. . . . . . /0 0 1 1 0 0 /1 0 0 0 1 /"
 		},
 		{
 			label: "Cycle aux mark",
 			input: ["playmode,auto", "setconfig,use,2", "mouse,right,5,1"],
-			result: "pzprv3/wittgen/1/6/. . . . . . /2 0 4 1 0 2 /1 0 0 0 1 /"
+			result: "pzprv3/wittgen/1/6/. . . . . . /0 0 4 1 0 0 /1 0 0 0 1 /"
+		},
+		{
+			label: "Erase lines vertical",
+			input: [
+				"newboard,1,6",
+				"mouse,left,1,1,1,11",
+				"mouse,left,1,1,1,3",
+				"mouse,left,1,9,1,11"
+			],
+			result:
+				"pzprv3/wittgen/6/1/. /. /. /. /. /. /0 /0 /0 /0 /0 /0 ///////0 /1 /0 /1 /0 /"
 		}
 	]
 });
