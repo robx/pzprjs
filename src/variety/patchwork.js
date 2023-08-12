@@ -83,6 +83,7 @@
 			this.drawBorders();
 			this.drawBorderQsubs();
 
+			this.drawBoxBorders(false);
 			this.drawChassis();
 			this.drawTarget();
 		},

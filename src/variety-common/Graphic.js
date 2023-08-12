@@ -1116,31 +1116,31 @@ pzpr.classmgr.makeCommon({
 					var LTin = cell.bx > 2,
 						RTin = cell.bx < 2 * this.board.cols - 2;
 
-					var isUP = !UPin || adb.top.ques === 1;
-					var isDN = !DNin || adb.bottom.ques === 1;
-					var isLT = !LTin || adb.left.ques === 1;
-					var isRT = !RTin || adb.right.ques === 1;
+					var isUP = !UPin || adb.top.isBorder();
+					var isDN = !DNin || adb.bottom.isBorder();
+					var isLT = !LTin || adb.left.isBorder();
+					var isRT = !RTin || adb.right.isBorder();
 
 					var isUL =
 						!UPin ||
 						!LTin ||
-						cell.relbd(-2, -1).ques === 1 ||
-						cell.relbd(-1, -2).ques === 1;
+						cell.relbd(-2, -1).isBorder() ||
+						cell.relbd(-1, -2).isBorder();
 					var isUR =
 						!UPin ||
 						!RTin ||
-						cell.relbd(2, -1).ques === 1 ||
-						cell.relbd(1, -2).ques === 1;
+						cell.relbd(2, -1).isBorder() ||
+						cell.relbd(1, -2).isBorder();
 					var isDL =
 						!DNin ||
 						!LTin ||
-						cell.relbd(-2, 1).ques === 1 ||
-						cell.relbd(-1, 2).ques === 1;
+						cell.relbd(-2, 1).isBorder() ||
+						cell.relbd(-1, 2).isBorder();
 					var isDR =
 						!DNin ||
 						!RTin ||
-						cell.relbd(2, 1).ques === 1 ||
-						cell.relbd(1, 2).ques === 1;
+						cell.relbd(2, 1).isBorder() ||
+						cell.relbd(1, 2).isBorder();
 
 					g.beginPath();
 
