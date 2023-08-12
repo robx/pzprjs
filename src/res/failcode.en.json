@@ -308,7 +308,7 @@
     "brObjNotSym.bonsan": "Position of circles is not point symmetric.",
     "bsAnt.armyants": "Two ants are adjacent.",
     "bsArrowGt2.evolmino": "The block has more than one square that is placed on arrows.",
-    "bsEqShade.mannequin": "The distance between the two shaded cells is the same in adjacent countries.",
+    "bsEqShade.mannequin": "The distance between the two shaded cells is the same in adjacent rooms.",
     "bsEqShade.shimaguni": "The sizes of countries that are in adjacent marine areas are the same.",
     "bsNoArrow.evolmino": "The block isn't placed on an arrow.",
     "bsNotEvol.evolmino": "The block doesn't have the same shape as the previous block with one additional square.",
