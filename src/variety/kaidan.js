@@ -481,8 +481,10 @@
 
 					px = cell.bx * this.bw;
 					py = cell.by * this.bh;
-					g.fillStyle = cell.trial ? this.trialcolor : this.linecolor;
 					var lm = this.lm + this.addlw / 2;
+					g.fillStyle = cell.trial
+						? this.trialcolor
+						: this.getLineColor(dir[1]);
 					if (dir[1].isVert()) {
 						g.fillRectCenter(
 							px + (mx + 1) * (dir[2] === cell.RT ? -1 : +1),
