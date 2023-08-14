@@ -72,6 +72,9 @@
 		icecolor: "rgb(204,204,204)",
 		shadecolor: "#222222",
 		bordercolor_func: "qans",
+		bbcolor: "rgb(200, 200, 200)",
+		trialcolor: "rgb(100, 95, 90)",
+		linetrialcolor: "#777777",
 
 		paint: function() {
 			this.drawBGCells();

@@ -91,6 +91,7 @@
 			linecolor: "rgb(0, 160, 0)", // 色分けなしの場合
 			errlinecolor: "rgb(255, 0, 0)",
 			noerrcolor: "rgb(160, 160, 160)", // エラー表示時, エラーでない線/境界線の描画色
+			linetrialcolor: "rgb(160, 160, 160)",
 
 			movelinecolor: "silver",
 			movetrialcolor: "rgb(255, 160, 0)",
