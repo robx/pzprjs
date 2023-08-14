@@ -180,7 +180,8 @@ ui.keypopup = {
 		maxi: [10, 0],
 		tetrochain: [10, 0],
 		brownies: [127, 0],
-		sashikazune: [10, 0]
+		sashikazune: [10, 0],
+		patchwork: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -397,6 +398,11 @@ ui.keypopup = {
 			cap = "□";
 		} else if (pid === "rectslider") {
 			cap = "■";
+		} else if (pid === "patchwork") {
+			cap = {
+				text: "■",
+				color: "rgb(204,204,204)"
+			};
 		} else if (
 			pid === "kurotto" ||
 			pid === "bonsan" ||
