@@ -315,7 +315,7 @@ pzpr.classmgr.makeCommon({
 					this.inputFixedNumber(-3);
 					break;
 				case "bgcolor":
-					this.inputBGcolor(true);
+					this.inputBGcolor();
 					break;
 				case "subcircle":
 				case "bgcolor1":

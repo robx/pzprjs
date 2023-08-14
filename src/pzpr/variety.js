@@ -252,6 +252,7 @@
 			mochikoro: [1, 0, "モチコロ", "Mochikoro", "nurikabe"],
 			mochinyoro: [1, 0, "モチにょろ", "Mochinyoro", "nurikabe"],
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
+			myopia: [0, 0, "Myopia", "Myopia"],
 			nagare: [0, 0, "流れるループ", "Nagareru-Loop"],
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
@@ -284,6 +285,7 @@
 			oyakodori: [0, 0, "おやこどり", "Oyakodori", "kaero"],
 			paintarea: [1, 0, "ペイントエリア", "Paintarea"],
 			parquet: [0, 0, "Parquet", "Parquet"],
+			patchwork: [0, 0, "パッチワーク", "Patchwork"],
 			pencils: [0, 0, "ペンシルズ", "Pencils"],
 			pentominous: [0, 0, "Pentominous", "Pentominous", "fillomino"],
 			pentopia: [0, 0, "Pentopia", "Pentopia", "statuepark"],
@@ -315,6 +317,7 @@
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
 			roundtrip: [0, 0, "Round Trip", "Round Trip"],
 			sashigane: [0, 0, "さしがね", "Sashigane", "loute"],
+			sashikazune: [0, 0, "さしカズね", "Sashikazune", "loute"],
 			satogaeri: [
 				0,
 				1,

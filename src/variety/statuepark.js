@@ -1512,7 +1512,11 @@
 					} while (!addr.getc().isnull && !addr.getc().isShade());
 					if (addr.getc().isShade()) {
 						row[dir] =
-							Math.abs(dir >= 3 ? addr.bx - cell0.bx : addr.by - cell0.by) / 2;
+							Math.abs(
+								dir === addr.LT || dir === addr.RT
+									? addr.bx - cell0.bx
+									: addr.by - cell0.by
+							) / 2;
 					}
 				}
 				ret.push(row);
