@@ -63,6 +63,21 @@
 			edit: ["border", "clear", "info-line"],
 			play: ["line", "peke", "shade", "unshade", "clear", "info-line"]
 		},
+
+		inputdragcross: function() {
+			if (this.firstPoint.bx === null) {
+				this.firstPoint.set(this.inputPoint);
+			} else if (this.inputData === null) {
+				var dx = this.inputPoint.bx - this.firstPoint.bx,
+					dy = this.inputPoint.by - this.firstPoint.by;
+				if (dx * dx + dy * dy > 0.1) {
+					this.inputShade();
+				}
+			} else {
+				this.inputShade();
+			}
+		},
+
 		inputShade: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
@@ -178,7 +193,11 @@
 					if (this.btn === "left") {
 						this.inputLine();
 					} else if (this.btn === "right") {
-						this.inputpeke();
+						if (this.pid === "nothing") {
+							this.inputdragcross();
+						} else {
+							this.inputpeke();
+						}
 					}
 				} else if (
 					this.mouseend &&
