@@ -52,6 +52,7 @@
     "singlenum.menu": "Single number in a region",
     "discolor": "Disable color",
     "mouseonly": "Enable mouse-only input",
+    "patchwork_leftaux": "Enable to input aux. lines with single click",
     "autocheck": "Answer check",
     "autocheck.off": "Manual",
     "autocheck.guarded": "Automatic (guarded)",

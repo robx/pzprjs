@@ -26,7 +26,9 @@
 						this.inputShade();
 					}
 				} else if (this.notInputted()) {
-					if (this.isBorderMode()) {
+					if (!this.puzzle.getConfig("patchwork_leftaux")) {
+						this.inputShade();
+					} else if (this.isBorderMode()) {
 						var border = this.getborder();
 						if (!border.isnull) {
 							border.setQsub(border.qsub === 1 ? 0 : 1);
