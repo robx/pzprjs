@@ -281,6 +281,11 @@
 			this.common.setaddr.call(this, pos);
 		}
 	},
+	"TargetCursor@pentatouch": {
+		initCursor: function() {
+			this.init(-1, -1);
+		}
+	},
 
 	"Board@statuepark,pentatouch": {
 		rows: 12,
@@ -947,9 +952,7 @@
 			this.drawChassis();
 			this.drawBank();
 
-			if (this.pid !== "pentatouch") {
-				this.drawTarget();
-			}
+			this.drawTarget();
 		},
 
 		maxpiececount: 0,
