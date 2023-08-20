@@ -399,6 +399,9 @@
 				case "mouseonly":
 					exec = pid === "lollipops" || pid === "magnets";
 					break;
+				case "patchwork_leftaux":
+					exec = pid === "patchwork";
+					break;
 				case "undefcell":
 					exec = pid === "shugaku" || pid === "lightshadow";
 					break;
