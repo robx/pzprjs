@@ -281,11 +281,6 @@
 			this.common.setaddr.call(this, pos);
 		}
 	},
-	"TargetCursor@pentatouch": {
-		initCursor: function() {
-			this.init(-1, -1);
-		}
-	},
 
 	"Board@statuepark,pentatouch": {
 		rows: 12,
@@ -931,7 +926,12 @@
 		shadecolor: "rgb(80, 80, 80)",
 		bgcellcolor_func: "qsub1",
 
-		crosssize: 0.15
+		crosssize: 0.15,
+
+		drawTarget: function() {
+			var show = this.puzzle.editmode && this.puzzle.cursor.bankpiece !== null;
+			this.drawCursor(true, show);
+		}
 	},
 
 	Graphic: {
