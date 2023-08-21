@@ -187,6 +187,7 @@ function toBGimage(pid) {
 		"voxas",
 		"vslither",
 		"walllogic",
+		"waterwalk",
 		"yinyang"
 	];
 	if (imgs.indexOf(pid) >= 0) {
