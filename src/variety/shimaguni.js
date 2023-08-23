@@ -29,6 +29,12 @@
 			autoedit_func: "areanum",
 			autoplay_func: "cell"
 		},
+		"MouseEvent@shimaguni": {
+			inputModes: {
+				edit: ["border", "number", "clear"],
+				play: ["shade", "unshade", "number"]
+			}
+		},
 		"MouseEvent@cocktail": {
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
@@ -76,6 +82,9 @@
 		KeyEvent: {
 			enablemake: true
 		},
+		"KeyEvent@shimaguni": {
+			enableplay: true
+		},
 		"KeyEvent@stostone": {
 			keyDispInfo: function(ca) {
 				if (ca === "x") {
@@ -93,6 +102,10 @@
 			maxnum: function() {
 				return Math.min(999, this.room.clist.length);
 			}
+		},
+		"Cell@shimaguni": {
+			enableSubNumberArray: true,
+			disableAnum: true
 		},
 		"Cell@chocona,hinge,heyablock,cocktail": {
 			minnum: 0
@@ -362,6 +375,7 @@
 			paint: function() {
 				this.drawBGCells();
 				this.drawGrid();
+				this.drawTargetSubNumber();
 				if (this.pid === "stostone") {
 					this.drawDotCells_stostone();
 				}
@@ -371,6 +385,7 @@
 					this.drawCircles();
 				}
 				this.drawQuesNumbers();
+				this.drawSubNumbers();
 
 				this.drawBorders();
 				if (this.pid === "stostone") {
@@ -385,7 +400,14 @@
 			}
 		},
 		"Graphic@shimaguni": {
-			bcolor: "rgb(191, 191, 255)"
+			bcolor: "rgb(191, 191, 255)",
+			drawTarget: function() {
+				this.drawCursor(
+					true,
+					this.puzzle.editmode ||
+						this.puzzle.mouse.inputMode.indexOf("number") >= 0
+				);
+			}
 		},
 		"Graphic@stostone": {
 			irowakeblk: true,
@@ -525,11 +547,13 @@
 				this.decodeAreaRoom();
 				this.decodeCellQnum();
 				this.decodeCellAns();
+				// TODO load snum
 			},
 			encodeData: function() {
 				this.encodeAreaRoom();
 				this.encodeCellQnum();
 				this.encodeCellAns();
+				// TODO save snum
 			}
 		},
 

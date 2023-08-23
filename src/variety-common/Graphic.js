@@ -2104,6 +2104,13 @@ pzpr.classmgr.makeCommon({
 
 			var target = cursor.targetdir;
 
+			if (
+				cursor.disableAnum &&
+				this.puzzle.mouse.inputMode.indexOf("number") === -1
+			) {
+				target = 0;
+			}
+
 			g.vid = "target_subnum";
 			g.fillStyle = this.ttcolor;
 			if (this.puzzle.playmode && target !== 0) {
