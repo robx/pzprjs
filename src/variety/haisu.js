@@ -111,6 +111,12 @@
 			}
 		}
 	},
+	"MouseEvent@kaisu": {
+		inputModes: {
+			edit: ["border", "circle-unshade"],
+			play: ["line", "peke", "diraux", "info-line"]
+		}
+	},
 
 	"MouseEvent@bdwalk": {
 		inputModes: {
@@ -252,6 +258,7 @@
 		}
 	},
 	"Cell@kaisu": {
+		disInputHatena: true,
 		maxnum: 1
 	},
 	"Cell@bdwalk": {
@@ -358,11 +365,17 @@
 				this.drawBorders();
 			}
 
+			if (this.pid === "kaisu") {
+				this.drawCircledNumbers();
+			}
+
 			this.drawLines();
 			this.drawPekes();
 			this.drawBorderAuxDir();
 
-			this.drawQuesNumbers();
+			if (this.pid !== "kaisu") {
+				this.drawQuesNumbers();
+			}
 
 			this.drawChassis();
 
@@ -419,6 +432,11 @@
 		getNumberVerticalOffset: function(cell) {
 			this.fontsizeratio = cell.qnum < -1 ? 0.7 : 0.8;
 			return 0;
+		}
+	},
+	"Graphic@kaisu": {
+		getNumberText: function() {
+			return "";
 		}
 	},
 
