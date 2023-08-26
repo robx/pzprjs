@@ -667,42 +667,38 @@
 			var oldCell = null;
 			var curCell = start;
 			var circles = new this.klass.CellList();
-			if (start.qnum > 0) {
-				circles.add(start);
-			}
 
 			while (true) {
 				curRoom = curCell.room;
-				if (oldRoom !== curRoom || (this.pid === "kaisu" && curCell === goal)) {
-					if (this.pid === "kaisu") {
-						if (curCell === goal && curCell.qnum > 0) {
-							if (oldRoom !== curRoom) {
-								circles = new this.klass.CellList();
-							}
-							circles.add(goal);
-						}
-
-						if (
-							oldRoom &&
-							circles.length > 0 &&
-							circles.length !== oldRoom.visit
-						) {
-							circles.seterr(1);
-							err = true;
-						}
+				if (this.pid === "kaisu") {
+					var oldCircles = null;
+					if (oldRoom && oldRoom !== curRoom) {
+						oldCircles = circles;
 						circles = new this.klass.CellList();
+					} else if (
+						curCell === goal ||
+						(oldRoom && curCell.lcnt === 1 && circles.length >= oldRoom.visit)
+					) {
+						oldCircles = circles; // Copy by reference
 					}
 
+					if (curCell.qnum > 0) {
+						circles.add(curCell);
+					}
+
+					if (
+						oldCircles &&
+						oldCircles.length > 0 &&
+						oldCircles.length !== oldRoom.visit
+					) {
+						oldCircles.seterr(1);
+						err = true;
+					}
+				}
+
+				if (oldRoom !== curRoom) {
 					curRoom.visit++;
 					oldRoom = curRoom;
-				}
-
-				if (curCell !== start && curCell.lcnt !== 2) {
-					break;
-				}
-
-				if (this.pid === "kaisu" && curCell.qnum > 0) {
-					circles.add(curCell);
 				}
 
 				if (
@@ -712,6 +708,12 @@
 				) {
 					curCell.seterr(1);
 					err = true;
+				}
+
+				if (curCell !== start && curCell.lcnt !== 2) {
+					// TODO add special case for entering border/circle/goal on final move
+
+					break;
 				}
 
 				var adj = [];

@@ -34,6 +34,11 @@ ui.debug.addDebugData("kaisu", {
 			{ skiprules: true }
 		],
 		[
+			"haisuError",
+			"pzprv3.1/kaisu/3/3/1 5 5 1/0 0 /0 0 /0 0 /1 1 1 /0 0 0 /1 . 1 /. . . /. . . /1 0 /0 0 /0 1 /1 1 1 /1 1 1 /",
+			{ skiprules: true }
+		],
+		[
 			null,
 			"pzprv3.1/kaisu/3/3/1 5 5 1/0 1 /0 1 /0 1 /0 0 0 /0 0 0 /. . . /1 1 1 /. . . /1 1 /1 1 /1 1 /1 0 0 /0 0 1 /"
 		]
