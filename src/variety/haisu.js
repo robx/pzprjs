@@ -669,6 +669,7 @@
 			var circles = new this.klass.CellList();
 
 			while (true) {
+				var didChangeRoom = false;
 				curRoom = curCell.room;
 				if (this.pid === "kaisu") {
 					var oldCircles = null;
@@ -697,6 +698,7 @@
 				}
 
 				if (oldRoom !== curRoom) {
+					didChangeRoom = true;
 					curRoom.visit++;
 					oldRoom = curRoom;
 				}
@@ -711,7 +713,17 @@
 				}
 
 				if (curCell !== start && curCell.lcnt !== 2) {
-					// TODO add special case for entering border/circle/goal on final move
+					/* Special case when entering the goal region on the final move */
+					if (
+						this.pid === "kaisu" &&
+						didChangeRoom &&
+						curCell === goal &&
+						curCell.qnum > 0 &&
+						curRoom.visit !== 1
+					) {
+						curCell.seterr(1);
+						err = true;
+					}
 
 					break;
 				}
