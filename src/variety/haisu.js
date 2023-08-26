@@ -673,9 +673,12 @@
 
 			while (true) {
 				curRoom = curCell.room;
-				if (oldRoom !== curRoom || curCell === goal) {
+				if (oldRoom !== curRoom || (this.pid === "kaisu" && curCell === goal)) {
 					if (this.pid === "kaisu") {
 						if (curCell === goal && curCell.qnum > 0) {
+							if (oldRoom !== curRoom) {
+								circles = new this.klass.CellList();
+							}
 							circles.add(goal);
 						}
 
