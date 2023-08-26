@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["haisu", "bdwalk"], {
+})(["haisu", "bdwalk", "kaisu"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -243,13 +243,16 @@
 		makeClist: true
 	},
 
-	"AreaRoomGraph@haisu": {
+	"AreaRoomGraph@haisu,kaisu": {
 		enabled: true
 	},
 	"Cell@haisu": {
 		maxnum: function() {
 			return this.room.clist.length;
 		}
+	},
+	"Cell@kaisu": {
+		maxnum: 1
 	},
 	"Cell@bdwalk": {
 		maxnum: 99,
@@ -351,7 +354,7 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 			this.drawGrid();
-			if (this.pid === "haisu") {
+			if (this.pid !== "bdwalk") {
 				this.drawBorders();
 			}
 
@@ -443,6 +446,18 @@
 			this.outbstr += this.writeNumber16((this.board.startpos.by + 1) / 2);
 			this.outbstr += this.writeNumber16((this.board.goalpos.bx + 1) / 2);
 			this.outbstr += this.writeNumber16((this.board.goalpos.by + 1) / 2);
+		}
+	},
+	"Encode@kaisu": {
+		decodePzpr: function(type) {
+			this.decodeSG();
+			this.decodeBorder();
+			this.decode1Cell(1);
+		},
+		encodePzpr: function(type) {
+			this.encodeSG();
+			this.encodeBorder();
+			this.encode1Cell(1);
 		}
 	},
 	"Encode@bdwalk": {
@@ -616,6 +631,7 @@
 		haisuWalk: function() {
 			var bd = this.board;
 			var start = bd.getc(bd.startpos.bx, bd.startpos.by);
+			var goal = bd.getc(bd.goalpos.bx, bd.goalpos.by);
 			var err = false;
 
 			if (start.lcnt !== 1) {
@@ -632,14 +648,47 @@
 			var curRoom = null;
 			var oldCell = null;
 			var curCell = start;
+			var circles = new this.klass.CellList();
+			if (start.qnum > 0) {
+				circles.add(start);
+			}
 
-			while (curCell === start || curCell.lcnt === 2) {
+			while (true) {
 				curRoom = curCell.room;
-				if (oldRoom !== curRoom) {
+				if (oldRoom !== curRoom || curCell === goal) {
+					if (this.pid === "kaisu") {
+						if (curCell === goal && curCell.qnum > 0) {
+							circles.add(goal);
+						}
+
+						if (
+							oldRoom &&
+							circles.length > 0 &&
+							circles.length !== oldRoom.visit
+						) {
+							circles.seterr(1);
+							err = true;
+						}
+						circles = new this.klass.CellList();
+					}
+
 					curRoom.visit++;
 					oldRoom = curRoom;
 				}
-				if (curCell.qnum > 0 && curCell.qnum !== curRoom.visit) {
+
+				if (curCell !== start && curCell.lcnt !== 2) {
+					break;
+				}
+
+				if (this.pid === "kaisu" && curCell.qnum > 0) {
+					circles.add(curCell);
+				}
+
+				if (
+					this.pid === "haisu" &&
+					curCell.qnum > 0 &&
+					curCell.qnum !== curRoom.visit
+				) {
 					curCell.seterr(1);
 					err = true;
 				}
