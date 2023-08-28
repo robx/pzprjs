@@ -157,12 +157,15 @@ function toBGimage(pid) {
 		"oneroom",
 		"ovotovata",
 		"oyakodori",
+		"patchwork",
 		"pencils",
+		"pentatouch",
 		"pentopia",
 		"ququ",
 		"rassi",
 		"remlen",
 		"roundtrip",
+		"sashikazune",
 		"satogaeri",
 		"scrin",
 		"simplegako",
@@ -185,6 +188,7 @@ function toBGimage(pid) {
 		"voxas",
 		"vslither",
 		"walllogic",
+		"waterwalk",
 		"wittgen",
 		"yinyang"
 	];

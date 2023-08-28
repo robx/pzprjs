@@ -64,13 +64,16 @@ pzpr.classmgr.makeCommon({
 				this.inputData = cell.qans !== 1 ? 1 : 0;
 			} else if (this.inputMode === "unshade") {
 				this.inputData = cell.qsub !== 1 ? 2 : 0;
-			} else if (this.puzzle.getConfig("use") === 1) {
+			} else if (
+				this.puzzle.getConfig("use") === 1 &&
+				this.pid !== "patchwork"
+			) {
 				if (this.btn === "left") {
 					this.inputData = cell.qans !== 1 ? 1 : 0;
 				} else if (this.btn === "right") {
 					this.inputData = cell.qsub !== 1 ? 2 : 0;
 				}
-			} else if (this.puzzle.getConfig("use") === 2) {
+			} else {
 				if (!cell.allowShade()) {
 					this.inputData = cell.qsub !== 1 ? 2 : 0;
 				} else if (!cell.allowUnshade()) {
@@ -343,7 +346,7 @@ pzpr.classmgr.makeCommon({
 			cell.draw();
 			this.mouseCell = cell;
 		},
-		inputBGcolor: function(isforceforward) {
+		inputBGcolor: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell.is51cell() || cell === this.mouseCell) {
 				return;
@@ -353,7 +356,7 @@ pzpr.classmgr.makeCommon({
 				this.inputMode = cell.qsub !== 1 ? 11 : 10;
 			} else if (this.inputMode === "bgcolor2") {
 				this.inputMode = cell.qsub !== 2 ? 12 : 10;
-			} else if (isforceforward || this.btn === "left") {
+			} else if (this.btn === "left") {
 				if (cell.qsub === 0) {
 					this.inputData = 11;
 				} else if (cell.qsub === 1) {

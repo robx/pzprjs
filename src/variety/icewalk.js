@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["icewalk"], {
+})(["icewalk", "waterwalk"], {
 	MouseEvent: {
 		inputModes: {
 			edit: ["ice", "number", "clear", "info-line"],
@@ -36,6 +36,17 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.inputqnum();
 				}
+			}
+		}
+	},
+	"MouseEvent@waterwalk": {
+		inputModes: {
+			edit: ["water", "number", "clear", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "water") {
+				this.inputIcebarn();
 			}
 		}
 	},
@@ -115,8 +126,13 @@
 			return null;
 		}
 	},
+	"Graphic@waterwalk": {
+		icecolor: "rgb(163, 216, 255)"
+	},
 	LineGraph: {
-		enabled: true,
+		enabled: true
+	},
+	"LineGraph@icewalk": {
 		isLineCross: true
 	},
 	AreaRoomGraph: {
@@ -126,11 +142,11 @@
 			"cell.ques": "node",
 			"border.line": "separator"
 		},
-		isnodevalid: function(cell) {
-			return !cell.ice();
-		},
 		isedgevalidbylinkobj: function(border) {
-			return border.isLine();
+			if (!border.isLine()) {
+				return false;
+			}
+			return border.sidecell[0].ice() === border.sidecell[1].ice();
 		}
 	},
 	Encode: {
@@ -174,8 +190,10 @@
 	AnsCheck: {
 		checklist: [
 			"checkBranchLine",
-			"checkCrossOutOfIce",
-			"checkIceLines",
+			"checkCrossLine@waterwalk",
+			"checkCrossOutOfIce@icewalk",
+			"checkIceLines@icewalk",
+			"checkWaterWalk@waterwalk",
 			"checkLessWalk",
 			"checkOverWalk",
 
@@ -190,6 +208,9 @@
 		checkOverWalk: function() {
 			this.checkWalkLength(+1, "bkSizeGt");
 		},
+		checkWaterWalk: function() {
+			this.checkWalkLength(+2, "bkSizeGt2");
+		},
 
 		checkWalkLength: function(flag, code) {
 			if (this.board.roommgr.isStale) {
@@ -201,6 +222,12 @@
 			for (var i = 0; i < this.board.cell.length; i++) {
 				var cell = this.board.cell[i];
 				var qnum = cell.qnum;
+				if (flag === +2) {
+					if (!cell.ice()) {
+						continue;
+					}
+					qnum = 2;
+				}
 				if (qnum <= 0 || !cell.room) {
 					continue;
 				}
