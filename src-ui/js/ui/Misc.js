@@ -159,6 +159,7 @@ function toBGimage(pid) {
 		"oyakodori",
 		"patchwork",
 		"pencils",
+		"pentatouch",
 		"pentopia",
 		"ququ",
 		"rassi",
