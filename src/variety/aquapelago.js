@@ -59,6 +59,34 @@
 		enablemake: true
 	},
 
+	AreaShadeGraph: {
+		enabled: true
+	},
+	"AreaShadeDiagGraph:AreaShadeGraph": {
+		enabled: true,
+		setComponentRefs: function (obj, component) {
+			obj.blkdiag = component;
+		},
+		getObjNodeList: function (nodeobj) {
+			return nodeobj.blkdiagnodes;
+		},
+		resetObjNodeList: function (nodeobj) {
+			nodeobj.blkdiagnodes = [];
+		},
+
+		getSideObjByNodeObj: function (cell) {
+			var list = cell.getdiagclist(),
+				cells = [];
+			for (var i = 0; i < list.length; i++) {
+				var cell2 = list[i][0];
+				if (this.isnodevalid(cell2)) {
+					cells.push(cell2);
+				}
+			}
+			return cells;
+		}
+	},
+
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
@@ -86,6 +114,10 @@
 		}
 	},
 	Board: {
+		addExtraInfo: function () {
+			this.sblkdiagmgr = this.addInfoList(this.klass.AreaShadeDiagGraph);
+		},
+
 		cols: 10,
 		rows: 10
 	},
@@ -196,47 +228,71 @@
 			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
-			"checkShootSingle",
+			"checkIncompatibleNumbers",
+			"checkGroupSizeGt",
+			"checkGroupSizeLt",
+			"check2x2UnshadeCell",
 			"doneShadingDecided"
 		],
 
-		checkShootSingle: function() {
-			var bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var cell = bd.cell[c];
-				if (!cell.isValidNum()) {
-					continue;
-				}
-				var num = cell.qnum,
-					cell2;
-				var clist = new this.klass.CellList();
-				cell2 = cell.relcell(-num * 2, 0);
-				if (cell2.isShade()) {
-					clist.add(cell2);
-				}
-				cell2 = cell.relcell(num * 2, 0);
-				if (cell2.isShade()) {
-					clist.add(cell2);
-				}
-				cell2 = cell.relcell(0, -num * 2);
-				if (cell2.isShade()) {
-					clist.add(cell2);
-				}
-				cell2 = cell.relcell(0, num * 2);
-				if (cell2.isShade()) {
-					clist.add(cell2);
-				}
-				if (clist.length === 1) {
-					continue;
-				}
+		checkIncompatibleNumbers: function () {
+			var groups = this.board.sblkdiagmgr.components;
+			var valid = true;
 
-				this.failcode.add("nmShootShadeNe1");
-				if (this.checkOnly) {
-					break;
+			for (var i = 0; i < groups.length; ++i) {
+				var group = groups[i];
+				var foundClue = 0;
+
+				for (var j = 0; j < group.clist.length; ++j) {
+					var cell = group.clist[j];
+
+					if (cell.qnum < 1) {
+						continue;
+					}
+
+					if (foundClue === 0) {
+						foundClue = cell.qnum;
+						continue;
+					}
+
+					if (foundClue === cell.qnum) {
+						continue;
+					}
+
+					this.failcode.add("differentNumbers");
+
+					if (this.checkOnly) {
+						return;
+					}
+
+					if (valid) {
+						this.board.cell.setnoerr();
+						valid = false;
+					}
+
+					group.clist.seterr(1);
 				}
-				cell.seterr(1);
-				clist.seterr(1);
 			}
+		},
+
+		checkGroupSizeGt: function () {
+			this.checkAllArea(
+				this.board.sblkdiagmgr,
+				function (w, h, a, n) {
+					return n <= 0 || n >= a;
+				},
+				"bkSizeGt"
+			);
+		},
+
+		checkGroupSizeLt: function () {
+			this.checkAllArea(
+				this.board.sblkdiagmgr,
+				function (w, h, a, n) {
+					return n <= 0 || n <= a;
+				},
+				"bkSizeLt"
+			);
 		}
 	}
 });

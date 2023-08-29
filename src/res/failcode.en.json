@@ -234,6 +234,7 @@
     "bkSize1.rectslider": "There is an isolated shaded cell.",
     "bkSize1.yajitatami": "The length of the tatami is one.",
     "bkSizeEq.fillmat": "The number is equal to the size of the tatami.",
+    "bkSizeGt.aquapelago": "A group of shaded cells is larger than the number.",
     "bkSizeGt.dbchoco": "A number is smaller than the size of the shape.",
     "bkSizeGt.fillomino": "A number is smaller than the size of the area.",
     "bkSizeGt.icewalk": "A section of unshaded cells is longer than the number.",
@@ -245,6 +246,7 @@
     "bkSizeGt3": "The size of an area is larger than three.",
     "bkSizeGt4": "The size of an area is larger than four.",
     "bkSizeGt5": "The size of an area is larger than five.",
+    "bkSizeLt.aquapelago": "A group of shaded cells is smaller than the number.",
     "bkSizeLt.dbchoco": "A number is bigger than the size of the shape.",
     "bkSizeLt.fillomino": "A number is bigger than the size of the area.",
     "bkSizeLt.icewalk": "A section of unshaded cells is shorter than the number.",
@@ -782,5 +784,8 @@
     "tentAround.tents": "Some tents touch.",
     "tooFewUnspecified.railpool": "The region contains fewer unspecified segment lengths than question marks.",
     "tooManyUnspecified.railpool": "The region contains more unspecified segment lengths than question marks.",
-    "unusedCell.pencils": "A cell is unused."
+    "unusedCell.pencils": "A cell is unused.",
+    "differentNumbers.aquapelago": "A group contains different numbers.",
+    "groupTooSmall.aquapelago": "A group contains fewer cells than the number.",
+    "groupTooBig.aquapelago": "A group contains more cells than the number."
 }
