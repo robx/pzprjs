@@ -898,6 +898,27 @@ pzpr.classmgr.makeCommon({
 				}
 			}
 			return dlist;
+		},
+
+		// Draw lines on borders where the adjacent cells have inequal, nonzero aux shades;
+		// erase lines where they have equal nonzero aux shades.
+		// Cells outside the grid are treated as having aux shade 2.
+		// Used by slither and myopia.
+		outlineShaded: function() {
+			this.border.each(function(b) {
+				var c0 = b.sidecell[0],
+					c1 = b.sidecell[1];
+				var qsub1 = c0.isnull ? 2 : c0.qsub;
+				var qsub2 = c1.isnull ? 2 : c1.qsub;
+				if (qsub1 === 0 || qsub2 === 0) {
+					return;
+				}
+				if (qsub1 === qsub2) {
+					b.setLineVal(0);
+				} else {
+					b.setLine();
+				}
+			});
 		}
 	}
 });
