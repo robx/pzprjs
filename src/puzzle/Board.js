@@ -900,16 +900,40 @@ pzpr.classmgr.makeCommon({
 			return dlist;
 		},
 
-		// Draw lines on borders where the adjacent cells have inequal, nonzero aux shades;
-		// erase lines where they have equal nonzero aux shades.
-		// Cells outside the grid are treated as having aux shade 2.
+		// Draw borders between opposite-shaded cells.
+		// A cell is shaded if its qsub value is nonzero; unshaded cells are ignored.
+		// A line is drawn between two shaded cells with opposite shades,
+		// or erased between shaded cells with the same shade.
+		// "Cells" outside the grid are treated as having shade 2,
+		// unless there is a cross mark between a shaded cell and the exterior, in which case that cell's shade is used as the exterior shade.
+		//
 		// Used by slither and myopia.
 		outlineShaded: function() {
+			// determine the exterior shade
+			var exteriorShade = 2;
+			for (var i = 0; i < this.border.length; i++) {
+				var b = this.border[i];
+				if (b.qsub !== 2) {
+					continue;
+				}
+				var c0 = b.sidecell[0],
+					c1 = b.sidecell[1];
+				if (c0.isnull && c1.qsub !== 0) {
+					exteriorShade = c1.qsub;
+					break;
+				}
+				if (c1.isnull && c0.qsub !== 0) {
+					exteriorShade = c0.qsub;
+					break;
+				}
+			}
+
+			// draw borders
 			this.border.each(function(b) {
 				var c0 = b.sidecell[0],
 					c1 = b.sidecell[1];
-				var qsub1 = c0.isnull ? 2 : c0.qsub;
-				var qsub2 = c1.isnull ? 2 : c1.qsub;
+				var qsub1 = c0.isnull ? exteriorShade : c0.qsub;
+				var qsub2 = c1.isnull ? exteriorShade : c1.qsub;
 				if (qsub1 === 0 || qsub2 === 0) {
 					return;
 				}
@@ -919,6 +943,8 @@ pzpr.classmgr.makeCommon({
 					b.setLine();
 				}
 			});
+
+			this.puzzle.redraw();
 		}
 	}
 });
