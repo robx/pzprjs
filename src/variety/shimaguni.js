@@ -85,7 +85,10 @@
 		"KeyEvent@shimaguni": {
 			enableplay: true,
 			keyinput: function(ca) {
-				if (this.puzzle.mouse.inputMode.indexOf("number") !== -1) {
+				if (
+					this.puzzle.playmode &&
+					this.puzzle.mouse.inputMode.indexOf("number") !== -1
+				) {
 					this.key_inputqnum(ca);
 				}
 			}
