@@ -86,7 +86,7 @@
 			enableplay: true,
 			keyinput: function(ca) {
 				if (
-					this.puzzle.playmode &&
+					this.puzzle.editmode ||
 					this.puzzle.mouse.inputMode.indexOf("number") !== -1
 				) {
 					this.key_inputqnum(ca);
