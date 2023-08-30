@@ -375,11 +375,11 @@
 			paint: function() {
 				this.drawBGCells();
 				this.drawGrid();
-				this.drawTargetSubNumber();
 				if (this.pid === "stostone") {
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
+				this.drawTargetSubNumber();
 
 				if (this.pid === "martini") {
 					this.drawCircles();
@@ -547,13 +547,13 @@
 				this.decodeAreaRoom();
 				this.decodeCellQnum();
 				this.decodeCellAns();
-				// TODO load snum
+				this.decodeCellSnum();
 			},
 			encodeData: function() {
 				this.encodeAreaRoom();
 				this.encodeCellQnum();
 				this.encodeCellAns();
-				// TODO save snum
+				this.encodeCellSnum();
 			}
 		},
 
