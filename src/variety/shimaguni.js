@@ -371,6 +371,7 @@
 
 			enablebcolor: true,
 			bgcellcolor_func: "qsub1",
+			subcolor: "rgb(40, 40, 80)",
 
 			paint: function() {
 				this.drawBGCells();
@@ -385,7 +386,7 @@
 					this.drawCircles();
 				}
 				this.drawQuesNumbers();
-				this.drawSubNumbers();
+				this.drawSubNumbers(true);
 
 				this.drawBorders();
 				if (this.pid === "stostone") {

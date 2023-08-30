@@ -636,7 +636,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawSubNumbers()  Cellの補助数字をCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawSubNumbers: function() {
+		drawSubNumbers: function(onshade) {
 			var g = this.vinc("cell_subnumber", "auto");
 			var posarray = [5, 4, 2, 3];
 
@@ -649,7 +649,12 @@ pzpr.classmgr.makeCommon({
 						: this.getNumberTextCore_letter(cell.snum[n]);
 					g.vid = "cell_subtext_" + cell.id + "_" + n;
 					if (!!text) {
-						g.fillStyle = !cell.trial ? this.subcolor : this.trialcolor;
+						g.fillStyle =
+							onshade && cell.isShade()
+								? this.subshadecolor
+								: !cell.trial
+								? this.subcolor
+								: this.trialcolor;
 						this.disptext(text, cell.bx * this.bw, cell.by * this.bh, {
 							position: posarray[n],
 							ratio: 0.33,
