@@ -83,7 +83,12 @@
 			enablemake: true
 		},
 		"KeyEvent@shimaguni": {
-			enableplay: true
+			enableplay: true,
+			keyinput: function(ca) {
+				if (this.puzzle.mouse.inputMode.indexOf("number") !== -1) {
+					this.key_inputqnum(ca);
+				}
+			}
 		},
 		"KeyEvent@stostone": {
 			keyDispInfo: function(ca) {
