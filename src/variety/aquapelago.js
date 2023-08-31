@@ -60,6 +60,7 @@
 	},
 
 	AreaShadeGraph: {
+		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true
 	},
 	"AreaShadeDiagGraph:AreaShadeGraph": {
@@ -87,6 +88,10 @@
 		}
 	},
 
+	AreaUnshadeGraph: {
+		enabled: true
+	},
+
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
@@ -96,6 +101,10 @@
 
 		isShade: function () {
 			return !this.isnull && (this.qans === 1 || this.qnum !== -1);
+		},
+
+		isUnshade: function () {
+			return !this.isnull && !this.isShade();
 		},
 
 		prehook: {
@@ -120,10 +129,6 @@
 
 		cols: 10,
 		rows: 10
-	},
-
-	AreaUnshadeGraph: {
-		enabled: true
 	},
 
 	//---------------------------------------------------------
@@ -170,54 +175,20 @@
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
-		decodePzpr: function(type) {
+		decodePzpr: function (type) {
 			this.decodeNumber16();
 		},
-		encodePzpr: function(type) {
+		encodePzpr: function (type) {
 			this.encodeNumber16();
-		},
-
-		decodeKanpen: function() {
-			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen();
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
-		decodeData: function() {
-			this.decodeCellQnum();
-			this.decodeCellQanssubcmp();
+		decodeData: function () {
+			this.decodeCellQnumAns();
 		},
-		encodeData: function() {
-			this.encodeCellQnum();
-			this.encodeCellQanssubcmp();
-		},
-
-		decodeCellQanssubcmp: function() {
-			this.decodeCell(function(cell, ca) {
-				if (ca === "+") {
-					cell.qsub = 1;
-				} else if (ca === "-") {
-					cell.qcmp = 1;
-				} else if (ca === "1") {
-					cell.qans = 1;
-				}
-			});
-		},
-		encodeCellQanssubcmp: function() {
-			this.encodeCell(function(cell) {
-				if (cell.qans === 1) {
-					return "1 ";
-				} else if (cell.qsub === 1) {
-					return "+ ";
-				} else if (cell.qcmp === 1) {
-					return "- ";
-				} else {
-					return ". ";
-				}
-			});
+		encodeData: function () {
+			this.encodeCellQnumAns();
 		}
 	},
 
