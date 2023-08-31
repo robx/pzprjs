@@ -388,7 +388,7 @@
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
-				this.drawTargetSubNumber();
+				this.drawTargetSubNumber(true);
 
 				if (this.pid === "martini") {
 					this.drawCircles();

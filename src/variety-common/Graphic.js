@@ -2095,7 +2095,7 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 
-		drawTargetSubNumber: function() {
+		drawTargetSubNumber: function(onshade) {
 			var g = this.vinc("target_subnum", "crispEdges");
 
 			var d = this.range,
@@ -2108,6 +2108,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			var target = cursor.targetdir;
+			var cell = cursor.getc();
 
 			if (
 				cursor.disableAnum &&
@@ -2117,7 +2118,8 @@ pzpr.classmgr.makeCommon({
 			}
 
 			g.vid = "target_subnum";
-			g.fillStyle = this.ttcolor;
+			g.fillStyle =
+				onshade && cell && cell.isShade() ? this.ttshadecolor : this.ttcolor;
 			if (this.puzzle.playmode && target !== 0) {
 				var bw = this.bw,
 					bh = this.bh;
