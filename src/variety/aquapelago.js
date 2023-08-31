@@ -59,11 +59,8 @@
 		enablemake: true
 	},
 
-	AreaShadeGraph: {
-		relation: { "cell.qans": "node", "cell.qnum": "node" },
-		enabled: true
-	},
 	"AreaShadeDiagGraph:AreaShadeGraph": {
+		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true,
 		setComponentRefs: function (obj, component) {
 			obj.blkdiag = component;
@@ -89,6 +86,7 @@
 	},
 
 	AreaUnshadeGraph: {
+		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true
 	},
 
