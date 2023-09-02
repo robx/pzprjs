@@ -13,17 +13,29 @@
 		use: true,
 		inputModes: {
 			edit: ["border", "number", "clear"],
-			play: ["shade", "unshade"]
+			play: ["shade", "unshade", "number"]
 		},
 		autoedit_func: "areanum",
 		autoplay_func: "cell"
 	},
 	KeyEvent: {
-		enablemake: true
+		enablemake: true,
+		enableplay: true,
+		keyinput: function(ca) {
+			if (
+				this.puzzle.editmode ||
+				this.puzzle.mouse.inputMode.indexOf("number") !== -1
+			) {
+				this.key_inputqnum(ca);
+			}
+		}
 	},
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		enableSubNumberArray: true,
+		disableAnum: true,
+
 		minnum: 0,
 		maxnum: function() {
 			return Math.min(999, this.room.clist.length - 2);
@@ -140,14 +152,17 @@
 
 		enablebcolor: true,
 		bgcellcolor_func: "qcmp",
+		subcolor: "rgb(40, 40, 80)",
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
 			this.drawShadedCells();
+			this.drawTargetSubNumber(true);
 			this.drawDotCells();
 
 			this.drawQuesNumbers();
+			this.drawSubNumbers(true);
 
 			this.drawBorders();
 
@@ -155,6 +170,14 @@
 			this.drawBoxBorders(false);
 
 			this.drawTarget();
+		},
+
+		drawTarget: function() {
+			this.drawCursor(
+				true,
+				this.puzzle.editmode ||
+					this.puzzle.mouse.inputMode.indexOf("number") >= 0
+			);
 		}
 	},
 
@@ -176,11 +199,13 @@
 			this.decodeBorderQues();
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeCellSnum();
 		},
 		encodeData: function() {
 			this.encodeBorderQues();
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeCellSnum();
 		}
 	},
 	AnsCheck: {
