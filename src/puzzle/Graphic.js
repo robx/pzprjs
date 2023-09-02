@@ -61,6 +61,7 @@
 			qcmpbgcolor: "rgb(224, 224, 255)",
 			trialcolor: "rgb(160, 160, 160)",
 			subcolor: "rgb(127, 127, 255)",
+			subshadecolor: "rgb(220, 220, 255)",
 
 			// 黒マスの色
 			shadecolor: "black",
@@ -106,6 +107,7 @@
 			targetColorPlay: "rgb(64,  64, 255)",
 			targetColorTrial: "rgb(255,  64, 255)",
 			ttcolor: "rgb(127,255,127)", // ques=51の入力ターゲット(TargetTriangle)
+			ttshadecolor: "rgb(0,127,0)",
 
 			movecolor: "red",
 

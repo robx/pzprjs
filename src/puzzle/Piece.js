@@ -362,6 +362,7 @@ pzpr.classmgr.makeCommon({
 
 		numberRemainsUnshaded: false, // 数字のあるマスが黒マスにならないパズル
 		enableSubNumberArray: false, // 補助数字の配列を作るパズル
+		disableAnum: false,
 		supportQnumAnum: false, // True if qnum and anum can appear at the same time.
 
 		adjacent: {}, // 四方向に隣接するセルを保持する
@@ -469,7 +470,7 @@ pzpr.classmgr.makeCommon({
 				this.clrSnum();
 			}
 			// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3
-			else if (this.qnum === -1) {
+			else if (this.qnum === -1 && !this.disableAnum) {
 				var vala =
 					val > -1 && !(this.numberAsObject && this.anum === val) ? val : -1;
 				var vals =

@@ -25,6 +25,11 @@ ui.debug.addDebugData("shimaguni", {
 		],
 		[
 			null,
+			"pzprv3/shimaguni/2/3/2/0 0 1 /0 0 1 /1 . 2 /. . . /# . # /. . # /. [,3,4,] . /. . . /",
+			{ skiprules: true }
+		],
+		[
+			null,
 			"pzprv3/shimaguni/6/6/8/0 0 0 1 2 3 /4 4 5 1 2 3 /4 4 5 1 2 2 /5 5 5 1 2 2 /6 6 6 6 6 6 /6 6 7 7 7 7 /3 . . . 3 . /2 . . . . . /. . . . . . /. . . . . . /4 . . . . . /. . 3 . . . /# # # + . # /+ + + # + + /# # + # + # /+ + # + # # /# # + + + + /# # + # # # /"
 		]
 	],
@@ -56,6 +61,22 @@ ui.debug.addDebugData("shimaguni", {
 			],
 			result:
 				"pzprv3/shimaguni/4/4/8/0 0 1 1 /2 2 3 3 /4 4 5 5 /6 6 7 7 /- . 2 . /1 . 1 . /2 . - . /. . . . /. . . . /. . . . /. . . . /. . . . /"
+		},
+		{
+			input: ["cursor,7,7", "key,2"],
+			result:
+				"pzprv3/shimaguni/4/4/8/0 0 1 1 /2 2 3 3 /4 4 5 5 /6 6 7 7 /- . 2 . /1 . 1 . /2 . - . /. . 2 . /. . . . /. . . . /. . . . /. . . . /"
+		},
+		{
+			input: [
+				"newboard,2,2",
+				"playmode",
+				"key,2",
+				"playmode,number",
+				"key,down,3"
+			],
+			result:
+				"pzprv3/shimaguni/2/2/1/0 0 /0 0 /. . /. . /. . /. . /. . /[3,,,] . /"
 		}
 	]
 });

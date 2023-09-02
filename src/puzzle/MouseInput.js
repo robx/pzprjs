@@ -433,6 +433,7 @@ pzpr.classmgr.makeCommon({
 			) {
 				this.inputMode = mode;
 				this.savedInputMode[this.puzzle.editmode ? "edit" : "play"] = mode;
+				this.puzzle.redraw();
 			} else {
 				throw Error("Invalid input mode :" + mode);
 			}
@@ -606,15 +607,22 @@ pzpr.classmgr.makeCommon({
 		setcursorsnum: function(pos) {
 			var pos0 = this.cursor.getaddr();
 			this.cursor.setaddr(pos);
+			var target;
 			var bx = this.inputPoint.bx,
 				by = this.inputPoint.by;
-			bx = (((bx + 12) % 2) * 1.5) | 0;
-			by = (((by + 12) % 2) * 1.5) | 0;
-			var target;
-			if (this.pid !== "factors") {
-				target = [5, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+
+			if (this.cursor.disableAnum) {
+				bx = bx % 2 | 0;
+				by = by % 2 | 0;
+				target = [5, 4, 2, 3][by * 2 + bx];
 			} else {
-				target = [0, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+				bx = (((bx + 12) % 2) * 1.5) | 0;
+				by = (((by + 12) % 2) * 1.5) | 0;
+				if (this.pid !== "factors") {
+					target = [5, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+				} else {
+					target = [0, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+				}
 			}
 			if (this.cursor.targetdir !== target) {
 				this.cursor.targetdir = target;
