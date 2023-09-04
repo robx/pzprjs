@@ -107,6 +107,7 @@ function toBGimage(pid) {
 	var imgs = [
 		"akichi",
 		"angleloop",
+		"aquapelago",
 		"aquarium",
 		"araf",
 		"skyscrapers",
