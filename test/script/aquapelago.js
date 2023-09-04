@@ -1,7 +1,7 @@
 /* aquapelago.js */
 
 ui.debug.addDebugData("aquapelago", {
-	url: "5/5/132k1i1i2k332",
+	url: "6/6/j.zg4g2h4j",
 	failcheck: [
 		["brNoShade", "pzprv3/aquapelago/6/6"],
 		[
