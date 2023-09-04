@@ -737,7 +737,7 @@ pzpr.classmgr.makeCommon({
 			}
 			return list;
 		},
-		getdiagclist: function () {
+		getdiagclist: function() {
 			var list = [];
 			var cells = [
 				this.relcell(-2, -2),

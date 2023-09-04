@@ -62,17 +62,17 @@
 	"AreaShadeDiagGraph:AreaShadeGraph": {
 		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true,
-		setComponentRefs: function (obj, component) {
+		setComponentRefs: function(obj, component) {
 			obj.blkdiag = component;
 		},
-		getObjNodeList: function (nodeobj) {
+		getObjNodeList: function(nodeobj) {
 			return nodeobj.blkdiagnodes;
 		},
-		resetObjNodeList: function (nodeobj) {
+		resetObjNodeList: function(nodeobj) {
 			nodeobj.blkdiagnodes = [];
 		},
 
-		getSideObjByNodeObj: function (cell) {
+		getSideObjByNodeObj: function(cell) {
 			var list = cell.getdiagclist(),
 				cells = [];
 			for (var i = 0; i < list.length; i++) {
@@ -94,24 +94,24 @@
 	// 盤面管理系
 	Cell: {
 		maxnum: function() {
-			return Math.ceil(this.board.rows * this.board.cols / 2);
+			return Math.ceil((this.board.rows * this.board.cols) / 2);
 		},
 
-		isShade: function () {
+		isShade: function() {
 			return !this.isnull && (this.qans === 1 || this.qnum !== -1);
 		},
 
-		isUnshade: function () {
+		isUnshade: function() {
 			return !this.isnull && !this.isShade();
 		},
 
 		prehook: {
-			qans: function (ans) {
+			qans: function(ans) {
 				return !ans && this.qnum !== -1;
 			}
 		},
 
-		setQnum: function (val) {
+		setQnum: function(val) {
 			this.setdata("qnum", val);
 			if (val === -1) {
 				this.setQans(0);
@@ -121,7 +121,7 @@
 		}
 	},
 	Board: {
-		addExtraInfo: function () {
+		addExtraInfo: function() {
 			this.sblkdiagmgr = this.addInfoList(this.klass.AreaShadeDiagGraph);
 		},
 
@@ -140,7 +140,7 @@
 		enablebcolor: true,
 		bgcellcolor_func: "qsub1",
 
-		paint: function () {
+		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
 			this.drawShadedCells();
@@ -152,7 +152,7 @@
 			this.drawTarget();
 		},
 
-		getShadedCellColor: function (cell) {
+		getShadedCellColor: function(cell) {
 			if (!cell.isShade()) {
 				return null;
 			}
@@ -173,19 +173,19 @@
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
-		decodePzpr: function (type) {
+		decodePzpr: function(type) {
 			this.decodeNumber16();
 		},
-		encodePzpr: function (type) {
+		encodePzpr: function(type) {
 			this.encodeNumber16();
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
-		decodeData: function () {
+		decodeData: function() {
 			this.decodeCellQnumAns();
 		},
-		encodeData: function () {
+		encodeData: function() {
 			this.encodeCellQnumAns();
 		}
 	},
@@ -204,7 +204,7 @@
 			"doneShadingDecided"
 		],
 
-		checkIncompatibleNumbers: function () {
+		checkIncompatibleNumbers: function() {
 			var groups = this.board.sblkdiagmgr.components;
 			var valid = true;
 
@@ -244,20 +244,20 @@
 			}
 		},
 
-		checkGroupSizeGt: function () {
+		checkGroupSizeGt: function() {
 			this.checkAllArea(
 				this.board.sblkdiagmgr,
-				function (w, h, a, n) {
+				function(w, h, a, n) {
 					return n <= 0 || n >= a;
 				},
 				"bkSizeGt"
 			);
 		},
 
-		checkGroupSizeLt: function () {
+		checkGroupSizeLt: function() {
 			this.checkAllArea(
 				this.board.sblkdiagmgr,
-				function (w, h, a, n) {
+				function(w, h, a, n) {
 					return n <= 0 || n <= a;
 				},
 				"bkSizeLt"
