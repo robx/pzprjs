@@ -217,7 +217,11 @@
 		},
 		initExtraObject: function(col, row) {
 			this.disableInfo();
-			this.startpos.init(1, row * 2 - 1);
+			if (col & 1 || row & 1) {
+				this.startpos.init(1, row * 2 - 1);
+			} else {
+				this.startpos.init(1, 1);
+			}
 			this.goalpos.init(col * 2 - 1, 1);
 			this.enableInfo();
 		},
