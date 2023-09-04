@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["haisu", "bdwalk"], {
+})(["haisu", "bdwalk", "kaisu"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -109,6 +109,12 @@
 					this.inputqnum();
 				}
 			}
+		}
+	},
+	"MouseEvent@kaisu": {
+		inputModes: {
+			edit: ["border", "circle-unshade"],
+			play: ["line", "peke", "diraux", "info-line"]
 		}
 	},
 
@@ -243,13 +249,17 @@
 		makeClist: true
 	},
 
-	"AreaRoomGraph@haisu": {
+	"AreaRoomGraph@haisu,kaisu": {
 		enabled: true
 	},
 	"Cell@haisu": {
 		maxnum: function() {
 			return this.room.clist.length;
 		}
+	},
+	"Cell@kaisu": {
+		disInputHatena: true,
+		maxnum: 1
 	},
 	"Cell@bdwalk": {
 		maxnum: 99,
@@ -351,15 +361,21 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 			this.drawGrid();
-			if (this.pid === "haisu") {
+			if (this.pid !== "bdwalk") {
 				this.drawBorders();
+			}
+
+			if (this.pid === "kaisu") {
+				this.drawCircledNumbers();
 			}
 
 			this.drawLines();
 			this.drawPekes();
 			this.drawBorderAuxDir();
 
-			this.drawQuesNumbers();
+			if (this.pid !== "kaisu") {
+				this.drawQuesNumbers();
+			}
 
 			this.drawChassis();
 
@@ -418,6 +434,11 @@
 			return 0;
 		}
 	},
+	"Graphic@kaisu": {
+		getNumberText: function() {
+			return "";
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -443,6 +464,18 @@
 			this.outbstr += this.writeNumber16((this.board.startpos.by + 1) / 2);
 			this.outbstr += this.writeNumber16((this.board.goalpos.bx + 1) / 2);
 			this.outbstr += this.writeNumber16((this.board.goalpos.by + 1) / 2);
+		}
+	},
+	"Encode@kaisu": {
+		decodePzpr: function(type) {
+			this.decodeSG();
+			this.decodeBorder();
+			this.decode1Cell(1);
+		},
+		encodePzpr: function(type) {
+			this.encodeSG();
+			this.encodeBorder();
+			this.encode1Cell(1);
 		}
 	},
 	"Encode@bdwalk": {
@@ -616,6 +649,7 @@
 		haisuWalk: function() {
 			var bd = this.board;
 			var start = bd.getc(bd.startpos.bx, bd.startpos.by);
+			var goal = bd.getc(bd.goalpos.bx, bd.goalpos.by);
 			var err = false;
 
 			if (start.lcnt !== 1) {
@@ -632,16 +666,66 @@
 			var curRoom = null;
 			var oldCell = null;
 			var curCell = start;
+			var circles = new this.klass.CellList();
 
-			while (curCell === start || curCell.lcnt === 2) {
+			while (true) {
+				var didChangeRoom = false;
 				curRoom = curCell.room;
+				if (this.pid === "kaisu") {
+					var oldCircles = null;
+					if (oldRoom && oldRoom !== curRoom) {
+						oldCircles = circles;
+						circles = new this.klass.CellList();
+					} else if (
+						curCell === goal ||
+						(oldRoom && curCell.lcnt === 1 && circles.length >= oldRoom.visit)
+					) {
+						oldCircles = circles; // Copy by reference
+					}
+
+					if (curCell.qnum > 0) {
+						circles.add(curCell);
+					}
+
+					if (
+						oldCircles &&
+						oldCircles.length > 0 &&
+						oldCircles.length !== oldRoom.visit
+					) {
+						oldCircles.seterr(1);
+						err = true;
+					}
+				}
+
 				if (oldRoom !== curRoom) {
+					didChangeRoom = true;
 					curRoom.visit++;
 					oldRoom = curRoom;
 				}
-				if (curCell.qnum > 0 && curCell.qnum !== curRoom.visit) {
+
+				if (
+					this.pid === "haisu" &&
+					curCell.qnum > 0 &&
+					curCell.qnum !== curRoom.visit
+				) {
 					curCell.seterr(1);
 					err = true;
+				}
+
+				if (curCell !== start && curCell.lcnt !== 2) {
+					/* Special case when entering the goal region on the final move */
+					if (
+						this.pid === "kaisu" &&
+						didChangeRoom &&
+						curCell === goal &&
+						curCell.qnum > 0 &&
+						curRoom.visit !== 1
+					) {
+						curCell.seterr(1);
+						err = true;
+					}
+
+					break;
 				}
 
 				var adj = [];
