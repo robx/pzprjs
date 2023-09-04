@@ -427,6 +427,7 @@
     "gateUnpass.slalom": "A gate is not passed by the loop.",
     "goishiRemains.goishi": "There is remaining Goishi.",
     "haisuError.haisu": "A number is not passed on the right visit.",
+    "haisuError.kaisu": "A region visit contains an incorrect amount of circles.",
     "haisuSG.haisu": "The line goes through S/G.",
     "invalid": "Invalid Error",
     "kitamakura.shugaku": "There is a futon that faces down.",
