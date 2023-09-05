@@ -665,13 +665,13 @@
 			for (var r = 0; r < rooms.length; r++) {
 				rooms[r].visit = 0;
 			}
-			start.room.visit = 1;
 
-			var oldRoom = null;
+			var oldRoom = start.room;
 			var curRoom = null;
 			var oldCell = null;
 			var curCell = start;
 			var circles = new this.klass.CellList();
+			oldRoom.visit = 1;
 
 			while (true) {
 				curRoom = curCell.room;
