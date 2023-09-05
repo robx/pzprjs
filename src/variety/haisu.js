@@ -684,12 +684,12 @@
 				var didChangeRoom = border && border.isBorder();
 				if (this.pid === "kaisu") {
 					var oldCircles = null;
-					if (oldRoom && didChangeRoom) {
+					if (didChangeRoom) {
 						oldCircles = circles;
 						circles = new this.klass.CellList();
 					} else if (
 						curCell === goal ||
-						(oldRoom && curCell.lcnt === 1 && circles.length >= oldRoom.visit)
+						(curCell.lcnt === 1 && circles.length >= oldRoom.visit)
 					) {
 						oldCircles = circles; // Copy by reference
 					}
@@ -701,7 +701,6 @@
 					if (
 						oldCircles &&
 						oldCircles.length > 0 &&
-						oldRoom &&
 						oldCircles.length !== oldRoom.visit
 					) {
 						oldCircles.seterr(1);
