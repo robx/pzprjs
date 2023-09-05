@@ -666,23 +666,30 @@
 				rooms[r].visit = 0;
 			}
 
-			var oldRoom = null;
+			var oldRoom = start.room;
 			var curRoom = null;
 			var oldCell = null;
 			var curCell = start;
 			var circles = new this.klass.CellList();
+			oldRoom.visit = 1;
 
 			while (true) {
-				var didChangeRoom = false;
 				curRoom = curCell.room;
+				var border = oldCell
+					? bd.getb(
+							(oldCell.bx + curCell.bx) >> 1,
+							(oldCell.by + curCell.by) >> 1
+					  )
+					: null;
+				var didChangeRoom = border && border.isBorder();
 				if (this.pid === "kaisu") {
 					var oldCircles = null;
-					if (oldRoom && oldRoom !== curRoom) {
+					if (didChangeRoom) {
 						oldCircles = circles;
 						circles = new this.klass.CellList();
 					} else if (
 						curCell === goal ||
-						(oldRoom && curCell.lcnt === 1 && circles.length >= oldRoom.visit)
+						(curCell.lcnt === 1 && circles.length >= oldRoom.visit)
 					) {
 						oldCircles = circles; // Copy by reference
 					}
@@ -701,8 +708,7 @@
 					}
 				}
 
-				if (oldRoom !== curRoom) {
-					didChangeRoom = true;
+				if (didChangeRoom) {
 					curRoom.visit++;
 					oldRoom = curRoom;
 				}
