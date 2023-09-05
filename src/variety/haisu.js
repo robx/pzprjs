@@ -665,6 +665,7 @@
 			for (var r = 0; r < rooms.length; r++) {
 				rooms[r].visit = 0;
 			}
+			start.room.visit = 1;
 
 			var oldRoom = null;
 			var curRoom = null;
@@ -673,11 +674,17 @@
 			var circles = new this.klass.CellList();
 
 			while (true) {
-				var didChangeRoom = false;
 				curRoom = curCell.room;
+				var border = oldCell
+					? bd.getb(
+							(oldCell.bx + curCell.bx) >> 1,
+							(oldCell.by + curCell.by) >> 1
+					  )
+					: null;
+				var didChangeRoom = border && border.isBorder();
 				if (this.pid === "kaisu") {
 					var oldCircles = null;
-					if (oldRoom && oldRoom !== curRoom) {
+					if (oldRoom && didChangeRoom) {
 						oldCircles = circles;
 						circles = new this.klass.CellList();
 					} else if (
@@ -694,6 +701,7 @@
 					if (
 						oldCircles &&
 						oldCircles.length > 0 &&
+						oldRoom &&
 						oldCircles.length !== oldRoom.visit
 					) {
 						oldCircles.seterr(1);
@@ -701,8 +709,7 @@
 					}
 				}
 
-				if (oldRoom !== curRoom) {
-					didChangeRoom = true;
+				if (didChangeRoom) {
 					curRoom.visit++;
 					oldRoom = curRoom;
 				}
