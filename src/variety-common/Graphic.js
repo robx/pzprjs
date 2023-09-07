@@ -659,7 +659,8 @@ pzpr.classmgr.makeCommon({
 								: !cell.trial
 								? this.subcolor
 								: this.trialcolor;
-						this.disptext(text, cell.bx * this.bw, cell.by * this.bh, {
+						var px = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
+						this.disptext(text, px, cell.by * this.bh, {
 							position: posarray[n],
 							ratio: 0.33,
 							hoffset: 0.8
@@ -2148,7 +2149,7 @@ pzpr.classmgr.makeCommon({
 			if (this.puzzle.playmode && target !== 0) {
 				var bw = this.bw,
 					bh = this.bh;
-				var px = cursor.bx * bw + 0.5,
+				var px = cursor.bx * bw + 0.5 + this.getCellHorizontalOffset(cell),
 					py = cursor.by * bh + 0.5;
 				var tw = bw * 0.8,
 					th = bh * 0.8;

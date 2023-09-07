@@ -10,7 +10,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["border", "subline"]
+			play: ["border", "number", "subline"]
 		},
 		getBoardAddress: function(e) {
 			var bd = this.board;
@@ -33,7 +33,8 @@
 		autoplay_func: "border"
 	},
 	KeyEvent: {
-		enablemake: true
+		enablemake: true,
+		enableplay: true
 	},
 
 	Border: {
@@ -126,6 +127,8 @@
 		}
 	},
 	Cell: {
+		enableSubNumberArray: true,
+		disableAnum: true,
 		maxnum: function() {
 			var bd = this.board;
 			return (bd.cols * bd.rows) >> 1;
@@ -181,6 +184,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawDashedGrid();
+			this.drawTargetSubNumber(true);
 
 			this.drawBorders();
 
@@ -190,8 +194,17 @@
 
 			this.drawCircles();
 			this.drawQuesNumbers();
+			this.drawSubNumbers(true);
 
 			this.drawTarget();
+		},
+
+		drawTarget: function() {
+			this.drawCursor(
+				true,
+				this.puzzle.editmode ||
+					this.puzzle.mouse.inputMode.indexOf("number") >= 0
+			);
 		},
 
 		fontsizeratio: 0.75,
@@ -362,10 +375,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeBorderAns();
+			this.decodeCellSnum();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeBorderAns();
+			this.encodeCellSnum();
 		}
 	},
 
