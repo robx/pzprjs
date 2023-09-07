@@ -694,6 +694,9 @@ pzpr.classmgr.makeCommon({
 			for (var by = y1 | 1; by <= y2; by += 2) {
 				for (var bx = x1 | 1; bx <= x2; bx += 2) {
 					var cell = this.getc(bx, by);
+					if (!cell) {
+						throw new Error("No cell at " + bx + "," + by);
+					}
 					if (!cell.isnull) {
 						clist.add(cell);
 					}

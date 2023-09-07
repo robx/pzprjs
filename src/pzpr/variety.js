@@ -357,6 +357,7 @@
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
 			symmarea: [0, 0, "シンメトリーエリア", "Symmetry Area", "fillomino"],
+			tachibk: [0, 0, "たちあわせブロック", "Tachiawase Block"],
 			tajmahal: [0, 0, "タージ・マハル", "Taj Mahal", "kouchoku"],
 			takoyaki: [0, 0, "たこ焼き", "Takoyaki", "kaidan"],
 			tapa: [0, 0, "Tapa", "Tapa"],
