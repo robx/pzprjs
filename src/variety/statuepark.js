@@ -2,13 +2,21 @@
 // statuepark.js
 //
 
-(function(pidlist, classbase) {
+(function(classbase) {
+	var pidlist = [
+		"statuepark",
+		"statuepark-aux",
+		"pentopia",
+		"battleship",
+		"pentatouch",
+		"retroships"
+	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["statuepark", "statuepark-aux", "pentopia", "battleship", "pentatouch"], {
+})({
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -136,7 +144,7 @@
 		}
 	},
 
-	"MouseEvent@battleship": {
+	"MouseEvent@battleship,retroships": {
 		inputModes: {
 			edit: ["number", "clear", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
@@ -250,7 +258,7 @@
 			}
 		}
 	},
-	"KeyEvent@battleship": {
+	"KeyEvent@battleship,retroships": {
 		keyinput: function(ca) {
 			if (!this.cursor.getex().isnull) {
 				this.key_inputexcell(ca);
@@ -297,7 +305,7 @@
 			return ret;
 		}
 	},
-	"Board@battleship": {
+	"Board@battleship,retroships": {
 		hasexcell: 1,
 		assumeAllUnshaded: false,
 
@@ -482,7 +490,7 @@
 		}
 	},
 
-	"Bank@battleship": {
+	"Bank@battleship,retroships": {
 		defaultPreset: function() {
 			return this.presets[1].constant;
 		},
@@ -714,7 +722,7 @@
 			}
 		}
 	},
-	"Cell@battleship": {
+	"Cell@battleship,retroships": {
 		numberAsObject: true,
 		minnum: 0,
 		maxnum: 10,
@@ -736,14 +744,6 @@
 			}
 		},
 
-		allowShade: function() {
-			return this.qnum === -1;
-		},
-
-		isShade: function() {
-			var isClue = this.qnum !== -1 && this.qnum !== 0;
-			return !this.isnull && (isClue || this.qans === 1);
-		},
 		isUnshade: function() {
 			return !this.isnull && !this.isShade();
 		},
@@ -779,6 +779,21 @@
 				this.adjacent.left.isShadeDecided() &&
 				this.adjacent.right.isShadeDecided()
 			);
+		}
+	},
+	"Cell@battleship#1": {
+		allowShade: function() {
+			return this.qnum === -1;
+		},
+
+		isShade: function() {
+			var isClue = this.qnum !== -1 && this.qnum !== 0;
+			return !this.isnull && (isClue || this.qans === 1);
+		}
+	},
+	"Cell@retroships#1": {
+		allowShade: function() {
+			return this.qnum !== 0;
 		}
 	},
 	"BoardExec@pentopia": {
@@ -835,7 +850,7 @@
 		}
 	},
 
-	"ExCell@battleship": {
+	"ExCell@battleship,retroships": {
 		disInputHatena: true,
 
 		maxnum: function() {
@@ -854,7 +869,7 @@
 			return true;
 		}
 	},
-	"BoardExec@battleship": {
+	"BoardExec@battleship,retroships": {
 		adjustBoardData: function(key, d) {
 			this.adjustCellQnumArrow(key, d);
 			this.adjustExCellTopLeft_1(key, d);
@@ -938,7 +953,6 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			this.drawGrid();
 
 			if (this.pid === "pentatouch") {
 				this.drawCrossMarks();
@@ -1092,7 +1106,11 @@
 		}
 	},
 
-	"Graphic@battleship": {
+	"Graphic@battleship,retroships": {
+		MODE_SHARP: 0,
+		MODE_ROUNDED: 1,
+		MODE_OUTLINE: 2,
+
 		bcolor: "rgb(191, 191, 255)",
 		trialbcolor: "rgb(255, 191, 255)",
 		qanscolor: "rgb(0, 80, 0)",
@@ -1104,7 +1122,12 @@
 			this.drawBGCells();
 			this.drawBoardPieces();
 			this.drawWaterClues();
-			this.drawGrid();
+
+			if (this.pid === "retroships") {
+				this.drawDashedGrid();
+			} else {
+				this.drawGrid();
+			}
 
 			this.drawNumbersExCell();
 
@@ -1199,6 +1222,13 @@
 						cell.isAdjacentDecided() ||
 						cell.qnum > 0);
 
+				var mode;
+				if (this.pid === "battleship") {
+					mode = isCircled ? this.MODE_ROUNDED : this.MODE_SHARP;
+				} else {
+					mode = cell.isShade() ? this.MODE_ROUNDED : this.MODE_OUTLINE;
+				}
+
 				var shape =
 					cell.qnum === -2
 						? this.board.CENTER
@@ -1208,13 +1238,19 @@
 
 				var vid = "c_piece_" + cell.id;
 
-				this.drawSinglePiece(g, vid, px, py, r, shape, color, isCircled);
+				this.drawSinglePiece(g, vid, px, py, r, shape, color, mode);
 			}
 		},
 
-		drawSinglePiece: function(g, vid, px, py, r, shape, color, isCircled) {
+		drawSinglePiece: function(g, vid, px, py, r, shape, color, mode) {
+			var isCircled = mode !== this.MODE_SHARP;
+			if (mode === this.MODE_OUTLINE) {
+				g.lineWidth = (1 + this.cw / 40) | 0;
+				r -= g.lineWidth;
+			}
+
 			g.vid = vid + "_circle";
-			if (color && isCircled) {
+			if (color && mode === this.MODE_ROUNDED) {
 				g.fillStyle = color;
 				g.fillCircle(px, py, r);
 			} else {
@@ -1223,8 +1259,6 @@
 
 			g.vid = vid;
 			if (!!color) {
-				g.fillStyle = color;
-
 				g.beginPath();
 				g.moveTo(px + r, py);
 
@@ -1283,7 +1317,13 @@
 					g.lineTo(px + r, py - r);
 				}
 				g.lineTo(px + r, py);
-				g.fill();
+				if (mode === this.MODE_OUTLINE) {
+					g.strokeStyle = color;
+					g.stroke();
+				} else {
+					g.fillStyle = color;
+					g.fill();
+				}
 			} else {
 				g.vhide();
 			}
@@ -1313,7 +1353,16 @@
 					var px = this.cw * br * (piece.x + 0.25 + x) + r;
 					var py = this.ch * br * (piece.y + 0.25 + y) + r;
 					py += (this.board.rows + 0.5) * this.ch + 1;
-					this.drawSinglePiece(g, vid, px, py, r, shape, color, true);
+					this.drawSinglePiece(
+						g,
+						vid,
+						px,
+						py,
+						r,
+						shape,
+						color,
+						this.MODE_ROUNDED
+					);
 				} else {
 					this.drawSinglePiece(g, vid, 0, 0, r, 0, null);
 				}
@@ -1349,7 +1398,7 @@
 			this.encodePieceBank();
 		}
 	},
-	"Encode@battleship": {
+	"Encode@battleship,retroships": {
 		decodePzpr: function(type) {
 			if (this.outbstr[0] !== "/") {
 				this.decodeNumber16ExCell();
@@ -1393,7 +1442,7 @@
 		decodeData: function() {
 			this.decodePieceBank();
 			this.decodeConfig();
-			if (this.pid === "battleship") {
+			if (this.pid === "battleship" || this.pid === "retroships") {
 				this.decodeCellExCell(function(obj, ca) {
 					if (ca[0] === "c") {
 						obj.qcmp = 1;
@@ -1417,7 +1466,7 @@
 		encodeData: function() {
 			this.encodePieceBank();
 			this.encodeConfig();
-			if (this.pid === "battleship") {
+			if (this.pid === "battleship" || this.pid === "retroships") {
 				this.encodeCellExCell(function(obj) {
 					if (obj.qnum >= 0) {
 						return (obj.qcmp ? "c" : "") + obj.qnum + " ";
@@ -1484,7 +1533,7 @@
 		}
 	},
 
-	"AnsCheck@pentopia,battleship,pentatouch#1": {
+	"AnsCheck@pentopia,battleship,retroships,pentatouch#1": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -1669,7 +1718,7 @@
 		}
 	},
 
-	"AnsCheck@battleship": {
+	"AnsCheck@battleship,retroships": {
 		checklist: [
 			"checkShapeExtra",
 			"checkBankPiecesAvailable",
@@ -1688,6 +1737,9 @@
 				if (cell.qnum === 0) {
 					return cell.isShade();
 				}
+				if (!cell.isShade()) {
+					return false;
+				}
 
 				var shape = cell.getShape();
 
@@ -1704,7 +1756,7 @@
 				if (cell.qnum <= 0) {
 					return false;
 				}
-				return cell.qnum !== cell.getShape();
+				return cell.isShade() && cell.qnum !== cell.getShape();
 			}, "csMismatch");
 		},
 
