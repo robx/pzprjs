@@ -2,6 +2,8 @@
 // statuepark.js
 //
 
+/* global Set:false */
+
 (function(classbase) {
 	var pidlist = [
 		"statuepark",
@@ -221,13 +223,40 @@
 				if (this.notInputted() && this.mousestart) {
 					this.inputqcmp();
 				}
-			} else if (this.puzzle.editmode && this.mousestart) {
-				this.inputqnum();
-				if (this.notInputted()) {
+			} else {
+				if (this.mousestart) {
 					if (this.btn === "left") {
 						this.inputpiece();
 					} else {
 						this.inputqcmp();
+					}
+
+					this.dragSet = this.notInputted() ? new Set() : null;
+				}
+
+				var cell = this.getcell();
+				if (this.dragSet && !cell.isnull) {
+					this.dragSet.add(cell);
+				}
+
+				if (this.mouseend && this.notInputted()) {
+					if (this.dragSet && this.dragSet.size >= 2) {
+						var set = this.dragSet;
+						var cells = new this.klass.CellList(set);
+						var bd = this.board;
+
+						cells.each(function(cell) {
+							cell.setQnum(
+								bd.getShape(
+									set.has(cell.adjacent.top),
+									set.has(cell.adjacent.bottom),
+									set.has(cell.adjacent.left),
+									set.has(cell.adjacent.right)
+								)
+							);
+						});
+					} else {
+						this.inputqnum();
 					}
 				}
 			}
