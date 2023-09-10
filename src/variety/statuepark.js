@@ -737,6 +737,12 @@
 		minnum: 0,
 		maxnum: 10,
 
+		isShade: function() {
+			return (
+				!this.isnull && this.qnum !== 0 && (this.isClue() || this.qans === 1)
+			);
+		},
+
 		posthook: {
 			qnum: function() {
 				this.drawaround();
@@ -795,15 +801,16 @@
 		allowShade: function() {
 			return this.qnum === -1;
 		},
-
-		isShade: function() {
-			var isClue = this.qnum !== -1 && this.qnum !== 0;
-			return !this.isnull && (isClue || this.qans === 1);
+		isClue: function() {
+			return this.qnum !== -1 && this.qnum !== 0;
 		}
 	},
 	"Cell@retroships#1": {
 		allowShade: function() {
-			return this.qnum !== 0;
+			return this.qnum !== 0 && this.qnum !== -2;
+		},
+		isClue: function() {
+			return !this.allowShade();
 		}
 	},
 	"BoardExec@pentopia": {
@@ -860,7 +867,7 @@
 		}
 	},
 
-	"ExCell@battleship,retroships": {
+	"ExCell@battleship": {
 		disInputHatena: true,
 
 		maxnum: function() {
@@ -928,7 +935,7 @@
 	AreaShadeGraph: {
 		enabled: true
 	},
-	"AreaShadeGraph@battleship": {
+	"AreaShadeGraph@battleship,retroships": {
 		relation: { "cell.qnum": "node", "cell.qans": "node" }
 	},
 	"AreaUnshadeGraph@statuepark": {
