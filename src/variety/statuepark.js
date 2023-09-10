@@ -148,7 +148,7 @@
 
 	"MouseEvent@battleship#1": {
 		inputModes: {
-			edit: ["number", "clear", "completion"],
+			edit: ["number", "clear", "water", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
 		},
 		mouseinput_auto: function() {
@@ -212,7 +212,7 @@
 	},
 	"MouseEvent@retroships#1": {
 		inputModes: {
-			edit: ["clear", "completion"],
+			edit: ["clear", "water", "circle-shade", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
 		},
 		mouseinput_auto: function() {
@@ -274,6 +274,16 @@
 			}
 
 			return this.common.getNewNumber.call(this, cell, val);
+		},
+		mouseinput: function() {
+			switch (this.inputMode) {
+				case "circle-shade":
+					return this.inputFixedNumber(6);
+				case "water":
+					return this.inputFixedNumber(0);
+				default:
+					return this.common.mouseinput.call(this);
+			}
 		}
 	},
 
