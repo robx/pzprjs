@@ -148,15 +148,7 @@
 		inputModes: {
 			edit: ["number", "clear", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
-		}
-	},
-	"MouseEvent@retroships#1": {
-		inputModes: {
-			edit: ["clear", "completion"],
-			play: ["shade", "unshade", "clear", "completion"]
-		}
-	},
-	"MouseEvent@battleship,retroships": {
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -214,8 +206,34 @@
 			excell.draw();
 
 			this.mousereset();
+		}
+	},
+	"MouseEvent@retroships#1": {
+		inputModes: {
+			edit: ["clear", "completion"],
+			play: ["shade", "unshade", "clear", "completion"]
 		},
-
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputcell();
+				}
+				if (this.notInputted() && this.mousestart) {
+					this.inputqcmp();
+				}
+			} else if (this.puzzle.editmode && this.mousestart) {
+				this.inputqnum();
+				if (this.notInputted()) {
+					if (this.btn === "left") {
+						this.inputpiece();
+					} else {
+						this.inputqcmp();
+					}
+				}
+			}
+		}
+	},
+	"MouseEvent@battleship,retroships": {
 		getNewNumber: function(cell, val) {
 			if (cell.group === "cell" && cell.qans) {
 				return cell.getShape();
