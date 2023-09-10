@@ -144,11 +144,19 @@
 		}
 	},
 
-	"MouseEvent@battleship,retroships": {
+	"MouseEvent@battleship#1": {
 		inputModes: {
 			edit: ["number", "clear", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
-		},
+		}
+	},
+	"MouseEvent@retroships#1": {
+		inputModes: {
+			edit: ["clear", "completion"],
+			play: ["shade", "unshade", "clear", "completion"]
+		}
+	},
+	"MouseEvent@battleship,retroships": {
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -305,8 +313,10 @@
 			return ret;
 		}
 	},
+	"Board@battleship#1": {
+		hasexcell: 1
+	},
 	"Board@battleship,retroships": {
-		hasexcell: 1,
 		assumeAllUnshaded: false,
 
 		UP: 1,
@@ -1382,7 +1392,7 @@
 			this.encodePieceBank();
 		}
 	},
-	"Encode@pentopia": {
+	"Encode@pentopia,retroships": {
 		decodePzpr: function(type) {
 			this.puzzle.setConfig("pentopia_transparent", this.checkpflag("t"));
 			if (this.outbstr[0] !== "/") {
@@ -1398,7 +1408,7 @@
 			this.encodePieceBank();
 		}
 	},
-	"Encode@battleship,retroships": {
+	"Encode@battleship": {
 		decodePzpr: function(type) {
 			if (this.outbstr[0] !== "/") {
 				this.decodeNumber16ExCell();
@@ -1442,7 +1452,7 @@
 		decodeData: function() {
 			this.decodePieceBank();
 			this.decodeConfig();
-			if (this.pid === "battleship" || this.pid === "retroships") {
+			if (this.pid === "battleship") {
 				this.decodeCellExCell(function(obj, ca) {
 					if (ca[0] === "c") {
 						obj.qcmp = 1;
@@ -1466,7 +1476,7 @@
 		encodeData: function() {
 			this.encodePieceBank();
 			this.encodeConfig();
-			if (this.pid === "battleship" || this.pid === "retroships") {
+			if (this.pid === "battleship") {
 				this.encodeCellExCell(function(obj) {
 					if (obj.qnum >= 0) {
 						return (obj.qcmp ? "c" : "") + obj.qnum + " ";
@@ -1725,7 +1735,7 @@
 			"checkBankPiecesInvalid",
 			"checkShadeDiagonal",
 			"checkShapeMissing",
-			"checkShadeCount",
+			"checkShadeCount@battleship",
 			"checkBankPiecesUsed"
 		],
 
