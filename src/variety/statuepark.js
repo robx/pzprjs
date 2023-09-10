@@ -235,13 +235,17 @@
 				}
 
 				var cell = this.getcell();
-				if (this.dragSet && !cell.isnull) {
+				if (this.dragSet && !cell.isnull && !this.dragSet.has(cell)) {
 					this.dragSet.add(cell);
+					this.dragSet.forEach(function(cell) {
+						cell.draw();
+					});
 				}
 
 				if (this.mouseend && this.notInputted()) {
 					if (this.dragSet && this.dragSet.size >= 2) {
 						var set = this.dragSet;
+						this.dragSet = null;
 						var cells = new this.klass.CellList(set);
 						var bd = this.board;
 
@@ -254,6 +258,7 @@
 									set.has(cell.adjacent.right)
 								)
 							);
+							cell.draw();
 						});
 					} else {
 						this.inputqnum();
@@ -1273,12 +1278,37 @@
 		drawBoardPieces: function() {
 			var g = this.vinc("cell_bpiece", "auto");
 			var clist = this.range.cells;
+
+			var dragSet = this.puzzle.mouse.dragSet;
+			if (dragSet && dragSet.size < 2) {
+				dragSet = null;
+			}
+
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
-					color = this.getShadedCellColor(cell),
+					color,
+					shape,
 					px = cell.bx * this.bw,
 					py = cell.by * this.bh,
 					r = this.bw * 0.9;
+
+				if (dragSet && dragSet.has(cell)) {
+					color = "red";
+					shape = this.board.getShape(
+						dragSet.has(cell.adjacent.top),
+						dragSet.has(cell.adjacent.bottom),
+						dragSet.has(cell.adjacent.left),
+						dragSet.has(cell.adjacent.right)
+					);
+				} else {
+					color = this.getShadedCellColor(cell);
+					shape =
+						cell.qnum === -2
+							? this.board.CENTER
+							: cell.qnum !== -1
+							? cell.qnum
+							: cell.getShape();
+				}
 
 				var isCircled =
 					cell.qnum !== -2 &&
@@ -1292,13 +1322,6 @@
 				} else {
 					mode = cell.isShade() ? this.MODE_ROUNDED : this.MODE_OUTLINE;
 				}
-
-				var shape =
-					cell.qnum === -2
-						? this.board.CENTER
-						: cell.qnum !== -1
-						? cell.qnum
-						: cell.getShape();
 
 				var vid = "c_piece_" + cell.id;
 
