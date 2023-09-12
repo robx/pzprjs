@@ -560,6 +560,30 @@
 					g.vhide();
 				}
 			}
+		},
+		qsubcolor1: "rgb(224, 224, 255)",
+		getBGCellColor: function(cell) {
+			if (cell.error === 1 || cell.qinfo === 1) {
+				return this.errbcolor1;
+			}
+			if (cell.qsub === 1) {
+				return this.qsubcolor1;
+			}
+			if (cell.lcnt === 0) {
+				return null;
+			}
+
+			var isTrial = !!cell.trial;
+			for (var dir in cell.adjborder) {
+				if (cell.adjborder[dir].error) {
+					return this.errbcolor1;
+				}
+				if (cell.adjborder[dir].trial) {
+					isTrial = true;
+				}
+			}
+
+			return isTrial ? "rgb(222,222,222)" : this.qsubcolor1;
 		}
 	},
 
