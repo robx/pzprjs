@@ -164,8 +164,6 @@
 				return this.errcolor1;
 			} else if (cell.trial) {
 				return this.trialcolor;
-			} else if (info === -1) {
-				return this.noerrcolor;
 			}
 			return cell.qnum !== -1 ? this.shadecolor : this.qanscolor;
 		},
@@ -231,7 +229,7 @@
 						continue;
 					}
 
-					this.failcode.add("differentNumbers");
+					this.failcode.add("nmMixed");
 
 					if (this.checkOnly) {
 						return;

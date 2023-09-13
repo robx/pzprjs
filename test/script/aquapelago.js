@@ -16,7 +16,7 @@ ui.debug.addDebugData("aquapelago", {
 			"pzprv3/aquapelago/6/6/# . # . - . /. . . . . . /. . # . # . /. # . . . . /. . 4 . 2 . /. 4 . . . # /"
 		],
 		[
-			"differentNumbers",
+			"nmMixed",
 			"pzprv3/aquapelago/6/6/. # . . - . /. . . # . . /. # . . . # /# . . # . . /. . 4 . 2 . /. 4 . . . . /"
 		],
 		[
