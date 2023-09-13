@@ -3,7 +3,6 @@
 ui.debug.addDebugData("aquapelago", {
 	url: "6/6/j.zg4g2h4j",
 	failcheck: [
-		["brNoShade", "pzprv3/aquapelago/6/6"],
 		[
 			"csAdjacent",
 			"pzprv3/aquapelago/6/6/# . # . - . /# . . . . . /. . # . # . /. # . . . . /. . 4 . 2 . /. 4 . . . # /"

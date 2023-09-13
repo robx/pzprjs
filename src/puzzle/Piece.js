@@ -748,7 +748,7 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < 4; i++) {
 				if (cells[i].group === "cell" && !cells[i].isnull) {
 					list.push([cells[i], i + 1]);
-				} /* i+1==dir */
+				}
 			}
 			return list;
 		},

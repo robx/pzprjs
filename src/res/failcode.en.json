@@ -785,7 +785,5 @@
     "tooFewUnspecified.railpool": "The region contains fewer unspecified segment lengths than question marks.",
     "tooManyUnspecified.railpool": "The region contains more unspecified segment lengths than question marks.",
     "unusedCell.pencils": "A cell is unused.",
-    "differentNumbers.aquapelago": "A group contains different numbers.",
-    "groupTooSmall.aquapelago": "A group contains fewer cells than the number.",
-    "groupTooBig.aquapelago": "A group contains more cells than the number."
+    "differentNumbers.aquapelago": "A group contains different numbers."
 }

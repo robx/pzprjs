@@ -137,6 +137,7 @@
 		qanscolor: "#333333",
 		numbercolor_func: "fixed_shaded",
 		fontShadecolor: "white",
+		qcmpcolor: "#7F7F7F",
 		enablebcolor: true,
 		bgcellcolor_func: "qsub1",
 
@@ -167,6 +168,9 @@
 				return this.noerrcolor;
 			}
 			return cell.qnum !== -1 ? this.shadecolor : this.qanscolor;
+		},
+		getQuesNumberColor: function(cell) {
+			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
 		}
 	},
 
@@ -194,7 +198,6 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"checkShadeCellExist",
 			"checkAdjacentShadeCell",
 			"checkConnectUnshadeRB",
 			"checkIncompatibleNumbers",
@@ -235,7 +238,6 @@
 					}
 
 					if (valid) {
-						this.board.cell.setnoerr();
 						valid = false;
 					}
 
