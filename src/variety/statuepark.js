@@ -1934,5 +1934,10 @@
 				cross.seterr(1);
 			}
 		}
+	},
+	"FailCode@retroships": {
+		bankGt: "bankGt.battleship",
+		bankLt: "bankLt.battleship",
+		shDiag: "shDiag.battleship"
 	}
 });
