@@ -36,8 +36,7 @@ ui.debug.addDebugData("aquapelago", {
 		{
 			label: "First click only moves cursor",
 			input: ["newboard,3,3", "editmode", "mouse,left,1,3"],
-			result:
-				"pzprv3/aquapelago/3/3/. . . /. . . /. . . /"
+			result: "pzprv3/aquapelago/3/3/. . . /. . . /. . . /"
 		},
 		{
 			input: ["mouse,left,1,3"],
