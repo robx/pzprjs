@@ -346,6 +346,7 @@
     "ceSuspend.view": "There is a cell that is not filled in number.",
     "ceTapaNe.tapa": "The number is not equal to the length of surrounding shaded cells.",
     "ceTooManyBlocks.doppelblock": "There are more than two blocks in a row or column.",
+    "ceUnused.kinkonkan": "A mirror is unused.",
     "ciNotOnCnr.loute": "A circle is not at the corner of an area.",
     "circleNotPromontory.kurodoko": "A circle is not a dead end.",
     "circleShade": "A white circle is shaded.",
