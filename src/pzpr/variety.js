@@ -90,6 +90,7 @@
 			anglers: [0, 0, "フィッシング", "Anglers"],
 			antmill: [0, 0, "Ant Mill", "Ant Mill", "scrin"],
 			aqre: [0, 0, "Aqre", "Aqre", "aqre"],
+			aquapelago: [0, 0, "Aquapelago", "Aquapelago"],
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],
 			araf: [0, 0, "相ダ部屋", "Araf", "araf"],
 			armyants: [0, 0, "ぐんたいあり", "Army Ants", "kaero"],
