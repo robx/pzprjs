@@ -400,7 +400,7 @@ ui.keypopup = {
 		) {
 		} else if (pid === "tasquare") {
 			cap = "□";
-		} else if (pid === "rectslider") {
+		} else if (pid === "rectslider" || pid === "aquapelago") {
 			cap = "■";
 		} else if (pid === "patchwork") {
 			cap = {
