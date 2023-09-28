@@ -57,7 +57,7 @@
 	},
 	"Cell@mukkonn": {
 		maxnum: function() {
-			return Math.max(this.board.cols, this.board.rows);
+			return Math.max(this.board.cols, this.board.rows) - 1;
 		},
 
 		getSegmentDir: function(dir) {
