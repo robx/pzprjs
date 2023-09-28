@@ -29,6 +29,12 @@
 			autoedit_func: "areanum",
 			autoplay_func: "cell"
 		},
+		"MouseEvent@shimaguni": {
+			inputModes: {
+				edit: ["border", "number", "clear"],
+				play: ["shade", "unshade", "number"]
+			}
+		},
 		"MouseEvent@cocktail": {
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
@@ -76,6 +82,17 @@
 		KeyEvent: {
 			enablemake: true
 		},
+		"KeyEvent@shimaguni": {
+			enableplay: true,
+			keyinput: function(ca) {
+				if (
+					this.puzzle.editmode ||
+					this.puzzle.mouse.inputMode.indexOf("number") !== -1
+				) {
+					this.key_inputqnum(ca);
+				}
+			}
+		},
 		"KeyEvent@stostone": {
 			keyDispInfo: function(ca) {
 				if (ca === "x") {
@@ -93,6 +110,10 @@
 			maxnum: function() {
 				return Math.min(999, this.room.clist.length);
 			}
+		},
+		"Cell@shimaguni": {
+			enableSubNumberArray: true,
+			disableAnum: true
 		},
 		"Cell@chocona,hinge,heyablock,cocktail": {
 			minnum: 0
@@ -358,6 +379,7 @@
 
 			enablebcolor: true,
 			bgcellcolor_func: "qsub1",
+			subcolor: "rgb(40, 40, 80)",
 
 			paint: function() {
 				this.drawBGCells();
@@ -366,11 +388,13 @@
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
+				this.drawTargetSubNumber(true);
 
 				if (this.pid === "martini") {
 					this.drawCircles();
 				}
 				this.drawQuesNumbers();
+				this.drawSubNumbers(true);
 
 				this.drawBorders();
 				if (this.pid === "stostone") {
@@ -385,7 +409,14 @@
 			}
 		},
 		"Graphic@shimaguni": {
-			bcolor: "rgb(191, 191, 255)"
+			bcolor: "rgb(191, 191, 255)",
+			drawTarget: function() {
+				this.drawCursor(
+					true,
+					this.puzzle.editmode ||
+						this.puzzle.mouse.inputMode.indexOf("number") >= 0
+				);
+			}
 		},
 		"Graphic@stostone": {
 			irowakeblk: true,
@@ -525,11 +556,13 @@
 				this.decodeAreaRoom();
 				this.decodeCellQnum();
 				this.decodeCellAns();
+				this.decodeCellSnum();
 			},
 			encodeData: function() {
 				this.encodeAreaRoom();
 				this.encodeCellQnum();
 				this.encodeCellAns();
+				this.encodeCellSnum();
 			}
 		},
 
