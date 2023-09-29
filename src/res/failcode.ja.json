@@ -775,5 +775,7 @@
     "cxOverlap.heyapin": "ピンが複数の部屋にまたがっていません。",
     "bkSizeGt2.waterwalk": "ループが水のマスを3マス以上連続して通過しています。",
     "bkSizeGt.aquapelago": "数字とカタマリのマス数が異なります。",
-    "bkSizeLt.aquapelago": "数字とカタマリのマス数が異なります。"
+    "bkSizeLt.aquapelago": "数字とカタマリのマス数が異なります。",
+    "nmMixed.aquapelago": "カタマリが異なる数字を含んでいます。",
+    "ceUnused.kinkonkan": "光の当たらない鏡があります。"
 }
