@@ -772,5 +772,8 @@
     "bkPinNe.heyapin": "部屋にあるピンの数が正しくありません。",
     "bkNumGt2.magnets": "領域の中に同じ極が2つ以上入っています。",
     "nmDistNe.sashikazune": "数字が、角からのマス数と一致していません。",
-    "cxOverlap.heyapin": "ピンが複数の部屋にまたがっていません。"
+    "cxOverlap.heyapin": "ピンが複数の部屋にまたがっていません。",
+    "bkSizeGt2.waterwalk": "ループが水のマスを3マス以上連続して通過しています。",
+    "bkSizeGt.aquapelago": "数字とカタマリのマス数が異なります。",
+    "bkSizeLt.aquapelago": "数字とカタマリのマス数が異なります。"
 }
