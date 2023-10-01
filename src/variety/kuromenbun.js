@@ -22,7 +22,10 @@
 
 	Cell: {
 		numberRemainsUnshaded: true,
-		minnum: 0
+		minnum: 0,
+		maxnum: function() {
+			return Math.round((this.board.cols * this.board.rows) / 1.5);
+		}
 	},
 	Board: {
 		hasborder: 1,
