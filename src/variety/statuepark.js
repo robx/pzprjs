@@ -801,7 +801,9 @@
 	"Cell@battleship,retroships": {
 		numberAsObject: true,
 		minnum: 0,
-		maxnum: 10,
+		maxnum: function() {
+			return this.board.bank.isSimpleBank ? 6 : 10;
+		},
 
 		isShade: function() {
 			return (
