@@ -323,6 +323,13 @@
 			var bd = this.board;
 			return 1 / this.lwratio + (bd.maxbx - bd.minbx) / 2;
 		},
+		getCanvasCols: function() {
+			return this.getBoardCols() + 3 * this.margin;
+		},
+		setParameter: function() {
+			this.common.setParameter.call(this);
+			this.basex0 = -this.margin * this.cw * 0.25;
+		},
 		drawChassis: function() {
 			var g = this.vinc("chassis", "crispEdges", true),
 				bd = this.board;
