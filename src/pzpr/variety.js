@@ -90,6 +90,7 @@
 			anglers: [0, 0, "フィッシング", "Anglers"],
 			antmill: [0, 0, "Ant Mill", "Ant Mill", "scrin"],
 			aqre: [0, 0, "Aqre", "Aqre", "aqre"],
+			aquapelago: [0, 0, "Aquapelago", "Aquapelago"],
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],
 			araf: [0, 0, "相ダ部屋", "Araf", "araf"],
 			armyants: [0, 0, "ぐんたいあり", "Army Ants", "kaero"],
@@ -394,6 +395,7 @@
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
 			waterwalk: [0, 0, "ウォーターウォーク", "Water Walk", "icewalk"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
+			wittgen: [0, 0, "Wittgenstein Briquet", "Wittgenstein Briquet", "kaidan"],
 			yajikazu: [1, 0, "やじさんかずさん", "Yajisan-Kazusan"],
 			yajilin: [
 				0,
