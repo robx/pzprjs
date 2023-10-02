@@ -1943,6 +1943,7 @@
 	},
 	"FailCode@retroships": {
 		bankGt: "bankGt.battleship",
+		bankInvalid: "bankInvalid.battleship",
 		bankLt: "bankLt.battleship",
 		shDiag: "shDiag.battleship"
 	}
