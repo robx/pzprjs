@@ -223,13 +223,17 @@
 				if (this.notInputted() && this.mousestart) {
 					this.inputqcmp();
 				}
+			} else if (this.btn === "right") {
+				if (this.mousestart) {
+					this.inputqcmp();
+					this.inputData = this.notInputted() ? 1 : 0;
+				}
+				if (this.inputData === 1) {
+					this.mouseinput_clear();
+				}
 			} else {
 				if (this.mousestart) {
-					if (this.btn === "left") {
-						this.inputpiece();
-					} else {
-						this.inputqcmp();
-					}
+					this.inputpiece();
 
 					this.dragSet = this.notInputted() ? new Set() : null;
 				}
