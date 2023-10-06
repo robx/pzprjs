@@ -131,7 +131,7 @@
 		disableAnum: true,
 		maxnum: function() {
 			var bd = this.board;
-			return (bd.cols * bd.rows) >> 1;
+			return (bd.cols * bd.rows) >> 2;
 		},
 		seterr: function(num) {
 			if (this.board.isenableSetError()) {
@@ -414,21 +414,18 @@
 				mid = (bd.minbx + bd.maxbx) / 2;
 			var leftSet = new Set(),
 				rightSet = new Set();
-			var leftvalid = true,
-				rightvalid = true;
+			var valid = true;
 
 			bd.cell.each(function(cell) {
 				var bk = cell.room;
 				if (bk.isvalid) {
 					(cell.bx < mid ? leftSet : rightSet).add(bk);
-				} else if (cell.bx < mid) {
-					leftvalid = false;
 				} else {
-					rightvalid = false;
+					valid = false;
 				}
 			});
 
-			if (!leftvalid || !rightvalid) {
+			if (!valid) {
 				return;
 			}
 
