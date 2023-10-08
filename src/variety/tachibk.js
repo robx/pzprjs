@@ -1,5 +1,3 @@
-/* global Set:false */
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -62,7 +60,7 @@
 
 		initBoardSize: function(col, row) {
 			if (col & 1) {
-				col -= 1;
+				col = Math.max(2, col - 1);
 			}
 			this.common.initBoardSize.call(this, col, row);
 		}
@@ -411,33 +409,19 @@
 
 		checkBankEqual: function() {
 			var bd = this.board,
-				mid = (bd.minbx + bd.maxbx) / 2;
-			var leftSet = new Set(),
-				rightSet = new Set();
-			var valid = true;
-
-			bd.cell.each(function(cell) {
-				var bk = cell.room;
-				if (bk.isvalid) {
-					(cell.bx < mid ? leftSet : rightSet).add(bk);
-				} else {
-					valid = false;
-				}
-			});
-
-			if (!valid) {
-				return;
-			}
-
-			var leftBks = [],
+				mid = (bd.minbx + bd.maxbx) / 2,
+				leftBks = [],
 				rightBks = [];
+			var tiles = bd.roommgr.components;
 
-			leftSet.forEach(function(bk) {
-				leftBks.push(bk.clist.getBlockShapes().canon);
-			});
-			rightSet.forEach(function(bk) {
-				rightBks.push(bk.clist.getBlockShapes().canon);
-			});
+			for (var r = 0; r < tiles.length; r++) {
+				if (!tiles[r].isvalid) {
+					return;
+				}
+				var clist = tiles[r].clist,
+					isleft = clist[0].bx < mid;
+				(isleft ? leftBks : rightBks).push(clist.getBlockShapes().canon);
+			}
 
 			for (var i = 0; i < leftBks.length; i++) {
 				var idx = rightBks.indexOf(leftBks[i]);
@@ -456,7 +440,6 @@
 				return;
 			}
 
-			var tiles = this.board.roommgr.components;
 			for (var r = 0; r < tiles.length; r++) {
 				var clist = tiles[r].clist,
 					isleft = clist[0].bx < mid,
@@ -503,6 +486,10 @@
 		checkNumberArea: function(factor, code) {
 			var tiles = this.board.roommgr.components;
 			for (var r = 0; r < tiles.length; r++) {
+				if (tiles[r].isvalid) {
+					continue;
+				}
+
 				var clist = tiles[r].clist,
 					d = clist.length;
 				for (var i = 0; i < clist.length; i++) {
