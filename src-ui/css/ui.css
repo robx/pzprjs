@@ -75,9 +75,14 @@ h2#title {
   background: linear-gradient(to bottom, #99334f, #993366);
 }
 
-.btn-warn:active {
-  background: #999900;
-  background: linear-gradient(to bottom, #999900, #cccc00);
+.btn-mono {
+  background: #1d1d1d;
+  background: linear-gradient(to bottom, #b8b8b8, #1d1d1d);
+  color: white;
+}
+.btn-mono:active {
+  background: #0e0e0e;
+  background: linear-gradient(to bottom, #0e0e0e, #1d1d1d);
 }
 
 .btn-danger {
