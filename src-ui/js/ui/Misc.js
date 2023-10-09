@@ -107,6 +107,7 @@ function toBGimage(pid) {
 	var imgs = [
 		"akichi",
 		"angleloop",
+		"aquapelago",
 		"aquarium",
 		"araf",
 		"skyscrapers",
@@ -149,6 +150,7 @@ function toBGimage(pid) {
 		"midloop",
 		"mirrorbk",
 		"moonsun",
+		"mukkonn",
 		"nanameguri",
 		"nondango",
 		"nonogram",
@@ -191,6 +193,7 @@ function toBGimage(pid) {
 		"vslither",
 		"walllogic",
 		"waterwalk",
+		"wittgen",
 		"yinyang"
 	];
 	if (imgs.indexOf(pid) >= 0) {
