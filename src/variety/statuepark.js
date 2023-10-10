@@ -74,13 +74,13 @@
 		inputpiece: function() {
 			var piece = this.getbank();
 			if (!piece) {
-				return;
+				return false;
 			}
 
 			this.puzzle.emit("request-aux-editor");
 
 			if (piece.index === null) {
-				return;
+				return false;
 			}
 
 			var pos0 = this.cursor.getaddr();
@@ -104,6 +104,7 @@
 				}
 				thiz.board.bank.setPiece(shape, piece.index);
 			});
+			return true;
 		}
 	},
 
@@ -215,6 +216,18 @@
 			edit: ["clear", "water", "circle-shade", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
 		},
+
+		dragSet: null,
+		mousereset: function() {
+			this.common.mousereset.call(this);
+			if (this.dragSet) {
+				var set = this.dragSet;
+				this.dragSet = null;
+				set.forEach(function(cell) {
+					cell.draw();
+				});
+			}
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -226,28 +239,46 @@
 			} else if (this.btn === "right") {
 				if (this.mousestart) {
 					this.inputqcmp();
-					this.inputData = this.notInputted() ? 1 : 0;
+					if (!this.notInputted()) {
+						this.mousereset();
+						return;
+					}
 				}
-				if (this.inputData === 1) {
-					this.mouseinput_clear();
-				}
+				this.mouseinput_clear();
 			} else {
-				if (this.mousestart) {
-					this.inputpiece();
-
-					this.dragSet = this.notInputted() ? new Set() : null;
+				if (this.mousestart && this.inputpiece()) {
+					this.mousereset();
+					return;
 				}
 
 				var cell = this.getcell();
-				if (this.dragSet && !cell.isnull && !this.dragSet.has(cell)) {
+				if (cell.isnull) {
+					return;
+				}
+				if (this.firstCell.isnull) {
+					this.firstCell = cell;
+					this.firstPoint.set(this.inputPoint);
+				}
+
+				if (!this.dragSet) {
+					var dx = this.inputPoint.bx - this.firstPoint.bx,
+						dy = this.inputPoint.by - this.firstPoint.by;
+					if (this.firstCell !== cell || dx * dx + dy * dy > 0.5) {
+						this.dragSet = new Set();
+						this.dragSet.add(this.firstCell);
+						this.firstCell.draw();
+					}
+				}
+
+				if (this.dragSet && !this.dragSet.has(cell)) {
 					this.dragSet.add(cell);
 					this.dragSet.forEach(function(cell) {
 						cell.draw();
 					});
 				}
 
-				if (this.mouseend && this.notInputted()) {
-					if (this.dragSet && this.dragSet.size >= 2) {
+				if (this.mouseend) {
+					if (this.dragSet) {
 						var set = this.dragSet;
 						this.dragSet = null;
 						var cells = new this.klass.CellList(set);
@@ -1296,9 +1327,6 @@
 			var clist = this.range.cells;
 
 			var dragSet = this.puzzle.mouse.dragSet;
-			if (dragSet && dragSet.size < 2) {
-				dragSet = null;
-			}
 
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
