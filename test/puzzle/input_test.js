@@ -37,6 +37,8 @@ function execinput(puzzle, str) {
 			var urls = [puzzle.pid, strs[1], strs[2]];
 			if (puzzle.pid === "tawa") {
 				urls.push(strs[3]);
+			} else if (strs[3]) {
+				urls.push("//" + strs[3]);
 			}
 			puzzle.open(urls.join("/"));
 			break;

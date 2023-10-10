@@ -346,7 +346,7 @@
 
 		getNewNumber: function(cell, ca, cur) {
 			if (cell.group === "cell") {
-				if (ca === "a") {
+				if (ca === "a" && cell.getmaxnum() >= 10) {
 					return 10;
 				} else if (ca === "0" || ca === "w") {
 					return 0;
