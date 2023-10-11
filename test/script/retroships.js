@@ -31,5 +31,42 @@ ui.debug.addDebugData("retroships", {
 			null,
 			"pzprv3/retroships/5/5/c/6 6 6 1 1 /6 1 6 2 2 /3 5 4 3 4 /6 2 3 4 1 /3 4 6 0 2 /# + # + # /+ + + + # /# # # + + /+ + + + # /+ + # + # /0 0 0 0 0 0 /"
 		]
+	],
+	inputs: [
+		{
+			label: "Drag multiple cells",
+			input: ["newboard,3,3,p", "editmode", "mouse,left, 3,1, 5,1, 5,5"],
+			result:
+				"pzprv3/retroships/3/3/p/. 3 8 /. . 5 /. . 2 /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Drag single cell",
+			input: ["mouse,left, 0.1,4.1, 1.9,5.9"],
+			result:
+				"pzprv3/retroships/3/3/p/. 3 8 /. . 5 /6 . 2 /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Cursor input",
+			input: ["mouse,leftx3, 1,3"],
+			result:
+				"pzprv3/retroships/3/3/p/. 3 8 /0 . 5 /6 . 2 /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Cancel input when going offscreen",
+			input: ["mouse,left, 3,1, 3,7"],
+			result:
+				"pzprv3/retroships/3/3/p/. 3 8 /0 . 5 /6 . 2 /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Specific edit modes",
+			input: [
+				"editmode,water",
+				"mouse,left, 1,1, 3,1",
+				"editmode,circle-unshade",
+				"mouse,left, 3,5, 5,5"
+			],
+			result:
+				"pzprv3/retroships/3/3/p/0 0 8 /0 . 5 /6 6 6 /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		}
 	]
 });

@@ -213,7 +213,7 @@
 	},
 	"MouseEvent@retroships#1": {
 		inputModes: {
-			edit: ["clear", "water", "circle-shade", "completion"],
+			edit: ["clear", "water", "circle-unshade", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
 		},
 
@@ -312,7 +312,7 @@
 		},
 		mouseinput: function() {
 			switch (this.inputMode) {
-				case "circle-shade":
+				case "circle-unshade":
 					return this.inputFixedNumber(6);
 				case "water":
 					return this.inputFixedNumber(0);
