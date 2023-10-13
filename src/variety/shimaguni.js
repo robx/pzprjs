@@ -394,7 +394,9 @@
 					this.drawCircles();
 				}
 				this.drawQuesNumbers();
-				this.drawSubNumbers(true);
+				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {
+					this.drawSubNumbers(true);
+				}
 
 				this.drawBorders();
 				if (this.pid === "stostone") {
