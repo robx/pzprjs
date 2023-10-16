@@ -180,6 +180,7 @@ function toBGimage(pid) {
 		"statuepark",
 		"wafusuma",
 		"symmarea",
+		"tachibk",
 		"tajmahal",
 		"takoyaki",
 		"tapaloop",
