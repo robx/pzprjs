@@ -558,13 +558,17 @@
 				this.decodeAreaRoom();
 				this.decodeCellQnum();
 				this.decodeCellAns();
-				this.decodeCellSnum();
+				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {
+					this.decodeCellSnum();
+				}
 			},
 			encodeData: function() {
 				this.encodeAreaRoom();
 				this.encodeCellQnum();
 				this.encodeCellAns();
-				this.encodeCellSnum();
+				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {
+					this.encodeCellSnum();
+				}
 			}
 		},
 
