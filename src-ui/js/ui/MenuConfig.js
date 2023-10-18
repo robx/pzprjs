@@ -125,6 +125,12 @@
 				case "context":
 					idname = "context_marks";
 					break;
+				case "heyapin":
+					idname = "heyapin_overlap";
+					break;
+				case "bdwalk":
+					idname = "bdwalk_height";
+					break;
 			}
 
 			if (typeof idname === "string") {

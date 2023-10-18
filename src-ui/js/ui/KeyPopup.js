@@ -176,6 +176,19 @@ ui.keypopup = {
 		fracdiv: [51, 0],
 		battleship: [126, 0],
 		heyapin: [10, 0],
+		detour: [10, 0],
+		maxi: [10, 0],
+		tetrochain: [10, 0],
+		brownies: [127, 0],
+		sashikazune: [10, 0],
+		patchwork: [10, 0],
+		waterwalk: [10, 0],
+		haisu: [10, 0],
+		wittgen: [4, 0],
+		aquapelago: [10, 0],
+		compass: [10, 0],
+		mukkonn: [10, 0],
+		tachibk: [10, 0],
 		alter: [113, 113]
 	},
 
@@ -310,6 +323,8 @@ ui.keypopup = {
 			this.generate_magnets(mode);
 		} else if (type === 126) {
 			this.generate_battleship(mode);
+		} else if (type === 127) {
+			this.generate_brownies(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -389,8 +404,13 @@ ui.keypopup = {
 		) {
 		} else if (pid === "tasquare") {
 			cap = "□";
-		} else if (pid === "rectslider") {
+		} else if (pid === "rectslider" || pid === "aquapelago") {
 			cap = "■";
+		} else if (pid === "patchwork") {
+			cap = {
+				text: "■",
+				color: "rgb(204,204,204)"
+			};
 		} else if (
 			pid === "kurotto" ||
 			pid === "bonsan" ||
@@ -421,6 +441,7 @@ ui.keypopup = {
 			pid === "icelom" ||
 			pid === "icelom2" ||
 			pid === "icewalk" ||
+			pid === "waterwalk" ||
 			pid === "dbchoco"
 		) {
 			itemlist.push([
@@ -489,7 +510,12 @@ ui.keypopup = {
 	},
 	gentable8: function(mode) {
 		var pid = ui.puzzle.pid;
-		if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines") {
+		if (pid === "brownies") {
+			this.generate_main(
+				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "?"], ["w", "○"]],
+				4
+			);
+		} else if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines") {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4
@@ -862,6 +888,26 @@ ui.keypopup = {
 				"0"
 			],
 			6
+		);
+	},
+
+	generate_brownies: function(mode) {
+		this.generate_main(
+			[
+				"0",
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				" ",
+				["q", "○"],
+				["w", "■"]
+			],
+			4
 		);
 	},
 

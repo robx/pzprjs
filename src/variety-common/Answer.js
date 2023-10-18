@@ -208,6 +208,11 @@ pzpr.classmgr.makeCommon({
 				return cell.isShade();
 			}, "cs2x2");
 		},
+		check2x2UnshadeCell: function() {
+			this.check2x2Block(function(cell) {
+				return cell.isUnshade();
+			}, "cu2x2");
+		},
 
 		//---------------------------------------------------------------------------
 		// ans.checkSameColorTile() 白マスと黒マスが混ざったタイルがないかどうかチェックする

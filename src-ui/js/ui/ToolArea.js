@@ -83,7 +83,7 @@ ui.toolarea = {
 				if (!!role) {
 					var roles = role.split(/,/);
 					addbtnevent(el, "mousedown", roles[0]);
-					if (!!role[1]) {
+					if (!!roles[1]) {
 						addbtnevent(el, "mouseup", roles[1]);
 						addbtnevent(el, "mouseleave", roles[1]);
 						addbtnevent(el, "touchcancel", roles[1]);
@@ -345,6 +345,9 @@ ui.toolarea = {
 	},
 	resetblocks: function() {
 		ui.puzzle.board.operate("resetpos");
+	},
+	outlineshaded: function() {
+		ui.puzzle.board.operate("outlineshaded");
 	},
 	flushexcell: function() {
 		ui.puzzle.board.flushexcell();

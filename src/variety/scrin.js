@@ -8,17 +8,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: { edit: ["number", "clear"], play: ["shade", "unshade"] },
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "cell"
 	},
 
 	"MouseEvent@antmill": {
@@ -344,7 +335,7 @@
 		enablebcolor: true,
 		shadecolor: "rgb(160,255,160)",
 		trialcolor: "rgb(210,210,210)",
-		triallinecolor: "gray",
+		linetrialcolor: "gray",
 
 		getLineColor: function(border) {
 			if (!border.isLine()) {
@@ -354,7 +345,7 @@
 				return this.errlinecolor;
 			}
 			if (border.sidecell[0].trial || border.sidecell[1].trial) {
-				return this.triallinecolor;
+				return this.linetrialcolor;
 			}
 			return this.qanscolor;
 		},

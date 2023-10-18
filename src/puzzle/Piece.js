@@ -44,7 +44,16 @@ pzpr.classmgr.makeCommon({
 		qinfo: 0,
 		trial: 0, // TrialModeのstateを保持する変数
 
-		propques: ["ques", "qdir", "qnum", "qnum2", "qchar", "qnums"],
+		propques: [
+			"ques",
+			"qdir",
+			"qnum",
+			"qnum2",
+			"qnum3",
+			"qnum4",
+			"qchar",
+			"qnums"
+		],
 		propans: ["qans", "anum", "line", "trial"],
 		propsub: ["qsub", "qcmp", "snum"],
 		propinfo: ["error", "qinfo"],
@@ -353,6 +362,7 @@ pzpr.classmgr.makeCommon({
 
 		numberRemainsUnshaded: false, // 数字のあるマスが黒マスにならないパズル
 		enableSubNumberArray: false, // 補助数字の配列を作るパズル
+		disableAnum: false,
 		supportQnumAnum: false, // True if qnum and anum can appear at the same time.
 
 		adjacent: {}, // 四方向に隣接するセルを保持する
@@ -460,7 +470,7 @@ pzpr.classmgr.makeCommon({
 				this.clrSnum();
 			}
 			// playmode時 val>=0は数字 val=-1は消去 numberAsObjectの・はval=-2 numberWithMBの○×はval=-2,-3
-			else if (this.qnum === -1) {
+			else if (this.qnum === -1 && !this.disableAnum) {
 				var vala =
 					val > -1 && !(this.numberAsObject && this.anum === val) ? val : -1;
 				var vals =
@@ -682,6 +692,7 @@ pzpr.classmgr.makeCommon({
 		// cell.getdir4clist()   上下左右4方向の存在するセルを返す
 		// cell.getdir4cblist()  上下左右4方向のセル＆境界線＆方向を返す
 		// cell.getdir8clist()   Get orthogonally and diagonally adjacent cells
+		// cell.getdiagclist()   Get diagonally adjacent cells
 		//---------------------------------------------------------------------------
 		getdir4clist: function() {
 			var adc = this.adjacent,
@@ -723,6 +734,21 @@ pzpr.classmgr.makeCommon({
 				if (cells[i].group === "cell" && !cells[i].isnull) {
 					list.push([cells[i], i + 1]);
 				} /* i+1==dir */
+			}
+			return list;
+		},
+		getdiagclist: function() {
+			var list = [];
+			var cells = [
+				this.relcell(-2, -2),
+				this.relcell(2, -2),
+				this.relcell(-2, 2),
+				this.relcell(2, 2)
+			];
+			for (var i = 0; i < 4; i++) {
+				if (cells[i].group === "cell" && !cells[i].isnull) {
+					list.push([cells[i], i + 1]);
+				}
 			}
 			return list;
 		},
