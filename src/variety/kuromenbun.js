@@ -27,6 +27,17 @@
 			return Math.round((this.board.cols * this.board.rows) / 1.5);
 		}
 	},
+	CellList: {
+		seterr: function(num) {
+			if (!this.board.isenableSetError()) {
+				return;
+			}
+			for (var i = 0; i < this.length; i++) {
+				var old = this[i].error;
+				this[i].error = old <= 0 ? num : Math.max(old, num);
+			}
+		}
+	},
 	Board: {
 		hasborder: 1,
 		rows: 8,
@@ -60,7 +71,18 @@
 		gridcolor_type: "DARK",
 
 		enablebcolor: true,
-		bgcellcolor_func: "qsub1",
+		errbcolor2: "rgb(192, 192, 255)",
+
+		getBGCellColor: function(cell) {
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errbcolor1;
+			} else if ((cell.error || cell.qinfo) === 2) {
+				return this.errbcolor2;
+			} else if (cell.qsub === 1) {
+				return this.bcolor;
+			}
+			return null;
+		},
 
 		paint: function() {
 			this.drawBGCells();
@@ -112,6 +134,7 @@
 		},
 
 		checkShadeCount: function(factor, code) {
+			var checkSingleError = !this.puzzle.getConfig("multierr");
 			var rooms = this.board.roommgr.components;
 			for (var r = 0; r < rooms.length; r++) {
 				var room = rooms[r],
@@ -130,6 +153,10 @@
 						return;
 					}
 					room.clist.seterr(1);
+					room.adjclist.seterr(2);
+					if (checkSingleError) {
+						return;
+					}
 				}
 			}
 		}
