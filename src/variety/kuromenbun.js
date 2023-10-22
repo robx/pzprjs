@@ -9,11 +9,23 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["border", "number", "clear"],
-			play: ["shade", "unshade"]
+			edit: ["border", "number", "clear", "info-ublk"],
+			play: ["shade", "unshade", "info-ublk"]
 		},
 		autoedit_func: "areanum",
-		autoplay_func: "cell"
+		autoplay_func: "cell",
+
+		dispInfoUblk: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull || !cell.room) {
+				return;
+			}
+			cell.room.clist.setinfo(1);
+			cell.room.adjclist.setinfo(2);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
+		}
 	},
 
 	KeyEvent: {
@@ -35,6 +47,12 @@
 			for (var i = 0; i < this.length; i++) {
 				var old = this[i].error;
 				this[i].error = old <= 0 ? num : Math.max(old, num);
+			}
+		},
+		setinfo: function(num) {
+			for (var i = 0; i < this.length; i++) {
+				var old = this[i].qinfo;
+				this[i].qinfo = old <= 0 ? num : Math.max(old, num);
 			}
 		}
 	},
