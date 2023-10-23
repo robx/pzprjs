@@ -188,7 +188,8 @@ ui.keypopup = {
 		aquapelago: [10, 0],
 		compass: [10, 0],
 		mukkonn: [10, 0],
-		tachibk: [10, 0]
+		tachibk: [10, 0],
+		alter: [113, 113]
 	},
 
 	//---------------------------------------------------------------------------
@@ -632,7 +633,7 @@ ui.keypopup = {
 			itemlist = [];
 
 		itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
-		if (pid === "hakoiri") {
+		if (pid === "hakoiri" || pid === "alter") {
 			itemlist.push([
 				"4",
 				{
