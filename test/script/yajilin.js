@@ -5,7 +5,8 @@ ui.debug.addDebugData("yajilin", {
 	failcheck: [
 		[
 			"anNoArrow",
-			"pzprv3/yajilin/2/3/0,1 . . /. . . /. . . /# . . /0 1 /0 1 /0 1 1 /"
+			"pzprv3/yajilin/2/3/0,1 . . /. . . /. . . /# . . /0 1 /0 1 /0 1 1 /",
+			{ skiprules: true }
 		],
 
 		[
