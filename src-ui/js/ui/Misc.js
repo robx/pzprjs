@@ -158,6 +158,7 @@ function toBGimage(pid) {
 		"norinuri",
 		"nurimisaki",
 		"nuriuzu",
+		"nothing",
 		"oneroom",
 		"ovotovata",
 		"oyakodori",
