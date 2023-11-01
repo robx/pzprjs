@@ -551,7 +551,7 @@
 		gridcolor_type: "SLIGHT",
 
 		paint: function() {
-			if (this.pid !== "remlen") {
+			if (this.pid !== "remlen" && this.pid !== "simpleloop") {
 				this.drawBGCells();
 			}
 
@@ -562,6 +562,8 @@
 			}
 			if (this.pid === "remlen") {
 				this.drawBorderDirBG();
+			}
+			if (this.pid === "remlen" || this.pid === "simpleloop") {
 				this.drawBGCells();
 			}
 			if (
