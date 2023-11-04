@@ -146,6 +146,7 @@ function toBGimage(pid) {
 		"kuroclone",
 		"lollipops",
 		"magnets",
+		"mannequin",
 		"martini",
 		"maxi",
 		"midloop",
