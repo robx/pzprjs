@@ -52,13 +52,23 @@
 	v3index.extend({
 		/* onload function */
 		onload_func: function() {
-			var enableSort = true;
+			self.setTranslation();
+			self.setBlockVisibility();
+			self.translate();
+			self.initializeSort();
+		},
+
+		initializeSort: function() {
+			// TODO load previously set sorting option
+			var enableSort =
+				JSON.parse(localStorage.getItem("pzprv3_config:ui") || "{}").listsort ||
+				"none";
 			var allGenres = _doc.querySelectorAll(".lists > ul > li");
 			for (var i = 0; i < allGenres.length; i++) {
 				if (allGenres[i].dataset) {
 					allGenres[i].dataset.order = i;
 				} else {
-					enableSort = false;
+					enableSort = null;
 				}
 			}
 
@@ -67,6 +77,7 @@
 				.forEach(function(el) {
 					if (enableSort && el.id.match(/puzsort_(.+)$/)) {
 						var typename = RegExp.$1;
+						el.className = typename === enableSort ? "puzmenusel" : "puzmenu";
 						el.addEventListener(
 							"click",
 							(function(typename) {
@@ -78,10 +89,6 @@
 						);
 					}
 				});
-
-			self.setTranslation();
-			self.setBlockVisibility();
-			self.translate();
 			if (enableSort) {
 				getEL("puzmenu").style.display = "block";
 				self.apply_sort();
@@ -95,16 +102,24 @@
 					el.className =
 						el.id === "puzsort_" + typename ? "puzmenusel" : "puzmenu";
 				});
+
+			var setting = JSON.parse(
+				localStorage.getItem("pzprv3_config:ui") || "{}"
+			);
+			setting.listsort = typename;
+			localStorage.setItem("pzprv3_config:ui", JSON.stringify(setting));
 			self.apply_sort();
 		},
 
 		apply_sort: function() {
 			var activeSortElement = _doc.querySelector("#puzmenu > li.puzmenusel"),
-				activeSort = activeSortElement ? activeSortElement.dataset.sort : "";
+				activeSort = activeSortElement
+					? activeSortElement.dataset.sort
+					: "none";
 
 			var pick = function(a) {
 				if (activeSort === "alpha") {
-					return a.innerText;
+					return a.innerText.toLowerCase();
 				}
 				return +a.dataset.order;
 			};
