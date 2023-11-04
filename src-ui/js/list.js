@@ -15,6 +15,10 @@
 	var _doc = document;
 	var self = v3index;
 
+	function getEL(id) {
+		return _doc.getElementById(id);
+	}
+
 	self.doclang =
 		JSON.parse(localStorage.getItem("pzprv3_config:ui") || "{}").language ||
 		pzpr.lang;
@@ -48,9 +52,84 @@
 	v3index.extend({
 		/* onload function */
 		onload_func: function() {
+			var enableSort = true;
+			var allGenres = _doc.querySelectorAll(".lists > ul > li");
+			for (var i = 0; i < allGenres.length; i++) {
+				if (allGenres[i].dataset) {
+					allGenres[i].dataset.order = i;
+				} else {
+					enableSort = false;
+				}
+			}
+
+			Array.prototype.slice
+				.call(_doc.querySelectorAll("#puzmenu > li"))
+				.forEach(function(el) {
+					if (enableSort && el.id.match(/puzsort_(.+)$/)) {
+						var typename = RegExp.$1;
+						el.addEventListener(
+							"click",
+							(function(typename) {
+								return function(e) {
+									self.click_tab(typename);
+								};
+							})(typename),
+							false
+						);
+					}
+				});
+
 			self.setTranslation();
 			self.setBlockVisibility();
 			self.translate();
+			if (enableSort) {
+				getEL("puzmenu").style.display = "block";
+				self.apply_sort();
+			}
+		},
+
+		click_tab: function(typename) {
+			Array.prototype.slice
+				.call(_doc.querySelectorAll("#puzmenu > li"))
+				.forEach(function(el) {
+					el.className =
+						el.id === "puzsort_" + typename ? "puzmenusel" : "puzmenu";
+				});
+			self.apply_sort();
+		},
+
+		apply_sort: function() {
+			var activeSortElement = _doc.querySelector("#puzmenu > li.puzmenusel"),
+				activeSort = activeSortElement ? activeSortElement.dataset.sort : "";
+
+			var pick = function(a) {
+				if (activeSort === "alpha") {
+					return a.innerText;
+				}
+				return +a.dataset.order;
+			};
+
+			var sortFunc = function(ia, ib) {
+				var a = pick(ia),
+					b = pick(ib);
+				if (a === b) {
+					return 0;
+				}
+				return a < b ? -1 : +1;
+			};
+
+			Array.prototype.slice
+				.call(_doc.querySelectorAll(".lists > ul"))
+				.forEach(function(list) {
+					var subItems = Array.prototype.slice.call(
+						list.querySelectorAll("li")
+					);
+					subItems.sort(sortFunc);
+
+					subItems.forEach(function(el) {
+						list.appendChild(el);
+					});
+				});
 		},
 
 		setBlockVisibility: function() {
