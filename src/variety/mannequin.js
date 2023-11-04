@@ -233,7 +233,7 @@
 				if (flag === 3 && room.clist.scnt <= 2) {
 					continue;
 				}
-				if (flag !== room.clist.scnt) {
+				if (flag < 3 && flag !== room.clist.scnt) {
 					continue;
 				}
 				this.failcode.add(code);
