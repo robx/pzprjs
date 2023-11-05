@@ -187,6 +187,28 @@
 					if (this.checkOnly) {
 						break;
 					}
+					bd.border.setnoerr();
+					if (isvert) {
+						bd.cellinside(
+							Math.min(cell.bx, pos.bx),
+							cell.by,
+							Math.max(cell.bx, pos.bx),
+							cell.by
+						).seterr(1);
+						bd.borderinside(pos.bx, pos.by - found * 2, pos.bx, pos.by).seterr(
+							1
+						);
+					} else {
+						bd.cellinside(
+							cell.bx,
+							Math.min(cell.by, pos.by),
+							cell.bx,
+							Math.max(cell.by, pos.by)
+						).seterr(1);
+						bd.borderinside(pos.bx - found * 2, pos.by, pos.bx, pos.by).seterr(
+							1
+						);
+					}
 					cell.seterr(1);
 				}
 			}
