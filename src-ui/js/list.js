@@ -59,23 +59,21 @@
 		},
 
 		initializeSort: function() {
-			// TODO load previously set sorting option
 			var enableSort =
 				JSON.parse(localStorage.getItem("pzprv3_config:ui") || "{}").listsort ||
 				"none";
 			var allGenres = _doc.querySelectorAll(".lists > ul > li");
 			for (var i = 0; i < allGenres.length; i++) {
-				if (allGenres[i].dataset) {
-					allGenres[i].dataset.order = i;
-				} else {
-					enableSort = null;
+				if (!allGenres[i].dataset) {
+					return;
 				}
+				allGenres[i].dataset.order = i;
 			}
 
 			Array.prototype.slice
 				.call(_doc.querySelectorAll("#puzmenu > li"))
 				.forEach(function(el) {
-					if (enableSort && el.id.match(/puzsort_(.+)$/)) {
+					if (el.id.match(/puzsort_(.+)$/)) {
 						var typename = RegExp.$1;
 						el.className = typename === enableSort ? "puzmenusel" : "puzmenu";
 						el.addEventListener(
@@ -89,10 +87,8 @@
 						);
 					}
 				});
-			if (enableSort) {
-				getEL("puzmenu").style.display = "block";
-				self.apply_sort();
-			}
+			getEL("puzmenu").style.display = "block";
+			self.apply_sort();
 		},
 
 		click_tab: function(typename) {
