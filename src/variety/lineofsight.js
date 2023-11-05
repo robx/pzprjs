@@ -48,6 +48,7 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		minnum: 0,
 		maxnum: function() {
 			return Math.max(this.board.cols, this.board.rows);
 		}
@@ -123,7 +124,8 @@
 			"checkNoLineInDir",
 
 			"checkOneLoop",
-			"checkDeadendLine+"
+			"checkDeadendLine+",
+			"checkNumberHasArrow"
 		],
 
 		checkNoLineInDir: function() {
