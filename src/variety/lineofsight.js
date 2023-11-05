@@ -57,7 +57,11 @@
 		hasborder: 2,
 		borderAsLine: true
 	},
-
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			this.adjustNumberArrow(key, d);
+		}
+	},
 	LineGraph: {
 		enabled: true
 	},
