@@ -243,6 +243,7 @@
 			loute: [0, 0, "エルート", "L-route"],
 			magnets: [0, 0, "Magnets", "Magnets"],
 			makaro: [0, 0, "マカロ", "Makaro"],
+			mannequin: [0, 0, "マネキンゲート", "Mannequin Gate"],
 			martini: [0, 0, "マティーニ", "Martini", "shimaguni"],
 			mashu: [0, 1, "ましゅ", "Masyu", "", { kanpen: "masyu", alias: "pearl" }],
 			maxi: [0, 0, "Maxi Loop", "Maxi Loop", "country"],
