@@ -785,5 +785,8 @@
     "ceOverlap.tachibk": "左右の盤面の同じ位置に当たるマスが、同じマス数のブロックになっています。",
     "bkLineNe.nothing": "ブロックの一部のマスにしか線が通っていません。",
     "lnLengthNe3.wittgen": "長方形が3マスではありません。",
-    "ceDirection.mukkonn": "線の長さが数字と異なっています。"
+    "ceDirection.mukkonn": "線の長さが数字と異なっています。",
+    "bsEqShade.mannequin": "黒マスどうしの距離が隣り合う領域で一致しています。",
+    "bkShadeDistNe.mannequin": "黒マスどうしの距離が数字と異なります。",
+    "cbUnshade": "太線をまたいで黒マスが隣り合っています。"
 }
