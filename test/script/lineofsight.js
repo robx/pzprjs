@@ -41,5 +41,23 @@ ui.debug.addDebugData("lineofsight", {
 			"pzprv3/lineofsight/5/5/. 3,2 . 3,1 . /. 3,1 . 3,2 . /. . 4,2 . . /. 1,2 . 4,1 . /. 1,1 . 3,2 . /1 0 0 1 0 0 /1 1 1 0 1 0 /0 0 1 0 0 1 /1 0 0 1 1 1 /1 1 1 1 0 0 /1 1 1 0 0 /0 1 0 1 0 /1 0 0 0 1 /1 1 0 1 0 /0 1 0 0 1 /1 0 1 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,2,2",
+				"editmode",
+				"cursor,1,1",
+				"mouse,right,1,1",
+				"mouse,left,1,1,3,1",
+				"key,down,1,shift+down"
+			],
+			result:
+				"pzprv3/lineofsight/2/2/4,2 . /2,1 . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /"
+		},
+		{
+			input: ["playmode", "mouse,left,2,0,4,0,4,2"],
+			result:
+				"pzprv3/lineofsight/2/2/4,2 . /2,1 . /0 0 1 /0 0 0 /0 1 /0 0 /0 0 /"
+		}
+	]
 });
