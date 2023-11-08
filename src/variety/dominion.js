@@ -13,13 +13,8 @@
 			edit: ["number", "clear"],
 			play: ["shade", "unshade", "info-ublk"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				this.inputcell();
-			} else if (this.puzzle.editmode) {
-				this.inputqnum();
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "cell"
 	},
 
 	KeyEvent: {

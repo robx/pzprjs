@@ -5,7 +5,8 @@ ui.debug.addDebugData("yajilin", {
 	failcheck: [
 		[
 			"anNoArrow",
-			"pzprv3/yajilin/2/3/0,1 . . /. . . /. . . /# . . /0 1 /0 1 /0 1 1 /"
+			"pzprv3/yajilin/2/3/0,1 . . /. . . /. . . /# . . /0 1 /0 1 /0 1 1 /",
+			{ skiprules: true }
 		],
 
 		[
@@ -117,6 +118,15 @@ ui.debug.addDebugData("yajilin", {
 		{
 			input: ["editmode", "cursor,5,1", "mouse,left, 5,1"],
 			result: "pzprv3/yajilin/1/4/0,- . 0,- . /. . . . /0 0 0 /"
+		},
+		/* test prehook */
+		{
+			input: ["newboard,2,2", "playmode", "mouse,left,1,1,3,1,3,3,1,3"],
+			result: "pzprv3/yajilin/2/2/. . /. . /. . /. . /1 /1 /0 1 /"
+		},
+		{
+			input: ["editmode", "cursor,1,3", "key,1"],
+			result: "pzprv3/yajilin/2/2/. . /0,1 . /. . /. . /1 /0 /0 1 /"
 		}
 	]
 });

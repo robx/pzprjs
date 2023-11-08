@@ -41,7 +41,7 @@ ui.debug.addDebugData("ladders", {
 				"mouse,left,2,0,2,2",
 				"mouse,left,4,0,4,2",
 				"mouse,right,1,1",
-				"playmode,info-line",
+				"playmode,info-room",
 				"mouse,left,1,1",
 				"playmode,auto",
 				"mouse,left,1,1",
@@ -50,7 +50,7 @@ ui.debug.addDebugData("ladders", {
 			result: "pzprv3/ladders/1/3/3/0 1 2 /1 . . /0 2 0 /0 0 /1 0 0 /"
 		},
 		{
-			input: ["playmode,info-line", "mouse,left,1,1"],
+			input: ["playmode,info-room", "mouse,left,1,1"],
 			result: function(puzzle, assert) {
 				var bd = puzzle.board;
 				assert.equal(bd.getc(1, 1).qinfo, 1);
@@ -62,7 +62,7 @@ ui.debug.addDebugData("ladders", {
 			input: [
 				"playmode,auto",
 				"mouse,left,4,1,2,1",
-				"playmode,info-line",
+				"playmode,info-room",
 				"mouse,left,1,1"
 			],
 			result: function(puzzle, assert) {

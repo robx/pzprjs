@@ -4,34 +4,27 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["compass"], {
+})(["compass", "mukkonn"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		inputModes: { edit: ["clear", "number"], play: ["border", "subline"] },
+		inputModes: { edit: ["clear"], play: ["border", "subline"] },
 		mouseinput_clear: function() {
 			this.input51_fixed();
 		},
-		mouseinput_number: function() {
+		mouseinputAutoEdit: function() {
 			if (this.mousestart) {
-				this.inputqnum_cell51();
+				this.input51();
 			}
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputQsubLine();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.input51();
-				}
-			}
-		}
+		autoplay_func: "border"
+	},
+	"MouseEvent@mukkonn": {
+		inputModes: {
+			edit: ["clear", "empty", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		autoplay_func: "line"
 	},
 
 	//---------------------------------------------------------
@@ -62,7 +55,42 @@
 		},
 		minnum: 0
 	},
-	CellList: {
+	"Cell@mukkonn": {
+		maxnum: function() {
+			return Math.max(this.board.cols, this.board.rows) - 1;
+		},
+
+		getSegmentDir: function(dir) {
+			var llist = new this.klass.PieceList();
+			var pos = this.getaddr().movedir(dir, 1);
+			while (1) {
+				var border = pos.getb();
+				if (!border || border.isnull) {
+					break;
+				}
+				if (border.isLine()) {
+					llist.add(border);
+				} else {
+					break;
+				}
+				pos.movedir(dir, 2);
+			}
+			return llist;
+		},
+
+		noLP: function(dir) {
+			return this.isEmpty();
+		}
+	},
+	Border: {
+		isQuesBorder: function() {
+			return this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty();
+		}
+	},
+	"Border@mukkonn": {
+		enableLineNG: true
+	},
+	"CellList@compass": {
 		singleQnumCell: true
 	},
 
@@ -110,7 +138,10 @@
 		}
 	},
 
-	AreaRoomGraph: {
+	"AreaRoomGraph@compass": {
+		enabled: true
+	},
+	"LineGraph@mukkonn": {
 		enabled: true
 	},
 
@@ -122,12 +153,21 @@
 		ttcolor: "rgb(255,255,127)",
 
 		bordercolor_func: "qans",
+		getBGCellColor: function(cell) {
+			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
+		},
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawQues51();
 
-			this.drawDashedGrid();
+			if (this.pid === "compass") {
+				this.drawDashedGrid();
+			} else {
+				this.drawGrid();
+				this.drawPekes();
+				this.drawLines();
+			}
 			this.drawBorders();
 
 			this.drawQuesNumbersOn51();
@@ -138,10 +178,21 @@
 			this.drawTarget();
 		},
 
+		getBorderColor: function(border) {
+			if (border.isQuesBorder()) {
+				return "black";
+			}
+
+			return this.getBorderColor_qans(border);
+		},
+
 		drawQues51: function() {
 			this.drawTargetTriangle();
 			this.drawSlash51Cells();
 		}
+	},
+	"Graphic@mukkonn": {
+		irowake: true
 	},
 
 	Encode: {
@@ -159,6 +210,12 @@
 			while (i < bstr.length && bd.cell[c]) {
 				var cell = bd.cell[c],
 					ca = bstr.charAt(i);
+				if (ca === "_") {
+					cell.ques = 7;
+					c++;
+					i++;
+					continue;
+				}
 				if (ca >= "g" && ca <= "z") {
 					c += parseInt(ca, 36) - 15;
 					i++;
@@ -184,7 +241,9 @@
 			for (var c = 0; c < bd.cell.length; c++) {
 				var pstr = "",
 					cell = bd.cell[c];
-				if (cell.ques === 51) {
+				if (cell.isEmpty()) {
+					pstr += "_";
+				} else if (cell.ques === 51) {
 					for (var dir = 1; dir <= 4; dir++) {
 						var qn = cell.getQnumDir(dir);
 						if (qn === -1) {
@@ -224,21 +283,27 @@
 			var bd = this.board;
 			bd.disableInfo(); /* mv.set51cell()用 */
 			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+					return;
+				}
 				if (ca === ".") {
 					return;
-				} else {
-					var inp = ca.split(",");
-					cell.set51cell();
-					cell.qnum = +inp[0];
-					cell.qnum2 = +inp[1];
-					cell.qnum3 = +inp[2];
-					cell.qnum4 = +inp[3];
 				}
+				var inp = ca.split(",");
+				cell.set51cell();
+				cell.qnum = +inp[0];
+				cell.qnum2 = +inp[1];
+				cell.qnum3 = +inp[2];
+				cell.qnum4 = +inp[3];
 			});
 			bd.enableInfo(); /* mv.set51cell()用 */
 		},
 		encodeCellCompass: function() {
 			this.encodeCell(function(cell) {
+				if (cell.isEmpty()) {
+					return "# ";
+				}
 				if (cell.ques === 51) {
 					return (
 						cell.qnum +
@@ -255,10 +320,20 @@
 			});
 		}
 	},
+	"FileIO@mukkonn": {
+		decodeData: function() {
+			this.decodeCellCompass();
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeCellCompass();
+			this.encodeBorderLine();
+		}
+	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
+	"AnsCheck@compass": {
 		checklist: [
 			"checkNoNumber",
 			"checkDirectionSize",
@@ -310,6 +385,56 @@
 						cell.seterr(1);
 						clist2.seterr(1);
 					}
+				}
+			}
+		}
+	},
+	"AnsCheck@mukkonn": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkNumberExit",
+
+			"checkDeadendLine+",
+			"checkOneLoop",
+			"checkNoLine+"
+		],
+
+		checkNumberExit: function() {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				if (!cell.isNum()) {
+					continue;
+				}
+
+				for (var dir = 1; dir <= 4; dir++) {
+					var n = cell.getQnumDir(dir);
+					if (n < 0 || !cell.reldirbd(dir, 1).isLine()) {
+						continue;
+					}
+					var segments = cell.getSegmentDir(dir);
+					if (!segments || segments.length === n) {
+						continue;
+					}
+					if (
+						segments.length < n &&
+						!cell
+							.getaddr()
+							.movedir(dir, segments.length * 2)
+							.getc()
+							.isLineCurve()
+					) {
+						continue;
+					}
+
+					this.failcode.add("ceDirection");
+					if (this.checkOnly) {
+						return;
+					}
+					this.board.border.setnoerr();
+					cell.seterr(1);
+					segments.seterr(1);
 				}
 			}
 		}

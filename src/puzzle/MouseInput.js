@@ -68,6 +68,17 @@ pzpr.classmgr.makeCommon({
 			this.mousemove = false;
 			this.mouseend = false;
 
+			var pc = this;
+			[
+				["mouseinputAutoEdit", this.autoedit_func],
+				["mouseinputAutoPlay", this.autoplay_func]
+			].forEach(function(item) {
+				if (pc[item[0]] !== pzpr.common.MouseEvent.prototype[item[0]]) {
+					return;
+				} // パズル個別の関数が定義されている場合はそのまま使用
+				pc[item[0]] = pc[item[0] + "_" + item[1]] || pc[item[0]];
+			});
+
 			if (this.puzzle.execConfig("dispmove") && !!cell0 && !cell0.isnull) {
 				cell0.draw();
 			}
@@ -267,6 +278,8 @@ pzpr.classmgr.makeCommon({
 					mode = "info-blk";
 				} else if (this.inputModes.play.indexOf("info-ublk") >= 0) {
 					mode = "info-ublk";
+				} else if (this.inputModes.play.indexOf("info-room") >= 0) {
+					mode = "info-room";
 				}
 			}
 			switch (mode) {
@@ -302,7 +315,7 @@ pzpr.classmgr.makeCommon({
 					this.inputFixedNumber(-3);
 					break;
 				case "bgcolor":
-					this.inputBGcolor(true);
+					this.inputBGcolor();
 					break;
 				case "subcircle":
 				case "bgcolor1":
@@ -368,6 +381,11 @@ pzpr.classmgr.makeCommon({
 						this.dispInfoUblk();
 					}
 					break;
+				case "info-room":
+					if (this.mousestart) {
+						this.dispInfoRoom();
+					}
+					break;
 				default:
 					this.mouseinput_other();
 					break; /* 各パズルのルーチンへ */
@@ -382,7 +400,18 @@ pzpr.classmgr.makeCommon({
 			this.inputclean_cell();
 		},
 		//オーバーライド用
-		mouseinput_auto: function() {},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				this.mouseinputAutoPlay();
+			} else if (this.puzzle.editmode) {
+				this.mouseinputAutoEdit();
+			}
+		},
+		mouseinputAutoEdit: function() {},
+		mouseinputAutoPlay: function() {},
+		autoedit_func: "", // mouseinputAutoEdit
+		autoplay_func: "", // mouseinputAutoPlay
+
 		mouseinput_other: function() {},
 
 		//---------------------------------------------------------------------------
@@ -404,6 +433,7 @@ pzpr.classmgr.makeCommon({
 			) {
 				this.inputMode = mode;
 				this.savedInputMode[this.puzzle.editmode ? "edit" : "play"] = mode;
+				this.puzzle.redraw();
 			} else {
 				throw Error("Invalid input mode :" + mode);
 			}
@@ -577,15 +607,22 @@ pzpr.classmgr.makeCommon({
 		setcursorsnum: function(pos) {
 			var pos0 = this.cursor.getaddr();
 			this.cursor.setaddr(pos);
+			var target;
 			var bx = this.inputPoint.bx,
 				by = this.inputPoint.by;
-			bx = (((bx + 12) % 2) * 1.5) | 0;
-			by = (((by + 12) % 2) * 1.5) | 0;
-			var target;
-			if (this.pid !== "factors") {
-				target = [5, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+
+			if (this.cursor.disableAnum) {
+				bx = bx % 2 | 0;
+				by = by % 2 | 0;
+				target = [5, 4, 2, 3][by * 2 + bx];
 			} else {
-				target = [0, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+				bx = (((bx + 12) % 2) * 1.5) | 0;
+				by = (((by + 12) % 2) * 1.5) | 0;
+				if (this.pid !== "factors") {
+					target = [5, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+				} else {
+					target = [0, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
+				}
 			}
 			if (this.cursor.targetdir !== target) {
 				this.cursor.targetdir = target;
