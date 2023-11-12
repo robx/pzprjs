@@ -96,7 +96,7 @@
 			araf: [0, 0, "相ダ部屋", "Araf", "araf"],
 			armyants: [0, 0, "ぐんたいあり", "Army Ants", "kaero"],
 			arukone: [0, 0, "アルコネ", "Arukone", "numlin"],
-			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "ekawayeh", "heyawake"],
+			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "Ayeheya", "heyawake"],
 			balance: [0, 0, "Balance Loop", "Balance Loop"],
 			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
 			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
