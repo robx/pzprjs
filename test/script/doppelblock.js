@@ -50,9 +50,14 @@ ui.debug.addDebugData("doppelblock", {
 				"pzprv3/doppelblock/4/4/. . 2 . . /. . . . . /. 1 q1 2 . /. . . . . /. . . . . /"
 		},
 		{
-			input: ["playmode,shade", "mouse,left,1,3,7,3"],
+			input: [
+				"playmode,shade",
+				"mouse,left,1,3,7,3",
+				"playmode,objblank",
+				"mouse,left,7,7"
+			],
 			result:
-				"pzprv3/doppelblock/4/4/. . 2 . . /. . . . . /. - q1 - - /. . . . . /. . . . . /"
+				"pzprv3/doppelblock/4/4/. . 2 . . /. . . . . /. - q1 - - /. . . . . /. . . . + /"
 		},
 		{
 			input: [
@@ -67,7 +72,7 @@ ui.debug.addDebugData("doppelblock", {
 				"mouse,rightx3,3,5"
 			],
 			result:
-				"pzprv3/doppelblock/4/4/. . 2 . . /. . + . . /. + q1 . - /. . 2 . . /. . . . . /"
+				"pzprv3/doppelblock/4/4/. . 2 . . /. . + . . /. + q1 . - /. . 2 . . /. . . . + /"
 		}
 	]
 });
