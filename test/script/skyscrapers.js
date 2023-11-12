@@ -17,6 +17,11 @@ ui.debug.addDebugData("skyscrapers", {
 		],
 		[
 			null,
+			"pzprv3/skyscrapers/4/4/. . . . . . /. 2 1 4 3 . /4 1 2 3 4 . /. 4 q3 1 2 3 /. 3 4 2 1 . /. . 1 3 . . /",
+			{ skiprules: true }
+		],
+		[
+			null,
 			"pzprv3/skyscrapers/4/4/. . . . . . /. 2 1 4 3 . /4 1 2 3 4 . /. 4 3 1 2 3 /. 3 4 2 1 . /. . 1 3 . . /"
 		]
 	],

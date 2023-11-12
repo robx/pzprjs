@@ -189,10 +189,10 @@
 					break;
 				}
 
-				if (cell.anum <= height) {
+				if (cell.getNum() <= height) {
 					continue;
 				}
-				height = cell.anum;
+				height = cell.getNum();
 				ldata[cell.id] = 1;
 				ccnt++;
 			}
