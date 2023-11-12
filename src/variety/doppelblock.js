@@ -17,9 +17,7 @@
 		},
 		mouseinput_number: function() {
 			if (this.mousestart) {
-				if (this.puzzle.editmode) {
-					this.inputqnum_excell();
-				} else {
+				if (!this.puzzle.editmode || !this.inputqnum_excell()) {
 					this.inputqnum();
 				}
 			}
@@ -33,9 +31,7 @@
 					}
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum_excell();
-				}
+				this.mouseinput_number();
 			}
 		},
 
@@ -53,10 +49,11 @@
 		},
 
 		getNewNumber: function(cell, val) {
+			var bound = this.puzzle.editmode ? -1 : -3;
 			if (this.btn === "left") {
 				val = val + 1;
 				if (val > cell.getmaxnum()) {
-					return -3;
+					return bound;
 				} else {
 					var minnum = cell.getminnum();
 					if (val >= 0 && val < minnum) {
@@ -66,7 +63,7 @@
 				}
 			} else if (this.btn === "right") {
 				val = val - 1;
-				if (val < -3) {
+				if (val < bound) {
 					return cell.getmaxnum();
 				} else {
 					if (val >= 0 && val < cell.getminnum()) {
@@ -80,12 +77,18 @@
 		},
 
 		inputDot: function() {
+			this.inputFixedNumber(-2);
+		},
+		inputShade: function() {
+			this.inputFixedNumber(-3);
+		},
+		inputFixedNumber: function(num) {
 			var cell = this.getcell();
 			if (cell.isnull) {
 				return;
 			}
 			if (this.inputData === null) {
-				this.inputData = cell.getNum() === -2 ? -1 : -2;
+				this.inputData = cell.getNum() === num ? -1 : num;
 			}
 
 			cell.setNum(this.inputData);
@@ -99,12 +102,6 @@
 	KeyEvent: {
 		enablemake: true,
 		enableplay: true,
-		moveTarget: function(ca) {
-			if (this.puzzle.playmode) {
-				return this.moveTCell(ca);
-			}
-			return this.moveExCell(ca);
-		},
 		keyinput: function(ca) {
 			if (this.puzzle.playmode) {
 				var isSnum = this.cursor.targetdir !== 0;
@@ -124,6 +121,8 @@
 				var excell = this.cursor.getex();
 				if (!excell.isnull) {
 					this.key_inputqnum_main(excell, ca);
+				} else {
+					this.key_inputqnum(ca);
 				}
 			}
 		}
@@ -132,6 +131,7 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		disInputHatena: true,
 		enableSubNumberArray: true,
 		numberWithMB: true,
 
@@ -140,10 +140,13 @@
 		},
 
 		noNum: function() {
-			return this.anum < 0 && this.qans !== 1;
+			return this.qnum < 0 && this.anum < 0 && this.qans !== 1;
 		},
 
 		getNum: function() {
+			if (this.qnum !== -1) {
+				return this.qnum;
+			}
 			if (this.anum > 0) {
 				return this.anum;
 			}
@@ -157,6 +160,18 @@
 		},
 
 		setNum: function(val) {
+			if (this.puzzle.editmode) {
+				this.setQnum(val);
+				this.setAnum(-1);
+				this.setQsub(0);
+				this.setQans(0);
+				this.clrSnum();
+				return;
+			}
+			if (this.qnum !== -1) {
+				return;
+			}
+
 			if (val > 0) {
 				this.setAnum(val);
 				this.setQsub(0);
@@ -225,6 +240,7 @@
 
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
+			this.drawQuesNumbers();
 			this.drawNumbersExCell();
 
 			this.drawChassis();
@@ -237,9 +253,17 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
+			this.decodeNumber16();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16ExCell();
+			if (
+				this.board.cell.some(function(b) {
+					return b.qnum !== -1;
+				})
+			) {
+				this.encodeNumber16();
+			}
 		}
 	},
 	//---------------------------------------------------------
@@ -258,6 +282,10 @@
 				} else if (obj.group === "excell") {
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
+					if (ca[0] === "q") {
+						obj.qnum = +ca.substr(1);
+						return;
+					}
 					if (ca.indexOf("[") >= 0) {
 						ca = this.setCellSnum(obj, ca);
 					}
@@ -278,6 +306,9 @@
 						return "" + obj.qnum + " ";
 					}
 				} else if (obj.group === "cell") {
+					if (obj.qnum !== -1) {
+						return "q" + obj.qnum + " ";
+					}
 					var ca = ".";
 					if (obj.anum !== -1) {
 						ca = "" + obj.anum;
@@ -353,8 +384,9 @@
 					}
 				} else if (shaded === 1) {
 					sumlist.add(cell);
-					if (cell.anum > 0) {
-						sum += cell.anum;
+					var n = cell.getNum();
+					if (n > 0) {
+						sum += n;
 					}
 				}
 			}
