@@ -299,7 +299,10 @@ pzpr.classmgr.makeCommon({
 				dir = cursor.NDIR;
 			switch (ca) {
 				case "up":
-					if (cursor.by - mv >= cursor.miny) {
+					if (
+						(this.pid === "easyasabc" && cursor.by === -1) ||
+						cursor.by - mv >= cursor.miny
+					) {
 						dir = cursor.UP;
 					}
 					break;
@@ -350,8 +353,6 @@ pzpr.classmgr.makeCommon({
 						cursor.by = cursor.miny;
 					} else if (cursor.by > cursor.miny) {
 						dir = addr0.UP;
-					} else if (this.pid === "easyasabc" && cursor.by === -1) {
-						dir = addr0.UP;
 					} else {
 						flag = false;
 					}
@@ -364,8 +365,6 @@ pzpr.classmgr.makeCommon({
 					) {
 						cursor.by = cursor.maxy;
 					} else if (cursor.by < cursor.maxy) {
-						dir = addr0.DN;
-					} else if (this.pid === "easyasabc" && cursor.by === -3) {
 						dir = addr0.DN;
 					} else {
 						flag = false;
