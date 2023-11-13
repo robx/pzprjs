@@ -284,5 +284,7 @@
     "about.author": "happa",
     "network.title": "Network play",
     "network.start": "Start",
-    "network.share": "Share this link to play with someone:"
+    "network.share": "Share this link to play with someone:",
+    "list.sort.date": "Sort by date",
+    "list.sort.alpha": "Sort alphabetically"
 }

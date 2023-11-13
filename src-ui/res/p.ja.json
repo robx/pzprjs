@@ -282,5 +282,8 @@
     "inputmode.copysymbol": "コピー",
     "preset.fleet3": "サイズ3",
     "preset.fleet4": "サイズ4",
-    "preset.fleet5": "サイズ5"
+    "preset.fleet5": "サイズ5",
+    "patchwork_leftaux": "左クリックで補助線を入力する",
+    "list.sort.date": "日付順",
+    "list.sort.alpha": "アルファベット順"
 }

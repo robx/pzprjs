@@ -51,7 +51,7 @@
 				if (this.inputMode === "balloon") {
 					this.inputData = cell.qans !== 1 ? 1 : 0;
 				} else if (this.inputMode === "ironball") {
-					this.inputData = cell.qans !== 2 ? 1 : 0;
+					this.inputData = cell.qans !== 2 ? 2 : 0;
 				} else if (this.inputMode === "objblank") {
 					this.inputData = cell.qsub !== 1 ? -2 : 0;
 				} else if (this.btn === "left") {

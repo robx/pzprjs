@@ -14,9 +14,7 @@
 		inputModes: { edit: ["number"], play: ["number", "clear"] },
 		mouseinput_number: function() {
 			if (this.mousestart) {
-				if (this.puzzle.editmode) {
-					this.inputqnum_excell();
-				} else {
+				if (!this.puzzle.editmode || !this.inputqnum_excell()) {
 					this.inputqnum();
 				}
 			}
@@ -34,10 +32,8 @@
 				} else {
 					this.inputflash();
 				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum_excell();
-				}
+			} else {
+				this.mouseinput_number();
 			}
 		},
 
@@ -74,7 +70,7 @@
 		inputqnum_excell: function() {
 			var excell = this.getpos(0).getex();
 			if (excell.isnull) {
-				return;
+				return false;
 			}
 
 			if (excell !== this.cursor.getex()) {
@@ -82,6 +78,7 @@
 			} else {
 				this.inputqnum_main(excell);
 			}
+			return true;
 		}
 	},
 
@@ -90,20 +87,12 @@
 	KeyEvent: {
 		enablemake: true,
 		enableplay: true,
-		moveTarget: function(ca) {
-			if (this.puzzle.playmode) {
-				return this.moveTCell(ca);
-			}
-			return this.moveExCell(ca);
-		},
 		keyinput: function(ca) {
-			if (this.puzzle.playmode) {
-				this.key_inputqnum(ca);
+			var excell = this.cursor.getex();
+			if (!excell.isnull && this.puzzle.editmode) {
+				this.key_inputqnum_main(excell, ca);
 			} else {
-				var excell = this.cursor.getex();
-				if (!excell.isnull) {
-					this.key_inputqnum_main(excell, ca);
-				}
+				this.key_inputqnum(ca);
 			}
 		}
 	},
@@ -121,13 +110,6 @@
 			this.miny += 2;
 			this.maxx -= 2;
 			this.maxy -= 2;
-		},
-		adjust_init: function() {
-			if (this.puzzle.playmode) {
-				this.common.adjust_init.call(this);
-			} else if (this.puzzle.editmode) {
-				this.adjust_cell_to_excell();
-			}
 		}
 	},
 
@@ -207,10 +189,10 @@
 					break;
 				}
 
-				if (cell.anum <= height) {
+				if (cell.getNum() <= height) {
 					continue;
 				}
-				height = cell.anum;
+				height = cell.getNum();
 				ldata[cell.id] = 1;
 				ccnt++;
 			}
@@ -246,6 +228,7 @@
 
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
+			this.drawQuesNumbers();
 			this.drawArrowNumbersExCell_skyscrapers();
 
 			this.drawChassis();
@@ -338,9 +321,17 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
+			this.decodeNumber16();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16ExCell();
+			if (
+				this.board.cell.some(function(b) {
+					return b.qnum !== -1;
+				})
+			) {
+				this.encodeNumber16();
+			}
 		}
 	},
 	//---------------------------------------------------------
@@ -359,6 +350,10 @@
 				} else if (obj.group === "excell") {
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
+					if (ca[0] === "q") {
+						obj.qnum = +ca.substr(1);
+						return;
+					}
 					if (ca.indexOf("[") >= 0) {
 						ca = this.setCellSnum(obj, ca);
 					}
@@ -375,6 +370,9 @@
 						return "" + obj.qnum + " ";
 					}
 				} else if (obj.group === "cell") {
+					if (obj.qnum !== -1) {
+						return "q" + obj.qnum + " ";
+					}
 					var ca = ".",
 						num = obj.anum;
 					if (num !== -1) {
