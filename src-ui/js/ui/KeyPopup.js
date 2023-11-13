@@ -190,7 +190,8 @@ ui.keypopup = {
 		mukkonn: [10, 0],
 		tachibk: [10, 0],
 		alter: [113, 113],
-		mannequin: [10, 0]
+		mannequin: [10, 0],
+		tetrominous: [128, 128]
 	},
 
 	//---------------------------------------------------------------------------
@@ -326,6 +327,8 @@ ui.keypopup = {
 			this.generate_battleship(mode);
 		} else if (type === 127) {
 			this.generate_brownies(mode);
+		} else if (type === 128) {
+			this.generate_tetrominous(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -735,6 +738,17 @@ ui.keypopup = {
 		items.push(" ");
 
 		this.generate_main(items, 5);
+	},
+	generate_tetrominous: function(mode) {
+		var items = "ilost".split("").map(function(c) {
+			return [c, { text: c.toUpperCase() }];
+		});
+		if (mode === 1) {
+			items.push(["-", "?"], ["q", "■"]);
+		}
+		items.push(" ");
+
+		this.generate_main(items, 4);
 	},
 	generate_snakepit: function() {
 		this.generate_main(

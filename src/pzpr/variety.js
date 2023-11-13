@@ -374,6 +374,7 @@
 			tentaisho: [0, 0, "天体ショー", "Tentaisho"],
 			tents: [0, 0, "Tents", "Tents", "tents"],
 			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
+			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],

@@ -3,13 +3,21 @@
 //
 
 /* global Set:false */
-(function(pidlist, classbase) {
+(function(classbase) {
+	var pidlist = [
+		"fillomino",
+		"symmarea",
+		"pentominous",
+		"snakepit",
+		"wafusuma",
+		"tetrominous"
+	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["fillomino", "symmarea", "pentominous", "snakepit", "wafusuma"], {
+})({
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -86,7 +94,7 @@
 			this.mouseCell = cell;
 		}
 	},
-	"MouseEvent@pentominous": {
+	"MouseEvent@pentominous,tetrominous": {
 		inputModes: {
 			edit: ["empty", "letter", "letter-", "border", "clear"],
 			play: ["copyletter", "letter", "letter-", "clear", "border", "subline"]
@@ -304,7 +312,7 @@
 		}
 	},
 
-	"KeyEvent@pentominous": {
+	"KeyEvent@pentominous,tetrominous": {
 		keyinput: function(ca) {
 			if (this.puzzle.editmode && ca === "q") {
 				this.key_inputvalid();
@@ -419,8 +427,17 @@
 			});
 		}
 	},
-	"Cell@pentominous": {
+	"Cell@pentominous,tetrominous#1": {
 		enableSubNumberArray: true,
+		prehook: {
+			anum: function(num) {
+				return !this.isValid();
+			}
+		},
+
+		minnum: 0
+	},
+	"Cell@pentominous": {
 		letters: "FILNPTUVWXYZ",
 		lettershapes: [
 			"3:001111010",
@@ -436,15 +453,12 @@
 			"2:01011101",
 			"3:001111100"
 		],
-
-		prehook: {
-			anum: function(num) {
-				return !this.isValid();
-			}
-		},
-
-		minnum: 0,
 		maxnum: 11
+	},
+	"Cell@tetrominous": {
+		letters: "ILOST",
+		lettershapes: ["1:1111", "2:010111", "2:1111", "2:011110", "2:011101"],
+		maxnum: 4
 	},
 	"Cell@snakepit": {
 		minnum: 2,
@@ -486,7 +500,12 @@
 				}
 				return;
 			}
-			var num = this.pid !== "pentominous" ? block.clist[0].getNum() : 5;
+			var num =
+				this.pid === "pentominous"
+					? 5
+					: this.pid === "tetrominous"
+					? 4
+					: block.clist[0].getNum();
 			var newcmp = num === block.clist.length ? 1 : 0;
 
 			if (this.puzzle.pid === "snakepit") {
@@ -601,11 +620,11 @@
 			return num1 === num2;
 		}
 	},
-	"Board@pentominous": {
+	"Board@pentominous,tetrominous": {
 		initBoardSize: function(col, row) {
 			this.common.initBoardSize.call(this, col, row);
 
-			var odd = (col * row) % 5;
+			var odd = (col * row) % (this.pid === "pentominous" ? 5 : 4);
 			if (odd >= 1) {
 				this.getc(this.minbx + 1, this.minby + 1).ques = 7;
 			}
@@ -690,6 +709,13 @@
 			component.number = 5;
 		}
 	},
+	"AreaNumBlockGraph@tetrominous": {
+		setExtraData: function(component) {
+			component.clist = new this.klass.CellList(component.getnodeobjs());
+			component.numkind = 1;
+			component.number = 4;
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -741,7 +767,7 @@
 		}
 	},
 
-	"Graphic@pentominous": {
+	"Graphic@pentominous,tetrominous": {
 		getNumberTextCore: function(num) {
 			return num === -2 ? "?" : this.klass.Cell.prototype.letters[num] || "";
 		}
@@ -834,7 +860,7 @@
 			this.fio.encodeCellQnum_kanpen();
 		}
 	},
-	"Encode@pentominous": {
+	"Encode@pentominous,tetrominous": {
 		decodePzpr: function(type) {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -1030,7 +1056,7 @@
 		UNDECIDED_NUM_XML: 0
 	},
 
-	"FileIO@pentominous": {
+	"FileIO@pentominous,tetrominous": {
 		decodeCellQnum: function() {
 			this.decodeCell(function(cell, ca) {
 				cell.ques = 0;
@@ -1174,7 +1200,7 @@
 		}
 	},
 
-	"AnsCheck@pentominous#1": {
+	"AnsCheck@pentominous,tetrominous#1": {
 		checklist: [
 			"checkSmallArea",
 			"checkLetterBlock",
@@ -1184,10 +1210,11 @@
 		],
 
 		checkLetterBlock: function() {
+			var size = this.pid === "pentominous" ? 5 : 4;
 			this.checkAllCell(function(cell) {
 				return (
 					cell.isNum() &&
-					cell.nblk.clist.length === 5 &&
+					cell.nblk.clist.length === size &&
 					cell.lettershapes[cell.getNum()] !==
 						cell.nblk.clist.getBlockShapes().canon
 				);
@@ -1196,10 +1223,11 @@
 
 		checkDifferentShapeBlock: function() {
 			var sides = this.board.numblkgraph.getSideAreaInfo();
+			var size = this.pid === "pentominous" ? 5 : 4;
 			for (var i = 0; i < sides.length; i++) {
 				var area1 = sides[i][0],
 					area2 = sides[i][1];
-				if (area1.clist.length !== 5 || area2.clist.length !== 5) {
+				if (area1.clist.length !== size || area2.clist.length !== size) {
 					continue;
 				}
 				if (this.isDifferentShapeBlock(area1, area2)) {
@@ -1218,6 +1246,10 @@
 	"FailCode@pentominous": {
 		bkSizeLt: "bkSizeLt5",
 		bkSizeGt: "bkSizeGt5"
+	},
+	"FailCode@tetrominous": {
+		bkSizeLt: "bkSizeLt4",
+		bkSizeGt: "bkSizeGt4"
 	},
 	"AnsCheck@snakepit": {
 		// TODO reduce amount of errors when forceallcell is on
