@@ -213,6 +213,13 @@
 			kakuru: [0, 0, "カックル", "Kakuru"],
 			kazunori: [0, 0, "かずのりのへや", "Kazunori Room"],
 			kinkonkan: [1, 0, "キンコンカン", "Kin-Kon-Kan"],
+			kissing: [
+				0,
+				0,
+				"Kissing Polyominoes",
+				"Kissing Polyominoes",
+				"statuepark"
+			],
 			koburin: [0, 0, "コブリン", "Koburin", "yajilin"],
 			kouchoku: [0, 0, "交差は直角に限る", "Kouchoku"],
 			kramma: [0, 0, "快刀乱麻", "KaitoRamma", "kramma"],

@@ -2,13 +2,21 @@
 // statuepark.js
 //
 
-(function(pidlist, classbase) {
+(function(classbase) {
+	var pidlist = [
+		"statuepark",
+		"statuepark-aux",
+		"pentopia",
+		"battleship",
+		"pentatouch",
+		"kissing"
+	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["statuepark", "statuepark-aux", "pentopia", "battleship", "pentatouch"], {
+})({
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -215,6 +223,12 @@
 			play: ["shade", "unshade", "clear", "completion"]
 		}
 	},
+	"MouseEvent@kissing": {
+		inputModes: {
+			edit: ["completion", "border", "empty"],
+			play: ["shade", "unshade", "clear", "completion"]
+		}
+	},
 
 	KeyEvent: {
 		enablemake: true
@@ -396,6 +410,9 @@
 
 	"Board@pentatouch": {
 		hascross: 1
+	},
+	"Board@kissing": {
+		hasborder: 1
 	},
 
 	Bank: {
@@ -714,6 +731,12 @@
 			}
 		}
 	},
+	"Cell@kissing": {
+		allowShade: function() {
+			return this.isValid();
+		}
+	},
+
 	"Cell@battleship": {
 		numberAsObject: true,
 		minnum: 0,
@@ -909,6 +932,13 @@
 	"AreaUnshadeGraph@statuepark": {
 		enabled: true
 	},
+	"AreaShadeGraph@kissing": {
+		coloring: true,
+		relation: { "cell.qans": "node", "border.ques": "separator" },
+		isedgevalidbylinkobj: function(border) {
+			return !border.isBorder();
+		}
+	},
 
 	"Graphic@statuepark": {
 		enablebcolor: true,
@@ -926,8 +956,9 @@
 		shadecolor: "rgb(80, 80, 80)",
 		bgcellcolor_func: "qsub1",
 
-		crosssize: 0.15,
-
+		crosssize: 0.15
+	},
+	"Graphic@pentatouch,kissing#1": {
 		drawTarget: function() {
 			var show = this.puzzle.editmode && this.puzzle.cursor.bankpiece !== null;
 			this.drawCursor(true, show);
@@ -947,6 +978,9 @@
 			} else if (this.pid === "pentopia") {
 				this.drawArrowCombinations();
 				this.drawHatenas();
+			} else if (this.pid === "kissing") {
+				this.drawBorders();
+				this.drawXCells();
 			}
 
 			this.drawChassis();
@@ -1058,6 +1092,32 @@
 						g.vid = "c_arrow_line_" + cell.id + "_" + dir;
 						g.vhide();
 					}
+				}
+			}
+		}
+	},
+
+	"Graphic@kissing": {
+		irowakeblk: true,
+		shadecolor: "rgb(80, 80, 80)",
+		bgcellcolor_func: "qsub1",
+		drawXCells: function() {
+			var g = this.vinc("cell_x", "auto", true);
+
+			var rsize = this.cw * 0.2;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_x_" + cell.id;
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				if (cell.isEmpty()) {
+					g.strokeStyle = this.quescolor;
+					g.lineWidth = 2;
+					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
 				}
 			}
 		}
@@ -1480,6 +1540,33 @@
 		checkUnshadeOnCircle: function() {
 			this.checkAllCell(function(cell) {
 				return cell.isShade() && cell.qnum === 1;
+			}, "circleShade");
+		}
+	},
+	"AnsCheck@kissing": {
+		checklist: [
+			"checkUnshadeOnCircle",
+			"checkSeparators",
+			"checkBankPiecesAvailable",
+			"checkBankPiecesInvalid",
+			"checkBankPiecesUsed"
+		],
+
+		checkSeparators: function() {
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return (
+						!cell1.isShade() || !cell2.isShade() || cell1.sblk === cell2.sblk
+					);
+				},
+				false,
+				"bdUnused"
+			);
+		},
+
+		checkUnshadeOnCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isShade() && !cell.isValid();
 			}, "circleShade");
 		}
 	},
