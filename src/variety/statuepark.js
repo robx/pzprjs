@@ -734,6 +734,9 @@
 	"Cell@kissing": {
 		allowShade: function() {
 			return this.isValid();
+		},
+		allowUnshade: function() {
+			return this.isValid();
 		}
 	},
 
@@ -981,6 +984,7 @@
 			} else if (this.pid === "kissing") {
 				this.drawBorders();
 				this.drawXCells();
+				this.drawDotCells();
 			}
 
 			this.drawChassis();
@@ -1100,7 +1104,6 @@
 	"Graphic@kissing": {
 		irowakeblk: true,
 		shadecolor: "rgb(80, 80, 80)",
-		bgcellcolor_func: "qsub1",
 		drawXCells: function() {
 			var g = this.vinc("cell_x", "auto", true);
 
@@ -1449,6 +1452,23 @@
 		}
 	},
 
+	"Encode@kissing": {
+		decodePzpr: function(type) {
+			if (this.outbstr[0] !== "/") {
+				this.decodeBorder();
+			}
+			if (this.outbstr[0] !== "/") {
+				this.decodeEmpty();
+			}
+			this.decodePieceBank();
+		},
+		encodePzpr: function(type) {
+			this.encodeBorder();
+			this.encodeEmpty();
+			this.encodePieceBank();
+		}
+	},
+
 	FileIO: {
 		decodeData: function() {
 			this.decodePieceBank();
@@ -1518,6 +1538,38 @@
 		},
 		encodeData: function() {
 			this.writeLine(this.board.getShape() || "1:0");
+		}
+	},
+
+	"FileIO@kissing": {
+		decodeData: function() {
+			this.decodePieceBank();
+			this.decodeBorderQues();
+			this.decodeCell(function(cell, ca) {
+				if (ca === "x") {
+					cell.ques = 7;
+				} else if (ca === "#") {
+					cell.qans = 1;
+				} else if (ca === "+") {
+					cell.qsub = 1;
+				}
+			});
+			this.decodePieceBankQcmp();
+		},
+		encodeData: function() {
+			this.encodePieceBank();
+			this.encodeBorderQues();
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "x ";
+				} else if (cell.qans) {
+					return "# ";
+				} else if (cell.qsub) {
+					return "+ ";
+				}
+				return ". ";
+			});
+			this.encodePieceBankQcmp();
 		}
 	},
 
