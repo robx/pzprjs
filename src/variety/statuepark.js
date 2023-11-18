@@ -32,13 +32,19 @@
 				if (this.notInputted() && this.mousestart) {
 					this.inputqcmp();
 				}
-			} else if (this.puzzle.editmode && this.mousestart) {
-				if (this.pid === "pentatouch") {
+			} else if (this.puzzle.editmode) {
+				if (this.pid === "kissing") {
+					if (this.mousestart || this.mousemove) {
+						this.inputborder();
+					} else if (this.mouseend && this.notInputted()) {
+						this.inputempty();
+					}
+				} else if (this.pid === "pentatouch" && this.mousestart) {
 					this.inputcrossMark();
-				} else {
+				} else if (this.mousestart) {
 					this.inputqnum();
 				}
-				if (this.notInputted()) {
+				if (this.mousestart && this.getbank()) {
 					if (this.btn === "left") {
 						this.inputpiece();
 					} else {
