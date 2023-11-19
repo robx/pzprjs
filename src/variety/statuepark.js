@@ -743,6 +743,11 @@
 		},
 		allowUnshade: function() {
 			return this.isValid();
+		},
+		posthook: {
+			qans: function() {
+				this.drawaround();
+			}
 		}
 	},
 
@@ -1125,6 +1130,66 @@
 					g.strokeStyle = this.quescolor;
 					g.lineWidth = 2;
 					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		drawShadedCells: function() {
+			this.vinc("cell_shaded", "crispEdges");
+			var g = this.context;
+			var clist = this.range.cells;
+
+			var radius = 0.8;
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					color = this.getShadedCellColor(cell);
+				var px = cell.bx,
+					py = cell.by;
+
+				var sizes = {};
+				for (var dir in cell.adjacent) {
+					sizes[dir] =
+						!cell.adjborder[dir].isBorder() && cell.adjacent[dir].isShade()
+							? 1
+							: radius;
+				}
+
+				g.vid = "c_fulls_h_" + cell.id;
+				if (!!color) {
+					g.fillStyle = color;
+
+					var left = px - sizes.left,
+						right = px + sizes.right,
+						top = py - radius,
+						bottom = py + radius;
+					g.fillRect(
+						left * this.bw,
+						top * this.bh,
+						(right - left) * this.bw,
+						(bottom - top) * this.bh
+					);
+				} else {
+					g.vhide();
+				}
+
+				g.vid = "c_fulls_v_" + cell.id;
+				if (!!color) {
+					g.fillStyle = color;
+					var px = cell.bx,
+						py = cell.by;
+
+					var left = px - radius,
+						right = px + radius,
+						top = py - sizes.top,
+						bottom = py + sizes.bottom;
+					g.fillRect(
+						left * this.bw,
+						top * this.bh,
+						(right - left) * this.bw,
+						(bottom - top) * this.bh
+					);
 				} else {
 					g.vhide();
 				}
