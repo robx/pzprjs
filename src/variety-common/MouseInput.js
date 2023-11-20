@@ -1014,6 +1014,7 @@ pzpr.classmgr.makeCommon({
 				if (this.mousestart || this.mousemove) {
 					this.inputLine();
 				} else if (this.mouseend && this.notInputted()) {
+					this.prevPos = new this.klass.Address();
 					this.inputpeke();
 				}
 			} else if (this.btn === "right") {
