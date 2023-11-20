@@ -947,7 +947,6 @@
 		enabled: true
 	},
 	"AreaShadeGraph@kissing": {
-		coloring: true,
 		relation: { "cell.qans": "node", "border.ques": "separator" },
 		isedgevalidbylinkobj: function(border) {
 			return !border.isBorder();
@@ -1113,7 +1112,6 @@
 	},
 
 	"Graphic@kissing": {
-		irowakeblk: true,
 		shadecolor: "rgb(80, 80, 80)",
 		drawXCells: function() {
 			var g = this.vinc("cell_x", "auto", true);
@@ -1676,15 +1674,36 @@
 		],
 
 		checkSeparators: function() {
-			this.checkSideAreaCell(
-				function(cell1, cell2) {
-					return (
-						!cell1.isShade() || !cell2.isShade() || cell1.sblk === cell2.sblk
-					);
-				},
-				false,
-				"bdUnused"
-			);
+			for (var id = 0; id < this.board.border.length; id++) {
+				var border = this.board.border[id];
+				if (!border.isBorder()) {
+					continue;
+				}
+				var cell1 = border.sidecell[0],
+					cell2 = border.sidecell[1];
+				if (cell1.isnull || cell2.isnull) {
+					continue;
+				}
+				if (cell1.isShade() && cell2.isShade() && cell1.sblk !== cell2.sblk) {
+					continue;
+				}
+
+				this.failcode.add("bdUnused");
+				if (this.checkOnly) {
+					break;
+				}
+				border.seterr(1); // TODO graphics
+				if (cell1.sblk) {
+					cell1.sblk.clist.seterr(1);
+				} else {
+					cell1.seterr(1);
+				}
+				if (cell2.sblk) {
+					cell2.sblk.clist.seterr(1);
+				} else {
+					cell2.seterr(1);
+				}
+			}
 		},
 
 		checkUnshadeOnCircle: function() {
