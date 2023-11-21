@@ -241,6 +241,7 @@
 				"",
 				{ pzprurl: "akari", kanpen: "bijutsukan" }
 			],
+			lineofsight: [0, 0, "サイトライン", "Line of Sight"],
 			lither: [0, 0, "Litherslink", "Litherslink"],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
 			lohkous: [0, 0, "Lohkous", "Lohkous"],
