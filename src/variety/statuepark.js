@@ -505,6 +505,28 @@
 		}
 	},
 
+	"Bank@kissing": {
+		exceedPieceSize: -1,
+		rebuildExtraData: function() {
+			var bd = this.puzzle.board;
+			var minsize = bd.rows * bd.cols + 1;
+			var maxsize = 0;
+
+			for (var i = 0; i < this.pieces.length; i++) {
+				var piece = this.pieces[i];
+				var size = 0;
+				for (var j = 0; j < piece.str.length; j++) {
+					if (piece.str[j] === "1") {
+						size++;
+					}
+				}
+				minsize = Math.min(size, minsize);
+				maxsize = Math.max(size, maxsize);
+			}
+			this.exceedPieceSize = minsize + maxsize;
+		}
+	},
+
 	"Bank@battleship": {
 		defaultPreset: function() {
 			return this.presets[1].constant;
@@ -1667,11 +1689,25 @@
 	"AnsCheck@kissing": {
 		checklist: [
 			"checkUnshadeOnCircle",
+			"checkPieceSize",
 			"checkSeparators",
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
 			"checkBankPiecesUsed"
 		],
+
+		checkPieceSize: function() {
+			// A separate check for pieces that are far too large,
+			// which probably indicates two pieces being merged together.
+			var exceed = this.board.bank.exceedPieceSize;
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a < exceed;
+				},
+				"csGtLimit"
+			);
+		},
 
 		checkSeparators: function() {
 			for (var id = 0; id < this.board.border.length; id++) {

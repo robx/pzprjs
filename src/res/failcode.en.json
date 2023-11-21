@@ -388,6 +388,7 @@
     "csGt1.takoyaki": "A line has more than one circle in the middle.",
     "csGt2": "The size of a mass of shaded cells is over two.",
     "csGt4": "The size of a mass of shaded cells is over four.",
+    "csGtLimit.kissing": "Two blocks are adjacent in an invalid location.",
     "csLoop.parquet": "There is a loop of shaded cells.",
     "csLt1.nothree": "A dot doesn't overlap a shaded cell.",
     "csLt1.takoyaki": "A line has no circle in the middle.",
