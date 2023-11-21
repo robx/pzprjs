@@ -42,6 +42,20 @@ ui.debug.addDebugData("kissing", {
 			],
 			result:
 				"pzprv3/kissing/3/3/p/0 1 /0 1 /0 0 /0 0 0 /0 0 0 /. . . /x . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			input: ["playmode", "mouse,left,1,3,5,3,5,1", "mouse,right,1,1,1,5"],
+			result:
+				"pzprv3/kissing/3/3/p/0 1 /0 1 /0 0 /0 0 0 /0 0 0 /+ . # /x # # /+ . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			result: function(puzzle, assert) {
+				var b1 = puzzle.board.getc(3, 3).sblk;
+				var b2 = puzzle.board.getc(5, 3).sblk;
+				var b3 = puzzle.board.getc(5, 1).sblk;
+				assert.equal(b2, b3);
+				assert.notEqual(b1, b2);
+			}
 		}
 	]
 });
