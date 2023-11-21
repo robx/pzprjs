@@ -1134,7 +1134,9 @@
 	},
 
 	"Graphic@kissing": {
-		shadecolor: "rgb(80, 80, 80)",
+		shadecolor: "#777",
+		trialcolor: "rgb(255, 160, 0)",
+
 		drawXCells: function() {
 			var g = this.vinc("cell_x", "auto", true);
 
@@ -1153,6 +1155,57 @@
 				} else {
 					g.vhide();
 				}
+			}
+		},
+		drawBorders: function() {
+			this.vinc("border", "auto", true);
+			var g = this.context;
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i],
+					color = this.getBorderColor(border);
+
+				g.vid = "b_bd_" + border.id;
+				if (!!color) {
+					var px = border.bx * this.bw,
+						py = border.by * this.bh;
+					var lx = this.bw * 0.2,
+						ly = this.bh * 0.2;
+					g.fillStyle = color;
+					if (border.isVert()) {
+						this.fillCapsule(g, px, py, lx, this.bh - ly);
+					} else {
+						this.fillCapsule(g, px, py, this.bw - lx, ly);
+					}
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		fillCapsule: function(g, x, y, w, h) {
+			if (w > h) {
+				var rads = (90 * Math.PI) / 180,
+					rade = (270 * Math.PI) / 180;
+
+				g.beginPath();
+				g.moveTo(x + w - h, y - h);
+				g.arc(x + w - h, y, h, rads, rade, true);
+				g.lineTo(x + h - w, y + h);
+				g.arc(x + h - w, y, h, rade, rads, true);
+				g.lineTo(x + w - h, y - h);
+				g.fill();
+			} else {
+				var rads = (0 * Math.PI) / 180,
+					rade = (180 * Math.PI) / 180;
+
+				g.beginPath();
+				g.moveTo(x - w, y + w - h);
+				g.arc(x, y + w - h, w, rads, rade, true);
+				g.lineTo(x + w, y + h - w);
+				g.arc(x, y + h - w, w, rade, rads, true);
+				g.lineTo(x - w, y + w - h);
+				g.fill();
 			}
 		},
 		drawShadedCells: function() {
@@ -1728,7 +1781,6 @@
 				if (this.checkOnly) {
 					break;
 				}
-				border.seterr(1); // TODO graphics
 				if (cell1.sblk) {
 					cell1.sblk.clist.seterr(1);
 				} else {
