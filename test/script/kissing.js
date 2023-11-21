@@ -31,5 +31,17 @@ ui.debug.addDebugData("kissing", {
 			null,
 			"pzprv3/kissing/5/7/t/0 0 0 0 0 0 /1 0 0 0 0 0 /1 0 0 0 0 0 /0 0 0 0 1 0 /0 0 0 0 0 0 /0 1 0 0 0 0 0 /0 0 0 0 0 0 0 /0 0 1 0 0 0 0 /0 0 0 0 0 0 0 /# # . . # x . /# # # . # . . /# # # . # . # /. . # . # # # /. # # # . # . /0 0 0 0 0 /"
 		]
+	],
+	inputs: [
+		{
+			input: [
+				"newboard,3,3",
+				"editmode",
+				"mouse,left,1,3",
+				"mouse,left,4,0,4,4"
+			],
+			result:
+				"pzprv3/kissing/3/3/p/0 1 /0 1 /0 0 /0 0 0 /0 0 0 /. . . /x . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		}
 	]
 });
