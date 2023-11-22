@@ -1213,7 +1213,7 @@
 			var g = this.context;
 			var clist = this.range.cells;
 
-			var radius = 0.8;
+			var radius = 0.75;
 
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
@@ -1238,9 +1238,9 @@
 						top = py - radius,
 						bottom = py + radius;
 					g.fillRect(
-						left * this.bw,
+						left * this.bw + 1,
 						top * this.bh,
-						(right - left) * this.bw,
+						(right - left) * this.bw - 1,
 						(bottom - top) * this.bh
 					);
 				} else {
@@ -1258,9 +1258,9 @@
 						top = py - sizes.top,
 						bottom = py + sizes.bottom;
 					g.fillRect(
-						left * this.bw,
+						left * this.bw + 1,
 						top * this.bh,
-						(right - left) * this.bw,
+						(right - left) * this.bw - 1,
 						(bottom - top) * this.bh
 					);
 				} else {
