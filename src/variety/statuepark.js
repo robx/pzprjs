@@ -244,7 +244,26 @@
 						return;
 					}
 				}
-				this.mouseinput_clear();
+				var cell = this.getcell();
+				if (cell.isnull) {
+					return;
+				}
+				if (this.firstCell.isnull) {
+					this.firstCell = cell;
+					this.firstPoint.set(this.inputPoint);
+				}
+				if (!this.inputData) {
+					var dx = this.inputPoint.bx - this.firstPoint.bx,
+						dy = this.inputPoint.by - this.firstPoint.by;
+					if (this.firstCell !== cell || dx * dx + dy * dy > 0.5) {
+						this.inputData = -1;
+					} else if (this.mouseend) {
+						this.inputqnum();
+					}
+				}
+				if (this.inputData) {
+					this.inputFixedNumber(-1);
+				}
 			} else {
 				if (this.mousestart && this.inputpiece()) {
 					this.mousereset();

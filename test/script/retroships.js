@@ -67,6 +67,18 @@ ui.debug.addDebugData("retroships", {
 			],
 			result:
 				"pzprv3/retroships/3/3/p/0 0 8 /0 . 5 /6 6 6 /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Remove with right drag",
+			input: ["editmode,auto", "mouse,right,3,0,3,3,5,3,5,5"],
+			result:
+				"pzprv3/retroships/3/3/p/0 . 8 /0 . . /6 6 . /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Move cursor with right click",
+			input: ["mouse,rightx2,1,5"],
+			result:
+				"pzprv3/retroships/3/3/p/0 . 8 /0 . . /5 6 . /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
 		}
 	]
 });
