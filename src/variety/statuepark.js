@@ -845,7 +845,11 @@
 		posthook: {
 			qnum: function() {
 				this.drawaround();
-				if (this.qnum !== -1 && this.qans) {
+				if (
+					this.qnum !== -1 &&
+					this.qans &&
+					(this.pid === "battleship" || this.qnum === 0 || this.qnum === -2)
+				) {
 					this.setQans(0);
 				}
 				this.board.recountShaded();
