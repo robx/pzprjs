@@ -49,6 +49,10 @@
 			this.add("dispqnumbg", false); /* yinyang: 問題のまるに背景色をつける */
 			this.add("undefcell", true); /* shugaku: 未確定マスはグレー表示にする */
 			this.add("mouseonly", false); /* lollipops: Alternative mouse input */
+			this.add(
+				"patchwork_leftaux",
+				true
+			); /* patchwork: Alternative mouse input */
 
 			this.add("squarecell", true); /* セルは正方形にする */
 
@@ -110,6 +114,10 @@
 				variant: true,
 				volatile: true
 			}); /* nuriuzu: Rule variation for shaded connectivity */
+			this.add("bdwalk_height", false, {
+				variant: true,
+				volatile: true
+			}); /* bdwalk: Rule variation for allowing any height */
 			this.add("pentopia_transparent", false, {
 				variant: true,
 				volatile: true
@@ -126,6 +134,10 @@
 				variant: true,
 				volatile: true
 			}); /* magnets: Adjacent poles of different magnets must be equal */
+			this.add("heyapin_overlap", false, {
+				variant: true,
+				volatile: true
+			}); /* heyapin: Pins must overlap at least 2 regions */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -367,7 +379,7 @@
 					exec = pid === "interbd";
 					break;
 				case "bgcolor":
-					exec = pid === "slither";
+					exec = pid === "slither" || pid === "myopia";
 					break;
 				case "irowake":
 					exec = puzzle.painter.irowake;
@@ -386,6 +398,9 @@
 					break;
 				case "mouseonly":
 					exec = pid === "lollipops" || pid === "magnets";
+					break;
+				case "patchwork_leftaux":
+					exec = pid === "patchwork";
 					break;
 				case "undefcell":
 					exec = pid === "shugaku" || pid === "lightshadow";
@@ -434,6 +449,9 @@
 				case "nuriuzu_connect":
 					exec = pid === "nuriuzu";
 					break;
+				case "bdwalk_height":
+					exec = pid === "bdwalk";
+					break;
 				case "pentopia_transparent":
 					exec = pid === "pentopia";
 					break;
@@ -445,6 +463,9 @@
 					break;
 				case "magnets_anti":
 					exec = pid === "magnets";
+					break;
+				case "heyapin_overlap":
+					exec = pid === "heyapin";
 					break;
 				default:
 					exec = !!this.list[name];

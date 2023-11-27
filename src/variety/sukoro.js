@@ -15,30 +15,16 @@
 			edit: ["number", "clear"],
 			play: ["number", "numexist", "numblank", "clear"]
 		},
-		mouseinput_auto: function() {
-			if (this.mousestart) {
-				this.inputqnum();
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "qnum"
 	},
 	"MouseEvent@sukororoom": {
 		inputModes: {
 			edit: ["border", "number", "clear"],
 			play: ["number", "numexist", "numblank", "clear"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart) {
-					this.inputqnum();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || (this.mousemove && this.btn === "left")) {
-					this.inputborder();
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "areanum",
+		autoplay_func: "qnum"
 	},
 
 	//---------------------------------------------------------

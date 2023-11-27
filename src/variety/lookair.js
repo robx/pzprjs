@@ -13,17 +13,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: { edit: ["number", "clear"], play: ["shade", "unshade"] },
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "cell"
 	},
 
 	//---------------------------------------------------------

@@ -49,6 +49,16 @@ ui.debug.addDebugData("compass", {
 			input: ["key,q"],
 			result:
 				"pzprv3/compass/3/3/. . . /. -1,-1,-1,-1 . /. . . /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			input: [
+				"newboard,2,2",
+				"editmode",
+				"cursor,3,3",
+				"mouse,leftx2,2.5,3",
+				"key,1"
+			],
+			result: "pzprv3/compass/2/2/. . /. -1,-1,1,-1 /0 /0 /0 0 /"
 		}
 	]
 });

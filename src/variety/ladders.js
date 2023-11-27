@@ -7,8 +7,8 @@
 })(["ladders"], {
 	MouseEvent: {
 		inputModes: {
-			edit: ["border", "number", "clear", "info-line"],
-			play: ["bar", "peke", "subcircle", "subcross", "info-line"]
+			edit: ["border", "number", "clear", "info-room"],
+			play: ["bar", "peke", "subcircle", "subcross", "info-room"]
 		},
 
 		mouseinput_auto: function() {
@@ -33,7 +33,7 @@
 				}
 			}
 		},
-		dispInfoLine: function() {
+		dispInfoRoom: function() {
 			var cell = this.getcell();
 			this.mousereset();
 			if (cell.isnull) {

@@ -7,24 +7,8 @@
 })(["anglers"], {
 	MouseEvent: {
 		inputModes: { edit: ["number", "shade", "clear"], play: ["line", "peke"] },
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.btn === "left") {
-					if (this.mousestart || this.mousemove) {
-						this.inputLine();
-					} else if (this.mouseend && this.notInputted()) {
-						this.prevPos.reset();
-						this.inputpeke();
-					}
-				} else if (this.btn === "right") {
-					if (this.mousestart || this.mousemove) {
-						this.inputpeke();
-					}
-				}
-			} else if (this.puzzle.editmode && this.mousestart) {
-				this.inputqnum();
-			}
-		},
+		autoedit_func: "qnum",
+		autoplay_func: "line",
 		inputqnum: function() {
 			var cell = this.getcell_excell();
 			if (cell.isnull || cell === this.mouseCell) {

@@ -19,17 +19,8 @@
 			edit: ["number", "undef", "clear", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum();
-				}
-			}
-		},
+		autoedit_func: "qnum",
+		autoplay_func: "cell",
 		dispInfoBlk: function() {
 			var cell = this.getcell();
 			this.mousereset();

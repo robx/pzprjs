@@ -61,7 +61,6 @@
 	// 盤面管理系
 	Cell: {
 		numberRemainsUnshaded: true,
-		minmum: 1,
 		maxnum: function() {
 			return (this.board.cols * this.board.rows) >> 1;
 		}

@@ -10,25 +10,8 @@
 			edit: ["number", "clear", "info-line"],
 			play: ["line", "peke", "clear", "info-line"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left") {
-						this.inputLine();
-					} else if (this.btn === "right") {
-						this.inputpeke();
-					}
-				} else if (this.mouseend && this.notInputted()) {
-					if (this.inputpeke_ifborder()) {
-						return;
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "qnum",
+		autoplay_func: "line"
 	},
 	KeyEvent: {
 		enablemake: true

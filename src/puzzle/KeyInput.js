@@ -299,7 +299,10 @@ pzpr.classmgr.makeCommon({
 				dir = cursor.NDIR;
 			switch (ca) {
 				case "up":
-					if (cursor.by - mv >= cursor.miny) {
+					if (
+						(this.pid === "easyasabc" && cursor.by === -1) ||
+						cursor.by - mv >= cursor.miny
+					) {
 						dir = cursor.UP;
 					}
 					break;
@@ -350,8 +353,6 @@ pzpr.classmgr.makeCommon({
 						cursor.by = cursor.miny;
 					} else if (cursor.by > cursor.miny) {
 						dir = addr0.UP;
-					} else if (this.pid === "easyasabc" && cursor.by === -1) {
-						dir = addr0.UP;
 					} else {
 						flag = false;
 					}
@@ -364,8 +365,6 @@ pzpr.classmgr.makeCommon({
 					) {
 						cursor.by = cursor.maxy;
 					} else if (cursor.by < cursor.maxy) {
-						dir = addr0.DN;
-					} else if (this.pid === "easyasabc" && cursor.by === -3) {
 						dir = addr0.DN;
 					} else {
 						flag = false;
@@ -424,17 +423,20 @@ pzpr.classmgr.makeCommon({
 			this.bankpiece = null;
 			this.mode51 = this.puzzle.klass.ExCell.prototype.ques === 51;
 			this.modesnum = this.puzzle.klass.Cell.prototype.enableSubNumberArray;
+			this.disableAnum = this.puzzle.klass.Cell.prototype.disableAnum;
 			this.targetdirs = this.puzzle.klass.Cell.prototype.dirs51;
 			if (this.mode51 && this.puzzle.editmode) {
-				this.targetdir = 4;
-			} // right
+				this.targetdir = 4; // right
+			} else if (this.disableAnum && this.puzzle.playmode) {
+				this.targetdir = 5;
+			}
 		},
 		init: function(bx, by) {
 			this.bx = bx;
 			this.by = by;
 			this.bankpiece = null;
 			if (!this.mode51) {
-				this.targetdir = 0;
+				this.targetdir = this.disableAnum && this.puzzle.playmode ? 5 : 0;
 			}
 			return this;
 		},
@@ -511,7 +513,7 @@ pzpr.classmgr.makeCommon({
 				this.targetdir = 4;
 			} // right
 			else if (this.modesnum) {
-				this.targetdir = 0;
+				this.targetdir = this.puzzle.playmode && this.disableAnum ? 5 : 0;
 			}
 		},
 		adjust_cell_to_excell: function() {
@@ -543,14 +545,20 @@ pzpr.classmgr.makeCommon({
 			var by = ((((pos.by + 12) / 2) | 0) - 6) * 2 + 1;
 			var result = this.bx === bx && this.by === by;
 			if (result && this.modesnum && this.puzzle.playmode) {
-				var tmpx = (((pos.bx + 12) % 2) * 1.5) | 0;
-				var tmpy = (((pos.by + 12) % 2) * 1.5) | 0;
-				if (this.pid !== "factors") {
-					result =
-						[5, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx] === this.targetdir;
+				if (this.disableAnum) {
+					var tmpx = pos.bx % 2 | 0;
+					var tmpy = pos.by % 2 | 0;
+					result = [5, 4, 2, 3][tmpy * 2 + tmpx] === this.targetdir;
 				} else {
-					result =
-						[0, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx] === this.targetdir;
+					var tmpx = (((pos.bx + 12) % 2) * 1.5) | 0;
+					var tmpy = (((pos.by + 12) % 2) * 1.5) | 0;
+					if (this.pid !== "factors") {
+						result =
+							[5, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx] === this.targetdir;
+					} else {
+						result =
+							[0, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx] === this.targetdir;
+					}
 				}
 			}
 			return result;
@@ -567,7 +575,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.puzzle.klass.Address.prototype.movedir.call(this, dir, mv);
-			if (this.modesnum && this.puzzle.playmode) {
+			if (this.modesnum && this.puzzle.playmode && !this.disableAnum) {
 				this.targetdir = 0;
 			}
 			return this;
@@ -589,7 +597,7 @@ pzpr.classmgr.makeCommon({
 			}
 			this.bankpiece = null;
 			this.set(pos);
-			if (this.modesnum && this.puzzle.playmode) {
+			if (this.modesnum && this.puzzle.playmode && !this.disableAnum) {
 				this.targetdir = 0;
 			}
 		},
@@ -599,7 +607,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		moveTo: function(bx, by) {
 			this.init(bx, by);
-			if (this.modesnum && this.puzzle.playmode) {
+			if (this.modesnum && this.puzzle.playmode && !this.disableAnum) {
 				this.targetdir = 0;
 			}
 		},
@@ -612,7 +620,9 @@ pzpr.classmgr.makeCommon({
 		targetdir: 0,
 		chtarget: function(mouse, dx, dy) {
 			if (this.oncell() && this.modesnum && this.puzzle.playmode) {
-				if (this.pid !== "factors") {
+				if (this.disableAnum) {
+					this.targetdir = [5, 1, 3, 5, 2, 4][this.targetdir];
+				} else if (this.pid !== "factors") {
 					this.targetdir = [5, 1, 3, 0, 2, 4][this.targetdir];
 				} else {
 					this.targetdir = [4, 1, 3, 0, 2, 0][this.targetdir];
@@ -655,7 +665,7 @@ pzpr.classmgr.makeCommon({
 			if (piece.isnull) {
 				return 0;
 			} else if (piece.group === "cell") {
-				if (piece.ques !== 51 || piece.id === bd.cell.length - 1) {
+				if (piece.ques !== 51) {
 					return 0;
 				} else if (this.targetdirs === 2) {
 					var invalidRight = adc.right.isnull || adc.right.ques === 51;

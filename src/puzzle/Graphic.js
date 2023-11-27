@@ -61,6 +61,7 @@
 			qcmpbgcolor: "rgb(224, 224, 255)",
 			trialcolor: "rgb(160, 160, 160)",
 			subcolor: "rgb(127, 127, 255)",
+			subshadecolor: "rgb(220, 220, 255)",
 
 			// 黒マスの色
 			shadecolor: "black",
@@ -91,6 +92,7 @@
 			linecolor: "rgb(0, 160, 0)", // 色分けなしの場合
 			errlinecolor: "rgb(255, 0, 0)",
 			noerrcolor: "rgb(160, 160, 160)", // エラー表示時, エラーでない線/境界線の描画色
+			linetrialcolor: "rgb(160, 160, 160)",
 
 			movelinecolor: "silver",
 			movetrialcolor: "rgb(255, 160, 0)",
@@ -105,6 +107,7 @@
 			targetColorPlay: "rgb(64,  64, 255)",
 			targetColorTrial: "rgb(255,  64, 255)",
 			ttcolor: "rgb(127,255,127)", // ques=51の入力ターゲット(TargetTriangle)
+			ttshadecolor: "rgb(0,127,0)",
 
 			movecolor: "red",
 
@@ -143,6 +146,8 @@
 			// canvas内での盤面の左上座標
 			x0: 0,
 			y0: 0,
+			basex0: 0,
+			basey0: 0,
 
 			// 描画単位(デフォルト値)
 			cw: 36, // セルの横幅
@@ -341,16 +346,18 @@
 				}
 
 				// 盤面のセルID:0が描画される左上の位置の設定 (Canvas左上からのオフセット)
-				var x0 = (this.x0 =
-					(((cwid - this.cw * this.getBoardCols()) / 2 +
-						this.cw * this.getOffsetCols()) |
-						0) +
-					0.5);
-				var y0 = (this.y0 =
-					(((chgt - this.ch * this.getBoardRows()) / 2 +
-						this.ch * this.getOffsetRows()) |
-						0) +
-					0.5);
+				var x0 =
+					(this.x0 =
+						(((cwid - this.cw * this.getBoardCols()) / 2 +
+							this.cw * this.getOffsetCols()) |
+							0) +
+						0.5) + this.basex0;
+				var y0 =
+					(this.y0 =
+						(((chgt - this.ch * this.getBoardRows()) / 2 +
+							this.ch * this.getOffsetRows()) |
+							0) +
+						0.5) + this.basey0;
 
 				// CanvasのOffset位置変更 (SVGの時、小数点以下の端数調整を行う)
 				if (!g.use.canvas) {

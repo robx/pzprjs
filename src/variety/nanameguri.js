@@ -8,7 +8,6 @@
 	}
 })(["nanameguri"], {
 	MouseEvent: {
-		use: true,
 		inputModes: {
 			edit: ["info-line"],
 			play: ["line", "peke", "info-line"]

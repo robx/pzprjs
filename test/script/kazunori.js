@@ -5,7 +5,8 @@ ui.debug.addDebugData("kazunori", {
 	failcheck: [
 		[
 			"bkOddSize",
-			"pzprv3/kazunori/4/4/. !4 | /. | . /. 2 . /. | . /. . | . /| | 2 | /. . . . /. . . . /. . . . /. . . . /. . . . /"
+			"pzprv3/kazunori/4/4/. !4 | /. | . /. 2 . /. | . /. . | . /| | 2 | /. . . . /. . . . /. . . . /. . . . /. . . . /",
+			{ skiprules: true }
 		],
 		[
 			"nmSame2x2",
@@ -25,7 +26,7 @@ ui.debug.addDebugData("kazunori", {
 		],
 		[
 			"nmNotLink",
-			"pzprv3/kazunori/4/4/. 4 . /. | . /. 2 . /. | . /| | . . /| | 2 | /. . . . /1 2 2 2 /1 2 1 1 /1 1 1 2 /2 2 1 2 /"
+			"pzprv3/kazunori/4/4/. 4 . /. | . /. 2 . /. | . /. . . . /| | 2 | /. . . . /1 2 2 2 /1 2 1 1 /1 1 1 2 /2 2 2 1 /"
 		],
 		[
 			null,

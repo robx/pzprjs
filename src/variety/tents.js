@@ -399,7 +399,7 @@
 				if (border.qsub === 1) {
 					var px = border.bx * this.bw,
 						py = border.by * this.bh;
-					g.fillStyle = !border.trial ? this.pekecolor : this.trialcolor;
+					g.fillStyle = !border.trial ? this.pekecolor : this.linetrialcolor;
 					if (border.isHorz()) {
 						g.fillRectCenter(px, py, 1, this.bh);
 					} else {

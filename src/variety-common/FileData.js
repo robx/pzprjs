@@ -236,6 +236,36 @@ pzpr.classmgr.makeCommon({
 			var snumtext = list.join(",");
 			return snumtext !== ",,," ? "[" + snumtext + "]" : "";
 		},
+		decodeCellSnum: function() {
+			this.decodeCell(function(cell, ca) {
+				ca = this.setCellSnum(cell, ca);
+			});
+		},
+		encodeCellSnum: function(isforce) {
+			if (!isforce) {
+				var found = false;
+				var cells = this.board.cell;
+
+				for (var c = 0; c < cells.length && !found; c++) {
+					var cell = cells[c];
+					for (var i = 0; i < cell.snum.length; ++i) {
+						if (cell.snum[i] !== -1) {
+							found = true;
+						}
+					}
+				}
+				if (!found) {
+					return;
+				}
+			}
+			this.encodeCell(function(cell) {
+				var ca = this.getCellSnum(cell);
+				if (ca) {
+					return ca + " ";
+				}
+				return ". ";
+			});
+		},
 		//---------------------------------------------------------------------------
 		// fio.decodeCellQsub() 背景色のデコードを行う
 		// fio.encodeCellQsub() 背景色のエンコードを行う

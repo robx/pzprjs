@@ -231,12 +231,16 @@ pzpr.classmgr.makeCommon({
 			var ret = null;
 			for (var i = 0, len = this.length; i < len; i++) {
 				if (this[i].isNum()) {
-					if (!this.singleQnumCell) {
-						return this[i];
+					if (this.singleQnumCell) {
+						if (ret) {
+							return this.board.emptycell;
+						}
+					} else {
+						if (this[i].qnum !== -2) {
+							return this[i];
+						}
 					}
-					if (ret) {
-						return this.board.emptycell;
-					}
+
 					ret = this[i];
 				}
 			}

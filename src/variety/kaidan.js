@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaidan", "takoyaki"], {
+})(["kaidan", "takoyaki", "wittgen"], {
 	MouseEvent: {
 		use: true,
 		RBShadeCell: true,
@@ -53,13 +53,19 @@
 				return;
 			}
 
-			if (this.pid === "kaidan" && cell.lcnt === 1 && this.btn === "left") {
+			if (
+				(this.pid === "kaidan" || this.pid === "wittgen") &&
+				cell.lcnt === 1 &&
+				this.btn === "left"
+			) {
 				cell.setLineVal(+!cell.line);
 				cell.draw();
 			} else if (cell.isNum()) {
 				this.inputqcmp();
 			} else if (this.btn === "right" && this.inputpeke_ifborder()) {
 				return;
+			} else if (this.pid === "wittgen") {
+				this.inputShade();
 			} else {
 				this.inputcell();
 			}
@@ -99,7 +105,7 @@
 			this.common.mousereset.call(this);
 		}
 	},
-	"MouseEvent@kaidan": {
+	"MouseEvent@kaidan,wittgen": {
 		inputLine: function() {
 			var cell = this.getcell();
 			var addcmp = false;
@@ -172,6 +178,22 @@
 			}
 		}
 	},
+	"MouseEvent@wittgen#2": {
+		inputModes: {
+			edit: ["number", "undef", "clear"],
+			play: ["line", "peke", "subcircle", "objblank", "completion"]
+		},
+		inputShade: function() {
+			if (this.puzzle.getConfig("use") === 2) {
+				this.inputBGcolor();
+			} else {
+				this.inputFixedQsub(this.btn === "left" ? 1 : 2);
+			}
+		},
+		inputDot: function() {
+			this.inputFixedQsub(2);
+		}
+	},
 
 	KeyEvent: {
 		enablemake: true
@@ -196,6 +218,81 @@
 	},
 	"Border@takoyaki": {
 		enableLineNG: true
+	},
+	"Border@wittgen": {
+		prehook: {
+			line: function(num) {
+				if (!num) {
+					return false;
+				}
+
+				if (this.isLineNG() || this.checkFormCurve(num)) {
+					return true;
+				}
+
+				var length = 0;
+
+				if (this.isVert() && this.relbd(-2, 0).path) {
+					length += this.relbd(-2, 0).path.clist.length;
+				}
+				if (this.isVert() && this.relbd(2, 0).path) {
+					length += this.relbd(2, 0).path.clist.length;
+				}
+				if (!this.isVert() && this.relbd(0, -2).path) {
+					length += this.relbd(0, -2).path.clist.length;
+				}
+				if (!this.isVert() && this.relbd(0, 2).path) {
+					length += this.relbd(0, 2).path.clist.length;
+				}
+				return length >= 3;
+			}
+		},
+		posthook: {
+			line: function() {
+				for (var i in this.sidecell) {
+					var cell = this.sidecell[i];
+					if (cell.line && cell.lcnt !== 1) {
+						cell.setLineVal(0);
+					}
+					if (this.line && cell.qsub) {
+						cell.setQsub(0);
+					}
+					cell.draw();
+				}
+				if (this.path && this.path.clist.length === 3) {
+					for (var c = 0; c < 3; c++) {
+						var cell = this.path.clist[c];
+						if (cell.lcnt === 1) {
+							cell.setLineVal(1);
+							cell.draw();
+						}
+					}
+				}
+				if (!this.line && this.isVert()) {
+					if (this.relbd(-2, 0).line) {
+						var cell = this.relcell(-3, 0);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+					if (this.relbd(2, 0).line) {
+						var cell = this.relcell(3, 0);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+				} else if (!this.line && this.isHorz()) {
+					if (this.relbd(0, -2).line) {
+						var cell = this.relcell(0, -3);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+					if (this.relbd(0, 2).line) {
+						var cell = this.relcell(0, 3);
+						cell.setLineVal(0);
+						cell.draw();
+					}
+				}
+			}
+		}
 	},
 
 	Cell: {
@@ -228,6 +325,16 @@
 			return this.qnum === -1;
 		}
 	},
+	"Cell@wittgen": {
+		isDot: function() {
+			return this.qsub === 2 && this.lcnt === 0;
+		},
+		prehook: {
+			qsub: function(num) {
+				return num && (this.isNum() || this.lcnt > 0);
+			}
+		}
+	},
 
 	Board: {
 		cols: 8,
@@ -247,29 +354,43 @@
 			return !cell.noLP();
 		}
 	},
+	"AreaUnshadeGraph@wittgen": {
+		enabled: true,
+		relation: { "border.line": "block" },
+		isnodevalid: function(cell) {
+			return cell.lcnt === 0;
+		},
+		modifyOtherInfo: function(border, relation) {
+			this.setEdgeByNodeObj(border.sidecell[0]);
+			this.setEdgeByNodeObj(border.sidecell[1]);
+		}
+	},
 
 	Graphic: {
-		hideHatena: true,
-
 		gridcolor_type: "LIGHT",
 
-		fontShadecolor: "white",
 		fgcellcolor_func: "qnum",
 		qcmpcolor: "rgb(127,127,127)",
-		mbcolor: "rgb(127,127,255)",
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
 
-			this.drawQuesCells();
+			if (this.pid !== "wittgen") {
+				this.drawQuesCells();
+			}
 			this.drawQuesNumbers();
 
-			this.drawCircles();
-			this.drawCrosses();
+			if (this.pid !== "wittgen") {
+				this.drawCircles();
+				this.drawCrosses();
+			} else {
+				this.drawDotCells();
+				this.drawMBs();
+			}
 
 			this.drawLines();
-			if (this.pid === "kaidan") {
+			if (this.pid === "kaidan" || this.pid === "wittgen") {
 				this.drawLineEnds();
 			}
 			this.drawPekes();
@@ -277,6 +398,30 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		}
+	},
+	"Graphic@kaidan,takoyaki#2": {
+		hideHatena: true,
+		mbcolor: "rgb(127,127,255)",
+		fontShadecolor: "white",
+		getQuesNumberColor: function(cell) {
+			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
+		},
+
+		getCircleStrokeColor: function(cell) {
+			if (cell.qans === 1) {
+				if (cell.error === 1) {
+					return this.errcolor1;
+				} else if (cell.trial) {
+					return this.trialcolor;
+				} else {
+					return this.quescolor;
+				}
+			}
+			return null;
+		},
+		getCircleFillColor: function(cell) {
+			return null;
 		},
 		drawCrosses: function() {
 			var g = this.vinc("cell_mb", "auto");
@@ -300,28 +445,9 @@
 					g.vhide();
 				}
 			}
-		},
-
-		getQuesNumberColor: function(cell) {
-			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
-		},
-		getCircleStrokeColor: function(cell) {
-			if (cell.qans === 1) {
-				if (cell.error === 1) {
-					return this.errcolor1;
-				} else if (cell.trial) {
-					return this.trialcolor;
-				} else {
-					return this.quescolor;
-				}
-			}
-			return null;
-		},
-		getCircleFillColor: function(cell) {
-			return null;
 		}
 	},
-	"Graphic@kaidan": {
+	"Graphic@kaidan,wittgen": {
 		drawLines: function() {
 			var g = this.vinc("line", "crispEdges");
 			var mx = this.bw / 2;
@@ -378,8 +504,10 @@
 
 					px = cell.bx * this.bw;
 					py = cell.by * this.bh;
-					g.fillStyle = cell.trial ? this.trialcolor : this.linecolor;
 					var lm = this.lm + this.addlw / 2;
+					g.fillStyle = cell.trial
+						? this.trialcolor
+						: this.getLineColor(dir[1]);
 					if (dir[1].isVert()) {
 						g.fillRectCenter(
 							px + (mx + 1) * (dir[2] === cell.RT ? -1 : +1),
@@ -404,6 +532,60 @@
 	"Graphic@takoyaki": {
 		irowake: true
 	},
+	"Graphic@wittgen#2": {
+		getQuesNumberColor: function(cell) {
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errcolor1;
+			}
+			return cell.qcmp ? this.qcmpcolor : this.quescolor;
+		},
+		drawMBs: function() {
+			var g = this.vinc("cell_mb", "auto", true);
+			g.lineWidth = 1;
+
+			var rsize = this.cw * 0.35;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					px,
+					py;
+
+				g.vid = "c_MB1_" + cell.id;
+				if (cell.qsub === 1) {
+					px = cell.bx * this.bw;
+					py = cell.by * this.bh;
+					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
+					g.strokeCircle(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		qsubcolor1: "rgb(224, 224, 255)",
+		getBGCellColor: function(cell) {
+			if (cell.error === 1 || cell.qinfo === 1) {
+				return this.errbcolor1;
+			}
+			if (cell.qsub === 1) {
+				return this.qsubcolor1;
+			}
+			if (cell.lcnt === 0) {
+				return null;
+			}
+
+			var isTrial = !!cell.trial;
+			for (var dir in cell.adjborder) {
+				if (cell.adjborder[dir].error) {
+					return this.errbcolor1;
+				}
+				if (cell.adjborder[dir].trial) {
+					isTrial = true;
+				}
+			}
+
+			return isTrial ? "rgb(222,222,222)" : this.qsubcolor1;
+		}
+	},
 
 	Encode: {
 		decodePzpr: function(type) {
@@ -419,7 +601,11 @@
 			this.decodeCell(function(cell, ca) {
 				var val = +ca;
 				if (val & 1) {
-					cell.qans = 1;
+					if (this.pid === "wittgen") {
+						cell.qsub = 2;
+					} else {
+						cell.qans = 1;
+					}
 				}
 				if (val & 2) {
 					cell.line = 1;
@@ -436,10 +622,10 @@
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCell(function(cell) {
-				return (
-					(cell.qans | (cell.line << 1) | (cell.qsub << 2) | (cell.qcmp << 3)) +
-					" "
-				);
+				var ans = this.pid === "wittgen" ? cell.qsub === 2 : cell.qans === 1;
+				var sub = cell.qsub === 1;
+
+				return (+ans | (cell.line << 1) | (+sub << 2) | (cell.qcmp << 3)) + " ";
 			});
 			this.encodeBorderLine();
 		}
@@ -463,6 +649,16 @@
 				1,
 				"nmShadeLt"
 			);
+		},
+		checkLineOverlap: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt > 2 || cell.isLineCurve();
+			}, "laCurve");
+		},
+		checkMissingEnd: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 1 && !cell.line;
+			}, "ceNoEnd");
 		}
 	},
 
@@ -513,17 +709,6 @@
 
 				return b1.line && b2.line;
 			}, "lnEnds");
-		},
-
-		checkLineOverlap: function() {
-			this.checkAllCell(function(cell) {
-				return cell.lcnt > 2 || cell.isLineCurve();
-			}, "laCurve");
-		},
-		checkMissingEnd: function() {
-			this.checkAllCell(function(cell) {
-				return cell.lcnt === 1 && !cell.line;
-			}, "ceNoEnd");
 		},
 		checkEmptyCell_kaidan: function() {
 			this.checkAllCell(function(cell) {
@@ -630,6 +815,56 @@
 			this.checkAllCell(function(cell) {
 				return cell.qans !== 1 && cell.lcnt === 1;
 			}, "cuEndpoint");
+		}
+	},
+	"AnsCheck@wittgen#1": {
+		checklist: [
+			"checkDir4BlockOver",
+			"checkConnectUnshade",
+			"checkLineOverlap",
+			"checkLineLength",
+			"checkDir4BlockLess",
+			"checkMissingEnd"
+		],
+		checkLineLength: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				if (path.clist.length === 3) {
+					continue;
+				}
+				if (
+					path.clist.length === 2 &&
+					(!path.clist[0].line || !path.clist[1].line)
+				) {
+					continue;
+				}
+
+				this.failcode.add("lnLengthNe3");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
+			}
+		},
+		checkDir4BlockOver: function() {
+			this.checkDir4Cell(
+				function(cell) {
+					return cell.lcnt;
+				},
+				2,
+				"nmLineGt"
+			);
+		},
+		checkDir4BlockLess: function() {
+			this.checkDir4Cell(
+				function(cell) {
+					return cell.lcnt;
+				},
+				1,
+				"nmLineLt"
+			);
 		}
 	},
 	"FailCode@takoyaki": {

@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["loute", "sashigane"], {
+})(["loute", "sashigane", "sashikazune"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@loute": {
@@ -27,7 +27,7 @@
 			}
 		}
 	},
-	MouseEvent: {
+	"MouseEvent@loute,sashigane#1": {
 		mouseinput: function() {
 			// オーバーライド
 			if (this.inputMode === "undef" || this.inputMode === "circle-unshade") {
@@ -134,11 +134,30 @@
 			cell.draw();
 		}
 	},
+	"MouseEvent@sashikazune": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["diraux", "border", "subline"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				this.inputarrow_cell();
+			}
+		},
+		inputarrow_cell_main: function(cell, dir) {
+			var value = 1 << (dir + 1);
+			cell.setQsub(cell.qsub ^ value);
+		},
+		autoedit_func: "qnum",
+		autoplay_func: "border"
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
-		enablemake: true,
+		enablemake: true
+	},
+	"KeyEvent@loute,sashigane": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -250,6 +269,12 @@
 			return this.qdir === 5;
 		}
 	},
+	"Cell@sashikazune": {
+		minnum: 1,
+		maxnum: function() {
+			return Math.max(this.board.cols, this.board.rows);
+		}
+	},
 
 	Board: {
 		cols: 8,
@@ -257,7 +282,7 @@
 
 		hasborder: 1
 	},
-	BoardExec: {
+	"BoardExec@loute,sashigane": {
 		adjustBoardData: function(key, d) {
 			this.adjustNumberArrow(key, d);
 		}
@@ -275,9 +300,7 @@
 			component.shape = 0;
 
 			var clist = component.clist,
-				d = clist.getRectSize(),
-				bd = this.board;
-
+				d = clist.getRectSize();
 			/* 四角形のうち別エリアとなっている部分を調べる */
 			/* 幅が1なので座標自体は調べなくてよいはず      */
 			var subclist = this.board
@@ -298,33 +321,64 @@
 				}
 			} else {
 				component.shape = 1; /* 幅が1のL字型 */
-				for (var i = 0; i < clist.length; i++) {
-					clist[i].place = 1;
-				} /* L字型ブロックのセル */
+				this.setCellPlaces(clist, d, dl);
+			}
+		},
 
-				/* 端のセル */
-				var isUL = d.x1 === dl.x1 && d.y1 === dl.y1,
-					isUR = d.x2 === dl.x2 && d.y1 === dl.y1,
-					isDL = d.x1 === dl.x1 && d.y2 === dl.y2,
-					isDR = d.x2 === dl.x2 && d.y2 === dl.y2;
-				if (isUL || isDR) {
-					bd.getc(d.x1, d.y2).place = 2;
-					bd.getc(d.x2, d.y1).place = 2;
-				} else if (isDL || isUR) {
-					bd.getc(d.x1, d.y1).place = 2;
-					bd.getc(d.x2, d.y2).place = 2;
-				}
+		setCellPlaces: function(clist, d, dl) {
+			var bd = this.board;
+			for (var i = 0; i < clist.length; i++) {
+				clist[i].place = 1;
+			} /* L字型ブロックのセル */
 
-				/* 角のセル */
-				if (isUL) {
-					bd.getc(d.x2, d.y2).place = 3;
-				} else if (isDL) {
-					bd.getc(d.x2, d.y1).place = 3;
-				} else if (isUR) {
-					bd.getc(d.x1, d.y2).place = 3;
-				} else if (isDR) {
-					bd.getc(d.x1, d.y1).place = 3;
-				}
+			/* 端のセル */
+			var isUL = d.x1 === dl.x1 && d.y1 === dl.y1,
+				isUR = d.x2 === dl.x2 && d.y1 === dl.y1,
+				isDL = d.x1 === dl.x1 && d.y2 === dl.y2,
+				isDR = d.x2 === dl.x2 && d.y2 === dl.y2;
+			if (isUL || isDR) {
+				bd.getc(d.x1, d.y2).place = 2;
+				bd.getc(d.x2, d.y1).place = 2;
+			} else if (isDL || isUR) {
+				bd.getc(d.x1, d.y1).place = 2;
+				bd.getc(d.x2, d.y2).place = 2;
+			}
+
+			/* 角のセル */
+			if (isUL) {
+				bd.getc(d.x2, d.y2).place = 3;
+			} else if (isDL) {
+				bd.getc(d.x2, d.y1).place = 3;
+			} else if (isUR) {
+				bd.getc(d.x1, d.y2).place = 3;
+			} else if (isDR) {
+				bd.getc(d.x1, d.y1).place = 3;
+			}
+		}
+	},
+
+	"AreaRoomGraph@sashikazune": {
+		setCellPlaces: function(clist, d, dl) {
+			var bd = this.board;
+			var corner = null;
+
+			if (d.x1 === dl.x1 && d.y1 === dl.y1) {
+				corner = bd.getc(d.x2, d.y2);
+			} else if (d.x1 === dl.x1 && d.y2 === dl.y2) {
+				corner = bd.getc(d.x2, d.y1);
+			} else if (d.x2 === dl.x2 && d.y1 === dl.y1) {
+				corner = bd.getc(d.x1, d.y2);
+			} else if (d.x2 === dl.x2 && d.y2 === dl.y2) {
+				corner = bd.getc(d.x1, d.y1);
+			} else {
+				return;
+			}
+
+			for (var i = 0; i < clist.length; i++) {
+				var c2 = clist[i];
+				c2.place =
+					1 +
+					((Math.abs(c2.bx - corner.bx) + Math.abs(c2.by - corner.by)) >> 1);
 			}
 		}
 	},
@@ -350,6 +404,9 @@
 				this.drawCircledNumbers();
 			} else if (this.pid === "loute") {
 				this.drawCircles();
+			} else {
+				this.drawQuesNumbers();
+				this.drawArrowAuxMarks();
 			}
 
 			this.drawBorderQsubs();
@@ -382,8 +439,54 @@
 			}
 		}
 	},
-	"Grahpic@sashigane": {
-		hideHatena: true
+	"Graphic@sashikazune": {
+		fontsizeratio: 0.75,
+		drawArrowAuxMarks: function() {
+			var g = this.vinc("cell_ticks", "auto");
+			g.lineWidth = (1 + this.cw / 40) | 0;
+			var size = this.cw * 0.15;
+			if (size < 3) {
+				size = 3;
+			}
+
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				var bx = cell.bx,
+					by = cell.by,
+					px = bx * this.bw,
+					py = by * this.bh;
+				var color = "rgb(127,127,255)";
+				g.strokeStyle = color;
+				var tickMods = [
+					[-1, 1],
+					[1, 1],
+					[-1, 0],
+					[1, 0]
+				];
+				for (var m = 0; m < tickMods.length; m++) {
+					g.vid = "ut_cell" + m + "_" + cell.id;
+
+					if (cell.qsub & (1 << (m + 2))) {
+						var xmult = tickMods[m][0],
+							isvert = tickMods[m][1];
+						var c1 = !isvert ? px : py,
+							c2 = !isvert ? py : px,
+							p1 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 + size],
+							p2 = [c1 + xmult * this.bw - 0.5 * xmult * size, c2],
+							p3 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 - size];
+						g.beginPath();
+						g.moveTo(p1[+!!isvert], p1[+!isvert]);
+						g.lineTo(p2[+!!isvert], p2[+!isvert]);
+						g.lineTo(p3[+!!isvert], p3[+!isvert]);
+						g.moveTo(p2[+!!isvert], p2[+!isvert]);
+						g.closePath();
+						g.stroke();
+					} else {
+						g.vhide();
+					}
+				}
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -529,6 +632,14 @@
 			this.outbstr += cm;
 		}
 	},
+	"Encode@sashikazune": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
@@ -562,6 +673,18 @@
 			});
 
 			this.encodeBorderAns();
+		}
+	},
+	"FileIO@sashikazune": {
+		decodeData: function() {
+			this.decodeCellQnum();
+			this.decodeBorderAns();
+			this.decodeCellQsub();
+		},
+		encodeData: function() {
+			this.encodeCellQnum();
+			this.encodeBorderAns();
+			this.encodeCellQsub();
 		}
 	},
 
@@ -674,6 +797,35 @@
 				}
 				rooms[id].clist.seterr(1);
 			}
+		}
+	},
+	"AnsCheck@sashikazune": {
+		checklist: [
+			"checkNumberDistance",
+			"checkNumber3Count",
+			"checkBorderDeadend",
+			"checkLblock"
+		],
+
+		checkNumberDistance: function() {
+			this.checkAllCell(function(cell) {
+				return (
+					cell.isValidNum() && cell.place !== 0 && cell.place !== cell.getNum()
+				);
+			}, "nmDistNe");
+		},
+
+		checkNumber3Count: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return cell.isNum() && cell.place !== 0;
+				},
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"bkNumGt2"
+			);
 		}
 	}
 });

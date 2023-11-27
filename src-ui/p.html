@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
+<meta name="google" content="notranslate">
 
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
@@ -157,6 +158,7 @@ if ('serviceWorker' in navigator) {
       <div class="child" data-value="water">__inputmode.water__</div>
       <div class="child" data-value="nabe">__inputmode.nabe__</div>
       <div class="child" data-value="box">__inputmode.box__</div>
+      <div class="child" data-value="pin">__inputmode.pin__</div>
       <div class="child" data-value="crossdot">__inputmode.crossdot__</div>
       <div class="child" data-value="ineq">__inputmode.ineq__</div>
       <div class="child" data-value="move-clue">__inputmode.move-clue__</div>
@@ -198,6 +200,7 @@ if ('serviceWorker' in navigator) {
       <div class="child" data-value="info-line">__inputmode.info-line__</div>
       <div class="child" data-value="info-blk">__inputmode.info-blk__</div>
       <div class="child" data-value="info-ublk">__inputmode.info-ublk__</div>
+      <div class="child" data-value="info-room">__inputmode.info-room__</div>
       <div class="child" data-value="info-road">__inputmode.info-road__</div>
      </div>
     </div>
@@ -328,6 +331,12 @@ if ('serviceWorker' in navigator) {
         <span>__mouseonly__</span>
       </label>
     </div>
+    <div class="config" data-config="patchwork_leftaux">
+      <label>
+        <input type="checkbox">
+        <span>__patchwork_leftaux__</span>
+      </label>
+    </div>
     <div class="config" data-config="keypopup">
       <label>
         <input type="checkbox">
@@ -387,6 +396,12 @@ if ('serviceWorker' in navigator) {
         <span>__nuriuzu_connect__</span>
       </label>
     </div>
+    <div class="config" data-config="bdwalk_height">
+      <label>
+        <input type="checkbox">
+        <span>__bdwalk_height__</span>
+      </label>
+    </div>
     <div class="config" data-config="pentopia_transparent">
       <label>
         <input type="checkbox">
@@ -409,6 +424,12 @@ if ('serviceWorker' in navigator) {
       <label>
         <input type="checkbox">
         <span>__magnets_anti__</span>
+      </label>
+    </div>
+    <div class="config" data-config="heyapin_overlap">
+      <label>
+        <input type="checkbox">
+        <span>__heyapin_overlap__</span>
       </label>
     </div>
     <div class="config" data-config="variant">
@@ -438,6 +459,8 @@ if ('serviceWorker' in navigator) {
   <button type="button" class="btn" id="btnflush"   data-button-exec="flushexcell">__flushexcell__</button>
   <button type="button" class="btn" id="btnpresets" data-button-exec="applypreset">__applypreset__</button>
   <button type="button" class="btn" data-disp-pid="stostone" data-press-exec="dropblocks,resetblocks">__dropblocks__</button>
+  <button type="button" class="btn" data-disp-pid="slither" data-button-exec="outlineshaded">__outlineshaded__</button>
+  <button type="button" class="btn" data-disp-pid="myopia" data-button-exec="outlineshaded">__outlineshaded__</button>
   <button type="button" class="btn" id="btntrial"   data-button-exec="enterTrial">__enterTrial__</button>
   <div id="btntrialarea" style="display:none;">
     <button type="button" class="btn btn-ok" id="btntriala"  data-button-exec="acceptTrial">__acceptTrial__</button

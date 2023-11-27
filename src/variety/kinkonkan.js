@@ -301,11 +301,13 @@
 			this.haslight = false;
 			this.puzzle.redraw();
 		},
-		searchLight: function(startexcell, setlight) {
-			var ccnt = 0,
+		searchLight: function(startexcell, setlight, ldata) {
+			var ccnt = 0;
+			if (!ldata) {
 				ldata = [];
-			for (var c = 0; c < this.cell.length; c++) {
-				ldata[c] = 0;
+				for (var c = 0; c < this.cell.length; c++) {
+					ldata[c] = 0;
+				}
 			}
 
 			var pos = startexcell.getaddr(),
@@ -676,7 +678,8 @@
 			"checkSingleMirrorInRoom",
 			"checkPairMirror",
 			"checkReflectionCount",
-			"checkExistMirrorInRoom"
+			"checkExistMirrorInRoom",
+			"checkMirrorUnused"
 		],
 
 		checkSingleMirrorInRoom: function() {
@@ -711,6 +714,7 @@
 			this.checkMirrors(2, "pairedNumberNe");
 		},
 		checkMirrors: function(type, code) {
+			var ldata = [];
 			var d = [],
 				bd = this.board,
 				result = true,
@@ -720,7 +724,7 @@
 				if (!isNaN(d[ec]) || excell.qnum === -1 || excell.qchar === 0) {
 					continue;
 				}
-				var ret = bd.searchLight(excell, false),
+				var ret = bd.searchLight(excell, false, ldata),
 					excell2 = bd.excell[ret.dest];
 				if (
 					(type === 1 && excell.qchar !== excell2.qchar) ||
@@ -741,12 +745,24 @@
 				d[ec] = 1;
 				d[ret.dest] = 1;
 			}
+			if (result || !this.checkOnly) {
+				this._info.ldata = ldata;
+			}
 			if (!result) {
 				this.failcode.add(code);
 				if (errorExCell) {
 					bd.searchLight(errorExCell, true);
 				}
 			}
+		},
+		checkMirrorUnused: function() {
+			if (!this._info.ldata) {
+				this.checkMirrors();
+			}
+			var ldata = this._info.ldata;
+			this.checkAllCell(function(cell) {
+				return cell.qans && !ldata[cell.id];
+			}, "ceUnused");
 		}
 	}
 });

@@ -11,20 +11,8 @@
 			edit: ["border", "number", "clear", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
 		},
-
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputborder();
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqnum();
-				}
-			}
-		}
+		autoedit_func: "areanum",
+		autoplay_func: "cell"
 	},
 
 	KeyEvent: {
