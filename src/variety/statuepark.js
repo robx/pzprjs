@@ -2,13 +2,21 @@
 // statuepark.js
 //
 
-(function(pidlist, classbase) {
+(function(classbase) {
+	var pidlist = [
+		"statuepark",
+		"statuepark-aux",
+		"pentopia",
+		"battleship",
+		"pentatouch",
+		"kissing"
+	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["statuepark", "statuepark-aux", "pentopia", "battleship", "pentatouch"], {
+})({
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -24,13 +32,19 @@
 				if (this.notInputted() && this.mousestart) {
 					this.inputqcmp();
 				}
-			} else if (this.puzzle.editmode && this.mousestart) {
-				if (this.pid === "pentatouch") {
+			} else if (this.puzzle.editmode) {
+				if (this.pid === "kissing") {
+					if (this.mousestart || this.mousemove) {
+						this.inputborder();
+					} else if (this.mouseend && this.notInputted()) {
+						this.inputempty();
+					}
+				} else if (this.pid === "pentatouch" && this.mousestart) {
 					this.inputcrossMark();
-				} else {
+				} else if (this.mousestart) {
 					this.inputqnum();
 				}
-				if (this.notInputted()) {
+				if (this.mousestart && this.getbank()) {
 					if (this.btn === "left") {
 						this.inputpiece();
 					} else {
@@ -212,6 +226,12 @@
 	"MouseEvent@pentatouch": {
 		inputModes: {
 			edit: ["completion"],
+			play: ["shade", "unshade", "clear", "completion"]
+		}
+	},
+	"MouseEvent@kissing": {
+		inputModes: {
+			edit: ["completion", "border", "empty"],
 			play: ["shade", "unshade", "clear", "completion"]
 		}
 	},
@@ -397,6 +417,9 @@
 	"Board@pentatouch": {
 		hascross: 1
 	},
+	"Board@kissing": {
+		hasborder: 1
+	},
 
 	Bank: {
 		enabled: true,
@@ -479,6 +502,28 @@
 				return p.serialize();
 			});
 			return !this.puzzle.pzpr.util.sameArray(this.defaultPreset(), pieces);
+		}
+	},
+
+	"Bank@kissing": {
+		exceedPieceSize: -1,
+		rebuildExtraData: function() {
+			var bd = this.puzzle.board;
+			var minsize = bd.rows * bd.cols + 1;
+			var maxsize = 0;
+
+			for (var i = 0; i < this.pieces.length; i++) {
+				var piece = this.pieces[i];
+				var size = 0;
+				for (var j = 0; j < piece.str.length; j++) {
+					if (piece.str[j] === "1") {
+						size++;
+					}
+				}
+				minsize = Math.min(size, minsize);
+				maxsize = Math.max(size, maxsize);
+			}
+			this.exceedPieceSize = minsize + maxsize;
 		}
 	},
 
@@ -714,6 +759,20 @@
 			}
 		}
 	},
+	"Cell@kissing": {
+		allowShade: function() {
+			return this.isValid();
+		},
+		allowUnshade: function() {
+			return this.isValid();
+		},
+		posthook: {
+			qans: function() {
+				this.drawaround();
+			}
+		}
+	},
+
 	"Cell@battleship": {
 		numberAsObject: true,
 		minnum: 0,
@@ -909,6 +968,12 @@
 	"AreaUnshadeGraph@statuepark": {
 		enabled: true
 	},
+	"AreaShadeGraph@kissing": {
+		relation: { "cell.qans": "node", "border.ques": "separator" },
+		isedgevalidbylinkobj: function(border) {
+			return !border.isBorder();
+		}
+	},
 
 	"Graphic@statuepark": {
 		enablebcolor: true,
@@ -926,8 +991,9 @@
 		shadecolor: "rgb(80, 80, 80)",
 		bgcellcolor_func: "qsub1",
 
-		crosssize: 0.15,
-
+		crosssize: 0.15
+	},
+	"Graphic@pentatouch,kissing#1": {
 		drawTarget: function() {
 			var show = this.puzzle.editmode && this.puzzle.cursor.bankpiece !== null;
 			this.drawCursor(true, show);
@@ -947,6 +1013,10 @@
 			} else if (this.pid === "pentopia") {
 				this.drawArrowCombinations();
 				this.drawHatenas();
+			} else if (this.pid === "kissing") {
+				this.drawBorders();
+				this.drawXCells();
+				this.drawDotCells();
 			}
 
 			this.drawChassis();
@@ -1058,6 +1128,144 @@
 						g.vid = "c_arrow_line_" + cell.id + "_" + dir;
 						g.vhide();
 					}
+				}
+			}
+		}
+	},
+
+	"Graphic@kissing": {
+		shadecolor: "#777",
+		trialcolor: "rgb(255, 160, 0)",
+
+		drawXCells: function() {
+			var g = this.vinc("cell_x", "auto", true);
+
+			var rsize = this.cw * 0.2;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_x_" + cell.id;
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				if (cell.isEmpty()) {
+					g.strokeStyle = this.quescolor;
+					g.lineWidth = 2;
+					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		drawBorders: function() {
+			this.vinc("border", "auto", true);
+			var g = this.context;
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i],
+					color = this.getBorderColor(border);
+
+				g.vid = "b_bd_" + border.id;
+				if (!!color) {
+					var px = border.bx * this.bw,
+						py = border.by * this.bh;
+					var lx = this.bw * 0.2,
+						ly = this.bh * 0.2;
+					g.fillStyle = color;
+					if (border.isVert()) {
+						this.fillCapsule(g, px, py, lx, this.bh - ly);
+					} else {
+						this.fillCapsule(g, px, py, this.bw - lx, ly);
+					}
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		fillCapsule: function(g, x, y, w, h) {
+			if (w > h) {
+				var rads = (90 * Math.PI) / 180,
+					rade = (270 * Math.PI) / 180;
+
+				g.beginPath();
+				g.moveTo(x + w - h, y - h);
+				g.arc(x + w - h, y, h, rads, rade, true);
+				g.lineTo(x + h - w, y + h);
+				g.arc(x + h - w, y, h, rade, rads, true);
+				g.lineTo(x + w - h, y - h);
+				g.fill();
+			} else {
+				var rads = (0 * Math.PI) / 180,
+					rade = (180 * Math.PI) / 180;
+
+				g.beginPath();
+				g.moveTo(x - w, y + w - h);
+				g.arc(x, y + w - h, w, rads, rade, true);
+				g.lineTo(x + w, y + h - w);
+				g.arc(x, y + h - w, w, rade, rads, true);
+				g.lineTo(x - w, y + w - h);
+				g.fill();
+			}
+		},
+		drawShadedCells: function() {
+			this.vinc("cell_shaded", "crispEdges");
+			var g = this.context;
+			var clist = this.range.cells;
+
+			var radius = 0.75;
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					color = this.getShadedCellColor(cell);
+				var px = cell.bx,
+					py = cell.by;
+
+				var sizes = {};
+				for (var dir in cell.adjacent) {
+					sizes[dir] =
+						!cell.adjborder[dir].isBorder() && cell.adjacent[dir].isShade()
+							? 1
+							: radius;
+				}
+
+				g.vid = "c_fulls_h_" + cell.id;
+				if (!!color) {
+					g.fillStyle = color;
+
+					var gap = sizes.left === 1 ? 0 : 1;
+					var left = px - sizes.left,
+						right = px + sizes.right,
+						top = py - radius,
+						bottom = py + radius;
+					g.fillRect(
+						left * this.bw + gap,
+						top * this.bh,
+						(right - left) * this.bw - gap,
+						(bottom - top) * this.bh
+					);
+				} else {
+					g.vhide();
+				}
+
+				g.vid = "c_fulls_v_" + cell.id;
+				if (!!color) {
+					g.fillStyle = color;
+					var px = cell.bx,
+						py = cell.by;
+
+					var left = px - radius,
+						right = px + radius,
+						top = py - sizes.top,
+						bottom = py + sizes.bottom;
+					g.fillRect(
+						left * this.bw + 1,
+						top * this.bh,
+						(right - left) * this.bw - 1,
+						(bottom - top) * this.bh
+					);
+				} else {
+					g.vhide();
 				}
 			}
 		}
@@ -1389,6 +1597,23 @@
 		}
 	},
 
+	"Encode@kissing": {
+		decodePzpr: function(type) {
+			if (this.outbstr[0] !== "/") {
+				this.decodeBorder();
+			}
+			if (this.outbstr[0] !== "/") {
+				this.decodeEmpty();
+			}
+			this.decodePieceBank();
+		},
+		encodePzpr: function(type) {
+			this.encodeBorder();
+			this.encodeEmpty();
+			this.encodePieceBank();
+		}
+	},
+
 	FileIO: {
 		decodeData: function() {
 			this.decodePieceBank();
@@ -1461,6 +1686,38 @@
 		}
 	},
 
+	"FileIO@kissing": {
+		decodeData: function() {
+			this.decodePieceBank();
+			this.decodeBorderQues();
+			this.decodeCell(function(cell, ca) {
+				if (ca === "x") {
+					cell.ques = 7;
+				} else if (ca === "#") {
+					cell.qans = 1;
+				} else if (ca === "+") {
+					cell.qsub = 1;
+				}
+			});
+			this.decodePieceBankQcmp();
+		},
+		encodeData: function() {
+			this.encodePieceBank();
+			this.encodeBorderQues();
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "x ";
+				} else if (cell.qans) {
+					return "# ";
+				} else if (cell.qsub) {
+					return "+ ";
+				}
+				return ". ";
+			});
+			this.encodePieceBankQcmp();
+		}
+	},
+
 	"AnsCheck@statuepark": {
 		checklist: [
 			"checkUnshadeOnCircle",
@@ -1480,6 +1737,67 @@
 		checkUnshadeOnCircle: function() {
 			this.checkAllCell(function(cell) {
 				return cell.isShade() && cell.qnum === 1;
+			}, "circleShade");
+		}
+	},
+	"AnsCheck@kissing": {
+		checklist: [
+			"checkUnshadeOnCircle",
+			"checkPieceSize",
+			"checkSeparators",
+			"checkBankPiecesAvailable",
+			"checkBankPiecesInvalid",
+			"checkBankPiecesUsed"
+		],
+
+		checkPieceSize: function() {
+			// A separate check for pieces that are far too large,
+			// which probably indicates two pieces being merged together.
+			var exceed = this.board.bank.exceedPieceSize;
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a < exceed;
+				},
+				"csGtLimit"
+			);
+		},
+
+		checkSeparators: function() {
+			for (var id = 0; id < this.board.border.length; id++) {
+				var border = this.board.border[id];
+				if (!border.isBorder()) {
+					continue;
+				}
+				var cell1 = border.sidecell[0],
+					cell2 = border.sidecell[1];
+				if (cell1.isnull || cell2.isnull) {
+					continue;
+				}
+				if (cell1.isShade() && cell2.isShade() && cell1.sblk !== cell2.sblk) {
+					continue;
+				}
+
+				this.failcode.add("bdUnused");
+				if (this.checkOnly) {
+					break;
+				}
+				if (cell1.sblk) {
+					cell1.sblk.clist.seterr(1);
+				} else {
+					cell1.seterr(1);
+				}
+				if (cell2.sblk) {
+					cell2.sblk.clist.seterr(1);
+				} else {
+					cell2.seterr(1);
+				}
+			}
+		},
+
+		checkUnshadeOnCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isShade() && !cell.isValid();
 			}, "circleShade");
 		}
 	},

@@ -142,6 +142,7 @@ function toBGimage(pid) {
 		"ladders",
 		"kaidan",
 		"kaisu",
+		"kissing",
 		"kropki",
 		"kuroclone",
 		"lollipops",
