@@ -1233,14 +1233,15 @@
 				if (!!color) {
 					g.fillStyle = color;
 
+					var gap = sizes.left === 1 ? 0 : 1;
 					var left = px - sizes.left,
 						right = px + sizes.right,
 						top = py - radius,
 						bottom = py + radius;
 					g.fillRect(
-						left * this.bw + 1,
+						left * this.bw + gap,
 						top * this.bh,
-						(right - left) * this.bw - 1,
+						(right - left) * this.bw - gap,
 						(bottom - top) * this.bh
 					);
 				} else {
