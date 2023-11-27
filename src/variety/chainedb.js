@@ -111,7 +111,7 @@
 	"Cell@mrtile": {
 		maxnum: function() {
 			var bd = this.board;
-			return (bd.cols * bd.rows) >> 1;
+			return ((bd.cols * bd.rows) >> 1) - 1;
 		}
 	},
 

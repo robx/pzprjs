@@ -16,5 +16,10 @@ ui.debug.addDebugData("mrtile", {
 			"pzprv3/mrtile/5/5/1 + + 3 # /+ # + + 3 /2 + - - + /# + + # + /+ # # + + /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,6,2", "cursor,5,3", "mouse,right,5,3"],
+			result: "pzprv3/mrtile/2/6/. . . . . . /. . 5 . . . /"
+		}
+	]
 });
