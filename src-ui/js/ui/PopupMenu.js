@@ -238,6 +238,13 @@ ui.popupmgr.addpopup("template", {
 ui.popupmgr.addpopup("newboard", {
 	formname: "newboard",
 
+	translate: function() {
+		ui.popupmgr.popups.template.translate.call(this);
+		if (ui.puzzle.klass.Bank.prototype.enabled) {
+			this.loadpresets();
+		}
+	},
+
 	reset: function() {
 		ui.misc.displayByPid(this.pop);
 

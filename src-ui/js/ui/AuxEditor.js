@@ -139,6 +139,11 @@ ui.popupmgr.addpopup("applypreset", {
 		this.loadpresets();
 	},
 
+	translate: function() {
+		ui.popupmgr.popups.template.translate.call(this);
+		this.loadpresets();
+	},
+
 	apply: function() {
 		if (this.form.preset.value === "") {
 			this.close();
