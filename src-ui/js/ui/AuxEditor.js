@@ -141,7 +141,9 @@ ui.popupmgr.addpopup("applypreset", {
 
 	translate: function() {
 		ui.popupmgr.popups.template.translate.call(this);
-		this.loadpresets();
+		if (ui.puzzle.klass.Bank.prototype.enabled) {
+			this.loadpresets();
+		}
 	},
 
 	apply: function() {
