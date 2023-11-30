@@ -1190,9 +1190,9 @@
 
 				g.beginPath();
 				g.moveTo(x + w - h, y - h);
-				g.arc(x + w - h, y, h, rads, rade, true);
+				g.arc(x + w - h, y, h, rade, rads, false);
 				g.lineTo(x + h - w, y + h);
-				g.arc(x + h - w, y, h, rade, rads, true);
+				g.arc(x + h - w, y, h, rads, rade, false);
 				g.lineTo(x + w - h, y - h);
 				g.fill();
 			} else {
@@ -1201,9 +1201,9 @@
 
 				g.beginPath();
 				g.moveTo(x - w, y + w - h);
-				g.arc(x, y + w - h, w, rads, rade, true);
+				g.arc(x, y + w - h, w, rade, rads, false);
 				g.lineTo(x + w, y + h - w);
-				g.arc(x, y + h - w, w, rade, rads, true);
+				g.arc(x, y + h - w, w, rads, rade, false);
 				g.lineTo(x - w, y + w - h);
 				g.fill();
 			}
