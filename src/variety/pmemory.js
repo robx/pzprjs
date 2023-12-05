@@ -30,6 +30,33 @@
 		autoplay_func: "line"
 	},
 
+	Cell: {
+		invalidNeighbors: function() {
+			if (this.lcnt !== 2) {
+				return null;
+			}
+			var bd = this.board,
+				x = this.bx,
+				y = this.by;
+			if (this.isLineStraight()) {
+				if (this.adjborder.top.isLine()) {
+					return bd.cellinside(x - 2, y, x + 2, y);
+				}
+				return bd.cellinside(x, y - 2, x, y + 2);
+			}
+			if (this.adjborder.top.isLine()) {
+				if (this.adjborder.left.isLine()) {
+					return bd.cellinside(x, y, x + 2, y + 2);
+				}
+				return bd.cellinside(x - 2, y, x, y + 2);
+			}
+			if (this.adjborder.left.isLine()) {
+				return bd.cellinside(x, y - 2, x + 2, y);
+			}
+			return bd.cellinside(x - 2, y - 2, x, y);
+		}
+	},
+
 	Board: {
 		hasborder: 1
 	},
@@ -121,13 +148,38 @@
 		checklist: [
 			"checkBranchLine",
 			"checkCrossLine",
+			"checkAdjacency",
 			"checkRegionCopies",
 			"checkCircleEndpoint",
 			"checkShadedRegions",
 			"checkOneLoop"
 		],
 
+		checkAdjacency: function() {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				var adjs = cell.invalidNeighbors();
+				if (!adjs) {
+					continue;
+				}
+				var invalid = adjs.filter(function(c2) {
+					return c2 !== cell && c2.lcnt > 0;
+				});
+				if (invalid.length === 0) {
+					continue;
+				}
+
+				this.failcode.add("lnAdjacent");
+				if (this.checkOnly) {
+					break;
+				}
+				cell.seterr(1);
+				invalid.seterr(1);
+			}
+		},
+
 		checkRegionCopies: function() {
+			var checkSingleError = !this.puzzle.getConfig("multierr");
 			var rooms = this.board.roommgr.components;
 			var groups = {};
 
@@ -173,6 +225,9 @@
 					}
 					for (var rx = 0; rx < rooms.length; rx++) {
 						rooms[rx].clist.seterr(1);
+					}
+					if (checkSingleError) {
+						return;
 					}
 				}
 			}
