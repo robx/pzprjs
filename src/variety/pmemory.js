@@ -88,18 +88,95 @@
 		}
 	},
 	FileIO: {
-		decodeData: function() {},
-		encodeData: function() {}
+		decodeData: function() {
+			this.decodeBorderQues();
+			this.decodeCell(function(cell, ca) {
+				var val = +ca;
+				if (val & 1) {
+					cell.ques = 6;
+				}
+				if (val & 2) {
+					cell.qnum = 1;
+				}
+			});
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeBorderQues();
+			this.encodeCell(function(cell) {
+				var val = 0;
+				if (cell.ice()) {
+					val |= 1;
+				}
+				if (cell.qnum === 1) {
+					val |= 2;
+				}
+				return val + " ";
+			});
+			this.encodeBorderLine();
+		}
 	},
 
 	AnsCheck: {
 		checklist: [
 			"checkBranchLine",
 			"checkCrossLine",
+			"checkRegionCopies",
 			"checkCircleEndpoint",
 			"checkShadedRegions",
 			"checkOneLoop"
 		],
+
+		checkRegionCopies: function() {
+			var rooms = this.board.roommgr.components;
+			var groups = {};
+
+			for (var i = 0; i < rooms.length; i++) {
+				var room = rooms[i];
+				if (!room.clist[0].ice()) {
+					continue;
+				}
+
+				var id = room.clist.getBlockShapes().id;
+				if (!(id in groups)) {
+					groups[id] = [];
+				}
+				groups[id].push(room);
+			}
+
+			for (id in groups) {
+				var rooms = groups[id];
+				var len = rooms[0].clist.length;
+				var valid = true;
+				for (var rx = 0; valid && rx < rooms.length - 1; rx++) {
+					for (var c = 0; valid && c < len; c++) {
+						var c1 = rooms[rx].clist[c],
+							c2 = rooms[rx + 1].clist[c];
+
+						for (var dir in c1.adjborder) {
+							var b1 = c1.adjborder[dir],
+								b2 = c2.adjborder[dir];
+
+							var line1 = b1 && b1.isLine(),
+								line2 = b2 && b2.isLine();
+							if (line1 !== line2) {
+								valid = false;
+							}
+						}
+					}
+				}
+				if (!valid) {
+					this.failcode.add("bkDifferentLines");
+
+					if (this.checkOnly) {
+						return;
+					}
+					for (var rx = 0; rx < rooms.length; rx++) {
+						rooms[rx].clist.seterr(1);
+					}
+				}
+			}
+		},
 
 		checkCircleEndpoint: function() {
 			this.checkAllCell(function(cell) {
@@ -129,5 +206,9 @@
 				room.clist.seterr(1);
 			}
 		}
+	},
+	FailCode: {
+		shEndpoint: "shEndpoint.snake",
+		bkNoLine: "bkNoLine.ovotovata"
 	}
 });
