@@ -11,6 +11,72 @@
 			play: ["line", "peke", "clear", "info-line"]
 		},
 
+		// TODO cell aux marks
+
+		mouseinput_clear: function() {
+			if (this.puzzle.playmode) {
+				this.inputFixedQsub(0);
+				return;
+			}
+
+			var cell = this.getcell();
+
+			if (cell.isnull || !cell.ice()) {
+				return;
+			}
+			cell.setQues(0);
+			for (var dir in cell.adjborder) {
+				var border = cell.adjborder[dir];
+				var cell2 = cell.adjacent[dir];
+				if (border && !border.isnull) {
+					border.setQues(cell2.ice() ? 1 : 0);
+				}
+			}
+			cell.drawaround();
+		},
+
+		mouseinputAutoEdit: function() {
+			if (this.btn === "right") {
+				return this.mouseinput_clear();
+			}
+
+			var cell = this.getcell();
+
+			if (cell.isnull) {
+				return;
+			}
+
+			if (this.prevPos.bx === null) {
+				if (!cell.ice()) {
+					cell.setQues(6);
+					for (var dir in cell.adjborder) {
+						var border = cell.adjborder[dir];
+						if (border && !border.isnull) {
+							border.setQues(1);
+						}
+					}
+					cell.drawaround();
+				}
+			} else {
+				cell.setQues(6);
+				var merge = this.prevPos.getnb(cell);
+				if (!merge.isnull) {
+					merge.setQues(0);
+				}
+
+				for (var dir in cell.adjborder) {
+					var border = cell.adjborder[dir];
+					var cell2 = cell.adjacent[dir];
+					if (border && !border.isnull && !cell2.ice()) {
+						border.setQues(1);
+					}
+				}
+				cell.drawaround();
+				// TODO remove every deadend line in this region
+			}
+			this.prevPos.set(cell);
+		},
+
 		inputShade: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
