@@ -6,7 +6,9 @@
 	}
 })(["pmemory"], {
 	MouseEvent: {
+		draggingSG: false,
 		inputModes: {
+			// TODO remove circle-unshade mode
 			edit: ["border", "shade", "circle-unshade", "clear", "info-line"],
 			play: ["line", "peke", "clear", "info-line"]
 		},
@@ -42,11 +44,27 @@
 
 			var cell = this.getcell();
 
-			if (cell.isnull) {
-				return;
+			if (this.draggingSG && this.mouseend) {
+				this.draggingSG = false;
+				cell.draw();
 			}
 
-			if (this.prevPos.bx === null) {
+			if (cell.isnull || this.prevPos.equals(cell)) {
+				return;
+			}
+			var prev = this.prevPos.getc();
+
+			if (this.draggingSG) {
+				if (cell.qnum !== 1) {
+					cell.setQnum(1);
+					prev.setQnum(-1);
+				}
+			} else if (this.prevPos.bx === null) {
+				if (cell.qnum === 1) {
+					this.draggingSG = true;
+					cell.draw();
+					return;
+				}
 				if (!cell.ice()) {
 					cell.setQues(6);
 					for (var dir in cell.adjborder) {
@@ -55,7 +73,6 @@
 							border.setQues(1);
 						}
 					}
-					cell.drawaround();
 				}
 			} else {
 				cell.setQues(6);
@@ -71,10 +88,11 @@
 						border.setQues(1);
 					}
 				}
-				cell.drawaround();
 				// TODO remove every deadend line in this region
 			}
 			this.prevPos.set(cell);
+			cell.drawaround();
+			prev.draw();
 		},
 
 		inputShade: function() {
@@ -124,6 +142,8 @@
 	},
 
 	Board: {
+		// TODO start the grid with 2 circles
+		// TODO enforce circles remaining onscreen when grid resizes
 		hasborder: 1
 	},
 
@@ -139,6 +159,8 @@
 		icecolor: "rgb(204,204,204)",
 		irowake: true,
 
+		circleratio: [0.33, 0.33],
+
 		paint: function() {
 			this.drawBGCells();
 
@@ -151,6 +173,23 @@
 			this.drawBorders();
 
 			this.drawChassis();
+		},
+
+		getCircleStrokeColor: function(cell) {
+			return this.getCircleFillColor(cell);
+		},
+		getCircleFillColor: function(cell) {
+			if (cell.qnum !== 1) {
+				return null;
+			}
+			if (this.puzzle.mouse.draggingSG) {
+				var pos = this.puzzle.mouse.prevPos;
+				if (pos && pos.equals(cell)) {
+					return "red";
+				}
+			}
+
+			return (cell.error || cell.qinfo) === 1 ? this.errcolor1 : this.quescolor;
 		}
 	},
 
