@@ -10,10 +10,8 @@
 		inputModes: {
 			// TODO remove circle-unshade mode
 			edit: ["border", "shade", "circle-unshade", "clear", "info-line"],
-			play: ["line", "peke", "clear", "info-line"]
+			play: ["line", "peke", "clear", "subcircle", "subcross", "info-line"]
 		},
-
-		// TODO cell aux marks
 
 		mouseinput_clear: function() {
 			if (this.puzzle.playmode) {
@@ -111,7 +109,7 @@
 			clist.draw();
 			this.mouseCell = cell;
 		},
-		autoplay_func: "line"
+		autoplay_func: "lineMB"
 	},
 
 	Cell: {
@@ -169,6 +167,8 @@
 			this.drawLines();
 
 			this.drawCircles();
+
+			this.drawMBs();
 
 			this.drawBorders();
 
@@ -232,6 +232,7 @@
 				}
 			});
 			this.decodeBorderLine();
+			this.decodeCellQsub();
 		},
 		encodeData: function() {
 			this.encodeBorderQues();
@@ -246,6 +247,7 @@
 				return val + " ";
 			});
 			this.encodeBorderLine();
+			this.encodeCellQsub();
 		}
 	},
 

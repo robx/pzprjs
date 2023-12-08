@@ -1009,19 +1009,25 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 
-		mouseinputAutoPlay_line: function() {
+		mouseinputAutoPlay_line: function(withMB) {
 			if (this.btn === "left") {
 				if (this.mousestart || this.mousemove) {
 					this.inputLine();
-				} else if (this.mouseend && this.notInputted()) {
-					this.prevPos = new this.klass.Address();
-					this.inputpeke();
 				}
 			} else if (this.btn === "right") {
 				if (this.mousestart || this.mousemove) {
 					this.inputpeke();
 				}
 			}
+			if (this.mouseend && this.notInputted()) {
+				this.prevPos = new this.klass.Address();
+				if (!this.inputpeke_ifborder() && withMB) {
+					this.inputMB();
+				}
+			}
+		},
+		mouseinputAutoPlay_lineMB: function() {
+			this.mouseinputAutoPlay_line(true);
 		},
 
 		//---------------------------------------------------------------------------
