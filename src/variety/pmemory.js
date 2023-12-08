@@ -257,7 +257,7 @@
 			"checkRegionCopies",
 			"checkCircleEndpoint",
 			"checkShadedRegions",
-			"checkOneLoop"
+			"checkOneLine"
 		],
 
 		checkAdjacency: function() {
