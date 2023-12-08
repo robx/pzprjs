@@ -140,9 +140,27 @@
 	},
 
 	Board: {
-		// TODO start the grid with 2 circles
 		// TODO enforce circles remaining onscreen when grid resizes
-		hasborder: 1
+		hasborder: 1,
+		rebuildInfo: function() {
+			this.common.rebuildInfo.call(this);
+
+			this.disableInfo();
+
+			var items = this.cell.filter(function(c) {
+				return c.qnum === 1;
+			});
+
+			var topleft = this.getc(1, 1);
+			if (items.length < 2 && topleft.qnum !== 1) {
+				topleft.qnum = 1;
+				items.add(topleft);
+			}
+			if (items.length < 2) {
+				this.getc(this.maxbx - 1, this.maxby - 1).qnum = 1;
+			}
+			this.enableInfo();
+		}
 	},
 
 	AreaRoomGraph: {
@@ -195,6 +213,10 @@
 
 	Encode: {
 		decodePzpr: function(type) {
+			this.board.cell.each(function(cell) {
+				cell.qnum = -1;
+			});
+
 			this.decodeBorder();
 			this.decode1Cell(1);
 
@@ -224,12 +246,8 @@
 			this.decodeBorderQues();
 			this.decodeCell(function(cell, ca) {
 				var val = +ca;
-				if (val & 1) {
-					cell.ques = 6;
-				}
-				if (val & 2) {
-					cell.qnum = 1;
-				}
+				cell.ques = val & 1 ? 6 : 0;
+				cell.qnum = val & 2 ? 1 : -1;
 			});
 			this.decodeBorderLine();
 			this.decodeCellQsub();
