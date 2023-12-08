@@ -343,6 +343,11 @@
 			}
 			bd.startpos.set(info1.pos.getc());
 			bd.goalpos.set(info2.pos.getc());
+			if (bd.startpos.equals(bd.goalpos)) {
+				bd.startpos.init(1, 1);
+				bd.goalpos.init(bd.maxbx - 1, bd.maxby - 1);
+			}
+
 			if (isrec) {
 				opemgr.forceRecord = false;
 			}
