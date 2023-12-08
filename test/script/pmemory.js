@@ -70,7 +70,17 @@ ui.debug.addDebugData("pmemory", {
 			input: ["editmode,shade", "mouse,left,3,1", "mouse,left,3,3"],
 			result:
 				"pzprv3/pmemory/3/3/1 0 /1 1 /0 1 /1 1 0 /1 0 0 /1 1 1 /0 0 3 /0 0 3 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			label: "Remove all separators",
+			input: [
+				"newboard,3,3",
+				"editmode,auto",
+				"mouse,left,5,1,1,1,1,3",
+				"mouse,left,5,3,5,5,1,5,1,3"
+			],
+			result:
+				"pzprv3/pmemory/3/3/0 0 /1 1 /0 0 /0 1 0 /0 1 0 /3 1 1 /1 0 1 /1 1 3 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
 		}
-		// TODO add test for removing deadend borders
 	]
 });

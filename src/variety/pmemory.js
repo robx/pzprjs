@@ -8,8 +8,7 @@
 	MouseEvent: {
 		draggingSG: false,
 		inputModes: {
-			// TODO remove circle-unshade mode
-			edit: ["border", "shade", "circle-unshade", "clear", "info-line"],
+			edit: ["border", "shade", "clear", "info-line"],
 			play: ["line", "peke", "clear", "subcircle", "subcross", "info-line"]
 		},
 
@@ -73,20 +72,22 @@
 					}
 				}
 			} else {
-				cell.setQues(6);
-				var merge = this.prevPos.getnb(cell);
-				if (!merge.isnull) {
-					merge.setQues(0);
-				}
+				if (!cell.ice()) {
+					var merge = this.prevPos.getnb(cell);
+					if (!merge.isnull) {
+						merge.setQues(0);
+					}
+					cell.setQues(6);
 
-				for (var dir in cell.adjborder) {
-					var border = cell.adjborder[dir];
-					var cell2 = cell.adjacent[dir];
-					if (border && !border.isnull && !cell2.ice()) {
-						border.setQues(1);
+					for (var dir in cell.adjborder) {
+						var border = cell.adjborder[dir];
+						var cell2 = cell.adjacent[dir];
+						if (border && !border.isnull && !cell2.ice()) {
+							border.setQues(1);
+						}
 					}
 				}
-				// TODO remove every deadend line in this region
+				this.board.mergeCells(this.prevPos.getc(), cell);
 			}
 			this.prevPos.set(cell);
 			cell.drawaround();
@@ -142,6 +143,23 @@
 	Board: {
 		// TODO enforce circles remaining onscreen when grid resizes
 		hasborder: 1,
+
+		mergeCells: function(cell1, cell2) {
+			var b1 = cell1.room,
+				b2 = cell2.room;
+
+			var borders = this.board.border.filter(function(border) {
+				var c1 = border.sidecell[0].room,
+					c2 = border.sidecell[1].room;
+
+				return (b1 === c1 && b2 === c2) || (b1 === c2 && b2 === c1);
+			});
+			borders.each(function(border) {
+				border.setQues(0);
+				border.draw();
+			});
+		},
+
 		rebuildInfo: function() {
 			this.common.rebuildInfo.call(this);
 
