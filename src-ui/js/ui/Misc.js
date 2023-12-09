@@ -143,6 +143,7 @@ function toBGimage(pid) {
 		"kaisu",
 		"kropki",
 		"kuroclone",
+		"kuromenbun",
 		"lollipops",
 		"magnets",
 		"martini",
