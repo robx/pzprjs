@@ -89,17 +89,37 @@
 		gridcolor_type: "DARK",
 
 		enablebcolor: true,
-		errbcolor2: "rgb(192, 192, 255)",
+		errcolor2: "rgb(192, 0, 0)",
 
 		getBGCellColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errbcolor1;
-			} else if ((cell.error || cell.qinfo) === 2) {
-				return this.errbcolor2;
 			} else if (cell.qsub === 1) {
 				return this.bcolor;
 			}
 			return null;
+		},
+
+		drawDotCells: function() {
+			var g = this.vinc("cell_dot", "auto", true);
+
+			var dsize = Math.max(this.cw * 0.12, 3);
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_dot_" + cell.id;
+				if (
+					!cell.isNum() &&
+					!cell.isShade() &&
+					(cell.error || cell.qinfo) === 2
+				) {
+					g.fillStyle = this.errcolor2;
+					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, dsize);
+				} else {
+					g.vhide();
+				}
+			}
 		},
 
 		paint: function() {
@@ -107,6 +127,7 @@
 			this.drawShadedCells();
 			this.drawGrid();
 
+			this.drawDotCells();
 			this.drawQuesNumbers();
 
 			this.drawBorders();
