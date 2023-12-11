@@ -140,8 +140,30 @@
 		}
 	},
 
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			var bd = this.board;
+
+			this.moved = [];
+			for (var id = 0; id < bd.cell.length; id++) {
+				var cell = bd.cell[id];
+				if (cell.qnum === 1) {
+					var after = this.getAfterPos(key, d, cell);
+					if (after.isdel) {
+						this.moved.push(after);
+					}
+				}
+			}
+		},
+		adjustBoardData2: function(key, d) {
+			var bd = this.board;
+			for (var i = 0; i < this.moved.length; i++) {
+				var pos = this.moved[i].pos;
+				bd.getc(pos.bx, pos.by).setQnum(1);
+			}
+		}
+	},
 	Board: {
-		// TODO enforce circles remaining onscreen when grid resizes
 		hasborder: 1,
 
 		mergeCells: function(cell1, cell2) {
