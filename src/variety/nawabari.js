@@ -91,7 +91,14 @@
 		maxnum: function() {
 			return this.board.cols * this.board.rows;
 		},
-		minnum: 2
+		minnum: 2,
+		posthook: {
+			qnum: function(num) {
+				if (this.room) {
+					this.board.roommgr.setExtraData(this.room);
+				}
+			}
+		}
 	},
 	"CellList@heteromino": {
 		triminoShape: function() {
