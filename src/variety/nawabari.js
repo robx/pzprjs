@@ -504,9 +504,9 @@
 
 				for (var ox = 0; !found && ox <= ls.cols - ss.cols; ox++) {
 					for (var oy = 0; !found && oy <= ls.rows - ss.rows; oy++) {
-						var i;
-						for (i = 0; i < small.clist.length; i++) {
-							var oldcell = small.clist[i];
+						var c;
+						for (c = 0; c < small.clist.length; c++) {
+							var oldcell = small.clist[c];
 							var newcell = this.board.getc(
 								ox * 2 + ls.x1 + oldcell.bx - ss.x1,
 								oy * 2 + ls.y1 + oldcell.by - ss.y1
@@ -516,7 +516,7 @@
 							}
 						}
 
-						if (i === small.clist.length) {
+						if (c === small.clist.length) {
 							found = true;
 						}
 					}
