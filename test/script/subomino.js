@@ -16,5 +16,11 @@ ui.debug.addDebugData("subomino", {
 			"pzprv3/subomino/5/5/3 . . . * /6 . . . . /3 . . . 4 /. . . . . /. . . . 4 /0 0 0 1 0 0 /0 0 1 0 1 0 /0 1 0 1 1 0 /0 1 1 0 1 0 /0 1 0 0 1 0 /0 0 0 0 0 /1 1 1 0 0 /1 0 1 0 0 /0 1 0 1 0 /0 0 1 1 0 /0 0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,3,3", "editmode", "cursor,3,3", "mouse,right,3,3"],
+			result:
+				"pzprv3/subomino/3/3/. . . /. 9 . /. . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
+		}
+	]
 });
