@@ -33,6 +33,9 @@
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
+		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
 		}
 	},
 
@@ -199,12 +202,13 @@
 			this.drawQansBorders();
 			this.drawQuesBorders();
 
-			this.drawQuesNumbers();
-			this.drawBorderQsubs();
-
 			if (this.pid === "heteromino" || this.pid === "subomino") {
+				this.drawCircles();
 				this.drawChassis();
 			}
+
+			this.drawQuesNumbers();
+			this.drawBorderQsubs();
 
 			this.drawTarget();
 		},
@@ -241,7 +245,9 @@
 	},
 
 	"Graphic@heteromino,subomino": {
-		errbcolor2: "rgb(192, 192, 255)",
+		errbcolor2: "rgb(255, 216, 216)",
+		circlestrokecolor_func: "null",
+		circleratio: [0.35, 0.35],
 		getBGCellColor: function(cell) {
 			if (!cell.isValid()) {
 				return "black";
@@ -253,6 +259,9 @@
 				return this.errbcolor2;
 			}
 			return null;
+		},
+		getCircleFillColor: function(cell) {
+			return cell.error === 3 ? this.errbcolor2 : null;
 		}
 	},
 
@@ -507,6 +516,7 @@
 
 				var ss = small.clist.getRectSize();
 				var ls = large.clist.getRectSize();
+				var clist = new this.klass.CellList();
 				var found = false;
 
 				for (var ox = 0; !found && ox <= ls.cols - ss.cols; ox++) {
@@ -521,10 +531,13 @@
 							if (newcell.isnull || newcell.room !== large) {
 								break;
 							}
+							clist.add(newcell);
 						}
 
 						if (c === small.clist.length) {
 							found = true;
+						} else {
+							clist = new this.klass.CellList();
 						}
 					}
 				}
@@ -536,6 +549,7 @@
 				if (this.checkOnly) {
 					break;
 				}
+				clist.seterr(3);
 				small.clist.seterr(2);
 				large.clist.seterr(1);
 			}
