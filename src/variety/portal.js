@@ -118,6 +118,10 @@
 		}
 	},
 	Cell: {
+		maxnum: function() {
+			return (this.board.cols * this.board.rows) >> 1;
+		},
+
 		noLP: function(dir) {
 			return this.isEmpty();
 		},
