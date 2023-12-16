@@ -92,6 +92,14 @@
 	Cell: {
 		noLP: function(dir) {
 			return this.isEmpty();
+		},
+		posthook: {
+			qnum: function() {
+				// TODO optimize, make less disruptive
+				this.board.rebuildInfo();
+				// TODO also less disruptive
+				this.puzzle.redraw();
+			}
 		}
 	},
 	LineGraph: {
@@ -250,11 +258,32 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			// TODO straight line on unused portals
+			// TODO enter/exit straight line
+			"checkOverlapPortal",
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkNoLine++",
 			"checkDeadendLine+",
 			"checkOneLoop"
-		]
+		],
+
+		checkNoLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === (cell.subspace ? 1 : 0);
+			}, "ceNoLine");
+		},
+
+		checkLineCount: function(val, code) {
+			this.checkAllCell(function(cell) {
+				return !cell.subspace && cell.lcnt === val;
+			}, code);
+		},
+
+		checkOverlapPortal: function() {
+			this.checkAllCell(function(cell) {
+				return cell.subspace && cell.lcnt > 2;
+			}, "cePortalCross");
+		}
 	}
 });
