@@ -55,5 +55,34 @@ ui.debug.addDebugData("portal", {
 			"pzprv3/portal/6/6/. 1 . . 2 . /. . . . . . /1 . . . . 3 /. 2 . . 4 . /. . . . . . /. . 4 3 . . /1 0 1 0 1 /1 1 0 0 1 /1 1 0 1 0 /1 0 1 0 0 /0 1 0 0 0 /1 0 0 0 1 /1 0 1 1 0 1 /0 0 0 1 1 0 /0 0 1 0 0 1 /1 0 0 1 1 1 /1 1 1 1 1 1 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,3,3",
+				"editmode",
+				"cursor,1,1",
+				"key,1",
+				"cursor,5,5",
+				"key,1"
+			],
+			result:
+				"pzprv3/portal/3/3/1 . . /. . . /. . 1 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			input: [
+				"playmode",
+				"mouse,left,1,1,5,1",
+				"mouse,left,1,3,5,3",
+				"mouse,left,1,5,5,5",
+				"playmode,info-line",
+				"mouse,left,2,1"
+			],
+			result: function(puzzle, assert) {
+				var bd = puzzle.board;
+				assert.equal(bd.getb(2, 1).qinfo, 1);
+				assert.equal(bd.getb(2, 3).qinfo, -1);
+				assert.equal(bd.getb(2, 5).qinfo, 1);
+			}
+		}
+	]
 });
