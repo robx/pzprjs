@@ -40,10 +40,7 @@
 			});
 
 			nums.forEach(function(num) {
-				var space = new bd.klass.Subspace(num);
-				if (!space.isnull) {
-					bd.subspace.add(space);
-				}
+				bd.subspace.add(new bd.klass.Subspace(num));
 			});
 
 			this.common.rebuildInfo.call(this);
@@ -53,6 +50,8 @@
 	Subspace: {
 		group: "subspace",
 		value: null,
+		isnull: true,
+		miscount: false,
 
 		initialize: function(value) {
 			this.setpos(value);
@@ -74,9 +73,11 @@
 				this.isnull = false;
 				this.sideobj[0].subspace = this;
 				this.sideobj[1].subspace = this;
+				this.miscount = false;
 			} else {
 				this.sideobj = [null, null];
 				this.isnull = true;
+				this.miscount = cells.length !== 0;
 			}
 		}
 	},
@@ -258,15 +259,72 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			// TODO straight line on unused portals
-			// TODO enter/exit straight line
+			"checkStraightUnmarked",
 			"checkOverlapPortal",
+			"checkPortalExit",
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkNoLine++",
+			"checkEditorPortal",
 			"checkDeadendLine+",
 			"checkOneLoop"
 		],
+
+		checkStraightUnmarked: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isNum() && !cell.subspace && cell.isLineCurve();
+			}, "lnCurveOnCir");
+		},
+
+		checkPortalExit: function() {
+			var subs = this.board.subspace;
+			for (var i = 0; i < subs.length; i++) {
+				var sub = subs[i];
+				if (sub.isnull) {
+					continue;
+				}
+				var c1 = sub.sideobj[0],
+					c2 = sub.sideobj[1];
+				if (c1.lcnt !== 2 || c2.lcnt !== 2) {
+					continue;
+				}
+
+				if (c1.adjborder.left.isLine() && c2.adjborder.right.isLine()) {
+					continue;
+				}
+				if (c1.adjborder.top.isLine() && c2.adjborder.bottom.isLine()) {
+					continue;
+				}
+				if (c2.adjborder.left.isLine() && c1.adjborder.right.isLine()) {
+					continue;
+				}
+				if (c2.adjborder.top.isLine() && c1.adjborder.bottom.isLine()) {
+					continue;
+				}
+
+				this.failcode.add("lnPortalCurve");
+				if (this.checkOnly) {
+					return;
+				}
+				c1.seterr(1);
+				c2.seterr(1);
+			}
+		},
+
+		checkEditorPortal: function() {
+			var subs = this.board.subspace;
+			for (var i = 0; i < subs.length; i++) {
+				var sub = subs[i];
+				if (sub.miscount) {
+					this.failcode.add("cePortalMiscount");
+					this.board.cell
+						.filter(function(cell) {
+							return cell.qnum === sub.value;
+						})
+						.seterr(1);
+				}
+			}
+		},
 
 		checkNoLine: function() {
 			this.checkAllCell(function(cell) {
@@ -283,7 +341,7 @@
 		checkOverlapPortal: function() {
 			this.checkAllCell(function(cell) {
 				return cell.subspace && cell.lcnt > 2;
-			}, "cePortalCross");
+			}, "lnPortalCross");
 		}
 	}
 });
