@@ -17,7 +17,17 @@
 	},
 
 	KeyEvent: {
-		enablemake: true
+		enablemake: true,
+		keyinput: function(ca) {
+			if (ca === "w") {
+				var cell = this.cursor.getc();
+				if (!cell.isnull) {
+					cell.setValid(cell.ques !== 7 ? 7 : 0);
+				}
+			} else {
+				this.key_inputqnum(ca);
+			}
+		}
 	},
 
 	Board: {
@@ -89,6 +99,9 @@
 	},
 
 	Border: {
+		isQuesBorder: function() {
+			return this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty();
+		},
 		checkStableLine: function(num) {
 			if (!num) {
 				return false;
@@ -223,11 +236,15 @@
 			this.drawPekes();
 			this.drawLines();
 
+			this.drawBorders();
 			this.drawChassis();
 
 			this.drawTarget();
 		},
 
+		getBorderColor: function(border) {
+			return border.isQuesBorder() ? "black" : null;
+		},
 		getBGCellColor: function(cell) {
 			if (!cell.isValid()) {
 				return "black";
