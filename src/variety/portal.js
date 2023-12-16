@@ -60,6 +60,7 @@
 			return !this.isnull;
 		},
 		seterr: function() {},
+		setinfo: function() {},
 
 		setpos: function(value) {
 			this.value = value;
@@ -88,7 +89,20 @@
 	},
 
 	Border: {
-		enableLineNG: true
+		checkStableLine: function(num) {
+			if (!num) {
+				return false;
+			}
+
+			var c1 = this.sidecell[0],
+				c2 = this.sidecell[1];
+
+			if (c1.subspace && c1.qnum === c2.qnum) {
+				return true;
+			}
+
+			return this.isLineNG();
+		}
 	},
 	Cell: {
 		noLP: function(dir) {
@@ -96,6 +110,15 @@
 		},
 		posthook: {
 			qnum: function() {
+				if (this.isValidNum()) {
+					for (var dir in this.adjacent) {
+						var other = this.adjacent[dir];
+						if (other.qnum === this.qnum) {
+							this.adjborder[dir].removeLine();
+						}
+					}
+				}
+
 				// TODO optimize, make less disruptive
 				this.board.rebuildInfo();
 				// TODO also less disruptive
