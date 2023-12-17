@@ -136,15 +136,47 @@
 					}
 				}
 
-				// TODO optimize, make less disruptive
+				// TODO: Actually update the subspace items in the graph instead of rebuilding everything
+
+				// Save every line color before rebuilding, then piece it together
+				var lines = [];
+				var linkobjs = this.board.linegraph.components;
+
+				for (var id = 0; id < linkobjs.length; id++) {
+					var path = linkobjs[id];
+					lines.push({
+						len: path.nodes.length,
+						color: path.color,
+						bx: path.clist[0].bx,
+						by: path.clist[0].by
+					});
+				}
+
 				this.board.rebuildInfo();
-				// TODO also less disruptive
+
+				var writeone = true;
+				for (var id = 0; id < lines.length; id++) {
+					var item = lines[id];
+
+					var cell = this.board.getc(item.bx, item.by);
+					if (cell.isnull || !cell.path) {
+						continue;
+					}
+					if (cell.path.nodes.length === item.len) {
+						cell.path.color = item.color;
+					} else if (writeone) {
+						cell.path.color = item.color;
+						writeone = false;
+					}
+				}
+
 				this.puzzle.redraw();
 			}
 		}
 	},
 	LineGraph: {
 		enabled: true,
+		makeClist: true,
 		getSideObjByNodeObj: function(cell) {
 			var cells = this.common.getSideObjByNodeObj.call(this, cell);
 

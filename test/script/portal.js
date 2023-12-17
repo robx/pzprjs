@@ -83,6 +83,22 @@ ui.debug.addDebugData("portal", {
 				assert.equal(bd.getb(2, 3).qinfo, -1);
 				assert.equal(bd.getb(2, 5).qinfo, 1);
 			}
+		},
+		{
+			input: ["cursor,1,3", "key,2", "cursor,1,5", "key,2"],
+			result: function(puzzle, assert) {
+				var bd = puzzle.board;
+				var color = bd.getc(1, 1).path.color;
+				assert(color);
+
+				bd.getc(1, 3).setNum(-1);
+				bd.getc(1, 5).setNum(-1);
+
+				var color1 = bd.getc(1, 1).path.color,
+					color2 = bd.getc(1, 3).path.color;
+				assert.notEqual(color1, color2);
+				assert(color1 === color || color2 === color);
+			}
 		}
 	]
 });
