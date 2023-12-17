@@ -57,6 +57,7 @@ ui.debug.addDebugData("portal", {
 	],
 	inputs: [
 		{
+			label: "Input numbers",
 			input: [
 				"newboard,3,3",
 				"editmode",
@@ -69,6 +70,7 @@ ui.debug.addDebugData("portal", {
 				"pzprv3/portal/3/3/1 . . /. . . /. . 1 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /"
 		},
 		{
+			label: "Drawing connectivity",
 			input: [
 				"playmode",
 				"mouse,left,1,1,5,1",
@@ -85,6 +87,7 @@ ui.debug.addDebugData("portal", {
 			}
 		},
 		{
+			label: "Number connectivity",
 			input: ["cursor,1,3", "key,2", "cursor,1,5", "key,2"],
 			result: function(puzzle, assert) {
 				var bd = puzzle.board;
@@ -99,6 +102,27 @@ ui.debug.addDebugData("portal", {
 				assert.notEqual(color1, color2);
 				assert(color1 === color || color2 === color);
 			}
+		},
+		{
+			label: "Prevent connecting identical adjacent portals",
+			input: [
+				"newboard,6,1",
+				"editmode",
+				"cursor,5,1",
+				"key,1",
+				"cursor,7,1",
+				"key,1",
+				"cursor,11,1",
+				"key,w",
+				"playmode,auto",
+				"mouse,left,1,1,11,1"
+			],
+			result: "pzprv3/portal/1/6/. . 1 1 . # /1 1 0 1 0 /"
+		},
+		{
+			label: "Remove existing lines when entering portals",
+			input: ["editmode", "cursor,3,1", "key,2", "cursor,5,1", "key,2"],
+			result: "pzprv3/portal/1/6/. 2 2 1 . # /1 0 0 1 0 /"
 		}
 	]
 });
