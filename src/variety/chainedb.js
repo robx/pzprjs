@@ -305,7 +305,11 @@
 		}
 	},
 	"AnsCheck@mrtile": {
-		checklist: ["checkNumberAndShadeSize", "checkAdjacentExist"],
+		checklist: [
+			"checkNumberAndShadeSize",
+			"checkAdjacentExist",
+			"doneShadingDecided"
+		],
 
 		checkAdjacentExist: function() {
 			var bd = this.board;
