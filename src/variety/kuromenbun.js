@@ -164,7 +164,12 @@
 	},
 
 	AnsCheck: {
-		checklist: ["checkDoubleNumber", "checkNumberTooHigh", "checkNumberTooLow"],
+		checklist: [
+			"checkDoubleNumber",
+			"checkNumberTooHigh",
+			"checkNumberTooLow",
+			"doneShadingDecided"
+		],
 		checkNumberTooLow: function() {
 			this.checkShadeCount(-1, "nmShadeLt");
 		},
