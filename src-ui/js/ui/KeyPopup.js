@@ -192,7 +192,8 @@ ui.keypopup = {
 		alter: [113, 113],
 		mannequin: [10, 0],
 		tetrominous: [128, 128],
-		lineofsight: [10, 0]
+		lineofsight: [10, 0],
+		mrtile: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -409,7 +410,11 @@ ui.keypopup = {
 		) {
 		} else if (pid === "tasquare") {
 			cap = "□";
-		} else if (pid === "rectslider" || pid === "aquapelago") {
+		} else if (
+			pid === "rectslider" ||
+			pid === "aquapelago" ||
+			pid === "mrtile"
+		) {
 			cap = "■";
 		} else if (pid === "patchwork") {
 			cap = {
