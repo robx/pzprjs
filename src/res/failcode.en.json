@@ -127,6 +127,7 @@
     "bkMSPassedGt2.moonsun": "A line passes the marks of the moon for two rooms in a row.",
     "bkMUPassedGt2.moonsun": "A line passes the marks of the sun for two rooms in a row.",
     "bkNoChain.chainedb": "A block is not diagonally adjacent to another block.",
+    "bkNoChain.mrtile": "A block is not diagonally adjacent to another identical block.",
     "bkNoColor.interbd": "A country has no color.",
     "bkNoLevel.aquarium": "A region has different water surface levels.",
     "bkNoLine.country": "A line doesn't pass a country.",
