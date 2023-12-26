@@ -21,6 +21,11 @@ ui.debug.addDebugData("subomino", {
 			input: ["newboard,3,3", "editmode", "cursor,3,3", "mouse,right,3,3"],
 			result:
 				"pzprv3/subomino/3/3/. . . /. 9 . /. . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			input: ["editmode,clear", "mouse,left,3,3"],
+			result:
+				"pzprv3/subomino/3/3/. . . /. . . /. . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
 		}
 	]
 });
