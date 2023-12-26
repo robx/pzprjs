@@ -90,6 +90,17 @@ ui.debug.addDebugData("retroships", {
 			],
 			result:
 				"pzprv3/retroships/3/3/p/0 . 8 /0 . . /5 6 . /. # # /+ . . /+ . . /0 1 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Erase data",
+			input: [
+				"playmode,clear",
+				"mouse,left,1,3,1,5",
+				"editmode,clear",
+				"mouse,left,3,1,5,1"
+			],
+			result:
+				"pzprv3/retroships/3/3/p/0 . . /0 . . /5 6 . /. . . /. . . /. . . /0 1 0 0 0 0 0 0 0 0 0 0 /"
 		}
 	]
 });
