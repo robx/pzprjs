@@ -79,6 +79,17 @@ ui.debug.addDebugData("retroships", {
 			input: ["mouse,rightx2,1,5"],
 			result:
 				"pzprv3/retroships/3/3/p/0 . 8 /0 . . /5 6 . /. . . /. . . /. . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Play input",
+			input: [
+				"playmode",
+				"mouse,left,5,1,1,1",
+				"mouse,right,1,5,1,3",
+				"mouse,left,bank,1"
+			],
+			result:
+				"pzprv3/retroships/3/3/p/0 . 8 /0 . . /5 6 . /. # # /+ . . /+ . . /0 1 0 0 0 0 0 0 0 0 0 0 /"
 		}
 	]
 });
