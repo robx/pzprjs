@@ -13,7 +13,8 @@
 		"dotchi",
 		"ovotovata",
 		"rassi",
-		"remlen"
+		"remlen",
+		"nothing"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -55,6 +56,52 @@
 		inputModes: {
 			edit: ["border", "clear", "info-line", "empty"],
 			play: ["line", "peke", "clear", "info-line"]
+		}
+	},
+	"MouseEvent@nothing": {
+		inputModes: {
+			edit: ["border", "clear", "info-line"],
+			play: ["line", "peke", "shade", "unshade", "clear", "info-line"]
+		},
+
+		inputdragcross: function() {
+			if (this.firstPoint.bx === null) {
+				this.firstPoint.set(this.inputPoint);
+			} else if (this.inputData === null) {
+				var dx = this.inputPoint.bx - this.firstPoint.bx,
+					dy = this.inputPoint.by - this.firstPoint.by;
+				if (dx * dx + dy * dy > 0.1) {
+					this.inputShade();
+				}
+			} else {
+				this.inputShade();
+			}
+		},
+
+		inputShade: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.inputData === null) {
+				if (this.inputMode === "shade") {
+					this.inputData = cell.qsub !== 1 ? 1 : 0;
+				} else if (this.inputMode === "unshade") {
+					this.inputData = cell.qsub !== 2 ? 2 : 0;
+				} else {
+					this.inputData = (this.btn === "left" ? [1, 2, 0] : [2, 0, 1])[
+						cell.qsub
+					];
+				}
+			}
+
+			this.mouseCell = cell;
+			var clist = cell.room.clist;
+			for (var i = 0; i < clist.length; i++) {
+				var cell2 = clist[i];
+				cell2.setQsub(this.inputData);
+			}
+			clist.draw();
 		}
 	},
 	"MouseEvent@simpleloop": {
@@ -146,7 +193,11 @@
 					if (this.btn === "left") {
 						this.inputLine();
 					} else if (this.btn === "right") {
-						this.inputpeke();
+						if (this.pid === "nothing") {
+							this.inputdragcross();
+						} else {
+							this.inputpeke();
+						}
 					}
 				} else if (
 					this.mouseend &&
@@ -160,7 +211,11 @@
 					) {
 						return;
 					}
-					this.inputMB();
+					if (this.pid === "nothing") {
+						this.inputShade();
+					} else {
+						this.inputMB();
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.pid === "simpleloop") {
@@ -496,17 +551,20 @@
 		gridcolor_type: "SLIGHT",
 
 		paint: function() {
+			if (this.pid !== "remlen" && this.pid !== "simpleloop") {
+				this.drawBGCells();
+			}
+
 			if (this.pid === "country") {
 				this.drawGrid();
-			} else if (this.pid !== "ovotovata") {
+			} else {
 				this.drawDashedGrid();
 			}
 			if (this.pid === "remlen") {
 				this.drawBorderDirBG();
 			}
-			this.drawBGCells();
-			if (this.pid === "ovotovata") {
-				this.drawGrid();
+			if (this.pid === "remlen" || this.pid === "simpleloop") {
+				this.drawBGCells();
 			}
 			if (
 				this.pid === "country" ||
@@ -526,7 +584,7 @@
 
 			this.drawBorders();
 
-			if (this.pid !== "onsen") {
+			if (this.pid !== "onsen" && this.pid !== "nothing") {
 				this.drawMBs();
 			}
 			this.drawLines();
@@ -541,6 +599,7 @@
 			if (
 				this.pid !== "rassi" &&
 				this.pid !== "doubleback" &&
+				this.pid !== "nothing" &&
 				this.pid !== "simpleloop"
 			) {
 				this.drawTarget();
@@ -685,6 +744,10 @@
 				}
 			}
 		}
+	},
+	"Graphic@nothing": {
+		bgcellcolor_func: "qsub2",
+		qsubcolor1: "silver"
 	},
 
 	//---------------------------------------------------------
@@ -1072,6 +1135,20 @@
 			"checkDeadendLine+",
 			"checkOneLoop",
 			"checkNoLine"
+		]
+	},
+	"AnsCheck@nothing#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkRoomPassOnce",
+
+			"checkRegionFullyVisited",
+			"checkSideAreaUnused",
+
+			"checkDeadendLine+",
+			"checkOneLoop"
 		]
 	},
 	AnsCheck: {
@@ -1832,6 +1909,61 @@
 			);
 
 			return ret;
+		}
+	},
+	"AnsCheck@nothing#2": {
+		checkSideAreaUnused: function() {
+			this.checkSideAreaSize(
+				this.board.roommgr,
+				function(area) {
+					if (
+						area.clist.some(function(cell) {
+							return cell.lcnt > 0;
+						})
+					) {
+						return 0;
+					}
+					return 1;
+				},
+				"cbNoLine"
+			);
+		},
+
+		checkRegionFullyVisited: function() {
+			var bd = this.board;
+			var rooms = bd.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var used = false,
+					empty = false,
+					other = false;
+
+				for (
+					var c = 0;
+					c < room.clist.length && !other && !(used && empty);
+					c++
+				) {
+					switch (room.clist[c].lcnt) {
+						case 0:
+							empty = true;
+							break;
+						case 2:
+							used = true;
+							break;
+						default:
+							other = true;
+							break;
+					}
+				}
+
+				if (used && empty && !other) {
+					this.failcode.add("bkLineNe");
+					if (this.checkOnly) {
+						break;
+					}
+					room.clist.seterr(1);
+				}
+			}
 		}
 	}
 });

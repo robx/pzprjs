@@ -140,6 +140,9 @@
 				this.mouseCell = this.board.emptycell;
 				this.inputqnum();
 			}
+		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
 		}
 	},
 

@@ -186,7 +186,15 @@ ui.keypopup = {
 		haisu: [10, 0],
 		wittgen: [4, 0],
 		aquapelago: [10, 0],
-		retroships: [129, 0]
+		retroships: [129, 0],
+		compass: [10, 0],
+		mukkonn: [10, 0],
+		tachibk: [10, 0],
+		alter: [113, 113],
+		mannequin: [10, 0],
+		tetrominous: [128, 128],
+		lineofsight: [10, 0],
+		mrtile: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -322,6 +330,8 @@ ui.keypopup = {
 			this.generate_battleship(mode);
 		} else if (type === 127) {
 			this.generate_brownies(mode);
+		} else if (type === 128) {
+			this.generate_tetrominous(mode);
 		} else if (type === 129) {
 			this.generate_retroships(mode);
 		}
@@ -403,7 +413,11 @@ ui.keypopup = {
 		) {
 		} else if (pid === "tasquare") {
 			cap = "□";
-		} else if (pid === "rectslider" || pid === "aquapelago") {
+		} else if (
+			pid === "rectslider" ||
+			pid === "aquapelago" ||
+			pid === "mrtile"
+		) {
 			cap = "■";
 		} else if (pid === "patchwork") {
 			cap = {
@@ -632,7 +646,7 @@ ui.keypopup = {
 			itemlist = [];
 
 		itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
-		if (pid === "hakoiri") {
+		if (pid === "hakoiri" || pid === "alter") {
 			itemlist.push([
 				"4",
 				{
@@ -733,6 +747,17 @@ ui.keypopup = {
 		items.push(" ");
 
 		this.generate_main(items, 5);
+	},
+	generate_tetrominous: function(mode) {
+		var items = "ilost".split("").map(function(c) {
+			return [c, { text: c.toUpperCase() }];
+		});
+		if (mode === 1) {
+			items.push(["-", "?"], ["q", "■"]);
+		}
+		items.push(" ");
+
+		this.generate_main(items, 4);
 	},
 	generate_snakepit: function() {
 		this.generate_main(

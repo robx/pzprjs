@@ -8,7 +8,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["hakoiri", "tontonbeya"], {
+})(["hakoiri", "tontonbeya", "alter"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -176,7 +176,7 @@
 			} else if (ca === "3" || ca === "e" || ca === "d" || ca === "c") {
 				ca = "3";
 			} else if (ca === "4" || ca === "r" || ca === "f" || ca === "v") {
-				ca = this.pid !== "hakoiri" ? " " : "s1";
+				ca = this.pid === "tontonbeya" ? " " : "s1";
 			} else if (ca === "5" || ca === "t" || ca === "g" || ca === "b") {
 				ca = " ";
 			}
@@ -198,10 +198,10 @@
 		hasborder: 1
 	},
 
-	AreaNumberGraph: {
+	"AreaNumberGraph@hakoiri,tontonbeya": {
 		enabled: true
 	},
-	"AreaNumberGraph@tontonbeya": {
+	"AreaNumberGraph@tontonbeya#1": {
 		relation: {
 			"cell.qnum": "node",
 			"cell.anum": "node",
@@ -334,11 +334,14 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"checkAroundMarks",
+			"checkAroundMarks@hakoiri",
+			"checkThreeTypesInLine@alter",
 			"checkOverFourMarksInBox",
 			"checkDifferentNumberInRoom",
-			"checkConnectNumber",
-			"checkAllMarkInBox"
+			"checkAlternatingLines@alter",
+			"checkConnectNumber@hakoiri",
+			"checkAllMarkInBox",
+			"checkNoTypesInLine@alter"
 		],
 
 		checkOverFourMarksInBox: function() {
@@ -370,6 +373,69 @@
 			this.checkAroundCell(function(cell1, cell2) {
 				return cell1.getNum() >= 0 && cell1.getNum() === cell2.getNum();
 			}, "nmAround");
+		},
+
+		checkAlternatingLines: function() {
+			var bd = this.board;
+			var hasError = false;
+			this.checkRowsCols(function(clist) {
+				var found = null;
+
+				for (var idx = 0; idx < clist.length; idx++) {
+					var cell = clist[idx];
+					if (!cell.isNum()) {
+						continue;
+					}
+
+					if (found && found.getNum() === cell.getNum()) {
+						if (this.checkOnly) {
+							return false;
+						}
+						hasError = true;
+						bd.cellinside(found.bx, found.by, cell.bx, cell.by).seterr(1);
+					}
+					found = cell;
+				}
+
+				return true;
+			}, "nmDupRow");
+
+			if (hasError) {
+				this.failcode.add("nmDupRow");
+			}
+		},
+
+		checkThreeTypesInLine: function() {
+			this.checkRowsCols(function(clist) {
+				var found = [false, false, false];
+
+				clist.each(function(cell) {
+					var num = cell.getNum();
+					if (num >= 1 && num <= 3) {
+						found[num - 1] = true;
+					}
+				});
+
+				if (found[0] && found[1] && found[2]) {
+					clist.seterr(1);
+					return false;
+				}
+				return true;
+			}, "nmTripRow");
+		},
+
+		checkNoTypesInLine: function() {
+			this.checkRowsCols(function(clist) {
+				var found = clist.filter(function(cell) {
+					return cell.isNum();
+				});
+
+				if (found.length < 2) {
+					clist.seterr(1);
+					return false;
+				}
+				return true;
+			}, "nmMissRow");
 		}
 	},
 

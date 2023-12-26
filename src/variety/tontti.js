@@ -10,7 +10,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["line", "subcircle", "subcross", "clear"]
+			play: ["line", "peke", "subcircle", "subcross", "clear"]
 		},
 
 		mouseinput_auto: function() {
