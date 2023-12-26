@@ -89,15 +89,14 @@
 		gridcolor_type: "DARK",
 
 		enablebcolor: true,
+		errbcolor2: "rgb(255, 216, 216)",
 		errcolor2: "rgb(192, 0, 0)",
 
 		getBGCellColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
-				return this.errbcolor1;
-			} else if (cell.qsub === 1) {
-				return this.bcolor;
+				return cell.qsub === 1 ? this.errbcolor2 : this.errbcolor1;
 			}
-			return null;
+			return cell.qsub === 1 ? this.bcolor : null;
 		},
 
 		drawDotCells: function() {
