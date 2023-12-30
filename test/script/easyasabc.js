@@ -26,17 +26,17 @@ ui.debug.addDebugData("easyasabc", {
 		{
 			input: ["cursor,1,-1", "key,b,right,d,down,c"],
 			result:
-				"pzprv3/easyasabc/4/4/3/. 2 . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . 3 . . . /"
+				"pzprv3/easyasabc/4/4/3/. 2 . . . . /. . q3 . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /"
 		},
 		{
 			input: ["mouse,leftx2, 3,-3"],
 			result:
-				"pzprv3/easyasabc/4/4/4/. 2 . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . 3 . . . /"
+				"pzprv3/easyasabc/4/4/4/. 2 . . . . /. . q3 . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /"
 		},
 		{
 			input: ["key,a"],
 			result:
-				"pzprv3/easyasabc/4/4/1/. 2 . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /. . 3 . . . /"
+				"pzprv3/easyasabc/4/4/1/. 2 . . . . /. . q3 . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /"
 		},
 		/* 回答入力テスト */
 		{ input: ["newboard,4,4,3", "playmode"] },

@@ -17,9 +17,7 @@
 		},
 		mouseinput_number: function() {
 			if (this.mousestart) {
-				if (this.puzzle.editmode) {
-					this.inputqnum_excell();
-				} else {
+				if (!this.puzzle.editmode || !this.inputqnum_excell()) {
 					this.inputqnum();
 				}
 			}
@@ -33,9 +31,7 @@
 					}
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.mousestart) {
-					this.inputqnum_excell();
-				}
+				this.mouseinput_number();
 			}
 		},
 
@@ -72,12 +68,6 @@
 	KeyEvent: {
 		enablemake: true,
 		enableplay: true,
-		moveTarget: function(ca) {
-			if (this.puzzle.playmode) {
-				return this.moveTCell(ca);
-			}
-			return this.moveExCell(ca);
-		},
 		keyinput: function(ca) {
 			if (this.puzzle.playmode) {
 				var isSnum = this.cursor.targetdir !== 0;
@@ -98,6 +88,8 @@
 					var excell = this.cursor.getex();
 					if (!excell.isnull) {
 						this.key_inputqnum_main(excell, ca);
+					} else {
+						this.key_inputqnum(ca);
 					}
 				} else {
 					this.key_inputqnum_indicator(ca);
@@ -136,13 +128,6 @@
 			this.miny += 2;
 			this.maxx -= 2;
 			this.maxy -= 2;
-		},
-		adjust_init: function() {
-			if (this.puzzle.playmode) {
-				this.common.adjust_init.call(this);
-			} else if (this.puzzle.editmode) {
-				this.adjust_cell_to_excell();
-			}
 		}
 	},
 
@@ -324,6 +309,7 @@
 			this.drawMBs();
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
+			this.drawQuesNumbers();
 			this.drawNumbersExCell();
 
 			this.drawChassis();
@@ -435,10 +421,18 @@
 		decodePzpr: function(type) {
 			this.decodeIndicator();
 			this.decodeNumber16ExCell();
+			this.decodeNumber16();
 		},
 		encodePzpr: function(type) {
 			this.encodeIndicator();
 			this.encodeNumber16ExCell();
+			if (
+				this.board.cell.some(function(b) {
+					return b.qnum !== -1;
+				})
+			) {
+				this.encodeNumber16();
+			}
 		},
 
 		decodeIndicator: function() {
@@ -476,6 +470,10 @@
 				} else if (obj.group === "excell") {
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
+					if (ca[0] === "q") {
+						obj.qnum = +ca.substr(1);
+						return;
+					}
 					if (ca.indexOf("[") >= 0) {
 						ca = this.setCellSnum(obj, ca);
 					}
@@ -496,6 +494,9 @@
 						return "" + obj.qnum + " ";
 					}
 				} else if (obj.group === "cell") {
+					if (obj.qnum !== -1) {
+						return "q" + obj.qnum + " ";
+					}
 					var ca = ".";
 					if (obj.anum !== -1) {
 						ca = "" + obj.anum;
@@ -538,8 +539,9 @@
 				d[n] = 0;
 			}
 			for (var i = 0; i < clist.length; i++) {
-				if (clist[i].anum >= bottom) {
-					d[clist[i].anum]++;
+				var num = clist[i].getNum();
+				if (num >= bottom) {
+					d[num]++;
 				}
 			}
 			for (var n = bottom; n <= max; n++) {
@@ -555,7 +557,7 @@
 			return result;
 		},
 
-		checkSight: function(type) {
+		checkSight: function() {
 			var bd = this.board,
 				result = true;
 			for (var ec = 0; ec < bd.excell.length; ec++) {
@@ -564,7 +566,7 @@
 					continue;
 				}
 				var cell = bd.searchSight(excell, false).dest;
-				if (cell.isnull || excell.qnum === cell.anum || cell.qsub === 1) {
+				if (cell.isnull || excell.qnum === cell.getNum() || cell.qsub === 1) {
 					continue;
 				}
 
