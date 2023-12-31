@@ -39,11 +39,26 @@
 				return this.mouseinput_clear();
 			}
 
+			if (this.firstPoint.bx === null) {
+				this.firstPoint.set(this.inputPoint);
+			}
+			if (!this.draggingSG) {
+				var dx = this.inputPoint.bx - this.firstPoint.bx,
+					dy = this.inputPoint.by - this.firstPoint.by;
+				if (dx * dx + dy * dy > 0.5) {
+					this.inputData = true;
+				}
+			}
+
 			var cell = this.getcell();
 
 			if (this.draggingSG && this.mouseend) {
 				this.draggingSG = false;
 				cell.draw();
+			}
+
+			if (!cell.isnull && this.mouseend && !this.inputData) {
+				return this.mouseinput_clear();
 			}
 
 			if (cell.isnull || this.prevPos.equals(cell)) {
@@ -63,6 +78,7 @@
 					return;
 				}
 				if (!cell.ice()) {
+					this.inputData = true;
 					cell.setQues(6);
 					for (var dir in cell.adjborder) {
 						var border = cell.adjborder[dir];
@@ -73,6 +89,7 @@
 				}
 			} else {
 				if (!cell.ice()) {
+					this.inputData = true;
 					var merge = this.prevPos.getnb(cell);
 					if (!merge.isnull) {
 						merge.setQues(0);

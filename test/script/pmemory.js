@@ -81,6 +81,24 @@ ui.debug.addDebugData("pmemory", {
 			],
 			result:
 				"pzprv3/pmemory/3/3/0 0 /1 1 /0 0 /0 1 0 /0 1 0 /3 1 1 /1 0 1 /1 1 3 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			label: "Erase with single click",
+			input: ["mouse,left,1,3"],
+			result:
+				"pzprv3/pmemory/3/3/0 0 /0 1 /0 0 /1 1 0 /1 1 0 /3 1 1 /0 0 1 /1 1 3 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
+		},
+		{
+			label: "Erase aux marks",
+			input: [
+				"playmode",
+				"mouse,left,3,1",
+				"mouse,left,3,3",
+				"playmode,clear",
+				"mouse,left,3,1"
+			],
+			result:
+				"pzprv3/pmemory/3/3/0 0 /0 1 /0 0 /1 1 0 /1 1 0 /3 1 1 /0 0 1 /1 1 3 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 1 0 /0 0 0 /"
 		}
 	]
 });
