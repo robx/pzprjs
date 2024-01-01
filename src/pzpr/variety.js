@@ -271,7 +271,7 @@
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
 			nanro: [0, 1, "ナンロー", "Nanro"],
-			nawabari: [1, 0, "なわばり", "Territory", "nawabari"],
+			nawabari: [1, 0, "なわばり", "Nawabari", "nawabari"],
 			news: [0, 0, "NEWS", "NEWS", "toichika"],
 			nikoji: [0, 0, "NIKOJI", "NIKOJI", "cbblock"],
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
