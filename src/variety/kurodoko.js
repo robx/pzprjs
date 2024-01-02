@@ -16,12 +16,30 @@
 		autoplay_func: "cell"
 	},
 
-	"MouseEvent@kurodoko,teri": {
+	"MouseEvent@kurodoko": {
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
 			play: ["shade", "unshade", "info-blk"]
 		},
 		RBShadeCell: true
+	},
+	"MouseEvent@teri": {
+		inputModes: {
+			edit: ["number", "clear", "info-blk", "info-ublk"],
+			play: ["shade", "unshade", "info-blk", "info-ublk"]
+		},
+		RBShadeCell: true,
+
+		dispInfoUblk: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull || !cell.isUnshade()) {
+				return;
+			}
+			cell.getVisibleCells().setinfo(1);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
+		}
 	},
 	"MouseEvent@nurimisaki": {
 		inputModes: {
