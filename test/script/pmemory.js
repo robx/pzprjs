@@ -72,6 +72,22 @@ ui.debug.addDebugData("pmemory", {
 				"pzprv3/pmemory/3/3/1 0 /1 1 /0 1 /1 1 0 /1 0 0 /1 1 1 /0 0 3 /0 0 3 /0 0 /0 0 /0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
 		},
 		{
+			label: "Info room",
+			input: [
+				"editmode,auto",
+				"mouse,left,1,5",
+				"editmode,info-room",
+				"mouse,left,1,1"
+			],
+			result: function(puzzle, assert) {
+				var bd = puzzle.board;
+				assert.equal(bd.getc(1, 1).qinfo, 1, "1,1");
+				assert.equal(bd.getc(1, 5).qinfo, 1, "1,5");
+				assert.equal(bd.getc(1, 3).qinfo, 0, "1,3");
+				assert.equal(bd.getc(3, 1).qinfo, 0, "3,1");
+			}
+		},
+		{
 			label: "Remove all separators",
 			input: [
 				"newboard,3,3",

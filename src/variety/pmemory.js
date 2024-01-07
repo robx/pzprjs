@@ -8,8 +8,16 @@
 	MouseEvent: {
 		draggingSG: false,
 		inputModes: {
-			edit: ["border", "shade", "clear", "info-line"],
-			play: ["line", "peke", "clear", "subcircle", "subcross", "info-line"]
+			edit: ["border", "shade", "clear", "info-line", "info-room"],
+			play: [
+				"line",
+				"peke",
+				"clear",
+				"subcircle",
+				"subcross",
+				"info-line",
+				"info-room"
+			]
 		},
 
 		mouseinput_clear: function() {
@@ -126,6 +134,24 @@
 			}
 			clist.draw();
 			this.mouseCell = cell;
+		},
+		dispInfoRoom: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull || !cell.ice()) {
+				return;
+			}
+			var shape = cell.room.clist.getBlockShapes().id;
+
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var clist = rooms[id].clist;
+				if (clist[0].ice() && clist.getBlockShapes().id === shape) {
+					clist.setinfo(1);
+				}
+			}
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
 		},
 		autoplay_func: "lineMB"
 	},
