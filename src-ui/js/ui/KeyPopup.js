@@ -193,6 +193,7 @@ ui.keypopup = {
 		mannequin: [10, 0],
 		tetrominous: [128, 128],
 		lineofsight: [10, 0],
+		portal: [10, 0],
 		mrtile: [10, 0]
 	},
 
@@ -435,6 +436,7 @@ ui.keypopup = {
 			pid === "shikaku" ||
 			pid === "aho" ||
 			pid === "bosanowa" ||
+			pid === "portal" ||
 			pid === "minarism"
 		) {
 			cap = "○";
