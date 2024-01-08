@@ -313,6 +313,7 @@
 				"Pipelink Returns",
 				"pipelink"
 			],
+			pmemory: [0, 0, "Persistence of Memory", "Persistence of Memory"],
 			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
 			ququ: [0, 0, "区区", "Ququ"],
 			railpool: [0, 0, "Rail Pool", "Rail Pool"],
