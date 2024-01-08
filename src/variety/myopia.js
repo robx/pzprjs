@@ -180,30 +180,6 @@
 					this.common.operate.call(this, type);
 					break;
 			}
-		},
-
-		outlineShaded: function() {
-			this.border.each(function(border) {
-				border.updateShaded();
-			});
-		}
-	},
-
-	Border: {
-		updateShaded: function() {
-			var c0 = this.sidecell[0],
-				c1 = this.sidecell[1];
-			var qsub1 = c0.isnull ? 2 : c0.qsub;
-			var qsub2 = c1.isnull ? 2 : c1.qsub;
-			if (qsub1 === 0 || qsub2 === 0) {
-				return;
-			}
-			if (qsub1 === qsub2) {
-				this.setLineVal(0);
-			} else {
-				this.setLine();
-			}
-			this.draw();
 		}
 	},
 
