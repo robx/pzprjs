@@ -63,6 +63,7 @@
 			if (this.draggingSG && this.mouseend) {
 				this.draggingSG = false;
 				cell.draw();
+				return;
 			}
 
 			if (!cell.isnull && this.mouseend && !this.inputData) {
