@@ -169,6 +169,7 @@ function toBGimage(pid) {
 		"pencils",
 		"pentatouch",
 		"pentopia",
+		"pmemory",
 		"ququ",
 		"rassi",
 		"remlen",
