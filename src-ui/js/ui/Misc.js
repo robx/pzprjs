@@ -145,6 +145,7 @@ function toBGimage(pid) {
 		"kissing",
 		"kropki",
 		"kuroclone",
+		"kuromenbun",
 		"lollipops",
 		"magnets",
 		"mannequin",
