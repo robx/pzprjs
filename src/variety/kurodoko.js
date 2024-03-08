@@ -36,7 +36,7 @@
 			if (cell.isnull || !cell.isUnshade()) {
 				return;
 			}
-			cell.getVisibleCells().setinfo(1);
+			cell.getVisibleCells().setinfo(2);
 			this.board.hasinfo = true;
 			this.puzzle.redraw();
 		}
@@ -69,6 +69,16 @@
 			return this.board.cols + this.board.rows - 1;
 		},
 		minnum: 2,
+
+		seterr: function(num) {
+			if (this.board.isenableSetError()) {
+				if (this.error <= 0) {
+					this.error = num;
+				} else {
+					this.error = Math.min(this.error, num);
+				}
+			}
+		},
 
 		getVisibleDirections: function() {
 			var outer = {};
@@ -182,6 +192,13 @@
 			);
 		}
 	},
+	CellList: {
+		seterr: function(num) {
+			for (var i = 0; i < this.length; i++) {
+				this[i].seterr(num);
+			}
+		}
+	},
 	Board: {
 		cols: 9,
 		rows: 9
@@ -222,6 +239,13 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getBGCellColor: function(cell) {
+			if (cell.error > 0 || cell.qinfo > 0) {
+				return this.errbcolor1;
+			}
+			return null;
 		}
 	},
 
@@ -358,7 +382,8 @@
 				if (this.checkOnly) {
 					break;
 				}
-				clist.seterr(1);
+				cell.seterr(1);
+				clist.seterr(2);
 			}
 		}
 	},
