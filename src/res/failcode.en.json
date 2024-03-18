@@ -322,7 +322,7 @@
     "bsSizeEq.fillmat": "Tatamis of the same size are adjacent.",
     "bsSnake.hebi": "Different snakes are adjacent.",
     "cbDiffLenNe.renban": "The difference between two numbers is not equal to the length of the line between them.",
-    "cbNoLine.country": "The cells that is not passed any line are adjacent over border line.",
+    "cbNoLine.country": "Adjacent cells in different countries are both unused by the loop.",
     "cbNoLine.nothing": "Two unvisited countries are adjacent.",
     "cbSameNum.nanro": "Adjacent blocks have the same number.",
     "cbShade.shimaguni": "Countries in different marine areas are adjacent.",
