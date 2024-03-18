@@ -1,5 +1,7 @@
 // PieceList.js v3.4.1
 
+/* global Set:false */
+
 pzpr.classmgr.makeCommon({
 	//----------------------------------------------------------------------------
 	// ★PieceListクラス オブジェクトの配列を扱う
@@ -21,6 +23,10 @@ pzpr.classmgr.makeCommon({
 		//--------------------------------------------------------------------------------
 		add: Array.prototype.push,
 		extend: function(list) {
+			if (list instanceof Set) {
+				list = Array.from(list);
+			}
+
 			var len = list.length,
 				n = this.length;
 			this.length += len;

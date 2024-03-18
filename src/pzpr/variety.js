@@ -271,7 +271,7 @@
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
 			nanro: [0, 1, "ナンロー", "Nanro"],
-			nawabari: [1, 0, "なわばり", "Territory", "nawabari"],
+			nawabari: [1, 0, "なわばり", "Nawabari", "nawabari"],
 			news: [0, 0, "NEWS", "NEWS", "toichika"],
 			nikoji: [0, 0, "NIKOJI", "NIKOJI", "cbblock"],
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
@@ -313,6 +313,7 @@
 				"Pipelink Returns",
 				"pipelink"
 			],
+			pmemory: [0, 0, "Persistence of Memory", "Persistence of Memory"],
 			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
 			ququ: [0, 0, "区区", "Ququ"],
 			railpool: [0, 0, "Rail Pool", "Rail Pool"],
@@ -321,6 +322,13 @@
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
+			retroships: [
+				0,
+				0,
+				"Retrograde Battleships",
+				"Retrograde Battleships",
+				"statuepark"
+			],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
 				0,

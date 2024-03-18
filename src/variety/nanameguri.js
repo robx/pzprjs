@@ -239,8 +239,8 @@
 					room["form" + form].add(cell);
 				}
 
-				room.edges = new this.klass.BorderList(Array.from(edges));
-				room.inner = new this.klass.BorderList(Array.from(innerbds));
+				room.edges = new this.klass.BorderList(edges);
+				room.inner = new this.klass.BorderList(innerbds);
 
 				ret.push(room);
 			}

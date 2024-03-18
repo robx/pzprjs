@@ -40,24 +40,24 @@ ui.debug.addDebugData("battleship", {
 		{
 			label: "Keyboard inputs",
 			input: [
-				"newboard,4,1",
+				"newboard,4,1,p",
 				"cursor,-1,1",
 				"key,1,right,2,right,a,right,1,0,right,a,BS",
 				"mouse,left,-1,1"
 			],
 			result:
-				"pzprv3/battleship/1/4/d/. . . . . /1 2 10 0 . /. . . . /0 0 0 0 0 0 0 0 0 0 /"
+				"pzprv3/battleship/1/4/p/. . . . . /1 2 10 0 . /. . . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
 		},
 		{
 			label: "Mouse input",
 			input: ["cursor,-1,1", "mouse,left,-1,1", "playmode", "mouse,left,-1,1"],
 			result:
-				"pzprv3/battleship/1/4/d/. . . . . /c2 2 10 0 . /. . . . /0 0 0 0 0 0 0 0 0 0 /"
+				"pzprv3/battleship/1/4/p/. . . . . /c2 2 10 0 . /. . . . /0 0 0 0 0 0 0 0 0 0 0 0 /"
 		},
 		{
 			label: "Copy answer",
 			input: [
-				"newboard,4,1",
+				"newboard,4,1,d",
 				"playmode",
 				"mouse,left,1,1,5,1",
 				"editmode",

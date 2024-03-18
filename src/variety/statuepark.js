@@ -2,6 +2,8 @@
 // statuepark.js
 //
 
+/* global Set:false */
+
 (function(classbase) {
 	var pidlist = [
 		"statuepark",
@@ -9,7 +11,8 @@
 		"pentopia",
 		"battleship",
 		"pentatouch",
-		"kissing"
+		"kissing",
+		"retroships"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -78,13 +81,13 @@
 		inputpiece: function() {
 			var piece = this.getbank();
 			if (!piece) {
-				return;
+				return false;
 			}
 
 			this.puzzle.emit("request-aux-editor");
 
 			if (piece.index === null) {
-				return;
+				return false;
 			}
 
 			var pos0 = this.cursor.getaddr();
@@ -108,6 +111,7 @@
 				}
 				thiz.board.bank.setPiece(shape, piece.index);
 			});
+			return true;
 		}
 	},
 
@@ -150,9 +154,9 @@
 		}
 	},
 
-	"MouseEvent@battleship": {
+	"MouseEvent@battleship#1": {
 		inputModes: {
-			edit: ["number", "clear", "completion"],
+			edit: ["number", "clear", "water", "completion"],
 			play: ["shade", "unshade", "clear", "completion"]
 		},
 		mouseinput_auto: function() {
@@ -212,14 +216,135 @@
 			excell.draw();
 
 			this.mousereset();
+		}
+	},
+	"MouseEvent@retroships#1": {
+		inputModes: {
+			edit: ["clear", "water", "circle-unshade", "completion"],
+			play: ["shade", "unshade", "clear", "completion"]
 		},
 
+		dragSet: null,
+		mousereset: function() {
+			this.common.mousereset.call(this);
+			if (this.dragSet) {
+				var set = this.dragSet;
+				this.dragSet = null;
+				set.forEach(function(cell) {
+					cell.draw();
+				});
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputcell();
+				}
+				if (this.notInputted() && this.mousestart) {
+					this.inputqcmp();
+				}
+			} else if (this.btn === "right") {
+				if (this.mousestart) {
+					this.inputqcmp();
+					if (!this.notInputted()) {
+						this.mousereset();
+						return;
+					}
+				}
+				var cell = this.getcell();
+				if (cell.isnull) {
+					return;
+				}
+				if (this.firstCell.isnull) {
+					this.firstCell = cell;
+					this.firstPoint.set(this.inputPoint);
+				}
+				if (!this.inputData) {
+					var dx = this.inputPoint.bx - this.firstPoint.bx,
+						dy = this.inputPoint.by - this.firstPoint.by;
+					if (this.firstCell !== cell || dx * dx + dy * dy > 0.5) {
+						this.inputData = -1;
+					} else if (this.mouseend) {
+						this.inputqnum();
+					}
+				}
+				if (this.inputData) {
+					this.inputFixedNumber(-1);
+				}
+			} else {
+				if (this.mousestart && this.inputpiece()) {
+					this.mousereset();
+					return;
+				}
+
+				var cell = this.getcell();
+				if (cell.isnull) {
+					return;
+				}
+				if (this.firstCell.isnull) {
+					this.firstCell = cell;
+					this.firstPoint.set(this.inputPoint);
+				}
+
+				if (!this.dragSet) {
+					var dx = this.inputPoint.bx - this.firstPoint.bx,
+						dy = this.inputPoint.by - this.firstPoint.by;
+					if (this.firstCell !== cell || dx * dx + dy * dy > 0.5) {
+						this.dragSet = new Set();
+						this.dragSet.add(this.firstCell);
+						this.firstCell.draw();
+					}
+				}
+
+				if (this.dragSet && !this.dragSet.has(cell)) {
+					this.dragSet.add(cell);
+					this.dragSet.forEach(function(cell) {
+						cell.draw();
+					});
+				}
+
+				if (this.mouseend) {
+					if (this.dragSet) {
+						var set = this.dragSet;
+						this.dragSet = null;
+						var cells = new this.klass.CellList(set);
+						var bd = this.board;
+
+						cells.each(function(cell) {
+							cell.setQnum(
+								bd.getShape(
+									set.has(cell.adjacent.top),
+									set.has(cell.adjacent.bottom),
+									set.has(cell.adjacent.left),
+									set.has(cell.adjacent.right)
+								)
+							);
+							cell.draw();
+						});
+					} else {
+						this.inputqnum();
+					}
+				}
+			}
+		}
+	},
+	"MouseEvent@battleship,retroships": {
 		getNewNumber: function(cell, val) {
 			if (cell.group === "cell" && cell.qans) {
 				return cell.getShape();
 			}
 
 			return this.common.getNewNumber.call(this, cell, val);
+		},
+		mouseinput: function() {
+			switch (this.inputMode) {
+				case "circle-unshade":
+					return this.inputFixedNumber(6);
+				case "water":
+					return this.inputFixedNumber(0);
+				default:
+					return this.common.mouseinput.call(this);
+			}
 		}
 	},
 
@@ -270,7 +395,7 @@
 			}
 		}
 	},
-	"KeyEvent@battleship": {
+	"KeyEvent@battleship,retroships": {
 		keyinput: function(ca) {
 			if (!this.cursor.getex().isnull) {
 				this.key_inputexcell(ca);
@@ -284,7 +409,7 @@
 
 		getNewNumber: function(cell, ca, cur) {
 			if (cell.group === "cell") {
-				if (ca === "a") {
+				if (ca === "a" && cell.getmaxnum() >= 10) {
 					return 10;
 				} else if (ca === "0" || ca === "w") {
 					return 0;
@@ -317,8 +442,10 @@
 			return ret;
 		}
 	},
-	"Board@battleship": {
-		hasexcell: 1,
+	"Board@battleship#1": {
+		hasexcell: 1
+	},
+	"Board@battleship,retroships": {
 		assumeAllUnshaded: false,
 
 		UP: 1,
@@ -527,7 +654,7 @@
 		}
 	},
 
-	"Bank@battleship": {
+	"Bank@battleship,retroships": {
 		defaultPreset: function() {
 			return this.presets[1].constant;
 		},
@@ -759,6 +886,7 @@
 			}
 		}
 	},
+
 	"Cell@kissing": {
 		allowShade: function() {
 			return this.isValid();
@@ -773,15 +901,27 @@
 		}
 	},
 
-	"Cell@battleship": {
+	"Cell@battleship,retroships": {
 		numberAsObject: true,
 		minnum: 0,
-		maxnum: 10,
+		maxnum: function() {
+			return this.board.bank.isSimpleBank ? 6 : 10;
+		},
+
+		isShade: function() {
+			return (
+				!this.isnull && this.qnum !== 0 && (this.isClue() || this.qans === 1)
+			);
+		},
 
 		posthook: {
 			qnum: function() {
 				this.drawaround();
-				if (this.qnum !== -1 && this.qans) {
+				if (
+					this.qnum !== -1 &&
+					this.qans &&
+					(this.pid === "battleship" || this.qnum === 0 || this.qnum === -2)
+				) {
 					this.setQans(0);
 				}
 				this.board.recountShaded();
@@ -795,14 +935,6 @@
 			}
 		},
 
-		allowShade: function() {
-			return this.qnum === -1;
-		},
-
-		isShade: function() {
-			var isClue = this.qnum !== -1 && this.qnum !== 0;
-			return !this.isnull && (isClue || this.qans === 1);
-		},
 		isUnshade: function() {
 			return !this.isnull && !this.isShade();
 		},
@@ -838,6 +970,22 @@
 				this.adjacent.left.isShadeDecided() &&
 				this.adjacent.right.isShadeDecided()
 			);
+		}
+	},
+	"Cell@battleship#1": {
+		allowShade: function() {
+			return this.qnum === -1;
+		},
+		isClue: function() {
+			return this.qnum !== -1 && this.qnum !== 0;
+		}
+	},
+	"Cell@retroships#1": {
+		allowShade: function() {
+			return this.qnum !== 0 && this.qnum !== -2;
+		},
+		isClue: function() {
+			return !this.allowShade();
 		}
 	},
 	"BoardExec@pentopia": {
@@ -913,7 +1061,7 @@
 			return true;
 		}
 	},
-	"BoardExec@battleship": {
+	"BoardExec@battleship,retroships": {
 		adjustBoardData: function(key, d) {
 			this.adjustCellQnumArrow(key, d);
 			this.adjustExCellTopLeft_1(key, d);
@@ -962,7 +1110,7 @@
 	AreaShadeGraph: {
 		enabled: true
 	},
-	"AreaShadeGraph@battleship": {
+	"AreaShadeGraph@battleship,retroships": {
 		relation: { "cell.qnum": "node", "cell.qans": "node" }
 	},
 	"AreaUnshadeGraph@statuepark": {
@@ -1004,7 +1152,6 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			this.drawGrid();
 
 			if (this.pid === "pentatouch") {
 				this.drawCrossMarks();
@@ -1300,7 +1447,11 @@
 		}
 	},
 
-	"Graphic@battleship": {
+	"Graphic@battleship,retroships": {
+		MODE_SHARP: 0,
+		MODE_ROUNDED: 1,
+		MODE_OUTLINE: 2,
+
 		bcolor: "rgb(191, 191, 255)",
 		trialbcolor: "rgb(255, 191, 255)",
 		qanscolor: "rgb(0, 80, 0)",
@@ -1312,7 +1463,12 @@
 			this.drawBGCells();
 			this.drawBoardPieces();
 			this.drawWaterClues();
-			this.drawGrid();
+
+			if (this.pid === "retroships") {
+				this.drawDashedGrid();
+			} else {
+				this.drawGrid();
+			}
 
 			this.drawNumbersExCell();
 
@@ -1394,12 +1550,34 @@
 		drawBoardPieces: function() {
 			var g = this.vinc("cell_bpiece", "auto");
 			var clist = this.range.cells;
+
+			var dragSet = this.puzzle.mouse.dragSet;
+
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
-					color = this.getShadedCellColor(cell),
+					color,
+					shape,
 					px = cell.bx * this.bw,
 					py = cell.by * this.bh,
 					r = this.bw * 0.9;
+
+				if (dragSet && dragSet.has(cell)) {
+					color = "red";
+					shape = this.board.getShape(
+						dragSet.has(cell.adjacent.top),
+						dragSet.has(cell.adjacent.bottom),
+						dragSet.has(cell.adjacent.left),
+						dragSet.has(cell.adjacent.right)
+					);
+				} else {
+					color = this.getShadedCellColor(cell);
+					shape =
+						cell.qnum === -2
+							? this.board.CENTER
+							: cell.qnum !== -1
+							? cell.qnum
+							: cell.getShape();
+				}
 
 				var isCircled =
 					cell.qnum !== -2 &&
@@ -1407,22 +1585,28 @@
 						cell.isAdjacentDecided() ||
 						cell.qnum > 0);
 
-				var shape =
-					cell.qnum === -2
-						? this.board.CENTER
-						: cell.qnum !== -1
-						? cell.qnum
-						: cell.getShape();
+				var mode;
+				if (this.pid === "battleship") {
+					mode = isCircled ? this.MODE_ROUNDED : this.MODE_SHARP;
+				} else {
+					mode = cell.isShade() ? this.MODE_ROUNDED : this.MODE_OUTLINE;
+				}
 
 				var vid = "c_piece_" + cell.id;
 
-				this.drawSinglePiece(g, vid, px, py, r, shape, color, isCircled);
+				this.drawSinglePiece(g, vid, px, py, r, shape, color, mode);
 			}
 		},
 
-		drawSinglePiece: function(g, vid, px, py, r, shape, color, isCircled) {
+		drawSinglePiece: function(g, vid, px, py, r, shape, color, mode) {
+			var isCircled = mode !== this.MODE_SHARP;
+			if (mode === this.MODE_OUTLINE) {
+				g.lineWidth = (1 + this.cw / 40) | 0;
+				r -= g.lineWidth;
+			}
+
 			g.vid = vid + "_circle";
-			if (color && isCircled) {
+			if (color && mode === this.MODE_ROUNDED) {
 				g.fillStyle = color;
 				g.fillCircle(px, py, r);
 			} else {
@@ -1431,8 +1615,6 @@
 
 			g.vid = vid;
 			if (!!color) {
-				g.fillStyle = color;
-
 				g.beginPath();
 				g.moveTo(px + r, py);
 
@@ -1491,7 +1673,13 @@
 					g.lineTo(px + r, py - r);
 				}
 				g.lineTo(px + r, py);
-				g.fill();
+				if (mode === this.MODE_OUTLINE) {
+					g.strokeStyle = color;
+					g.stroke();
+				} else {
+					g.fillStyle = color;
+					g.fill();
+				}
 			} else {
 				g.vhide();
 			}
@@ -1521,7 +1709,16 @@
 					var px = this.cw * br * (piece.x + 0.25 + x) + r;
 					var py = this.ch * br * (piece.y + 0.25 + y) + r;
 					py += (this.board.rows + 0.5) * this.ch + 1;
-					this.drawSinglePiece(g, vid, px, py, r, shape, color, true);
+					this.drawSinglePiece(
+						g,
+						vid,
+						px,
+						py,
+						r,
+						shape,
+						color,
+						this.MODE_ROUNDED
+					);
 				} else {
 					this.drawSinglePiece(g, vid, 0, 0, r, 0, null);
 				}
@@ -1541,7 +1738,7 @@
 			this.encodePieceBank();
 		}
 	},
-	"Encode@pentopia": {
+	"Encode@pentopia,retroships": {
 		decodePzpr: function(type) {
 			this.puzzle.setConfig("pentopia_transparent", this.checkpflag("t"));
 			if (this.outbstr[0] !== "/") {
@@ -1802,7 +1999,7 @@
 		}
 	},
 
-	"AnsCheck@pentopia,battleship,pentatouch#1": {
+	"AnsCheck@pentopia,battleship,retroships,pentatouch#1": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -1987,14 +2184,14 @@
 		}
 	},
 
-	"AnsCheck@battleship": {
+	"AnsCheck@battleship,retroships": {
 		checklist: [
 			"checkShapeExtra",
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
 			"checkShadeDiagonal",
 			"checkShapeMissing",
-			"checkShadeCount",
+			"checkShadeCount@battleship",
 			"checkBankPiecesUsed"
 		],
 
@@ -2005,6 +2202,9 @@
 				}
 				if (cell.qnum === 0) {
 					return cell.isShade();
+				}
+				if (!cell.isShade()) {
+					return false;
 				}
 
 				var shape = cell.getShape();
@@ -2022,7 +2222,7 @@
 				if (cell.qnum <= 0) {
 					return false;
 				}
-				return cell.qnum !== cell.getShape();
+				return cell.isShade() && cell.qnum !== cell.getShape();
 			}, "csMismatch");
 		},
 
@@ -2103,5 +2303,11 @@
 				cross.seterr(1);
 			}
 		}
+	},
+	"FailCode@retroships": {
+		bankGt: "bankGt.battleship",
+		bankInvalid: "bankInvalid.battleship",
+		bankLt: "bankLt.battleship",
+		shDiag: "shDiag.battleship"
 	}
 });
