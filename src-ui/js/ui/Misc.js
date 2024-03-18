@@ -185,6 +185,7 @@ function toBGimage(pid) {
 		"squarejam",
 		"starbattle",
 		"statuepark",
+		"subomino",
 		"wafusuma",
 		"symmarea",
 		"tachibk",
