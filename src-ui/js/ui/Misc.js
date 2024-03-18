@@ -173,6 +173,7 @@ function toBGimage(pid) {
 		"ququ",
 		"rassi",
 		"remlen",
+		"retroships",
 		"roundtrip",
 		"sashikazune",
 		"satogaeri",

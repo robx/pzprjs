@@ -322,6 +322,13 @@
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
+			retroships: [
+				0,
+				0,
+				"Retrograde Battleships",
+				"Retrograde Battleships",
+				"statuepark"
+			],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
 				0,
