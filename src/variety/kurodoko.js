@@ -26,9 +26,21 @@
 	"MouseEvent@teri": {
 		inputModes: {
 			edit: ["number", "clear", "info-blk", "info-ublk"],
-			play: ["shade", "unshade", "info-blk", "info-ublk"]
+			play: ["shade", "unshade", "subline", "info-blk", "info-ublk"]
 		},
 		RBShadeCell: true,
+
+		mouseinputAutoPlay: function() {
+			if (this.mousestart) {
+				this.isDraggingLine = this.puzzle.key.isALT;
+			}
+
+			if (this.isDraggingLine) {
+				this.inputQsubLine();
+			} else {
+				this.inputcell();
+			}
+		},
 
 		dispInfoUblk: function() {
 			var cell = this.getcell();
@@ -203,7 +215,7 @@
 		cols: 9,
 		rows: 9
 	},
-	"Board@cave": {
+	"Board@cave,teri": {
 		hasborder: 1 // for pekes
 	},
 
@@ -233,6 +245,10 @@
 			this.drawGrid();
 			this.drawShadedCells();
 			this.drawDotCells();
+
+			if (this.pid === "teri") {
+				this.drawBorderQsubs();
+			}
 
 			this.drawCircledNumbers();
 
@@ -313,10 +329,21 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			if (this.pid === "teri") {
+				this.decodeBorderAns();
+			}
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			if (
+				this.pid === "teri" &&
+				this.board.border.some(function(border) {
+					return border.qsub;
+				})
+			) {
+				this.encodeBorderAns();
+			}
 		},
 
 		kanpenOpen: function() {
