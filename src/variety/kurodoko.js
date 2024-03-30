@@ -254,7 +254,10 @@
 
 		gridcolor_type: "DLIGHT",
 		enablebcolor: true,
-		bgcellcolor_func: "qsub1",
+
+		getBGCellColor: function(cell) {
+			return this.getBGCellColor_qsub1(cell);
+		},
 
 		qanscolor: "black",
 
