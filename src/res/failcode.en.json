@@ -206,6 +206,7 @@
     "bkObjGe2.kinkonkan": "A room has more than one mirror.",
     "bkObjNotSym.bonsan": "Position of circles in the room is not point symmetric.",
     "bkOddSize.kazunori": "The size of the room is not even.",
+    "bkOverlap.subomino": "A block fits entirely in an adjacent block.",
     "bkOverNum": "A block contains too many numbers.",
     "bkPassTwice.country": "A line passes a country twice or more.",
     "bkPassTwice.moonsun": "A line passes a room twice or more.",

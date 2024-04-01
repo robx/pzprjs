@@ -375,6 +375,7 @@
 			statuepark: [0, 0, "Statue Park", "Statue Park"],
 			"statuepark-aux": [0, 0, "図形の編集", "Edit shape"],
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],
+			subomino: [0, 0, "Subomino", "Subomino", "nawabari"],
 			sudoku: [0, 1, "数独", "Sudoku"],
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
