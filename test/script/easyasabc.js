@@ -22,7 +22,7 @@ ui.debug.addDebugData("easyasabc", {
 	],
 	inputs: [
 		/* 問題入力テスト */
-		{ input: ["newboard,4,4,3", "editmode"] },
+		{ input: ["newboard,4,4", "editmode"] },
 		{
 			input: ["cursor,1,-1", "key,b,right,d,down,c"],
 			result:
@@ -39,7 +39,7 @@ ui.debug.addDebugData("easyasabc", {
 				"pzprv3/easyasabc/4/4/1/. 2 . . . . /. . q3 . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . . /"
 		},
 		/* 回答入力テスト */
-		{ input: ["newboard,4,4,3", "playmode"] },
+		{ input: ["newboard,4,4", "playmode"] },
 		{
 			input: ["cursor,1,1", "key,shift,a,right,left,1"],
 			result:

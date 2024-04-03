@@ -186,6 +186,7 @@ ui.keypopup = {
 		haisu: [10, 0],
 		wittgen: [4, 0],
 		aquapelago: [10, 0],
+		retroships: [129, 0],
 		compass: [10, 0],
 		mukkonn: [10, 0],
 		tachibk: [10, 0],
@@ -194,6 +195,7 @@ ui.keypopup = {
 		tetrominous: [128, 128],
 		lineofsight: [10, 0],
 		mrtile: [10, 0],
+		subomino: [10, 0],
 		kuromenbun: [10, 0]
 	},
 
@@ -332,6 +334,8 @@ ui.keypopup = {
 			this.generate_brownies(mode);
 		} else if (type === 128) {
 			this.generate_tetrominous(mode);
+		} else if (type === 129) {
+			this.generate_retroships(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -913,6 +917,31 @@ ui.keypopup = {
 		);
 	},
 
+	generate_retroships: function(mode) {
+		this.imgCR = [10, 1];
+		this.generate_main(
+			[
+				["7", { image: 6 }],
+				["8", { image: 7 }],
+				["1", { image: 4 }],
+				" ",
+				["9", { image: 8 }],
+				["a", { image: 9 }],
+				["2", { image: 5 }],
+				" ",
+				["3", { image: 2 }],
+				["5", { image: 0 }],
+				["4", { image: 3 }],
+				" ",
+				["6", { image: 1 }],
+				["0", { text: "~", color: "blue" }],
+				["-", "?"],
+				" "
+			],
+			4
+		);
+	},
+
 	generate_brownies: function(mode) {
 		this.generate_main(
 			[
@@ -1003,6 +1032,10 @@ ui.keypopup = {
 			_child = createEL("img");
 			_child.className = "kpimg";
 			var pid = ui.puzzle.pid;
+			if (pid === "retroships") {
+				pid = "battleship";
+			}
+
 			_child.src =
 				"data:image/gif;base64," +
 				this.dataurl[!!this.dataurl[pid] ? pid : "shitappa"];

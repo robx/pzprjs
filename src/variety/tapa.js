@@ -190,12 +190,14 @@
 	},
 
 	AreaShadeGraph: {
-		enabled: true
+		enabled: true,
+		coloring: true
 	},
 
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
+		irowakeblk: true,
 		qanscolor: "black",
 
 		paint: function() {
