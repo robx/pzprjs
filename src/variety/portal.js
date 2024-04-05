@@ -177,20 +177,6 @@
 	LineGraph: {
 		enabled: true,
 		makeClist: true,
-		getSideObjByNodeObj: function(cell) {
-			var cells = this.common.getSideObjByNodeObj.call(this, cell);
-
-			if (cell.subspace) {
-				var sideobj = cell.subspace.sideobj;
-				var cell2 = sideobj[0] !== this ? sideobj[0] : sideobj[1];
-
-				if (this.isnodevalid(cell2)) {
-					cells.push(cell2);
-				}
-			}
-
-			return cells;
-		},
 		rebuild2: function() {
 			this.common.rebuild2.call(this);
 
