@@ -50,6 +50,7 @@ pzpr.classmgr.makeCommon({
 			if (cell.qans !== 1) {
 				return null;
 			}
+			var hasinfo = this.board.haserror || this.board.hasinfo;
 			var info = cell.error || cell.qinfo;
 			if (info === 1) {
 				return this.errcolor1;
@@ -57,7 +58,7 @@ pzpr.classmgr.makeCommon({
 				return this.errcolor2;
 			} else if (cell.trial) {
 				return this.trialcolor;
-			} else if (this.puzzle.execConfig("irowakeblk")) {
+			} else if (this.puzzle.execConfig("irowakeblk") && !hasinfo) {
 				return cell.sblk.color;
 			}
 			return this.shadecolor;

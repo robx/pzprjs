@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nawabari", "fourcells", "fivecells", "heteromino"], {
+})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -29,10 +29,13 @@
 			this.inputempty();
 		}
 	},
-	"MouseEvent@fourcells,fivecells,heteromino": {
+	"MouseEvent@fourcells,fivecells,subomino": {
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
+		},
+		mouseinput_clear: function() {
+			this.inputFixedNumber(-1);
 		}
 	},
 
@@ -42,7 +45,7 @@
 		enablemake: true
 	},
 
-	"KeyEvent@fourcells,fivecells,heteromino": {
+	"KeyEvent@fourcells,fivecells,subomino,heteromino": {
 		keyinput: function(ca) {
 			if (ca === "w") {
 				this.key_inputvalid(ca);
@@ -87,6 +90,19 @@
 		maxnum: 3,
 		minnum: 0
 	},
+	"Cell@subomino": {
+		maxnum: function() {
+			return this.board.cols * this.board.rows;
+		},
+		minnum: 2,
+		posthook: {
+			qnum: function(num) {
+				if (this.room) {
+					this.board.roommgr.setExtraData(this.room);
+				}
+			}
+		}
+	},
 	"CellList@heteromino": {
 		triminoShape: function() {
 			if (this.length !== 3) {
@@ -104,6 +120,15 @@
 				id += 1 << (dx + 2 * dy);
 			}
 			return id;
+		}
+	},
+	"CellList@subomino": {
+		seterr: function(err) {
+			this.each(function(cell) {
+				if (err > cell.error) {
+					cell.error = err;
+				}
+			});
 		}
 	},
 
@@ -154,6 +179,14 @@
 	AreaRoomGraph: {
 		enabled: true
 	},
+	"AreaRoomGraph@subomino": {
+		setExtraData: function(component) {
+			component.clist = new this.klass.CellList(component.getnodeobjs());
+			component.valid = !component.clist.some(function(cell) {
+				return cell.qnum > 0 && cell.qnum !== component.clist.length;
+			});
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -169,12 +202,13 @@
 			this.drawQansBorders();
 			this.drawQuesBorders();
 
-			this.drawQuesNumbers();
-			this.drawBorderQsubs();
-
-			if (this.pid === "heteromino") {
+			if (this.pid === "heteromino" || this.pid === "subomino") {
+				this.drawCircles();
 				this.drawChassis();
 			}
+
+			this.drawQuesNumbers();
+			this.drawBorderQsubs();
 
 			this.drawTarget();
 		},
@@ -210,12 +244,24 @@
 		}
 	},
 
-	"Graphic@heteromino": {
+	"Graphic@heteromino,subomino": {
+		errbcolor2: "rgb(255, 216, 216)",
+		circlestrokecolor_func: "null",
+		circleratio: [0.35, 0.35],
 		getBGCellColor: function(cell) {
 			if (!cell.isValid()) {
 				return "black";
 			}
-			return this.getBGCellColor_error1(cell);
+			var info = cell.error || cell.qinfo;
+			if (info === 1 || info === 3) {
+				return this.errbcolor1;
+			} else if (info === 2) {
+				return this.errbcolor2;
+			}
+			return null;
+		},
+		getCircleFillColor: function(cell) {
+			return cell.error === 3 ? this.errbcolor2 : null;
 		}
 	},
 
@@ -293,6 +339,16 @@
 			}
 
 			this.outbstr += cm;
+		}
+	},
+	"Encode@subomino": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+			this.decodeEmpty();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+			this.encodeEmpty();
 		}
 	},
 	//---------------------------------------------------------
@@ -438,6 +494,80 @@
 				}
 				l1.seterr(1);
 				l2.seterr(1);
+			}
+		}
+	},
+	"AnsCheck@subomino": {
+		checklist: ["checkAreaOverlap", "checkNumberValid", "checkBorderDeadend+"],
+
+		checkAreaOverlap: function() {
+			var sides = this.board.roommgr.getSideAreaInfo();
+			for (var i = 0; i < sides.length; i++) {
+				var small = sides[i][0],
+					large = sides[i][1];
+
+				if (!small.valid || !large.valid) {
+					continue;
+				}
+				if (small.clist.length > large.clist.length) {
+					large = sides[i][0];
+					small = sides[i][1];
+				}
+
+				var ss = small.clist.getRectSize();
+				var ls = large.clist.getRectSize();
+				var clist = new this.klass.CellList();
+				var found = false;
+
+				for (var ox = 0; !found && ox <= ls.cols - ss.cols; ox++) {
+					for (var oy = 0; !found && oy <= ls.rows - ss.rows; oy++) {
+						var c;
+						for (c = 0; c < small.clist.length; c++) {
+							var oldcell = small.clist[c];
+							var newcell = this.board.getc(
+								ox * 2 + ls.x1 + oldcell.bx - ss.x1,
+								oy * 2 + ls.y1 + oldcell.by - ss.y1
+							);
+							if (newcell.isnull || newcell.room !== large) {
+								break;
+							}
+							clist.add(newcell);
+						}
+
+						if (c === small.clist.length) {
+							found = true;
+						} else {
+							clist = new this.klass.CellList();
+						}
+					}
+				}
+				if (!found) {
+					continue;
+				}
+
+				this.failcode.add("bkOverlap");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(3);
+				small.clist.seterr(2);
+				large.clist.seterr(1);
+			}
+		},
+
+		checkNumberValid: function() {
+			var bd = this.board;
+			for (var r = 0; r < bd.roommgr.components.length; r++) {
+				var area = bd.roommgr.components[r];
+				if (area.valid) {
+					continue;
+				}
+
+				this.failcode.add("bkSizeNe");
+				if (this.checkOnly) {
+					break;
+				}
+				area.clist.seterr(1);
 			}
 		}
 	}

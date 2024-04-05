@@ -166,7 +166,8 @@
 	},
 
 	AreaShadeGraph: {
-		enabled: true
+		enabled: true,
+		coloring: true
 	},
 	"AreaShadeGraph@mochikoro": {
 		enabled: false
@@ -239,6 +240,9 @@
 			}
 			return this.quescolor;
 		}
+	},
+	"Graphic@nurikabe,canal#1": {
+		irowakeblk: true
 	},
 
 	//---------------------------------------------------------

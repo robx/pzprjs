@@ -271,7 +271,7 @@
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
 			nanro: [0, 1, "ナンロー", "Nanro"],
-			nawabari: [1, 0, "なわばり", "Territory", "nawabari"],
+			nawabari: [1, 0, "なわばり", "Nawabari", "nawabari"],
 			news: [0, 0, "NEWS", "NEWS", "toichika"],
 			nikoji: [0, 0, "NIKOJI", "NIKOJI", "cbblock"],
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
@@ -313,6 +313,7 @@
 				"Pipelink Returns",
 				"pipelink"
 			],
+			pmemory: [0, 0, "Persistence of Memory", "Persistence of Memory"],
 			portal: [0, 0, "Portal Loop", "Portal Loop"],
 			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
 			ququ: [0, 0, "区区", "Ququ"],
@@ -322,6 +323,13 @@
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
 			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
+			retroships: [
+				0,
+				0,
+				"Retrograde Battleships",
+				"Retrograde Battleships",
+				"statuepark"
+			],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
 				0,
@@ -368,6 +376,7 @@
 			statuepark: [0, 0, "Statue Park", "Statue Park"],
 			"statuepark-aux": [0, 0, "図形の編集", "Edit shape"],
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],
+			subomino: [0, 0, "Subomino", "Subomino", "nawabari"],
 			sudoku: [0, 1, "数独", "Sudoku"],
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],

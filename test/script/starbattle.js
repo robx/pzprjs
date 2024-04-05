@@ -26,7 +26,7 @@ ui.debug.addDebugData("starbattle", {
 	],
 	inputs: [
 		/* 問題入力テスト */
-		{ input: ["newboard,8,8,1", "editmode"] },
+		{ input: ["newboard,8,8", "editmode"] },
 		{
 			input: ["key,2"],
 			result:
@@ -38,7 +38,7 @@ ui.debug.addDebugData("starbattle", {
 				"pzprv3/starbattle/8/8/1/1/0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /0 0 0 0 0 0 0 0 /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /"
 		},
 		/* 回答入力テスト */
-		{ input: ["newboard,4,4,1", "playmode", "setconfig,use,1"] },
+		{ input: ["newboard,4,4", "playmode", "setconfig,use,1"] },
 		{
 			input: ["mouse,right, 1,3, 7,3"],
 			result:
