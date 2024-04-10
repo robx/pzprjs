@@ -520,7 +520,9 @@
 	"Graphic@lixloop#2": {
 		getNumberTextCore: function(num) {
 			if (num <= 0) {
-				return num === -2 ? "?" : "";
+				return num === -2 && this.puzzle.getConfig("disptype_yajilin") !== 2
+					? "?"
+					: "";
 			}
 			var ret = "";
 			if (num & 4) {

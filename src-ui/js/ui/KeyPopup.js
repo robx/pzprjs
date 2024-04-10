@@ -195,7 +195,8 @@ ui.keypopup = {
 		tetrominous: [128, 128],
 		lineofsight: [10, 0],
 		mrtile: [10, 0],
-		subomino: [10, 0]
+		subomino: [10, 0],
+		lixloop: [130, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -335,6 +336,8 @@ ui.keypopup = {
 			this.generate_tetrominous(mode);
 		} else if (type === 129) {
 			this.generate_retroships(mode);
+		} else if (type === 130) {
+			this.generate_lix(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -958,6 +961,13 @@ ui.keypopup = {
 				["w", "■"]
 			],
 			4
+		);
+	},
+
+	generate_lix: function(mode) {
+		this.generate_main(
+			[["l", "L"], ["i", "I"], ["x", "X"], ["-", "?"], " "],
+			3
 		);
 	},
 
