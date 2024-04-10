@@ -83,6 +83,7 @@
 			var idname = [];
 			switch (ui.puzzle.pid) {
 				case "yajilin":
+				case "lixloop":
 					idname = "disptype_yajilin";
 					break;
 				case "bosanowa":

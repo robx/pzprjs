@@ -280,7 +280,7 @@
 			);
 		}
 	},
-	"Cell@lixloop": {
+	"Cell@lixloop#2": {
 		minnum: 1,
 		maxnum: 7,
 
@@ -375,7 +375,7 @@
 			}
 		}
 	},
-	"Border@yajilin,koburin": {
+	"Border@yajilin,koburin,lixloop": {
 		isBorder: function() {
 			return (this.sidecell[0].qnum === -1) !== (this.sidecell[1].qnum === -1);
 		}
