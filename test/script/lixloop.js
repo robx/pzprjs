@@ -45,5 +45,22 @@ ui.debug.addDebugData("lixloop", {
 			"pzprv3/lixloop/6/6/. . 2,2 . . 2,5 /. . . . . . /. . . . . . /. 3,1 . 3,3 . . /. . . . . . /. . . . 3,6 . /. . . . . . /. . . . . # /. . . # . . /# . . . # . /. . . . . . /. . . . . # /1 0 0 1 0 /0 1 1 0 0 /1 1 0 0 1 /0 0 0 0 0 /1 1 0 1 1 /1 1 1 0 0 /1 1 0 1 1 0 /1 0 0 0 1 0 /0 0 1 0 0 1 /0 0 1 0 0 1 /1 0 0 1 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,1,2", "editmode", "key,l", "key,shift+down"],
+			result: "pzprv3/lixloop/2/1/2,4 /. /. /. ///0 /"
+		},
+		{
+			input: ["key,i", "key,l", "key,x"],
+			result: "pzprv3/lixloop/2/1/2,3 /. /. /. ///0 /"
+		},
+		{
+			input: ["key,BS"],
+			result: "pzprv3/lixloop/2/1/2,2 /. /. /. ///0 /"
+		},
+		{
+			input: ["key,i"],
+			result: "pzprv3/lixloop/2/1/. /. /. /. ///0 /"
+		}
+	]
 });
