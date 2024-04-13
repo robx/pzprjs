@@ -140,6 +140,7 @@ function toBGimage(pid) {
 		"icewalk",
 		"invlitso",
 		"ladders",
+		"lixloop",
 		"kaidan",
 		"kaisu",
 		"kissing",
