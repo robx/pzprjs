@@ -423,6 +423,8 @@ pzpr.classmgr.makeCommon({
 		inputarrow_cell_main: function(cell, dir) {
 			if (cell.numberAsObject) {
 				cell.setNum(dir);
+			} else {
+				cell.setQdir(dir);
 			}
 		},
 

@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["toichika", "toichika2", "news"], {
+})(["toichika", "toichika2", "news", "arrows2"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -20,30 +20,29 @@
 				this.inputDot();
 			}
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left") {
-						this.inputarrow_cell();
-					} else if (
-						this.btn === "right" &&
-						(this.pid === "toichika" || this.mousemove)
-					) {
-						this.inputDot();
-					}
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqnum();
+		mouseinputAutoEdit: function() {
+			if (this.mousestart || this.mousemove) {
+				if (this.isBorderMode()) {
+					this.inputborder();
+				} else {
+					this.inputarrow_cell();
 				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputarrow_cell();
-					}
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqnum();
+			} else if (this.mouseend && this.notInputted()) {
+				this.inputqnum();
+			}
+		},
+		mouseinputAutoPlay: function() {
+			if (this.mousestart || this.mousemove) {
+				if (this.btn === "left") {
+					this.inputarrow_cell();
+				} else if (
+					this.btn === "right" &&
+					(this.pid === "toichika" || this.mousemove)
+				) {
+					this.inputDot();
 				}
+			} else if (this.mouseend && this.notInputted()) {
+				this.inputqnum();
 			}
 		},
 
@@ -72,7 +71,7 @@
 		inputclean_cell: function() {
 			this.common.inputclean_cell.call(this);
 			var cell = this.getcell();
-			if (!cell.isnull) {
+			if (!cell.isnull && cell.room) {
 				cell.room.checkAutoCmp();
 			}
 		}
@@ -129,6 +128,28 @@
 			}
 			this.mouseCell = cell;
 			cell.draw();
+		}
+	},
+	"MouseEvent@arrows2": {
+		inputModes: {
+			edit: ["number", "empty", "clear"],
+			play: ["arrow", "objblank", "numexist", "completion", "clear"]
+		},
+		mouseinputAutoEdit: function() {
+			if (this.mousestart) {
+				this.inputqnum();
+			}
+		},
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell.qnum < 0) {
+				return;
+			}
+
+			cell.setQcmp(+!cell.qcmp);
+			cell.draw();
+
+			this.mousereset();
 		}
 	},
 	"MouseEvent@news": {
@@ -212,11 +233,22 @@
 		maxnum: 4,
 		posthook: {
 			qnum: function(num) {
-				this.room.checkAutoCmp();
+				if (this.room) {
+					this.room.checkAutoCmp();
+				}
 			},
 			anum: function(num) {
-				this.room.checkAutoCmp();
+				if (this.room) {
+					this.room.checkAutoCmp();
+				}
 			}
+		}
+	},
+	"Cell@arrows2": {
+		minnum: 0,
+		numberWithMB: true,
+		isDot: function() {
+			return this.qsub === 2;
 		}
 	},
 	"Cell@toichika2": {
@@ -287,7 +319,7 @@
 		rows: 8,
 		cols: 8
 	},
-	CellList: {
+	"CellList@toichika,toichika2,news": {
 		checkCmp: function() {
 			var expected = this.pid === "news" ? 2 : 1;
 			return (
@@ -297,13 +329,13 @@
 			);
 		}
 	},
-	"BoardExec@toichika,news": {
+	"BoardExec@toichika,news,arrows2": {
 		adjustBoardData: function(key, d) {
 			this.adjustCellArrow(key, d);
 		}
 	},
 
-	AreaRoomGraph: {
+	"AreaRoomGraph@toichika,toichika2,news": {
 		enabled: true,
 
 		// IDだけ必要
@@ -338,7 +370,7 @@
 			return adjs;
 		}
 	},
-	"AreaRoomGraph@toichika2": {
+	"AreaRoomGraph@toichika2#1": {
 		hastop: true
 	},
 
@@ -358,7 +390,12 @@
 			this.drawBorders();
 
 			this.drawDotCells();
-			if (this.pid === "toichika") {
+			if (this.pid === "arrows2") {
+				this.drawQuesCells();
+				this.drawQuesNumbers();
+				this.drawCellArrows();
+				this.drawMBs();
+			} else if (this.pid === "toichika") {
 				this.drawCellArrows();
 				this.drawHatenas();
 			} else {
@@ -374,6 +411,22 @@
 			this.drawChassis();
 
 			this.drawCursor();
+		}
+	},
+	"Graphic@arrows2": {
+		autocmp: null,
+		fgcellcolor_func: "qnum",
+		fontShadecolor: "white",
+		hideHatena: true,
+		getQuesNumberColor: function(cell) {
+			return cell.qcmp ? this.qcmpcolor : this.fontShadecolor;
+		},
+		getCellArrowColor: function(cell) {
+			var dir = cell.anum;
+			if (dir >= 1 && dir <= 4) {
+				return !cell.trial ? this.qanscolor : this.trialcolor;
+			}
+			return null;
 		}
 	},
 	"Graphic@toichika2": {
@@ -411,7 +464,9 @@
 					g.vhide();
 				}
 			}
-		},
+		}
+	},
+	"Graphic@news,arrows2#1": {
 		drawMBs: function() {
 			var g = this.vinc("cell_mb", "auto", true);
 			g.lineWidth = 1;
@@ -443,6 +498,12 @@
 			return cell.getNum() < 0;
 		}
 	},
+	"AreaNumberGraph@arrows2": {
+		enabled: true,
+		isnodevalid: function(cell) {
+			return !cell.isNum();
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -454,6 +515,15 @@
 		encodePzpr: function(type) {
 			this.encodeBorder();
 			this.encodeRoomNumber16();
+		}
+	},
+
+	"Encode@arrows2": {
+		decodePzpr: function(type) {
+			this.decode4Cell();
+		},
+		encodePzpr: function(type) {
+			this.encode4Cell();
 		}
 	},
 
@@ -537,13 +607,17 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeConfig();
-			this.decodeAreaRoom();
+			if (this.board.roommgr.enabled) {
+				this.decodeAreaRoom();
+			}
 			this.decodeCellQnum();
 			this.decodeCellAnumsub();
 		},
 		encodeData: function() {
 			this.encodeConfig();
-			this.encodeAreaRoom();
+			if (this.board.roommgr.enabled) {
+				this.encodeAreaRoom();
+			}
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
 		},
@@ -624,11 +698,13 @@
 				isarrow = [],
 				bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
-				isarrow[c] = bd.cell[c].isNum();
+				var cell = bd.cell[c];
+				isarrow[c] =
+					cell.isNum() && (this.pid !== "arrows2" || cell.qnum === -1);
 			}
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell0 = bd.cell[c];
-				if (cell0.noNum()) {
+				if (!isarrow[cell0.id]) {
 					continue;
 				}
 				var pos = cell0.getaddr(),
@@ -637,7 +713,11 @@
 				while (1) {
 					pos.movedir(dir, 2);
 					var cell = pos.getc();
-					if (cell.isnull) {
+					if (
+						cell.isnull ||
+						cell.qnum === -2 ||
+						(this.pid === "arrows2" && cell.qnum !== -1)
+					) {
 						ainfo.push([cell0]);
 						break;
 					}
@@ -809,6 +889,68 @@
 			}
 
 			return (this._info.parrow = ainfo);
+		}
+	},
+
+	"AnsCheck@arrows2": {
+		checklist: [
+			"checkOverArrows",
+			"checkConnectEmpty",
+			"checkArrowsAdjacent",
+			"checkDirectionOfArrow",
+			"checkLessArrows"
+		],
+		checkArrowsAdjacent: function() {
+			var ainfo = this.getPairArrowsInfo();
+			for (var i = 0; i < ainfo.length; i++) {
+				if (ainfo[i].length !== 2) {
+					continue;
+				}
+				if (ainfo[i][0].getnb(ainfo[i][1]).isnull) {
+					continue;
+				}
+
+				this.failcode.add("arAdjPair");
+				if (this.checkOnly) {
+					break;
+				}
+				ainfo[i][0].seterr(1);
+				ainfo[i][1].seterr(1);
+			}
+		},
+		checkArrows4Cell: function(type, code) {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				var num = cell.qnum;
+				if (num < 0) {
+					continue;
+				}
+				var count = cell.countDir4Cell(function(cell2) {
+					return cell2.anum > 0;
+				});
+				if (
+					(type === 0 && num === count) ||
+					(type === 1 && num <= count) ||
+					(type === 2 && num >= count)
+				) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				cell.seterr(1);
+			}
+		},
+		checkOverArrows: function() {
+			this.checkArrows4Cell(2, "nmArrowGt");
+		},
+		checkLessArrows: function() {
+			this.checkArrows4Cell(1, "nmArrowLt");
+		},
+		checkConnectEmpty: function() {
+			this.checkOneArea(this.board.nblkmgr, "bkDivide");
 		}
 	},
 
