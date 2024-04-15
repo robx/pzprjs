@@ -244,6 +244,7 @@
 			lineofsight: [0, 0, "サイトライン", "Line of Sight"],
 			lither: [0, 0, "Litherslink", "Litherslink"],
 			lits: [1, 1, "ＬＩＴＳ", "LITS", "lits"],
+			lixloop: [0, 0, "LIX Loop", "LIX Loop", "yajilin"],
 			lohkous: [0, 0, "Lohkous", "Lohkous"],
 			lollipops: [0, 0, "ペロペロキャンディ", "Lollipops"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
