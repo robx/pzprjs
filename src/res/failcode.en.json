@@ -9,6 +9,7 @@
     "anNoShade": "The cell next to the arrow is not shaded.",
     "anNumberNe.crossstitch": "The number of crossings is not correct.",
     "anNumberNe.hebi": "A clue points at the wrong number.",
+    "anShadeNe.lixloop": "A clue does not indicate the type of cell that is most common.",
     "anShadeNe.yajisoko": "The number of boxes is not correct.",
     "anShadeNe": "The number of shaded cells is not correct.",
     "anTatamiNe.yajitatami": "The number of tatamis are not correct.",
