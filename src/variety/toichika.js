@@ -168,7 +168,7 @@
 		enablemake: true,
 		enableplay: true
 	},
-	"KeyEvent@toichika": {
+	"KeyEvent@toichika,arrows2": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -194,6 +194,25 @@
 				ca = " ";
 			}
 			this.key_inputqnum(ca);
+		}
+	},
+	"KeyEvent@arrows2#1": {
+		keyinput: function(ca) {
+			if (this.puzzle.playmode) {
+				this.key_arrows(ca);
+			} else {
+				this.key_inputqnum(ca);
+			}
+		},
+		key_arrows: function(ca) {
+			if ("oaz+".indexOf(ca) >= 0) {
+				ca = "s1";
+			} else if ("6wsx-".indexOf(ca) >= 0) {
+				ca = "s2";
+			} else if (ca === "7") {
+				ca = " ";
+			}
+			this.key_toichika(ca);
 		}
 	},
 	"KeyEvent@toichika2": {
@@ -245,7 +264,9 @@
 		}
 	},
 	"Cell@arrows2": {
-		minnum: 0,
+		minnum: function() {
+			return this.puzzle.editmode ? 0 : 1;
+		},
 		numberWithMB: true,
 		isDot: function() {
 			return this.qsub === 2;
