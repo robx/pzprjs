@@ -350,9 +350,25 @@
 			);
 		}
 	},
-	"BoardExec@toichika,news,arrows2": {
+	"BoardExec@toichika,news": {
 		adjustBoardData: function(key, d) {
 			this.adjustCellArrow(key, d);
+		}
+	},
+	"BoardExec@arrows2": {
+		adjustBoardData: function(key, d) {
+			if (!(key & this.TURNFLIP)) {
+				return;
+			}
+			var trans = this.getTranslateDir(key);
+			var clist = this.board.cellinside(d.x1, d.y1, d.x2, d.y2);
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				var val = trans[cell.anum];
+				if (!!val) {
+					cell.anum = val;
+				}
+			}
 		}
 	},
 
