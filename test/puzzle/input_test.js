@@ -7,12 +7,16 @@ var pzpr = require("../../dist/js/pzpr.js");
 var testdata = require("../load_testdata.js");
 
 function execmouse(puzzle, strs) {
-	var matches = (strs[1].match(/(left|right)(.*)/)[2] || "").match(/x([0-9]+)/);
+	var buttons = strs[1].split("+");
+	var button = buttons[buttons.length - 1];
+
+	var matches = (button.match(/(left|right)(.*)/)[2] || "").match(/x([0-9]+)/);
 	var repeat = matches ? +matches[1] : 1;
 	var args = [];
-	if (strs[1].substr(0, 4) === "left") {
+
+	if (button.substr(0, 4) === "left") {
 		args.push("left");
-	} else if (strs[1].substr(0, 5) === "right") {
+	} else if (button.substr(0, 5) === "right") {
 		args.push("right");
 	}
 	for (var i = 2; i < strs.length; i++) {
@@ -26,8 +30,17 @@ function execmouse(puzzle, strs) {
 			args.push(+strs[i]);
 		}
 	}
+
+	if (buttons.indexOf("alt") >= 0) {
+		puzzle.key.isALT = true;
+	}
+
 	for (var t = 0; t < repeat; t++) {
 		puzzle.mouse.inputPath.apply(puzzle.mouse, args);
+	}
+
+	if (buttons.indexOf("alt") >= 0) {
+		puzzle.key.isALT = false;
 	}
 }
 function execinput(puzzle, str) {

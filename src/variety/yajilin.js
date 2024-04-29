@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["yajilin", "yajilin-regions", "koburin"], {
+})(["yajilin", "yajilin-regions", "koburin", "lixloop"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -43,7 +43,7 @@
 						this.inputqnum();
 					}
 				} else if (this.mousestart || this.mousemove) {
-					if (this.pid === "yajilin") {
+					if (this.pid === "yajilin" || this.pid === "lixloop") {
 						this.inputdirec();
 					} else if (this.pid === "yajilin-regions") {
 						this.inputborder();
@@ -65,7 +65,7 @@
 			this.mousereset();
 		}
 	},
-	"MouseEvent@yajilin": {
+	"MouseEvent@yajilin,lixloop": {
 		inputModes: {
 			edit: ["number", "direc", "clear", "info-line"],
 			play: ["line", "peke", "shade", "unshade", "info-line", "completion"]
@@ -100,6 +100,27 @@
 				return;
 			}
 			this.key_inputqnum(ca);
+		}
+	},
+	"KeyEvent@lixloop": {
+		getNewNumber: function(cell, ca, cur) {
+			if (ca === "l") {
+				return Math.max(0, cur) ^ 4 || -1;
+			} else if (ca === "i") {
+				return Math.max(0, cur) ^ 2 || -1;
+			} else if (ca === "x") {
+				return Math.max(0, cur) ^ 1 || -1;
+			} else if (ca === "-") {
+				return -2;
+			} else if (ca === " ") {
+				return -1;
+			} else if (ca === "BS") {
+				if (cur <= 0) {
+					return -1;
+				}
+				return cur & (cur - 1) || -1;
+			}
+			return null;
 		}
 	},
 
@@ -154,7 +175,7 @@
 			}
 		}
 	},
-	"Cell@yajilin,koburin": {
+	"Cell@yajilin,koburin,lixloop": {
 		minnum: 0,
 		maxnum: function() {
 			return Math.max((this.board.cols + 1) >> 1, (this.board.rows + 1) >> 1);
@@ -259,6 +280,49 @@
 			);
 		}
 	},
+	"Cell@lixloop#2": {
+		minnum: 1,
+		maxnum: 7,
+
+		countShade: function(clist) {
+			if (!clist) {
+				return -1;
+			}
+
+			var L = 0;
+			var I = 0;
+			var X = 0;
+			var unknown = false;
+			clist.each(function(cell) {
+				if (cell.isShade()) {
+					X++;
+				} else if (cell.isLineCurve()) {
+					L++;
+				} else if (cell.isLineStraight()) {
+					I++;
+				} else if (cell.qnum === -1) {
+					unknown = true;
+				}
+			});
+
+			if (unknown) {
+				return -1;
+			}
+
+			var highest = Math.max(L, Math.max(I, X));
+			var ret = 0;
+			if (highest === L) {
+				ret ^= 4;
+			}
+			if (highest === I) {
+				ret ^= 2;
+			}
+			if (highest === X) {
+				ret ^= 1;
+			}
+			return ret;
+		}
+	},
 	"Cell@yajilin-regions": {
 		minnum: 0,
 		maxnum: function() {
@@ -311,7 +375,7 @@
 			}
 		}
 	},
-	"Border@yajilin,koburin": {
+	"Border@yajilin,koburin,lixloop": {
 		isBorder: function() {
 			return (this.sidecell[0].qnum === -1) !== (this.sidecell[1].qnum === -1);
 		}
@@ -319,7 +383,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@yajilin,koburin": {
+	"Board@yajilin,koburin,lixloop": {
 		redrawAffected: function(cells) {
 			var minx = this.maxbx,
 				maxx = this.minbx,
@@ -366,7 +430,7 @@
 			}
 		}
 	},
-	"BoardExec@yajilin": {
+	"BoardExec@yajilin,lixloop": {
 		adjustBoardData: function(key, d) {
 			this.adjustNumberArrow(key, d);
 		}
@@ -405,13 +469,13 @@
 
 			this.drawBorders();
 
-			if (this.pid === "yajilin") {
+			if (this.pid === "yajilin" || this.pid === "lixloop") {
 				this.drawArrowNumbers();
 			}
 
 			this.drawLines();
 
-			if (this.pid !== "yajilin") {
+			if (this.pid !== "yajilin" && this.pid !== "lixloop") {
 				this.drawQuesNumbers();
 			}
 
@@ -426,7 +490,7 @@
 			this.drawTarget();
 		}
 	},
-	"Graphic@yajilin,koburin": {
+	"Graphic@yajilin,koburin,lixloop": {
 		getBGCellColor: function(cell) {
 			var info = cell.error || cell.qinfo;
 			if (this.puzzle.getConfig("disptype_yajilin") === 2 && cell.qnum !== -1) {
@@ -453,13 +517,33 @@
 			return null;
 		}
 	},
+	"Graphic@lixloop#2": {
+		getNumberTextCore: function(num) {
+			if (num <= 0) {
+				return num === -2 && this.puzzle.getConfig("disptype_yajilin") !== 2
+					? "?"
+					: "";
+			}
+			var ret = "";
+			if (num & 4) {
+				ret += "L";
+			}
+			if (num & 2) {
+				ret += "I";
+			}
+			if (num & 1) {
+				ret += "X";
+			}
+			return ret;
+		}
+	},
 	"Graphic@yajilin-regions": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	"Encode@yajilin": {
+	"Encode@yajilin,lixloop": {
 		decodePzpr: function(type) {
 			this.decodeArrowNumber16();
 
@@ -510,7 +594,7 @@
 		}
 	},
 	//---------------------------------------------------------
-	"FileIO@yajilin": {
+	"FileIO@yajilin,lixloop": {
 		decodeData: function() {
 			this.decodeCellDirecQnum();
 			this.decodeCellAns();
@@ -688,12 +772,12 @@
 			"checkLineOnShadeCell",
 			"checkAdjacentShadeCell",
 			"checkDeadendLine+",
-			"checkArrowNumber@yajilin,koburin",
+			"checkArrowNumber@yajilin,koburin,lixloop",
 			"checkShadeCellCount@yajilin-regions",
 			"checkOneLoop",
-			"checkEmptyCell_yajilin+@yajilin,koburin",
+			"checkEmptyCell_yajilin+@yajilin,koburin,lixloop",
 			"checkEmptyCell_regions+@yajilin-regions",
-			"checkNumberHasArrow@yajilin"
+			"checkNumberHasArrow@yajilin,lixloop"
 		],
 
 		checkEmptyCell_yajilin: function() {

@@ -373,7 +373,7 @@
 					exec = pid === "context";
 					break;
 				case "disptype_yajilin":
-					exec = pid === "yajilin" || pid === "koburin";
+					exec = pid === "yajilin" || pid === "koburin" || pid === "lixloop";
 					break;
 				case "disptype_interbd":
 					exec = pid === "interbd";
