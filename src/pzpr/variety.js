@@ -392,6 +392,7 @@
 			tawa: [0, 0, "たわむれんが", "Tawamurenga"],
 			tentaisho: [0, 0, "天体ショー", "Tentaisho"],
 			tents: [0, 0, "Tents", "Tents", "tents"],
+			teri: [0, 0, "テリトリー", "Territory", "kurodoko"],
 			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],

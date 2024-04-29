@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kurodoko", "nurimisaki", "cave"], {
+})(["kurodoko", "nurimisaki", "cave", "teri"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -22,6 +22,36 @@
 			play: ["shade", "unshade", "info-blk"]
 		},
 		RBShadeCell: true
+	},
+	"MouseEvent@teri": {
+		inputModes: {
+			edit: ["number", "clear", "info-blk", "info-ublk"],
+			play: ["shade", "unshade", "subline", "info-blk", "info-ublk"]
+		},
+		RBShadeCell: true,
+
+		mouseinputAutoPlay: function() {
+			if (this.mousestart) {
+				this.isDraggingLine = this.puzzle.key.isALT;
+			}
+
+			if (this.isDraggingLine) {
+				this.inputQsubLine();
+			} else {
+				this.inputcell();
+			}
+		},
+
+		dispInfoUblk: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull || !cell.isUnshade()) {
+				return;
+			}
+			cell.getVisibleCells().setinfo(2);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
+		}
 	},
 	"MouseEvent@nurimisaki": {
 		inputModes: {
@@ -50,13 +80,142 @@
 		maxnum: function() {
 			return this.board.cols + this.board.rows - 1;
 		},
-		minnum: 2
+		minnum: 2,
+
+		seterr: function(num) {
+			if (this.board.isenableSetError()) {
+				if (this.error <= 0) {
+					this.error = num;
+				} else {
+					this.error = Math.min(this.error, num);
+				}
+			}
+		},
+
+		getVisibleDirections: function() {
+			var outer = {};
+			for (var dir in this.adjacent) {
+				var target = this;
+				do {
+					outer[dir] =
+						dir === "left" || dir === "right" ? target.bx : target.by;
+					target = target.adjacent[dir];
+				} while (target.isUnshade() && !target.isnull);
+			}
+			return outer;
+		},
+
+		getVisibleCells: function() {
+			var outer = this.getVisibleDirections();
+			var clist = this.board.cellinside(
+				outer.left,
+				this.by,
+				outer.right,
+				this.by
+			);
+			clist.extend(
+				this.board.cellinside(this.bx, outer.top, this.bx, this.by - 2)
+			);
+			clist.extend(
+				this.board.cellinside(this.bx, this.by + 2, this.bx, outer.bottom)
+			);
+			return clist;
+		}
+	},
+	"Cell@teri": {
+		maxnum: function() {
+			return this.board.cols * this.board.rows;
+		},
+
+		getVisibleCells: function() {
+			var outer = this.getVisibleDirections();
+
+			/* Build list of distances in every column */
+			var topdist = {},
+				botdist = {};
+			topdist[this.bx] = outer.top;
+			botdist[this.bx] = outer.bottom;
+			for (var delta = -2; delta <= 2; delta += 4) {
+				var maxtop = outer.top;
+				var maxbot = outer.bottom;
+				var end = delta < 0 ? outer.left : outer.right;
+				for (var x = this.bx + delta; x !== end + delta; x += delta) {
+					var start = this.board.getc(x, this.by);
+
+					var target = start;
+					while (target.by > maxtop) {
+						var newtarget = target.adjacent.top;
+
+						if (newtarget.isShade()) {
+							break;
+						}
+						target = newtarget;
+					}
+					maxtop = target.by;
+					topdist[x] = maxtop;
+
+					target = start;
+					while (target.by < maxbot) {
+						var newtarget = target.adjacent.bottom;
+						if (newtarget.isShade()) {
+							break;
+						}
+						target = newtarget;
+					}
+					maxbot = target.by;
+					botdist[x] = maxbot;
+				}
+			}
+
+			/* Find combination of left/right values that leads to optimal size */
+			var maxrect = {
+				left: this.bx,
+				right: this.bx,
+				top: this.by,
+				bottom: this.by,
+				count: 1
+			};
+
+			for (var left = outer.left; left <= this.bx; left += 2) {
+				for (var right = this.bx; right <= outer.right; right += 2) {
+					var top = Math.max(topdist[left], topdist[right]);
+					var bottom = Math.min(botdist[left], botdist[right]);
+
+					var rows = ((right - left) >> 1) + 1,
+						cols = ((bottom - top) >> 1) + 1;
+
+					if (rows * cols > maxrect.count) {
+						maxrect = {
+							left: left,
+							right: right,
+							top: top,
+							bottom: bottom,
+							count: rows * cols
+						};
+					}
+				}
+			}
+
+			return this.board.cellinside(
+				maxrect.left,
+				maxrect.top,
+				maxrect.right,
+				maxrect.bottom
+			);
+		}
+	},
+	CellList: {
+		seterr: function(num) {
+			for (var i = 0; i < this.length; i++) {
+				this[i].seterr(num);
+			}
+		}
 	},
 	Board: {
 		cols: 9,
 		rows: 9
 	},
-	"Board@cave": {
+	"Board@cave,teri": {
 		hasborder: 1 // for pekes
 	},
 
@@ -87,11 +246,22 @@
 			this.drawShadedCells();
 			this.drawDotCells();
 
+			if (this.pid === "teri") {
+				this.drawBorderQsubs();
+			}
+
 			this.drawCircledNumbers();
 
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getBGCellColor: function(cell) {
+			if (cell.error > 0 || cell.qinfo > 0) {
+				return this.errbcolor1;
+			}
+			return null;
 		}
 	},
 
@@ -100,7 +270,10 @@
 
 		gridcolor_type: "DLIGHT",
 		enablebcolor: true,
-		bgcellcolor_func: "qsub1",
+
+		getBGCellColor: function(cell) {
+			return this.getBGCellColor_qsub1(cell);
+		},
 
 		qanscolor: "black",
 
@@ -156,10 +329,21 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			if (this.pid === "teri") {
+				this.decodeBorderAns();
+			}
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			if (
+				this.pid === "teri" &&
+				this.board.border.some(function(border) {
+					return border.qsub;
+				})
+			) {
+				this.encodeBorderAns();
+			}
 		},
 
 		kanpenOpen: function() {
@@ -200,8 +384,8 @@
 		checklist: [
 			"checkShadeCellExist",
 			"check2x2ShadeCell@nurimisaki",
-			"checkAdjacentShadeCell@kurodoko",
-			"checkConnectUnshadeRB@kurodoko",
+			"checkAdjacentShadeCell@kurodoko,teri",
+			"checkConnectUnshadeRB@kurodoko,teri",
 			"checkConnectUnshade@nurimisaki,cave",
 			"checkConnectShadeOutside@cave",
 			"checkViewOfNumber",
@@ -219,30 +403,7 @@
 					continue;
 				}
 
-				var clist = new this.klass.CellList(),
-					adc = cell.adjacent,
-					target;
-				clist.add(cell);
-				target = adc.left;
-				while (target.isUnshade()) {
-					clist.add(target);
-					target = target.adjacent.left;
-				}
-				target = adc.right;
-				while (target.isUnshade()) {
-					clist.add(target);
-					target = target.adjacent.right;
-				}
-				target = adc.top;
-				while (target.isUnshade()) {
-					clist.add(target);
-					target = target.adjacent.top;
-				}
-				target = adc.bottom;
-				while (target.isUnshade()) {
-					clist.add(target);
-					target = target.adjacent.bottom;
-				}
+				var clist = cell.getVisibleCells();
 				if (cell.qnum === clist.length) {
 					continue;
 				}
@@ -251,7 +412,8 @@
 				if (this.checkOnly) {
 					break;
 				}
-				clist.seterr(1);
+				cell.seterr(1);
+				clist.seterr(2);
 			}
 		}
 	},

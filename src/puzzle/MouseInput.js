@@ -272,11 +272,18 @@ pzpr.classmgr.makeCommon({
 		mouseinput: function() {
 			var mode = this.inputMode;
 			if (this.puzzle.key.isZ && this.inputMode.indexOf(/info\-/) === -1) {
+				var hasUblk = this.inputModes.play.indexOf("info-ublk") >= 0;
+
 				if (this.inputModes.play.indexOf("info-line") >= 0) {
 					mode = "info-line";
 				} else if (this.inputModes.play.indexOf("info-blk") >= 0) {
-					mode = "info-blk";
-				} else if (this.inputModes.play.indexOf("info-ublk") >= 0) {
+					var cell = this.getcell();
+					if (hasUblk && cell.isUnshade()) {
+						mode = "info-ublk";
+					} else {
+						mode = "info-blk";
+					}
+				} else if (hasUblk) {
 					mode = "info-ublk";
 				} else if (this.inputModes.play.indexOf("info-room") >= 0) {
 					mode = "info-room";
