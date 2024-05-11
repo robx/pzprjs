@@ -127,6 +127,10 @@
 		},
 		posthook: {
 			qnum: function() {
+				if (this.qnum !== -1) {
+					this.setQues(0);
+				}
+
 				if (this.isValidNum()) {
 					for (var dir in this.adjacent) {
 						var other = this.adjacent[dir];
@@ -136,9 +140,12 @@
 					}
 				}
 
-				// TODO: Actually update the subspace items in the graph instead of rebuilding everything
+				// TODO: The code below is a workaround to not have to update the graph when portals change.
+				// Instead, the entire graph will be reconstructed. If this becomes a performance issue for
+				// puzzle setters, everything below this commment should be removed and the graph needs to
+				// be updated to support portal changes without leading to a corrupted state.
 
-				// Save every line color before rebuilding, then piece it together
+				/* Save every line color before rebuilding, then piece it back together */
 				var lines = [];
 				var linkobjs = this.board.linegraph.components;
 
