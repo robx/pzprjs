@@ -171,6 +171,7 @@ function toBGimage(pid) {
 		"pentatouch",
 		"pentopia",
 		"pmemory",
+		"portal",
 		"ququ",
 		"rassi",
 		"remlen",
