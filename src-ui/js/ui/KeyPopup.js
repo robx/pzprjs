@@ -197,7 +197,8 @@ ui.keypopup = {
 		mrtile: [10, 0],
 		subomino: [10, 0],
 		lixloop: [130, 0],
-		teri: [10, 0]
+		teri: [10, 0],
+		portal: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -443,6 +444,7 @@ ui.keypopup = {
 			pid === "shikaku" ||
 			pid === "aho" ||
 			pid === "bosanowa" ||
+			pid === "portal" ||
 			pid === "minarism"
 		) {
 			cap = "○";
