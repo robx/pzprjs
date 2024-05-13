@@ -316,6 +316,7 @@
 				"pipelink"
 			],
 			pmemory: [0, 0, "Persistence of Memory", "Persistence of Memory"],
+			portal: [0, 0, "Portal Loop", "Portal Loop"],
 			putteria: [0, 0, "プッテリア", "Putteria", "hanare"],
 			ququ: [0, 0, "区区", "Ququ"],
 			railpool: [0, 0, "Rail Pool", "Rail Pool"],
@@ -393,6 +394,7 @@
 			tawa: [0, 0, "たわむれんが", "Tawamurenga"],
 			tentaisho: [0, 0, "天体ショー", "Tentaisho"],
 			tents: [0, 0, "Tents", "Tents", "tents"],
+			teri: [0, 0, "テリトリー", "Territory", "kurodoko"],
 			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],

@@ -575,8 +575,6 @@
     "nmSumRowShadeNe.box": "数字と黒マスになった数字の合計が正しくありません。",
     "nmSumSizeNe.kurotto": "隣り合う黒マスの個数の合計が数字と違います。",
     "nmSumSizeNe.tasquare": "数字とそれに接する黒マスの大きさの合計が一致しません。",
-    "nmSumViewNe.sukoro": "数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。",
-    "nmSumViewNe.sukororoom": "数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。",
     "nmSumViewNe.view": "数字と、他のマスにたどり着くまでのマスの数の合計が一致していません。",
     "nmSumViewNe": "数字と黒マスにぶつかるまでの4方向のマスの合計が違います。",
     "nmTentGt.tents": "木の数よりもテントの数が多い部分があります。",
