@@ -121,6 +121,37 @@
 			}
 		},
 
+		drawShadedBorders: function() {
+			this.vinc("wbd", "crispEdges", true);
+			var g = this.context;
+			g.lineWidth = this.gw;
+			g.strokeStyle = this.bbcolor;
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i];
+
+				g.vid = "b_wbd_" + border.id;
+				if (
+					!border.isBorder() &&
+					border.sidecell[0].isShade() &&
+					border.sidecell[1].isShade()
+				) {
+					if (border.isVert()) {
+						var px = border.bx * this.bw,
+							py = border.by * this.bh;
+						g.strokeLine(px, py - this.bh, px, py + this.bh);
+					} else {
+						var px = border.bx * this.bw,
+							py = border.by * this.bh;
+						g.strokeLine(px - this.bw, py, px + this.bw, py);
+					}
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
@@ -129,6 +160,7 @@
 			this.drawDotCells();
 			this.drawQuesNumbers();
 
+			this.drawShadedBorders();
 			this.drawBorders();
 
 			this.drawChassis();
