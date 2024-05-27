@@ -155,7 +155,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			this.drawGrid();
+			this.drawDashedGrid();
 
 			this.drawDotCells();
 			this.drawQuesNumbers();
