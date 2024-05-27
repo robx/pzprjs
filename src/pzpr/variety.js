@@ -228,6 +228,7 @@
 			kurochute: [0, 1, "クロシュート", "Kurochute"],
 			kuroclone: [0, 0, "クロクローン", "Kuroclone"],
 			kurodoko: [0, 1, "黒どこ(黒マスはどこだ)", "Kurodoko"],
+			kuromenbun: [0, 0, "クロメンブン", "Kuromenbun"],
 			kurotto: [0, 0, "クロット", "Kurotto"],
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
 			ladders: [0, 0, "はしごをかけろ", "Ladders"],
