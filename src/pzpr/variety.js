@@ -110,6 +110,7 @@
 			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
 			bonsan: [1, 0, "ぼんさん", "Bonsan", "bonsan"],
 			bosanowa: [1, 0, "ボサノワ", "Bosanowa", "", { alias: "bossanova" }],
+			bosnianroad: [0, 0, "Bosnian Road", "Bosnian Road"],
 			box: [0, 0, "ボックス", "Box"],
 			brownies: [0, 0, "ブラウニー", "Brownies", "yosenabe"],
 			skyscrapers: [

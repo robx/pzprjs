@@ -198,7 +198,8 @@ ui.keypopup = {
 		subomino: [10, 0],
 		lixloop: [130, 0],
 		teri: [10, 0],
-		portal: [10, 0]
+		portal: [10, 0],
+		bosnianroad: [8, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -535,7 +536,7 @@ ui.keypopup = {
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "?"], ["w", "○"]],
 				4
 			);
-		} else if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines") {
+		} else if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines" && pid !== "bosnianroad") {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4
