@@ -271,7 +271,13 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCell(function(cell, ca) {
-				if (ca === "#") {
+				if (ca === "A") {
+					cell.ques = 6;
+					cell.qans = 1;
+				} else if (ca === "B") {
+					cell.ques = 6;
+					cell.qans = 2;
+				} else if (ca === "#") {
 					cell.ques = 6;
 				} else if (ca === "-") {
 					cell.qnum = -2;
@@ -283,7 +289,11 @@
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
-				if (cell.ques === 6) {
+				if (cell.qans === 1) {
+					return "A ";
+				} else if (cell.qans === 2) {
+					return "B ";
+				} else if (cell.ques === 6) {
 					return "# ";
 				} else if (cell.qnum === -2) {
 					return "- ";
