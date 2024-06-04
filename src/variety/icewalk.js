@@ -181,36 +181,34 @@
 					px2 = (cell.bx + 1) * this.bw,
 					py2 = (cell.by + 1) * this.bh;
 
+				var adj = cell.adjborder;
+
 				for (var arc = 0; arc < 4; arc++) {
 					var showArc = false;
+					var color = null;
 					switch (arc) {
 						case 0:
 							showArc =
-								cell.qans === 1 &&
-								cell.adjborder.top.isLine() &&
-								cell.adjborder.left.isLine();
+								cell.qans === 1 && adj.top.isLine() && adj.left.isLine();
+							color = showArc ? this.getLineColor(adj.top) : null;
 							break;
 						case 1:
 							showArc =
-								cell.qans === 2 &&
-								cell.adjborder.top.isLine() &&
-								cell.adjborder.right.isLine();
+								cell.qans === 2 && adj.top.isLine() && adj.right.isLine();
+							color = showArc ? this.getLineColor(adj.top) : null;
 							break;
 						case 2:
 							showArc =
-								cell.qans === 1 &&
-								cell.adjborder.bottom.isLine() &&
-								cell.adjborder.right.isLine();
+								cell.qans === 1 && adj.bottom.isLine() && adj.right.isLine();
+							color = showArc ? this.getLineColor(adj.bottom) : null;
 							break;
 						case 3:
 							showArc =
-								cell.qans === 2 &&
-								cell.adjborder.bottom.isLine() &&
-								cell.adjborder.left.isLine();
+								cell.qans === 2 && adj.bottom.isLine() && adj.left.isLine();
+							color = showArc ? this.getLineColor(adj.bottom) : null;
 							break;
 					}
 
-					var color = showArc ? this.linecolor : null;
 					g.vid = "c_arc_" + arc + "_" + cell.id;
 					if (!!color) {
 						g.beginPath();
