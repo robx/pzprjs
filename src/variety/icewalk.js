@@ -74,18 +74,13 @@
 				this.board.roommgr.isStale = true;
 				for (var sc = 0; sc <= 1; sc++) {
 					var cell = this.sidecell[sc];
-					if (cell.ice() && cell.isLineCurve()) {
-						var newQans =
-							cell.adjborder.top.isLine() === cell.adjborder.left.isLine();
-						cell.setQans(newQans ? 1 : 2);
-					} else if (cell.lcnt < 2 || cell.isLineStraight()) {
-						cell.setQans(0);
-					}
+					cell.updateFireQans();
 				}
 			}
 		}
 	},
 	Cell: {
+		updateFireQans: function() {},
 		posthook: {
 			qnum: function(val) {
 				if (val !== -1 && this.ques === 6) {
@@ -96,8 +91,8 @@
 				this.board.roommgr.isStale = true;
 				if (val === 6) {
 					this.setQnum(-1);
-					this.setQans(0);
 				}
+				this.updateFireQans();
 			}
 		},
 		maxnum: function() {
@@ -105,6 +100,17 @@
 		},
 		ice: function() {
 			return this.isnull || this.ques === 6;
+		}
+	},
+	"Cell@firewalk": {
+		updateFireQans: function() {
+			if (this.ice() && this.isLineCurve()) {
+				var newQans =
+					this.adjborder.top.isLine() === this.adjborder.left.isLine();
+				this.setQans(newQans ? 1 : 2);
+			} else if (!this.ice() || this.lcnt < 2 || this.isLineStraight()) {
+				this.setQans(0);
+			}
 		}
 	},
 	Cross: {
