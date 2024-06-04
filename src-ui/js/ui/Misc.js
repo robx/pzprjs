@@ -123,6 +123,7 @@ function toBGimage(pid) {
 		"cocktail",
 		"coffeemilk",
 		"compass",
+		"contact",
 		"coral",
 		"cts",
 		"curvedata",

@@ -2,7 +2,7 @@
 	"redirects": [
 		{
 			"source": "/",
-			"destination": "/list.html"
+			"destination": "/changes.html"
 		}
 	]
 }

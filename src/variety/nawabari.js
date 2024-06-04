@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino"], {
+})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino", "contact"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -17,7 +17,7 @@
 	"MouseEvent@nawabari": {
 		inputModes: { edit: ["number", "clear"], play: ["border", "subline"] }
 	},
-	"MouseEvent@fourcells,fivecells": {
+	"MouseEvent@fourcells,fivecells,contact": {
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
@@ -45,7 +45,7 @@
 		enablemake: true
 	},
 
-	"KeyEvent@fourcells,fivecells,subomino,heteromino": {
+	"KeyEvent@fourcells,fivecells,subomino,heteromino,contact": {
 		keyinput: function(ca) {
 			if (ca === "w") {
 				this.key_inputvalid(ca);
@@ -103,6 +103,10 @@
 			}
 		}
 	},
+	"Cell@contact": {
+		maxnum: 6,
+		minnum: 1
+	},
 	"CellList@heteromino": {
 		triminoShape: function() {
 			if (this.length !== 3) {
@@ -156,11 +160,11 @@
 	Board: {
 		hasborder: 2
 	},
-	"Board@fourcells,fivecells": {
+	"Board@fourcells,fivecells,contact": {
 		initBoardSize: function(col, row) {
 			this.common.initBoardSize.call(this, col, row);
 
-			var odd = (col * row) % (this.pid === "fivecells" ? 5 : 4);
+			var odd = (col * row) % (this.pid === "fivecells" ? 5 : this.pid === "fourcells" ? 4 : 2);
 			if (odd >= 1) {
 				this.getc(this.minbx + 1, this.minby + 1).ques = 7;
 			}
@@ -391,6 +395,10 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkOverTwoCells@contact",
+			"checkLessTwoCells@contact",
+			"checkTouch@contact",
+			"checkNumKinds@contact",
 			"checkOverThreeCells@heteromino",
 			"checkTouchDifferent@heteromino",
 			"checkLessThreeCells@heteromino",
@@ -405,6 +413,46 @@
 			"checkLessFiveCells@fivecells"
 		],
 
+		checkOverTwoCells: function() {
+			this.checkAllArea(
+				this.board.roommgr,
+				function(w, h, a, n) {
+					return a >= 2;
+				},
+				"bkSizeLt2"
+			);
+		},
+		checkLessTwoCells: function() {
+			this.checkAllArea(
+				this.board.roommgr,
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"bkSizeGt2"
+			);
+		},
+		checkNumKinds: function() {
+			this.checkAllErrorRoom(function(area) {
+				return area.numkind <= 1;
+			}, "bkMixedNum");
+		},
+		checkTouch: function() {
+			this.checkAllCell(function(cell) {
+				if (!cell.isNum() || cell.nblk.clist.length !== 2) {
+					return false;
+				}
+				
+				var pieces = 0;
+				var cendlist = new this.klass.PieceList();
+				var csidelist = new this.klass.PieceList();
+				
+				if (pieces > cell.qnum || pieces < cell.qnum) {
+					cell.seterr(1);
+					cendlist.seterr(1);
+					csidelist.seterr(1);
+				}
+			}, "anPiece");
+		},
 		checkOverThreeCells: function() {
 			this.checkAllArea(
 				this.board.roommgr,

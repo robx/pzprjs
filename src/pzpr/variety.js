@@ -129,6 +129,7 @@
 			coffeemilk: [0, 0, "コーヒー牛乳", "Coffee Milk", "wblink"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
 			compass: [0, 0, "Compass", "Compass", "compass"],
+			contact: [0, 0, "接触", "Contact", "nawabari"],
 			coral: [0, 0, "Coral", "Coral", "nonogram"],
 			country: [1, 0, "カントリーロード", "Country Road"],
 			creek: [1, 0, "クリーク", "Creek"],

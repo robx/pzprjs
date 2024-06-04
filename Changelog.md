@@ -1,6 +1,9 @@
-* turnaround: New puzzle type Turnaround
-
 ### 2024-06-04
+
+* turnaround: New puzzle type Turnaround
+* contact: New puzzle type Contact
+
+### ????-??-??
 
 * aqre: New puzzle type Aqre
 * interbd: New puzzle type International Borders (due to Lennard Sprong)
