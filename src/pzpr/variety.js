@@ -406,6 +406,7 @@
 			tren: [0, 0, "パーキング", "Tren"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
 			tslither: [0, 0, "Touch Slitherlink", "Touch Slitherlink", "vslither"],
+			turnaround: [0, 0, "転向", "Turnaround"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],
 			view: [1, 0, "ヴィウ", "View", "sukoro"],

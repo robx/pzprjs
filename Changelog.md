@@ -1,3 +1,7 @@
+* turnaround: New puzzle type Turnaround
+
+### 2024-06-04
+
 * aqre: New puzzle type Aqre
 * interbd: New puzzle type International Borders (due to Lennard Sprong)
 * tapaloop: New puzzle type Tapa-Like Loop (due to Giuliano Montelucci)
