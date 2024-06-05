@@ -126,7 +126,7 @@
     "bkMixed.view": "A room includes both numbered and non-numbered cells.",
     "bkMixed": "A tile includes both shaded and unshaded cells.",
     "bkMixedNum.fillomino": "An area has two or more kinds of numbers.",
-    "bkMixedNum.contact": "An area has two different numbers.",
+    "bkMixedNum.contact": "A domino has two different numbers.",
     "bkMoreThan2Num.araf": "An area has more than two numbers.",
     "bkMSGe2.nondango": "An area has two or more shaded circles.",
     "bkMSPassedGt2.moonsun": "A line passes the marks of the moon for two rooms in a row.",

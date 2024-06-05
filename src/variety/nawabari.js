@@ -395,10 +395,6 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"checkOverTwoCells@contact",
-			"checkLessTwoCells@contact",
-			"checkTouch@contact",
-			"checkNumKinds@contact",
 			"checkOverThreeCells@heteromino",
 			"checkTouchDifferent@heteromino",
 			"checkLessThreeCells@heteromino",
@@ -412,47 +408,6 @@
 			"checkLessFourCells@fourcells",
 			"checkLessFiveCells@fivecells"
 		],
-
-		checkOverTwoCells: function() {
-			this.checkAllArea(
-				this.board.roommgr,
-				function(w, h, a, n) {
-					return a >= 2;
-				},
-				"bkSizeLt2"
-			);
-		},
-		checkLessTwoCells: function() {
-			this.checkAllArea(
-				this.board.roommgr,
-				function(w, h, a, n) {
-					return a <= 2;
-				},
-				"bkSizeGt2"
-			);
-		},
-		checkNumKinds: function() {
-			this.checkAllErrorRoom(function(area) {
-				return area.numkind <= 1;
-			}, "bkMixedNum");
-		},
-		checkTouch: function() {
-			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.nblk.clist.length !== 2) {
-					return false;
-				}
-				
-				var pieces = 0;
-				var cendlist = new this.klass.PieceList();
-				var csidelist = new this.klass.PieceList();
-				
-				if (pieces > cell.qnum || pieces < cell.qnum) {
-					cell.seterr(1);
-					cendlist.seterr(1);
-					csidelist.seterr(1);
-				}
-			}, "anPiece");
-		},
 		checkOverThreeCells: function() {
 			this.checkAllArea(
 				this.board.roommgr,
@@ -617,6 +572,87 @@
 				}
 				area.clist.seterr(1);
 			}
+		}
+	},
+	"AnsCheck@contact": {
+		checklist: [
+			"checkOverTwoCells",
+			"checkLessTwoCells",
+			"checkSameNumberInRoom",
+			"checkTouch"
+		],
+		checkOverTwoCells: function() {
+			this.checkAllArea(
+				this.board.roommgr,
+				function(w, h, a, n) {
+					return a >= 2;
+				},
+				"bkSizeLt2"
+			);
+		},
+		checkLessTwoCells: function() {
+			this.checkAllArea(
+				this.board.roommgr,
+				function(w, h, a, n) {
+					return a <= 2;
+				},
+				"bkSizeGt2"
+			);
+		},
+		checkSameNumberInRoom: function() {
+			this.checkSameObjectInRoom(
+				this.board.roommgr,
+				function(cell) {
+					return cell.qnum;
+				},
+				"bkMixedNum"
+			);
+		},
+		checkTouch: function() {
+			this.checkAllCell(function(cell) {
+				if (!cell.isNum() || cell.room.clist.length !== 2) {
+					return false;
+				}
+				
+				var dupe = 0;
+				var horizontal = !cell.adjborder.left.isBorder() || !cell.adjborder.right.isBorder();
+				var firstcell = cell.room.clist[0],
+					secondcell = cell.room.clist[1];
+				var clist = new cell.klass.CellList();
+
+				for(var dir in firstcell.adjacent) {
+					if(firstcell.adjacent[dir].isValid()) {
+						clist.add(firstcell.adjacent[dir])
+					}
+					if(secondcell.adjacent[dir].isValid()) {
+						clist.add(secondcell.adjacent[dir])
+					}
+				}
+
+				if(horizontal) {
+					if(firstcell.adjacent.top.isValid() && secondcell.adjacent.top.isValid() && firstcell.adjacent.top.room === secondcell.adjacent.top.room) {
+						dupe += 1;
+					}
+					if(firstcell.adjacent.bottom.isValid() && secondcell.adjacent.bottom.isValid() && firstcell.adjacent.bottom.room === secondcell.adjacent.bottom.room) {
+						dupe += 1;
+					}
+				}
+				else {
+					if(firstcell.adjacent.left.isValid() && secondcell.adjacent.left.isValid() && firstcell.adjacent.left.room === secondcell.adjacent.left.room) {
+						dupe += 1;
+					}
+					if(firstcell.adjacent.right.isValid() && secondcell.adjacent.right.isValid() && firstcell.adjacent.right.room === secondcell.adjacent.right.room)  {
+						dupe += 1;
+					}
+				}
+
+				var piececount = clist.length - dupe - 2;
+				if (piececount !== cell.qnum){
+					clist.seterr(1);
+					return true
+				}
+				return false
+			}, "anPiece");
 		}
 	}
 });
