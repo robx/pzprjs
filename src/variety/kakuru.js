@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kakuru", "numrope"], {
+})(["kakuru", "numrope", "sananko"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -131,6 +131,56 @@
 			cell.draw();
 		}
 	},
+	"MouseEvent@sananko": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["number", "objblank", "clear"]
+		},
+		dragDots: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (cell.qnum !== -1) {
+				return;
+			}
+			if (this.mouseCell.isnull) {
+				if (cell.anum !== -1) {
+					return;
+				}
+				this.inputData = cell.qsub === 1 ? -2 : 10;
+				this.mouseCell = cell;
+				return;
+			}
+
+			if (this.inputData === -2) {
+				cell.setAnum(-1);
+				cell.setQsub(1);
+			} else if (this.inputData === 10) {
+				cell.setAnum(-1);
+				cell.setQsub(0);
+			}
+			this.mouseCell = cell;
+			cell.draw();
+		},
+		inputDot: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell || cell.qnum !== -1) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = cell.qsub === 1 ? 0 : 1;
+			}
+
+			cell.setAnum(-1);
+			cell.setQsub(this.inputData === 1 ? 1 : 0);
+			this.mouseCell = cell;
+			cell.draw();
+		}
+		// TODO add copynum action to auto
+		// TODO add dot drag action to auto
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -150,6 +200,12 @@
 				cell.noNum()
 			) {
 				this.cursor.chtarget();
+			} else if (
+				this.pid === "sananko" &&
+				this.puzzle.playmode &&
+				(ca === "-" || ca === "q")
+			) {
+				this.key_inputqnum_main(cell, "s1");
 			} else if (("0" <= ca && ca <= "9") || ca === "BS" || ca === "-") {
 				if (this.puzzle.playmode && cell.ques === 1) {
 					return;
@@ -253,6 +309,15 @@
 			}
 		}
 	},
+	"Cell@sananko": {
+		numberAsObject: true,
+		minnum: function() {
+			return this.puzzle.editmode ? 0 : 1;
+		},
+		maxnum: function() {
+			return this.puzzle.editmode ? 12 : 3;
+		}
+	},
 	"Cell@numrope": {
 		isValidNum: function() {
 			return !this.isnull && this.anum >= 0;
@@ -304,6 +369,12 @@
 			}
 		}
 	},
+	"AreaNumberGraph@sananko": {
+		enabled: true,
+		isnodevalid: function(cell) {
+			return cell.anum !== -1;
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -320,7 +391,10 @@
 			if (this.pid === "kakuru") {
 				this.drawCircledNumbers();
 			} else {
+				this.drawDotCells();
 				this.drawQuesNumbers();
+			}
+			if (this.pid === "numrope") {
 				this.drawLines();
 			}
 
@@ -357,12 +431,14 @@
 				: null;
 		}
 	},
-	"Graphic@numrope": {
-		numbercolor_func: "fixed_shaded",
-		fontShadecolor: "white",
+	"Graphic@numrope#1": {
 		getLineColor: function(border) {
 			return border.isLine() ? "#aaaaaa" : null;
 		}
+	},
+	"Graphic@numrope,sananko": {
+		numbercolor_func: "fixed_shaded",
+		fontShadecolor: "white"
 	},
 
 	//---------------------------------------------------------
@@ -482,6 +558,7 @@
 				this.decodeBorderQues();
 			}
 			this.decodeCell(function(cell, ca) {
+				// TODO add qsub
 				if (ca.indexOf("[") >= 0) {
 					ca = this.setCellSnum(cell, ca);
 				}
@@ -506,6 +583,7 @@
 				this.encodeBorderQues();
 			}
 			this.encodeCell(function(cell) {
+				// TODO add qsub
 				var ca = ".";
 				if (cell.ques !== 1 && cell.qnum === -1) {
 					ca = cell.anum !== -1 ? cell.anum : "0";
@@ -577,7 +655,7 @@
 				}
 			}
 		},
-		checkSumOfNumber: function(type) {
+		checkSumOfNumber: function(strict) {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
@@ -604,7 +682,7 @@
 						if (qa > 0) {
 							cnt += qa;
 							clist.add(cell2);
-						} else {
+						} else if (!strict) {
 							cnt = cell.qnum;
 							break;
 						}
@@ -701,6 +779,43 @@
 
 				return !empty && cnt >= 2 && (!next || !prev);
 			}, "nmNotSeq");
+		}
+	},
+	"AnsCheck@sananko": {
+		checklist: [
+			"checkOverThreeCells",
+			"checkAdjacentSameNumber",
+			"checkLessThreeCells",
+			"checkSumOfNumberStrict"
+		],
+		checkSumOfNumberStrict: function() {
+			this.checkSumOfNumber(true);
+		},
+		checkAdjacentSameNumber: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				if (cell1.anum === -1 || cell2.anum === -1) {
+					return false;
+				}
+				return cell1.anum !== cell2.anum;
+			}, "nmAdjacent");
+		},
+		checkOverThreeCells: function() {
+			this.checkAllArea(
+				this.board.nblkmgr,
+				function(w, h, a, n) {
+					return a >= 3;
+				},
+				"bkSizeLt3"
+			);
+		},
+		checkLessThreeCells: function() {
+			this.checkAllArea(
+				this.board.nblkmgr,
+				function(w, h, a, n) {
+					return a <= 3;
+				},
+				"bkSizeGt3"
+			);
 		}
 	}
 });
