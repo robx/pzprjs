@@ -234,12 +234,46 @@
 	AnsCheck: {
 		checklist: [
 			"checkShadeCellExist+",
+			"check2x2ShadeSection",
 			"checkShadeBranch",
 			"checkShadeDeadEnd",
 			"checkConnectShade",
 			"checkShadeDiagonal",
 			"checkShadeCount+"
 		],
+
+		check2x2ShadeSection: function() {
+			var isShade = function(cell) {
+				return cell.isShade();
+			};
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.bx >= bd.maxbx - 1 || cell.by >= bd.maxby - 1) {
+					continue;
+				}
+
+				var bx = cell.bx,
+					by = cell.by;
+				var clist = bd.cellinside(bx, by, bx + 2, by + 2).filter(isShade);
+				if (clist.length < 4) {
+					continue;
+				}
+
+				var isPartOfBiggerLoop = clist.some(function(cell) {
+					return cell.countDir4Cell(isShade) !== 2;
+				});
+				if (!isPartOfBiggerLoop) {
+					continue;
+				}
+
+				this.failcode.add("cs2x2");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		},
 
 		checkNeighborCount: function(sign, error) {
 			this.checkAllCell(function(cell) {
