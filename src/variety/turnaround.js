@@ -8,7 +8,15 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear", "info-line"],
-			play: ["line", "peke", "clear", "info-line", "bgcolor", "bgcolor1", "bgcolor2"]
+			play: [
+				"line",
+				"peke",
+				"clear",
+				"info-line",
+				"bgcolor",
+				"bgcolor1",
+				"bgcolor2"
+			]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "line"
@@ -75,38 +83,31 @@
 		],
 
 		checkTurn: function() {
-			var bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var cell = bd.cell[c];
+			this.checkAllCell(function(cell){
 				if (!cell.isNum() || cell.lcnt !== 2) {
-					continue;
-				}
-				
-				var clist = new this.klass.PieceList();
-				if (cell.adjborder.top.isLine()) {
-					clist.add(cell.adjacent.top);
-				}
-				if (cell.adjborder.bottom.isLine()) {
-					clist.add(cell.adjacent.bottom);
-				}
-				if (cell.adjborder.left.isLine()) {
-					clist.add(cell.adjacent.left);
-				}
-				if (cell.adjborder.right.isLine()) {
-					clist.add(cell.adjacent.right);
+					return false;
 				}
 
-				var turncount = cell.isLineStraight()? 0:1;
+				var clist = new cell.klass.PieceList();
+				for(var d in cell.adjborder) {
+					if (cell.adjborder[d].isLine()) {
+						clist.add(cell.adjacent[d]);
+					}
+				}
+
+				var turncount = cell.isLineStraight() ? 0 : 1;
 				clist.each(function(cell) {
-					turncount += cell.isLineStraight()? 0:1
+					turncount += cell.isLineStraight() ? 0 : 1;
 				});
-				
+
 				if (turncount > cell.qnum || turncount < cell.qnum) {
 					cell.seterr(1);
 					clist.seterr(1);
-					this.failcode.add("anTurn");
+					return true;
 				}
-			}
+
+				return false;
+			}, "anTurn");
 		},
 
 		checkNoLineNumber: function() {

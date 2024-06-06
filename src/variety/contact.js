@@ -35,7 +35,7 @@
 
 			if (this.mouseend && this.notInputted()) {
 				this.mouseCell = this.board.emptycell;
-				this.inputqnum(); 
+				this.inputqnum();
 			}
 		},
 
@@ -49,24 +49,26 @@
 				this.mouseCell = cell;
 				return;
 			}
-			
-			if(cell.by !== cell2.by && cell.bx !== cell2.bx) {
+
+			if (cell.by !== cell2.by && cell.bx !== cell2.bx) {
 				return;
 			}
-			var horizontal = (cell.by === cell2.by)
-			if((horizontal && Math.abs(cell.bx - cell2.bx) !== 2) 
-				|| (!horizontal && Math.abs(cell.by - cell2.by) !==2)) {
+			var horizontal = cell.by === cell2.by;
+			if (
+				(horizontal && Math.abs(cell.bx - cell2.bx) !== 2) ||
+				(!horizontal && Math.abs(cell.by - cell2.by) !== 2)
+			) {
 				return;
 			}
 			var b = this.board.getb(
 				(cell.bx + cell2.bx) >> 1,
 				(cell.by + cell2.by) >> 1
 			);
-			for(var d in cell.adjborder) {
+			for (var d in cell.adjborder) {
 				cell.adjborder[d].setQans(1);
 				cell.adjborder[d].draw();
 			}
-			for(var d in cell2.adjacent) {
+			for (var d in cell2.adjacent) {
 				cell2.adjborder[d].setQans(1);
 				cell2.adjborder[d].draw();
 			}
@@ -104,27 +106,30 @@
 			var currentCell = this;
 			var loop = false;
 			var routeList = new this.klass.CellList();
-			while(currentCell.isValid() && !loop) {
-				loop = routeList.some(function(c){
-					return c === currentCell
+			while (currentCell.isValid() && !loop) {
+				loop = routeList.some(function(c) {
+					return c === currentCell;
 				});
-				if(loop) {
+				if (loop) {
 					continue;
 				}
 				routeList.add(currentCell);
-				for(var dir in currentCell.adjacent) {
-					if(!currentCell.adjborder[dir].isBorder()) {
+				for (var dir in currentCell.adjacent) {
+					if (!currentCell.adjborder[dir].isBorder()) {
 						currentCell = currentCell.adjacent[dir].adjacent[dir];
 						break;
 					}
 				}
 			}
-			if((loop && (this.qnum !== -3)) || (!loop && (routeList.length !== this.qnum))) {
-				routeList.each(function(c){
+			if (
+				(loop && this.qnum !== -3) ||
+				(!loop && routeList.length !== this.qnum)
+			) {
+				routeList.each(function(c) {
 					c.room.clist.seterr(1);
 				});
 			}
-			return loop? -1: routeList.length;
+			return loop ? -1 : routeList.length;
 		}
 	},
 	"Cell@contact": {
@@ -134,7 +139,7 @@
 	"Cell@rampage": {
 		minnum: 1,
 		maxnum: function() {
-			return Math.ceil(this.board.cols/2) * Math.ceil(this.board.rows/2);
+			return Math.ceil(this.board.cols / 2) * Math.ceil(this.board.rows / 2);
 		}
 	},
 	Border: {
@@ -224,7 +229,7 @@
 			}
 		},
 		getQuesNumberText: function(cell) {
-			return cell.getNum() === -3? "∞" : this.getNumberText(cell, cell.qnum);
+			return cell.getNum() === -3 ? "∞" : this.getNumberText(cell, cell.qnum);
 		}
 	},
 
@@ -287,8 +292,7 @@
 					pstr = "*";
 				} else if (qn !== -1) {
 					pstr = qn.toString(10);
-				}
-				else {
+				} else {
 					count++;
 				}
 
@@ -322,9 +326,6 @@
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
-			if (this.pid === "fourcells") {
-				this.filever = 1;
-			}
 			this.encodeCell(function(cell) {
 				if (cell.ques === 7) {
 					return "* ";
@@ -381,59 +382,74 @@
 		},
 		checkTouch: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum !== -2 || cell.room.clist.length !== 2) {
+				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
 					return false;
 				}
-				
+
 				var dupe = 0;
-				var horizontal = !cell.adjborder.left.isBorder() || !cell.adjborder.right.isBorder();
+				var horizontal =
+					!cell.adjborder.left.isBorder() || !cell.adjborder.right.isBorder();
 				var firstcell = cell.room.clist[0],
 					secondcell = cell.room.clist[1];
 				var clist = new cell.klass.CellList();
 
-				for(var dir in firstcell.adjacent) {
-					if(firstcell.adjacent[dir].isValid()) {
-						clist.add(firstcell.adjacent[dir])
+				for (var dir in firstcell.adjacent) {
+					if (firstcell.adjacent[dir].isValid()) {
+						clist.add(firstcell.adjacent[dir]);
 					}
-					if(secondcell.adjacent[dir].isValid()) {
-						clist.add(secondcell.adjacent[dir])
+					if (secondcell.adjacent[dir].isValid()) {
+						clist.add(secondcell.adjacent[dir]);
 					}
 				}
 
-				if(horizontal) {
-					if(firstcell.adjacent.top.isValid() && secondcell.adjacent.top.isValid() && firstcell.adjacent.top.room === secondcell.adjacent.top.room) {
+				if (horizontal) {
+					if (
+						firstcell.adjacent.top.isValid() &&
+						secondcell.adjacent.top.isValid() &&
+						firstcell.adjacent.top.room === secondcell.adjacent.top.room
+					) {
 						dupe += 1;
 					}
-					if(firstcell.adjacent.bottom.isValid() && secondcell.adjacent.bottom.isValid() && firstcell.adjacent.bottom.room === secondcell.adjacent.bottom.room) {
+					if (
+						firstcell.adjacent.bottom.isValid() &&
+						secondcell.adjacent.bottom.isValid() &&
+						firstcell.adjacent.bottom.room === secondcell.adjacent.bottom.room
+					) {
 						dupe += 1;
 					}
-				}
-				else {
-					if(firstcell.adjacent.left.isValid() && secondcell.adjacent.left.isValid() && firstcell.adjacent.left.room === secondcell.adjacent.left.room) {
+				} else {
+					if (
+						firstcell.adjacent.left.isValid() &&
+						secondcell.adjacent.left.isValid() &&
+						firstcell.adjacent.left.room === secondcell.adjacent.left.room
+					) {
 						dupe += 1;
 					}
-					if(firstcell.adjacent.right.isValid() && secondcell.adjacent.right.isValid() && firstcell.adjacent.right.room === secondcell.adjacent.right.room)  {
+					if (
+						firstcell.adjacent.right.isValid() &&
+						secondcell.adjacent.right.isValid() &&
+						firstcell.adjacent.right.room === secondcell.adjacent.right.room
+					) {
 						dupe += 1;
 					}
 				}
 
 				var piececount = clist.length - dupe - 2;
-				if (piececount !== cell.qnum){
+				if (piececount !== cell.qnum) {
 					clist.each(function(c) {
-						c.room.clist[0].seterr(1);
-						c.room.clist[1].seterr(1);
+						c.room.clist.seterr(1);
 					});
-					for(var dir in firstcell.adjacent) {
-						if(firstcell.adjborder[dir].qans > 0) {
-							firstcell.adjborder[dir].seterr(2);
+					for (var dir in firstcell.adjacent) {
+						if (firstcell.adjborder[dir].qans > 0) {
+							firstcell.adjborder[dir].seterr(1);
 						}
-						if(secondcell.adjborder[dir].qans > 0) {
-							secondcell.adjborder[dir].seterr(2);
+						if (secondcell.adjborder[dir].qans > 0) {
+							secondcell.adjborder[dir].seterr(1);
 						}
 					}
-					return true
+					return true;
 				}
-				return false
+				return false;
 			}, "anPiece");
 		},
 		checkRouteLoop: function() {
@@ -441,39 +457,39 @@
 				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
 					return false;
 				}
-				if(cell.qnum !== -3){
+				if (cell.qnum !== -3) {
 					return false;
 				}
 
-				var routeLen = cell.getBullRouteLen()
-				return routeLen !== -1
-			}, "routeLenLoop")
+				var routeLen = cell.getBullRouteLen();
+				return routeLen !== -1;
+			}, "routeLenLoop");
 		},
 		checkRouteLenGt: function() {
 			this.checkAllCell(function(cell) {
 				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
 					return false;
 				}
-				if(cell.qnum === -3) {
+				if (cell.qnum === -3) {
 					return false;
 				}
 
-				var routeLen = cell.getBullRouteLen()
-				return routeLen === -1 || routeLen > cell.qnum
-			}, "routeLenGt")
+				var routeLen = cell.getBullRouteLen();
+				return routeLen === -1 || routeLen > cell.qnum;
+			}, "routeLenGt");
 		},
 		checkRouteLenLt: function() {
 			this.checkAllCell(function(cell) {
 				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
 					return false;
 				}
-				if(cell.qnum === -3) { 
+				if (cell.qnum === -3) {
 					return false;
 				}
 
-				var routeLen = cell.getBullRouteLen()
-				return routeLen !== -1 && routeLen < cell.qnum
-			}, "routeLenLt")
+				var routeLen = cell.getBullRouteLen();
+				return routeLen !== -1 && routeLen < cell.qnum;
+			}, "routeLenLt");
 		}
 	}
 });
