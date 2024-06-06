@@ -604,6 +604,8 @@
     "rmDeadend.scrin": "頂点を１つしか共有していない長方形があります。",
     "rmIsolated.scrin": "頂点を全く共有していない長方形があります。",
     "rmRectUnshade.scrin": "輪の中に長方形が出来ています。",
+    "routeLenGt": "ブロックの数が数字よりも長いです",
+    "routeLenLt": "ブロックの数が数字よりも短いです",
     "routeIgnoreCP.nurimaze": "○がSからGへの経路上にありません。",
     "routePassDeadEnd.nurimaze": "△がSからGへの経路上にあります。",
     "segBlackEq.balance": "黒丸から線の端までの長さが同じになっています。",

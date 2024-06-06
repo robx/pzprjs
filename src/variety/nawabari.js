@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino", "contact"], {
+})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -17,7 +17,7 @@
 	"MouseEvent@nawabari": {
 		inputModes: { edit: ["number", "clear"], play: ["border", "subline"] }
 	},
-	"MouseEvent@fourcells,fivecells,contact": {
+	"MouseEvent@fourcells,fivecells": {
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
@@ -45,7 +45,7 @@
 		enablemake: true
 	},
 
-	"KeyEvent@fourcells,fivecells,subomino,heteromino,contact": {
+	"KeyEvent@fourcells,fivecells,subomino,heteromino": {
 		keyinput: function(ca) {
 			if (ca === "w") {
 				this.key_inputvalid(ca);
@@ -103,10 +103,6 @@
 			}
 		}
 	},
-	"Cell@contact": {
-		maxnum: 6,
-		minnum: 1
-	},
 	"CellList@heteromino": {
 		triminoShape: function() {
 			if (this.length !== 3) {
@@ -160,7 +156,7 @@
 	Board: {
 		hasborder: 2
 	},
-	"Board@fourcells,fivecells,contact": {
+	"Board@fourcells,fivecells": {
 		initBoardSize: function(col, row) {
 			this.common.initBoardSize.call(this, col, row);
 
@@ -572,87 +568,6 @@
 				}
 				area.clist.seterr(1);
 			}
-		}
-	},
-	"AnsCheck@contact": {
-		checklist: [
-			"checkOverTwoCells",
-			"checkLessTwoCells",
-			"checkSameNumberInRoom",
-			"checkTouch"
-		],
-		checkOverTwoCells: function() {
-			this.checkAllArea(
-				this.board.roommgr,
-				function(w, h, a, n) {
-					return a >= 2;
-				},
-				"bkSizeLt2"
-			);
-		},
-		checkLessTwoCells: function() {
-			this.checkAllArea(
-				this.board.roommgr,
-				function(w, h, a, n) {
-					return a <= 2;
-				},
-				"bkSizeGt2"
-			);
-		},
-		checkSameNumberInRoom: function() {
-			this.checkSameObjectInRoom(
-				this.board.roommgr,
-				function(cell) {
-					return cell.qnum;
-				},
-				"bkMixedNum"
-			);
-		},
-		checkTouch: function() {
-			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.room.clist.length !== 2) {
-					return false;
-				}
-				
-				var dupe = 0;
-				var horizontal = !cell.adjborder.left.isBorder() || !cell.adjborder.right.isBorder();
-				var firstcell = cell.room.clist[0],
-					secondcell = cell.room.clist[1];
-				var clist = new cell.klass.CellList();
-
-				for(var dir in firstcell.adjacent) {
-					if(firstcell.adjacent[dir].isValid()) {
-						clist.add(firstcell.adjacent[dir])
-					}
-					if(secondcell.adjacent[dir].isValid()) {
-						clist.add(secondcell.adjacent[dir])
-					}
-				}
-
-				if(horizontal) {
-					if(firstcell.adjacent.top.isValid() && secondcell.adjacent.top.isValid() && firstcell.adjacent.top.room === secondcell.adjacent.top.room) {
-						dupe += 1;
-					}
-					if(firstcell.adjacent.bottom.isValid() && secondcell.adjacent.bottom.isValid() && firstcell.adjacent.bottom.room === secondcell.adjacent.bottom.room) {
-						dupe += 1;
-					}
-				}
-				else {
-					if(firstcell.adjacent.left.isValid() && secondcell.adjacent.left.isValid() && firstcell.adjacent.left.room === secondcell.adjacent.left.room) {
-						dupe += 1;
-					}
-					if(firstcell.adjacent.right.isValid() && secondcell.adjacent.right.isValid() && firstcell.adjacent.right.room === secondcell.adjacent.right.room)  {
-						dupe += 1;
-					}
-				}
-
-				var piececount = clist.length - dupe - 2;
-				if (piececount !== cell.qnum){
-					clist.seterr(1);
-					return true
-				}
-				return false
-			}, "anPiece");
 		}
 	}
 });

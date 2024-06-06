@@ -201,7 +201,8 @@ ui.keypopup = {
 		portal: [10, 0],
 		kuromenbun: [10, 0],
 		turnaround: [3, 0],
-		contact: [6, 0]
+		contact: [6, 0],
+		rampage: [131,0 ]
 	},
 
 	//---------------------------------------------------------------------------
@@ -343,6 +344,8 @@ ui.keypopup = {
 			this.generate_retroships(mode);
 		} else if (type === 130) {
 			this.generate_lix(mode);
+		} else if (type === 131) {
+			this.generate_infinity(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -974,6 +977,15 @@ ui.keypopup = {
 		this.generate_main(
 			[["l", "L"], ["i", "I"], ["x", "X"], ["-", "?"], " "],
 			3
+		);
+	},
+	generate_infinity: function() {
+		this.generate_main(
+			[
+				"0","1","2","3","4","5","6","7","8","9"," ",
+				["i", "∞"]
+			],
+			4
 		);
 	},
 

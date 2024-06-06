@@ -176,6 +176,7 @@ function toBGimage(pid) {
 		"portal",
 		"ququ",
 		"rassi",
+		"rampage",
 		"remlen",
 		"retroships",
 		"roundtrip",
