@@ -19,6 +19,59 @@
 		},
 		mouseinput_clear: function() {
 			this.inputFixedNumber(-1);
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
+				if (this.isBorderMode()) {
+					this.inputborder();
+				} else {
+					this.drag_domino();
+				}
+			}
+
+			if (this.puzzle.editmode && this.mousemove) {
+				this.inputborder();
+			}
+
+			if (this.mouseend && this.notInputted()) {
+				this.mouseCell = this.board.emptycell;
+				this.inputqnum(); 
+			}
+		},
+
+		drag_domino: function() {
+			var cell = this.getcell(),
+				cell2 = this.mouseCell;
+			if (cell.isnull || cell === cell2) {
+				return;
+			}
+			if (cell2.isnull) {
+				this.mouseCell = cell;
+				return;
+			}
+			
+			if(cell.by !== cell2.by && cell.bx !== cell2.bx) {
+				return;
+			}
+			var horizontal = (cell.by === cell2.by)
+			if((horizontal && Math.abs(cell.bx - cell2.bx) !== 2) 
+				|| (!horizontal && Math.abs(cell.by - cell2.by) !==2)) {
+				return;
+			}
+			var b = this.board.getb(
+				(cell.bx + cell2.bx) >> 1,
+				(cell.by + cell2.by) >> 1
+			);
+			for(var d in cell.adjborder) {
+				cell.adjborder[d].setQans(1);
+				cell.adjborder[d].draw();
+			}
+			for(var d in cell2.adjacent) {
+				cell2.adjborder[d].setQans(1);
+				cell2.adjborder[d].draw();
+			}
+			b.setQans(0);
+			b.draw();
 		}
 	},
 
@@ -28,31 +81,60 @@
 		enablemake: true,
 		keyinput: function(ca) {
 			if (ca === "w") {
-				this.key_inputvalid(ca);
-			} else if (this.pid !== "heteromino") {
-				this.key_inputqnum(ca);
-			}
-		},
-		key_inputvalid: function(ca) {
-			if (ca === "w") {
 				var cell = this.cursor.getc();
 				if (!cell.isnull) {
 					cell.setValid(cell.ques !== 7 ? 7 : 0);
 				}
+			} else if (this.pid === "rampage" && ca === "i") {
+				var cell = this.cursor.getc();
+				if (!cell.isnull) {
+					cell.setQnum(-3);
+					cell.draw();
+				}
+			} else {
+				this.key_inputqnum(ca);
 			}
 		}
 	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
+	Cell: {
+		getBullRouteLen: function() {
+			var currentCell = this;
+			var loop = false;
+			var routeList = new this.klass.CellList();
+			while(currentCell.isValid() && !loop) {
+				loop = routeList.some(function(c){
+					return c === currentCell
+				});
+				if(loop) {
+					continue;
+				}
+				routeList.add(currentCell);
+				for(var dir in currentCell.adjacent) {
+					if(!currentCell.adjborder[dir].isBorder()) {
+						currentCell = currentCell.adjacent[dir].adjacent[dir];
+						break;
+					}
+				}
+			}
+			if((loop && (this.qnum !== -3)) || (!loop && (routeList.length !== this.qnum))) {
+				routeList.each(function(c){
+					c.room.clist.seterr(1);
+				});
+			}
+			return loop? -1: routeList.length;
+		}
+	},
 	"Cell@contact": {
-		minnum: 0,
+		minnum: 1,
 		maxnum: 6
 	},
 	"Cell@rampage": {
 		minnum: 1,
 		maxnum: function() {
-			return Math.ceil(this.board.cols/2) * Math.ceil(this.board.rows);
+			return Math.ceil(this.board.cols/2) * Math.ceil(this.board.rows/2);
 		}
 	},
 	Border: {
@@ -140,6 +222,9 @@
 					g.vhide();
 				}
 			}
+		},
+		getQuesNumberText: function(cell) {
+			return cell.getNum() === -3? "∞" : this.getNumberText(cell, cell.qnum);
 		}
 	},
 
@@ -147,12 +232,12 @@
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
-			this.decodeFivecells();
+			this.decode();
 		},
 		encodePzpr: function(type) {
-			this.encodeFivecells();
+			this.encode();
 		},
-		decodeFivecells: function() {
+		decode: function() {
 			for (var c = 0; c < this.board.cell.length; c++) {
 				this.board.cell[c].setQues(0);
 			}
@@ -170,6 +255,8 @@
 					cell.ques = 7;
 				} else if (ca === ".") {
 					cell.qnum = -2;
+				} else if (ca === "*") {
+					cell.qnum = -3;
 				} else if (this.include(ca, "0", "9")) {
 					cell.qnum = parseInt(ca, 10);
 				} else if (this.include(ca, "a", "z")) {
@@ -183,7 +270,7 @@
 			}
 			this.outbstr = bstr.substr(i);
 		},
-		encodeFivecells: function() {
+		encode: function() {
 			var cm = "",
 				count = 0,
 				bd = this.board;
@@ -196,9 +283,11 @@
 					pstr = "7";
 				} else if (qn === -2) {
 					pstr = ".";
+				} else if (qn === -3) {
+					pstr = "*";
 				} else if (qn !== -1) {
 					pstr = qn.toString(10);
-				} // 0～3
+				}
 				else {
 					count++;
 				}
@@ -230,9 +319,7 @@
 					cell.qnum = +ca;
 				}
 			});
-			this.decodeBorderAns(
-				this.pid === "fourcells" && this.filever === 0 ? 1 : null
-			);
+			this.decodeBorderAns();
 		},
 		encodeData: function() {
 			if (this.pid === "fourcells") {
@@ -261,7 +348,9 @@
 			"checkLessTwoCells",
 			"checkSameNumberInRoom@contact",
 			"checkTouch@contact",
-			"checkPathLen@rampage"
+			"checkRouteLoop@rampage",
+			"checkRouteLenGt@rampage",
+			"checkRouteLenLt@rampage"
 		],
 		checkOverTwoCells: function() {
 			this.checkAllArea(
@@ -292,7 +381,7 @@
 		},
 		checkTouch: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.room.clist.length !== 2) {
+				if (!cell.isNum() || cell.qnum !== -2 || cell.room.clist.length !== 2) {
 					return false;
 				}
 				
@@ -347,44 +436,44 @@
 				return false
 			}, "anPiece");
 		},
-		checkPathLen: function() {
+		checkRouteLoop: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.room.clist.length !== 2) {
+				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
+					return false;
+				}
+				if(cell.qnum !== -3){
 					return false;
 				}
 
-				var pathlen = 0;
-				var loop = false;
-				var startingCell = cell,
-					currentCell = cell;
-				var clist = new cell.klass.CellList();
+				var routeLen = cell.getBullRouteLen()
+				return routeLen !== -1
+			}, "routeLenLoop")
+		},
+		checkRouteLenGt: function() {
+			this.checkAllCell(function(cell) {
+				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
+					return false;
+				}
+				if(cell.qnum === -3) {
+					return false;
+				}
 
-				while(currentCell.isValid() && !loop) {
-					clist.add(currentCell);
-					console.log(currentCell.bx, currentCell.by)
-					if(pathlen > 0 && currentCell.room === startingCell.room) {
-						loop = true;
-						continue;
-					}
-					for(var dir in currentCell.adjacent) {
-						if(!currentCell.adjborder[dir].isBorder()) {
-							currentCell = currentCell.adjacent[dir].adjacent[dir];
-							console.log(dir)
-							pathlen ++;
-							break;
-						}
-					}
-				}
-				console.log('len ', pathlen)
-				if((loop && (startingCell.qnum === "i")) || (startingCell.qnum !== pathlen)) {
-					clist.each(function(c){
-						c.room.clist[0].seterr(1);
-						c.room.clist[1].seterr(1);
-					});
-					return true;
-				}
-				return false;
+				var routeLen = cell.getBullRouteLen()
+				return routeLen === -1 || routeLen > cell.qnum
 			}, "routeLenGt")
+		},
+		checkRouteLenLt: function() {
+			this.checkAllCell(function(cell) {
+				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
+					return false;
+				}
+				if(cell.qnum === -3) { 
+					return false;
+				}
+
+				var routeLen = cell.getBullRouteLen()
+				return routeLen !== -1 && routeLen < cell.qnum
+			}, "routeLenLt")
 		}
 	}
 });

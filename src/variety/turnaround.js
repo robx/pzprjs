@@ -8,7 +8,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear", "info-line"],
-			play: ["line", "peke", "clear", "info-line"]
+			play: ["line", "peke", "clear", "info-line", "bgcolor", "bgcolor1", "bgcolor2"]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "line"

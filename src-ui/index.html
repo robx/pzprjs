@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html">
+<link rel="stylesheet" href="./css/blog.css?<%= git.hash %>">
 
 <script type="text/javascript">
 if ('serviceWorker' in navigator) {
@@ -17,25 +18,67 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-<title>pzprjs changes</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-  }
-  ul {
-    margin: 0;
-    padding: 0 0 0 16px;
-  }
-</style>
+<title>Logic Showcase 61</title>
 </head>
+
 <body>
 <main>
-<h1>Hello there</h1>
-<div style="margin-bottom: 5px;"><b>Latest types</b> (<em><a href="/list.html" target="_parent">all types</a></em>)</div>
-<ul>
-  <li><a href="/p.html?turnaround" target="_parent">Turnaround</a></li>
-  <li><a href="/p.html?contact" target="_parent">Contact</a></li>
-</ul>
+
+<h1>Logic Showcase 61</h1>
+
+<div id="changelog">
+  <p><b>Last updated <time datetime="2024-06-08">8 June 2024</time>.</b> Several new puzzles, detailed below.</p>
+  <ul>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#turnaround">Turnaround</a></li>
+    <li><a href="#rampage">Rampage</a></li>
+  </ul>
+  <div class="notecard warning">
+    <details><summary>Terms, Privacy</summary>
+    <p>This imitation of Chaotic's blog will only be up until the end of the showcase, but the links to puzz.link implementations and puzzles will still be available. I'll also post my fork (of course after my identity is revealed), though I can't promise that it will get merged to the main pzpr branch.</p>
+    </details>
+  </div>
+</div>
+
+<section><h2 id="contact">Contact</h2>
+  <div class="notecard rules">
+      <p>Divide the grid into dominoes. Each number indicates how many dominoes are orthogonally adjacent to the domino containing the number. Dominoes may contain any number of given numbers. <a href="/p.html?contact" target="_blank">(puzz.link implementation)</a></p>
+  </div>
+  <div class="notecard accented">
+    You can create a domino by clicking and dragging! Borders around the two cells will be automatically filled.
+  </div>
+  <ul>
+    <li><a href="/p.html?contact/6/6/a354o4a6n" target="_blank">Puzzle 1: Pi</a></li>
+    <li><a href="/p.html?contact/6/6/h6d3r5c" target="_blank">Puzzle 2: To Infinity and Beyond</a></li>
+    <li><a href="/p.html?contact/6/6/h6d3r5c" target="_blank">Puzzle 3: ...</a></li>
+  </ul>
+</section>
+
+<section><h2 id="turnaround">Turnaround</h2>
+  <div class="notecard rules">
+      <p>Draw a loop traveling orthogonally on cells. The loop must visit all numbers. Each number indicates how many turns the loop makes among the three cells: the number itself, and the cells immediately before and after it in the loop. <a href="/p.html?turnaround" target="_blank">(puzz.link implementation)</a></p>
+  </div>
+  <ul>
+    <li><a href="/p.html?turnaround/6/6/m10i1h1g12g2h2i32m" target="_blank">Puzzle 1: Spiral</a></li>
+    <li><a href="/p.html?rampage/6/6/a1i2l4i3a" target="_blank">Puzzle 2: To Infinity and Beyond</a></li>
+    <li><a href="/p.html?rampage/6/6/a1i2l4i3a" target="_blank">Puzzle 3: ...</a></li>
+  </ul>
+</section>
+
+<section><h2 id="rampage">Rampage</h2>
+  <div class="notecard rules">
+      <p>Divide the grid into dominoes. Each number represents a rampaging bull, which behaves as follows. The bull first moves to the other cell of the domino it's in, and then moves one extra space (thus breaking through the opposite short edge into a new domino). It then repeats this procedure with the new domino it's in, and so on. The number indicates how many dominoes the bull passes through, including the initial one. As a special case, if the bull never leaves the grid, the number is infinity (∞). <a href="/p.html?rampage" target="_blank">(puzz.link implementation)</a></p>
+  </div>
+
+  <div class="notecard accented">
+    You can create a domino by clicking and dragging! Borders around the two cells will be automatically filled.
+  </div>
+  <ul>
+    <li><a href="/p.html?rampage/6/6/a1i2l4i3a" target="_blank">Puzzle 1: Tiled Square</a></li>
+    <li><a href="/p.html?rampage/6/6/a1i2l4i3a" target="_blank">Puzzle 2: To Infinity and Beyond</a></li>
+    <li><a href="/p.html?rampage/6/6/a1i2l4i3a" target="_blank">Puzzle 3: ...</a></li>
+  </ul>
+</section>
+
 </main>
 </body>

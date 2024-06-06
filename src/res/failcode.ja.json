@@ -606,6 +606,7 @@
     "rmRectUnshade.scrin": "輪の中に長方形が出来ています。",
     "routeLenGt": "ブロックの数が数字よりも長いです",
     "routeLenLt": "ブロックの数が数字よりも短いです",
+    "routeLenLoop": "ループではありません.",
     "routeIgnoreCP.nurimaze": "○がSからGへの経路上にありません。",
     "routePassDeadEnd.nurimaze": "△がSからGへの経路上にあります。",
     "segBlackEq.balance": "黒丸から線の端までの長さが同じになっています。",
