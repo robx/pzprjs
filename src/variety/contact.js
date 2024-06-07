@@ -260,7 +260,7 @@
 					cell.ques = 7;
 				} else if (ca === ".") {
 					cell.qnum = -2;
-				} else if (ca === "*") {
+				} else if (ca === "~") {
 					cell.qnum = -3;
 				} else if (this.include(ca, "0", "9")) {
 					cell.qnum = parseInt(ca, 10);
@@ -289,7 +289,7 @@
 				} else if (qn === -2) {
 					pstr = ".";
 				} else if (qn === -3) {
-					pstr = "*";
+					pstr = "~";
 				} else if (qn !== -1) {
 					pstr = qn.toString(10);
 				} else {
@@ -319,6 +319,8 @@
 					cell.ques = 7;
 				} else if (ca === "-") {
 					cell.qnum = -2;
+				} else if (ca === "~") {
+					cell.qnum = -3;
 				} else if (ca !== ".") {
 					cell.qnum = +ca;
 				}
@@ -331,6 +333,8 @@
 					return "* ";
 				} else if (cell.qnum === -2) {
 					return "- ";
+				} else if (cell.qnum === -3) {
+					return "~ ";
 				} else if (cell.qnum >= 0) {
 					return cell.qnum + " ";
 				} else {
