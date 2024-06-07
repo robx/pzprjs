@@ -712,6 +712,7 @@
     "nmPillowLt.shugaku": "The number of pillows around the number is wrong.",
     "nmProduct.factors": "A number of room is not equal to the product of these numbers.",
     "nmRange.kakuru": "A number is larger than 9.",
+    "nmRange.sananko": "A number is larger than 3.",
     "nmRange.trainstations": "A number is out of range.",
     "nmSame2x2.kazunori": "There is a 2x2 block of the same number.",
     "nmSame2x2.snakepit": "A snake loops back on itself.",

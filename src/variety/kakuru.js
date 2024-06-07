@@ -638,8 +638,9 @@
 		],
 
 		checkRange: function() {
+			var max = this.pid === "sananko" ? 3 : 9;
 			this.checkAllCell(function(cell) {
-				return cell.anum !== -1 && (cell.anum < 1 || cell.anum > 9);
+				return cell.anum !== -1 && (cell.anum < 1 || cell.anum > max);
 			}, "nmRange");
 		},
 
@@ -689,7 +690,7 @@
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (cell.ques === 1 || cell.qnum <= 0) {
+				if (cell.ques === 1 || cell.qnum < 0) {
 					continue;
 				}
 
@@ -813,8 +814,9 @@
 	},
 	"AnsCheck@sananko": {
 		checklist: [
-			"checkOverThreeCells",
+			"checkRange",
 			"checkAdjacentSameNumber",
+			"checkOverThreeCells",
 			"checkLessThreeCells",
 			"checkSumOfNumberStrict"
 		],
@@ -829,7 +831,7 @@
 				return cell1.anum !== cell2.anum;
 			}, "nmAdjacent");
 		},
-		checkOverThreeCells: function() {
+		checkLessThreeCells: function() {
 			this.checkAllArea(
 				this.board.nblkmgr,
 				function(w, h, a, n) {
@@ -838,7 +840,7 @@
 				"bkSizeLt3"
 			);
 		},
-		checkLessThreeCells: function() {
+		checkOverThreeCells: function() {
 			this.checkAllArea(
 				this.board.nblkmgr,
 				function(w, h, a, n) {
