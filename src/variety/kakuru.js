@@ -179,9 +179,6 @@
 				for (var sn = 0; sn < 4; sn++) {
 					cell.setSnum(sn, this.inputData[sn]);
 				}
-				if (this.inputData[4]) {
-					cell.setQsub(1);
-				}
 				cell.draw();
 			} else if (this.inputData >= -1 && cell.qnum === -1) {
 				cell.clrSnum();
