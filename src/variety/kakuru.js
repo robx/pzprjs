@@ -136,32 +136,64 @@
 			edit: ["number", "clear"],
 			play: ["number", "objblank", "clear"]
 		},
-		dragDots: function() {
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
+				this.dragnumber_sananko();
+			}
+
+			if (this.mouseend && this.notInputted()) {
+				this.mouseCell = this.board.emptycell;
+				this.inputqnum();
+			}
+		},
+		dragnumber_sananko: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
 				return;
 			}
-			if (cell.qnum !== -1) {
-				return;
-			}
-			if (this.mouseCell.isnull) {
-				if (cell.anum !== -1) {
-					return;
+			if (this.inputData === null) {
+				if (this.btn === "right" && this.mousemove) {
+					this.inputData = cell.qsub ? -1 : -2;
+				} else if (this.btn === "left") {
+					this.inputData = cell.anum;
+					if (this.inputData === -1) {
+						for (var sn = 0; sn < 4; sn++) {
+							if (cell.snum[sn] !== -1) {
+								this.inputData = cell.snum;
+							}
+						}
+					}
+					if (this.inputData === -1 && cell.qsub) {
+						this.inputData = -2;
+					}
+					this.mouseCell = cell;
 				}
-				this.inputData = cell.qsub === 1 ? -2 : 10;
-				this.mouseCell = cell;
 				return;
 			}
 
-			if (this.inputData === -2) {
+			if (
+				this.inputData !== null &&
+				typeof this.inputData === "object" &&
+				cell.qnum === -1
+			) {
+				for (var sn = 0; sn < 4; sn++) {
+					cell.setSnum(sn, this.inputData[sn]);
+				}
+				if (this.inputData[4]) {
+					cell.setQsub(1);
+				}
+				cell.draw();
+			} else if (this.inputData >= -1 && cell.qnum === -1) {
+				cell.clrSnum();
+				cell.setAnum(this.inputData);
+				cell.setQsub(0);
+				cell.draw();
+			} else if (this.inputData === -2 && cell.qnum === -1) {
 				cell.setAnum(-1);
 				cell.setQsub(1);
-			} else if (this.inputData === 10) {
-				cell.setAnum(-1);
-				cell.setQsub(0);
+				cell.draw();
 			}
 			this.mouseCell = cell;
-			cell.draw();
 		},
 		inputDot: function() {
 			var cell = this.getcell();
@@ -178,8 +210,6 @@
 			this.mouseCell = cell;
 			cell.draw();
 		}
-		// TODO add copynum action to auto
-		// TODO add dot drag action to auto
 	},
 
 	//---------------------------------------------------------
