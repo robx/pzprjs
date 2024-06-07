@@ -13,9 +13,7 @@
 				"peke",
 				"clear",
 				"info-line",
-				"bgcolor",
-				"bgcolor1",
-				"bgcolor2"
+				"shade", "unshade"
 			]
 		},
 		autoedit_func: "qnum",
