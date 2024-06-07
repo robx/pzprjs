@@ -256,7 +256,7 @@
 					ca = bstr.charAt(i);
 
 				cell.ques = 0;
-				if (ca === "7") {
+				if (ca === "_") {
 					cell.ques = 7;
 				} else if (ca === ".") {
 					cell.qnum = -2;
@@ -285,7 +285,7 @@
 					qu = bd.cell[c].ques;
 
 				if (qu === 7) {
-					pstr = "7";
+					pstr = "_";
 				} else if (qn === -2) {
 					pstr = ".";
 				} else if (qn === -3) {
@@ -315,7 +315,7 @@
 		decodeData: function() {
 			this.decodeCell(function(cell, ca) {
 				cell.ques = 0;
-				if (ca === "*") {
+				if (ca === "_") {
 					cell.ques = 7;
 				} else if (ca === "-") {
 					cell.qnum = -2;
@@ -330,7 +330,7 @@
 		encodeData: function() {
 			this.encodeCell(function(cell) {
 				if (cell.ques === 7) {
-					return "* ";
+					return "_ ";
 				} else if (cell.qnum === -2) {
 					return "- ";
 				} else if (cell.qnum === -3) {

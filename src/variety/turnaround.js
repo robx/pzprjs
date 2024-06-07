@@ -40,6 +40,7 @@
 		// irowake: true,
 		paint: function() {
 			this.drawBGCells();
+			this.drawShadedCells();
 			this.drawGrid();
 			this.drawLines();
 			this.drawQuesNumbers();
