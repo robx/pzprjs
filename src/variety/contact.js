@@ -284,7 +284,7 @@
 					qn = bd.cell[c].qnum,
 					qu = bd.cell[c].ques;
 
-				if (qu === 7) {
+				if (qu === 7 || (this.pid === "contact" && qn === 7)) {
 					pstr = "_";
 				} else if (qn === -2) {
 					pstr = ".";
