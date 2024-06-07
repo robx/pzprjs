@@ -588,11 +588,12 @@
 				this.decodeBorderQues();
 			}
 			this.decodeCell(function(cell, ca) {
-				// TODO add qsub
 				if (ca.indexOf("[") >= 0) {
 					ca = this.setCellSnum(cell, ca);
 				}
-				if (ca !== "." && ca !== "0") {
+				if (ca === "+") {
+					cell.qsub = 1;
+				} else if (ca !== "." && ca !== "0") {
 					cell.anum = +ca;
 				}
 			});
@@ -613,10 +614,9 @@
 				this.encodeBorderQues();
 			}
 			this.encodeCell(function(cell) {
-				// TODO add qsub
 				var ca = ".";
 				if (cell.ques !== 1 && cell.qnum === -1) {
-					ca = cell.anum !== -1 ? cell.anum : "0";
+					ca = cell.anum !== -1 ? cell.anum : cell.qsub ? "+" : "0";
 				}
 				if (cell.enableSubNumberArray && cell.anum === -1) {
 					ca += this.getCellSnum(cell);
