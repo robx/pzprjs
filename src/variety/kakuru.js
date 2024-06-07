@@ -230,7 +230,7 @@
 			} else if (
 				this.pid === "sananko" &&
 				this.puzzle.playmode &&
-				(ca === "-" || ca === "q")
+				(ca === "-" || ca === "q" || ca === "4")
 			) {
 				this.key_inputqnum_main(cell, "s1");
 			} else if (("0" <= ca && ca <= "9") || ca === "BS" || ca === "-") {
