@@ -108,6 +108,7 @@
 	// 盤面管理系
 	Cell: {
 		getBullRouteLen: function() {
+			console.log(this.bx, this.by, this.qnum)
 			var currentCell = this;
 			var loop = false;
 			var routeList = new this.klass.CellList();
@@ -427,13 +428,13 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkOverTwoCells",
+			"checkLessTwoCells",
 			"checkSameNumberInRoom@contact",
 			"checkTouch@contact",
 			"checkRouteLoop@rampage",
 			"checkRouteLenGt@rampage",
-			"checkRouteLenLt@rampage",
-			"checkOverTwoCells",
-			"checkLessTwoCells"
+			"checkRouteLenLt@rampage"
 		],
 		checkOverTwoCells: function() {
 			this.checkAllArea(
@@ -493,37 +494,6 @@
 						dupe += 1;
 					}
 				}
-				// if (horizontal) {
-				// 	if (
-				// 		firstcell.adjacent.top.isValid() &&
-				// 		secondcell.adjacent.top.isValid() &&
-				// 		firstcell.adjacent.top.room === secondcell.adjacent.top.room
-				// 	) {
-				// 		dupe += 1;
-				// 	}
-				// 	if (
-				// 		firstcell.adjacent.bottom.isValid() &&
-				// 		secondcell.adjacent.bottom.isValid() &&
-				// 		firstcell.adjacent.bottom.room === secondcell.adjacent.bottom.room
-				// 	) {
-				// 		dupe += 1;
-				// 	}
-				// } else {
-				// 	if (
-				// 		firstcell.adjacent.left.isValid() &&
-				// 		secondcell.adjacent.left.isValid() &&
-				// 		firstcell.adjacent.left.room === secondcell.adjacent.left.room
-				// 	) {
-				// 		dupe += 1;
-				// 	}
-				// 	if (
-				// 		firstcell.adjacent.right.isValid() &&
-				// 		secondcell.adjacent.right.isValid() &&
-				// 		firstcell.adjacent.right.room === secondcell.adjacent.right.room
-				// 	) {
-				// 		dupe += 1;
-				// 	}
-				// }
 
 				var piececount = clist.length - dupe - 2;
 				if (piececount !== cell.qnum) {
@@ -545,7 +515,7 @@
 		},
 		checkRouteLoop: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
+				if (!cell.isNum() || cell.qnum === -2 || cell.qnum === -1 || cell.room.clist.length !== 2) {
 					return false;
 				}
 				if (cell.qnum !== -3) {
@@ -558,7 +528,7 @@
 		},
 		checkRouteLenGt: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
+				if (!cell.isNum() || cell.qnum === -2 || cell.qnum === -1 || cell.room.clist.length !== 2) {
 					return false;
 				}
 				if (cell.qnum === -3) {
@@ -571,7 +541,7 @@
 		},
 		checkRouteLenLt: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
+				if (!cell.isNum() || cell.qnum === -2 || cell.qnum === -1 || cell.room.clist.length !== 2) {
 					return false;
 				}
 				if (cell.qnum === -3) {
