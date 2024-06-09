@@ -1,7 +1,7 @@
 /* rampage.js */
 
 ui.debug.addDebugData("rampage", {
-	url: "6/6/a1e2c2l3c1e4a",
+	url: "6/6/g1o2r4o3g",
 	failcheck: [
 		[
 			"bkNumGe2",

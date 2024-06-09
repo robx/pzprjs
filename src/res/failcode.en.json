@@ -783,7 +783,7 @@
     "rmRectUnshade.scrin": "A rectangle is not part of the solution.",
     "routeLenGt": "The number of dominos on the bull's route is greater than the clue.",
     "routeLenLt": "The number of dominos on the bull's route is smaller than the clue.",
-    "routeLenLoop": "The route is not a loop.",
+    "routeLenLoop": "The route does not contain a loop.",
     "routeIgnoreCP.nurimaze": "There is a circle out of the shortest route from S to G.",
     "routePassDeadEnd.nurimaze": "There is a triangle on the shortest route from S to G.",
     "segBlackEq.balance": "Segments through a black circle are equal.",

@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino"], {
+})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino", "ggrass"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -17,7 +17,7 @@
 	"MouseEvent@nawabari": {
 		inputModes: { edit: ["number", "clear"], play: ["border", "subline"] }
 	},
-	"MouseEvent@fourcells,fivecells": {
+	"MouseEvent@fourcells,fivecells, ggrass": {
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
@@ -45,7 +45,7 @@
 		enablemake: true
 	},
 
-	"KeyEvent@fourcells,fivecells,subomino,heteromino": {
+	"KeyEvent@fourcells,fivecells,subomino,heteromino, ggrass": {
 		keyinput: function(ca) {
 			if (ca === "w") {
 				this.key_inputvalid(ca);

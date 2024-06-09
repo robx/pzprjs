@@ -14,7 +14,7 @@
 		autoedit_func: "qnum",
 		autoplay_func: "border",
 		inputModes: {
-			edit: ["empty", "number", "clear"],
+			edit: ["empty", "number", "border", "clear"],
 			play: ["border", "subline"]
 		},
 		mouseinput_clear: function() {
@@ -64,16 +64,21 @@
 				(cell.bx + cell2.bx) >> 1,
 				(cell.by + cell2.by) >> 1
 			);
+			var blist = new this.klass.BorderList();
 			for (var d in cell.adjborder) {
-				cell.adjborder[d].setQans(1);
-				cell.adjborder[d].draw();
+				blist.add(cell.adjborder[d]);
 			}
 			for (var d in cell2.adjacent) {
-				cell2.adjborder[d].setQans(1);
-				cell2.adjborder[d].draw();
+				blist.add(cell2.adjborder[d]);
 			}
 			b.setQans(0);
 			b.draw();
+			blist.each(function(border){
+				if(b !== border) {
+					border.setQans(1);
+					border.draw();
+				}
+			});
 		}
 	},
 
@@ -235,7 +240,7 @@
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	Encode: {
+	"Encode@contact": {
 		decodePzpr: function(type) {
 			this.decode();
 		},
@@ -260,8 +265,6 @@
 					cell.ques = 7;
 				} else if (ca === ".") {
 					cell.qnum = -2;
-				} else if (ca === "~") {
-					cell.qnum = -3;
 				} else if (this.include(ca, "0", "9")) {
 					cell.qnum = parseInt(ca, 10);
 				} else if (this.include(ca, "a", "z")) {
@@ -284,12 +287,10 @@
 					qn = bd.cell[c].qnum,
 					qu = bd.cell[c].ques;
 
-				if (qu === 7 || (this.pid === "contact" && qn === 7)) {
+				if (qu === 7 || qn === 7) {
 					pstr = "_";
 				} else if (qn === -2) {
 					pstr = ".";
-				} else if (qn === -3) {
-					pstr = "~";
 				} else if (qn !== -1) {
 					pstr = qn.toString(10);
 				} else {
@@ -305,6 +306,83 @@
 			}
 			if (count > 0) {
 				cm += (9 + count).toString(36);
+			}
+
+			this.outbstr += cm;
+		}
+	},
+	"Encode@rampage": {
+		decodePzpr: function(type) {
+			this.decode();
+		},
+		encodePzpr: function(type) {
+			this.encode();
+		},
+		decode: function() {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				this.board.cell[c].setQues(0);
+			}
+
+			var c = 0,
+				i = 0,
+				bstr = this.outbstr,
+				bd = this.board,
+				length = this.board.cell.length;
+			while (i < bstr.length && c < length) {
+				var cell = bd.cell[c],
+					ca = bstr.charAt(i);
+				var res = this.readNumber16(bstr, i);
+				if (res[0] !== -1) {
+					cell.qnum = res[0];
+					i += res[1];
+					c++;
+				} else if (ca >= "g" && ca <= "z") {
+					c += parseInt(ca, 36) - 15;
+					i++;
+				} else if (ca === "_") {
+					cell.ques = 7;
+					i++;
+					c++;
+				} else if (ca === "~") {
+					cell.qnum = -3;
+					i++;
+					c++;
+				} else {
+					i++;
+				}
+			}
+			this.outbstr = bstr.substr(i);
+		},
+		encode: function() {
+			var cm = "",
+				count = 0,
+				bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var pstr = "",
+					qn = bd.cell[c].qnum,
+					qu = bd.cell[c].ques;
+
+				if (qu === 7 || (this.pid === "contact" && qn === 7)) {
+					pstr = "_";
+				} else if (qn === -2) {
+					pstr = ".";
+				} else if (qn === -3) {
+					pstr = "~";
+				} else if (qn !== -1) {
+					pstr = this.writeNumber16(qn);
+				} else {
+					count++;
+				}
+
+				if (count === 0) {
+					cm += pstr;
+				} else if (pstr || count === 20) {
+					cm += (15 + count).toString(36) + pstr;
+					count = 0;
+				}
+			}
+			if (count > 0) {
+				cm += (15 + count).toString(36);
 			}
 
 			this.outbstr += cm;
@@ -349,13 +427,13 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"checkOverTwoCells",
-			"checkLessTwoCells",
 			"checkSameNumberInRoom@contact",
 			"checkTouch@contact",
 			"checkRouteLoop@rampage",
 			"checkRouteLenGt@rampage",
-			"checkRouteLenLt@rampage"
+			"checkRouteLenLt@rampage",
+			"checkOverTwoCells",
+			"checkLessTwoCells"
 		],
 		checkOverTwoCells: function() {
 			this.checkAllArea(
@@ -405,38 +483,47 @@
 						clist.add(secondcell.adjacent[dir]);
 					}
 				}
-
-				if (horizontal) {
+				var dirs = horizontal? ['top', 'bottom']:['left', 'right'];
+				for(var d in dirs) {
 					if (
-						firstcell.adjacent.top.isValid() &&
-						secondcell.adjacent.top.isValid() &&
-						firstcell.adjacent.top.room === secondcell.adjacent.top.room
-					) {
-						dupe += 1;
-					}
-					if (
-						firstcell.adjacent.bottom.isValid() &&
-						secondcell.adjacent.bottom.isValid() &&
-						firstcell.adjacent.bottom.room === secondcell.adjacent.bottom.room
-					) {
-						dupe += 1;
-					}
-				} else {
-					if (
-						firstcell.adjacent.left.isValid() &&
-						secondcell.adjacent.left.isValid() &&
-						firstcell.adjacent.left.room === secondcell.adjacent.left.room
-					) {
-						dupe += 1;
-					}
-					if (
-						firstcell.adjacent.right.isValid() &&
-						secondcell.adjacent.right.isValid() &&
-						firstcell.adjacent.right.room === secondcell.adjacent.right.room
+						firstcell.adjacent[dirs[d]].isValid() &&
+						secondcell.adjacent[dirs[d]].isValid() &&
+						firstcell.adjacent[dirs[d]].room === secondcell.adjacent[dirs[d]].room
 					) {
 						dupe += 1;
 					}
 				}
+				// if (horizontal) {
+				// 	if (
+				// 		firstcell.adjacent.top.isValid() &&
+				// 		secondcell.adjacent.top.isValid() &&
+				// 		firstcell.adjacent.top.room === secondcell.adjacent.top.room
+				// 	) {
+				// 		dupe += 1;
+				// 	}
+				// 	if (
+				// 		firstcell.adjacent.bottom.isValid() &&
+				// 		secondcell.adjacent.bottom.isValid() &&
+				// 		firstcell.adjacent.bottom.room === secondcell.adjacent.bottom.room
+				// 	) {
+				// 		dupe += 1;
+				// 	}
+				// } else {
+				// 	if (
+				// 		firstcell.adjacent.left.isValid() &&
+				// 		secondcell.adjacent.left.isValid() &&
+				// 		firstcell.adjacent.left.room === secondcell.adjacent.left.room
+				// 	) {
+				// 		dupe += 1;
+				// 	}
+				// 	if (
+				// 		firstcell.adjacent.right.isValid() &&
+				// 		secondcell.adjacent.right.isValid() &&
+				// 		firstcell.adjacent.right.room === secondcell.adjacent.right.room
+				// 	) {
+				// 		dupe += 1;
+				// 	}
+				// }
 
 				var piececount = clist.length - dupe - 2;
 				if (piececount !== cell.qnum) {
