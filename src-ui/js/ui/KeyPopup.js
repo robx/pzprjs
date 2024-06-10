@@ -199,6 +199,7 @@ ui.keypopup = {
 		lixloop: [130, 0],
 		teri: [10, 0],
 		portal: [10, 0],
+		kuromenbun: [10, 0],
 		bosnianroad: [8, 0]
 	},
 
