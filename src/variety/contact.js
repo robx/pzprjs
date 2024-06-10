@@ -15,10 +15,7 @@
 		autoplay_func: "border",
 		inputModes: {
 			edit: ["empty", "number", "clear"], 
-			play: ["border",
-				"bgcolor1",
-				"bgcolor2",
-				"subline"]
+			play: ["border", "subline"]
 		},
 		mouseinput_clear: function() {
 			this.inputFixedNumber(-1);
@@ -35,6 +32,8 @@
 							this.drag_domino();
 						}
 					}
+				} else if (this.btn === "right") {
+					this.inputQsubline();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -121,6 +120,9 @@
 				}
 			} else {
 				this.key_inputqnum(ca);
+				var cell = this.cursor.getc();
+				cell.setQsub(1+cell.getMod());
+				cell.draw();
 			}
 		}
 	},
@@ -159,6 +161,9 @@
 		},
 		isValidNum: function() {
 			return !this.isnull && this.qnum >= 0;
+		},
+		getMod: function() {
+			return ((this.bx >> 1) % 2) + 2*((this.by >> 1)% 2)
 		}
 	},
 	"Cell@contact": {
@@ -203,6 +208,16 @@
 			}
 		}
 	},
+	"Board@rampage": {
+		irowakeRemake: function() {
+			var l = this.board.cell.length
+			for(var i = 0; i < l; i ++) {
+				var cell = this.board.cell[i]
+				cell.setQsub(1 + cell.getMod());
+				cell.draw();
+			}
+		}
+	},
 
 	AreaRoomGraph: {
 		enabled: true
@@ -212,7 +227,6 @@
 	// 画像表示系
 	Graphic: {
 		gridcolor_type: "DLIGHT",
-		bgcellcolor_func: "qsub2",
 		numbercolor_func: "qnum",
 
 		paint: function() {
@@ -221,10 +235,9 @@
 			this.drawValidDashedGrid();
 			this.drawQansBorders();
 			this.drawQuesBorders();
+			this.drawBorderQsubs();
 
 			this.drawQuesNumbers();
-			// this.drawBorderQsubs();
-
 			this.drawTarget();
 		},
 
@@ -259,6 +272,16 @@
 		},
 		getQuesNumberText: function(cell) {
 			return cell.getNum() === -3 ? "∞" : this.getNumberText(cell, cell.qnum);
+		}
+	},
+	"Graphic@rampage": {
+		irowakeblk: true,
+		getBGCellColor: function(cell) {
+			if(!this.puzzle.execConfig("irowakeblk") || cell.qsub === 7) {
+				return "white"
+			}
+			var colors = [this.qsubcolor1, this.qsubcolor2, this.qsubcolor3, this.icecolor]
+			return colors[cell.qsub-1];
 		}
 	},
 
