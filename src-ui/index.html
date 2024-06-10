@@ -31,7 +31,7 @@ if ('serviceWorker' in navigator) {
   <ul>
     <li>Fixed a bug where an empty cell had a number.</li>
     <li>Fixed encoding of Rampage (if you happened to create a puzzle already, you will need to open an old version, go to "File" > "Save file as", copy the text in the second box. Then, open the update version and go to "File" > "Load from URL" to paste the text, then "Load", and export again.)</li>
-    <li>A single undo now reverts a whole domino.</li>
+    <li>A single undo now reverts the whole domino.</li>
   </ul>
   <p><b> <time datetime="2024-06-08">8 June 2024</time>.</b> Several new puzzles, detailed below.</p>
   <ul>
@@ -40,7 +40,7 @@ if ('serviceWorker' in navigator) {
     <li><a href="#rampage">Rampage</a></li>
   </ul>
   <div class="notecard warning">
-    <details><summary>Terms, Privacy</summary>
+    <details><summary>Terms</summary>
     <p>This page (stylized as <a href="https://chaoticiak.github.io/logic.html" target = "_blank">Chaotic's page</a>) will only be up until the end of the showcase, but puzz.link implementations and puzzles below will still be available. I'll also post my fork, though I can't promise that it will get merged to the main pzpr branch.</p>
     </details>
   </div>
@@ -48,41 +48,44 @@ if ('serviceWorker' in navigator) {
 
 <section><h2 id="turnaround">Turnaround</h2>
   <div class="notecard rules">
-    <p>Draw a loop traveling orthogonally on cells. The loop must visit all numbers. Each number indicates how many turns the loop makes among the three cells: the number itself, and the cells immediately before and after it in the loop. <a href="/p.html?turnaround" target="_blank">(puzz.link implementation)</a></p>
+    <p>Draw a loop traveling orthogonally on cells. The loop must visit all numbers. Each number indicates how many turns the loop makes among the three cells: the number itself, and the cells immediately before and after it in the loop. </p>
   </div>
   <ul>
+    <li><a href="/p.html?turnaround" target="_blank">(puzz.link implementation)</a></li>
     <li><a href="/p.html?turnaround/6/6/m10i1h1g12g2h2i32m" target="_blank">Puzzle 1: Spiral</a></li>
-    <li><a href="/p.html?turnaround/9/9/1o1j1k1g1i1g1g1p1g1m1k1g1k1i1k1j" target="_blank">Puzzle 2: Only One</a></li>
-    <li><a href="/p.html?turnaround/12/12//11k11h1i00l2i00g11j1k10g11g2g33k11i00g01p32g11i33k22g3g33g22k22i32g22i3l22i2h33k22" target="_blank">Puzzle 3: Tilted Square</a></li>
+    <li><a href="/p.html?turnaround/9/9/1o1j1k1g1i1g1g1p1g1m1k1g1k1i1k1j" target="_blank">Puzzle 2: Only ones</a></li>
+    <li><a href="/p.html?turnaround/12/12//11k11h1i00l2i00g11j1k10g11g2g33k11i00g01p32g11i33k22g3g33g22k22i32g22i3l22i2h33k22" target="_blank">Puzzle 3: Tilted Squares</a></li>
   </ul>
 </section>
 
 <section><h2 id="contact">Contact</h2>
   <div class="notecard rules">
-      <p>Divide the grid into dominoes. Each number indicates how many dominoes are orthogonally adjacent to the domino containing the number. Dominoes may contain any number of given numbers. <a href="/p.html?contact" target="_blank">(puzz.link implementation)</a></p>
+      <p>Divide the grid into dominoes. Each number indicates how many dominoes are orthogonally adjacent to the domino containing the number. Dominoes may contain any number of given numbers. </p>
   </div>
   <div class="notecard accented">
     You can create a domino by clicking and dragging two adjacent cells! Borders around the cells will be automatically filled.
   </div>
   <ul>
-    <li><a href="p.html?contact/6/6/g344p556g" target="_blank">Puzzle 1: Equal</a></li>
-    <!-- <li><a href="/p.html?contact/9/9/a2_w_c4_a6e___e3a_d_t5b_1a" target="_blank">Puzzle 2: Plus</a></li> -->
-    <!-- <li><a href="/p.html?contact/6/6/h6d3r5c" target="_blank">Puzzle 3: ...</a></li> -->
+    <li><a href="/p.html?contact" target="_blank">puzz.link implementation</a></li>
+    <li><a href="p.html?contact/6/6/g344p556g" target="_blank">Puzzle 1: Equal Sign</a></li>
+    <li><a href="/p.html?contact/9/9/a2_h5n_d_a6e___e3a_d_r4d_1a" target="_blank">Puzzle 2: Plus</a></li>
+    <li><a href="/p.html?contact/12/12/n6b54b4c4h6r54f5b4b5b6b6b6b6b5f45r6h5c6b56b6n" target="_blank">Puzzle 3: Lenses</a></li>
   </ul>
 </section>
 
 <section><h2 id="rampage">Rampage</h2>
   <div class="notecard rules">
-    <p>Divide the grid into dominoes. Each number represents a rampaging bull, which behaves as follows. The bull first moves to the other cell of the domino it's in, and then moves one extra space (thus breaking through the opposite short edge into a new domino). It then repeats this procedure with the new domino it's in, and so on. The number indicates how many dominoes the bull passes through, including the initial one. As a special case, if the bull never leaves the grid, the number is infinity (∞). <a href="/p.html?rampage" target="_blank">(puzz.link implementation)</a></p>
+    <p>Divide the grid into dominoes. Each number represents a rampaging bull, which behaves as follows. The bull first moves to the other cell of the domino it's in, and then moves one extra space (thus breaking through the opposite short edge into a new domino). It then repeats this procedure with the new domino it's in, and so on. The number indicates how many dominoes the bull passes through, including the initial one. As a special case, if the bull never leaves the grid, the number is infinity (∞). </p>
   </div>
   
   <div class="notecard accented">
     You can create a domino by clicking and dragging! Borders around the two cells will be automatically filled.
   </div>
   <ul>
+    <li><a href="/p.html?rampage" target="_blank">puzz.link implementation</a></li>
     <li><a href="/p.html?rampage/6/6/g1o2r4o3g" target="_blank">Puzzle 1: Tilted Square</a></li>
-    <!-- <li><a href="/p.html?rampage/10/9/l9i7d7m~f~m.d7i5l" target="_blank">Puzzle 2: To Infinity and Beyond</a></li> -->
-    <!-- <li><a href="/p.html?rampage/6/6/a1i2l4i3a" target="_blank">Puzzle 3: ...</a></li> -->
+    <li><a href="/p.html?rampage/10/9/xai_4w~l~n4o_zh" target="_blank">Puzzle 2: Ox Loops</a></li>
+    <li><a href="/p.html?rampage/12/12/t2m6u4i3zk6j9zzt8i9pc" target="_blank">Puzzle 3: ...</a></li>
   </ul>
 </section>
       

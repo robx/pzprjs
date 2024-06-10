@@ -14,28 +14,35 @@
 		autoedit_func: "qnum",
 		autoplay_func: "border",
 		inputModes: {
-			edit: ["empty", "number", "border", "clear"],
-			play: ["border", "subline"]
+			edit: ["empty", "number", "clear"], 
+			play: ["border",
+				"bgcolor1",
+				"bgcolor2",
+				"subline"]
 		},
 		mouseinput_clear: function() {
 			this.inputFixedNumber(-1);
 		},
 		mouseinput_auto: function() {
-			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
-				if (this.isBorderMode()) {
-					this.inputborder();
-				} else {
-					this.drag_domino();
+			if (this.puzzle.playmode) {
+				if (this.checkInputBGcolor()) {
+					this.inputBGcolor();
+				} else if (this.btn === "left") {
+					if (this.mousestart || this.mousemove) {
+						if (this.isBorderMode()) {
+							this.inputborder();
+						} else {
+							this.drag_domino();
+						}
+					}
 				}
-			}
-
-			if (this.puzzle.editmode && this.mousemove) {
-				this.inputborder();
-			}
-
-			if (this.mouseend && this.notInputted()) {
-				this.mouseCell = this.board.emptycell;
-				this.inputqnum();
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					// this.inputborder(); // disable for now
+				} else if (this.mouseend && this.notInputted()) {
+					this.mouseCell = this.board.emptycell;
+					this.inputqnum();
+				}
 			}
 		},
 
@@ -79,6 +86,20 @@
 					border.draw();
 				}
 			});
+		},
+
+		checkInputBGcolor: function() {
+			var inputbg = this.puzzle.execConfig("bgcolor");
+			if (inputbg) {
+				if (this.mousestart) {
+					inputbg = this.getpos(0.25).oncell();
+				} else if (this.mousemove) {
+					inputbg = this.inputData >= 10;
+				} else {
+					inputbg = false;
+				}
+			}
+			return inputbg;
 		}
 	},
 
@@ -108,7 +129,6 @@
 	// 盤面管理系
 	Cell: {
 		getBullRouteLen: function() {
-			console.log(this.bx, this.by, this.qnum)
 			var currentCell = this;
 			var loop = false;
 			var routeList = new this.klass.CellList();
@@ -136,6 +156,9 @@
 				});
 			}
 			return loop ? -1 : routeList.length;
+		},
+		isValidNum: function() {
+			return !this.isnull && this.qnum >= 0;
 		}
 	},
 	"Cell@contact": {
@@ -189,7 +212,7 @@
 	// 画像表示系
 	Graphic: {
 		gridcolor_type: "DLIGHT",
-
+		bgcellcolor_func: "qsub2",
 		numbercolor_func: "qnum",
 
 		paint: function() {
@@ -200,7 +223,7 @@
 			this.drawQuesBorders();
 
 			this.drawQuesNumbers();
-			this.drawBorderQsubs();
+			// this.drawBorderQsubs();
 
 			this.drawTarget();
 		},
@@ -465,7 +488,7 @@
 		},
 		checkTouch: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum === -2 || cell.room.clist.length !== 2) {
+				if (!cell.isValidNum() || cell.room.clist.length !== 2) {
 					return false;
 				}
 
@@ -515,10 +538,7 @@
 		},
 		checkRouteLoop: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum === -2 || cell.qnum === -1 || cell.room.clist.length !== 2) {
-					return false;
-				}
-				if (cell.qnum !== -3) {
+				if (cell.isnull || cell.qnum !== -3 || cell.room.clist.length !== 2) {
 					return false;
 				}
 
@@ -528,10 +548,7 @@
 		},
 		checkRouteLenGt: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum === -2 || cell.qnum === -1 || cell.room.clist.length !== 2) {
-					return false;
-				}
-				if (cell.qnum === -3) {
+				if (!cell.isValidNum() || cell.room.clist.length !== 2) {
 					return false;
 				}
 
@@ -541,10 +558,7 @@
 		},
 		checkRouteLenLt: function() {
 			this.checkAllCell(function(cell) {
-				if (!cell.isNum() || cell.qnum === -2 || cell.qnum === -1 || cell.room.clist.length !== 2) {
-					return false;
-				}
-				if (cell.qnum === -3) {
+				if (!cell.isValidNum() || cell.room.clist.length !== 2) {
 					return false;
 				}
 
