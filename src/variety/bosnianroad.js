@@ -17,10 +17,17 @@
 
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if (this.btn === "right" && this.mousestart && this.inputpeke_ifborder()) {
+				if (
+					this.btn === "right" &&
+					this.mousestart &&
+					this.inputpeke_ifborder()
+				) {
 					return;
 				}
-				if ((this.mousestart || this.mousemove) && (!this.firstCell.isnull || this.notInputted())) {
+				if (
+					(this.mousestart || this.mousemove) &&
+					(!this.firstCell.isnull || this.notInputted())
+				) {
 					this.inputcell();
 				}
 				if (this.mouseend && this.notInputted()) {
@@ -38,7 +45,7 @@
 				}
 			}
 		},
-		
+
 		inputqcmp: function() {
 			var cell = this.getcell();
 			if (cell.isnull || !cell.isValidNum()) {
@@ -77,11 +84,13 @@
 		numberRemainsUnshaded: true,
 
 		getClist: function() {
-			return this.board.cellinside(this.bx - 2, this.by - 2, this.bx + 2, this.by + 2).filter(function(cc) {
-				return cc.qnum === -1;
-			});
+			return this.board
+				.cellinside(this.bx - 2, this.by - 2, this.bx + 2, this.by + 2)
+				.filter(function(cc) {
+					return cc.qnum === -1;
+				});
 		},
-		
+
 		isCmp: function() {
 			if (!this.isValidNum()) {
 				return false;
@@ -94,7 +103,7 @@
 			}
 			return this.checkComplete();
 		},
-		
+
 		checkComplete: function() {
 			if (!this.isValidNum()) {
 				return true;
@@ -115,7 +124,7 @@
 			return cnt === this.qnum;
 		}
 	},
-	
+
 	Border: {
 		isBorder: function() {
 			return (this.sidecell[0].qnum === -1) !== (this.sidecell[1].qnum === -1);
@@ -146,7 +155,7 @@
 			}
 			this.common.setRange.call(this, x1, y1, x2, y2);
 		},
-		
+
 		cluebgcolor: "rgb(224,224,224)",
 		hideHatena: true,
 		irowakeblk: true,
@@ -157,7 +166,7 @@
 			}
 			return this.getBGCellColor_error1(cell);
 		},
-		
+
 		getQuesNumberColor: function(cell) {
 			var qnum_color = this.getQuesNumberColor_qnum(cell);
 			if ((cell.error || cell.qinfo) === 1) {
@@ -179,7 +188,7 @@
 			this.drawBorders();
 
 			this.drawQuesNumbers();
-			
+
 			this.drawPekes();
 
 			this.drawChassis();
@@ -254,7 +263,10 @@
 					cell.isShade() &&
 					(cell.countDir4Cell(function(adj) {
 						return adj.isShade();
-					}) - 2) * sign > 0
+					}) -
+						2) *
+						sign >
+						0
 				);
 			}, error);
 		},

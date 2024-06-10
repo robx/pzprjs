@@ -537,7 +537,12 @@ ui.keypopup = {
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "?"], ["w", "○"]],
 				4
 			);
-		} else if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines" && pid !== "bosnianroad") {
+		} else if (
+			pid !== "tapa" &&
+			pid !== "tapaloop" &&
+			pid !== "mines" &&
+			pid !== "bosnianroad"
+		) {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4
