@@ -1152,6 +1152,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
+			this.drawGrid();
 
 			if (this.pid === "pentatouch") {
 				this.drawCrossMarks();
