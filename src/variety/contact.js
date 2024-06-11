@@ -14,26 +14,22 @@
 		autoedit_func: "qnum",
 		autoplay_func: "border",
 		inputModes: {
-			edit: ["empty", "number", "clear"], 
+			edit: ["number", "empty", "clear"], 
 			play: ["border", "subline"]
 		},
-		mouseinput_clear: function() {
-			this.inputFixedNumber(-1);
-		},
+		// mouseinput_clear: function() {
+		// 	this.inputFixedNumber(-1);
+		// },
 		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.checkInputBGcolor()) {
-					this.inputBGcolor();
-				} else if (this.btn === "left") {
-					if (this.mousestart || this.mousemove) {
-						if (this.isBorderMode()) {
-							this.inputborder();
-						} else {
-							this.drag_domino();
-						}
+			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
+				if (this.btn === "left") {
+					if (this.isBorderMode()) {
+						this.inputborder();
+					} else {
+						this.drag_domino();
 					}
 				} else if (this.btn === "right") {
-					this.inputQsubline();
+					this.inputQsubLine();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -85,20 +81,6 @@
 					border.draw();
 				}
 			});
-		},
-
-		checkInputBGcolor: function() {
-			var inputbg = this.puzzle.execConfig("bgcolor");
-			if (inputbg) {
-				if (this.mousestart) {
-					inputbg = this.getpos(0.25).oncell();
-				} else if (this.mousemove) {
-					inputbg = this.inputData >= 10;
-				} else {
-					inputbg = false;
-				}
-			}
-			return inputbg;
 		}
 	},
 
@@ -120,9 +102,6 @@
 				}
 			} else {
 				this.key_inputqnum(ca);
-				var cell = this.cursor.getc();
-				cell.setQsub(1+cell.getMod());
-				cell.draw();
 			}
 		}
 	},
@@ -162,7 +141,7 @@
 		isValidNum: function() {
 			return !this.isnull && this.qnum >= 0;
 		},
-		getMod: function() {
+		getScottColor: function() {
 			return ((this.bx >> 1) % 2) + 2*((this.by >> 1)% 2)
 		}
 	},
@@ -209,13 +188,9 @@
 		}
 	},
 	"Board@rampage": {
-		irowakeRemake: function() {
-			var l = this.board.cell.length
-			for(var i = 0; i < l; i ++) {
-				var cell = this.board.cell[i]
-				cell.setQsub(1 + cell.getMod());
-				cell.draw();
-			}
+		irowake: function() {
+			// todo: assign new colors?
+			this.puzzle.redraw();
 		}
 	},
 
@@ -276,12 +251,12 @@
 	},
 	"Graphic@rampage": {
 		irowakeblk: true,
+		ScottColors: ["white", "rgb(160,255,160)", "rgb(255,255,127)", "rgb(192,192,192)"],
 		getBGCellColor: function(cell) {
 			if(!this.puzzle.execConfig("irowakeblk") || cell.qsub === 7) {
 				return "white"
 			}
-			var colors = [this.qsubcolor1, this.qsubcolor2, this.qsubcolor3, this.icecolor]
-			return colors[cell.qsub-1];
+			return this.ScottColors[cell.getScottColor()];
 		}
 	},
 

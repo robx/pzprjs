@@ -381,9 +381,6 @@
 				case "bgcolor":
 					exec = pid === "slither" || pid === "myopia";
 					break;
-				case "checkerboard":
-					exec = pid === "rampage";
-					break;
 				case "irowake":
 					exec = puzzle.painter.irowake;
 					break;
