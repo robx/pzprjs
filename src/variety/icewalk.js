@@ -50,6 +50,58 @@
 			}
 		}
 	},
+	"MouseEvent@firewalk": {
+		inputLine: function() {
+			var cell = this.getcell();
+			this.initFirstCell(cell);
+
+			var pos = this.getpos(0);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+			var border = this.prevPos.getnb(pos);
+
+			if (!border.isnull) {
+				if (this.inputData === null) {
+					this.inputData = border.isLine() ? 0 : 1;
+				}
+				if (this.inputData === 1) {
+					border.setLine();
+					if (
+						this.prevborder &&
+						Math.abs(this.prevborder.bx - border.bx) === 1 &&
+						Math.abs(this.prevborder.by - border.by) === 1
+					) {
+						var horz = border.isVert() ? this.prevborder : border;
+						var vert = border.isVert() ? border : this.prevborder;
+
+						var cell = this.board.cellinside(
+							Math.min(horz.bx, vert.bx),
+							Math.min(horz.by, vert.by),
+							Math.max(horz.bx, vert.bx),
+							Math.max(horz.by, vert.by)
+						)[0];
+						if (cell && !cell.isnull && cell.ice() && cell.lcnt >= 3) {
+							var newQans =
+								(cell.adjborder.top === horz) ===
+								(cell.adjborder.left === vert);
+							cell.setQans(newQans ? 1 : 2);
+						}
+					}
+
+					this.prevborder = border;
+				} else if (this.inputData === 0) {
+					border.removeLine();
+				}
+				border.draw();
+			}
+			this.prevPos = pos;
+		},
+		mousereset: function() {
+			this.common.mousereset.call(this);
+			this.prevborder = null;
+		}
+	},
 	KeyEvent: {
 		enablemake: true,
 
