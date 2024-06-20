@@ -194,10 +194,14 @@
 					return;
 				}
 				
-				var circles = new this.klass.CellList([horz.circles[0], vert.circles[0]]);
+				var circles = new this.klass.CellList([
+					horz.circles[0],
+					vert.circles[0]
+				]);
 
 				// Erroneous solutions can have a lot of these paths.
-				// Highlighting at most one per circle reduces both visual clutter and time complexity.
+				// Highlighting at most one per circle reduces
+				// both visual clutter and time complexity.
 				var someAlreadyFlagged = circles.some(function(circle) {
 					return circle.error === 1;
 				});
