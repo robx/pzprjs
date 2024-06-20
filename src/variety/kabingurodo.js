@@ -60,7 +60,7 @@
 			this.vertStripes = this.addInfoList(this.klass.VertStripeGraph);
 		}
 	},
-	
+
 	AreaUnshadeGraph: {
 		enabled: true
 	},
@@ -182,18 +182,18 @@
 				if (cell.isShade() || cell.qnum === 1) {
 					continue;
 				}
-				
+
 				var horz = cell.horzStripe;
 				var vert = cell.vertStripe;
 				if (horz.circles.length !== 1 || vert.circles.length !== 1) {
 					continue;
 				}
-				
+
 				this.failcode.add("kabinOneTurn");
 				if (this.checkOnly) {
 					return;
 				}
-				
+
 				var circles = new this.klass.CellList([
 					horz.circles[0],
 					vert.circles[0]
