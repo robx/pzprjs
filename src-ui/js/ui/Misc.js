@@ -142,6 +142,7 @@ function toBGimage(pid) {
 		"invlitso",
 		"ladders",
 		"lixloop",
+		"kabingurodo",
 		"kaidan",
 		"kaisu",
 		"kissing",

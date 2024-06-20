@@ -207,6 +207,7 @@
 			interbd: [0, 0, "International Borders", "International Borders"],
 			invlitso: [0, 0, "Inverse LITSO", "Inverse LITSO", "lits"],
 			juosan: [0, 0, "縦横さん", "Juosan"],
+			kabingurodo: [0, 0, "カービングロード", "Curving Road"],
 			kaero: [1, 0, "お家に帰ろう", "Return Home"],
 			kaidan: [0, 0, "かいだんしばり", "Stairwell"],
 			kaisu: [0, 0, "Kaisu", "Kaisu", "haisu"],
