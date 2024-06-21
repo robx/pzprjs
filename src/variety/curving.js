@@ -46,13 +46,7 @@
 		maxnum: 1,
 		disInputHatena: true,
 		numberAsObject: true,
-		numberRemainsUnshaded: true,
-		posthook: {
-			qnum: function() {
-				this.board.horzStripes.setExtraData(this.horzStripe);
-				this.board.vertStripes.setExtraData(this.vertStripe);
-			}
-		}
+		numberRemainsUnshaded: true
 	},
 	Board: {
 		addExtraInfo: function() {
@@ -65,6 +59,7 @@
 		enabled: true
 	},
 	"StripeGraph:AreaUnshadeGraph": {
+		relation: { "cell.qnum": "node", "cell.qans": "node" },
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
 			component.circles = component.clist.filter(function(cell) {
