@@ -36,15 +36,18 @@ ui.debug.addDebugData("curving", {
 		{ input: ["newboard,4,4", "editmode"] },
 		{
 			input: ["mouse,left, 1,1, 7,1, 7,7, 1,7"],
-			result: "pzprv3/curving/4/4/1 . 1 . /. . . 1 /. . . . /. 1 . 1 /. . . . /. . . . /. . . . /. . . . /"
+			result:
+				"pzprv3/curving/4/4/1 . 1 . /. . . 1 /. . . . /. 1 . 1 /. . . . /. . . . /. . . . /. . . . /"
 		},
 		{
 			input: ["mouse,left, 1,3, 7,3, 7,5, 1,5"],
-			result: "pzprv3/curving/4/4/1 . 1 . /1 . 1 1 /. 1 . 1 /. 1 . 1 /. . . . /. . . . /. . . . /. . . . /"
+			result:
+				"pzprv3/curving/4/4/1 . 1 . /1 . 1 1 /. 1 . 1 /. 1 . 1 /. . . . /. . . . /. . . . /. . . . /"
 		},
 		{
 			input: ["mouse,left, 1,1, 7,1, 7,7, 1,7, 1,1"],
-			result: "pzprv3/curving/4/4/. . . . /. . 1 . /. 1 . . /. . . . /. . . . /. . . . /. . . . /. . . . /"
+			result:
+				"pzprv3/curving/4/4/. . . . /. . 1 . /. 1 . . /. . . . /. . . . /. . . . /. . . . /. . . . /"
 		}
 	]
 });
