@@ -132,7 +132,7 @@
 			this.decodeBinary("qnum", 1);
 		},
 		encodePzpr: function(type) {
-			this.encodeBinary("qnum", 1, true);
+			this.encodeBinary("qnum", 1);
 		}
 	},
 	FileIO: {
