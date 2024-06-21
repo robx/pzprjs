@@ -1,5 +1,5 @@
 ﻿//
-// kabingurodo.js
+// curving.js
 //
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kabingurodo"], {
+})(["curving"], {
 	MouseEvent: {
 		RBShadeCell: true,
 		use: true,
@@ -164,7 +164,7 @@
 					continue;
 				}
 
-				this.failcode.add("kabinNoTurns");
+				this.failcode.add("curvingNoTurns");
 				if (this.checkOnly) {
 					return;
 				}
@@ -189,7 +189,7 @@
 					continue;
 				}
 
-				this.failcode.add("kabinOneTurn");
+				this.failcode.add("curvingOneTurn");
 				if (this.checkOnly) {
 					return;
 				}
