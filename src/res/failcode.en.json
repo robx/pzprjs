@@ -613,6 +613,7 @@
     "nm2x2.nanro": "There is a 2x2 block of numbers.",
     "nmAdjacent.hanare": "Some numbers are adjacent.",
     "nmAdjacent.magnets": "Equal poles are adjacent.",
+    "nmAdjacent.sananko": "Different numbers are adjacent.",
     "nmAdjacent": "Equal numbers are adjacent.",
     "nmAdjacentGt2.tontonbeya": "A cluster of symbols is adjacent to 2 or more clusters with the same symbol.",
     "nmAdjacentLt2.tontonbeya": "A cluster of symbols is not adjacent to another cluster with the same symbol.",
