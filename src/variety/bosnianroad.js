@@ -167,12 +167,20 @@
 		enabled: true,
 		allowAdd: true,
 		defaultPreset: function() {
-			var ret = [];
-			for (var r = 1; r <= 9; r++) {
-				ret.push(r + "");
+			return this.presets[0].constant;
+		},
+		presets: [
+			{
+				name: "preset.nine",
+				shortkey: "i",
+				constant: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+			},
+			{
+				name: "preset.zero",
+				shortkey: "z",
+				constant: []
 			}
-			return ret;
-		}
+		]
 	},
 	"BankPiece@snakeegg": {
 		str: null,
@@ -184,7 +192,15 @@
 		},
 		serialize: function() {
 			return this.str;
-		}
+		},
+
+		/* Gaps between numbers are 1/10 */
+		w: 10,
+		h: 10
+	},
+	BankAddButton: {
+		w: 10,
+		h: 10
 	},
 
 	AreaShadeGraph: {
@@ -277,6 +293,7 @@
 	"Graphic@snakeegg": {
 		irowakeblk: true,
 		bgcellcolor_func: "qsub1",
+		bankratio: 0.1,
 
 		paint: function() {
 			this.drawBGCells();
@@ -291,13 +308,39 @@
 
 			this.drawChassis();
 
+			this.drawBank();
 			this.drawTarget();
+		},
+		drawBankPiece: function(g, piece, idx) {
+			if (!piece) {
+				g.vid = "pb_c" + idx;
+				g.vhide();
+				g.vid = "pb_n" + idx;
+				g.vhide();
+				return;
+			}
+
+			var x = this.cw * 0.1 * (piece.x + 5);
+			var y = this.ch * 0.1 * piece.y;
+			y += (this.board.rows + 0.75) * this.ch;
+
+			g.vid = "pb_c" + idx;
+			g.strokeStyle = this.getBankPieceColor(piece);
+			g.fillStyle = null;
+			g.shapeCircle(x, y, this.cw * 0.4);
+
+			g.vid = "pb_n" + idx;
+			g.strokeStyle = null;
+			g.fillStyle = this.getBankPieceColor(piece);
+			this.disptext(piece.str, x, y, { ratio: 0.65 });
 		}
 	},
 
 	Encode: {
 		decodePzpr: function(type) {
-			this.decodeNumber10();
+			if (this.outbstr[0] !== "/") {
+				this.decodeNumber10();
+			}
 			if (this.pid === "snakeegg") {
 				this.decodePieceBank();
 			}
