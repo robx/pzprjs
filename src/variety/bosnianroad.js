@@ -79,12 +79,68 @@
 			edit: ["number", "info-blk"],
 			play: ["shade", "unshade", "peke", "info-blk"]
 		},
-		autoedit_func: "qnum",
-		autoplay_func: "cell"
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputcell();
+				}
+				if (this.notInputted() && this.mousestart) {
+					this.inputqcmp();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart) {
+					this.inputqnum();
+				}
+				if (this.mousestart && this.getbank()) {
+					if (this.btn === "left") {
+						this.inputpiece();
+					} else {
+						this.inputqcmp();
+					}
+				}
+			}
+		},
+		inputpiece: function() {
+			var piece = this.getbank();
+			if (!piece || piece.index === null) {
+				return false;
+			}
+
+			var pos0 = this.cursor.getaddr();
+			this.cursor.bankpiece = piece.index;
+			pos0.draw();
+		},
+
+		inputqcmp: function() {
+			var piece = this.getbank();
+			if (piece) {
+				piece.setQcmp(piece.qcmp ? 0 : 1);
+				piece.draw();
+			}
+		}
 	},
 
 	KeyEvent: {
 		enablemake: true
+	},
+	"KeyEvent@snakeegg": {
+		keyinput: function(ca) {
+			if (this.cursor.bankpiece && this.puzzle.editmode) {
+				var piece = this.board.bank.pieces[this.cursor.bankpiece];
+
+				var val = this.getNewNumber(piece, ca, piece.getNum());
+				if (val === null) {
+					return;
+				}
+				piece.setNum(val);
+
+				piece.draw();
+				this.prev = piece;
+				this.cancelDefault = true;
+			} else {
+				this.key_inputqnum(ca);
+			}
+		}
 	},
 
 	"Cell@snakeegg": {
@@ -192,6 +248,18 @@
 		},
 		serialize: function() {
 			return this.str;
+		},
+		getmaxnum: function() {
+			return 999;
+		},
+		getminnum: function() {
+			return 1;
+		},
+		getNum: function() {
+			return +this.str;
+		},
+		setNum: function(num) {
+			this.str = num + "";
 		},
 
 		/* Gaps between numbers are 1/10 */
