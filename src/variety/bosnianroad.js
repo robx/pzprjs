@@ -7,8 +7,8 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["bosnianroad"], {
-	MouseEvent: {
+})(["bosnianroad", "snakeegg"], {
+	"MouseEvent@bosnianroad": {
 		use: true,
 		inputModes: {
 			edit: ["number", "shade", "clear", "info-blk"],
@@ -73,15 +73,33 @@
 			this.mouseCell = cell;
 		}
 	},
+	"MouseEvent@snakeegg": {
+		use: true,
+		inputModes: {
+			edit: ["number", "info-blk"],
+			play: ["shade", "unshade", "peke", "info-blk"]
+		},
+		autoedit_func: "qnum",
+		autoplay_func: "cell"
+	},
 
 	KeyEvent: {
 		enablemake: true
 	},
 
-	Cell: {
+	"Cell@snakeegg": {
 		minnum: 0,
-		maxnum: 8,
+		allowShade: function() {
+			return this.qnum === 0 || this.qnum === -1;
+		},
+		allowUnshade: function() {
+			return this.qnum !== 0;
+		}
+	},
+	"Cell@bosnianroad": {
+		minnum: 0,
 		numberRemainsUnshaded: true,
+		maxnum: 8,
 
 		getClist: function() {
 			return this.board
@@ -125,7 +143,7 @@
 		}
 	},
 
-	Border: {
+	"Border@bosnianroad": {
 		isBorder: function() {
 			return (this.sidecell[0].qnum === -1) !== (this.sidecell[1].qnum === -1);
 		}
@@ -134,13 +152,50 @@
 	Board: {
 		hasborder: 1
 	},
+	"Board@snakeegg": {
+		getBankPiecesInGrid: function() {
+			var ret = [];
+			var shapes = this.board.ublkmgr.components;
+			for (var r = 0; r < shapes.length; r++) {
+				var clist = shapes[r].clist;
+				ret.push([clist.length + "", clist]);
+			}
+			return ret;
+		}
+	},
+	"Bank@snakeegg": {
+		enabled: true,
+		allowAdd: true,
+		defaultPreset: function() {
+			var ret = [];
+			for (var r = 1; r <= 9; r++) {
+				ret.push(r + "");
+			}
+			return ret;
+		}
+	},
+	"BankPiece@snakeegg": {
+		str: null,
+		deserialize: function(str) {
+			if (!+str) {
+				throw new Error("Invalid piece");
+			}
+			this.str = str;
+		},
+		serialize: function() {
+			return this.str;
+		}
+	},
 
 	AreaShadeGraph: {
 		enabled: true,
 		coloring: true
 	},
+	AreaUnshadeGraph: {
+		enabled: true
+	},
 
-	Graphic: {
+	"Graphic@bosnianroad": {
 		autocmp: "number",
 		qcmpcolor: "rgb(144,144,144)",
 
@@ -219,13 +274,39 @@
 			}
 		}
 	},
+	"Graphic@snakeegg": {
+		irowakeblk: true,
+		bgcellcolor_func: "qsub1",
+
+		paint: function() {
+			this.drawBGCells();
+
+			this.drawShadedCells();
+			this.drawGrid();
+			this.drawBorders();
+
+			this.drawQuesNumbers();
+
+			this.drawPekes();
+
+			this.drawChassis();
+
+			this.drawTarget();
+		}
+	},
 
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber10();
+			if (this.pid === "snakeegg") {
+				this.decodePieceBank();
+			}
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber10();
+			if (this.pid === "snakeegg") {
+				this.encodePieceBank();
+			}
 		}
 	},
 
@@ -233,10 +314,18 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			if (this.pid === "snakeegg") {
+				this.decodePieceBank();
+				this.decodePieceBankQcmp();
+			}
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			if (this.pid === "snakeegg") {
+				this.encodePieceBank();
+				this.encodePieceBankQcmp();
+			}
 		}
 	},
 
@@ -244,11 +333,20 @@
 		checklist: [
 			"checkShadeCellExist+",
 			"check2x2ShadeSection",
+			"checkShadeLoop@snakeegg",
 			"checkShadeBranch",
-			"checkShadeDeadEnd",
+
+			"checkCircleEndpoint@snakeegg",
+			"checkShadeOnCircle@snakeegg",
+			"checkNumberSize@snakeegg",
+			"checkBankPiecesAvailable@snakeegg",
+			"checkBankPiecesInvalid@snakeegg",
+
+			"checkShadeDeadEnd@bosnianroad",
 			"checkConnectShade",
-			"checkShadeDiagonal",
-			"checkShadeCount+"
+			"checkBankPiecesUsed@snakeegg",
+			"checkShadeDiagonal@bosnianroad",
+			"checkShadeCount+@bosnianroad"
 		],
 
 		check2x2ShadeSection: function() {
@@ -277,8 +375,49 @@
 
 		checkShadeDeadEnd: function() {
 			this.checkNeighborCount(-1, "shDeadEnd");
+		}
+	},
+	"AnsCheck@snakeegg": {
+		checkNumberSize: function() {
+			this.checkAllCell(function(cell) {
+				return (
+					cell.qnum > 0 && cell.ublk && cell.ublk.clist.length !== cell.qnum
+				);
+			}, "bkSizeNe");
 		},
-
+		checkShadeOnCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum === 0 && !cell.isShade();
+			}, "circleUnshade");
+		},
+		checkCircleEndpoint: function() {
+			this.checkAllCell(function(cell) {
+				if (!cell.isShade()) {
+					return false;
+				}
+				return (
+					cell.qnum === 0 &&
+					cell.countDir4Cell(function(adj) {
+						return adj.isShade();
+					}) !== 1
+				);
+			}, "shEndpoint");
+		},
+		checkShadeLoop: function() {
+			var blocks = this.board.sblkmgr.components;
+			if (blocks.length !== 1) {
+				return;
+			}
+			var loop = blocks[0];
+			if (loop.circuits > 0) {
+				this.failcode.add("shLoop");
+				if (!this.checkOnly) {
+					loop.clist.seterr(1);
+				}
+			}
+		}
+	},
+	"AnsCheck@bosnianroad": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -334,5 +473,9 @@
 				}
 			}
 		}
+	},
+	"FailCode@snakeegg": {
+		shEndpoint: "shEndpoint.snake",
+		shLoop: "shLoop.snake"
 	}
 });
