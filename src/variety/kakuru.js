@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kakuru", "numrope"], {
+})(["kakuru", "numrope", "sananko"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -131,6 +131,83 @@
 			cell.draw();
 		}
 	},
+	"MouseEvent@sananko": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["number", "objblank", "clear"]
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
+				this.dragnumber_sananko();
+			}
+
+			if (this.mouseend && this.notInputted()) {
+				this.mouseCell = this.board.emptycell;
+				this.inputqnum();
+			}
+		},
+		dragnumber_sananko: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.inputData === null) {
+				if (this.btn === "right" && this.mousemove) {
+					this.inputData = cell.qsub ? -1 : -2;
+				} else if (this.btn === "left") {
+					this.inputData = cell.anum;
+					if (this.inputData === -1) {
+						for (var sn = 0; sn < 4; sn++) {
+							if (cell.snum[sn] !== -1) {
+								this.inputData = cell.snum;
+							}
+						}
+					}
+					if (this.inputData === -1 && cell.qsub) {
+						this.inputData = -2;
+					}
+					this.mouseCell = cell;
+				}
+				return;
+			}
+
+			if (
+				this.inputData !== null &&
+				typeof this.inputData === "object" &&
+				cell.qnum === -1
+			) {
+				for (var sn = 0; sn < 4; sn++) {
+					cell.setSnum(sn, this.inputData[sn]);
+				}
+				cell.draw();
+			} else if (this.inputData >= -1 && cell.qnum === -1) {
+				cell.clrSnum();
+				cell.setAnum(this.inputData);
+				cell.setQsub(0);
+				cell.draw();
+			} else if (this.inputData === -2 && cell.qnum === -1) {
+				cell.setAnum(-1);
+				cell.setQsub(1);
+				cell.draw();
+			}
+			this.mouseCell = cell;
+		},
+		inputDot: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell || cell.qnum !== -1) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = cell.qsub === 1 ? 0 : 1;
+			}
+
+			cell.setAnum(-1);
+			cell.setQsub(this.inputData === 1 ? 1 : 0);
+			this.mouseCell = cell;
+			cell.draw();
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -150,6 +227,12 @@
 				cell.noNum()
 			) {
 				this.cursor.chtarget();
+			} else if (
+				this.pid === "sananko" &&
+				this.puzzle.playmode &&
+				(ca === "-" || ca === "q" || ca === "4")
+			) {
+				this.key_inputqnum_main(cell, "s1");
 			} else if (("0" <= ca && ca <= "9") || ca === "BS" || ca === "-") {
 				if (this.puzzle.playmode && cell.ques === 1) {
 					return;
@@ -253,6 +336,15 @@
 			}
 		}
 	},
+	"Cell@sananko": {
+		numberAsObject: true,
+		minnum: function() {
+			return this.puzzle.editmode ? 0 : 1;
+		},
+		maxnum: function() {
+			return this.puzzle.editmode ? 12 : 3;
+		}
+	},
 	"Cell@numrope": {
 		isValidNum: function() {
 			return !this.isnull && this.anum >= 0;
@@ -304,6 +396,12 @@
 			}
 		}
 	},
+	"AreaNumberGraph@sananko": {
+		enabled: true,
+		isnodevalid: function(cell) {
+			return cell.anum !== -1;
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -320,7 +418,10 @@
 			if (this.pid === "kakuru") {
 				this.drawCircledNumbers();
 			} else {
+				this.drawDotCells();
 				this.drawQuesNumbers();
+			}
+			if (this.pid === "numrope") {
 				this.drawLines();
 			}
 
@@ -357,12 +458,14 @@
 				: null;
 		}
 	},
-	"Graphic@numrope": {
-		numbercolor_func: "fixed_shaded",
-		fontShadecolor: "white",
+	"Graphic@numrope#1": {
 		getLineColor: function(border) {
 			return border.isLine() ? "#aaaaaa" : null;
 		}
+	},
+	"Graphic@numrope,sananko": {
+		numbercolor_func: "fixed_shaded",
+		fontShadecolor: "white"
 	},
 
 	//---------------------------------------------------------
@@ -485,7 +588,9 @@
 				if (ca.indexOf("[") >= 0) {
 					ca = this.setCellSnum(cell, ca);
 				}
-				if (ca !== "." && ca !== "0") {
+				if (ca === "+") {
+					cell.qsub = 1;
+				} else if (ca !== "." && ca !== "0") {
 					cell.anum = +ca;
 				}
 			});
@@ -508,7 +613,7 @@
 			this.encodeCell(function(cell) {
 				var ca = ".";
 				if (cell.ques !== 1 && cell.qnum === -1) {
-					ca = cell.anum !== -1 ? cell.anum : "0";
+					ca = cell.anum !== -1 ? cell.anum : cell.qsub ? "+" : "0";
 				}
 				if (cell.enableSubNumberArray && cell.anum === -1) {
 					ca += this.getCellSnum(cell);
@@ -530,8 +635,9 @@
 		],
 
 		checkRange: function() {
+			var max = this.pid === "sananko" ? 3 : 9;
 			this.checkAllCell(function(cell) {
-				return cell.anum !== -1 && (cell.anum < 1 || cell.anum > 9);
+				return cell.anum !== -1 && (cell.anum < 1 || cell.anum > max);
 			}, "nmRange");
 		},
 
@@ -577,11 +683,11 @@
 				}
 			}
 		},
-		checkSumOfNumber: function(type) {
+		checkSumOfNumber: function(strict) {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (cell.ques === 1 || cell.qnum <= 0) {
+				if (cell.ques === 1 || cell.qnum < 0) {
 					continue;
 				}
 
@@ -604,7 +710,7 @@
 						if (qa > 0) {
 							cnt += qa;
 							clist.add(cell2);
-						} else {
+						} else if (!strict) {
 							cnt = cell.qnum;
 							break;
 						}
@@ -701,6 +807,44 @@
 
 				return !empty && cnt >= 2 && (!next || !prev);
 			}, "nmNotSeq");
+		}
+	},
+	"AnsCheck@sananko": {
+		checklist: [
+			"checkRange",
+			"checkAdjacentSameNumber",
+			"checkOverThreeCells",
+			"checkLessThreeCells",
+			"checkSumOfNumberStrict"
+		],
+		checkSumOfNumberStrict: function() {
+			this.checkSumOfNumber(true);
+		},
+		checkAdjacentSameNumber: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				if (cell1.anum === -1 || cell2.anum === -1) {
+					return false;
+				}
+				return cell1.anum !== cell2.anum;
+			}, "nmAdjacent");
+		},
+		checkLessThreeCells: function() {
+			this.checkAllArea(
+				this.board.nblkmgr,
+				function(w, h, a, n) {
+					return a >= 3;
+				},
+				"bkSizeLt3"
+			);
+		},
+		checkOverThreeCells: function() {
+			this.checkAllArea(
+				this.board.nblkmgr,
+				function(w, h, a, n) {
+					return a <= 3;
+				},
+				"bkSizeGt3"
+			);
 		}
 	}
 });
