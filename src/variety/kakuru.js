@@ -596,9 +596,9 @@
 					ca = this.setCellSnum(cell, ca);
 				}
 				if (ca === "+") {
-					cell.qsub = 2;
-				} else if (ca === "-") {
 					cell.qsub = 1;
+				} else if (ca === "-") {
+					cell.qsub = 2;
 				} else if (ca !== "." && ca !== "0") {
 					cell.anum = +ca;
 				}
