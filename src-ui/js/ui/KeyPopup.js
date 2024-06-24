@@ -657,18 +657,23 @@ ui.keypopup = {
 			itemlist = [];
 
 		if (pid === "sananko") {
+			var mbcolor = ui.puzzle.painter.mbcolor;
 			itemlist.push("1", "2", "3");
+			itemlist.push(
+				["q", { text: "○", color: mbcolor }],
+				["w", { text: "×", color: mbcolor }]
+			);
 		} else {
 			itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
-		}
-		if (pid !== "tontonbeya") {
-			itemlist.push([
-				"4",
-				{
-					text: mode === 1 ? "?" : "・",
-					color: mode === 3 ? "rgb(255, 96, 191)" : ""
-				}
-			]);
+			if (pid !== "tontonbeya") {
+				itemlist.push([
+					"4",
+					{
+						text: mode === 1 ? "?" : "・",
+						color: mode === 3 ? "rgb(255, 96, 191)" : ""
+					}
+				]);
+			}
 		}
 		itemlist.push(" ");
 		this.generate_main(itemlist, 3);

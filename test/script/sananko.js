@@ -36,14 +36,24 @@ ui.debug.addDebugData("sananko", {
 			result: "pzprv3/sananko/1/5/. . . . . /0 2 2 0 0 /"
 		},
 		{
-			label: "Dots drag",
+			label: "Right-drag cross overwrite",
 			input: ["mouse,right,9,1,5,1"],
-			result: "pzprv3/sananko/1/5/. . . . . /0 2 + + + /"
+			result: "pzprv3/sananko/1/5/. . . . . /0 2 - - - /"
+		},
+		{
+			label: "Cycle aux marks",
+			input: ["cursor,7,1", "mouse,right,7,1"],
+			result: "pzprv3/sananko/1/5/. . . . . /0 2 - + - /"
 		},
 		{
 			label: "Input numbers",
-			input: ["cursor,9,1", "mouse,right,9,1"],
-			result: "pzprv3/sananko/1/5/. . . . . /0 2 + + 3 /"
+			input: ["cursor,9,1", "mouse,rightx2,9,1"],
+			result: "pzprv3/sananko/1/5/. . . . . /0 2 - + 3 /"
+		},
+		{
+			label: "Aux drag",
+			input: ["mouse,left,5,1,3,1", "mouse,left,7,1,9,1"],
+			result: "pzprv3/sananko/1/5/. . . . . /0 - - + + /"
 		},
 		{
 			label: "Sub number drag",
@@ -54,12 +64,12 @@ ui.debug.addDebugData("sananko", {
 				"key,shift,1",
 				"mouse,left,1,1,3,1"
 			],
-			result: "pzprv3/sananko/1/5/. . . . . /0[1,,,] 0[1,,,] + + 3 /"
+			result: "pzprv3/sananko/1/5/. . . . . /0[1,,,] 0[1,,,] - + + /"
 		},
 		{
-			label: "Dots input",
+			label: "Empty drag",
 			input: ["playmode,objblank", "mouse,left,1,1,3,1", "mouse,left,3,1,7,1"],
-			result: "pzprv3/sananko/1/5/. . . . . /+[1,,,] 0[1,,,] 0 0 3 /"
+			result: "pzprv3/sananko/1/5/. . . . . /+[1,,,] 0[1,,,] 0 0 + /"
 		}
 	]
 });

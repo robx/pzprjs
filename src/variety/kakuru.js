@@ -134,7 +134,7 @@
 	"MouseEvent@sananko": {
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["number", "objblank", "clear"]
+			play: ["number", "objblank", "numexist", "clear"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
@@ -164,7 +164,7 @@
 						}
 					}
 					if (this.inputData === -1 && cell.qsub) {
-						this.inputData = -2;
+						this.inputData = cell.qsub - 4;
 					}
 					this.mouseCell = cell;
 				}
@@ -185,9 +185,9 @@
 				cell.setAnum(this.inputData);
 				cell.setQsub(0);
 				cell.draw();
-			} else if (this.inputData === -2 && cell.qnum === -1) {
+			} else if (this.inputData <= -2 && cell.qnum === -1) {
 				cell.setAnum(-1);
-				cell.setQsub(1);
+				cell.setQsub(this.inputData + 4);
 				cell.draw();
 			}
 			this.mouseCell = cell;
@@ -230,9 +230,15 @@
 			} else if (
 				this.pid === "sananko" &&
 				this.puzzle.playmode &&
-				(ca === "-" || ca === "q" || ca === "4")
+				(ca === "-" || ca === "q" || ca === "5")
 			) {
 				this.key_inputqnum_main(cell, "s1");
+			} else if (
+				this.pid === "sananko" &&
+				this.puzzle.playmode &&
+				(ca === "+" || ca === "w" || ca === "4")
+			) {
+				this.key_inputqnum_main(cell, "s2");
 			} else if (("0" <= ca && ca <= "9") || ca === "BS" || ca === "-") {
 				if (this.puzzle.playmode && cell.ques === 1) {
 					return;
@@ -338,6 +344,7 @@
 	},
 	"Cell@sananko": {
 		numberAsObject: true,
+		numberWithMB: true,
 		minnum: function() {
 			return this.puzzle.editmode ? 0 : 1;
 		},
@@ -418,7 +425,7 @@
 			if (this.pid === "kakuru") {
 				this.drawCircledNumbers();
 			} else {
-				this.drawDotCells();
+				this.drawMBs();
 				this.drawQuesNumbers();
 			}
 			if (this.pid === "numrope") {
@@ -589,6 +596,8 @@
 					ca = this.setCellSnum(cell, ca);
 				}
 				if (ca === "+") {
+					cell.qsub = 2;
+				} else if (ca === "-") {
 					cell.qsub = 1;
 				} else if (ca !== "." && ca !== "0") {
 					cell.anum = +ca;
@@ -613,7 +622,14 @@
 			this.encodeCell(function(cell) {
 				var ca = ".";
 				if (cell.ques !== 1 && cell.qnum === -1) {
-					ca = cell.anum !== -1 ? cell.anum : cell.qsub ? "+" : "0";
+					ca =
+						cell.anum !== -1
+							? cell.anum
+							: cell.qsub === 1
+							? "+"
+							: cell.qsub === 2
+							? "-"
+							: "0";
 				}
 				if (cell.enableSubNumberArray && cell.anum === -1) {
 					ca += this.getCellSnum(cell);
