@@ -134,7 +134,7 @@
 	"MouseEvent@sananko": {
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["number", "objblank", "numexist", "clear"]
+			play: ["number", "numblank", "numexist", "clear"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {

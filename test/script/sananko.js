@@ -67,8 +67,8 @@ ui.debug.addDebugData("sananko", {
 			result: "pzprv3/sananko/1/5/. . . . . /0[1,,,] 0[1,,,] - + + /"
 		},
 		{
-			label: "Empty drag",
-			input: ["playmode,objblank", "mouse,left,1,1,3,1", "mouse,left,3,1,7,1"],
+			label: "Numexist input mode",
+			input: ["playmode,numexist", "mouse,left,1,1,3,1", "mouse,left,3,1,7,1"],
 			result: "pzprv3/sananko/1/5/. . . . . /+[1,,,] 0[1,,,] 0 0 + /"
 		}
 	]
