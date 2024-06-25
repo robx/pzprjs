@@ -230,13 +230,13 @@
 			} else if (
 				this.pid === "sananko" &&
 				this.puzzle.playmode &&
-				(ca === "-" || ca === "q" || ca === "5")
+				(ca === "+" || ca === "q" || ca === "4")
 			) {
 				this.key_inputqnum_main(cell, "s1");
 			} else if (
 				this.pid === "sananko" &&
 				this.puzzle.playmode &&
-				(ca === "+" || ca === "w" || ca === "4")
+				(ca === "-" || ca === "w" || ca === "5")
 			) {
 				this.key_inputqnum_main(cell, "s2");
 			} else if (("0" <= ca && ca <= "9") || ca === "BS" || ca === "-") {
