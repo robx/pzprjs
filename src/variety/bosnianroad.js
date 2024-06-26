@@ -133,6 +133,7 @@
 					return;
 				}
 				piece.setNum(val);
+				piece = this.board.bank.pieces[this.cursor.bankpiece];
 
 				piece.draw();
 				this.prev = piece;
@@ -259,12 +260,27 @@
 			return +this.str;
 		},
 		setNum: function(num) {
-			this.str = num + "";
+			this.board.bank.setPiece(num + "", this.index);
 		},
 
 		/* Gaps between numbers are 1/10 */
 		w: 10,
 		h: 10
+	},
+	BankEditOperation: {
+		isBankEdit: true,
+
+		isModify: function(lastope) {
+			if (
+				lastope.isBankEdit &&
+				lastope.index === this.index &&
+				lastope.num === this.old
+			) {
+				lastope.num = this.num;
+				return true;
+			}
+			return false;
+		}
 	},
 	BankAddButton: {
 		w: 10,
