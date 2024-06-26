@@ -126,7 +126,9 @@
 	"KeyEvent@snakeegg": {
 		keyinput: function(ca) {
 			if (this.cursor.bankpiece && this.puzzle.editmode) {
-				var piece = this.board.bank.pieces[this.cursor.bankpiece];
+				var piece =
+					this.board.bank.pieces[this.cursor.bankpiece] ||
+					this.board.bank.addButton;
 
 				var val = this.getNewNumber(piece, ca, piece.getNum());
 				if (val === null) {
@@ -284,7 +286,19 @@
 	},
 	BankAddButton: {
 		w: 10,
-		h: 10
+		h: 10,
+		getmaxnum: function() {
+			return 999;
+		},
+		getminnum: function() {
+			return 1;
+		},
+		getNum: function() {
+			return -1;
+		},
+		setNum: function(num) {
+			this.board.bank.setPiece(num + "", this.index);
+		}
 	},
 
 	AreaShadeGraph: {
@@ -378,6 +392,7 @@
 		irowakeblk: true,
 		bgcellcolor_func: "qsub1",
 		bankratio: 0.1,
+		bankVerticalOffset: 0.25,
 
 		paint: function() {
 			this.drawBGCells();
