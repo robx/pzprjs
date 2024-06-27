@@ -61,34 +61,43 @@
 			var cursor = this.cursor;
 			if (cursor.bankpiece !== null) {
 				var pos0 = this.cursor.getaddr();
+				var act = false;
 				// TODO move vertically between bank items
 
-				var piece = this.board.bank.pieces[cursor.bankpiece];
+				var piece =
+					this.board.bank.pieces[cursor.bankpiece] || this.board.bank.addButton;
 
 				switch (ca) {
 					case "left":
 						if (cursor.bankpiece > 0) {
 							cursor.bankpiece--;
+							act = true;
 						}
 						break;
 					case "right":
 						if (cursor.bankpiece < this.board.bank.pieces.length) {
 							cursor.bankpiece++;
+							act = true;
 						}
 						break;
 					case "up":
 						if (piece.y === 0) {
 							cursor.bankpiece = null;
-							// TODO actual x coordinate
+
+							var estx = (piece.x + piece.w / 2) / (this.board.bank.width || 1);
+							var bx = (estx * this.board.cols * 2) | 1;
+
+							cursor.bx = Math.max(cursor.minx, Math.min(bx, cursor.maxx));
 							cursor.by = cursor.maxy;
+							act = true;
 						}
 						break;
 					default:
-						return false;
+						break;
 				}
 
 				pos0.draw();
-				return false;
+				return act;
 			}
 
 			if (ca === "down" && cursor.by === cursor.maxy) {
