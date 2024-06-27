@@ -57,8 +57,50 @@
 
 	KeyEvent: {
 		enablemake: true,
+		moveTarget: function(ca) {
+			var cursor = this.cursor;
+			if (cursor.bankpiece !== null) {
+				var pos0 = this.cursor.getaddr();
+				// TODO move vertically between bank items
+
+				var piece = this.board.bank.pieces[cursor.bankpiece];
+
+				switch (ca) {
+					case "left":
+						if (cursor.bankpiece > 0) {
+							cursor.bankpiece--;
+						}
+						break;
+					case "right":
+						if (cursor.bankpiece < this.board.bank.pieces.length) {
+							cursor.bankpiece++;
+						}
+						break;
+					case "up":
+						if (piece.y === 0) {
+							cursor.bankpiece = null;
+							// TODO actual x coordinate
+							cursor.by = cursor.maxy;
+						}
+						break;
+					default:
+						return false;
+				}
+
+				pos0.draw();
+				return false;
+			}
+
+			if (ca === "down" && cursor.by === cursor.maxy) {
+				var pos0 = this.cursor.getaddr();
+				cursor.bankpiece = 0; // TODO actual x coordinate
+				pos0.draw();
+				return true;
+			}
+			return this.moveTCell(ca);
+		},
 		keyinput: function(ca) {
-			if (this.cursor.bankpiece && this.puzzle.editmode) {
+			if (this.cursor.bankpiece !== null && this.puzzle.editmode) {
 				var piece =
 					this.board.bank.pieces[this.cursor.bankpiece] ||
 					this.board.bank.addButton;
@@ -269,9 +311,9 @@
 			"checkShadeLoop",
 			"checkShadeBranch",
 
-			"checkCircleEndpoint",
 			"checkShadeOnCircle",
 			"checkNumberSize",
+			"checkCircleEndpoint",
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
 
