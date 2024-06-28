@@ -152,6 +152,7 @@
 		}
 	},
 	Bank: {
+		// TODO decide on a good moment to drop empty pieces
 		enabled: true,
 		allowAdd: true,
 		defaultPreset: function() {
@@ -173,13 +174,19 @@
 	BankPiece: {
 		num: null,
 		deserialize: function(str) {
-			if (!+str) {
+			if (+str) {
+				this.num = +str;
+			} else if (!str) {
+				this.num = -1;
+			} else {
 				throw new Error("Invalid piece");
 			}
-			this.num = +str;
 		},
 		serialize: function() {
-			return this.num + "";
+			if (this.num > 0) {
+				return this.num + "";
+			}
+			return null;
 		},
 		getmaxnum: function() {
 			return 999;
