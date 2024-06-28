@@ -171,15 +171,15 @@
 		]
 	},
 	BankPiece: {
-		str: null,
+		num: null,
 		deserialize: function(str) {
 			if (!+str) {
 				throw new Error("Invalid piece");
 			}
-			this.str = str;
+			this.num = +str;
 		},
 		serialize: function() {
-			return this.str;
+			return this.num + "";
 		},
 		getmaxnum: function() {
 			return 999;
@@ -188,11 +188,13 @@
 			return 1;
 		},
 		getNum: function() {
-			return +this.str;
+			return this.num;
 		},
 		setNum: function(num) {
-			this.board.bank.setPiece(num + "", this.index);
+			this.board.bank.setPiece(num, this.index);
 		},
+
+		disInputHatena: true,
 
 		/* Gaps between numbers are 1/10 */
 		w: 10,
@@ -200,6 +202,7 @@
 	},
 	BankEditOperation: {
 		isBankEdit: true,
+		disInputHatena: true,
 
 		isModify: function(lastope) {
 			if (
@@ -226,7 +229,10 @@
 			return -1;
 		},
 		setNum: function(num) {
-			this.board.bank.setPiece(num + "", this.index);
+			if (num < 0) {
+				return;
+			}
+			this.board.bank.setPiece(num, this.index);
 		}
 	},
 
@@ -281,7 +287,8 @@
 			g.vid = "pb_n" + idx;
 			g.strokeStyle = null;
 			g.fillStyle = this.getBankPieceColor(piece);
-			this.disptext(piece.str, x, y, { ratio: 0.65 });
+			var str = piece.num >= 0 ? "" + piece.num : "";
+			this.disptext(str, x, y, { ratio: 0.65 });
 		}
 	},
 
