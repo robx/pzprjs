@@ -327,8 +327,7 @@
 			"checkBankPiecesInvalid",
 
 			"checkConnectShade",
-			"checkBankPiecesUsed",
-			"checkShadeCount+"
+			"checkBankPiecesUsed"
 		],
 
 		check2x2ShadeSection: function() {
