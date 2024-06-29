@@ -114,6 +114,17 @@
 					this.board.bank.pieces[this.cursor.bankpiece] ||
 					this.board.bank.addButton;
 
+				if (ca === "BS" && piece.getNum() === -1) {
+					if (piece !== this.board.bank.addButton) {
+						this.board.bank.setPiece(null, this.cursor.bankpiece);
+					}
+					if (this.cursor.bankpiece > 0) {
+						this.cursor.bankpiece--;
+					}
+					piece.draw();
+					return;
+				}
+
 				var val = this.getNewNumber(piece, ca, piece.getNum());
 				if (val === null) {
 					return;
