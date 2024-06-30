@@ -62,7 +62,6 @@
 			if (cursor.bankpiece !== null) {
 				var pos0 = this.cursor.getaddr();
 				var act = false;
-				// TODO move vertically between bank items
 
 				var piece =
 					this.board.bank.pieces[cursor.bankpiece] || this.board.bank.addButton;
@@ -90,7 +89,12 @@
 							cursor.bx = Math.max(cursor.minx, Math.min(bx, cursor.maxx));
 							cursor.by = cursor.maxy;
 							act = true;
+						} else {
+							act = this.moveBankVertical(-1);
 						}
+						break;
+					case "down":
+						act = this.moveBankVertical(+1);
 						break;
 					default:
 						break;
@@ -107,6 +111,10 @@
 				return true;
 			}
 			return this.moveTCell(ca);
+		},
+		moveBankVertical: function(dir) {
+			// TODO move vertically between bank items
+			return false;
 		},
 		keyinput: function(ca) {
 			if (this.cursor.bankpiece !== null && this.puzzle.editmode) {
@@ -163,7 +171,6 @@
 		}
 	},
 	Bank: {
-		// TODO decide on a good moment to drop empty pieces
 		enabled: true,
 		allowAdd: true,
 		defaultPreset: function() {
@@ -264,9 +271,11 @@
 
 	Graphic: {
 		irowakeblk: true,
+		shadecolor: "rgb(80, 80, 80)",
 		bgcellcolor_func: "qsub1",
 		bankratio: 0.1,
 		bankVerticalOffset: 0.25,
+		circlestrokecolor_func: "null",
 
 		paint: function() {
 			this.drawBGCells();
@@ -276,6 +285,7 @@
 			this.drawBorders();
 
 			this.drawQuesNumbers();
+			this.drawCircles();
 
 			this.drawPekes();
 
@@ -284,6 +294,14 @@
 			this.drawBank();
 			this.drawTarget();
 		},
+
+		getCircleFillColor: function(cell) {
+			return cell.qnum === 0 ? this.quescolor : null;
+		},
+		getNumberTextCore: function(num) {
+			return num > 0 ? "" + num : num === -2 ? "?" : "";
+		},
+
 		drawBankPiece: function(g, piece, idx) {
 			if (!piece) {
 				g.vid = "pb_c" + idx;
