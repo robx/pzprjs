@@ -53,7 +53,6 @@
 				"patchwork_leftaux",
 				true
 			); /* patchwork: Alternative mouse input */
-			this.add("rampage_coloring", false); /* rampage: scott-pattern grid */
 			this.add("squarecell", true); /* セルは正方形にする */
 
 			/* 入力方法設定 */
@@ -402,9 +401,6 @@
 				case "patchwork_leftaux":
 					exec = pid === "patchwork";
 					break;
-				case "rampage_coloring":
-					exec = pid === "rampage";
-					break;
 				case "undefcell":
 					exec = pid === "shugaku" || pid === "lightshadow";
 					break;
@@ -501,7 +497,6 @@
 				case "disptype_interbd":
 				case "dispqnumbg":
 				case "mouseonly":
-				case "rampage_coloring":
 					puzzle.redraw();
 					break;
 

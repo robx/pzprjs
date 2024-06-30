@@ -352,9 +352,6 @@ ui.toolarea = {
 	flushexcell: function() {
 		ui.puzzle.board.flushexcell();
 	},
-	traceroute: function() {
-		ui.puzzle.board.operate("traceroute");
-	},
 	applypreset: function(e) {
 		ui.auxeditor.close();
 
