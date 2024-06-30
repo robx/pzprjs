@@ -24,8 +24,9 @@ function execmouse(puzzle, strs) {
 			var idx = +strs[++i];
 			var piece = puzzle.board.bank.pieces[idx];
 			var r = puzzle.painter.bankratio;
+			var off = puzzle.painter.bankVerticalOffset;
 			args.push((piece.x + piece.w / 2) * r * 2);
-			args.push((piece.y + piece.h / 2 + puzzle.board.maxby + 0.5) * r * 2);
+			args.push((piece.y + piece.h / 2) * r * 2 + puzzle.board.maxby + off);
 		} else {
 			args.push(+strs[i]);
 		}

@@ -386,26 +386,15 @@
 			}, "cs2x2");
 		},
 
-		checkNeighborCount: function(sign, error) {
+		checkShadeBranch: function() {
 			this.checkAllCell(function(cell) {
 				return (
 					cell.isShade() &&
-					(cell.countDir4Cell(function(adj) {
+					cell.countDir4Cell(function(adj) {
 						return adj.isShade();
-					}) -
-						2) *
-						sign >
-						0
+					}) > 2
 				);
-			}, error);
-		},
-
-		checkShadeBranch: function() {
-			this.checkNeighborCount(+1, "shBranch");
-		},
-
-		checkShadeDeadEnd: function() {
-			this.checkNeighborCount(-1, "shDeadEnd");
+			}, "shBranch");
 		},
 		checkNumberSize: function() {
 			this.checkAllCell(function(cell) {

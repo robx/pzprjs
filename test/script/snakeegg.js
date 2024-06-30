@@ -52,5 +52,12 @@ ui.debug.addDebugData("snakeegg", {
 			"pzprv3/snakeegg/5/5/. 0 . 0 . /. . . . . /. . . . . /. 4 . 2 . /. . . . . /# # + # + /# + + # # /# # # + # /+ + # + # /+ + # # # /4/1/2/3/4/0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Can type bank numbers",
+			input: ["newboard,3,3", "editmode", "mouse,left,bank,2", "key,9"],
+			result:
+				"pzprv3/snakeegg/3/3/. . . /. . . /. . . /. . . /. . . /. . . /9/1/2/9/4/5/6/7/8/9/0 0 0 0 0 0 0 0 0 /"
+		}
+	]
 });
