@@ -113,7 +113,28 @@
 
 			if (ca === "down" && cursor.by === cursor.maxy) {
 				var pos0 = this.cursor.getaddr();
-				cursor.bankpiece = 0; // TODO actual x coordinate
+				if (cursor.bx === cursor.minx) {
+					cursor.bankpiece = 0;
+				} else {
+					var center = cursor.bx / this.puzzle.painter.bankratio;
+					var i = 0;
+					while (true) {
+						var piece = this.board.bank.pieces[i];
+						if (!piece) {
+							cursor.bankpiece = this.board.bank.pieces.length;
+							break;
+						}
+						if (piece.x <= center && piece.x + piece.w >= center) {
+							cursor.bankpiece = i;
+							break;
+						}
+						if (piece.y > 0) {
+							cursor.bankpiece = i - 1;
+							break;
+						}
+						i++;
+					}
+				}
 				pos0.draw();
 				return true;
 			}

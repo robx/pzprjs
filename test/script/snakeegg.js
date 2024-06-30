@@ -101,8 +101,15 @@ ui.debug.addDebugData("snakeegg", {
 			}
 		},
 		{
+			label: "Move down to specific bank column from grid",
+			input: ["cursor,5,5", "key,down"],
+			result: function(puzzle, assert) {
+				assert.equal(puzzle.cursor.bankpiece, 1);
+			}
+		},
+		{
 			label: "Move down between bank rows",
-			input: ["key,down,down"],
+			input: ["key,left,down,down"],
 			result: function(puzzle, assert) {
 				assert.equal(puzzle.cursor.bankpiece, 4);
 			}
