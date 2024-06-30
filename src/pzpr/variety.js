@@ -104,6 +104,7 @@
 			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
 			bonsan: [1, 0, "ぼんさん", "Bonsan", "bonsan"],
 			bosanowa: [1, 0, "ボサノワ", "Bosanowa", "", { alias: "bossanova" }],
+			bosnianroad: [0, 0, "Bosnian Road", "Bosnian Road"],
 			box: [0, 0, "ボックス", "Box"],
 			brownies: [0, 0, "ブラウニー", "Brownies", "yosenabe"],
 			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
@@ -345,6 +346,7 @@
 			],
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
 			roundtrip: [0, 0, "Round Trip", "Round Trip"],
+			sananko: [0, 0, "サンアンコー", "San-Anko", "kakuru"],
 			sashigane: [0, 0, "さしがね", "Sashigane", "loute"],
 			sashikazune: [0, 0, "さしカズね", "Sashikazune", "loute"],
 			satogaeri: [

@@ -202,7 +202,9 @@ ui.keypopup = {
 		kuromenbun: [10, 0],
 		turnaround: [3, 0],
 		contact: [6, 0],
-		rampage: [131, 0]
+		rampage: [131, 0],
+		bosnianroad: [8, 0],
+		sananko: [10, 113]
 	},
 
 	//---------------------------------------------------------------------------
@@ -391,14 +393,16 @@ ui.keypopup = {
 				null
 			);
 		}
-		if (
-			mode === 1 &&
-			(pid === "kakuru" ||
-				pid === "tateyoko" ||
-				pid === "crossstitch" ||
-				pid === "numrope" ||
-				pid === "yajisoko")
-		) {
+
+		var separateEmptyHatena =
+			pid === "kakuru" ||
+			pid === "tateyoko" ||
+			pid === "crossstitch" ||
+			pid === "numrope" ||
+			pid === "sananko" ||
+			pid === "yajisoko";
+
+		if (mode === 1 && separateEmptyHatena) {
 			itemlist.push(["q1", pid === "yajisoko" ? "□" : "■"]);
 			if (pid === "crossstitch") {
 				itemlist.push(["w2", "○"]);
@@ -415,14 +419,8 @@ ui.keypopup = {
 		);
 
 		var cap = null;
-		if (
-			mode === 3 ||
-			pid === "kakuru" ||
-			pid === "numrope" ||
-			pid === "tateyoko" ||
-			pid === "crossstitch" ||
-			pid === "yajisoko"
-		) {
+		if (mode === 3 || separateEmptyHatena) {
+			/* Do nothing */
 		} else if (pid === "tasquare") {
 			cap = "□";
 		} else if (
@@ -541,7 +539,12 @@ ui.keypopup = {
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "?"], ["w", "○"]],
 				4
 			);
-		} else if (pid !== "tapa" && pid !== "tapaloop" && pid !== "mines") {
+		} else if (
+			pid !== "tapa" &&
+			pid !== "tapaloop" &&
+			pid !== "mines" &&
+			pid !== "bosnianroad"
+		) {
 			this.generate_main(
 				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
 				4
@@ -658,15 +661,24 @@ ui.keypopup = {
 		var pid = ui.puzzle.pid,
 			itemlist = [];
 
-		itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
-		if (pid === "hakoiri" || pid === "alter") {
-			itemlist.push([
-				"4",
-				{
-					text: mode === 1 ? "?" : "・",
-					color: mode === 3 ? "rgb(255, 96, 191)" : ""
-				}
-			]);
+		if (pid === "sananko") {
+			var mbcolor = ui.puzzle.painter.mbcolor;
+			itemlist.push("1", "2", "3");
+			itemlist.push(
+				["q", { text: "○", color: mbcolor }],
+				["w", { text: "×", color: mbcolor }]
+			);
+		} else {
+			itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
+			if (pid !== "tontonbeya") {
+				itemlist.push([
+					"4",
+					{
+						text: mode === 1 ? "?" : "・",
+						color: mode === 3 ? "rgb(255, 96, 191)" : ""
+					}
+				]);
+			}
 		}
 		itemlist.push(" ");
 		this.generate_main(itemlist, 3);

@@ -272,7 +272,12 @@
 		enablebcolor: true,
 
 		getBGCellColor: function(cell) {
-			return this.getBGCellColor_qsub1(cell);
+			if (cell.error > 0 || cell.qinfo > 0) {
+				return this.errbcolor1;
+			} else if (cell.qsub === 1) {
+				return this.bcolor;
+			}
+			return null;
 		},
 
 		qanscolor: "black",
