@@ -11,8 +11,15 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["number", "info-blk"],
-			play: ["shade", "unshade", "peke", "info-blk"]
+			edit: ["number", "circle-shade", "info-blk"],
+			play: ["shade", "unshade", "info-blk"]
+		},
+		mouseinput: function() {
+			if (this.inputMode === "circle-shade") {
+				this.inputFixedNumber(0);
+			} else {
+				this.common.mouseinput.call(this);
+			}
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -440,6 +447,7 @@
 		}
 	},
 	FailCode: {
+		shBranch: "shBranch.snake",
 		shEndpoint: "shEndpoint.snake",
 		shLoop: "shLoop.snake"
 	}
