@@ -109,18 +109,18 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
-		getBullRouteLen: function() {
+		getBullRoute: function(){
 			var currentCell = this;
 			var loop = false;
 			var routeList = new this.klass.CellList();
-			while (currentCell.isValid() && !loop) {
+			while (currentCell.isValid()) {
+				routeList.add(currentCell);
 				loop = routeList.some(function(c) {
 					return c === currentCell;
 				});
 				if (loop) {
 					continue;
 				}
-				routeList.add(currentCell);
 				for (var dir in currentCell.adjacent) {
 					if (!currentCell.adjborder[dir].isBorder()) {
 						currentCell = currentCell.adjacent[dir].adjacent[dir];
@@ -128,15 +128,31 @@
 					}
 				}
 			}
+			return routeList
+		},
+		getBullRouteLen: function() {
+			var routeList = this.getBullRoute();
+			var len = routeList.length;
+			var finalCell = routeList[len-1];
+			var loop = false;
+			for(var i = 0; i < len-1; i ++) {
+				if(routeList[i] === finalCell) {
+					loop = true;
+					break;
+				}
+			}
 			if (
 				(loop && this.qnum !== -3) ||
-				(!loop && routeList.length !== this.qnum)
+				(!loop && (len !== this.qnum))
 			) {
-				routeList.each(function(c) {
-					c.room.clist.seterr(1);
-				});
+				paintRoute(routeList);
 			}
 			return loop ? -1 : routeList.length;
+		},
+		paintRoute: function(route) {
+			route.each(function(c) {
+				c.room.clist.seterr(1);
+			});
 		},
 		isValidNum: function() {
 			return !this.isnull && this.qnum >= 0;
@@ -253,6 +269,9 @@
 		irowakeblk: true,
 		ScottColors: ["white", "rgb(160,255,160)", "rgb(255,255,127)", "rgb(192,192,192)"],
 		getBGCellColor: function(cell) {
+			if(cell.error) {
+				return this.errcolor1
+			}
 			if(!this.puzzle.execConfig("irowakeblk") || cell.qsub === 7) {
 				return "white"
 			}
