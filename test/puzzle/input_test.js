@@ -24,8 +24,9 @@ function execmouse(puzzle, strs) {
 			var idx = +strs[++i];
 			var piece = puzzle.board.bank.pieces[idx];
 			var r = puzzle.painter.bankratio;
+			var off = puzzle.painter.bankVerticalOffset;
 			args.push((piece.x + piece.w / 2) * r * 2);
-			args.push((piece.y + piece.h / 2 + puzzle.board.maxby + 0.5) * r * 2);
+			args.push((piece.y + piece.h / 2) * r * 2 + puzzle.board.maxby + off);
 		} else {
 			args.push(+strs[i]);
 		}
@@ -85,7 +86,11 @@ function execinput(puzzle, str) {
 			puzzle.key.inputKeys.apply(puzzle.key, strs);
 			break;
 		case "cursor":
-			puzzle.cursor.init(+strs[1], +strs[2]);
+			if (strs[1] === "bank") {
+				puzzle.cursor.bankpiece = strs[2] === "null" ? null : +strs[2];
+			} else {
+				puzzle.cursor.init(+strs[1], +strs[2]);
+			}
 			break;
 		case "mouse":
 			execmouse(puzzle, strs);
