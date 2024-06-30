@@ -53,7 +53,6 @@
     "discolor": "Disable color",
     "mouseonly": "Enable mouse-only input",
     "patchwork_leftaux": "Enable to input aux. lines with single click",
-    "rampage_coloring": "Show plaid background colors",
     "autocheck": "Answer check",
     "autocheck.off": "Manual",
     "autocheck.guarded": "Automatic (guarded)",
