@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino", "ggrass"], {
+})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -17,7 +17,7 @@
 	"MouseEvent@nawabari": {
 		inputModes: { edit: ["number", "clear"], play: ["border", "subline"] }
 	},
-	"MouseEvent@fourcells,fivecells, ggrass": {
+	"MouseEvent@fourcells,fivecells": {
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
@@ -45,7 +45,7 @@
 		enablemake: true
 	},
 
-	"KeyEvent@fourcells,fivecells,subomino,heteromino, ggrass": {
+	"KeyEvent@fourcells,fivecells,subomino,heteromino": {
 		keyinput: function(ca) {
 			if (ca === "w") {
 				this.key_inputvalid(ca);
@@ -161,8 +161,7 @@
 			this.common.initBoardSize.call(this, col, row);
 
 			var odd =
-				(col * row) %
-				(this.pid === "fivecells" ? 5 : this.pid === "fourcells" ? 4 : 2);
+				(col * row) % (this.pid === "fivecells" ? 5 : 4);
 			if (odd >= 1) {
 				this.getc(this.minbx + 1, this.minby + 1).ques = 7;
 			}
@@ -406,6 +405,7 @@
 			"checkLessFourCells@fourcells",
 			"checkLessFiveCells@fivecells"
 		],
+		
 		checkOverThreeCells: function() {
 			this.checkAllArea(
 				this.board.roommgr,
