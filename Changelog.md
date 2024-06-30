@@ -2,6 +2,7 @@
 
 * turnaround: New puzzle type Turnaround
 * contact: New puzzle type Contact
+* rampage: New puzzle type Rampage
 
 ### ????-??-??
 

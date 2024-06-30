@@ -17,9 +17,6 @@
 			edit: ["number", "empty", "clear"], 
 			play: ["border", "subline"]
 		},
-		// mouseinput_clear: function() {
-		// 	this.inputFixedNumber(-1);
-		// },
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode && (this.mousestart || this.mousemove)) {
 				if (this.btn === "left") {
@@ -33,7 +30,7 @@
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
-					// this.inputborder(); // disable for now
+					// this.inputborder(); // in case question border can be added in the future
 				} else if (this.mouseend && this.notInputted()) {
 					this.mouseCell = this.board.emptycell;
 					this.inputqnum();
@@ -57,8 +54,8 @@
 			}
 			var horizontal = cell.by === cell2.by;
 			if (
-				(horizontal && Math.abs(cell.bx - cell2.bx) !== 2) ||
-				(!horizontal && Math.abs(cell.by - cell2.by) !== 2)
+				(horizontal && Math.abs(cell.bx - cell2.bx) !== 2) 
+				||	(!horizontal && Math.abs(cell.by - cell2.by) !== 2)
 			) {
 				return;
 			}
@@ -108,18 +105,104 @@
 
 	//---------------------------------------------------------
 	// 盤面管理系
-	Cell: {
+	"Cell@contact": {
+		minnum: 1,
+		maxnum: 6,
+
+		isValidNum: function() {
+			return !this.isnull && this.qnum >= this.minnum && this.qnum <= this.maxnum;
+		},
+
+		isCmp: function() {
+			if (!this.puzzle.execConfig("autocmp")) {
+				return false;
+			}
+
+			var dominoes = this.getSurroundingDominoes();
+			if(dominoes.some(function(cell){
+				return cell.room.nodes.length !== 2; 
+			})) {
+				return false;
+			}
+			return this.qnum === dominoes.length;
+		},
+
+		getSurroundingDominoes: function() {
+			var dominoes = new this.klass.CellList();
+			if(!this.isValidNum() || !this.room.clist || this.room.clist.length !== 2) {
+				return dominoes;
+			}
+
+			var horizontal =
+				!this.adjborder.left.isBorder() || !this.adjborder.right.isBorder();
+			var c = this.room.clist[0];
+			var firstcell, secondcell; 
+			// make firstcell top/left and secondcell bottom/right
+			if(!c.adjborder.right.isBorder() || !c.adjborder.bottom.isBorder()) {
+				firstcell = this.room.clist[0],
+				secondcell = this.room.clist[1];
+			}
+			else {
+				firstcell = this.room.clist[1],
+				secondcell = this.room.clist[0];
+			}
+
+			var longside = horizontal? ['top', 'bottom']:['left', 'right'];
+			var shortside = horizontal? ['left', 'right']:['top', 'bottom'];
+
+			for(var dir in longside) {
+				var firstlong = firstcell.adjacent[longside[dir]];
+				var secondlong = secondcell.adjacent[longside[dir]];
+				if (firstlong.isValid()) {
+					dominoes.add(firstlong);
+					if (secondlong.isValid() && firstlong.room !== secondlong.room) {
+						dominoes.add(secondlong);
+					}
+				} else if (secondlong.isValid()) {
+					dominoes.add(secondlong);
+				}
+			}
+			var firstshort = firstcell.adjacent[shortside[0]];
+			var secondshort = secondcell.adjacent[shortside[1]];
+			if (firstshort.isValid()) {
+				dominoes.add(firstshort);
+			}
+			if (secondshort.isValid()) {
+				dominoes.add(secondshort);
+			}
+			return dominoes;
+		},
+
+		posthook: {
+			qans: function(num) {
+				if(num >= 1) {
+					this.checkAutoCmp();
+				}
+			}
+		}
+	},
+	"Cell@rampage": {
+		minnum: 1,
+		maxnum: function() {
+			return Math.ceil(this.board.cols / 2) * Math.ceil(this.board.rows / 2);
+		},
+
+		isValidNum: function() {
+			return !this.isnull && (this.qnum >= 0 || this.qnum === -3);
+		},
+
 		getBullRoute: function(){
 			var currentCell = this;
 			var loop = false;
 			var routeList = new this.klass.CellList();
-			while (currentCell.isValid()) {
-				routeList.add(currentCell);
+
+			while (currentCell.isValid() && currentCell.room.clist.length === 2) {
 				loop = routeList.some(function(c) {
 					return c === currentCell;
 				});
+				routeList.add(currentCell); // in case of a loop, the repeating cell is added so that we can check later
 				if (loop) {
-					continue;
+					break;
 				}
 				for (var dir in currentCell.adjacent) {
 					if (!currentCell.adjborder[dir].isBorder()) {
@@ -130,45 +213,22 @@
 			}
 			return routeList
 		},
-		getBullRouteLen: function() {
-			var routeList = this.getBullRoute();
-			var len = routeList.length;
-			var finalCell = routeList[len-1];
+
+		getBullRouteLen: function(route) {
+			var len = route.length;
+			var finalCell = route[len-1];
 			var loop = false;
 			for(var i = 0; i < len-1; i ++) {
-				if(routeList[i] === finalCell) {
+				if(route[i] === finalCell) {
 					loop = true;
 					break;
 				}
 			}
-			if (
-				(loop && this.qnum !== -3) ||
-				(!loop && (len !== this.qnum))
-			) {
-				paintRoute(routeList);
-			}
-			return loop ? -1 : routeList.length;
+			return loop ? -1 : route.length;
 		},
-		paintRoute: function(route) {
-			route.each(function(c) {
-				c.room.clist.seterr(1);
-			});
-		},
-		isValidNum: function() {
-			return !this.isnull && this.qnum >= 0;
-		},
-		getScottColor: function() {
+
+		getPlaidColor: function() {
 			return ((this.bx >> 1) % 2) + 2*((this.by >> 1)% 2)
-		}
-	},
-	"Cell@contact": {
-		minnum: 1,
-		maxnum: 6
-	},
-	"Cell@rampage": {
-		minnum: 1,
-		maxnum: function() {
-			return Math.ceil(this.board.cols / 2) * Math.ceil(this.board.rows / 2);
 		}
 	},
 	Border: {
@@ -204,8 +264,19 @@
 		}
 	},
 	"Board@rampage": {
-		irowake: function() {
-			// todo: assign new colors?
+		operate: function(type){
+			if(type !== "traceroute") {
+				return;
+			}
+
+			var cells = this.cell;
+			for (var i = 0; i < this.cell.length; i++) {
+				var c = cells[i]
+				if(c.isValid() && (c.qnum > 0 || c.qnum === -3)) {
+					this.puzzle.painter.paintRoute(c.getBullRoute());
+				}
+			}
+			this.hasinfo = true;
 			this.puzzle.redraw();
 		}
 	},
@@ -265,17 +336,46 @@
 			return cell.getNum() === -3 ? "∞" : this.getNumberText(cell, cell.qnum);
 		}
 	},
+	"Graphic@contact":{
+		qcmpcolor: "rgb(127,127,127)",
+		autocmp: "number",
+
+		getQuesNumberColor: function(cell) {
+			var qnum_color = this.getQuesNumberColor_mixed(cell);
+			if ((cell.error || cell.qinfo) === 1) {
+				return qnum_color;
+			}
+			return cell.isCmp() ? this.qcmpcolor : qnum_color;
+		},
+
+		setRange: function(x1, y1, x2, y2) {
+			var puzzle = this.puzzle,
+				bd = puzzle.board;
+			if (puzzle.execConfig("autocmp")) {
+				x1 = bd.minbx - 2;
+				y1 = bd.minby - 2;
+				x2 = bd.maxbx + 2;
+				y2 = bd.maxby + 2;
+			}
+			this.common.setRange.call(this, x1, y1, x2, y2);
+		}
+	},
 	"Graphic@rampage": {
-		irowakeblk: true,
-		ScottColors: ["white", "rgb(160,255,160)", "rgb(255,255,127)", "rgb(192,192,192)"],
+		PlaidColors: ["white", "rgb(160,255,160)", "rgb(255,255,127)", "rgb(192,192,192)"],
 		getBGCellColor: function(cell) {
 			if(cell.error) {
-				return this.errcolor1
+				return this.errbcolor1;
 			}
-			if(!this.puzzle.execConfig("irowakeblk") || cell.qsub === 7) {
-				return "white"
+			if(!this.puzzle.execConfig("rampage_coloring")|| cell.ques === 7) {
+				return "white";
 			}
-			return this.ScottColors[cell.getScottColor()];
+			return this.PlaidColors[cell.getPlaidColor()];
+		},
+
+		paintRoute: function(route) {
+			route.each(function(c) {
+				c.room.clist.seterr(1);
+			});
 		}
 	},
 
@@ -472,9 +572,7 @@
 			"checkLessTwoCells",
 			"checkSameNumberInRoom@contact",
 			"checkTouch@contact",
-			"checkRouteLoop@rampage",
-			"checkRouteLenGt@rampage",
-			"checkRouteLenLt@rampage"
+			"checkRouteLen@rampage"
 		],
 		checkOverTwoCells: function() {
 			this.checkAllArea(
@@ -509,43 +607,20 @@
 					return false;
 				}
 
-				var dupe = 0;
-				var horizontal =
-					!cell.adjborder.left.isBorder() || !cell.adjborder.right.isBorder();
-				var firstcell = cell.room.clist[0],
-					secondcell = cell.room.clist[1];
-				var clist = new cell.klass.CellList();
+				var clist = cell.getSurroundingDominoes();
 
-				for (var dir in firstcell.adjacent) {
-					if (firstcell.adjacent[dir].isValid()) {
-						clist.add(firstcell.adjacent[dir]);
-					}
-					if (secondcell.adjacent[dir].isValid()) {
-						clist.add(secondcell.adjacent[dir]);
-					}
-				}
-				var dirs = horizontal? ['top', 'bottom']:['left', 'right'];
-				for(var d in dirs) {
-					if (
-						firstcell.adjacent[dirs[d]].isValid() &&
-						secondcell.adjacent[dirs[d]].isValid() &&
-						firstcell.adjacent[dirs[d]].room === secondcell.adjacent[dirs[d]].room
-					) {
-						dupe += 1;
-					}
-				}
-
-				var piececount = clist.length - dupe - 2;
+				var piececount = clist.length;
 				if (piececount !== cell.qnum) {
 					clist.each(function(c) {
 						c.room.clist.seterr(1);
 					});
-					for (var dir in firstcell.adjacent) {
-						if (firstcell.adjborder[dir].qans > 0) {
-							firstcell.adjborder[dir].seterr(1);
-						}
-						if (secondcell.adjborder[dir].qans > 0) {
-							secondcell.adjborder[dir].seterr(1);
+					var room = cell.room.clist;
+					room.seterr(1);
+					for(var i in room) {
+						for(var d in room[i].adjborder) {
+							if(room[i].adjborder[d].isBorder()) {
+								room[i].adjborder[d].seterr(1);
+							}
 						}
 					}
 					return true;
@@ -553,35 +628,35 @@
 				return false;
 			}, "anPiece");
 		},
-		checkRouteLoop: function() {
-			this.checkAllCell(function(cell) {
-				if (cell.isnull || cell.qnum !== -3 || cell.room.clist.length !== 2) {
-					return false;
-				}
 
-				var routeLen = cell.getBullRouteLen();
-				return routeLen !== -1;
-			}, "routeLenLoop");
-		},
-		checkRouteLenGt: function() {
-			this.checkAllCell(function(cell) {
+		checkRouteLen: function() {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
 				if (!cell.isValidNum() || cell.room.clist.length !== 2) {
-					return false;
+					continue;
 				}
 
-				var routeLen = cell.getBullRouteLen();
-				return routeLen === -1 || routeLen > cell.qnum;
-			}, "routeLenGt");
-		},
-		checkRouteLenLt: function() {
-			this.checkAllCell(function(cell) {
-				if (!cell.isValidNum() || cell.room.clist.length !== 2) {
-					return false;
+				var route = cell.getBullRoute()
+				var routelen = cell.getBullRouteLen(route);
+
+				var err = false;
+				if(cell.qnum === -3) {
+					if(routelen !== -1) {
+						this.failcode.add("routeLenLoop");
+						err = true;
+					}
+				} else if(routelen === -1 || routelen > cell.qnum) {
+					this.failcode.add("routeLenGt");
+					err = true;
+				} else if(routelen !== -1 && routelen < cell.qnum) {
+					this.failcode.add("routeLenLt");
+					err = true;
 				}
 
-				var routeLen = cell.getBullRouteLen();
-				return routeLen !== -1 && routeLen < cell.qnum;
-			}, "routeLenLt");
+				if(err) {
+					this.puzzle.painter.paintRoute(route);
+				}
+			}
 		}
 	}
 });
