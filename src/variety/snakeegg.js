@@ -45,7 +45,7 @@
 		inputpiece: function() {
 			var piece = this.getbank();
 			if (!piece || piece.index === null) {
-				return false;
+				return;
 			}
 
 			var pos0 = this.cursor.getaddr();
@@ -120,7 +120,23 @@
 			return this.moveTCell(ca);
 		},
 		moveBankVertical: function(dir) {
-			// TODO move vertically between bank items
+			var cursor = this.cursor;
+			var piece =
+				this.board.bank.pieces[cursor.bankpiece] || this.board.bank.addButton;
+
+			var center = piece.x + piece.w / 2;
+
+			for (
+				var i = cursor.bankpiece + dir;
+				i >= 0 && i <= this.board.bank.pieces.length;
+				i += dir
+			) {
+				piece = this.board.bank.pieces[i] || this.board.bank.addButton;
+				if (piece.x <= center && piece.x + piece.w >= center) {
+					cursor.bankpiece = i;
+					return true;
+				}
+			}
 			return false;
 		},
 		keyinput: function(ca) {

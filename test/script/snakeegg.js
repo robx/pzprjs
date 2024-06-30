@@ -99,6 +99,26 @@ ui.debug.addDebugData("snakeegg", {
 			result: function(puzzle, assert) {
 				assert.equal(puzzle.cursor.bankpiece, 0);
 			}
+		},
+		{
+			label: "Move down between bank rows",
+			input: ["key,down,down"],
+			result: function(puzzle, assert) {
+				assert.equal(puzzle.cursor.bankpiece, 4);
+			}
+		},
+		{
+			label: "Move up between bank rows",
+			input: ["key,right,up"],
+			result: function(puzzle, assert) {
+				assert.equal(puzzle.cursor.bankpiece, 3);
+			}
+		},
+		{
+			label: "Add new number",
+			input: ["cursor,bank,8", "key,1,down,2"],
+			result:
+				"pzprv3/snakeegg/3/3/. . . /. . . /. . . /. . . /. . . /. . . /9/1/2/9/4/6/7/8/9/12/0 0 0 0 0 0 0 0 0 /"
 		}
 	]
 });

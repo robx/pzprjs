@@ -569,8 +569,6 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		movedir: function(dir, mv) {
 			if (this.bankpiece !== null) {
-				// TODO implement moving from board to bank
-				// TODO implement moving between bankpieces
 				return this;
 			}
 
