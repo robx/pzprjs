@@ -58,6 +58,47 @@ ui.debug.addDebugData("snakeegg", {
 			input: ["newboard,3,3", "editmode", "mouse,left,bank,2", "key,9"],
 			result:
 				"pzprv3/snakeegg/3/3/. . . /. . . /. . . /. . . /. . . /. . . /9/1/2/9/4/5/6/7/8/9/0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Can backspace",
+			input: ["cursor,bank,4", "key,BS"],
+			result:
+				"pzprv3/snakeegg/3/3/. . . /. . . /. . . /. . . /. . . /. . . /9/1/2/9/4//6/7/8/9/0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Can erase",
+			input: ["key,BS"],
+			result:
+				"pzprv3/snakeegg/3/3/. . . /. . . /. . . /. . . /. . . /. . . /8/1/2/9/4/6/7/8/9/0 0 0 0 0 0 0 0 /"
+		},
+		{
+			label: "Has moved cursor when erased",
+			result: function(puzzle, assert) {
+				assert.equal(puzzle.cursor.bankpiece, 3);
+			}
+		},
+		{
+			label: "Move horizontally with arrow keys",
+			input: ["key,left,left,left"],
+			result: function(puzzle, assert) {
+				assert.equal(puzzle.cursor.bankpiece, 0);
+			}
+		},
+		{
+			label: "Move up to grid from bank",
+			input: ["key,right,up"],
+			result: function(puzzle, assert) {
+				assert.equal(puzzle.cursor.bankpiece, null);
+				assert.equal(puzzle.cursor.bx, 3);
+				assert.equal(puzzle.cursor.by, 5);
+			}
+		},
+		{
+			label: "Move down to bank from grid",
+			input: ["key,left,down"],
+			result: function(puzzle, assert) {
+				assert.equal(puzzle.cursor.bankpiece, 0);
+			}
 		}
 	]
 });
