@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
-<link rel="manifest" href="./site.webmanifest">
+<link rel="manifest" href="./site.webmanifest" crossorigin="use-credentials">
 <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
 <link rel="stylesheet" href="./css/ui.css?<%= git.hash %>" type="text/css">
 <script type="text/javascript">
@@ -337,6 +337,12 @@ if ('serviceWorker' in navigator) {
         <span>__patchwork_leftaux__</span>
       </label>
     </div>
+    <div class="config" data-config="rampage_coloring">
+      <label>
+        <input type="checkbox">
+        <span>__rampage_coloring__</span>
+      </label>
+    </div>
     <div class="config" data-config="keypopup">
       <label>
         <input type="checkbox">
@@ -461,6 +467,7 @@ if ('serviceWorker' in navigator) {
   <button type="button" class="btn" data-disp-pid="stostone" data-press-exec="dropblocks,resetblocks">__dropblocks__</button>
   <button type="button" class="btn" data-disp-pid="slither" data-button-exec="outlineshaded">__outlineshaded__</button>
   <button type="button" class="btn" data-disp-pid="myopia" data-button-exec="outlineshaded">__outlineshaded__</button>
+  <button type="button" class="btn" data-disp-pid="rampage" data-button-exec="traceroute">__traceroute__</button>
   <button type="button" class="btn" id="btntrial"   data-button-exec="enterTrial">__enterTrial__</button>
   <div id="btntrialarea" style="display:none;">
     <button type="button" class="btn btn-ok" id="btntriala"  data-button-exec="acceptTrial">__acceptTrial__</button

@@ -404,7 +404,6 @@
 			"checkLessFourCells@fourcells",
 			"checkLessFiveCells@fivecells"
 		],
-
 		checkOverThreeCells: function() {
 			this.checkAllArea(
 				this.board.roommgr,

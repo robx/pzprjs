@@ -205,6 +205,7 @@
     "auxdelete.confirm": "このブロックを削除しますか？",
     "encolorall": "色をつける",
     "flushexcell": "ヒントを揃える",
+    "traceroute":"ルートを表示",
     "applypreset": "ブロックの変更",
     "applypreset.title": "ブロックの変更",
     "applypreset.submit": "OK",

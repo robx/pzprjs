@@ -1,3 +1,10 @@
+### 2024-07-01
+
+* contact: New puzzle type Contact
+* rampage: New puzzle type Rampage
+
+### ????-??-??
+
 * aqre: New puzzle type Aqre
 * interbd: New puzzle type International Borders (due to Lennard Sprong)
 * tapaloop: New puzzle type Tapa-Like Loop (due to Giuliano Montelucci)

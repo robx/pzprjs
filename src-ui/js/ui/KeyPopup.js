@@ -1,4 +1,4 @@
-// KeyPopup.js v3.4.0
+// Key.js v3.4.0
 /* global createEL:readonly, getEL:readonly */
 
 //---------------------------------------------------------------------------
@@ -200,6 +200,8 @@ ui.keypopup = {
 		teri: [10, 0],
 		portal: [10, 0],
 		kuromenbun: [10, 0],
+		contact: [6, 0],
+		rampage: [131, 0],
 		bosnianroad: [8, 0],
 		sananko: [10, 113]
 	},
@@ -343,6 +345,8 @@ ui.keypopup = {
 			this.generate_retroships(mode);
 		} else if (type === 130) {
 			this.generate_lix(mode);
+		} else if (type === 131) {
+			this.generate_infinity(mode);
 		}
 	},
 	gentable4: function(mode) {
@@ -984,6 +988,28 @@ ui.keypopup = {
 		this.generate_main(
 			[["l", "L"], ["i", "I"], ["x", "X"], ["-", "?"], " "],
 			3
+		);
+	},
+	generate_infinity: function() {
+		this.generate_main(
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"0",
+				["i", "∞"],
+				null,
+				null,
+				" ",
+				["-", "?"]
+			],
+			5
 		);
 	},
 
