@@ -53,7 +53,10 @@
 				"patchwork_leftaux",
 				true
 			); /* patchwork: Alternative mouse input */
-			this.add("rampage_coloring", false); /* rampage: plaid background coloring */
+			this.add(
+				"rampage_coloring",
+				false
+			); /* rampage: plaid background coloring */
 			this.add("squarecell", true); /* セルは正方形にする */
 
 			/* 入力方法設定 */

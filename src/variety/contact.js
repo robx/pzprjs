@@ -14,7 +14,7 @@
 		autoedit_func: "qnum",
 		autoplay_func: "border",
 		inputModes: {
-			edit: ["number", "empty", "clear"], 
+			edit: ["number", "empty", "clear"],
 			play: ["border", "subline"]
 		},
 		mouseinput_auto: function() {
@@ -54,8 +54,8 @@
 			}
 			var horizontal = cell.by === cell2.by;
 			if (
-				(horizontal && Math.abs(cell.bx - cell2.bx) !== 2) 
-				||	(!horizontal && Math.abs(cell.by - cell2.by) !== 2)
+				(horizontal && Math.abs(cell.bx - cell2.bx) !== 2) ||
+				(!horizontal && Math.abs(cell.by - cell2.by) !== 2)
 			) {
 				return;
 			}
@@ -72,8 +72,8 @@
 			}
 			b.setQans(0);
 			b.draw();
-			blist.each(function(border){
-				if(b !== border) {
+			blist.each(function(border) {
+				if (b !== border) {
 					border.setQans(1);
 					border.draw();
 				}
@@ -110,7 +110,9 @@
 		maxnum: 6,
 
 		isValidNum: function() {
-			return !this.isnull && this.qnum >= this.minnum && this.qnum <= this.maxnum;
+			return (
+				!this.isnull && this.qnum >= this.minnum && this.qnum <= this.maxnum
+			);
 		},
 
 		isCmp: function() {
@@ -119,9 +121,11 @@
 			}
 
 			var dominoes = this.getSurroundingDominoes();
-			if(dominoes.some(function(cell){
-				return cell.room.nodes.length !== 2; 
-			})) {
+			if (
+				dominoes.some(function(cell) {
+					return cell.room.nodes.length !== 2;
+				})
+			) {
 				return false;
 			}
 			return this.qnum === dominoes.length;
@@ -129,28 +133,29 @@
 
 		getSurroundingDominoes: function() {
 			var dominoes = new this.klass.CellList();
-			if(!this.isValidNum() || !this.room.clist || this.room.clist.length !== 2) {
+			if (
+				!this.isValidNum() ||
+				!this.room.clist ||
+				this.room.clist.length !== 2
+			) {
 				return dominoes;
 			}
 
 			var horizontal =
 				!this.adjborder.left.isBorder() || !this.adjborder.right.isBorder();
 			var c = this.room.clist[0];
-			var firstcell, secondcell; 
+			var firstcell, secondcell;
 			// make firstcell top/left and secondcell bottom/right
-			if(!c.adjborder.right.isBorder() || !c.adjborder.bottom.isBorder()) {
-				firstcell = this.room.clist[0],
-				secondcell = this.room.clist[1];
-			}
-			else {
-				firstcell = this.room.clist[1],
-				secondcell = this.room.clist[0];
+			if (!c.adjborder.right.isBorder() || !c.adjborder.bottom.isBorder()) {
+				(firstcell = this.room.clist[0]), (secondcell = this.room.clist[1]);
+			} else {
+				(firstcell = this.room.clist[1]), (secondcell = this.room.clist[0]);
 			}
 
-			var longside = horizontal? ['top', 'bottom']:['left', 'right'];
-			var shortside = horizontal? ['left', 'right']:['top', 'bottom'];
+			var longside = horizontal ? ["top", "bottom"] : ["left", "right"];
+			var shortside = horizontal ? ["left", "right"] : ["top", "bottom"];
 
-			for(var dir in longside) {
+			for (var dir in longside) {
 				var firstlong = firstcell.adjacent[longside[dir]];
 				var secondlong = secondcell.adjacent[longside[dir]];
 				if (firstlong.isValid()) {
@@ -175,7 +180,7 @@
 
 		posthook: {
 			qans: function(num) {
-				if(num >= 1) {
+				if (num >= 1) {
 					this.checkAutoCmp();
 				}
 			}
@@ -191,7 +196,7 @@
 			return !this.isnull && (this.qnum >= 0 || this.qnum === -3);
 		},
 
-		getBullRoute: function(){
+		getBullRoute: function() {
 			var currentCell = this;
 			var loop = false;
 			var routeList = new this.klass.CellList();
@@ -211,15 +216,15 @@
 					}
 				}
 			}
-			return routeList
+			return routeList;
 		},
 
 		getBullRouteLen: function(route) {
 			var len = route.length;
-			var finalCell = route[len-1];
+			var finalCell = route[len - 1];
 			var loop = false;
-			for(var i = 0; i < len-1; i ++) {
-				if(route[i] === finalCell) {
+			for (var i = 0; i < len - 1; i++) {
+				if (route[i] === finalCell) {
 					loop = true;
 					break;
 				}
@@ -228,7 +233,7 @@
 		},
 
 		getPlaidColor: function() {
-			return ((this.bx >> 1) % 2) + 2*((this.by >> 1)% 2)
+			return ((this.bx >> 1) % 2) + 2 * ((this.by >> 1) % 2);
 		}
 	},
 	Border: {
@@ -264,15 +269,15 @@
 		}
 	},
 	"Board@rampage": {
-		operate: function(type){
-			if(type !== "traceroute") {
+		operate: function(type) {
+			if (type !== "traceroute") {
 				return;
 			}
 
 			var cells = this.cell;
 			for (var i = 0; i < this.cell.length; i++) {
-				var c = cells[i]
-				if(c.isValid() && (c.qnum > 0 || c.qnum === -3)) {
+				var c = cells[i];
+				if (c.isValid() && (c.qnum > 0 || c.qnum === -3)) {
 					this.puzzle.painter.paintRoute(c.getBullRoute());
 				}
 			}
@@ -336,7 +341,7 @@
 			return cell.getNum() === -3 ? "∞" : this.getNumberText(cell, cell.qnum);
 		}
 	},
-	"Graphic@contact":{
+	"Graphic@contact": {
 		qcmpcolor: "rgb(127,127,127)",
 		autocmp: "number",
 
@@ -361,12 +366,17 @@
 		}
 	},
 	"Graphic@rampage": {
-		PlaidColors: ["white", "rgb(160,255,160)", "rgb(255,255,127)", "rgb(192,192,192)"],
+		PlaidColors: [
+			"white",
+			"rgb(160,255,160)",
+			"rgb(255,255,127)",
+			"rgb(192,192,192)"
+		],
 		getBGCellColor: function(cell) {
-			if(cell.error) {
+			if (cell.error) {
 				return this.errbcolor1;
 			}
-			if(!this.puzzle.execConfig("rampage_coloring")|| cell.ques === 7) {
+			if (!this.puzzle.execConfig("rampage_coloring") || cell.ques === 7) {
 				return "white";
 			}
 			return this.PlaidColors[cell.getPlaidColor()];
@@ -616,9 +626,9 @@
 					});
 					var room = cell.room.clist;
 					room.seterr(1);
-					for(var i in room) {
-						for(var d in room[i].adjborder) {
-							if(room[i].adjborder[d].isBorder()) {
+					for (var i in room) {
+						for (var d in room[i].adjborder) {
+							if (room[i].adjborder[d].isBorder()) {
 								room[i].adjborder[d].seterr(1);
 							}
 						}
@@ -636,24 +646,24 @@
 					continue;
 				}
 
-				var route = cell.getBullRoute()
+				var route = cell.getBullRoute();
 				var routelen = cell.getBullRouteLen(route);
 
 				var err = false;
-				if(cell.qnum === -3) {
-					if(routelen !== -1) {
+				if (cell.qnum === -3) {
+					if (routelen !== -1) {
 						this.failcode.add("routeLenLoop");
 						err = true;
 					}
-				} else if(routelen === -1 || routelen > cell.qnum) {
+				} else if (routelen === -1 || routelen > cell.qnum) {
 					this.failcode.add("routeLenGt");
 					err = true;
-				} else if(routelen !== -1 && routelen < cell.qnum) {
+				} else if (routelen !== -1 && routelen < cell.qnum) {
 					this.failcode.add("routeLenLt");
 					err = true;
 				}
 
-				if(err) {
+				if (err) {
 					this.puzzle.painter.paintRoute(route);
 				}
 			}
