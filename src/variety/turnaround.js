@@ -8,12 +8,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear", "info-line"],
-			play: [
-				"line",
-				"peke",
-				"clear",
-				"info-line"
-			]
+			play: ["line", "peke", "clear", "info-line"]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "line"
@@ -37,26 +32,28 @@
 			if (!this.isNum() || this.lcnt !== 2) {
 				return -1;
 			}
-			
+
 			var clist = this.getAdjCells();
-			if(clist.some(function(cell) {
-				return cell.lcnt !== 2;
-			})) {
+			if (
+				clist.some(function(cell) {
+					return cell.lcnt !== 2;
+				})
+			) {
 				return -1;
 			}
-			
+
 			clist.add(this);
 			var turncount = 0;
 			clist.each(function(cell) {
 				turncount += cell.isLineCurve() ? 1 : 0;
 			});
-			
+
 			return turncount;
 		},
 
 		getAdjCells: function() {
 			var clist = new this.klass.PieceList();
-			for(var dir in this.adjborder) {
+			for (var dir in this.adjborder) {
 				if (this.adjborder[dir].isLine()) {
 					clist.add(this.adjacent[dir]);
 				}
@@ -66,7 +63,7 @@
 
 		posthook: {
 			qans: function(num) {
-				if(num >= 0) {
+				if (num >= 0) {
 					this.checkAutoCmp();
 				}
 			}
@@ -150,8 +147,8 @@
 		],
 
 		checkTurnCount: function() {
-			this.checkAllCell(function(cell){
-				if(!cell.isValidNum()) {
+			this.checkAllCell(function(cell) {
+				if (!cell.isValidNum()) {
 					return false;
 				}
 
