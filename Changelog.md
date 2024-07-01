@@ -1,6 +1,5 @@
-### 2024-06-04
+### 2024-07-01
 
-* turnaround: New puzzle type Turnaround
 * contact: New puzzle type Contact
 * rampage: New puzzle type Rampage
 

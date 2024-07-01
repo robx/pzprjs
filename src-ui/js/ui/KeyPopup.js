@@ -200,7 +200,6 @@ ui.keypopup = {
 		teri: [10, 0],
 		portal: [10, 0],
 		kuromenbun: [10, 0],
-		turnaround: [3, 0],
 		contact: [6, 0],
 		rampage: [131, 0],
 		bosnianroad: [8, 0],
