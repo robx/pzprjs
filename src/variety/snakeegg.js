@@ -227,11 +227,24 @@
 				constant: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 			},
 			{
+				name: "preset.copy_answer",
+				func: "copyAnswer"
+			},
+			{
 				name: "preset.zero",
 				shortkey: "z",
 				constant: []
 			}
-		]
+		],
+		copyAnswer: function() {
+			var sizes = this.board.ublkmgr.components.map(function(u) {
+				return u.clist.length + "";
+			});
+			sizes.sort(function(a, b) {
+				return a - b;
+			});
+			return sizes;
+		}
 	},
 	BankPiece: {
 		num: null,
@@ -436,7 +449,7 @@
 		checkNumberSize: function() {
 			this.checkAllCell(function(cell) {
 				return (
-					cell.qnum > 0 && cell.ublk && cell.ublk.clist.length !== cell.qnum
+					cell.qnum > 0 && (!cell.ublk || cell.ublk.clist.length !== cell.qnum)
 				);
 			}, "bkSizeNe");
 		},
