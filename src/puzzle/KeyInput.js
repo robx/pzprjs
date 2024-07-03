@@ -515,6 +515,9 @@ pzpr.classmgr.makeCommon({
 			else if (this.modesnum) {
 				this.targetdir = this.puzzle.playmode && this.disableAnum ? 5 : 0;
 			}
+			if (this.puzzle.playmode) {
+				this.bankpiece = null;
+			}
 		},
 		adjust_cell_to_excell: function() {
 			var bd = this.board;

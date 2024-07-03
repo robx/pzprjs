@@ -12,7 +12,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "circle-shade", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "number", "info-blk"]
 		},
 		mouseinput: function() {
 			if (this.inputMode === "circle-shade") {
@@ -64,7 +64,12 @@
 
 	KeyEvent: {
 		enablemake: true,
+		enableplay: true,
 		moveTarget: function(ca) {
+			if (this.puzzle.playmode) {
+				return this.moveTCell(ca);
+			}
+
 			var cursor = this.cursor;
 			if (cursor.bankpiece !== null) {
 				var pos0 = this.cursor.getaddr();
@@ -194,7 +199,11 @@
 	},
 
 	Cell: {
-		minnum: 0,
+		disableAnum: true,
+		minnum: function() {
+			return this.puzzle.playmode ? 1 : 0;
+		},
+		enableSubNumberArray: true,
 		allowShade: function() {
 			return this.qnum === 0 || this.qnum === -1;
 		},
@@ -339,9 +348,12 @@
 
 			this.drawShadedCells();
 			this.drawGrid();
+			this.drawTargetSubNumber(true);
 			this.drawBorders();
 
+			this.drawSubNumbers();
 			this.drawQuesNumbers();
+
 			this.drawCircles();
 
 			this.drawPekes();
@@ -382,6 +394,14 @@
 			g.fillStyle = this.getBankPieceColor(piece);
 			var str = piece.num >= 0 ? "" + piece.num : "";
 			this.disptext(str, x, y, { ratio: 0.65 });
+		},
+
+		drawTarget: function() {
+			this.drawCursor(
+				true,
+				this.puzzle.editmode ||
+					this.puzzle.mouse.inputMode.indexOf("number") >= 0
+			);
 		}
 	},
 
@@ -404,12 +424,14 @@
 			this.decodeCellAns();
 			this.decodePieceBank();
 			this.decodePieceBankQcmp();
+			this.decodeCellSnum();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
 			this.encodePieceBank();
 			this.encodePieceBankQcmp();
+			this.encodeCellSnum();
 		}
 	},
 
