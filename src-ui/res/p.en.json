@@ -76,6 +76,7 @@
     "preset.fleet3": "Battleships (size 3)",
     "preset.fleet4": "Battleships (size 4)",
     "preset.fleet5": "Battleships (size 5)",
+    "preset.nine": "1~9",
     "inputmode": "Input Mode",
     "inputmode.auto": "Auto",
     "inputmode.slide": "Slide",

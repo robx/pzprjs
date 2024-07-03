@@ -2085,7 +2085,7 @@ pzpr.classmgr.makeCommon({
 
 					px = (piece.x + 0.25 + piece.w / 2) * this.cw * r;
 					py = (piece.y + 0.25 + piece.h / 2) * this.ch * r;
-					py += (this.board.rows + 0.5) * this.ch;
+					py += (this.board.rows + this.bankVerticalOffset) * this.ch;
 					w = (piece.w + 0.25) * this.cw * r * 0.5;
 					h = (piece.h + 0.25) * this.ch * r * 0.5;
 				} else {
@@ -2712,7 +2712,7 @@ pzpr.classmgr.makeCommon({
 				var r = this.bankratio;
 				var px = this.cw * r * (addButton.x + 0.25) + 1;
 				var py = this.ch * r * (addButton.y + 0.25) + 1;
-				py += (this.board.rows + 0.5) * this.ch;
+				py += (this.board.rows + this.bankVerticalOffset) * this.ch;
 				var px2 = px + this.cw * r * addButton.w - 1;
 				var py2 = py + this.ch * r * addButton.h - 1;
 				for (var i = 0; i < 4; i++) {

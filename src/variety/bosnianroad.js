@@ -1,4 +1,4 @@
-﻿//
+//
 // bosnianroad.js
 //
 (function(pidlist, classbase) {

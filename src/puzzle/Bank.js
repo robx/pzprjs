@@ -220,7 +220,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.old = index < len ? this.board.bank.pieces[index].serialize() : null;
-			this.num = value || null;
+			this.num = value;
 			this.index = index;
 		},
 
@@ -268,6 +268,9 @@ pzpr.classmgr.makeCommon({
 		},
 
 		isNoop: function() {
+			if (this.num === null) {
+				return false;
+			}
 			return this.old === this.num;
 		},
 
