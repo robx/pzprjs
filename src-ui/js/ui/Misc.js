@@ -204,6 +204,7 @@ function toBGimage(pid) {
 		"tontonbeya",
 		"trainstations",
 		"tslither",
+		"turnaround",
 		"voxas",
 		"vslither",
 		"walllogic",

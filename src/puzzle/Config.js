@@ -53,7 +53,6 @@
 				"patchwork_leftaux",
 				true
 			); /* patchwork: Alternative mouse input */
-
 			this.add("squarecell", true); /* セルは正方形にする */
 
 			/* 入力方法設定 */
