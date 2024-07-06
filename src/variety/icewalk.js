@@ -300,6 +300,90 @@
 	"LineGraph@icewalk": {
 		isLineCross: true
 	},
+	"LineGraph@firewalk": {
+		isLineCross: true,
+		iscrossing: function(cell) {
+			return cell.ice();
+		},
+		getSideNodesByLinkObj: function(border) {
+			var sidenodes = [],
+				sidenodeobj = this.getSideObjByLinkObj(border);
+			for (var i = 0; i < sidenodeobj.length; i++) {
+				var cell = sidenodeobj[i],
+					nodes = this.getObjNodeList(cell),
+					node = nodes[0];
+				if (!!nodes[1]) {
+					var dir = cell.getdir(border, 1);
+					switch (cell.qans) {
+						case 1:
+							if (dir === border.DN || dir === border.RT) {
+								node = nodes[1];
+							}
+							break;
+						case 2:
+							if (dir === border.DN || dir === border.LT) {
+								node = nodes[1];
+							}
+							break;
+						default:
+							if (border.isvert) {
+								node = nodes[1];
+							}
+							break;
+					}
+				}
+				sidenodes.push(node);
+			}
+			return sidenodes;
+		},
+		createNodeIfEmpty: function(cell) {
+			var nodes = this.getObjNodeList(cell);
+
+			// 周囲のNode生成が必要かもしれないのでチェック＆create
+			if (nodes.length === 0) {
+				this.createNode(cell);
+			}
+			// 交差あり盤面の処理
+			else if (
+				!nodes[1] &&
+				nodes[0].nodes.length === 2 &&
+				this.iscrossing(cell)
+			) {
+				// 2本->3本になる時はNodeを追加して分離します
+				// 上下/左右の線が1本ずつだった場合は左右の線をnodes[1]に付加し直します
+				var nbnodes = nodes[0].nodes;
+				var dirs = [
+					cell.getdir(nbnodes[0].obj, 2),
+					cell.getdir(nbnodes[1].obj, 2)
+				];
+				var hordir = cell.qans === 1 ? cell.LT : cell.RT;
+				var isvert = [
+					dirs[0] === cell.UP || dirs[0] === hordir,
+					dirs[1] === cell.UP || dirs[1] === hordir
+				];
+				if (isvert[0] !== isvert[1]) {
+					// breaking up a corner; we create two new nodes to ensure
+					// that the graph gets rebuilt correctly
+					var vertnode = nbnodes[isvert[0] ? 0 : 1];
+					var horiznode = nbnodes[isvert[0] ? 1 : 0];
+					this.removeEdge(nodes[0], vertnode);
+					this.removeEdge(nodes[0], horiznode);
+					this.deleteNode(nodes[0]);
+					this.createNode(cell);
+					this.createNode(cell);
+					this.addEdge(nodes[0], vertnode);
+					this.addEdge(nodes[1], horiznode);
+				}
+				// 両方左右線の場合はnodes[0], nodes[1]を交換してnodes[0]に0本、nodes[1]に2本付加する
+				else {
+					this.createNode(cell);
+					if (!isvert[0] && !isvert[1]) {
+						nodes.push(nodes.shift());
+					}
+				}
+			}
+		}
+	},
 	AreaRoomGraph: {
 		countprop: "l2cnt",
 		enabled: true,
