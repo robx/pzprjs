@@ -324,6 +324,10 @@
 			var otherdir = [cell.DN, cell.LT, cell.RT][cell.qans];
 
 			for (var dir = 1; dir <= 4; dir++) {
+				if (!reusenodes[dir]) {
+					continue;
+				}
+
 				if (dir === cell.UP || dir === otherdir) {
 					this.addEdge(nodes[0], reusenodes[dir]);
 				} else {

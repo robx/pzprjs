@@ -199,7 +199,8 @@ ui.keypopup = {
 		lixloop: [130, 0],
 		teri: [10, 0],
 		portal: [10, 0],
-		kuromenbun: [10, 0]
+		kuromenbun: [10, 0],
+		firewalk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -463,13 +464,19 @@ ui.keypopup = {
 			pid === "icelom2" ||
 			pid === "icewalk" ||
 			pid === "waterwalk" ||
+			pid === "firewalk" ||
 			pid === "dbchoco"
 		) {
 			itemlist.push([
 				"q",
 				{
 					text: "■",
-					color: pid === "dbchoco" ? "rgb(204,204,204)" : "rgb(192,224,255)"
+					color:
+						pid === "dbchoco"
+							? "rgb(204,204,204)"
+							: pid === "firewalk"
+							? "rgb(255,192,192)"
+							: "rgb(192,224,255)"
 				}
 			]);
 		}
