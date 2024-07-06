@@ -301,9 +301,35 @@
 		isLineCross: true
 	},
 	"LineGraph@firewalk": {
+		relation: { "border.line": "link", "cell.qans": "arcs" },
 		isLineCross: true,
-		iscrossing: function(cell) {
-			return cell.ice();
+
+		modifyOtherInfo: function(cell, relation) {
+			var nodes = this.getObjNodeList(cell);
+			if (nodes.length !== 2) {
+				return;
+			}
+
+			var reusenodes = {};
+
+			for (var i = 0; i < nodes.length; i++) {
+				while (nodes[i].nodes.length > 0) {
+					var subnode = nodes[i].nodes[0];
+					this.removeEdge(nodes[i], subnode);
+					var dir = cell.getdir(subnode.obj, 2);
+					reusenodes[dir] = subnode;
+				}
+			}
+
+			var otherdir = [cell.DN, cell.LT, cell.RT][cell.qans];
+
+			for (var dir = 1; dir <= 4; dir++) {
+				if (dir === cell.UP || dir === otherdir) {
+					this.addEdge(nodes[0], reusenodes[dir]);
+				} else {
+					this.addEdge(nodes[1], reusenodes[dir]);
+				}
+			}
 		},
 		getSideNodesByLinkObj: function(border) {
 			var sidenodes = [],
@@ -339,45 +365,37 @@
 		createNodeIfEmpty: function(cell) {
 			var nodes = this.getObjNodeList(cell);
 
-			// 周囲のNode生成が必要かもしれないのでチェック＆create
 			if (nodes.length === 0) {
 				this.createNode(cell);
-			}
-			// 交差あり盤面の処理
-			else if (
+			} else if (
 				!nodes[1] &&
 				nodes[0].nodes.length === 2 &&
 				this.iscrossing(cell)
 			) {
-				// 2本->3本になる時はNodeを追加して分離します
-				// 上下/左右の線が1本ずつだった場合は左右の線をnodes[1]に付加し直します
 				var nbnodes = nodes[0].nodes;
 				var dirs = [
 					cell.getdir(nbnodes[0].obj, 2),
 					cell.getdir(nbnodes[1].obj, 2)
 				];
-				var hordir = cell.qans === 1 ? cell.LT : cell.RT;
-				var isvert = [
-					dirs[0] === cell.UP || dirs[0] === hordir,
-					dirs[1] === cell.UP || dirs[1] === hordir
+				/* Split off the two nodes in a certain direction. */
+				var otherdir = [cell.DN, cell.LT, cell.RT][cell.qans];
+				var isfirst = [
+					dirs[0] === cell.UP || dirs[0] === otherdir,
+					dirs[1] === cell.UP || dirs[1] === otherdir
 				];
-				if (isvert[0] !== isvert[1]) {
-					// breaking up a corner; we create two new nodes to ensure
-					// that the graph gets rebuilt correctly
-					var vertnode = nbnodes[isvert[0] ? 0 : 1];
-					var horiznode = nbnodes[isvert[0] ? 1 : 0];
-					this.removeEdge(nodes[0], vertnode);
-					this.removeEdge(nodes[0], horiznode);
+				if (isfirst[0] !== isfirst[1]) {
+					var firstnode = nbnodes[isfirst[0] ? 0 : 1];
+					var secondnode = nbnodes[isfirst[0] ? 1 : 0];
+					this.removeEdge(nodes[0], firstnode);
+					this.removeEdge(nodes[0], secondnode);
 					this.deleteNode(nodes[0]);
 					this.createNode(cell);
 					this.createNode(cell);
-					this.addEdge(nodes[0], vertnode);
-					this.addEdge(nodes[1], horiznode);
-				}
-				// 両方左右線の場合はnodes[0], nodes[1]を交換してnodes[0]に0本、nodes[1]に2本付加する
-				else {
+					this.addEdge(nodes[0], firstnode);
+					this.addEdge(nodes[1], secondnode);
+				} else {
 					this.createNode(cell);
-					if (!isvert[0] && !isvert[1]) {
+					if (!isfirst[0] && !isfirst[1]) {
 						nodes.push(nodes.shift());
 					}
 				}
