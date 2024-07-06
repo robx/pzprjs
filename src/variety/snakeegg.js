@@ -449,7 +449,8 @@
 			"checkBankPiecesInvalid",
 
 			"checkConnectShade",
-			"checkBankPiecesUsed"
+			"checkBankPiecesUsed",
+			"doneShadingDecided"
 		],
 
 		check2x2ShadeSection: function() {
