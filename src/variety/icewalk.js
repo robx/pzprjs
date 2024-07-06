@@ -467,10 +467,12 @@
 	AnsCheck: {
 		checklist: [
 			"checkBranchLine",
-			"checkCrossLine@waterwalk",
+			"checkCrossLine@waterwalk,firewalk",
 			"checkCrossOutOfIce@icewalk",
 			"checkIceLines@icewalk",
 			"checkWaterWalk@waterwalk",
+			"checkStraightOnFire@firewalk",
+			"checkDoubleTurnOutside@firewalk",
 			"checkLessWalk",
 			"checkOverWalk",
 
@@ -540,6 +542,31 @@
 			this.checkAllCell(function(cell) {
 				return cell.qnum !== -1 && cell.lcnt === 0;
 			}, "lnIsolate");
+		}
+	},
+	"AnsCheck@firewalk": {
+		checkBranchLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 3 && cell.qans === 0;
+			}, "lnBranch");
+		},
+		checkCrossLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 4 && cell.qans === 0;
+			}, "lnCross");
+		},
+		checkDeadendLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 1 || (cell.lcnt === 3 && cell.qans > 0);
+			}, "lnDeadEnd");
+		},
+		checkStraightOnFire: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt >= 2 && cell.ice() && cell.qans === 0;
+			}, "lnStraightOnIce");
+		},
+		checkDoubleTurnOutside: function() {
+			// TODO implement lnDoubleTurn
 		}
 	}
 });
