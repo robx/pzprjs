@@ -525,7 +525,7 @@
 			"checkStraightOnFire@firewalk",
 			"checkLessWalk",
 			"checkOverWalk",
-			
+
 			"checkOneLoop",
 			"checkDoubleTurnOutside@firewalk",
 			"checkNoLineOnNum",
