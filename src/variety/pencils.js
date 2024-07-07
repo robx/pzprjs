@@ -140,25 +140,25 @@
 					// Do not use setArrow here, leave the border intact
 					if (
 						border.isvert &&
-						(cell0.anum === border.LT || cell1.anum === border.RT)
+						(cell0.qans === border.LT || cell1.qans === border.RT)
 					) {
-						if (cell0.anum === border.LT) {
-							cell0.setAnum(-1);
+						if (cell0.qans === border.LT) {
+							cell0.setQans(0);
 						}
-						if (cell1.anum === border.RT) {
-							cell1.setAnum(-1);
+						if (cell1.qans === border.RT) {
+							cell1.setQans(0);
 						}
 						this.inputData = 0;
 					}
 					if (
 						!border.isvert &&
-						(cell0.anum === border.UP || cell1.anum === border.DN)
+						(cell0.qans === border.UP || cell1.qans === border.DN)
 					) {
-						if (cell0.anum === border.UP) {
-							cell0.setAnum(-1);
+						if (cell0.qans === border.UP) {
+							cell0.setQans(0);
 						}
-						if (cell1.anum === border.DN) {
-							cell1.setAnum(-1);
+						if (cell1.qans === border.DN) {
+							cell1.setQans(0);
 						}
 						this.inputData = 0;
 					}
@@ -348,13 +348,13 @@
 				cell: this.adjacent.left
 			};
 
-			var anum = this.anum,
+			var qans = this.qans,
 				qdir = this.qdir;
 
-			this.setAnum(-1);
+			this.setQans(0);
 
-			if (anum > 0 && dirs[anum].cell.anum !== dirs[anum].inv) {
-				dirs[anum].border.setQans(0);
+			if (qans > 0 && dirs[qans].cell.qans !== dirs[qans].inv) {
+				dirs[qans].border.setQans(0);
 			}
 
 			if (question) {
@@ -374,14 +374,14 @@
 				}
 				this.setQdir(dir);
 			} else if (!(qdir >= 1 && qdir <= 4) && this.qnum === -1) {
-				if (anum === dir || dir === 0) {
-					dir = -1;
+				if (qans === dir) {
+					dir = 0;
 				}
 
 				if (dir > 0 && !dirs[dir].border.isnull) {
 					dirs[dir].border.setQans(1);
 				}
-				this.setAnum(dir);
+				this.setQans(dir);
 			}
 		},
 
@@ -390,9 +390,9 @@
 			if (qdir >= 1 && qdir <= 4) {
 				return qdir;
 			}
-			var anum = this.anum;
-			if (anum >= 1 && anum <= 4) {
-				return anum;
+			var qans = this.qans;
+			if (qans >= 1 && qans <= 4) {
+				return qans;
 			}
 			return 0;
 		},
@@ -553,9 +553,9 @@
 				if (!!val) {
 					cell.qdir = val;
 				}
-				var val = trans[cell.anum];
+				var val = trans[cell.qans];
 				if (!!val) {
-					cell.anum = val;
+					cell.qans = val;
 				}
 			}
 		}
@@ -801,7 +801,7 @@
 				}
 
 				if (ca !== "." && +ca <= 4) {
-					cell.anum = +ca;
+					cell.qans = +ca;
 				}
 			});
 		},
@@ -827,8 +827,8 @@
 					ca += "-";
 				}
 
-				if (cell.anum !== -1) {
-					ca += cell.anum.toString();
+				if (cell.qans !== 0) {
+					ca += cell.qans.toString();
 				}
 
 				if (ca === "") {

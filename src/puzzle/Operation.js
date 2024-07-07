@@ -483,6 +483,15 @@ pzpr.classmgr.makeCommon({
 		push: function(ope) {
 			this[this.length++] = ope;
 		},
+		pop: function() {
+			if (this.length > 0) {
+				var ope = this[this.length - 1];
+				delete this[this.length - 1];
+				this.length--;
+				return ope;
+			}
+			return null;
+		},
 		some: function(func) {
 			return Array.prototype.slice.call(this).some(func);
 		}
@@ -716,8 +725,12 @@ pzpr.classmgr.makeCommon({
 			} else {
 				/* merged into previous operation, remove if noop */
 				if (this.lastope.isNoop && this.lastope.isNoop()) {
-					this.history.pop();
-					this.position--;
+					if (this.history[this.history.length - 1].length <= 1) {
+						this.history.pop();
+						this.position--;
+					} else {
+						this.history[this.history.length - 1].pop();
+					}
 					this.lastope = null;
 				}
 			}
