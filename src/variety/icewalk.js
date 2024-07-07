@@ -171,6 +171,17 @@
 	Board: {
 		hasborder: 2
 	},
+	"BoardExec@firewalk": {
+		adjustBoardData: function(key, d) {
+			if (key & this.TURNFLIP) {
+				var clist = this.board.cell;
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					cell.qans = { 0: 0, 1: 2, 2: 1 }[cell.qans];
+				}
+			}
+		}
+	},
 	Graphic: {
 		irowake: true,
 		bgcellcolor_func: "icebarn",
