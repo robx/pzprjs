@@ -18,6 +18,9 @@
 					} else if (this.mouseend && this.notInputted()) {
 						this.prevPos.reset();
 						this.inputpeke();
+						if (this.pid === "firewalk" && this.notInputted()) {
+							this.toggleArcs();
+						}
 					}
 				} else if (
 					this.btn === "right" &&
@@ -51,6 +54,14 @@
 		}
 	},
 	"MouseEvent@firewalk": {
+		toggleArcs: function() {
+			var cell = this.getcell();
+			if (cell.isnull || !cell.ice() || cell.lcnt < 3) {
+				return;
+			}
+			cell.setQans(cell.qans !== 1 ? 1 : 2);
+			cell.drawaround();
+		},
 		inputLine: function() {
 			var cell = this.getcell();
 			this.initFirstCell(cell);
