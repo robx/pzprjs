@@ -413,44 +413,10 @@
 			}
 			return sidenodes;
 		},
-		createNodeIfEmpty: function(cell) {
-			var nodes = this.getObjNodeList(cell);
-
-			if (nodes.length === 0) {
-				this.createNode(cell);
-			} else if (
-				!nodes[1] &&
-				nodes[0].nodes.length === 2 &&
-				this.iscrossing(cell)
-			) {
-				var nbnodes = nodes[0].nodes;
-				var dirs = [
-					cell.getdir(nbnodes[0].obj, 2),
-					cell.getdir(nbnodes[1].obj, 2)
-				];
-				/* Split off the two nodes in a certain direction. */
-				var otherdir = [cell.DN, cell.LT, cell.RT][cell.qans];
-				var isfirst = [
-					dirs[0] === cell.UP || dirs[0] === otherdir,
-					dirs[1] === cell.UP || dirs[1] === otherdir
-				];
-				if (isfirst[0] !== isfirst[1]) {
-					var firstnode = nbnodes[isfirst[0] ? 0 : 1];
-					var secondnode = nbnodes[isfirst[0] ? 1 : 0];
-					this.removeEdge(nodes[0], firstnode);
-					this.removeEdge(nodes[0], secondnode);
-					this.deleteNode(nodes[0]);
-					this.createNode(cell);
-					this.createNode(cell);
-					this.addEdge(nodes[0], firstnode);
-					this.addEdge(nodes[1], secondnode);
-				} else {
-					this.createNode(cell);
-					if (!isfirst[0] && !isfirst[1]) {
-						nodes.push(nodes.shift());
-					}
-				}
-			}
+		usesSecondNode: function(cell, other) {
+			var otherdir = [cell.DN, cell.LT, cell.RT][cell.qans];
+			var dir = cell.getdir(other, 2);
+			return dir === cell.UP || dir === otherdir;
 		}
 	},
 	AreaRoomGraph: {
