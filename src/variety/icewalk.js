@@ -123,6 +123,7 @@
 		},
 		posthook: {
 			line: function(val) {
+				this.board.scanResult = null;
 				this.board.roommgr.isStale = true;
 				for (var sc = 0; sc <= 1; sc++) {
 					var cell = this.sidecell[sc];
@@ -169,7 +170,39 @@
 		l2cnt: 0
 	},
 	Board: {
-		hasborder: 2
+		hasborder: 2,
+		scanResult: null,
+		scanInside: function() {
+			if (this.scanResult !== null) {
+				return this.scanResult;
+			}
+
+			if (
+				this.cell.some(function(cell) {
+					return cell.lcnt === 1 && cell.lcnt === 3;
+				})
+			) {
+				this.scanResult = false;
+				return false;
+			}
+
+			for (var y = 2; y < this.maxby; y += 2) {
+				var inside = false;
+				for (var x = 1; x < this.maxbx; x += 2) {
+					if (this.getb(x, y).isLine()) {
+						inside ^= true;
+					}
+					this.getx(x + 1, y).inside = inside;
+				}
+			}
+
+			this.scanResult = true;
+			return true;
+		},
+		rebuildInfo: function() {
+			this.scanResult = null;
+			this.common.rebuildInfo.call(this);
+		}
 	},
 	"BoardExec@firewalk": {
 		adjustBoardData: function(key, d) {
@@ -490,11 +523,11 @@
 			"checkIceLines@icewalk",
 			"checkWaterWalk@waterwalk",
 			"checkStraightOnFire@firewalk",
-			"checkDoubleTurnOutside@firewalk",
 			"checkLessWalk",
 			"checkOverWalk",
-
+			
 			"checkOneLoop",
+			"checkDoubleTurnOutside@firewalk",
 			"checkNoLineOnNum",
 			"checkDeadendLine+"
 		],
@@ -584,7 +617,16 @@
 			}, "lnStraightOnIce");
 		},
 		checkDoubleTurnOutside: function() {
-			// TODO implement lnDoubleTurn
+			if (!this.board.scanInside()) {
+				return;
+			}
+			this.checkAllCell(function(cell) {
+				return (
+					cell.lcnt === 4 &&
+					((cell.qans === 1 && cell.relcross(-1, -1).inside) ||
+						(cell.qans === 2 && cell.relcross(1, -1).inside))
+				);
+			}, "lnDoubleTurn");
 		}
 	}
 });
