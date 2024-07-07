@@ -182,11 +182,6 @@
 
 			this.drawLines();
 
-			if (this.pid === "firewalk") {
-				this.drawArcBackground();
-				this.drawArcCorners();
-			}
-
 			this.drawPekes();
 			this.drawQuesNumbers();
 
@@ -206,9 +201,17 @@
 	},
 	"Graphic@firewalk": {
 		icecolor: "rgb(255, 192, 192)",
+
+		drawLines: function() {
+			/* This function may be called outside of calls to paint() */
+			this.common.drawLines.call(this);
+			this.drawArcBackground();
+			this.drawArcCorners();
+		},
+
 		drawArcBackground: function() {
 			var g = this.vinc("arc_back", "crispEdges", true);
-			var clist = this.range.cells;
+			var clist = this.range.borders.cellinside();
 			var pad = this.lw;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
@@ -231,7 +234,7 @@
 			var g = this.vinc("arcs", "auto", true);
 			g.lineWidth = this.lm * 2;
 			var rsize = this.bw;
-			var clist = this.range.cells;
+			var clist = this.range.borders.cellinside();
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
 				var px1 = (cell.bx - 1) * this.bw,
