@@ -662,6 +662,7 @@
     "nmConnected.yajisoko": "箱どうしが線でつながっています。",
     "nmNotSeq.numrope": "線上の数字が連続していません。",
     "nmRange.kakuru": "数字が9より大きいです。",
+    "nmRange.sananko": "数字が3より大きいです。",
     "nmSubNe1.numrope": "隣り合う数字の差が1ではありません。",
     "nmUnshadeAdjNe.context": "タテヨコに隣り合う黒マスの数が数字と異なります。",
     "arDistanceGt.pentopia": "矢印のない方向に、近すぎる黒マスがあります。",

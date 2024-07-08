@@ -180,6 +180,7 @@ function toBGimage(pid) {
 		"remlen",
 		"retroships",
 		"roundtrip",
+		"sananko",
 		"sashikazune",
 		"satogaeri",
 		"scrin",
