@@ -54,11 +54,7 @@
 				return;
 			}
 
-			if (
-				(this.pid !== "takoyaki") &&
-				cell.lcnt === 1 &&
-				this.btn === "left"
-			) {
+			if (this.pid !== "takoyaki" && cell.lcnt === 1 && this.btn === "left") {
 				cell.setLineVal(+!cell.line);
 				cell.draw();
 			} else if (cell.isNum()) {
@@ -355,6 +351,22 @@
 		enabled: true,
 		makeClist: true
 	},
+	"LineGraph@zabajaba": {
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			var d = component.clist.getRectSize();
+
+			if (d.rows === 1 && d.cols === 3) {
+				component.shape = 1;
+			} else if (d.rows === 3 && d.cols === 1) {
+				component.shape = 2;
+			} else if (d.rows === 2 && d.cols === 2 && d.cnt === 4) {
+				component.shape = 3;
+			} else {
+				component.shape = d.cnt === 2 ? 0 : -1;
+			}
+		}
+	},
 	"AreaUnshadeGraph@kaidan": {
 		enabled: true,
 		relation: { "cell.qnum": "node", "cell.qans": "node" },
@@ -362,7 +374,7 @@
 			return !cell.noLP();
 		}
 	},
-	"AreaUnshadeGraph@wittgen": {
+	"AreaUnshadeGraph@wittgen,zabajaba": {
 		enabled: true,
 		relation: { "border.line": "block" },
 		isnodevalid: function(cell) {
@@ -371,6 +383,11 @@
 		modifyOtherInfo: function(border, relation) {
 			this.setEdgeByNodeObj(border.sidecell[0]);
 			this.setEdgeByNodeObj(border.sidecell[1]);
+		}
+	},
+	"AreaUnshadeGraph@zabajaba#1": {
+		isnodevalid: function(cell) {
+			return cell.lcnt > 0;
 		}
 	},
 
@@ -887,6 +904,67 @@
 				1,
 				"nmLineLt"
 			);
+		}
+	},
+	"AnsCheck@zabajaba#1": {
+		checklist: [
+			"checkDir8BlockOver",
+			"checkShapeAdjacent",
+			"checkInvalidShape",
+			"checkConnectUnshade",
+			"checkDir8BlockLess"
+		],
+		checkInvalidShape: function() {
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				if (paths[r].shape > 0) {
+					continue;
+				}
+				this.failcode.add("bkNotRect");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				paths[r].setedgeerr(1);
+			}
+		},
+		checkShapeAdjacent: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				return (
+					cell1.path &&
+					cell2.path &&
+					cell1.path !== cell2.path &&
+					cell1.path.shape > 0 &&
+					cell1.path.shape === cell2.path.shape
+				);
+			}, "bkSameTouch");
+		},
+		checkDir8: function(sign, code) {
+			this.checkAllCell(function(cell) {
+				if (!cell.isValidNum()) {
+					return false;
+				}
+				var clist = cell.board.cellinside(
+					cell.bx - 2,
+					cell.by - 2,
+					cell.bx + 2,
+					cell.by + 2
+				);
+				var shapes = new Set();
+				clist.each(function(c) {
+					if (c.path) {
+						shapes.add(c.path);
+					}
+				});
+				return (shapes.size - cell.getNum()) * sign > 0;
+			}, code);
+		},
+		checkDir8BlockOver: function() {
+			this.checkDir8(+1, "nmLineGt");
+		},
+		checkDir8BlockLess: function() {
+			this.checkDir8(-1, "nmLineLt");
 		}
 	},
 	"FailCode@takoyaki": {
