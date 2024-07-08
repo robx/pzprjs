@@ -1,10 +1,11 @@
+/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaidan", "takoyaki", "wittgen"], {
+})(["kaidan", "takoyaki", "wittgen", "zabajaba"], {
 	MouseEvent: {
 		use: true,
 		RBShadeCell: true,
@@ -54,7 +55,7 @@
 			}
 
 			if (
-				(this.pid === "kaidan" || this.pid === "wittgen") &&
+				(this.pid !== "takoyaki") &&
 				cell.lcnt === 1 &&
 				this.btn === "left"
 			) {
@@ -219,32 +220,36 @@
 	"Border@takoyaki": {
 		enableLineNG: true
 	},
-	"Border@wittgen": {
+	"Border@wittgen,zabajaba": {
 		prehook: {
 			line: function(num) {
 				if (!num) {
 					return false;
 				}
 
-				if (this.isLineNG() || this.checkFormCurve(num)) {
+				if (
+					this.isLineNG() ||
+					(this.pid === "wittgen" && this.checkFormCurve(num))
+				) {
 					return true;
 				}
+				var set = new Set();
+				for (var i = 0; i < 2; i++) {
+					var cell = this.sidecell[i];
+					if (cell.isnull) {
+						continue;
+					}
+					set.add(cell);
+					var path = cell.path;
+					if (path) {
+						path.clist.each(function(pc) {
+							set.add(pc);
+						});
+					}
+				}
 
-				var length = 0;
-
-				if (this.isVert() && this.relbd(-2, 0).path) {
-					length += this.relbd(-2, 0).path.clist.length;
-				}
-				if (this.isVert() && this.relbd(2, 0).path) {
-					length += this.relbd(2, 0).path.clist.length;
-				}
-				if (!this.isVert() && this.relbd(0, -2).path) {
-					length += this.relbd(0, -2).path.clist.length;
-				}
-				if (!this.isVert() && this.relbd(0, 2).path) {
-					length += this.relbd(0, 2).path.clist.length;
-				}
-				return length >= 3;
+				var d = new this.klass.CellList(set).getRectSize();
+				return d.rows + d.cols > 4;
 			}
 		},
 		posthook: {
@@ -335,6 +340,9 @@
 			}
 		}
 	},
+	"Cell@zabajaba": {
+		maxnum: 8
+	},
 
 	Board: {
 		cols: 8,
@@ -376,12 +384,12 @@
 			this.drawBGCells();
 			this.drawGrid();
 
-			if (this.pid !== "wittgen") {
+			if (this.pid !== "wittgen" && this.pid !== "zabajaba") {
 				this.drawQuesCells();
 			}
 			this.drawQuesNumbers();
 
-			if (this.pid !== "wittgen") {
+			if (this.pid !== "wittgen" && this.pid !== "zabajaba") {
 				this.drawCircles();
 				this.drawCrosses();
 			} else {
@@ -390,7 +398,11 @@
 			}
 
 			this.drawLines();
-			if (this.pid === "kaidan" || this.pid === "wittgen") {
+			if (
+				this.pid === "kaidan" ||
+				this.pid === "wittgen" ||
+				this.pid === "zabajaba"
+			) {
 				this.drawLineEnds();
 			}
 			this.drawPekes();
@@ -447,7 +459,7 @@
 			}
 		}
 	},
-	"Graphic@kaidan,wittgen": {
+	"Graphic@kaidan,wittgen,zabajaba": {
 		drawLines: function() {
 			var g = this.vinc("line", "crispEdges");
 			var mx = this.bw / 2;
@@ -532,13 +544,15 @@
 	"Graphic@takoyaki": {
 		irowake: true
 	},
-	"Graphic@wittgen#2": {
+	"Graphic@wittgen,zabajaba#1": {
 		getQuesNumberColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errcolor1;
 			}
 			return cell.qcmp ? this.qcmpcolor : this.quescolor;
-		},
+		}
+	},
+	"Graphic@wittgen#2": {
 		drawMBs: function() {
 			var g = this.vinc("cell_mb", "auto", true);
 			g.lineWidth = 1;
@@ -593,6 +607,14 @@
 		},
 		encodePzpr: function(type) {
 			this.encode4Cell();
+		}
+	},
+	"Encode@zabajaba": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
 		}
 	},
 	FileIO: {
