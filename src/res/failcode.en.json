@@ -453,6 +453,8 @@
     "haisuError.kaisu": "A region visit contains an incorrect amount of circles.",
     "haisuSG.haisu": "The line goes through S/G.",
     "invalid": "Invalid Error",
+    "curvingNoTurns.curving": "A path between circles does not turn.",
+    "curvingOneTurn.curving": "A path between circles turns only once.",
     "kitamakura.shugaku": "There is a futon that faces down.",
     "laCurve.herugolf": "A ball curves halfway.",
     "laCurve.kaidan": "Two rectangles overlap.",

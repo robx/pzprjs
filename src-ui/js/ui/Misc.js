@@ -127,6 +127,7 @@ function toBGimage(pid) {
 		"coral",
 		"cts",
 		"curvedata",
+		"curving",
 		"dbchoco",
 		"detour",
 		"dominion",
