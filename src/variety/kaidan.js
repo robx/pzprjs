@@ -175,6 +175,42 @@
 			}
 		}
 	},
+	"MouseEvent@zabajaba": {
+		inputLine: function() {
+			var cell = this.getcell();
+			this.initFirstCell(cell);
+
+			var pos = this.getpos(0);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+			var border = this.prevPos.getnb(pos);
+
+			if (!border.isnull) {
+				if (this.inputData === null) {
+					this.inputData = border.isLine() ? 0 : 1;
+				}
+				if (this.inputData === 1) {
+					border.setLine();
+				} else if (this.inputData === 0) {
+					if (cell.path && cell.path.shape === 3) {
+						var d = cell.path.clist.getRectSize();
+						var borders = this.board.borderinside(d.x1, d.y1, d.x2, d.y2);
+						borders.each(function(bd) {
+							if (bd === border || (bd.bx !== cell.bx && bd.by !== cell.by)) {
+								bd.removeLine();
+							}
+						});
+						this.puzzle.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
+					} else {
+						border.removeLine();
+					}
+				}
+				border.draw();
+			}
+			this.prevPos = pos;
+		}
+	},
 	"MouseEvent@wittgen,zabajaba#2": {
 		inputModes: {
 			edit: ["number", "undef", "clear"],
@@ -297,8 +333,6 @@
 						}
 					}
 				}
-
-				// TODO reduce 2x2 square when erasing line
 
 				if (!this.line && this.isVert()) {
 					if (this.relbd(-2, 0).line) {
