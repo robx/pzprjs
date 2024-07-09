@@ -50,7 +50,7 @@ ui.debug.addDebugData("firewalk", {
 	],
 	inputs: [
 		{
-			input: ["newboard,3,3", "editmode,ice", "mouse,left,3,3"],
+			input: ["newboard,3,3", "editmode,fire", "mouse,left,3,3"],
 			result:
 				"pzprv3/firewalk/3/3/. . . /. # . /. . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /"
 		},

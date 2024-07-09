@@ -54,6 +54,15 @@
 		}
 	},
 	"MouseEvent@firewalk": {
+		inputModes: {
+			edit: ["fire", "number", "clear", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "fire") {
+				this.inputIcebarn();
+			}
+		},
 		toggleArcs: function() {
 			var cell = this.getcell();
 			if (cell.isnull || !cell.ice() || cell.lcnt < 3) {

@@ -104,6 +104,7 @@
     "inputmode.empty": "Invalid cells",
     "inputmode.ice": "Icebarns",
     "inputmode.water": "Water hazard",
+    "inputmode.fire": "Fire",
     "inputmode.nabe": "Crocks",
     "inputmode.box": "Boxes",
     "inputmode.pin": "Pins",
