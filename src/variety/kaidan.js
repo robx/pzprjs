@@ -61,7 +61,7 @@
 				this.inputqcmp();
 			} else if (this.btn === "right" && this.inputpeke_ifborder()) {
 				return;
-			} else if (this.pid === "wittgen") {
+			} else if (this.pid === "wittgen" || this.pid === "zabajaba") {
 				this.inputShade();
 			} else {
 				this.inputcell();
@@ -175,7 +175,7 @@
 			}
 		}
 	},
-	"MouseEvent@wittgen#2": {
+	"MouseEvent@wittgen,zabajaba#2": {
 		inputModes: {
 			edit: ["number", "undef", "clear"],
 			play: ["line", "peke", "subcircle", "objblank", "completion"]
@@ -245,6 +245,15 @@
 				}
 
 				var d = new this.klass.CellList(set).getRectSize();
+
+				if (d.rows === 2 && d.cols === 2) {
+					return this.board
+						.cellinside(d.x1, d.y1, d.x2, d.y2)
+						.some(function(cell) {
+							return cell.noLP();
+						});
+				}
+
 				return d.rows + d.cols > 4;
 			}
 		},
@@ -261,7 +270,24 @@
 					cell.draw();
 				}
 				if (this.path && this.path.clist.length === 3) {
-					// TODO make 2x2 square
+					if (this.pid === "zabajaba" && this.line) {
+						var d = this.path.clist.getRectSize();
+						if (d.rows === 2 && d.cols === 2) {
+							/* Enforce 2x2 square */
+							this.board
+								.borderinside(d.x1, d.y1, d.x2, d.y2)
+								.each(function(border) {
+									border.setLineVal(1);
+								});
+							this.board
+								.cellinside(d.x1, d.y1, d.x2, d.y2)
+								.each(function(cell) {
+									cell.setLineVal(0);
+									cell.draw();
+								});
+							this.puzzle.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
+						}
+					}
 
 					for (var c = 0; c < 3; c++) {
 						var cell = this.path.clist[c];
@@ -271,6 +297,9 @@
 						}
 					}
 				}
+
+				// TODO reduce 2x2 square when erasing line
+
 				if (!this.line && this.isVert()) {
 					if (this.relbd(-2, 0).line) {
 						var cell = this.relcell(-3, 0);
@@ -328,7 +357,7 @@
 			return this.qnum === -1;
 		}
 	},
-	"Cell@wittgen": {
+	"Cell@wittgen,zabajaba": {
 		isDot: function() {
 			return this.qsub === 2 && this.lcnt === 0;
 		},
@@ -338,7 +367,7 @@
 			}
 		}
 	},
-	"Cell@zabajaba": {
+	"Cell@zabajaba#1": {
 		maxnum: 8
 	},
 
@@ -584,9 +613,7 @@
 				return this.errcolor1;
 			}
 			return cell.qcmp ? this.qcmpcolor : this.quescolor;
-		}
-	},
-	"Graphic@wittgen#2": {
+		},
 		drawMBs: function() {
 			var g = this.vinc("cell_mb", "auto", true);
 			g.lineWidth = 1;
@@ -608,7 +635,9 @@
 					g.vhide();
 				}
 			}
-		},
+		}
+	},
+	"Graphic@wittgen#2": {
 		qsubcolor1: "rgb(224, 224, 255)",
 		getBGCellColor: function(cell) {
 			if (cell.error === 1 || cell.qinfo === 1) {
@@ -947,14 +976,27 @@
 			}
 		},
 		checkShapeAdjacent: function() {
+			var bd = this.board;
+			var shouldmark = !this.checkOnly;
+
 			this.checkSideCell(function(cell1, cell2) {
-				return (
+				if (
 					cell1.path &&
 					cell2.path &&
 					cell1.path !== cell2.path &&
 					cell1.path.shape > 0 &&
 					cell1.path.shape === cell2.path.shape
-				);
+				) {
+					if (shouldmark) {
+						bd.border.setnoerr();
+						shouldmark = false;
+					}
+
+					cell1.path.setedgeerr(1);
+					cell2.path.setedgeerr(1);
+					return true;
+				}
+				return false;
 			}, "bkSameTouch");
 		},
 		checkDir8: function(sign, code) {
