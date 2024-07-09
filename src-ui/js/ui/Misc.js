@@ -135,6 +135,7 @@ function toBGimage(pid) {
 		"doubleback",
 		"easyasabc",
 		"evolmino",
+		"firewalk",
 		"geradeweg",
 		"heteromino",
 		"heyapin",
