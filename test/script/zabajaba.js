@@ -28,5 +28,40 @@ ui.debug.addDebugData("zabajaba", {
 			"pzprv3/zabajaba/6/6/. . . 2 . . /. . . . . . /1 2 . . . . /. . . . 3 3 /. . . . . . /. . 1 . . . /0 0 0 0 0 2 /0 0 2 0 0 0 /0 0 0 0 0 2 /0 0 2 0 0 0 /0 0 2 0 2 0 /0 0 0 0 0 0 /1 0 0 0 0 /1 0 0 1 0 /0 0 0 1 0 /0 0 0 0 0 /0 0 1 1 0 /0 0 0 0 0 /1 1 0 0 0 1 /0 0 1 1 1 1 /0 0 1 0 0 0 /0 0 0 0 0 0 /0 0 0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,4,4", "editmode", "key,-"],
+			result:
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
+		},
+		{
+			label: "Block 2x2 input",
+			input: ["playmode", "mouse,left,3,1,3,3,1,3"],
+			result:
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 0 0 /0 1 0 0 /0 0 0 0 /0 0 0 0 /"
+		},
+		{
+			label: "Input blocks",
+			input: [
+				"ansclear",
+				"mouse,left,3,1,3,3,5,3",
+				"mouse,left,7,1,7,5",
+				"mouse,left,7,7,3,7"
+			],
+			result:
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /0 0 0 0 /0 0 0 2 /0 2 0 2 /0 1 0 /0 1 0 /0 0 0 /0 1 1 /0 1 1 1 /0 0 0 1 /0 0 0 0 /"
+		},
+		{
+			label: "Aux marks",
+			input: ["mouse,left,1,3", "mouse,left,1,5", "mouse,right,3,5,5,5"],
+			result:
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /4 0 0 0 /4 0 0 2 /0 2 0 2 /0 1 0 /0 1 0 /0 0 0 /0 1 1 /0 1 1 1 /0 0 0 1 /0 0 0 0 /"
+		},
+		{
+			label: "Collapse 2x2 block",
+			input: ["mouse,left,3,1,3,3", "playmode,info-room", "mouse,left,7,1"],
+			result:
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /4 0 0 0 /4 0 0 2 /0 2 0 2 /0 0 0 /0 1 0 /0 0 0 /0 1 1 /0 0 0 1 /0 0 0 1 /0 0 0 0 /"
+		}
+	]
 });
