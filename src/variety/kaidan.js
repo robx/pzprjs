@@ -261,6 +261,8 @@
 					cell.draw();
 				}
 				if (this.path && this.path.clist.length === 3) {
+					// TODO make 2x2 square
+
 					for (var c = 0; c < 3; c++) {
 						var cell = this.path.clist[c];
 						if (cell.lcnt === 1) {
@@ -487,29 +489,44 @@
 				var border = blist[i],
 					color = this.getLineColor(border);
 
-				if (!!color) {
-					var px = border.bx * this.bw,
-						py = border.by * this.bh;
+				var col1 = color,
+					col2 = color;
 
-					var isvert = this.board.borderAsLine === border.isVert();
-					var lm = this.lm + this.addlw / 2;
+				var px = border.bx * this.bw,
+					py = border.by * this.bh;
 
-					g.fillStyle = color;
+				var isvert = this.board.borderAsLine === border.isVert();
+				var lm = this.lm + this.addlw / 2;
+
+				/* Zabajaba 2x2 shapes */
+				if (border.path && border.path.shape === 3) {
+					var d = border.path.clist.getRectSize();
+					if (d.x1 === border.bx || d.y1 === border.by) {
+						col2 = null;
+					} else {
+						col1 = null;
+					}
+				}
+
+				g.fillStyle = color;
+				g.vid = "b_line1_" + border.id;
+				if (!!col1) {
 					if (isvert) {
-						g.vid = "b_line1_" + border.id;
 						g.fillRectCenter(px - mx, py, lm, this.bh + lm + my);
-						g.vid = "b_line2_" + border.id;
+					} else {
+						g.fillRectCenter(px, py - my, this.bw + lm + mx, lm);
+					}
+				} else {
+					g.vhide();
+				}
+				g.vid = "b_line2_" + border.id;
+				if (!!col2) {
+					if (isvert) {
 						g.fillRectCenter(px + mx, py, lm, this.bh + lm + my);
 					} else {
-						g.vid = "b_line1_" + border.id;
-						g.fillRectCenter(px, py - my, this.bw + lm + mx, lm);
-						g.vid = "b_line2_" + border.id;
 						g.fillRectCenter(px, py + my, this.bw + lm + mx, lm);
 					}
 				} else {
-					g.vid = "b_line1_" + border.id;
-					g.vhide();
-					g.vid = "b_line2_" + border.id;
 					g.vhide();
 				}
 			}
