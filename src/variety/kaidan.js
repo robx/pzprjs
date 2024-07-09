@@ -175,7 +175,20 @@
 			}
 		}
 	},
+	"MouseEvent@wittgen#1": {
+		inputModes: {
+			edit: ["number", "undef", "clear"],
+			play: ["line", "peke", "subcircle", "objblank", "completion"]
+		}
+	},
 	"MouseEvent@zabajaba": {
+		inputModes: {
+			edit: ["number", "undef", "clear", "info-room"],
+			play: ["line", "peke", "subcircle", "objblank", "completion", "info-room"]
+		},
+		dispInfoRoom: function() {
+			this.dispInfoUblk();
+		},
 		inputLine: function() {
 			var cell = this.getcell();
 			this.initFirstCell(cell);
@@ -212,10 +225,6 @@
 		}
 	},
 	"MouseEvent@wittgen,zabajaba#2": {
-		inputModes: {
-			edit: ["number", "undef", "clear"],
-			play: ["line", "peke", "subcircle", "objblank", "completion"]
-		},
 		inputShade: function() {
 			if (this.puzzle.getConfig("use") === 2) {
 				this.inputBGcolor();
