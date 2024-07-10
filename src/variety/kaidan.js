@@ -1022,25 +1022,29 @@
 			var bd = this.board;
 			var shouldmark = !this.checkOnly;
 
-			this.checkSideCell(function(cell1, cell2) {
-				if (
-					cell1.path &&
-					cell2.path &&
-					cell1.path !== cell2.path &&
-					cell1.path.shape > 0 &&
-					cell1.path.shape === cell2.path.shape
-				) {
-					if (shouldmark) {
-						bd.border.setnoerr();
-						shouldmark = false;
-					}
+			this.checkSideCell(
+				function(cell1, cell2) {
+					if (
+						cell1.path &&
+						cell2.path &&
+						cell1.path !== cell2.path &&
+						cell1.path.shape > 0 &&
+						cell1.path.shape === cell2.path.shape
+					) {
+						if (shouldmark) {
+							bd.border.setnoerr();
+							shouldmark = false;
+						}
 
-					cell1.path.setedgeerr(1);
-					cell2.path.setedgeerr(1);
-					return true;
-				}
-				return false;
-			}, "bkSameTouch");
+						cell1.path.setedgeerr(1);
+						cell2.path.setedgeerr(1);
+						return true;
+					}
+					return false;
+				},
+				"bkSameTouch",
+				false
+			);
 		},
 		checkDir8: function(sign, code) {
 			this.checkAllCell(function(cell) {
