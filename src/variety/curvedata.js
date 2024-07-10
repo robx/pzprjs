@@ -333,18 +333,15 @@
 		bits: [],
 		w: 0,
 
-		// The following fields are derived from the `bits` and `w` values.
-		// If their values are null, `build()` must be called to fill them.
+		// The following field is derived from the `bits` and `w` values.
+		// If its value is null, `build()` must be called to fill it.
 		//
-		// Positions is a map with node shapes as keys, and an array of indexes as the value.
-		// A node shape is defined by the bit value of itself and its four neighbours.
-		// Using more distinct keys (instead of only the value of `bits`) keeps each array of
-		// positions short, which means less permutations and less total combinations.
-		positions: null,
-		// Connections is a map with positions in `bits` as the key,
-		// and a map of four position arrays as the value. This represents the graph.
+		// Connections is an array representing the graph, with one element for each
+		// meaningful node in `bits` (not 0, 5, or 10). Each element is an array of
+		// length 4 representing graph indices of nodes connected right, down, left,
+		// and up, in this order. Null represents no node in that direction.
 		connections: null,
-		nodecnt: 0,
+
 		// Cached result of encodeBits().
 		serialized: null,
 
@@ -365,9 +362,7 @@
 		},
 
 		invalidate: function() {
-			this.positions = null;
 			this.connections = null;
-			this.nodecnt = 0;
 			this.serialized = null;
 		},
 
@@ -389,95 +384,84 @@
 		},
 
 		build: function() {
-			var len = this.bits.length;
-			var w = this.w;
-			var h = len / this.w;
-			this.positions = {};
-			this.connections = {};
-			this.nodecnt = 0;
+			this.connections = [];
 
 			this.buildBits();
 
-			// Fill the connections map.
-			for (var id = 0; id < len; id++) {
+			var left = null;
+			var above = new Array(this.w);
+			for (var id = 0; id < this.bits.length; id++) {
 				var key = this.bits[id];
 				if (key === 0 || key === 5 || key === 10) {
 					continue;
 				}
-				this.connections[id] = { left: [], right: [], top: [], bottom: [] };
-				this.nodecnt++;
-			}
-			// Horizontal connections
-			for (var y = 0; y < h; y++) {
-				var hold = null;
-				for (var x = 0; x < w; x++) {
-					var id = y * w + x;
-					if (hold === null && this.bits[id] & 1) {
-						hold = [id];
-					} else if (hold !== null && this.bits[id] !== 5) {
-						hold.push(id);
-						if (!(this.bits[id] & 1)) {
-							var conns = this.connections;
-							hold.forEach(function(pos, index) {
-								conns[pos].left = hold.slice(0, index);
-								conns[pos].right = hold.slice(index);
-							});
-							hold = null;
-						}
-					}
+
+				var x = id % this.w;
+				var node = this.connections.length;
+				var conns = [null, null, null, null];
+
+				if (key & 4) {
+					conns[2] = left;
+					this.connections[left][0] = node;
 				}
-			}
-			// Vertical connections
-			for (var x = 0; x < w; x++) {
-				var hold = null;
-				for (var y = 0; y < h; y++) {
-					var id = y * w + x;
-					if (hold === null && this.bits[id] & 2) {
-						hold = [id];
-					} else if (hold !== null && this.bits[id] !== 10) {
-						hold.push(id);
-						if (!(this.bits[id] & 2)) {
-							var conns = this.connections;
-							hold.forEach(function(pos, index) {
-								conns[pos].top = hold.slice(0, index);
-								conns[pos].bottom = hold.slice(index);
-							});
-							hold = null;
-						}
-					}
+				if (key & 8) {
+					conns[3] = above[x];
+					this.connections[above[x]][1] = node;
 				}
+				left = node;
+				above[x] = node;
+
+				this.connections.push(conns);
+			}
+		},
+
+		// Constructs a string with the following traits:
+		// - depends only on `connections` and the argument `root`
+		// - ignores the order of elements in `connections` other than `connections[root]`
+		// - unambiguously describes a curve isomorphic with `connections`
+		// In consequence, if two curves are isomorphic, the sets of strings
+		// they can produce for all possible values of `root` are identical.
+		// If two curves are NOT isomorphic, then those sets have no overlap.
+		constructDfsString: function(root) {
+			var result = "";
+			var stack = [{ node: root, parent: null, str: "" }];
+			var index = 0;
+			var order = new Array(this.connections.length);
+			for (var i = 0; i < order.length; i++) {
+				order[i] = null;
 			}
 
-			// Fill the positions map.
-			for (var id = 0; id < len; id++) {
-				var bits = this.bits[id];
-				if (bits === 0 || bits === 5 || bits === 10) {
+			while (stack.length > 0) {
+				var current = stack.pop();
+				result += current.str;
+				var node = current.node;
+
+				// Using null as "return to parent" marker to append "^" to the string.
+				if (node === null) {
 					continue;
 				}
+				stack.push({ node: null, parent: node, str: "^" });
 
-				var conns = this.connections[id];
-				var allBits = this.bits;
-				var mapBits = function(i) {
-					return allBits[i];
-				};
+				// When encountering a previously visited node, append its index in
+				// visiting order to the string. This will always be followed by a
+				// return to parent so there is no danger of concatenating two numbers.
+				if (order[node] !== null) {
+					result += order[node];
+					continue;
+				}
+				order[node] = index;
+				index++;
 
-				var key = [
-					bits,
-					"R",
-					conns.right.map(mapBits).join(","),
-					"B",
-					conns.bottom.map(mapBits).join(","),
-					"L",
-					conns.left.map(mapBits).join(","),
-					"T",
-					conns.top.map(mapBits).join(",")
-				].join("");
-				if (key in this.positions) {
-					this.positions[key].push(id);
-				} else {
-					this.positions[key] = [id];
+				for (var dir = 0; dir < 4; dir++) {
+					var child = this.connections[node][dir];
+					if (child !== null && child !== current.parent) {
+						var prefix = ["R", "D", "L", "U"][dir];
+						stack.push({ node: child, parent: node, str: prefix });
+					}
 				}
 			}
+
+			return result;
 		},
 
 		deepEquals: function(other) {
@@ -491,124 +475,28 @@
 				return false;
 			}
 
-			if (!this.positions) {
+			if (!this.connections) {
 				this.build();
 			}
-			if (!other.positions) {
+			if (!other.connections) {
 				other.build();
 			}
 
-			if (this.nodecnt !== other.nodecnt) {
+			if (this.connections.length !== other.connections.length) {
 				return false;
 			}
-
-			// Compare the total count of each node type.
-			for (var key in this.positions) {
-				if (
-					!(key in other.positions) ||
-					this.positions[key].length !== other.positions[key].length
-				) {
-					return false;
-				}
+			if (this.connections.length === 0 && other.connections.length === 0) {
+				return true;
 			}
 
-			var states = [];
-			var matching = {};
-
-			for (var key in this.positions) {
-				var pos1 = this.positions[key];
-				var pos2 = other.positions[key];
-
-				var len = pos1.length;
-				if (len === 1) {
-					matching[pos1[0]] = pos2[0];
-					continue;
-				}
-
-				// State for Heap's algorithm for finding permutations.
-				var c = new Array(len);
-				for (var i = 0; i < len; i++) {
-					c[i] = 0;
-					matching[pos1[i]] = pos2[i];
-				}
-				states.push({
-					c: c,
-					input: pos1,
-					other: pos2,
-					current: pos1.slice()
-				});
-			}
-
-			while (true) {
-				if (this.isConnectionsEqual(other, matching)) {
+			var key = other.constructDfsString(0);
+			for (var i = 0; i < this.connections.length; i++) {
+				if (this.constructDfsString(i) === key) {
 					return true;
 				}
-
-				var s = 0;
-				for (s = 0; s < states.length; s++) {
-					var state = states[s];
-					var step = this.permute_next(state);
-					for (var i = 0; i < state.c.length; i++) {
-						matching[state.current[i]] = state.other[i];
-					}
-					if (step) {
-						break;
-					}
-				}
-
-				if (s === states.length) {
-					return false;
-				}
-			}
-		},
-
-		permute_next: function(state) {
-			var i = 1;
-			while (i < state.c.length) {
-				if (state.c[i] < i) {
-					var k = i % 2 && state.c[i];
-					var p = state.current[i];
-					state.current[i] = state.current[k];
-					state.current[k] = p;
-					state.c[i]++;
-
-					return true;
-				} else {
-					state.c[i++] = 0;
-				}
 			}
 
-			// Reset for next loop
-			for (i = 0; i < state.c.length; i++) {
-				state.current[i] = state.input[i];
-				state.c[i] = 0;
-			}
 			return false;
-		},
-
-		isConnectionsEqual: function(other, matching) {
-			for (var id in this.connections) {
-				var conn = this.connections[id];
-				var otherconn = other.connections[matching[id]];
-
-				if (conn.right.length !== otherconn.right.length) {
-					return false;
-				}
-				for (var j = 0; j < conn.right.length; j++) {
-					if (otherconn.right[j] !== matching[conn.right[j]]) {
-						return false;
-					}
-				}
-				if (conn.bottom.length !== otherconn.bottom.length) {
-					return false;
-				}
-				for (var j = 0; j < conn.bottom.length; j++) {
-					if (otherconn.bottom[j] !== matching[conn.bottom[j]]) {
-						return false;
-					}
-				}
-			}
-			return true;
 		},
 
 		encodeBits: function() {
