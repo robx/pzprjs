@@ -205,7 +205,7 @@
 				}
 				if (this.inputData === 1) {
 					border.setLine();
-				} else if (this.inputData === 0) {
+				} else if (this.inputData === 0 && border.line) {
 					if (cell.path && cell.path.shape === 3) {
 						var d = cell.path.clist.getRectSize();
 						var borders = this.board.borderinside(d.x1, d.y1, d.x2, d.y2);
@@ -292,11 +292,31 @@
 				var d = new this.klass.CellList(set).getRectSize();
 
 				if (d.rows === 2 && d.cols === 2) {
-					return this.board
-						.cellinside(d.x1, d.y1, d.x2, d.y2)
-						.some(function(cell) {
+					if (
+						this.board.cellinside(d.x1, d.y1, d.x2, d.y2).some(function(cell) {
 							return cell.noLP();
-						});
+						})
+					) {
+						return true;
+					}
+					if (
+						this.board
+							.borderinside(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1)
+							.some(function(bd) {
+								if (
+									bd.bx >= d.x1 &&
+									bd.bx <= d.x2 &&
+									bd.by >= d.y1 &&
+									bd.by <= d.y2
+								) {
+									return false;
+								}
+								return bd.line;
+							})
+					) {
+						return true;
+					}
+					return false;
 				}
 
 				return d.rows + d.cols > 4;
@@ -314,7 +334,7 @@
 					}
 					cell.draw();
 				}
-				if (this.path && this.path.clist.length === 3) {
+				if (this.path && this.path.clist.length >= 3) {
 					if (this.pid === "zabajaba" && this.line) {
 						var d = this.path.clist.getRectSize();
 						if (d.rows === 2 && d.cols === 2) {
@@ -401,6 +421,9 @@
 		}
 	},
 	"Cell@wittgen,zabajaba": {
+		isUnshade: function() {
+			return this.lcnt === 0;
+		},
 		isDot: function() {
 			return this.qsub === 2 && this.lcnt === 0;
 		},
@@ -411,6 +434,9 @@
 		}
 	},
 	"Cell@zabajaba#1": {
+		isUnshade: function() {
+			return this.lcnt > 0;
+		},
 		maxnum: 8
 	},
 
@@ -451,17 +477,9 @@
 	"AreaUnshadeGraph@wittgen,zabajaba": {
 		enabled: true,
 		relation: { "border.line": "block" },
-		isnodevalid: function(cell) {
-			return cell.lcnt === 0;
-		},
 		modifyOtherInfo: function(border, relation) {
 			this.setEdgeByNodeObj(border.sidecell[0]);
 			this.setEdgeByNodeObj(border.sidecell[1]);
-		}
-	},
-	"AreaUnshadeGraph@zabajaba#1": {
-		isnodevalid: function(cell) {
-			return cell.lcnt > 0;
 		}
 	},
 
