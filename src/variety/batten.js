@@ -114,6 +114,17 @@
 			} else if (!this.cursor.getx().isnull) {
 				this.key_inputcross(ca);
 			}
+		},
+		key_inputcross: function(ca) {
+			var cross = this.cursor.getx();
+			if (cross !== null) {
+				if (ca === "1") {
+					cross.setQnum(1);
+				} else if (ca === " " || ca === "-" || ca === "0") {
+					cross.setQnum(-1);
+				}
+				cross.draw();
+			}
 		}
 	},
 
