@@ -41,8 +41,8 @@ ui.keypopup = {
 		hebi: [5, 5],
 		tawa: [6, 0],
 		hashikake: [8, 0],
-		tapa: [8, 0],
-		tapaloop: [8, 0],
+		tapa: [80, 0],
+		tapaloop: [80, 0],
 		amibo: [10, 0],
 		cave: [10, 0],
 		bdblock: [10, 0],
@@ -163,7 +163,7 @@ ui.keypopup = {
 		meander: [10, 10],
 		juosan: [10, 0],
 		walllogic: [10, 0],
-		mines: [8, 0],
+		mines: [80, 0],
 		pencils: [10, 0],
 		minarism: [10, 10],
 		trainstations: [124, 0],
@@ -200,8 +200,9 @@ ui.keypopup = {
 		teri: [10, 0],
 		portal: [10, 0],
 		kuromenbun: [10, 0],
-		bosnianroad: [8, 0],
-		sananko: [10, 113]
+		bosnianroad: [80, 0],
+		sananko: [10, 113],
+		zabajaba: [80, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -299,6 +300,8 @@ ui.keypopup = {
 			this.gentable6(mode);
 		} else if (type === 8) {
 			this.gentable8(mode);
+		} else if (type === 80) {
+			this.gentable80(mode);
 		} else if (type === 101) {
 			this.generate_slalom(mode);
 		} else if (type === 102) {
@@ -528,28 +531,16 @@ ui.keypopup = {
 		this.generate_main(["1", "2", "3", "4", "5", "6", "0", " ", ["-", "?"]], 3);
 	},
 	gentable8: function(mode) {
-		var pid = ui.puzzle.pid;
-		if (pid === "brownies") {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "?"], ["w", "○"]],
-				4
-			);
-		} else if (
-			pid !== "tapa" &&
-			pid !== "tapaloop" &&
-			pid !== "mines" &&
-			pid !== "bosnianroad"
-		) {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
-				4
-			);
-		} else {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", "0", " ", ["-", "?"]],
-				4
-			);
-		}
+		this.generate_main(
+			["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
+			4
+		);
+	},
+	gentable80: function(mode) {
+		this.generate_main(
+			["1", "2", "3", "4", "5", "6", "7", "8", "0", " ", ["-", "?"]],
+			4
+		);
 	},
 
 	//---------------------------------------------------------------------------

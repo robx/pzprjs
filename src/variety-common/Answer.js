@@ -103,7 +103,7 @@ pzpr.classmgr.makeCommon({
 		// ans.checkAdjacentDiffNumber() 同じ数字が隣接している時、エラーを設定する
 		// ans.checkAroundCell()  Same as checkSideCell, but also checks diagonally adjacent cells
 		//---------------------------------------------------------------------------
-		checkSideCell: function(func, code) {
+		checkSideCell: function(func, code, mark) {
 			var result = true,
 				bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -114,8 +114,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cell.seterr(1);
-					cell2.seterr(1);
+					if (mark !== false) {
+						cell.seterr(1);
+						cell2.seterr(1);
+					}
 				}
 				cell2 = cell.adjacent.bottom;
 				if (cell.by < bd.maxby - 1 && func(cell, cell2)) {
@@ -123,8 +125,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cell.seterr(1);
-					cell2.seterr(1);
+					if (mark !== false) {
+						cell.seterr(1);
+						cell2.seterr(1);
+					}
 				}
 			}
 			if (!result) {

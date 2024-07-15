@@ -1,10 +1,11 @@
+/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kaidan", "takoyaki", "wittgen"], {
+})(["kaidan", "takoyaki", "wittgen", "zabajaba"], {
 	MouseEvent: {
 		use: true,
 		RBShadeCell: true,
@@ -53,18 +54,14 @@
 				return;
 			}
 
-			if (
-				(this.pid === "kaidan" || this.pid === "wittgen") &&
-				cell.lcnt === 1 &&
-				this.btn === "left"
-			) {
+			if (this.pid !== "takoyaki" && cell.lcnt === 1 && this.btn === "left") {
 				cell.setLineVal(+!cell.line);
 				cell.draw();
 			} else if (cell.isNum()) {
 				this.inputqcmp();
 			} else if (this.btn === "right" && this.inputpeke_ifborder()) {
 				return;
-			} else if (this.pid === "wittgen") {
+			} else if (this.pid === "wittgen" || this.pid === "zabajaba") {
 				this.inputShade();
 			} else {
 				this.inputcell();
@@ -178,11 +175,56 @@
 			}
 		}
 	},
-	"MouseEvent@wittgen#2": {
+	"MouseEvent@wittgen#1": {
 		inputModes: {
 			edit: ["number", "undef", "clear"],
 			play: ["line", "peke", "subcircle", "objblank", "completion"]
+		}
+	},
+	"MouseEvent@zabajaba": {
+		inputModes: {
+			edit: ["number", "undef", "clear", "info-room"],
+			play: ["line", "peke", "subcircle", "objblank", "completion", "info-room"]
 		},
+		dispInfoRoom: function() {
+			this.dispInfoUblk();
+		},
+		inputLine: function() {
+			var cell = this.getcell();
+			this.initFirstCell(cell);
+
+			var pos = this.getpos(0);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+			var border = this.prevPos.getnb(pos);
+
+			if (!border.isnull) {
+				if (this.inputData === null) {
+					this.inputData = border.isLine() ? 0 : 1;
+				}
+				if (this.inputData === 1) {
+					border.setLine();
+				} else if (this.inputData === 0 && border.line) {
+					if (cell.path && cell.path.shape === 3) {
+						var d = cell.path.clist.getRectSize();
+						var borders = this.board.borderinside(d.x1, d.y1, d.x2, d.y2);
+						borders.each(function(bd) {
+							if (bd === border || (bd.bx !== cell.bx && bd.by !== cell.by)) {
+								bd.removeLine();
+							}
+						});
+						this.puzzle.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
+					} else {
+						border.removeLine();
+					}
+				}
+				border.draw();
+			}
+			this.prevPos = pos;
+		}
+	},
+	"MouseEvent@wittgen,zabajaba#2": {
 		inputShade: function() {
 			if (this.puzzle.getConfig("use") === 2) {
 				this.inputBGcolor();
@@ -219,32 +261,65 @@
 	"Border@takoyaki": {
 		enableLineNG: true
 	},
-	"Border@wittgen": {
+	"Border@wittgen,zabajaba": {
 		prehook: {
 			line: function(num) {
 				if (!num) {
 					return false;
 				}
 
-				if (this.isLineNG() || this.checkFormCurve(num)) {
+				if (
+					this.isLineNG() ||
+					(this.pid === "wittgen" && this.checkFormCurve(num))
+				) {
 					return true;
 				}
+				var set = new Set();
+				for (var i = 0; i < 2; i++) {
+					var cell = this.sidecell[i];
+					if (cell.isnull) {
+						continue;
+					}
+					set.add(cell);
+					var path = cell.path;
+					if (path) {
+						path.clist.each(function(pc) {
+							set.add(pc);
+						});
+					}
+				}
 
-				var length = 0;
+				var d = new this.klass.CellList(set).getRectSize();
 
-				if (this.isVert() && this.relbd(-2, 0).path) {
-					length += this.relbd(-2, 0).path.clist.length;
+				if (d.rows === 2 && d.cols === 2) {
+					if (
+						this.board.cellinside(d.x1, d.y1, d.x2, d.y2).some(function(cell) {
+							return cell.noLP();
+						})
+					) {
+						return true;
+					}
+					if (
+						this.board
+							.borderinside(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1)
+							.some(function(bd) {
+								if (
+									bd.bx >= d.x1 &&
+									bd.bx <= d.x2 &&
+									bd.by >= d.y1 &&
+									bd.by <= d.y2
+								) {
+									return false;
+								}
+								return bd.line;
+							})
+					) {
+						return true;
+					}
+					return false;
 				}
-				if (this.isVert() && this.relbd(2, 0).path) {
-					length += this.relbd(2, 0).path.clist.length;
-				}
-				if (!this.isVert() && this.relbd(0, -2).path) {
-					length += this.relbd(0, -2).path.clist.length;
-				}
-				if (!this.isVert() && this.relbd(0, 2).path) {
-					length += this.relbd(0, 2).path.clist.length;
-				}
-				return length >= 3;
+
+				return d.rows + d.cols > 4;
 			}
 		},
 		posthook: {
@@ -259,7 +334,26 @@
 					}
 					cell.draw();
 				}
-				if (this.path && this.path.clist.length === 3) {
+				if (this.path && this.path.clist.length >= 3) {
+					if (this.pid === "zabajaba" && this.line) {
+						var d = this.path.clist.getRectSize();
+						if (d.rows === 2 && d.cols === 2) {
+							/* Enforce 2x2 square */
+							this.board
+								.borderinside(d.x1, d.y1, d.x2, d.y2)
+								.each(function(border) {
+									border.setLineVal(1);
+								});
+							this.board
+								.cellinside(d.x1, d.y1, d.x2, d.y2)
+								.each(function(cell) {
+									cell.setLineVal(0);
+									cell.draw();
+								});
+							this.puzzle.painter.paintRange(d.x1, d.y1, d.x2, d.y2);
+						}
+					}
+
 					for (var c = 0; c < 3; c++) {
 						var cell = this.path.clist[c];
 						if (cell.lcnt === 1) {
@@ -268,6 +362,7 @@
 						}
 					}
 				}
+
 				if (!this.line && this.isVert()) {
 					if (this.relbd(-2, 0).line) {
 						var cell = this.relcell(-3, 0);
@@ -325,7 +420,10 @@
 			return this.qnum === -1;
 		}
 	},
-	"Cell@wittgen": {
+	"Cell@wittgen,zabajaba": {
+		isUnshade: function() {
+			return this.lcnt === 0;
+		},
 		isDot: function() {
 			return this.qsub === 2 && this.lcnt === 0;
 		},
@@ -334,6 +432,12 @@
 				return num && (this.isNum() || this.lcnt > 0);
 			}
 		}
+	},
+	"Cell@zabajaba#1": {
+		isUnshade: function() {
+			return this.lcnt > 0;
+		},
+		maxnum: 8
 	},
 
 	Board: {
@@ -347,6 +451,22 @@
 		enabled: true,
 		makeClist: true
 	},
+	"LineGraph@zabajaba": {
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			var d = component.clist.getRectSize();
+
+			if (d.rows === 1 && d.cols === 3) {
+				component.shape = 1;
+			} else if (d.rows === 3 && d.cols === 1) {
+				component.shape = 2;
+			} else if (d.rows === 2 && d.cols === 2 && d.cnt === 4) {
+				component.shape = 3;
+			} else {
+				component.shape = d.cnt === 2 ? 0 : -1;
+			}
+		}
+	},
 	"AreaUnshadeGraph@kaidan": {
 		enabled: true,
 		relation: { "cell.qnum": "node", "cell.qans": "node" },
@@ -354,12 +474,9 @@
 			return !cell.noLP();
 		}
 	},
-	"AreaUnshadeGraph@wittgen": {
+	"AreaUnshadeGraph@wittgen,zabajaba": {
 		enabled: true,
 		relation: { "border.line": "block" },
-		isnodevalid: function(cell) {
-			return cell.lcnt === 0;
-		},
 		modifyOtherInfo: function(border, relation) {
 			this.setEdgeByNodeObj(border.sidecell[0]);
 			this.setEdgeByNodeObj(border.sidecell[1]);
@@ -376,12 +493,12 @@
 			this.drawBGCells();
 			this.drawGrid();
 
-			if (this.pid !== "wittgen") {
+			if (this.pid !== "wittgen" && this.pid !== "zabajaba") {
 				this.drawQuesCells();
 			}
 			this.drawQuesNumbers();
 
-			if (this.pid !== "wittgen") {
+			if (this.pid !== "wittgen" && this.pid !== "zabajaba") {
 				this.drawCircles();
 				this.drawCrosses();
 			} else {
@@ -390,7 +507,11 @@
 			}
 
 			this.drawLines();
-			if (this.pid === "kaidan" || this.pid === "wittgen") {
+			if (
+				this.pid === "kaidan" ||
+				this.pid === "wittgen" ||
+				this.pid === "zabajaba"
+			) {
 				this.drawLineEnds();
 			}
 			this.drawPekes();
@@ -447,7 +568,7 @@
 			}
 		}
 	},
-	"Graphic@kaidan,wittgen": {
+	"Graphic@kaidan,wittgen,zabajaba": {
 		drawLines: function() {
 			var g = this.vinc("line", "crispEdges");
 			var mx = this.bw / 2;
@@ -458,29 +579,44 @@
 				var border = blist[i],
 					color = this.getLineColor(border);
 
-				if (!!color) {
-					var px = border.bx * this.bw,
-						py = border.by * this.bh;
+				var col1 = color,
+					col2 = color;
 
-					var isvert = this.board.borderAsLine === border.isVert();
-					var lm = this.lm + this.addlw / 2;
+				var px = border.bx * this.bw,
+					py = border.by * this.bh;
 
-					g.fillStyle = color;
+				var isvert = this.board.borderAsLine === border.isVert();
+				var lm = this.lm + this.addlw / 2;
+
+				/* Zabajaba 2x2 shapes */
+				if (border.path && border.path.shape === 3) {
+					var d = border.path.clist.getRectSize();
+					if (d.x1 === border.bx || d.y1 === border.by) {
+						col2 = null;
+					} else {
+						col1 = null;
+					}
+				}
+
+				g.fillStyle = color;
+				g.vid = "b_line1_" + border.id;
+				if (!!col1) {
 					if (isvert) {
-						g.vid = "b_line1_" + border.id;
 						g.fillRectCenter(px - mx, py, lm, this.bh + lm + my);
-						g.vid = "b_line2_" + border.id;
+					} else {
+						g.fillRectCenter(px, py - my, this.bw + lm + mx, lm);
+					}
+				} else {
+					g.vhide();
+				}
+				g.vid = "b_line2_" + border.id;
+				if (!!col2) {
+					if (isvert) {
 						g.fillRectCenter(px + mx, py, lm, this.bh + lm + my);
 					} else {
-						g.vid = "b_line1_" + border.id;
-						g.fillRectCenter(px, py - my, this.bw + lm + mx, lm);
-						g.vid = "b_line2_" + border.id;
 						g.fillRectCenter(px, py + my, this.bw + lm + mx, lm);
 					}
 				} else {
-					g.vid = "b_line1_" + border.id;
-					g.vhide();
-					g.vid = "b_line2_" + border.id;
 					g.vhide();
 				}
 			}
@@ -532,7 +668,7 @@
 	"Graphic@takoyaki": {
 		irowake: true
 	},
-	"Graphic@wittgen#2": {
+	"Graphic@wittgen,zabajaba#1": {
 		getQuesNumberColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errcolor1;
@@ -560,7 +696,9 @@
 					g.vhide();
 				}
 			}
-		},
+		}
+	},
+	"Graphic@wittgen#2": {
 		qsubcolor1: "rgb(224, 224, 255)",
 		getBGCellColor: function(cell) {
 			if (cell.error === 1 || cell.qinfo === 1) {
@@ -593,6 +731,14 @@
 		},
 		encodePzpr: function(type) {
 			this.encode4Cell();
+		}
+	},
+	"Encode@zabajaba": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
 		}
 	},
 	FileIO: {
@@ -865,6 +1011,84 @@
 				1,
 				"nmLineLt"
 			);
+		}
+	},
+	"AnsCheck@zabajaba#1": {
+		checklist: [
+			"checkDir8BlockOver",
+			"checkShapeAdjacent",
+			"checkInvalidShape",
+			"checkConnectUnshade",
+			"checkDir8BlockLess"
+		],
+		checkInvalidShape: function() {
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				if (paths[r].shape > 0) {
+					continue;
+				}
+				this.failcode.add("bkNotRect");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				paths[r].setedgeerr(1);
+			}
+		},
+		checkShapeAdjacent: function() {
+			var bd = this.board;
+			var shouldmark = !this.checkOnly;
+
+			this.checkSideCell(
+				function(cell1, cell2) {
+					if (
+						cell1.path &&
+						cell2.path &&
+						cell1.path !== cell2.path &&
+						cell1.path.shape > 0 &&
+						cell1.path.shape === cell2.path.shape
+					) {
+						if (shouldmark) {
+							bd.border.setnoerr();
+							shouldmark = false;
+						}
+
+						cell1.path.setedgeerr(1);
+						cell2.path.setedgeerr(1);
+						return true;
+					}
+					return false;
+				},
+				"bkSameTouch",
+				false
+			);
+		},
+		checkDir8: function(sign, code) {
+			this.checkAllCell(function(cell) {
+				if (!cell.isValidNum()) {
+					return false;
+				}
+				var clist = cell.board.cellinside(
+					cell.bx - 2,
+					cell.by - 2,
+					cell.bx + 2,
+					cell.by + 2
+				);
+				var shapes = new Set();
+				clist.each(function(c) {
+					if (c.path) {
+						shapes.add(c.path);
+					}
+				});
+				return (shapes.size - cell.getNum()) * sign > 0;
+			}, code);
+		},
+		checkDir8BlockOver: function() {
+			this.checkDir8(+1, "nmLineGt");
+		},
+		checkDir8BlockLess: function() {
+			this.checkDir8(-1, "nmLineLt");
 		}
 	},
 	"FailCode@takoyaki": {
