@@ -743,14 +743,15 @@
 	},
 	FileIO: {
 		decodeData: function() {
+			var hasQans = this.pid !== "wittgen" && this.pid !== "zabajaba";
 			this.decodeCellQnum();
 			this.decodeCell(function(cell, ca) {
 				var val = +ca;
 				if (val & 1) {
-					if (this.pid === "wittgen") {
-						cell.qsub = 2;
-					} else {
+					if (hasQans) {
 						cell.qans = 1;
+					} else {
+						cell.qsub = 2;
 					}
 				}
 				if (val & 2) {
@@ -766,9 +767,10 @@
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			var hasQans = this.pid !== "wittgen" && this.pid !== "zabajaba";
 			this.encodeCellQnum();
 			this.encodeCell(function(cell) {
-				var ans = this.pid === "wittgen" ? cell.qsub === 2 : cell.qans === 1;
+				var ans = hasQans ? cell.qans === 1 : cell.qsub === 2;
 				var sub = cell.qsub === 1;
 
 				return (+ans | (cell.line << 1) | (+sub << 2) | (cell.qcmp << 3)) + " ";

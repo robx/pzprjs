@@ -55,25 +55,25 @@ ui.debug.addDebugData("zabajaba", {
 			label: "Aux marks",
 			input: ["mouse,left,1,3", "mouse,left,1,5", "mouse,right,3,5,5,5"],
 			result:
-				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /4 0 0 0 /4 0 0 2 /0 2 0 2 /0 1 0 /0 1 0 /0 0 0 /0 1 1 /0 1 1 1 /0 0 0 1 /0 0 0 0 /"
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /4 0 0 0 /4 1 1 2 /0 2 0 2 /0 1 0 /0 1 0 /0 0 0 /0 1 1 /0 1 1 1 /0 0 0 1 /0 0 0 0 /"
 		},
 		{
 			label: "Collapse 2x2 block",
 			input: ["mouse,left,3,1,3,3", "playmode,info-room", "mouse,left,7,1"],
 			result:
-				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /4 0 0 0 /4 0 0 2 /0 2 0 2 /0 0 0 /0 1 0 /0 0 0 /0 1 1 /0 0 0 1 /0 0 0 1 /0 0 0 0 /"
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /4 0 0 0 /4 1 1 2 /0 2 0 2 /0 0 0 /0 1 0 /0 0 0 /0 1 1 /0 0 0 1 /0 0 0 1 /0 0 0 0 /"
 		},
 		{
 			label: "Block 2x2 input when other paths are present",
 			input: ["playmode,auto", "mouse,left,1,3,1,5,3,5"],
 			result:
-				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /0 0 0 0 /0 0 0 2 /0 2 0 2 /0 0 0 /0 1 0 /0 0 0 /0 1 1 /0 0 0 1 /1 0 0 1 /0 0 0 0 /"
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /0 0 0 0 /0 1 1 2 /0 2 0 2 /0 0 0 /0 1 0 /0 0 0 /0 1 1 /0 0 0 1 /1 0 0 1 /0 0 0 0 /"
 		},
 		{
 			label: "Can join two lines",
 			input: ["mouse,left,3,1,5,1,5,3"],
 			result:
-				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /0 0 0 0 /0 0 0 2 /0 2 0 2 /0 1 0 /0 1 0 /0 0 0 /0 1 1 /0 1 1 1 /1 0 0 1 /0 0 0 0 /"
+				"pzprv3/zabajaba/4/4/- . . . /. . . . /. . . . /. . . . /0 0 0 2 /0 0 0 0 /0 1 1 2 /0 2 0 2 /0 1 0 /0 1 0 /0 0 0 /0 1 1 /0 1 1 1 /1 0 0 1 /0 0 0 0 /"
 		}
 	]
 });
