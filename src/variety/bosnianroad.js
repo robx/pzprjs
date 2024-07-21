@@ -28,7 +28,7 @@
 					(this.mousestart || this.mousemove) &&
 					(!this.firstCell.isnull || this.notInputted())
 				) {
-					this.inputcell();
+					this.inputShade();
 				}
 				if (this.mouseend && this.notInputted()) {
 					this.inputqcmp();
@@ -59,6 +59,11 @@
 		},
 
 		inputShade: function() {
+			if (this.puzzle.playmode) {
+				this.inputcell();
+				return;
+			}
+
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
 				return;
@@ -67,7 +72,7 @@
 				this.inputData = cell.qnum === -1 ? -2 : -1;
 			}
 			if ((this.inputData === -1) !== (cell.qnum === -1)) {
-				cell.setQnum(this.inputData);
+				cell.setNum(this.inputData);
 				cell.drawaround();
 			}
 			this.mouseCell = cell;

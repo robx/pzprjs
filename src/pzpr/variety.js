@@ -136,6 +136,7 @@
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
 			"curvedata-aux": [0, 0, "図形の編集", "Edit shape"],
+			curving: [0, 0, "カービングロード", "Curving Road"],
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
 			detour: [0, 0, "Detour", "Detour", "country"],
 			disloop: [0, 0, "Disorderly Loop", "Disorderly Loop", "tapaloop"],
@@ -440,7 +441,8 @@
 			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
-			yosenabe: [0, 0, "よせなべ", "Yosenabe"]
+			yosenabe: [0, 0, "よせなべ", "Yosenabe"],
+			zabajaba: [0, 0, "Zabajaba", "Zabajaba", "kaidan"]
 		}
 	);
 })();
