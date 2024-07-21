@@ -113,6 +113,7 @@ function toBGimage(pid) {
 		"araf",
 		"skyscrapers",
 		"balance",
+		"batten",
 		"battleship",
 		"bdwalk",
 		"bosnianroad",
@@ -127,6 +128,7 @@ function toBGimage(pid) {
 		"coral",
 		"cts",
 		"curvedata",
+		"curving",
 		"dbchoco",
 		"detour",
 		"dominion",
@@ -210,7 +212,8 @@ function toBGimage(pid) {
 		"walllogic",
 		"waterwalk",
 		"wittgen",
-		"yinyang"
+		"yinyang",
+		"zabajaba"
 	];
 	if (imgs.indexOf(pid) >= 0) {
 		return "img/" + pid + ".png";

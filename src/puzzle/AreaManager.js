@@ -111,7 +111,11 @@ pzpr.classmgr.makeCommon({
 		// areagraph.setExtraData()   指定された領域の拡張データを設定する
 		//--------------------------------------------------------------------------------
 		setExtraData: function(component) {
-			component.clist = new this.klass.CellList(component.getnodeobjs());
+			if (component.nodes.length) {
+				component.clist = new this.klass.CellList(component.getnodeobjs());
+			} else {
+				component.clist = new this.klass.CellList();
+			}
 		}
 	},
 
