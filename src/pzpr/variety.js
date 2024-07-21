@@ -105,6 +105,7 @@
 			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			cts: [0, 0, "Cross the Streams", "Cross the Streams", "nonogram"],
 			barns: [1, 0, "バーンズ", "Barns"],
+			batten: [0, 0, "Battenberg Painting", "Battenberg Painting"],
 			battleship: [0, 0, "Battleship", "Battleship", "statuepark"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
 			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
