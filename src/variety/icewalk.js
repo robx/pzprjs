@@ -296,16 +296,16 @@
 						var adj = cell.adjborder;
 						var ox, oy;
 						if (
-							(cell.qans === 1 && adj.top.isLine()) ||
-							(cell.qans === 2 && adj.bottom.isLine())
+							(cell.qans === 1 && adj.top.isLine() && adj.left.isLine()) ||
+							(cell.qans === 2 && adj.bottom.isLine() && adj.left.isLine())
 						) {
 							ox = (cell.bx - 1) * this.bw - pad + bigpad;
 						} else {
 							ox = cell.bx * this.bw + pad - bigpad;
 						}
 						if (
-							(cell.qans === 1 && adj.left.isLine()) ||
-							(cell.qans === 2 && adj.right.isLine())
+							(cell.qans === 1 && adj.left.isLine() && adj.top.isLine()) ||
+							(cell.qans === 2 && adj.right.isLine() && adj.top.isLine())
 						) {
 							oy = (cell.by - 1) * this.bh - pad + bigpad;
 						} else {
