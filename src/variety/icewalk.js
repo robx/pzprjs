@@ -274,21 +274,48 @@
 		},
 
 		drawArcBackground: function() {
-			var g = this.vinc("arc_back", "crispEdges", true);
+			var g = this.vinc("arc_back", "crispEdges");
 			var clist = this.range.borders.cellinside();
-			var pad = this.lw;
+			var pad = this.lw,
+				bigpad = this.bw / 2;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
 					color = cell.qans ? this.getBGCellColor(cell) : null;
 				g.vid = "c_arc_bg_" + cell.id;
 				if (!!color) {
 					g.fillStyle = color;
-					g.fillRectCenter(
-						cell.bx * this.bw,
-						cell.by * this.bh,
-						this.bw - pad,
-						this.bh - pad
-					);
+
+					if (cell.lcnt === 4) {
+						g.fillRectCenter(
+							cell.bx * this.bw,
+							cell.by * this.bh,
+							this.bw - pad,
+							this.bh - pad
+						);
+					} else {
+						var adj = cell.adjborder;
+						var ox, oy;
+						if (
+							(cell.qans === 1 && adj.top.isLine()) ||
+							(cell.qans === 2 && adj.bottom.isLine())
+						) {
+							ox = (cell.bx - 1) * this.bw - pad + bigpad;
+						} else {
+							ox = cell.bx * this.bw + pad - bigpad;
+						}
+						if (
+							(cell.qans === 1 && adj.left.isLine()) ||
+							(cell.qans === 2 && adj.right.isLine())
+						) {
+							oy = (cell.by - 1) * this.bh - pad + bigpad;
+						} else {
+							oy = cell.by * this.bh + pad - bigpad;
+						}
+
+						var w = this.bw + bigpad - pad * 2;
+						var h = this.bw + bigpad - pad * 2;
+						g.fillRect(ox, oy, w, h);
+					}
 				} else {
 					g.vhide();
 				}
