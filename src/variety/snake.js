@@ -311,11 +311,6 @@
 				return !cell.isShade() && cell.qnum > 0;
 			}, "circleUnshade");
 		},
-
-		checkShadeCount: function() {
-			this.checkRowsCols(this.isExCellCount, "exShadeNe");
-		},
-
 		checkShadeLoop: function() {
 			var snakes = this.board.sblkmgr.components;
 			for (var r = 0; r < snakes.length; r++) {
@@ -338,36 +333,6 @@
 					}
 				}
 			}
-		},
-
-		isExCellCount: function(clist) {
-			var d = clist.getRectSize(),
-				bd = this.board;
-			var count = clist.filter(function(c) {
-				return c.isShade();
-			}).length;
-
-			var result = true;
-
-			if (d.x1 === d.x2) {
-				var exc = bd.getex(d.x1, -1);
-				if (exc.qnum !== -1 && exc.qnum !== count) {
-					exc.seterr(1);
-					result = false;
-				}
-			}
-			if (d.y1 === d.y2) {
-				var exc = bd.getex(-1, d.y1);
-				if (exc.qnum !== -1 && exc.qnum !== count) {
-					exc.seterr(1);
-					result = false;
-				}
-			}
-
-			if (!result) {
-				clist.seterr(1);
-			}
-			return result;
 		}
 	}
 });
