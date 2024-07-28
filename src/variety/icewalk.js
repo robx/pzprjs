@@ -19,8 +19,11 @@
 						this.prevPos.reset();
 						this.inputpeke();
 						if (this.pid === "firewalk" && this.notInputted()) {
-							// TODO input dots
-							this.toggleArcs();
+							this.prevPos.reset();
+							this.inputdot();
+							if (this.notInputted()) {
+								this.toggleArcs();
+							}
 						}
 					}
 				} else if (
@@ -334,7 +337,7 @@
 			return null;
 		},
 		getDotRadius: function(dot) {
-			return 0.13;
+			return 0.15;
 		},
 
 		drawLines: function() {
@@ -602,7 +605,12 @@
 				}
 			});
 			this.encodeBorderLine();
-			if (this.pid === "firewalk") {
+			if (
+				this.pid === "firewalk" &&
+				this.board.cross.some(function(cross) {
+					return cross.qsub;
+				})
+			) {
 				this.encodeCross(function(cross) {
 					return cross.qsub + " ";
 				});
