@@ -18,19 +18,19 @@
 					} else if (this.mouseend && this.notInputted()) {
 						this.prevPos.reset();
 						this.inputpeke();
-						if (this.pid === "firewalk" && this.notInputted()) {
-							this.prevPos.reset();
-							this.inputdot();
-							if (this.notInputted()) {
-								this.toggleArcs();
-							}
-						}
 					}
 				} else if (
 					this.btn === "right" &&
 					(this.mousestart || this.mousemove)
 				) {
 					this.inputpeke();
+				}
+				if (this.pid === "firewalk" && this.mouseend && this.notInputted()) {
+					this.prevPos.reset();
+					this.inputdot();
+					if (this.notInputted()) {
+						this.toggleArcs();
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				var cell = this.getcell();
