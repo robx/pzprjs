@@ -19,6 +19,7 @@
 						this.prevPos.reset();
 						this.inputpeke();
 						if (this.pid === "firewalk" && this.notInputted()) {
+							// TODO input dots
 							this.toggleArcs();
 						}
 					}
@@ -56,12 +57,38 @@
 	"MouseEvent@firewalk": {
 		inputModes: {
 			edit: ["fire", "number", "clear", "info-line"],
-			play: ["line", "peke", "info-line"]
+			play: ["line", "peke", "dot", "info-line"]
 		},
 		mouseinput_other: function() {
 			if (this.inputMode === "fire") {
 				this.inputIcebarn();
+			} else if (this.inputMode === "dot") {
+				this.inputdot();
 			}
+		},
+		inputdot: function() {
+			var pos = this.getpos(0.25);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+
+			var dot = pos.getDot();
+			this.prevPos = pos;
+			if (dot === null) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				if (this.btn === "left") {
+					this.inputData = { 0: 1, 1: 2, 2: 0 }[dot.getDot()];
+				} else if (this.btn === "right") {
+					this.inputData = { 0: 2, 1: 0, 2: 1 }[dot.getDot()];
+				} else {
+					return;
+				}
+			}
+			dot.setDot(this.inputData);
+			dot.draw();
 		},
 		toggleArcs: function() {
 			var cell = this.getcell();
@@ -189,6 +216,25 @@
 	Cross: {
 		l2cnt: 0
 	},
+	"Dot@firewalk": {
+		getDot: function() {
+			if (this.piece.group === "cross") {
+				return this.piece.qsub;
+			}
+			return 0;
+		},
+		setDot: function(val) {
+			if (this.piece.group !== "cross") {
+				return;
+			}
+			this.puzzle.opemgr.disCombine = true;
+			this.piece.setQsub(val);
+			this.puzzle.opemgr.disCombine = false;
+		},
+		getTrial: function() {
+			return this.piece.trial;
+		}
+	},
 	Board: {
 		hasborder: 2,
 		scanResult: null,
@@ -224,6 +270,9 @@
 			this.common.rebuildInfo.call(this);
 		}
 	},
+	"Board@firewalk": {
+		hasdots: 1
+	},
 	"BoardExec@firewalk": {
 		adjustBoardData: function(key, d) {
 			if (key & this.TURNFLIP) {
@@ -249,6 +298,10 @@
 			this.drawPekes();
 			this.drawQuesNumbers();
 
+			if (this.pid === "firewalk") {
+				this.drawDots();
+			}
+
 			this.drawTarget();
 		},
 		getBorderColor: function(border) {
@@ -265,6 +318,24 @@
 	},
 	"Graphic@firewalk": {
 		icecolor: "rgb(255, 192, 192)",
+
+		getDotFillColor: function(dot) {
+			if (dot.getDot() === 1) {
+				return dot.getTrial() ? this.trialcolor : this.pekecolor;
+			} else if (dot.getDot() === 2) {
+				return "white";
+			}
+			return null;
+		},
+		getDotOutlineColor: function(dot) {
+			if (dot.getDot() === 2) {
+				return dot.getTrial() ? this.trialcolor : this.pekecolor;
+			}
+			return null;
+		},
+		getDotRadius: function(dot) {
+			return 0.13;
+		},
 
 		drawLines: function() {
 			/* This function may be called outside of calls to paint() */
@@ -508,6 +579,11 @@
 				}
 			});
 			this.decodeBorderLine();
+			if (this.pid === "firewalk") {
+				this.decodeCross(function(cross, ca) {
+					cross.qsub = +ca;
+				});
+			}
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
@@ -526,6 +602,11 @@
 				}
 			});
 			this.encodeBorderLine();
+			if (this.pid === "firewalk") {
+				this.encodeCross(function(cross) {
+					return cross.qsub + " ";
+				});
+			}
 		}
 	},
 	AnsCheck: {
