@@ -203,7 +203,8 @@ ui.keypopup = {
 		bosnianroad: [80, 0],
 		sananko: [10, 113],
 		zabajaba: [80, 0],
-		batten: [10, 0]
+		batten: [10, 0],
+		firewalk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -465,13 +466,19 @@ ui.keypopup = {
 			pid === "icelom2" ||
 			pid === "icewalk" ||
 			pid === "waterwalk" ||
+			pid === "firewalk" ||
 			pid === "dbchoco"
 		) {
 			itemlist.push([
 				"q",
 				{
 					text: "■",
-					color: pid === "dbchoco" ? "rgb(204,204,204)" : "rgb(192,224,255)"
+					color:
+						pid === "dbchoco"
+							? "rgb(204,204,204)"
+							: pid === "firewalk"
+							? "rgb(255,192,192)"
+							: "rgb(192,224,255)"
 				}
 			]);
 		}

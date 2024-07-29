@@ -248,6 +248,10 @@ pzpr.classmgr.makeCommon({
 		// linegraph.createNodeIfEmpty()  指定されたオブジェクトの場所にNodeを生成する
 		// linegraph.deleteNodeIfEmpty()  指定されたオブジェクトの場所からNodeを除去する
 		//---------------------------------------------------------------------------
+		usesSecondNode: function(cell, other) {
+			return cell.getvert(other, 2);
+		},
+
 		createNodeIfEmpty: function(cell) {
 			var nodes = this.getObjNodeList(cell);
 
@@ -265,8 +269,8 @@ pzpr.classmgr.makeCommon({
 				// 上下/左右の線が1本ずつだった場合は左右の線をnodes[1]に付加し直します
 				var nbnodes = nodes[0].nodes;
 				var isvert = [
-					cell.getvert(nbnodes[0].obj, 2),
-					cell.getvert(nbnodes[1].obj, 2)
+					this.usesSecondNode(cell, nbnodes[0].obj),
+					this.usesSecondNode(cell, nbnodes[1].obj)
 				];
 				if (isvert[0] !== isvert[1]) {
 					// breaking up a corner; we create two new nodes to ensure
