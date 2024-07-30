@@ -80,7 +80,7 @@ ui.debug.addDebugData("firewalk", {
 				"pzprv3/firewalk/3/3/. . . /. # . /. . . /0 0 1 0 /0 0 0 0 /0 1 0 0 /0 0 0 /0 1 0 /0 1 0 /0 0 0 /"
 		},
 		{
-			input: ["mouse,left,2,2", "mouse,right,4,2"],
+			input: ["mouse,right,2,2", "mouse,left,4,2"],
 			result:
 				"pzprv3/firewalk/3/3/. . . /. # . /. . . /0 0 1 0 /0 0 0 0 /0 1 0 0 /0 0 0 /0 1 0 /0 1 0 /0 0 0 /0 0 0 0 /0 1 2 0 /0 0 0 0 /0 0 0 0 /"
 		}

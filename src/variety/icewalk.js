@@ -83,9 +83,9 @@
 
 			if (this.inputData === null) {
 				if (this.btn === "left") {
-					this.inputData = { 0: 1, 1: 2, 2: 0 }[dot.getDot()];
-				} else if (this.btn === "right") {
 					this.inputData = { 0: 2, 1: 0, 2: 1 }[dot.getDot()];
+				} else if (this.btn === "right") {
+					this.inputData = { 0: 1, 1: 2, 2: 0 }[dot.getDot()];
 				} else {
 					return;
 				}
