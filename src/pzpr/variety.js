@@ -105,6 +105,7 @@
 			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			cts: [0, 0, "Cross the Streams", "Cross the Streams", "nonogram"],
 			barns: [1, 0, "バーンズ", "Barns"],
+			batten: [0, 0, "Battenberg Painting", "Battenberg Painting"],
 			battleship: [0, 0, "Battleship", "Battleship", "statuepark"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
 			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
@@ -135,6 +136,7 @@
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
 			"curvedata-aux": [0, 0, "図形の編集", "Edit shape"],
+			curving: [0, 0, "カービングロード", "Curving Road"],
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
 			detour: [0, 0, "Detour", "Detour", "country"],
 			disloop: [0, 0, "Disorderly Loop", "Disorderly Loop", "tapaloop"],
@@ -157,6 +159,7 @@
 				{ kanpen2: "fillomino01" }
 			],
 			firefly: [1, 0, "ホタルビーム", "Hotaru Beam"],
+			firewalk: [1, 0, "Fire Walk", "Fire Walk", "icewalk"],
 			fivecells: [0, 0, "ファイブセルズ", "FiveCells", "nawabari"],
 			fourcells: [0, 0, "フォーセルズ", "FourCells", "nawabari"],
 			fracdiv: [0, 0, "分数分割", "Fractional Division"],
@@ -344,6 +347,7 @@
 			],
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
 			roundtrip: [0, 0, "Round Trip", "Round Trip"],
+			sananko: [0, 0, "サンアンコー", "San-Anko", "kakuru"],
 			sashigane: [0, 0, "さしがね", "Sashigane", "loute"],
 			sashikazune: [0, 0, "さしカズね", "Sashikazune", "loute"],
 			satogaeri: [
@@ -439,7 +443,8 @@
 			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
-			yosenabe: [0, 0, "よせなべ", "Yosenabe"]
+			yosenabe: [0, 0, "よせなべ", "Yosenabe"],
+			zabajaba: [0, 0, "Zabajaba", "Zabajaba", "kaidan"]
 		}
 	);
 })();

@@ -41,8 +41,8 @@ ui.keypopup = {
 		hebi: [5, 5],
 		tawa: [6, 0],
 		hashikake: [8, 0],
-		tapa: [8, 0],
-		tapaloop: [8, 0],
+		tapa: [80, 0],
+		tapaloop: [80, 0],
 		amibo: [10, 0],
 		cave: [10, 0],
 		bdblock: [10, 0],
@@ -163,7 +163,7 @@ ui.keypopup = {
 		meander: [10, 10],
 		juosan: [10, 0],
 		walllogic: [10, 0],
-		mines: [8, 0],
+		mines: [80, 0],
 		pencils: [10, 0],
 		minarism: [10, 10],
 		trainstations: [124, 0],
@@ -200,7 +200,11 @@ ui.keypopup = {
 		teri: [10, 0],
 		portal: [10, 0],
 		kuromenbun: [10, 0],
-		bosnianroad: [8, 0],
+		bosnianroad: [80, 0],
+		sananko: [10, 113],
+		zabajaba: [80, 0],
+		batten: [10, 0],
+		firewalk: [10, 0],
 		snakeegg: [10, 0]
 	},
 
@@ -299,6 +303,8 @@ ui.keypopup = {
 			this.gentable6(mode);
 		} else if (type === 8) {
 			this.gentable8(mode);
+		} else if (type === 80) {
+			this.gentable80(mode);
 		} else if (type === 101) {
 			this.generate_slalom(mode);
 		} else if (type === 102) {
@@ -388,14 +394,16 @@ ui.keypopup = {
 				null
 			);
 		}
-		if (
-			mode === 1 &&
-			(pid === "kakuru" ||
-				pid === "tateyoko" ||
-				pid === "crossstitch" ||
-				pid === "numrope" ||
-				pid === "yajisoko")
-		) {
+
+		var separateEmptyHatena =
+			pid === "kakuru" ||
+			pid === "tateyoko" ||
+			pid === "crossstitch" ||
+			pid === "numrope" ||
+			pid === "sananko" ||
+			pid === "yajisoko";
+
+		if (mode === 1 && separateEmptyHatena) {
 			itemlist.push(["q1", pid === "yajisoko" ? "□" : "■"]);
 			if (pid === "crossstitch") {
 				itemlist.push(["w2", "○"]);
@@ -412,14 +420,8 @@ ui.keypopup = {
 		);
 
 		var cap = null;
-		if (
-			mode === 3 ||
-			pid === "kakuru" ||
-			pid === "numrope" ||
-			pid === "tateyoko" ||
-			pid === "crossstitch" ||
-			pid === "yajisoko"
-		) {
+		if (mode === 3 || separateEmptyHatena) {
+			/* Do nothing */
 		} else if (pid === "tasquare") {
 			cap = "□";
 		} else if (
@@ -465,13 +467,19 @@ ui.keypopup = {
 			pid === "icelom2" ||
 			pid === "icewalk" ||
 			pid === "waterwalk" ||
+			pid === "firewalk" ||
 			pid === "dbchoco"
 		) {
 			itemlist.push([
 				"q",
 				{
 					text: "■",
-					color: pid === "dbchoco" ? "rgb(204,204,204)" : "rgb(192,224,255)"
+					color:
+						pid === "dbchoco"
+							? "rgb(204,204,204)"
+							: pid === "firewalk"
+							? "rgb(255,192,192)"
+							: "rgb(192,224,255)"
 				}
 			]);
 		}
@@ -532,28 +540,16 @@ ui.keypopup = {
 		this.generate_main(["1", "2", "3", "4", "5", "6", "0", " ", ["-", "?"]], 3);
 	},
 	gentable8: function(mode) {
-		var pid = ui.puzzle.pid;
-		if (pid === "brownies") {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "?"], ["w", "○"]],
-				4
-			);
-		} else if (
-			pid !== "tapa" &&
-			pid !== "tapaloop" &&
-			pid !== "mines" &&
-			pid !== "bosnianroad"
-		) {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
-				4
-			);
-		} else {
-			this.generate_main(
-				["1", "2", "3", "4", "5", "6", "7", "8", "0", " ", ["-", "?"]],
-				4
-			);
-		}
+		this.generate_main(
+			["1", "2", "3", "4", "5", "6", "7", "8", " ", ["-", "○"]],
+			4
+		);
+	},
+	gentable80: function(mode) {
+		this.generate_main(
+			["1", "2", "3", "4", "5", "6", "7", "8", "0", " ", ["-", "?"]],
+			4
+		);
 	},
 
 	//---------------------------------------------------------------------------
@@ -660,15 +656,24 @@ ui.keypopup = {
 		var pid = ui.puzzle.pid,
 			itemlist = [];
 
-		itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
-		if (pid === "hakoiri" || pid === "alter") {
-			itemlist.push([
-				"4",
-				{
-					text: mode === 1 ? "?" : "・",
-					color: mode === 3 ? "rgb(255, 96, 191)" : ""
-				}
-			]);
+		if (pid === "sananko") {
+			var mbcolor = ui.puzzle.painter.mbcolor;
+			itemlist.push("1", "2", "3");
+			itemlist.push(
+				["q", { text: "○", color: mbcolor }],
+				["w", { text: "×", color: mbcolor }]
+			);
+		} else {
+			itemlist.push(["1", "○"], ["2", "△"], ["3", "□"]);
+			if (pid !== "tontonbeya") {
+				itemlist.push([
+					"4",
+					{
+						text: mode === 1 ? "?" : "・",
+						color: mode === 3 ? "rgb(255, 96, 191)" : ""
+					}
+				]);
+			}
 		}
 		itemlist.push(" ");
 		this.generate_main(itemlist, 3);
