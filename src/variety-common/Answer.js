@@ -1309,7 +1309,7 @@ pzpr.classmgr.makeCommon({
 
 			for (var key in pieces) {
 				var found = false;
-				for (var b = 0; b < this.board.bank.pieces.length; b++ && !found) {
+				for (var b = 0; b < this.board.bank.pieces.length && !found; b++) {
 					if (key === this.board.bank.pieces[b].canonize()) {
 						found = true;
 					}

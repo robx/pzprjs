@@ -190,6 +190,7 @@ function toBGimage(pid) {
 		"simpleloop",
 		"slashpack",
 		"snake",
+		"snakeegg",
 		"squarejam",
 		"starbattle",
 		"statuepark",
