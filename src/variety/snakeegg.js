@@ -258,12 +258,16 @@
 	BankPiece: {
 		num: null,
 		deserialize: function(str) {
+			if (typeof str === "string" && str[str.length - 1] === "=") {
+				str = str.substring(0, str.length - 1);
+			}
+
 			if (+str) {
 				this.num = +str;
 			} else if (!str) {
 				this.num = -1;
 			} else {
-				throw new Error("Invalid piece");
+				throw new Error("Invalid piece: " + typeof str + " " + str);
 			}
 		},
 		serialize: function() {
