@@ -246,7 +246,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawCellArrows() 矢印だけをCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawCellArrows: function(wide, outline) {
+		drawCellArrows: function(wide) {
 			var g = this.vinc("cell_arrow", "auto");
 			var al, aw, tl, tw;
 
@@ -255,6 +255,12 @@ pzpr.classmgr.makeCommon({
 				aw = this.cw * 0.03; // ArrowWidth
 				tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
 				tw = this.cw * 0.16; // 矢じりの幅
+			} else if (wide === 0.5) {
+				/* 太い矢印 */
+				al = this.cw * 0.35; // ArrowLength
+				aw = this.cw * 0.1; // ArrowWidth
+				tl = 0; // 矢じりの長さの座標(中心-長さ)
+				tw = this.cw * 0.27; // 矢じりの幅
 			} else {
 				/* 太い矢印 */
 				al = this.cw * 0.35; // ArrowLength
@@ -266,114 +272,123 @@ pzpr.classmgr.makeCommon({
 			tw = tw >= 5 ? tw : 5;
 
 			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i],
-					dir = !cell.numberAsObject ? cell.qdir : cell.getNum();
-				var color = dir >= 1 && dir <= 4 ? this.getCellArrowColor(cell) : null;
+			for (var item = 0; item < 2; item++) {
+				var func =
+					item === 1 ? this.getCellArrowOutline : this.getCellArrowColor;
+				if (!func) {
+					continue;
+				}
 
-				g.vid = "c_arrow_" + cell.id;
-				if (!!color) {
-					g.lineWidth = 1.5;
-					g.strokeStyle = g.fillStyle = color;
-					g.beginPath();
-					var px = cell.bx * this.bw,
-						py = cell.by * this.bh;
-					switch (dir) {
-						case cell.UP:
-							g.setOffsetLinePath(
-								px,
-								py,
-								0,
-								-al,
-								-tw,
-								-tl,
-								-aw,
-								-tl,
-								-aw,
-								al,
-								aw,
-								al,
-								aw,
-								-tl,
-								tw,
-								-tl,
-								true
-							);
-							break;
-						case cell.DN:
-							g.setOffsetLinePath(
-								px,
-								py,
-								0,
-								al,
-								-tw,
-								tl,
-								-aw,
-								tl,
-								-aw,
-								-al,
-								aw,
-								-al,
-								aw,
-								tl,
-								tw,
-								tl,
-								true
-							);
-							break;
-						case cell.LT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-al,
-								0,
-								-tl,
-								-tw,
-								-tl,
-								-aw,
-								al,
-								-aw,
-								al,
-								aw,
-								-tl,
-								aw,
-								-tl,
-								tw,
-								true
-							);
-							break;
-						case cell.RT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								al,
-								0,
-								tl,
-								-tw,
-								tl,
-								-aw,
-								-al,
-								-aw,
-								-al,
-								aw,
-								tl,
-								aw,
-								tl,
-								tw,
-								true
-							);
-							break;
-					}
-					if (outline) {
-						g.stroke();
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i],
+						dir = !cell.numberAsObject ? cell.qdir : cell.getNum();
+					var color = dir >= 1 && dir <= 4 ? func.call(this, cell) : null;
+
+					g.vid = "c_arrow_" + item + "_" + cell.id;
+					if (!!color) {
+						g.lineWidth = 1.5;
+						g.strokeStyle = g.fillStyle = color;
+						g.beginPath();
+						var px = cell.bx * this.bw,
+							py = cell.by * this.bh;
+						switch (dir) {
+							case cell.UP:
+								g.setOffsetLinePath(
+									px,
+									py,
+									0,
+									-al,
+									-tw,
+									-tl,
+									-aw,
+									-tl,
+									-aw,
+									al,
+									aw,
+									al,
+									aw,
+									-tl,
+									tw,
+									-tl,
+									true
+								);
+								break;
+							case cell.DN:
+								g.setOffsetLinePath(
+									px,
+									py,
+									0,
+									al,
+									-tw,
+									tl,
+									-aw,
+									tl,
+									-aw,
+									-al,
+									aw,
+									-al,
+									aw,
+									tl,
+									tw,
+									tl,
+									true
+								);
+								break;
+							case cell.LT:
+								g.setOffsetLinePath(
+									px,
+									py,
+									-al,
+									0,
+									-tl,
+									-tw,
+									-tl,
+									-aw,
+									al,
+									-aw,
+									al,
+									aw,
+									-tl,
+									aw,
+									-tl,
+									tw,
+									true
+								);
+								break;
+							case cell.RT:
+								g.setOffsetLinePath(
+									px,
+									py,
+									al,
+									0,
+									tl,
+									-tw,
+									tl,
+									-aw,
+									-al,
+									-aw,
+									-al,
+									aw,
+									tl,
+									aw,
+									tl,
+									tw,
+									true
+								);
+								break;
+						}
+						if (item === 1) {
+							g.stroke();
+						} else {
+							g.fill();
+						}
 					} else {
-						g.fill();
+						g.vhide();
 					}
-				} else {
-					g.vhide();
 				}
 			}
 		},
+		getCellArrowOutline: null,
 		getCellArrowColor: function(cell) {
 			var dir = !cell.numberAsObject ? cell.qdir : cell.getNum();
 			if (dir >= 1 && dir <= 4) {
