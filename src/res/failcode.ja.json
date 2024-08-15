@@ -670,7 +670,7 @@
     "arNoShade.pentopia": "矢印の指す方向に黒マスがありません。",
     "csOnArrow": "矢印のあるマスが黒マスになっています。",
     "nmShadeDiagNe.context": "ナナメに隣り合う黒マスの数が数字と異なります。",
-    "shDiag.pentopia": "黒マスのカタマリがナナメに接しています。",
+    "shDiag": "黒マスのカタマリがナナメに接しています。",
     "nmSightNe.roundtrip": "最も近い線の長さが正しくありません。",
     "bdUnequal.antmill": "バツ印に隣接するマスのうち１つだけが黒マスになるようにします。",
     "bdEqual.antmill": "正方形に隣接するマスが同色になっていません。",
