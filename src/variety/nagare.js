@@ -915,9 +915,12 @@
 
 					var celldir = cell.qdir;
 					if (cell.isShade()) {
-						celldir = cell.isLineStraight()
-							? [0, cell.DN, cell.UP, cell.RT, cell.LT][celldir]
-							: cell.NDIR;
+						var border = cell.getaddr().movedir(celldir, 1);
+
+						celldir =
+							cell.isLineStraight() && border.getb().isLine()
+								? [0, cell.DN, cell.UP, cell.RT, cell.LT][celldir]
+								: cell.NDIR;
 					}
 
 					if (celldir !== cell.NDIR) {
