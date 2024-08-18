@@ -507,9 +507,16 @@
 		}
 	},
 	"Graphic@fakearrow": {
+		gridcolor_type: "SLIGHT",
+
 		getBorderColor: function(border) {
 			var cell1 = border.sidecell[0],
 				cell2 = border.sidecell[1];
+
+			if (cell1.isEmpty() && cell2.isEmpty()) {
+				return null;
+			}
+
 			if (
 				border.inside &&
 				!cell1.isnull &&
@@ -520,8 +527,8 @@
 			}
 			return this.getBorderColor_ques(border);
 		},
-		getBGCellColor: function(cell) {
-			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
+		getQuesCellColor: function(cell) {
+			return cell.ques === 7 ? "darkgray" : null;
 		},
 		getCellArrowOutline: function(cell) {
 			return this.quescolor;
