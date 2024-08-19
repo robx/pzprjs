@@ -254,11 +254,15 @@
 			this.drawShadedCells();
 
 			this.drawGoalStar();
-			this.drawCellArrows(true, true);
+			this.drawCellArrows(true);
 			this.drawHatenas();
 
 			this.drawChassis();
 			this.drawTarget();
+		},
+		getCellArrowColor: null,
+		getCellArrowOutline: function(cell) {
+			return cell.qnum !== -1 ? this.quescolor : null;
 		},
 
 		drawGoalStar: function() {

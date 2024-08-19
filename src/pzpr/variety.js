@@ -148,6 +148,7 @@
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
 			evolmino: [0, 0, "シンカミノ", "Evolmino"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
+			fakearrow: [0, 0, "フェイクアロー", "Fake Arrow", "nagare"],
 			familyphoto: [0, 0, "家族写真", "Family Photo"],
 			fillmat: [1, 0, "フィルマット", "Fillmat", "fillmat"],
 			fillomino: [
