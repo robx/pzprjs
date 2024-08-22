@@ -7,53 +7,16 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nagare"], {
+})(["nagare", "fakearrow"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		inputModes: {
-			edit: ["shade", "arrow", "info-line"],
-			play: ["line", "peke", "diraux", "info-line"]
-		},
-		mouseinput: function() {
-			// オーバーライド
-			if (this.inputMode === "shade") {
-				if (this.mousestart) {
-					this.inputShadeCell();
-				}
-			} else {
-				this.common.mouseinput.call(this);
-			}
-		},
 		mouseinput_other: function() {
 			if (this.inputMode === "diraux") {
 				if (this.mousestart || this.mousemove) {
 					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
 					this.clickdiraux();
-				}
-			}
-		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode && this.btn === "right") {
-				if (this.mousestart) {
-					this.inputdiraux_mousedown();
-				} else if (this.inputData === 2 || this.inputData === 3) {
-					this.inputpeke();
-				} else if (this.mousemove) {
-					this.inputdiraux_mousemove();
-				}
-			} else if (this.puzzle.playmode && this.btn === "left") {
-				if (this.mousestart || this.mousemove) {
-					this.inputLine();
-				} else if (this.mouseend && this.notInputted()) {
-					this.clickdiraux();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputarrow_cell();
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputShadeCell();
 				}
 			}
 		},
@@ -79,6 +42,82 @@
 			}
 		}
 	},
+	"MouseEvent@nagare": {
+		inputModes: {
+			edit: ["shade", "arrow", "info-line"],
+			play: ["line", "peke", "diraux", "info-line"]
+		},
+		mouseinput: function() {
+			// オーバーライド
+			if (this.inputMode === "shade") {
+				if (this.mousestart) {
+					this.inputShadeCell();
+				}
+			} else {
+				this.common.mouseinput.call(this);
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode && this.btn === "right") {
+				if (this.mousestart) {
+					this.inputdiraux_mousedown();
+				} else if (this.inputData === 2 || this.inputData === 3) {
+					this.inputpeke();
+				} else if (this.mousemove) {
+					this.inputdiraux_mousemove();
+				}
+			} else if (this.puzzle.playmode && this.btn === "left") {
+				if (this.mousestart || this.mousemove) {
+					this.inputLine();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputarrow_cell();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputShadeCell();
+				}
+			}
+		}
+	},
+	"MouseEvent@fakearrow": {
+		inputModes: {
+			edit: ["border", "arrow", "empty", "info-line"],
+			play: ["line", "peke", "diraux", "shade", "info-line"]
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode && this.btn === "right") {
+				if (this.mousestart) {
+					this.inputdiraux_mousedown();
+				} else if (this.inputData === 2 || this.inputData === 3) {
+					this.inputpeke();
+				} else if (this.mousemove) {
+					this.inputdiraux_mousemove();
+				}
+			} else if (this.puzzle.playmode && this.btn === "left") {
+				if (this.mousestart || this.mousemove) {
+					this.inputLine();
+				} else if (this.mouseend && this.notInputted()) {
+					if (this.getcell().qdir > 0) {
+						this.inputShade();
+					} else {
+						this.clickdiraux();
+					}
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.isBorderMode()) {
+						this.inputborder();
+					} else {
+						this.inputarrow_cell();
+					}
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputqnum();
+				}
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -98,9 +137,11 @@
 			this.key_inputques_nagare(ca);
 		},
 		key_inputques_nagare: function(ca) {
+			var wall = this.pid === "nagare" ? 1 : 7;
+
 			if (ca === "q" || ca === "w") {
 				var cell = this.cursor.getc();
-				cell.setQues(cell.ques !== 1 ? 1 : 0);
+				cell.setQues(cell.ques !== wall ? wall : 0);
 				cell.drawaround();
 			}
 		}
@@ -108,7 +149,32 @@
 
 	//---------------------------------------------------------
 	// 盤面管理系
-	Cell: {
+	"Cell@fakearrow": {
+		allowShade: function() {
+			return this.qdir > 0;
+		},
+		allowUnshade: function() {
+			return false;
+		},
+		noLP: function() {
+			return this.isEmpty();
+		},
+		posthook: {
+			ques: function(num) {
+				if (num) {
+					this.setQdir(this.NDIR);
+				}
+			},
+			qdir: function(num) {
+				if (num === this.NDIR) {
+					this.setQans(0);
+				} else {
+					this.setQues(0);
+				}
+			}
+		}
+	},
+	"Cell@nagare": {
 		windbase: 0 /* このセルから風が吹いているか(1,2,4,8) or 風をガードしているか(16) */,
 		wind: 0 /* セルに風が吹いているかどうか判定するためのパラメータ (qdir値とは別) */,
 		/* 0-15:2進数の4桁がそれぞれ風の吹いてくる向きを表す 4方向から風が吹くと15 */
@@ -279,8 +345,9 @@
 		enableLineNG: true
 	},
 	Board: {
-		hasborder: 1,
-
+		hasborder: 1
+	},
+	"Board@nagare": {
 		rebuildInfo: function() {
 			this.initWind();
 			this.common.rebuildInfo.call(this);
@@ -305,6 +372,9 @@
 	},
 
 	LineGraph: {
+		enabled: true
+	},
+	"AreaRoomGraph@fakearrow": {
 		enabled: true
 	},
 
@@ -339,7 +409,11 @@
 			this.drawDashedGrid();
 			this.drawQuesCells();
 
-			this.drawCellArrows(true);
+			if (this.pid === "fakearrow") {
+				this.drawBorders();
+			}
+
+			this.drawCellArrows(this.pid === "fakearrow" ? 0.5 : true);
 
 			this.drawLines();
 			this.drawPekes();
@@ -432,10 +506,41 @@
 			}
 		}
 	},
+	"Graphic@fakearrow": {
+		gridcolor_type: "SLIGHT",
+
+		getBorderColor: function(border) {
+			var cell1 = border.sidecell[0],
+				cell2 = border.sidecell[1];
+
+			if (cell1.isEmpty() && cell2.isEmpty()) {
+				return null;
+			}
+
+			if (
+				border.inside &&
+				!cell1.isnull &&
+				!cell2.isnull &&
+				(cell1.isEmpty() || cell2.isEmpty())
+			) {
+				return "black";
+			}
+			return this.getBorderColor_ques(border);
+		},
+		getQuesCellColor: function(cell) {
+			return cell.ques === 7 ? "darkgray" : null;
+		},
+		getCellArrowOutline: function(cell) {
+			return this.quescolor;
+		},
+		getCellArrowColor: function(cell) {
+			return cell.isShade() ? this.quescolor : null;
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
-	Encode: {
+	"Encode@nagare": {
 		decodePzpr: function(type) {
 			this.decodeNagare();
 		},
@@ -497,6 +602,30 @@
 			this.outbstr += cm;
 		}
 	},
+	"Encode@fakearrow": {
+		decodePzpr: function() {
+			this.decodeBorder();
+
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				var cell = bd.cell[c];
+				if (val === 5) {
+					cell.setValid(7);
+				} else if (val >= 0) {
+					cell.qdir = val;
+				}
+			});
+		},
+		encodePzpr: function() {
+			this.encodeBorder();
+
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				var cell = bd.cell[c];
+				return cell.isEmpty() ? 5 : cell.qdir || -1;
+			});
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
@@ -525,6 +654,28 @@
 			this.encodeBorderArrowAns();
 		}
 	},
+	"FileIO@fakearrow": {
+		decodeData: function() {
+			this.decodeBorderQues();
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (+ca > 0) {
+					cell.qdir = +ca;
+				}
+			});
+			this.decodeBorderArrowAns();
+			this.decodeCellQanssub();
+		},
+		encodeData: function() {
+			this.encodeBorderQues();
+			this.encodeCell(function(cell) {
+				return cell.isEmpty() ? "# " : cell.qdir ? cell.qdir + " " : ". ";
+			});
+			this.encodeBorderArrowAns();
+			this.encodeCellQanssub();
+		}
+	},
 	//---------------------------------------------------------
 	// 正解判定処理実行部
 	AnsCheck: {
@@ -548,7 +699,7 @@
 			for (var i = 0; i < boardcell.length; i++) {
 				var cell = boardcell[i],
 					arwind = cell.wind & (15 ^ [0, 1, 2, 4, 8][cell.qdir]);
-				if (cell.qdir === 0 || cell.ques === 1 || !arwind) {
+				if (cell.qdir === 0 || cell.ques === 1 || cell.isShade() || !arwind) {
 					continue;
 				}
 
@@ -582,6 +733,9 @@
 		checkAcrossArrow: function() {
 			this.checkAllCell(function(cell) {
 				var adb = cell.adjborder;
+				if (cell.isShade()) {
+					return false;
+				}
 				return (
 					((cell.qdir === 1 || cell.qdir === 2) &&
 						(adb.left.isLine() || adb.right.isLine())) ||
@@ -592,7 +746,9 @@
 		},
 		checkAllArrow: function() {
 			this.checkAllCell(function(cell) {
-				return cell.ques === 0 && cell.qdir > 0 && cell.lcnt === 0;
+				return (
+					!cell.isShade() && cell.ques === 0 && cell.qdir > 0 && cell.lcnt === 0
+				);
 			}, "arNoLine");
 		},
 
@@ -616,14 +772,20 @@
 			}
 		},
 		checkLineArrowDirection: function() {
+			return this.checkLineArrowDirectionGeneric(null, "lrAgainstArrow");
+		},
+		checkLineArrowDirectionGeneric: function(filter, code) {
 			var traces = this.getTraceInfo();
 			for (var i = 0; i < traces.length; i++) {
 				var clist = traces[i].clist;
+				if (filter) {
+					clist = clist.filter(filter);
+				}
 				if (clist.length === 0) {
 					continue;
 				}
 
-				this.failcode.add("lrAgainstArrow");
+				this.failcode.add(code);
 				if (this.checkOnly) {
 					break;
 				}
@@ -758,8 +920,18 @@
 						break;
 					} // 一周して戻ってきた
 
-					if (cell.qdir !== cell.NDIR) {
-						if (cell.qdir === dir) {
+					var celldir = cell.qdir;
+					if (cell.isShade()) {
+						var border = cell.getaddr().movedir(celldir, 1);
+
+						celldir =
+							cell.isLineStraight() && border.getb().isLine()
+								? [0, cell.DN, cell.UP, cell.RT, cell.LT][celldir]
+								: cell.NDIR;
+					}
+
+					if (celldir !== cell.NDIR) {
+						if (celldir === dir) {
 							clist1.push(cell);
 						} else {
 							clist2.push(cell);
@@ -812,6 +984,58 @@
 			info.blist.extend(choice === 1 ? blist1 : blist2);
 
 			return info;
+		}
+	},
+	"AnsCheck@fakearrow": {
+		checklist: [
+			"checkAdjacentShadeCell",
+			"checkOverShadeArrow",
+			"checkLineExist+",
+			"checkCrossLine+",
+			"checkBranchLine+",
+			"checkAcrossArrow",
+			"checkLineArrowDirectionUnshade",
+			"checkLineArrowDirectionShade",
+			"checkNoShadeArrow",
+			"checkAllArrow",
+			"checkDeadendLine++",
+			"checkOneLoop"
+		],
+
+		checkOverShadeArrow: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return cell.qans === 1;
+				},
+				function(w, h, a, n) {
+					return a <= 1;
+				},
+				"bkShadeGe2"
+			);
+		},
+		checkNoShadeArrow: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return cell.qans === 1;
+				},
+				function(w, h, a, n) {
+					return a >= 1;
+				},
+				"bkNoShade"
+			);
+		},
+
+		checkLineArrowDirectionUnshade: function() {
+			this.checkLineArrowDirectionGeneric(function(cell) {
+				return !cell.isShade();
+			}, "lrAgainstArrow");
+		},
+		checkLineArrowDirectionShade: function() {
+			this.checkLineArrowDirectionGeneric(function(cell) {
+				return cell.isShade();
+			}, "lrFollowsFake");
 		}
 	}
 });
