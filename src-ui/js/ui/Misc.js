@@ -181,6 +181,7 @@ function toBGimage(pid) {
 		"ququ",
 		"rassi",
 		"remlen",
+		"regional-poly",
 		"retroships",
 		"roundtrip",
 		"sananko",
