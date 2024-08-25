@@ -1,4 +1,4 @@
-// Key.js v3.4.0
+// KeyPopup.js v3.4.0
 /* global createEL:readonly, getEL:readonly */
 
 //---------------------------------------------------------------------------
@@ -987,28 +987,6 @@ ui.keypopup = {
 		this.generate_main(
 			[["l", "L"], ["i", "I"], ["x", "X"], ["-", "?"], " "],
 			3
-		);
-	},
-	generate_infinity: function() {
-		this.generate_main(
-			[
-				"1",
-				"2",
-				"3",
-				"4",
-				"5",
-				"6",
-				"7",
-				"8",
-				"9",
-				"0",
-				["i", "∞"],
-				null,
-				null,
-				" ",
-				["-", "?"]
-			],
-			5
 		);
 	},
 

@@ -1,7 +1,3 @@
-### 2024-07-01
-
-* turnaround: New puzzle type Turnaround
-
 ### ????-??-??
 
 * aqre: New puzzle type Aqre
