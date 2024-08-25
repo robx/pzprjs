@@ -1,4 +1,4 @@
-// Key.js v3.4.0
+// KeyPopup.js v3.4.0
 /* global createEL:readonly, getEL:readonly */
 
 //---------------------------------------------------------------------------

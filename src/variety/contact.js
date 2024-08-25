@@ -23,7 +23,7 @@
 					if (this.isBorderMode()) {
 						this.inputborder();
 					} else {
-						this.drag_domino();
+						this.dragDomino();
 					}
 				} else if (this.btn === "right") {
 					this.inputQsubLine();
@@ -38,7 +38,7 @@
 			}
 		},
 
-		drag_domino: function() {
+		dragDomino: function() {
 			var cell = this.getcell(),
 				cell2 = this.mouseCell;
 			if (cell.isnull || cell === cell2) {
@@ -78,6 +78,40 @@
 					border.draw();
 				}
 			});
+		}
+	},
+	"MouseEvent@rampage": {
+		inputModes: {
+			edit: ["number", "empty", "clear", "info-road"],
+			play: ["border", "subline", "info-road"]
+		},
+		mouseinput: function() {
+			// override
+			if (this.puzzle.key.isZ || this.inputMode === "info-road") {
+				if (this.mousestart) {
+					this.dispRoute();
+				}
+			} else {
+				this.common.mouseinput.call(this);
+			}
+		},
+
+		dispRoute: function() {
+			var cell = this.getcell();
+			if (cell.isnull) {
+				return;
+			}
+
+			var route = cell.getBullRoute();
+			route.each(function(c) {
+				c.room.clist.setinfo(2);
+			});
+
+			var puzzle = this.puzzle;
+			puzzle.board.hasinfo = true;
+			puzzle.redraw();
+
+			this.mousereset();
 		}
 	},
 
@@ -268,23 +302,6 @@
 			}
 		}
 	},
-	"Board@rampage": {
-		operate: function(type) {
-			if (type !== "traceroute") {
-				return;
-			}
-
-			var cells = this.cell;
-			for (var i = 0; i < this.cell.length; i++) {
-				var c = cells[i];
-				if (c.isValid() && (c.qnum > 0 || c.qnum === -3)) {
-					this.puzzle.painter.paintRoute(c.getBullRoute());
-				}
-			}
-			this.hasinfo = true;
-			this.puzzle.redraw();
-		}
-	},
 
 	AreaRoomGraph: {
 		enabled: true
@@ -366,6 +383,7 @@
 		}
 	},
 	"Graphic@rampage": {
+		errbcolor2: "rgb(255, 224, 192)",
 		PlaidColors: [
 			"white",
 			"rgb(160,255,160)",
@@ -375,8 +393,12 @@
 		getBGCellColor: function(cell) {
 			if (cell.error) {
 				return this.errbcolor1;
-			}
-			if (!this.puzzle.execConfig("rampage_coloring") || cell.ques === 7) {
+			} else if (cell.qinfo === 2) {
+				return this.errbcolor2;
+			} else if (
+				!this.puzzle.execConfig("rampage_coloring") ||
+				cell.ques === 7
+			) {
 				return "white";
 			}
 			return this.PlaidColors[cell.getPlaidColor()];
