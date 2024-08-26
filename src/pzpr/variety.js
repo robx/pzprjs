@@ -328,6 +328,13 @@
 			rassi: [0, 0, "Rassi Silai", "Rassi Silai", "country"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
+			"regional-poly": [
+				0,
+				0,
+				"Regional Polyominoes",
+				"Regional Polyominoes",
+				"statuepark"
+			],
 			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
 			retroships: [

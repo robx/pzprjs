@@ -12,7 +12,8 @@
 		"battleship",
 		"pentatouch",
 		"kissing",
-		"retroships"
+		"retroships",
+		"regional-poly"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -36,7 +37,7 @@
 					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.pid === "kissing") {
+				if (this.pid === "kissing" || this.pid === "regional-poly") {
 					if (this.mousestart || this.mousemove) {
 						this.inputborder();
 					} else if (this.mouseend && this.notInputted()) {
@@ -354,7 +355,7 @@
 			play: ["shade", "unshade", "clear", "completion"]
 		}
 	},
-	"MouseEvent@kissing": {
+	"MouseEvent@kissing,regional-poly": {
 		inputModes: {
 			edit: ["completion", "border", "empty"],
 			play: ["shade", "unshade", "clear", "completion"]
@@ -544,7 +545,7 @@
 	"Board@pentatouch": {
 		hascross: 1
 	},
-	"Board@kissing": {
+	"Board@kissing,regional-poly": {
 		hasborder: 1
 	},
 
@@ -887,7 +888,7 @@
 		}
 	},
 
-	"Cell@kissing": {
+	"Cell@kissing,regional-poly": {
 		allowShade: function() {
 			return this.isValid();
 		},
@@ -1110,6 +1111,9 @@
 	AreaShadeGraph: {
 		enabled: true
 	},
+	"AreaRoomGraph@regional-poly": {
+		enabled: true
+	},
 	"AreaShadeGraph@battleship,retroships": {
 		relation: { "cell.qnum": "node", "cell.qans": "node" }
 	},
@@ -1141,7 +1145,7 @@
 
 		crosssize: 0.15
 	},
-	"Graphic@pentatouch,kissing#1": {
+	"Graphic@pentatouch,kissing,regional-poly#1": {
 		drawTarget: function() {
 			var show = this.puzzle.editmode && this.puzzle.cursor.bankpiece !== null;
 			this.drawCursor(true, show);
@@ -1161,7 +1165,7 @@
 			} else if (this.pid === "pentopia") {
 				this.drawArrowCombinations();
 				this.drawHatenas();
-			} else if (this.pid === "kissing") {
+			} else if (this.pid === "kissing" || this.pid === "regional-poly") {
 				this.drawBorders();
 				this.drawXCells();
 				this.drawDotCells();
@@ -1281,10 +1285,9 @@
 		}
 	},
 
-	"Graphic@kissing": {
+	"Graphic@kissing,regional-poly": {
 		shadecolor: "#777",
 		trialcolor: "rgb(255, 160, 0)",
-
 		drawXCells: function() {
 			var g = this.vinc("cell_x", "auto", true);
 
@@ -1304,7 +1307,9 @@
 					g.vhide();
 				}
 			}
-		},
+		}
+	},
+	"Graphic@kissing#2": {
 		drawBorders: function() {
 			this.vinc("border", "auto", true);
 			var g = this.context;
@@ -1795,7 +1800,7 @@
 		}
 	},
 
-	"Encode@kissing": {
+	"Encode@kissing,regional-poly": {
 		decodePzpr: function(type) {
 			if (this.outbstr[0] !== "/") {
 				this.decodeBorder();
@@ -1884,7 +1889,7 @@
 		}
 	},
 
-	"FileIO@kissing": {
+	"FileIO@kissing,regional-poly": {
 		decodeData: function() {
 			this.decodePieceBank();
 			this.decodeBorderQues();
@@ -1938,15 +1943,57 @@
 			}, "circleShade");
 		}
 	},
-	"AnsCheck@kissing": {
+	"AnsCheck@kissing,regional-poly": {
 		checklist: [
 			"checkUnshadeOnCircle",
-			"checkPieceSize",
-			"checkSeparators",
+			"checkSideAreaShadeCell@regional-poly",
+			"checkSeqBlocksInRoom@regional-poly",
+			"checkShadeDiagonal@regional-poly",
+			"checkPieceSize@kissing",
+			"checkSeparators@kissing",
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
 			"checkBankPiecesUsed"
 		],
+
+		checkSideAreaShadeCell: function() {
+			this.checkSideAreaCell(
+				function(cell1, cell2) {
+					return cell1.isShade() && cell2.isShade();
+				},
+				false,
+				"cbShade"
+			);
+		},
+
+		checkSeqBlocksInRoom: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var clist = rooms[r].clist,
+					sblkbase = null,
+					check = true;
+				for (var i = 0; i < clist.length; i++) {
+					if (clist[i].sblk === null) {
+					} else if (clist[i].sblk !== sblkbase) {
+						if (sblkbase === null) {
+							sblkbase = clist[i].sblk;
+						} else {
+							check = false;
+							break;
+						}
+					}
+				}
+				if (check) {
+					continue;
+				}
+
+				this.failcode.add("bkShadeDivide");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		},
 
 		checkPieceSize: function() {
 			// A separate check for pieces that are far too large,
@@ -2000,7 +2047,7 @@
 		}
 	},
 
-	"AnsCheck@pentopia,battleship,retroships,pentatouch#1": {
+	"AnsCheck@pentopia,battleship,retroships,pentatouch,regional-poly#1": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
