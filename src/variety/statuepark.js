@@ -428,7 +428,7 @@
 		}
 	},
 
-	"Board@statuepark,pentatouch": {
+	"Board@statuepark,pentatouch,regional-poly": {
 		rows: 12,
 		cols: 12
 	},
