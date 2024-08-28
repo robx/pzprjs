@@ -288,5 +288,6 @@
     "list.sort.date": "日付順",
     "list.sort.alpha": "アルファベット順",
     "preset.nine": "1~9",
-    "inputmode.fire": "火"
+    "inputmode.fire": "火",
+    "inputmode.mark-checkerboard": "市松模様"
 }
