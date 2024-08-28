@@ -285,5 +285,7 @@
     "preset.fleet5": "サイズ5",
     "patchwork_leftaux": "左クリックで補助線を入力する",
     "list.sort.date": "日付順",
-    "list.sort.alpha": "アルファベット順"
+    "list.sort.alpha": "アルファベット順",
+    "preset.nine": "1~9",
+    "inputmode.fire": "火"
 }
