@@ -460,7 +460,7 @@
     "lpNumGt2.onsen": "数字が2つ以上含まれたループがあります。",
     "lpPlNum.pipelink": "異なる数字を含んだループがあります。",
     "lpSepNum.pipelink": "同じ数字が異なるループに含まれています。",
-    "lrAcrossArrow.nagare": "線が矢印を横切っています。",
+    "lrAcrossArrow.nagare": "線が矢印で直進していません。",
     "lrAcrossWind.nagare": "線が風で流されずに横切っています。",
     "lrAgainstArrow.nagare": "線が矢印に反して進んでいます。",
     "lrAgainstWind.nagare": "線が風上に向かって進んでいます。",
