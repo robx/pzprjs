@@ -62,7 +62,7 @@
 		},
 
 		posthook: {
-			qans: function(num) {
+			qnum: function(num) {
 				if (num >= 0) {
 					this.checkAutoCmp();
 				}
