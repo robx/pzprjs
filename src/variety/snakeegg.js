@@ -232,8 +232,14 @@
 		presets: [
 			{
 				name: "preset.nine",
+				createOnly: true,
 				shortkey: "i",
 				constant: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+			},
+			{
+				name: "preset.range",
+				func: "generateRange",
+				field: { type: "number", value: 9, min: 0, size: 4 }
 			},
 			{
 				name: "preset.copy_answer",
@@ -245,6 +251,17 @@
 				constant: []
 			}
 		],
+		generateRange: function(input) {
+			var limit = +input;
+			if (isNaN(limit) || !isFinite(limit) || (limit | 0) !== limit) {
+				limit = 0;
+			}
+			var sizes = new Array(limit);
+			for (var i = 0; i < limit; i++) {
+				sizes[i] = i + 1 + "";
+			}
+			return sizes;
+		},
 		copyAnswer: function() {
 			var sizes = this.board.ublkmgr.components.map(function(u) {
 				return u.clist.length + "";

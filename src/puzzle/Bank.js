@@ -29,12 +29,12 @@ pzpr.classmgr.makeCommon({
 			return [];
 		},
 
-		applyPreset: function(preset) {
+		applyPreset: function(preset, param) {
 			var pieces;
-			if (preset.constant) {
+			if (preset.func) {
+				pieces = this[preset.func](param);
+			} else if (preset.constant) {
 				pieces = preset.constant;
-			} else if (preset.func) {
-				pieces = this[preset.func]();
 			} else {
 				return;
 			}
