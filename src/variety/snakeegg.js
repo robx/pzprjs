@@ -239,7 +239,7 @@
 			{
 				name: "preset.range",
 				func: "generateRange",
-				field: { type: "number", value: 9, min: 0, size: 4 }
+				field: { type: "number", value: 9, min: 0, max: 999, size: 4 }
 			},
 			{
 				name: "preset.copy_answer",
@@ -252,8 +252,8 @@
 			}
 		],
 		generateRange: function(input) {
-			var limit = +input;
-			if (isNaN(limit) || !isFinite(limit) || (limit | 0) !== limit) {
+			var limit = Math.max(0, Math.min(+input, 999));
+			if (isNaN(limit) || (limit | 0) !== limit) {
 				limit = 0;
 			}
 			var sizes = new Array(limit);
@@ -436,6 +436,35 @@
 		encodePzpr: function(type) {
 			this.encodeNumber10();
 			this.encodePieceBank();
+		},
+		decodePieceBank: function() {
+			var num = +this.outbstr.substr(2);
+			if (this.outbstr.substr(0, 2) === "//" && !isNaN(num)) {
+				var bank = this.board.bank;
+				bank.initialize(bank.generateRange(num));
+				this.outbstr = "";
+			} else {
+				this.common.decodePieceBank.call(this);
+			}
+		},
+		encodePieceBank: function() {
+			var bank = this.board.bank;
+			var count = bank.pieces.length;
+			var isBasic = false;
+			if (count > 0 && count <= 999 && count !== 9) {
+				isBasic = true;
+				for (var i = 0; i < count && isBasic; i++) {
+					if (bank.pieces[i].num !== i + 1) {
+						isBasic = false;
+					}
+				}
+			}
+
+			if (isBasic) {
+				this.outbstr += "//" + count;
+			} else {
+				this.common.encodePieceBank.call(this);
+			}
 		}
 	},
 
