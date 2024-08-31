@@ -460,7 +460,7 @@
     "lpNumGt2.onsen": "数字が2つ以上含まれたループがあります。",
     "lpPlNum.pipelink": "異なる数字を含んだループがあります。",
     "lpSepNum.pipelink": "同じ数字が異なるループに含まれています。",
-    "lrAcrossArrow.nagare": "線が矢印を横切っています。",
+    "lrAcrossArrow.nagare": "線が矢印で直進していません。",
     "lrAcrossWind.nagare": "線が風で流されずに横切っています。",
     "lrAgainstArrow.nagare": "線が矢印に反して進んでいます。",
     "lrAgainstWind.nagare": "線が風上に向かって進んでいます。",
@@ -834,5 +834,9 @@
     "bkOverlap.subomino": "隣り合うブロックが、一方が他方を包含する形になっています。",
     "bkSameTouch.zabajaba": "同じ向きのブロック同士が隣り合っています。",
     "nmShadeGt.kuromenbun": "シマと接する黒マスの数が違います。",
-    "cePortalMiscount.portal": "同じ番号のポータルが2個ずつになっていません。"
+    "cePortalMiscount.portal": "同じ番号のポータルが2個ずつになっていません。",
+    "csAdjacent.fakearrow": "黒く塗られた矢印が隣り合っています。",
+    "lrFollowsFake.fakearrow": "間違っていない矢印が黒く塗られています。",
+    "bkShadeGe2.fakearrow": "間違っている矢印が部屋に2つ以上あります。",
+    "bkNoShade.fakearrow": "間違っている矢印が部屋にありません。"
 }
