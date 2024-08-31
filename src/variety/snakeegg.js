@@ -232,8 +232,14 @@
 		presets: [
 			{
 				name: "preset.nine",
+				createOnly: true,
 				shortkey: "i",
 				constant: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+			},
+			{
+				name: "preset.range",
+				func: "generateRange",
+				field: { type: "number", value: 9, min: 0, max: 999, size: 4 }
 			},
 			{
 				name: "preset.copy_answer",
@@ -245,6 +251,17 @@
 				constant: []
 			}
 		],
+		generateRange: function(input) {
+			var limit = Math.max(0, Math.min(+input, 999));
+			if (isNaN(limit) || (limit | 0) !== limit) {
+				limit = 0;
+			}
+			var sizes = new Array(limit);
+			for (var i = 0; i < limit; i++) {
+				sizes[i] = i + 1 + "";
+			}
+			return sizes;
+		},
 		copyAnswer: function() {
 			var sizes = this.board.ublkmgr.components.map(function(u) {
 				return u.clist.length + "";
@@ -258,10 +275,6 @@
 	BankPiece: {
 		num: null,
 		deserialize: function(str) {
-			if (typeof str === "string" && str[str.length - 1] === "=") {
-				str = str.substring(0, str.length - 1);
-			}
-
 			if (+str) {
 				this.num = +str;
 			} else if (!str) {
@@ -419,6 +432,39 @@
 		encodePzpr: function(type) {
 			this.encodeNumber10();
 			this.encodePieceBank();
+		},
+		decodePieceBank: function() {
+			if (this.outbstr[this.outbstr.length - 1] === "=") {
+				this.outbstr = this.outbstr.substring(0, this.outbstr.length - 1);
+			}
+
+			var num = +this.outbstr.substr(2);
+			if (this.outbstr.substr(0, 2) === "//" && !isNaN(num)) {
+				var bank = this.board.bank;
+				bank.initialize(bank.generateRange(num));
+				this.outbstr = "";
+			} else {
+				this.common.decodePieceBank.call(this);
+			}
+		},
+		encodePieceBank: function() {
+			var bank = this.board.bank;
+			var count = bank.pieces.length;
+			var isBasic = false;
+			if (count > 0 && count <= 999 && count !== 9) {
+				isBasic = true;
+				for (var i = 0; i < count && isBasic; i++) {
+					if (bank.pieces[i].num !== i + 1) {
+						isBasic = false;
+					}
+				}
+			}
+
+			if (isBasic) {
+				this.outbstr += "//" + count;
+			} else {
+				this.common.encodePieceBank.call(this);
+			}
 		}
 	},
 

@@ -1,7 +1,7 @@
 /* snakeegg.js */
 
 ui.debug.addDebugData("snakeegg", {
-	url: "5/5/a0a0l4a2f/4/1/2/3/4",
+	url: "5/5/a0a0l4a2f//4",
 	failcheck: [
 		[
 			"brNoShade",
