@@ -275,10 +275,6 @@
 	BankPiece: {
 		num: null,
 		deserialize: function(str) {
-			if (typeof str === "string" && str[str.length - 1] === "=") {
-				str = str.substring(0, str.length - 1);
-			}
-
 			if (+str) {
 				this.num = +str;
 			} else if (!str) {
@@ -438,6 +434,10 @@
 			this.encodePieceBank();
 		},
 		decodePieceBank: function() {
+			if (this.outbstr[this.outbstr.length - 1] === "=") {
+				this.outbstr = this.outbstr.substring(0, this.outbstr.length - 1);
+			}
+
 			var num = +this.outbstr.substr(2);
 			if (this.outbstr.substr(0, 2) === "//" && !isNaN(num)) {
 				var bank = this.board.bank;
