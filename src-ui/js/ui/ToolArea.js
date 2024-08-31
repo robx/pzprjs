@@ -16,6 +16,7 @@ ui.toolarea = {
 			this.walkElement(getEL("usepanel"));
 			this.walkElement(getEL("checkpanel"));
 			this.walkElement(getEL("variantpanel"));
+			this.walkElement(getEL("timerpanel"));
 			this.walkElement(getEL("btnarea"));
 		}
 		ui.misc.displayByPid(getEL("checkpanel"));
@@ -377,5 +378,9 @@ ui.toolarea = {
 	},
 	rejectTrial: function() {
 		ui.puzzle.rejectCurrentTrial();
+	},
+
+	togglePause: function() {
+		ui.puzzle.togglePause();
 	}
 };

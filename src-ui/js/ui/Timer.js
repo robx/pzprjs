@@ -26,7 +26,7 @@
 		//---------------------------------------------------------------------------
 		init: function() {
 			this.worstACtime = 0;
-			this.timerEL = document.getElementById("timerpanel");
+			this.timerEL = document.getElementById("timertext");
 			this.showtime(0);
 		},
 		start: function() {

@@ -203,6 +203,8 @@
     "variant": "This puzzle uses variant rules",
     "time": "Time:",
     "timer.menu": "Show timer",
+    "pause": "Pause",
+    "resume": "Resume",
     "check": "Check",
     "check.variant": "Check base type",
     "undo": "<-",

@@ -608,3 +608,26 @@ form#fileform2 {
   color: black;
   content: "+";
 }
+
+div#timertext {
+  display: inline-block;
+  padding: 2pt 0;
+}
+body.paused div#timertext {
+  color: red;
+}
+body.paused div#divques {
+  filter: brightness(0);
+  pointer-events: none;
+}
+button#pausebtn,
+button#resumebtn {
+  float: right;
+  margin: 0;
+}
+body.paused button#pausebtn {
+  display: none;
+}
+body:not(.paused) button#resumebtn {
+  display: none;
+}
