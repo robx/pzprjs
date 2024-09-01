@@ -445,12 +445,16 @@ if ('serviceWorker' in navigator) {
   <div id="timerpanel">
     <div id="timertext">経過時間：00:00</div>
     <button type="button" class="btn" id="pausebtn" data-button-exec="togglePause">__pause__</button>
-    <button type="button" class="btn" id="resumebtn" data-button-exec="togglePause">__resume__</button>
+    <button type="button" class="btn btn-warn" id="resumebtn" data-button-exec="togglePause">__resume__</button>
   </div>
 </div>
 
 <div id="quesboard">
   <div id="divques"></div> <!-- Canvas用 -->
+  <div id="pauseoverlay">
+    <div class="header">__pause.header__</div>
+    <div id="pausedesc">__pause.desc__</div>
+  </div>
 </div>
 
 <div id="btnarea" class="outofboard" style="display:none;"> <!-- Buttons below board下部のボタン -->
