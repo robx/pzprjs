@@ -626,6 +626,10 @@ body.paused div#divques {
   opacity: 0.15;
   pointer-events: none;
 }
+body.paused div#btnarea {
+  opacity: 0.15;
+  pointer-events: none;
+}
 button#pausebtn,
 button#resumebtn {
   float: right;
