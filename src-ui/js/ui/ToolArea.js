@@ -16,6 +16,8 @@ ui.toolarea = {
 			this.walkElement(getEL("usepanel"));
 			this.walkElement(getEL("checkpanel"));
 			this.walkElement(getEL("variantpanel"));
+			this.walkElement(getEL("timerpanel"));
+			this.walkElement(getEL("pauseoverlay"));
 			this.walkElement(getEL("btnarea"));
 		}
 		ui.misc.displayByPid(getEL("checkpanel"));
@@ -125,6 +127,9 @@ ui.toolarea = {
 		getEL("separator2").style.display =
 			hasTimer && ui.menuconfig.get("toolarea") ? "" : "none";
 		getEL("timerpanel").style.display = hasTimer ? "block" : "none";
+		getEL("pausedesc").innerText = ui.i18n(
+			pzpr.env.OS.mobile ? "pause.desc.mobile" : "pause.desc"
+		);
 		this.displayVariantPanel();
 
 		for (var idname in this.items) {
@@ -377,5 +382,9 @@ ui.toolarea = {
 	},
 	rejectTrial: function() {
 		ui.puzzle.rejectCurrentTrial();
+	},
+
+	togglePause: function() {
+		ui.puzzle.togglePause();
 	}
 };

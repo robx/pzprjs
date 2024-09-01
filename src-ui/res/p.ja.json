@@ -194,6 +194,8 @@
     "variant": "変種ルール",
     "time": "経過時間：",
     "timer.menu": "タイマーを表示",
+    "pause": "ポーズ",
+    "resume": "スタート",
     "check": "チェック",
     "check.variant": "本家ルールでチェック",
     "undo": "戻",

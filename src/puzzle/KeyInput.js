@@ -221,6 +221,14 @@ pzpr.classmgr.makeCommon({
 				puzzle.opemgr.updateStarts();
 			}
 
+			if (this.keydown && c === "F4" && puzzle.playeronly) {
+				puzzle.togglePause();
+				return;
+			}
+			if (puzzle.pausetime !== null) {
+				return;
+			}
+
 			puzzle.emit("key", c);
 			if (this.cancelEvent) {
 				return;

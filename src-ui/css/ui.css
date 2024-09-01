@@ -75,6 +75,10 @@ h2#title {
   background: linear-gradient(to bottom, #99334f, #993366);
 }
 
+.btn-warn {
+  background: yellow;
+  background: linear-gradient(to bottom, yellow, #cccc00);
+}
 .btn-warn:active {
   background: #999900;
   background: linear-gradient(to bottom, #999900, #cccc00);
@@ -216,6 +220,7 @@ div#auxeditorpanel div.childsel {
 
 /* パズル表示部 */
 div#quesboard {
+  position: relative;
   margin: 16pt auto 16pt auto;
   text-align: center;
 }
@@ -607,4 +612,58 @@ form#fileform2 {
   width: 1em;
   color: black;
   content: "+";
+}
+
+div#timertext {
+  display: inline-block;
+  padding: 2pt 0;
+}
+body.paused div#timertext {
+  animation: pulse 2s ease-in-out infinite;
+}
+body.paused div#divques {
+  filter: brightness(0);
+  opacity: 0.15;
+  pointer-events: none;
+}
+body.paused div#btnarea {
+  opacity: 0.15;
+  pointer-events: none;
+}
+button#pausebtn,
+button#resumebtn {
+  float: right;
+  margin: 0;
+}
+body.paused button#pausebtn {
+  display: none;
+}
+body:not(.paused) button#resumebtn {
+  display: none;
+}
+body:not(.paused) div#pauseoverlay {
+  display: none;
+}
+div#pauseoverlay {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  user-select: none;
+}
+div#pauseoverlay div.header {
+  color: blue;
+  font-size: 2em;
+  padding-bottom: 0.8em;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
 }
