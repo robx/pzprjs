@@ -103,7 +103,7 @@ pzpr.classmgr.makeCommon({
 		// ans.checkAdjacentDiffNumber() 同じ数字が隣接している時、エラーを設定する
 		// ans.checkAroundCell()  Same as checkSideCell, but also checks diagonally adjacent cells
 		//---------------------------------------------------------------------------
-		checkSideCell: function(func, code) {
+		checkSideCell: function(func, code, mark) {
 			var result = true,
 				bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -114,8 +114,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cell.seterr(1);
-					cell2.seterr(1);
+					if (mark !== false) {
+						cell.seterr(1);
+						cell2.seterr(1);
+					}
 				}
 				cell2 = cell.adjacent.bottom;
 				if (cell.by < bd.maxby - 1 && func(cell, cell2)) {
@@ -123,8 +125,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cell.seterr(1);
-					cell2.seterr(1);
+					if (mark !== false) {
+						cell.seterr(1);
+						cell2.seterr(1);
+					}
 				}
 			}
 			if (!result) {
@@ -969,6 +973,41 @@ pzpr.classmgr.makeCommon({
 				code
 			);
 		},
+		checkShadeCount: function() {
+			this.checkRowsCols(this.isExCellCount, "exShadeNe");
+		},
+		getRowsColsValue: function(clist) {
+			return clist.filter(function(c) {
+				return c.isShade();
+			}).length;
+		},
+		isExCellCount: function(clist) {
+			var d = clist.getRectSize(),
+				bd = this.board;
+			var count = this.getRowsColsValue(clist);
+
+			var result = true;
+
+			if (d.x1 === d.x2) {
+				var exc = bd.getex(d.x1, -1);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+			if (d.y1 === d.y2) {
+				var exc = bd.getex(-1, d.y1);
+				if (exc.qnum !== -1 && exc.qnum !== count) {
+					exc.seterr(1);
+					result = false;
+				}
+			}
+
+			if (!result) {
+				clist.seterr(1);
+			}
+			return result;
+		},
 
 		//---------------------------------------------------------------------------
 		// ans.checkBorderCount()  ある交点との周り四方向の境界線の数を判定する(bp==1:黒点が打たれている場合)
@@ -1270,7 +1309,7 @@ pzpr.classmgr.makeCommon({
 
 			for (var key in pieces) {
 				var found = false;
-				for (var b = 0; b < this.board.bank.pieces.length; b++ && !found) {
+				for (var b = 0; b < this.board.bank.pieces.length && !found; b++) {
 					if (key === this.board.bank.pieces[b].canonize()) {
 						found = true;
 					}

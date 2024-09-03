@@ -138,6 +138,7 @@
 			// 枠外の一辺のmargin(セル数換算)
 			margin: 0.15,
 			bankratio: 0.5,
+			bankVerticalOffset: 0.5,
 
 			// canvasの大きさを保持する
 			canvasWidth: null,

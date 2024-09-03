@@ -156,6 +156,7 @@ if ('serviceWorker' in navigator) {
       <div class="child" data-value="empty">__inputmode.empty__</div>
       <div class="child" data-value="ice">__inputmode.ice__</div>
       <div class="child" data-value="water">__inputmode.water__</div>
+      <div class="child" data-value="fire">__inputmode.fire__</div>
       <div class="child" data-value="nabe">__inputmode.nabe__</div>
       <div class="child" data-value="box">__inputmode.box__</div>
       <div class="child" data-value="pin">__inputmode.pin__</div>
@@ -169,6 +170,7 @@ if ('serviceWorker' in navigator) {
       <div class="child" data-value="mark-tree">__inputmode.mark-tree__</div>
       <div class="child" data-value="mark-tent">__inputmode.mark-tent__</div>
       <div class="child" data-value="mark-cross">__inputmode.mark-cross__</div>
+      <div class="child" data-value="mark-checkerboard">__inputmode.mark-checkerboard__</div>
       <div class="child" data-value="undef">__inputmode.undef__</div>
       <div class="child" data-value="line">__inputmode.line__</div>
       <div class="child" data-value="peke">__inputmode.peke__</div>
@@ -440,11 +442,19 @@ if ('serviceWorker' in navigator) {
     </div>
   </div>
   <hr class="separator" id="separator2">
-  <div id="timerpanel">経過時間：00:00</div>
+  <div id="timerpanel" style="display:none;">
+    <div id="timertext">経過時間：00:00</div>
+    <button type="button" class="btn" id="pausebtn" data-button-exec="togglePause">__pause__</button>
+    <button type="button" class="btn btn-warn" id="resumebtn" data-button-exec="togglePause">__resume__</button>
+  </div>
 </div>
 
 <div id="quesboard">
   <div id="divques"></div> <!-- Canvas用 -->
+  <div id="pauseoverlay">
+    <div class="header">__pause.header__</div>
+    <div id="pausedesc">__pause.desc__</div>
+  </div>
 </div>
 
 <div id="btnarea" class="outofboard" style="display:none;"> <!-- Buttons below board下部のボタン -->

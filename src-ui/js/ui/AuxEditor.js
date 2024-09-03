@@ -135,6 +135,11 @@ ui.auxeditor = {
 ui.popupmgr.addpopup("applypreset", {
 	formname: "applypreset",
 
+	show: function(px, py) {
+		ui.popupmgr.popups.template.show.call(this, px, py);
+		ui.puzzle.key.enableKey = false;
+	},
+
 	reset: function() {
 		this.loadpresets();
 	},
@@ -151,8 +156,12 @@ ui.popupmgr.addpopup("applypreset", {
 			this.close();
 			return;
 		}
-		var preset = ui.puzzle.board.bank.presets[+this.form.preset.value];
-		ui.puzzle.board.bank.applyPreset(preset);
+		var i = +this.form.preset.value;
+		var preset = ui.puzzle.board.bank.presets[i];
+		var field = this.form["preset_" + i];
+		var param = field ? field.value : undefined;
+
+		ui.puzzle.board.bank.applyPreset(preset, param);
 		this.close();
 	},
 
@@ -162,6 +171,10 @@ ui.popupmgr.addpopup("applypreset", {
 
 		var presets = ui.puzzle.board.bank.presets;
 		for (var i = 0; i < presets.length; i++) {
+			if (!presets[i].name || presets[i].createOnly) {
+				continue;
+			}
+
 			var div = document.createElement("div");
 			var label = document.createElement("label");
 			var input = document.createElement("input");
@@ -170,10 +183,26 @@ ui.popupmgr.addpopup("applypreset", {
 			input.value = i;
 			input.type = "radio";
 
-			label.textContent = ui.i18n(presets[i].name) || presets[i].name;
+			label.textContent = (ui.i18n(presets[i].name) || presets[i].name) + " ";
 			label.prepend(input);
 
 			div.replaceChildren(label);
+			if (presets[i].field) {
+				var field = document.createElement("input");
+				var props = presets[i].field;
+				for (var prop in props) {
+					field[prop] = props[prop];
+				}
+				field.name = "preset_" + i;
+
+				field.oninput = function(ev) {
+					// div > label > input
+					ev.target.parentNode.firstChild.firstChild.checked = true;
+				};
+
+				div.appendChild(field);
+			}
+
 			root.appendChild(div);
 		}
 	}

@@ -99,6 +99,7 @@
 			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "Ayeheya", "heyawake"],
 			balance: [0, 0, "Balance Loop", "Balance Loop"],
 			barns: [1, 0, "バーンズ", "Barns"],
+			batten: [0, 0, "Battenberg Painting", "Battenberg Painting"],
 			battleship: [0, 0, "Battleship", "Battleship", "statuepark"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
 			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
@@ -135,6 +136,7 @@
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
 			"curvedata-aux": [0, 0, "図形の編集", "Edit shape"],
+			curving: [0, 0, "カービングロード", "Curving Road"],
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
 			detour: [0, 0, "Detour", "Detour", "country"],
 			disloop: [0, 0, "Disorderly Loop", "Disorderly Loop", "tapaloop"],
@@ -146,6 +148,7 @@
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
 			evolmino: [0, 0, "シンカミノ", "Evolmino"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
+			fakearrow: [0, 0, "フェイクアロー", "Fake Arrow", "nagare"],
 			familyphoto: [0, 0, "家族写真", "Family Photo"],
 			fillmat: [1, 0, "フィルマット", "Fillmat", "fillmat"],
 			fillomino: [
@@ -157,6 +160,7 @@
 				{ kanpen2: "fillomino01" }
 			],
 			firefly: [1, 0, "ホタルビーム", "Hotaru Beam"],
+			firewalk: [1, 0, "Fire Walk", "Fire Walk", "icewalk"],
 			fivecells: [0, 0, "ファイブセルズ", "FiveCells", "nawabari"],
 			fourcells: [0, 0, "フォーセルズ", "FourCells", "nawabari"],
 			fracdiv: [0, 0, "分数分割", "Fractional Division"],
@@ -324,6 +328,13 @@
 			rassi: [0, 0, "Rassi Silai", "Rassi Silai", "country"],
 			rectslider: [0, 0, "四角スライダー", "Rectangle-Slider", "bonsan"],
 			reflect: [1, 0, "リフレクトリンク", "Reflect Link"],
+			"regional-poly": [
+				0,
+				0,
+				"Regional Polyominoes",
+				"Regional Polyominoes",
+				"statuepark"
+			],
 			remlen: [0, 0, "Remembered Length", "Remembered Length", "country"],
 			renban: [0, 0, "連番窓口", "Renban-Madoguchi"],
 			retroships: [
@@ -374,6 +385,7 @@
 				{ kanpen: "slitherlink" }
 			],
 			snake: [0, 0, "Snake", "Snake"],
+			snakeegg: [0, 0, "Snake Egg", "Snake Egg"],
 			snakepit: [0, 0, "Snake Pit", "Snake Pit", "fillomino"],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
 			squarejam: [0, 0, "Square Jam", "Square Jam"],
@@ -440,7 +452,8 @@
 			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
-			yosenabe: [0, 0, "よせなべ", "Yosenabe"]
+			yosenabe: [0, 0, "よせなべ", "Yosenabe"],
+			zabajaba: [0, 0, "Zabajaba", "Zabajaba", "kaidan"]
 		}
 	);
 })();

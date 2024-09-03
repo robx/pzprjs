@@ -194,6 +194,8 @@
     "variant": "変種ルール",
     "time": "経過時間：",
     "timer.menu": "タイマーを表示",
+    "pause": "ポーズ",
+    "resume": "スタート",
     "check": "チェック",
     "check.variant": "本家ルールでチェック",
     "undo": "戻",
@@ -275,7 +277,7 @@
     "dispsize.submit": "変更する",
     "about.title": "puzz.linkについて",
     "about.pzv": "ぱずぷれv3",
-    "about.author": "は はっぱ/連続発破",
+    "about.author": "はっぱ/連続発破",
     "network.title": "ネットワークプレイ",
     "network.start": "始める",
     "network.share": "共有用URL:",
@@ -283,7 +285,11 @@
     "preset.fleet3": "サイズ3",
     "preset.fleet4": "サイズ4",
     "preset.fleet5": "サイズ5",
+    "preset.range": "1 ~",
     "patchwork_leftaux": "左クリックで補助線を入力する",
     "list.sort.date": "日付順",
-    "list.sort.alpha": "アルファベット順"
+    "list.sort.alpha": "アルファベット順",
+    "preset.nine": "1~9",
+    "inputmode.fire": "火",
+    "inputmode.mark-checkerboard": "市松模様"
 }

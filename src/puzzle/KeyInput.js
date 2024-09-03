@@ -221,6 +221,14 @@ pzpr.classmgr.makeCommon({
 				puzzle.opemgr.updateStarts();
 			}
 
+			if (this.keydown && c === "F4" && puzzle.playeronly) {
+				puzzle.togglePause();
+				return;
+			}
+			if (puzzle.pausetime !== null) {
+				return;
+			}
+
 			puzzle.emit("key", c);
 			if (this.cancelEvent) {
 				return;
@@ -515,6 +523,9 @@ pzpr.classmgr.makeCommon({
 			else if (this.modesnum) {
 				this.targetdir = this.puzzle.playmode && this.disableAnum ? 5 : 0;
 			}
+			if (this.puzzle.playmode) {
+				this.bankpiece = null;
+			}
 		},
 		adjust_cell_to_excell: function() {
 			var bd = this.board;
@@ -569,8 +580,6 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		movedir: function(dir, mv) {
 			if (this.bankpiece !== null) {
-				// TODO implement moving from board to bank
-				// TODO implement moving between bankpieces
 				return this;
 			}
 

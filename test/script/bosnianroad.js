@@ -36,5 +36,30 @@ ui.debug.addDebugData("bosnianroad", {
 			"pzprv3/bosnianroad/7/7/. . . . . . . /. 2 . . . 4 . /. . . . . . . /. . . . . . . /. . . . . . . /. - . . . 7 . /. . . . . . . /+ + + + + + + /+ . # # # . + /+ + # + # # # /+ + # + + + # /+ + # # # + # /+ . + + # . # /+ + + + # # # /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Gray cells",
+			input: ["newboard,3,3", "editmode,auto", "mouse,right, 1,1, 1,5"],
+			result:
+				"pzprv3/bosnianroad/3/3/- . . /- . . /- . . /. . . /. . . /. . . /"
+		},
+		{
+			label: "Shaded cells",
+			input: ["playmode,shade", "mouse,left, 1,1, 5,1"],
+			result:
+				"pzprv3/bosnianroad/3/3/- . . /- . . /- . . /. # # /. . . /. . . /"
+		},
+		{
+			label: "Unshaded cells",
+			input: ["playmode,unshade", "mouse,left, 1,5, 5,5"],
+			result:
+				"pzprv3/bosnianroad/3/3/- . . /- . . /- . . /. # # /. . . /. + + /"
+		},
+		{
+			label: "Gray cells on top of answer",
+			input: ["editmode,shade", "mouse,left, 5,1, 5,5"],
+			result:
+				"pzprv3/bosnianroad/3/3/- . - /- . - /- . - /. # . /. . . /. + . /"
+		}
+	]
 });

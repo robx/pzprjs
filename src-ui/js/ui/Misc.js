@@ -113,6 +113,7 @@ function toBGimage(pid) {
 		"araf",
 		"skyscrapers",
 		"balance",
+		"batten",
 		"battleship",
 		"bdwalk",
 		"bosnianroad",
@@ -127,6 +128,7 @@ function toBGimage(pid) {
 		"coral",
 		"cts",
 		"curvedata",
+		"curving",
 		"dbchoco",
 		"detour",
 		"dominion",
@@ -135,6 +137,8 @@ function toBGimage(pid) {
 		"doubleback",
 		"easyasabc",
 		"evolmino",
+		"fakearrow",
+		"firewalk",
 		"geradeweg",
 		"heteromino",
 		"heyapin",
@@ -177,6 +181,7 @@ function toBGimage(pid) {
 		"ququ",
 		"rassi",
 		"remlen",
+		"regional-poly",
 		"retroships",
 		"roundtrip",
 		"sananko",
@@ -187,6 +192,7 @@ function toBGimage(pid) {
 		"simpleloop",
 		"slashpack",
 		"snake",
+		"snakeegg",
 		"squarejam",
 		"starbattle",
 		"statuepark",
@@ -210,7 +216,8 @@ function toBGimage(pid) {
 		"walllogic",
 		"waterwalk",
 		"wittgen",
-		"yinyang"
+		"yinyang",
+		"zabajaba"
 	];
 	if (imgs.indexOf(pid) >= 0) {
 		return "img/" + pid + ".png";

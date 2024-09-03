@@ -29,12 +29,12 @@ pzpr.classmgr.makeCommon({
 			return [];
 		},
 
-		applyPreset: function(preset) {
+		applyPreset: function(preset, param) {
 			var pieces;
-			if (preset.constant) {
+			if (preset.func) {
+				pieces = this[preset.func](param);
+			} else if (preset.constant) {
 				pieces = preset.constant;
-			} else if (preset.func) {
-				pieces = this[preset.func]();
 			} else {
 				return;
 			}
@@ -220,7 +220,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.old = index < len ? this.board.bank.pieces[index].serialize() : null;
-			this.num = value || null;
+			this.num = value;
 			this.index = index;
 		},
 
@@ -268,6 +268,9 @@ pzpr.classmgr.makeCommon({
 		},
 
 		isNoop: function() {
+			if (this.num === null) {
+				return false;
+			}
 			return this.old === this.num;
 		},
 

@@ -1008,9 +1008,13 @@ pzpr.classmgr.makeCommon({
 			this.outbstr += "/";
 			var bank = this.board.bank;
 
-			var pieces = bank.pieces.map(function(p) {
-				return p.serialize();
-			});
+			var pieces = bank.pieces
+				.map(function(p) {
+					return p.serialize();
+				})
+				.filter(function(p) {
+					return p;
+				});
 
 			for (var i = 0; i < bank.presets.length; i++) {
 				if (!bank.presets[i].constant) {
