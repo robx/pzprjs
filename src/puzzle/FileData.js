@@ -29,6 +29,11 @@
 
 				bd.initBoardSize(pzl.cols, pzl.rows);
 
+				if (pzl.variant !== null) {
+					puzzle.setConfig("variant", true);
+					puzzle.setConfig("variantid", pzl.variant);
+				}
+
 				this.filever = pzl.filever;
 				if (filetype !== pzl.FILE_PBOX_XML) {
 					this.lineseek = 0;

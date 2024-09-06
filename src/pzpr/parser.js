@@ -158,24 +158,40 @@
 			}
 			// ぱずぷれv3の場合
 			else {
-				if (url.startsWith("v:/")) {
-					url = url.substring(3);
-					this.variant = true;
-				}
-				var qs = url.indexOf("/", url.indexOf("?"));
+				var start = url.indexOf("?");
+				var qs = url.indexOf("/", start);
 				var first = "";
 				if (qs > -1) {
-					first = url.substring(url.indexOf("?") + 1, qs);
+					first = url.substring(start + 1, qs);
+
+					while (first.match(/^(\w+)\=(\w+)\&/)) {
+						if (RegExp.$1 === "type") {
+							this.mode = RegExp.$2;
+						}
+
+						start = url.indexOf("&", start + 1);
+						first = url.substring(start + 1, qs);
+					}
 				} else {
-					first = url.substr(url.indexOf("?") + 1);
+					first = url.substring(start + 1);
 				}
+
+				if (first.startsWith("v:")) {
+					var newstart = start + first.length + 2;
+					var next = url.indexOf("/", newstart);
+					first = url.substring(newstart, next);
+				}
+
 				if (first.match(/^pzprv[0-9.]*$/)) {
+					if (start > -1 && start < qs) {
+						// Remove other querystring parameters
+						url = url.substring(start + 1);
+					}
+
 					// encoded file; extract pid
 					url = decodeURIComponent(url);
-					var parts = url.split("/");
-					if (parts.length >= 2) {
-						this.pid = parts[1];
-					}
+					var parts = url.split("/", 4);
+					this.pid = parts[0].startsWith("v:") ? parts[2] : parts[1];
 					this.qdata = url;
 					this.type = URL_PZPRFILE;
 				} else {
@@ -437,6 +453,7 @@
 	pzpr.parser.FileData.prototype = {
 		pid: "",
 		type: FILE_AUTO /* == 0 */,
+		variant: null,
 		filever: 0,
 		fstr: "",
 		qdata: "",
@@ -477,6 +494,11 @@
 			delete this.fstr;
 
 			/* ヘッダからパズルの種類・ファイルの種類を判定する */
+			if (firstline.match(/^v:(.*)/)) {
+				this.variant = RegExp.$1;
+				firstline = lines.shift();
+			}
+
 			if (firstline.match(/^pzprv3/)) {
 				this.type = FILE_PZPR;
 				if (firstline.match(/pzprv3\.(\d+)/)) {
