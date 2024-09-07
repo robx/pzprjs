@@ -187,24 +187,21 @@ pzpr.on("load", function(){
           rulediv.appendChild(span);
         });
       }
+      player.id = "rules";
       player.appendChild(rulediv);
     });
 
     heading = document.createElement('h1');
     heading.textContent = "Example errors / 誤答例";
     body.appendChild(heading);
+
+    var foundcodes = {};
     failcheck.forEach(function(data){
       if(data.length>2&&data[2].skiprules){ return;}
       var testcase = document.createElement('div');
       testcase.className = 'testcase';
       body.appendChild(testcase);
-      // blank puzzle
-      //render(testcase, data[1], 'viewer', function(puzzle){
-      //  puzzle.ansclear();
-      //});
-      // solution
-      //render(testcase, data[1], 'viewer', function(puzzle){});
-      // marked solution
+
       render(testcase, data[1], 'viewer', function(puzzle){
         var failcode = puzzle.check(true);
         var label = document.createElement('div');
@@ -219,10 +216,22 @@ pzpr.on("load", function(){
           span.textContent =  failcode.gettext(lang);
           error.appendChild(span);
         });
+
+        var c = failcode.lastcode || "complete"
+        foundcodes[c] = (foundcodes[c] || 0) + 1;
+        testcase.id = foundcodes[c] === 1 ? c : c+"-"+foundcodes[c];
+
         testcase.appendChild(label);
         testcase.appendChild(error);
       });
     });
+
+    if (location.hash) {
+      var target = location.hash;
+      setTimeout(function() {
+        body.scrollTop = document.querySelector(target).offsetTop;
+      }, 50);
+    }
   };
   document.getElementsByTagName('head')[0].appendChild(_script);
 });
