@@ -4,7 +4,56 @@ var assert = require("assert");
 
 var pzpr = require("../../");
 
-var puzzle = new pzpr.Puzzle();
+var puzzle;
+beforeEach(function() {
+	puzzle = new pzpr.Puzzle();
+});
+
+describe("URLData", function() {
+	it("parses files", function() {
+		var url = "pzprv3/nurikabe/3/3/# # . /1 # 3 /# # . /";
+		var pzl = pzpr.parser.parseURL(url);
+
+		assert.equal("nurikabe", pzl.pid);
+
+		puzzle.open(pzl);
+		assert.equal("nurikabe", puzzle.pid);
+
+		assert.equal(puzzle.board.getc(3, 3).qans, 1);
+	});
+
+	it("parses variant files", function() {
+		var url = "v:/pzprv3/nurikabe/3/3/# # . /1 # 3 /# # . /";
+		var pzl = pzpr.parser(url);
+		assert.equal("nurikabe", pzl.pid);
+		puzzle.open(pzl);
+		assert.equal("nurikabe", puzzle.pid);
+		assert.equal(true, puzzle.getConfig("variant"));
+	});
+
+	it("parses variant urls", function() {
+		var url =
+			"https://puzz.link/p?type=editor&v:/pzprv3/nurikabe/3/3/%23%20%23%20.%20/1%20%23%203%20/%23%20%23%20.%20//";
+		var pzl = pzpr.parser(url);
+		assert.equal("nurikabe", pzl.pid);
+		puzzle.open(pzl);
+		assert.equal("nurikabe", puzzle.pid);
+		assert.equal(true, puzzle.getConfig("variant"));
+	});
+
+	it("parses duplicated urls", function() {
+		var url =
+			"https://puzz.link/p?type=editor&pzprv3/nurikabe/3/3/%23%20%23%20.%20/1%20%23%203%20/%23%20%23%20.%20//";
+		var pzl = pzpr.parser(url);
+
+		assert.equal("nurikabe", pzl.pid);
+
+		puzzle.open(pzl);
+		assert.equal("nurikabe", puzzle.pid);
+
+		assert.equal(puzzle.board.getc(3, 3).qans, 1);
+	});
+});
 
 describe("changeProperPid:URL", function() {
 	it("Check bonsan", function() {
