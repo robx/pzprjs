@@ -22,14 +22,15 @@
 		maxnum: 3,
 
 		isCmp: function() {
-			if (!this.puzzle.execConfig("autocmp")) {
+			if (!this.puzzle.execConfig("autocmp") || !this.isNum()) {
 				return false;
 			}
-			return this.qnum === this.countTurn();
+			var count = this.countTurn();
+			return this.qnum === count || (this.qnum === -2 && count >= 0);
 		},
 
 		countTurn: function() {
-			if (!this.isNum() || this.lcnt !== 2) {
+			if (this.lcnt !== 2) {
 				return -1;
 			}
 
