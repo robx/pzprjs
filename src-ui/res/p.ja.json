@@ -291,5 +291,7 @@
     "list.sort.alpha": "アルファベット順",
     "preset.nine": "1~9",
     "inputmode.fire": "火",
-    "inputmode.mark-checkerboard": "市松模様"
+    "inputmode.mark-checkerboard": "市松模様",
+    "pause.header": "ポーズ中",
+    "pause.desc": "再開をクリックするか、F4キーを押してください"
 }
