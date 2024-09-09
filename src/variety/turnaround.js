@@ -59,14 +59,6 @@
 				}
 			}
 			return clist;
-		},
-
-		posthook: {
-			qnum: function(num) {
-				if (num >= 0) {
-					this.checkAutoCmp();
-				}
-			}
 		}
 	},
 	Board: {
