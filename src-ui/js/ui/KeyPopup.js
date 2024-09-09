@@ -200,6 +200,7 @@ ui.keypopup = {
 		teri: [10, 0],
 		portal: [10, 0],
 		kuromenbun: [10, 0],
+		turnaround: [3, 0],
 		bosnianroad: [80, 0],
 		sananko: [10, 113],
 		zabajaba: [80, 0],
@@ -349,6 +350,8 @@ ui.keypopup = {
 			this.generate_retroships(mode);
 		} else if (type === 130) {
 			this.generate_lix(mode);
+		} else if (type === 131) {
+			this.generate_infinity(mode);
 		}
 	},
 	gentable4: function(mode) {
