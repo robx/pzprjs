@@ -65,8 +65,8 @@
 	"MouseEvent@meidjuluk": {
 		autoplay_func: "border",
 		inputModes: {
-			edit: ["number", "clear"],
-			play: ["border", "subline"]
+			edit: ["number", "empty", "clear"],
+			play: ["number", "border", "subline"]
 		}
 	},
 
@@ -211,6 +211,15 @@
 		minnum: function() {
 			return this.puzzle.playmode ? 1 : 0;
 		},
+		maxnum: function() {
+			return this.puzzle.playmode
+				? Math.max(1, this.board.bank.highestPiece)
+				: Math.min(
+						999,
+						this.board.rows * this.board.cols -
+							(this.pid === "snakeegg" ? 2 : 0)
+				  );
+		},
 		enableSubNumberArray: true,
 		allowShade: function() {
 			return this.qnum === 0 || this.qnum === -1;
@@ -218,6 +227,9 @@
 		allowUnshade: function() {
 			return this.qnum !== 0;
 		}
+	},
+	"Cell@meidjuluk": {
+		minnum: 1
 	},
 
 	Board: {
@@ -235,6 +247,20 @@
 	},
 	"Board@meidjuluk": {
 		hasborder: 1
+	},
+	"Border@meidjuluk": {
+		isQuesBorder: function() {
+			return this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty();
+		},
+
+		prehook: {
+			qans: function() {
+				return this.isQuesBorder();
+			},
+			qsub: function() {
+				return this.isQuesBorder();
+			}
+		}
 	},
 	"AreaRoomGraph@meidjuluk": {
 		enabled: true
@@ -279,13 +305,25 @@
 			return sizes;
 		},
 		copyAnswer: function() {
-			var sizes = this.board.ublkmgr.components.map(function(u) {
+			var manager = this.board.ublkmgr.enabled
+				? this.board.ublkmgr
+				: this.board.roommgr;
+
+			var sizes = manager.components.map(function(u) {
 				return u.clist.length + "";
 			});
 			sizes.sort(function(a, b) {
 				return a - b;
 			});
 			return sizes;
+		},
+		highestPiece: 0,
+		rebuildExtraData: function() {
+			var max = 0;
+			for (var b = 0; b < this.pieces.length; b++) {
+				max = Math.max(max, this.pieces[b].getNum());
+			}
+			this.highestPiece = max;
 		}
 	},
 	BankPiece: {
@@ -439,7 +477,20 @@
 		}
 	},
 	"Graphic@meidjuluk": {
-		bordercolor_func: "qans"
+		getBGCellColor: function(cell) {
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errbcolor1;
+			} else if (cell.isEmpty()) {
+				return "black";
+			}
+			return null;
+		},
+		getBorderColor: function(border) {
+			if (border.isQuesBorder()) {
+				return "black";
+			}
+			return this.getBorderColor_qans(border);
+		}
 	},
 	"Graphic@snakeegg": {
 		irowakeblk: true,
@@ -496,21 +547,74 @@
 			}
 		}
 	},
+	"Encode@meidjuluk": {
+		decodePzpr: function() {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				if (val === 0) {
+					bd.cell[c].ques = 7;
+				} else {
+					bd.cell[c].qnum = val;
+				}
+			});
+			this.decodePieceBank();
+		},
+		encodePzpr: function(type) {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				return bd.cell[c].isEmpty() ? 0 : bd.cell[c].qnum;
+			});
+			this.encodePieceBank();
+		}
+	},
 
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnum();
-			this.decodeCellAns();
+			if (this.pid === "meidjuluk") {
+				this.decodeBorderAns();
+			} else {
+				this.decodeCellAns();
+			}
 			this.decodePieceBank();
 			this.decodePieceBankQcmp();
 			this.decodeCellSnum();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
-			this.encodeCellAns();
+			if (this.pid === "meidjuluk") {
+				this.encodeBorderAns();
+			} else {
+				this.encodeCellAns();
+			}
 			this.encodePieceBank();
 			this.encodePieceBankQcmp();
 			this.encodeCellSnum();
+		},
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				cell.ques = 0;
+				if (ca === "*") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "* ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else {
+					return ". ";
+				}
+			});
 		}
 	},
 
@@ -597,18 +701,29 @@
 			"checkBankPiecesUsed"
 		],
 
-		// TODO don't run checkDifferentNumberInRoom for rooms that are invalid size
-		// TODO don't run checkNumberDivisions for rooms that are invalid size
+		isDifferentNumberInClist: function(clist) {
+			if (clist.length > this.board.bank.highestPiece) {
+				return true;
+			}
+			return this.isIndividualObject(clist, function(cell) {
+				return cell.getNum();
+			});
+		},
 
 		checkSmallArea: function() {
 			this.checkAllCell(function(cell) {
-				return cell.qnum > cell.room.clist.length;
+				return cell.qnum > 0 && cell.qnum > cell.room.clist.length;
 			}, "bkSizeLt");
 		},
 
 		checkNumberDivisions: function() {
+			var max = this.board.bank.highestPiece;
 			this.checkAllCell(function(cell) {
-				return cell.qnum > 0 && cell.room.clist.length % cell.qnum;
+				return (
+					cell.qnum > 0 &&
+					cell.room.clist.length <= max &&
+					cell.room.clist.length % cell.qnum
+				);
 			}, "bkNumDivisor");
 		}
 	},
