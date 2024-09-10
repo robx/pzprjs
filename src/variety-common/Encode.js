@@ -276,7 +276,11 @@ pzpr.classmgr.makeCommon({
 			return cm;
 		},
 		encodeNumber10: function() {
-			this.outbstr += this.maybeEncodeNumber10();
+			var result = this.maybeEncodeNumber10();
+			if (!result) {
+				throw Error("Grid contains number higher than 9");
+			}
+			this.outbstr += result;
 		},
 
 		//---------------------------------------------------------------------------

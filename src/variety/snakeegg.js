@@ -425,12 +425,12 @@
 	Encode: {
 		decodePzpr: function(type) {
 			if (this.outbstr[0] !== "/") {
-				this.decodeNumber10();
+				this.decodeNumber10or16();
 			}
 			this.decodePieceBank();
 		},
 		encodePzpr: function(type) {
-			this.encodeNumber10();
+			this.encodeNumber10or16();
 			this.encodePieceBank();
 		},
 		decodePieceBank: function() {
