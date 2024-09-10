@@ -7,25 +7,11 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["snakeegg"], {
+})(["snakeegg", "meidjuluk"], {
 	MouseEvent: {
-		use: true,
-		inputModes: {
-			edit: ["number", "circle-shade", "info-blk"],
-			play: ["shade", "unshade", "number", "info-blk"]
-		},
-		mouseinput: function() {
-			if (this.inputMode === "circle-shade") {
-				this.inputFixedNumber(0);
-			} else {
-				this.common.mouseinput.call(this);
-			}
-		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
+				this.mouseinputAutoPlay();
 				if (this.notInputted() && this.mousestart) {
 					this.inputqcmp();
 				}
@@ -59,6 +45,28 @@
 				piece.setQcmp(piece.qcmp ? 0 : 1);
 				piece.draw();
 			}
+		}
+	},
+	"MouseEvent@snakeegg": {
+		use: true,
+		autoplay_func: "cell",
+		inputModes: {
+			edit: ["number", "circle-shade", "info-blk"],
+			play: ["shade", "unshade", "number", "info-blk"]
+		},
+		mouseinput: function() {
+			if (this.inputMode === "circle-shade") {
+				this.inputFixedNumber(0);
+			} else {
+				this.common.mouseinput.call(this);
+			}
+		}
+	},
+	"MouseEvent@meidjuluk": {
+		autoplay_func: "border",
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["border", "subline"]
 		}
 	},
 
@@ -215,13 +223,21 @@
 	Board: {
 		getBankPiecesInGrid: function() {
 			var ret = [];
-			var shapes = this.board.ublkmgr.components;
+			var shapes = this.ublkmgr.enabled
+				? this.ublkmgr.components
+				: this.roommgr.components;
 			for (var r = 0; r < shapes.length; r++) {
 				var clist = shapes[r].clist;
 				ret.push([clist.length + "", clist]);
 			}
 			return ret;
 		}
+	},
+	"Board@meidjuluk": {
+		hasborder: 1
+	},
+	"AreaRoomGraph@meidjuluk": {
+		enabled: true
 	},
 	Bank: {
 		enabled: true,
@@ -344,36 +360,40 @@
 		}
 	},
 
-	AreaShadeGraph: {
+	"AreaShadeGraph@snakeegg": {
 		enabled: true,
 		coloring: true
 	},
-	AreaUnshadeGraph: {
+	"AreaUnshadeGraph@snakeegg": {
 		enabled: true
 	},
 
 	Graphic: {
-		irowakeblk: true,
-		shadecolor: "rgb(80, 80, 80)",
-		bgcellcolor_func: "qsub1",
 		bankratio: 0.1,
 		bankVerticalOffset: 0.25,
-		circlestrokecolor_func: "null",
 
 		paint: function() {
 			this.drawBGCells();
 
-			this.drawShadedCells();
-			this.drawGrid();
+			if (this.pid === "meidjuluk") {
+				this.drawDashedGrid();
+			} else {
+				this.drawShadedCells();
+				this.drawGrid();
+			}
 			this.drawTargetSubNumber(true);
-			this.drawBorders();
+
+			if (this.pid === "meidjuluk") {
+				this.drawBorders();
+				this.drawBorderQsubs();
+			}
 
 			this.drawSubNumbers();
 			this.drawQuesNumbers();
 
-			this.drawCircles();
-
-			this.drawPekes();
+			if (this.pid === "snakeegg") {
+				this.drawCircles();
+			}
 
 			this.drawChassis();
 
@@ -381,9 +401,6 @@
 			this.drawTarget();
 		},
 
-		getCircleFillColor: function(cell) {
-			return cell.qnum === 0 ? this.quescolor : null;
-		},
 		getNumberTextCore: function(num) {
 			return num > 0 ? "" + num : num === -2 ? "?" : "";
 		},
@@ -419,6 +436,18 @@
 				this.puzzle.editmode ||
 					this.puzzle.mouse.inputMode.indexOf("number") >= 0
 			);
+		}
+	},
+	"Graphic@meidjuluk": {
+		bordercolor_func: "qans"
+	},
+	"Graphic@snakeegg": {
+		irowakeblk: true,
+		shadecolor: "rgb(80, 80, 80)",
+		bgcellcolor_func: "qsub1",
+		circlestrokecolor_func: "null",
+		getCircleFillColor: function(cell) {
+			return cell.qnum === 0 ? this.quescolor : null;
 		}
 	},
 
@@ -485,7 +514,7 @@
 		}
 	},
 
-	AnsCheck: {
+	"AnsCheck@snakeegg": {
 		checklist: [
 			"checkShadeCellExist+",
 			"check2x2ShadeSection",
@@ -558,9 +587,35 @@
 			}
 		}
 	},
+	"AnsCheck@meidjuluk": {
+		checklist: [
+			"checkDifferentNumberInRoom",
+			"checkSmallArea",
+			"checkNumberDivisions",
+			"checkBankPiecesAvailable",
+			"checkBankPiecesInvalid",
+			"checkBankPiecesUsed"
+		],
+
+		// TODO don't run checkDifferentNumberInRoom for rooms that are invalid size
+		// TODO don't run checkNumberDivisions for rooms that are invalid size
+
+		checkSmallArea: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum > cell.room.clist.length;
+			}, "bkSizeLt");
+		},
+
+		checkNumberDivisions: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum > 0 && cell.room.clist.length % cell.qnum;
+			}, "bkNumDivisor");
+		}
+	},
 	FailCode: {
 		shBranch: "shBranch.snake",
 		shEndpoint: "shEndpoint.snake",
-		shLoop: "shLoop.snake"
+		shLoop: "shLoop.snake",
+		bkSizeLt: "bkSizeLt.fillomino"
 	}
 });

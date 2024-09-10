@@ -263,6 +263,7 @@
 			mashu: [0, 1, "ましゅ", "Masyu", "", { kanpen: "masyu", alias: "pearl" }],
 			maxi: [0, 0, "Maxi Loop", "Maxi Loop", "country"],
 			meander: [0, 0, "にょろにょろナンバー", "Meandering Numbers", "ripple"],
+			meidjuluk: [0, 0, "Meidjuluk", "Meidjuluk", "snakeegg"],
 			mejilink: [0, 0, "メジリンク", "Mejilink"],
 			minarism: [1, 0, "マイナリズム", "Minarism"],
 			mines: [0, 0, "マインスイーパ", "Minesweeper", "kurotto"],
