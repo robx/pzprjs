@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["hanare", "putteria"], {
+})(["hanare", "putteria", "twinarea"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -31,7 +31,9 @@
 					}
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
+				if (this.pid === "twinarea" && this.btn === "right") {
+					this.inputIcebarn();
+				} else if (this.mousestart || this.mousemove) {
 					this.inputborder();
 				} else if (this.mouseend && this.notInputted()) {
 					this.inputqnum_hanare();
@@ -87,6 +89,13 @@
 			cell.setQsub(0);
 			this.mouseCell = cell;
 			cell.draw();
+		}
+	},
+
+	"MouseEvent@twinarea": {
+		inputModes: { edit: ["border", "number", "shade"], play: ["objblank"] },
+		inputShade: function() {
+			this.inputIcebarn();
 		}
 	},
 
@@ -167,8 +176,31 @@
 		hasborder: 1
 	},
 
+	"Board@twinarea": {
+		addExtraInfo: function() {
+			this.icegraph = this.addInfoList(this.klass.AreaIcebarnGraph);
+		}
+	},
+
 	AreaRoomGraph: {
 		enabled: true
+	},
+
+	"AreaIcebarnGraph:AreaGraphBase@twinarea": {
+		enabled: true,
+		relation: { "cell.ques": "node" },
+		setComponentRefs: function(obj, component) {
+			obj.icebarn = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.icebarnnodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.icebarnnodes = [];
+		},
+		isnodevalid: function(cell) {
+			return cell.ice();
+		}
 	},
 
 	//---------------------------------------------------------
@@ -195,6 +227,14 @@
 
 			this.drawChassis();
 		}
+	},
+
+	"Graphic@twinarea": {
+		autocmp: null,
+		icecolor: "rgb(204,204,204)",
+		qanscolor: "rgb(0, 127, 0)",
+		trialcolor: "rgb(127, 80, 0)",
+		bgcellcolor_func: "icebarn"
 	},
 
 	"Graphic@putteria": {
@@ -233,10 +273,16 @@
 		decodePzpr: function(type) {
 			this.decodeBorder();
 			this.decodeNumber16();
+			if (this.pid === "twinarea") {
+				this.decodeIce();
+			}
 		},
 		encodePzpr: function(type) {
 			this.encodeBorder();
 			this.encodeNumber16();
+			if (this.pid === "twinarea") {
+				this.encodeIce();
+			}
 		}
 	},
 	//---------------------------------------------------------
@@ -253,6 +299,38 @@
 		}
 	},
 
+	"FileIO@twinarea": {
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca.charAt(0) === "-") {
+					cell.ques = 6;
+					ca = ca.substr(1);
+				}
+
+				if (ca !== "." && +ca > 0) {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				var ca = "";
+				if (cell.ques === 6) {
+					ca += "-";
+				}
+
+				if (cell.qnum !== -1) {
+					ca += cell.qnum.toString();
+				}
+
+				if (ca === "") {
+					ca = ".";
+				}
+				return ca + " ";
+			});
+		}
+	},
+
 	//---------------------------------------------------------
 	// 正解判定処理実行部
 	AnsCheck: {
@@ -260,7 +338,8 @@
 			"checkDoubleNumber",
 			"checkAnsNumberAndSize",
 			"checkDiffNumber@hanare",
-			"checkAdjacentNumber@putteria",
+			"checkAdjacentNumber@putteria,twinarea",
+			"checkTwinAreaSums@twinarea",
 			"checkDifferentNumberInLine@putteria",
 			"checkNoNumber"
 		],
@@ -336,6 +415,31 @@
 			this.checkSideCell(function(cell1, cell2) {
 				return cell1.isNum() && cell2.isNum();
 			}, "nmAdjacent");
+		},
+
+		checkTwinAreaSums: function() {
+			var areas = this.board.icegraph.components;
+			for (var id = 0; id < areas.length; id++) {
+				var area = areas[id],
+					clist = area.clist;
+
+				var sum = 0;
+				clist.each(function(cell) {
+					if (cell.isNum()) {
+						sum += cell.getNum();
+					}
+				});
+
+				if (sum === clist.length) {
+					continue;
+				}
+
+				this.failcode.add("bkSumNe");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
 		}
 	}
 });
