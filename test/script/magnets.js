@@ -35,6 +35,11 @@ ui.debug.addDebugData("magnets", {
 		],
 		[
 			null,
+			"pzprv3/magnets/2/2/1 /1 /0 0 /. . 1 1 /. . 1 1 /1 1 q1 a2 /1 1 q2 a1 /",
+			{ skiprules: true }
+		],
+		[
+			null,
 			"pzprv3/magnets/5/5/0 1 1 1 /1 1 1 1 /1 0 0 1 /0 1 1 1 /0 1 1 0 /1 1 0 0 0 /0 0 0 1 1 /1 1 0 0 0 /1 1 0 1 1 /. . 2 2 . . . /. . . 2 . . 2 /2 . a1 a2 a1 a2 s2 /2 . a2 a1 a2 a1 s2 /. 2 a1 a2 # s2 a2 /. 0 s2 s2 a1 s2 a1 /2 3 a2 a1 a2 a1 a2 /"
 		]
 	],

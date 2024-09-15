@@ -551,7 +551,7 @@
 			var d = clist.getRectSize(),
 				bd = this.board;
 			var count = clist.filter(function(c) {
-				return c.anum === symbol;
+				return c.getNum() === symbol;
 			}).length;
 
 			var result = true;
