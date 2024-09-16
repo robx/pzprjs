@@ -294,6 +294,7 @@
     "bkSubGt2.dbchoco": "A block has three or more shapes.",
     "bkSubLt2.cbblock": "A block has one area framed by dotted line.",
     "bkSubLt2.dbchoco": "A block contains a single color.",
+    "bkSumNe.twinarea": "The sum of numbers in a gray area is not equal to the size of the gray area.",
     "bkSumNeBn.yosenabe": "Sum of filling is not equal to a crock.",
     "bkUCGe2.dosufuwa": "An area has two or more balloons.",
     "bkUnitNe2.kuroclone": "There is an area without exactly two units.",

@@ -411,7 +411,7 @@
 					exec = pid === "hitori" || pid === "gokigen" || pid === "wagiri";
 					break;
 				case "singlenum":
-					exec = pid === "hanare" || pid === "putteria";
+					exec = pid === "hanare" || pid === "putteria" || pid === "twinarea";
 					break;
 				case "singleregion":
 					exec = pid === "parquet";
