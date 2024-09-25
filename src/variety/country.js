@@ -43,10 +43,10 @@
 		},
 		mouseinput_other: function() {
 			switch (this.inputMode) {
-				case "moon":
+				case "sun":
 					this.inputFixedNumber(1);
 					break;
-				case "sun":
+				case "moon":
 					this.inputFixedNumber(2);
 					break;
 			}
