@@ -384,6 +384,7 @@
 				"",
 				{ kanpen: "slitherlink" }
 			],
+			smullyan: [0, 0, "Smullyanic Dynasty", "Smullyanic Dynasty", "context"],
 			snake: [0, 0, "Snake", "Snake"],
 			snakeegg: [0, 0, "Snake Egg", "Snake Egg"],
 			snakepit: [0, 0, "Snake Pit", "Snake Pit", "fillomino"],
