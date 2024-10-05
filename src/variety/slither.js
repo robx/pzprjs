@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["slither"], {
+})(["slither", "swslither"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -62,6 +62,31 @@
 		}
 	},
 
+	"MouseEvent@swslither": {
+		inputModes: {
+			edit: ["sheep", "wolf", "number", "clear", "info-line"],
+			play: [
+				"line",
+				"peke",
+				"bgcolor",
+				"bgcolor1",
+				"bgcolor2",
+				"clear",
+				"info-line"
+			]
+		},
+		mouseinput_other: function() {
+			switch (this.inputMode) {
+				case "sheep":
+					this.inputFixedNumber(5);
+					break;
+				case "wolf":
+					this.inputFixedNumber(6);
+					break;
+			}
+		}
+	},
+
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
@@ -93,6 +118,11 @@
 		}
 	},
 
+	"Cell@swslither": {
+		maxnum: 6,
+		minnum: 0
+	},
+
 	Board: {
 		hasborder: 2,
 		borderAsLine: true,
@@ -115,6 +145,37 @@
 		}
 	},
 
+	"Board@swslither": {
+		scanResult: null,
+		scanInside: function() {
+			if (this.scanResult !== null) {
+				return this.scanResult;
+			}
+
+			var inside = false;
+			this.cell.each(function(cell) {
+				if (cell.adjborder.left.isLine()) {
+					inside = !inside;
+				}
+				cell.inside = inside;
+				if (
+					(cell.id + 1) % cell.board.cols === 0 &&
+					cell.adjborder.right.isLine()
+				) {
+					inside = !inside;
+				}
+			});
+
+			this.scanResult = true;
+			return true;
+		},
+
+		rebuildInfo: function() {
+			this.scanResult = null;
+			this.common.rebuildInfo.call(this);
+		}
+	},
+
 	Border: {
 		updateShaded: function() {
 			var c0 = this.sidecell[0],
@@ -130,6 +191,14 @@
 				this.setLine();
 			}
 			this.draw();
+		}
+	},
+
+	"Border@swslither": {
+		posthook: {
+			line: function() {
+				this.board.scanResult = null;
+			}
 		}
 	},
 
@@ -152,11 +221,33 @@
 			this.drawQuesNumbers();
 			this.drawPekes();
 			this.drawTarget();
+			if (this.pid === "swslither") {
+				this.drawSheepWolf();
+			}
 		},
 
 		repaintParts: function(blist) {
 			this.range.crosses = blist.crossinside();
 			this.drawBaseMarks();
+		}
+	},
+
+	"Graphic@swslither": {
+		drawSheepWolf: function() {
+			this.vinc("cell_number_image", "auto");
+			var g = this.context;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				if (cell.qnum >= 5) {
+					g.vid = "cell_text_" + cell.id;
+					g.vhide();
+					var text = cell.qnum === 5 ? "🐑" : "🐺";
+					var x = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
+					var y = cell.by * this.bh + this.getNumberVerticalOffset(cell);
+					this.disptext(text, x, y);
+				}
+			}
 		}
 	},
 
@@ -175,6 +266,14 @@
 		},
 		encodeKanpen: function() {
 			this.fio.encodeCellQnum_kanpen();
+		}
+	},
+	"Encode@swslither": {
+		decodePzpr: function(type) {
+			this.decodeNumber10();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber10();
 		}
 	},
 	//---------------------------------------------------------
@@ -294,13 +393,31 @@
 			"checkdir4BorderLine",
 
 			"checkOneLoop",
-			"checkDeadendLine+"
+			"checkDeadendLine+",
+
+			"checkSheepInWolfOut@swslither"
 		],
 
 		checkdir4BorderLine: function() {
 			this.checkAllCell(function(cell) {
-				return cell.qnum >= 0 && cell.getdir4BorderLine1() !== cell.qnum;
+				return (
+					cell.qnum >= 0 &&
+					cell.qnum <= 4 &&
+					cell.getdir4BorderLine1() !== cell.qnum
+				);
 			}, "nmLineNe");
+		},
+
+		checkSheepInWolfOut: function() {
+			var bd = this.board;
+			if (!bd.scanInside()) {
+				return;
+			}
+			this.checkAllCell(function(cell) {
+				return (
+					(cell.qnum === 5 && !cell.inside) || (cell.qnum === 6 && cell.inside)
+				);
+			}, "sheepOutsideOrWolfInside");
 		}
 	}
 });

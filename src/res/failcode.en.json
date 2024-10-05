@@ -819,6 +819,7 @@
     "shDiag.pentatouch": "A place where two pieces touch isn't marked with a point.",
     "shDiag.snake": "The snake touches itself diagonally.",
     "shDiag": "Two pieces are diagonally adjacent.",
+    "sheepOutsideOrWolfInside": "A sheep is outside the loop or a wolf is inside the loop.",
     "shEndpoint.snake": "A black circle is not on an endpoint.",
     "shIncorrect.curvedata": "A shape does not match the clue.",
     "shInside.castle": "A shaded cell is inside of the loop.",
