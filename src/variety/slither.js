@@ -119,8 +119,7 @@
 	},
 
 	"Cell@swslither": {
-		maxnum: 6,
-		minnum: 0
+		maxnum: 6
 	},
 
 	Board: {
