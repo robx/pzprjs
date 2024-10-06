@@ -838,6 +838,5 @@
     "csAdjacent.fakearrow": "黒く塗られた矢印が隣り合っています。",
     "lrFollowsFake.fakearrow": "間違っていない矢印が黒く塗られています。",
     "bkShadeGe2.fakearrow": "間違っている矢印が部屋に2つ以上あります。",
-    "bkNoShade.fakearrow": "間違っている矢印が部屋にありません。",
-    "sheepOutsideOrWolfInside": "羊が囲われていないか、狼が囲われています。"
+    "bkNoShade.fakearrow": "間違っている矢印が部屋にありません。"
 }

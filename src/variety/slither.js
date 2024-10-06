@@ -394,7 +394,8 @@
 			"checkOneLoop",
 			"checkDeadendLine+",
 
-			"checkSheepInWolfOut@swslither"
+			"checkSheepIn@swslither",
+			"checkWolvesOut@swslither"
 		],
 
 		checkdir4BorderLine: function() {
@@ -407,16 +408,24 @@
 			}, "nmLineNe");
 		},
 
-		checkSheepInWolfOut: function() {
+		checkSheepIn: function() {
 			var bd = this.board;
 			if (!bd.scanInside()) {
 				return;
 			}
 			this.checkAllCell(function(cell) {
-				return (
-					(cell.qnum === 5 && !cell.inside) || (cell.qnum === 6 && cell.inside)
-				);
-			}, "sheepOutsideOrWolfInside");
+				return cell.qnum === 5 && !cell.inside;
+			}, "nmOutside");
+		},
+
+		checkWolvesOut: function() {
+			var bd = this.board;
+			if (!bd.scanInside()) {
+				return;
+			}
+			this.checkAllCell(function(cell) {
+				return cell.qnum === 6 && cell.inside;
+			}, "nmInside");
 		}
 	}
 });
