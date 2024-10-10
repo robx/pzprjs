@@ -7,3 +7,5 @@ git.json
 .vercel
 .nyc_output
 coverage
+
+.vscode

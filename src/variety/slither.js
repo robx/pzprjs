@@ -217,12 +217,12 @@
 			this.drawBGCells();
 			this.drawLines();
 			this.drawBaseMarks();
-			this.drawQuesNumbers();
-			this.drawPekes();
-			this.drawTarget();
 			if (this.pid === "swslither") {
 				this.drawSheepWolf();
 			}
+			this.drawQuesNumbers();
+			this.drawPekes();
+			this.drawTarget();
 		},
 
 		repaintParts: function(blist) {
@@ -232,21 +232,27 @@
 	},
 
 	"Graphic@swslither": {
+		initialize: function() {
+			this.imgtile = new this.klass.ImageTile();
+			this.common.initialize.call(this);
+		},
 		drawSheepWolf: function() {
-			this.vinc("cell_number_image", "auto");
-			var g = this.context;
+			var g = this.vinc("cell_number_image", "auto");
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
-				if (cell.qnum >= 5) {
-					g.vid = "cell_text_" + cell.id;
-					g.vhide();
-					var text = cell.qnum === 5 ? "🐑" : "🐺";
-					var x = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
-					var y = cell.by * this.bh + this.getNumberVerticalOffset(cell);
-					this.disptext(text, x, y);
-				}
+				var keyimg = ["cell", cell.id, "quesimg"].join("_");
+				var x = (cell.bx - 1) * this.bw;
+				var y = (cell.by - 1) * this.bh;
+				var tile = cell.qnum >= 5 ? cell.qnum - 5 : null;
+				this.imgtile.putImage(g, keyimg, tile, x, y, this.cw, this.ch);
 			}
+		},
+		getQuesNumberText: function(cell) {
+			if (cell.qnum >= 5) {
+				return "";
+			}
+			return this.common.getQuesNumberText.call(this, cell);
 		}
 	},
 
@@ -426,6 +432,19 @@
 			this.checkAllCell(function(cell) {
 				return cell.qnum === 6 && cell.inside;
 			}, "nmInside");
+		}
+	},
+
+	"ImageTile@swslither": {
+		imgsrc_dataurl: "../img/sheep_wolf.png",
+		cols: 2,
+		rows: 1,
+		width: 256,
+		height: 128,
+		initialize: function() {
+			this.imgsrc_dataurl =
+				this.puzzle.pzpr.util.getpath() + this.imgsrc_dataurl;
+			this.common.initialize.call(this);
 		}
 	}
 });
