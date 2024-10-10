@@ -378,7 +378,7 @@
 					exec = pid === "interbd";
 					break;
 				case "bgcolor":
-					exec = pid === "slither" || pid === "myopia";
+					exec = pid === "slither" || pid === "myopia" || pid === "swslither";
 					break;
 				case "irowake":
 					exec = puzzle.painter.irowake;

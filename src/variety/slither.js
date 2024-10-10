@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["slither"], {
+})(["slither", "swslither"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -62,6 +62,31 @@
 		}
 	},
 
+	"MouseEvent@swslither": {
+		inputModes: {
+			edit: ["sheep", "wolf", "number", "clear", "info-line"],
+			play: [
+				"line",
+				"peke",
+				"bgcolor",
+				"bgcolor1",
+				"bgcolor2",
+				"clear",
+				"info-line"
+			]
+		},
+		mouseinput_other: function() {
+			switch (this.inputMode) {
+				case "sheep":
+					this.inputFixedNumber(5);
+					break;
+				case "wolf":
+					this.inputFixedNumber(6);
+					break;
+			}
+		}
+	},
+
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
@@ -93,6 +118,10 @@
 		}
 	},
 
+	"Cell@swslither": {
+		maxnum: 6
+	},
+
 	Board: {
 		hasborder: 2,
 		borderAsLine: true,
@@ -115,6 +144,37 @@
 		}
 	},
 
+	"Board@swslither": {
+		scanResult: null,
+		scanInside: function() {
+			if (this.scanResult !== null) {
+				return this.scanResult;
+			}
+
+			var inside = false;
+			this.cell.each(function(cell) {
+				if (cell.adjborder.left.isLine()) {
+					inside = !inside;
+				}
+				cell.inside = inside;
+				if (
+					(cell.id + 1) % cell.board.cols === 0 &&
+					cell.adjborder.right.isLine()
+				) {
+					inside = !inside;
+				}
+			});
+
+			this.scanResult = true;
+			return true;
+		},
+
+		rebuildInfo: function() {
+			this.scanResult = null;
+			this.common.rebuildInfo.call(this);
+		}
+	},
+
 	Border: {
 		updateShaded: function() {
 			var c0 = this.sidecell[0],
@@ -130,6 +190,14 @@
 				this.setLine();
 			}
 			this.draw();
+		}
+	},
+
+	"Border@swslither": {
+		posthook: {
+			line: function() {
+				this.board.scanResult = null;
+			}
 		}
 	},
 
@@ -149,6 +217,9 @@
 			this.drawBGCells();
 			this.drawLines();
 			this.drawBaseMarks();
+			if (this.pid === "swslither") {
+				this.drawSheepWolf();
+			}
 			this.drawQuesNumbers();
 			this.drawPekes();
 			this.drawTarget();
@@ -157,6 +228,31 @@
 		repaintParts: function(blist) {
 			this.range.crosses = blist.crossinside();
 			this.drawBaseMarks();
+		}
+	},
+
+	"Graphic@swslither": {
+		initialize: function() {
+			this.imgtile = new this.klass.ImageTile();
+			this.common.initialize.call(this);
+		},
+		drawSheepWolf: function() {
+			var g = this.vinc("cell_number_image", "auto");
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				var keyimg = ["cell", cell.id, "quesimg"].join("_");
+				var x = (cell.bx - 1) * this.bw;
+				var y = (cell.by - 1) * this.bh;
+				var tile = cell.qnum >= 5 ? cell.qnum - 5 : null;
+				this.imgtile.putImage(g, keyimg, tile, x, y, this.cw, this.ch);
+			}
+		},
+		getQuesNumberText: function(cell) {
+			if (cell.qnum >= 5) {
+				return "";
+			}
+			return this.common.getQuesNumberText.call(this, cell);
 		}
 	},
 
@@ -175,6 +271,14 @@
 		},
 		encodeKanpen: function() {
 			this.fio.encodeCellQnum_kanpen();
+		}
+	},
+	"Encode@swslither": {
+		decodePzpr: function(type) {
+			this.decodeNumber10();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber10();
 		}
 	},
 	//---------------------------------------------------------
@@ -294,13 +398,53 @@
 			"checkdir4BorderLine",
 
 			"checkOneLoop",
-			"checkDeadendLine+"
+			"checkDeadendLine+",
+
+			"checkSheepIn@swslither",
+			"checkWolvesOut@swslither"
 		],
 
 		checkdir4BorderLine: function() {
 			this.checkAllCell(function(cell) {
-				return cell.qnum >= 0 && cell.getdir4BorderLine1() !== cell.qnum;
+				return (
+					cell.qnum >= 0 &&
+					cell.qnum <= 4 &&
+					cell.getdir4BorderLine1() !== cell.qnum
+				);
 			}, "nmLineNe");
+		},
+
+		checkSheepIn: function() {
+			var bd = this.board;
+			if (!bd.scanInside()) {
+				return;
+			}
+			this.checkAllCell(function(cell) {
+				return cell.qnum === 5 && !cell.inside;
+			}, "nmOutside");
+		},
+
+		checkWolvesOut: function() {
+			var bd = this.board;
+			if (!bd.scanInside()) {
+				return;
+			}
+			this.checkAllCell(function(cell) {
+				return cell.qnum === 6 && cell.inside;
+			}, "nmInside");
+		}
+	},
+
+	"ImageTile@swslither": {
+		imgsrc_dataurl: "../img/sheep_wolf.png",
+		cols: 2,
+		rows: 1,
+		width: 256,
+		height: 128,
+		initialize: function() {
+			this.imgsrc_dataurl =
+				this.puzzle.pzpr.util.getpath() + this.imgsrc_dataurl;
+			this.common.initialize.call(this);
 		}
 	}
 });
