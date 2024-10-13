@@ -287,12 +287,7 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			this.addEdge(sidenodes[0], sidenodes[1]);
-			if (
-				border.sidecross[0][this.countprop] === 0 ||
-				border.sidecross[1][this.countprop] === 0
-			) {
-				this.modifyNodes = [];
-			} else if (this.hastop && sidenodes.length >= 2) {
+			if (this.hastop && sidenodes.length >= 2) {
 				this.setTopOfRoom_combine(sidenodes[0].obj, sidenodes[1].obj);
 			}
 		},
