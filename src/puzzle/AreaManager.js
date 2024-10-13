@@ -296,20 +296,6 @@ pzpr.classmgr.makeCommon({
 				this.setTopOfRoom_combine(sidenodes[0].obj, sidenodes[1].obj);
 			}
 		},
-		removeEdgeBySeparator: function(border) {
-			// 境界線を引いた時の処理
-			var sidenodes = this.getSideNodesBySeparator(border);
-			if (!sidenodes) {
-				return;
-			}
-			this.removeEdge(sidenodes[0], sidenodes[1]);
-			if (
-				border.sidecross[0][this.countprop] === 1 ||
-				border.sidecross[1][this.countprop] === 1
-			) {
-				this.modifyNodes = [];
-			}
-		},
 
 		//--------------------------------------------------------------------------------
 		// roommgr.setTopOfRoom_combine()  部屋が繋がったとき、部屋のTOPを設定する
