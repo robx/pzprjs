@@ -107,3 +107,8 @@ peke: cross mark
 [puzz.link]: https://puzz.link/list.html
 [sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [yajilin]: https://en.wikipedia.org/wiki/Yajilin
+
+
+## OpenSource Licenses
+
+Emojis used in some puzzles are sourced from [noto-emoji](https://github.com/googlefonts/noto-emoji) and licensed under the [SIL Open Font License](https://scripts.sil.org/OFL), Version 1.1.

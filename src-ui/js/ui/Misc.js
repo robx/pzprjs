@@ -199,6 +199,7 @@ function toBGimage(pid) {
 		"statuepark",
 		"subomino",
 		"wafusuma",
+		"swslither",
 		"symmarea",
 		"tachibk",
 		"tajmahal",
