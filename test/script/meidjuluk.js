@@ -31,5 +31,21 @@ ui.debug.addDebugData("meidjuluk", {
 			null,
 			"pzprv3/meidjuluk/4/6/3 . . 1 * . /5 * 2 4 * . /1 . . 1 2 . /. 1 2 . . . /0 0 1 0 0 /0 0 0 0 0 /0 0 1 1 0 /1 0 1 1 0 /1 0 1 1 0 0 /0 0 1 0 0 0 /0 1 1 0 0 0 /6/1/2/3/4/5/6/0 0 0 0 0 0 /"
 		]
+	],
+	inputs: [
+		{
+			input: ["newboard,2,2", "editmode", "key,3"],
+			result: "pzprv3/meidjuluk/2/2/3 . /. . /0 /0 /0 0 /i/0 0 0 0 0 0 0 0 0 /"
+		},
+		{
+			input: ["playmode,number", "mouse,leftx2,1.5,1.5"],
+			result:
+				"pzprv3/meidjuluk/2/2/3 . /. . /0 /0 /0 0 /i/0 0 0 0 0 0 0 0 0 /[,,,1] . /. . /"
+		},
+		{
+			input: ["key,shift,shift,5"],
+			result:
+				"pzprv3/meidjuluk/2/2/3 . /. . /0 /0 /0 0 /i/0 0 0 0 0 0 0 0 0 /[,5,,1] . /. . /"
+		}
 	]
 });

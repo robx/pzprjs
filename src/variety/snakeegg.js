@@ -229,7 +229,14 @@
 		}
 	},
 	"Cell@meidjuluk": {
-		minnum: 1
+		supportQnumAnum: true,
+		minnum: 1,
+		isNum: function() {
+			return this.isEmpty();
+		},
+		noNum: function() {
+			return this.isValid();
+		}
 	},
 
 	Board: {
