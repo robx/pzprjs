@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["toichika", "toichika2", "news", "arrows2"], {
+})(["toichika", "toichika2", "news", "yajirushi2"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -130,7 +130,7 @@
 			cell.draw();
 		}
 	},
-	"MouseEvent@arrows2": {
+	"MouseEvent@yajirushi2": {
 		inputModes: {
 			edit: ["number", "empty", "clear"],
 			play: ["arrow", "objblank", "numexist", "completion", "clear"]
@@ -168,7 +168,7 @@
 		enablemake: true,
 		enableplay: true
 	},
-	"KeyEvent@toichika,arrows2": {
+	"KeyEvent@toichika,yajirushi2": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -196,7 +196,7 @@
 			this.key_inputqnum(ca);
 		}
 	},
-	"KeyEvent@arrows2#1": {
+	"KeyEvent@yajirushi2#1": {
 		keyinput: function(ca) {
 			if (this.puzzle.playmode) {
 				this.key_arrows(ca);
@@ -263,7 +263,7 @@
 			}
 		}
 	},
-	"Cell@arrows2": {
+	"Cell@yajirushi2": {
 		minnum: function() {
 			return this.puzzle.editmode ? 0 : 1;
 		},
@@ -355,7 +355,7 @@
 			this.adjustCellArrow(key, d);
 		}
 	},
-	"BoardExec@arrows2": {
+	"BoardExec@yajirushi2": {
 		adjustBoardData: function(key, d) {
 			if (!(key & this.TURNFLIP)) {
 				return;
@@ -427,7 +427,7 @@
 			this.drawBorders();
 
 			this.drawDotCells();
-			if (this.pid === "arrows2") {
+			if (this.pid === "yajirushi2") {
 				this.drawQuesCells();
 				this.drawQuesNumbers();
 				this.drawCellArrows();
@@ -450,7 +450,7 @@
 			this.drawCursor();
 		}
 	},
-	"Graphic@arrows2": {
+	"Graphic@yajirushi2": {
 		autocmp: null,
 		fgcellcolor_func: "qnum",
 		fontShadecolor: "white",
@@ -503,7 +503,7 @@
 			}
 		}
 	},
-	"Graphic@news,arrows2#1": {
+	"Graphic@news,yajirushi2#1": {
 		drawMBs: function() {
 			var g = this.vinc("cell_mb", "auto", true);
 			g.lineWidth = 1;
@@ -535,7 +535,7 @@
 			return cell.getNum() < 0;
 		}
 	},
-	"AreaNumberGraph@arrows2": {
+	"AreaNumberGraph@yajirushi2": {
 		enabled: true,
 		isnodevalid: function(cell) {
 			return !cell.isNum();
@@ -555,7 +555,7 @@
 		}
 	},
 
-	"Encode@arrows2": {
+	"Encode@yajirushi2": {
 		decodePzpr: function(type) {
 			this.decode4Cell();
 		},
@@ -737,7 +737,7 @@
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
 				isarrow[c] =
-					cell.isNum() && (this.pid !== "arrows2" || cell.qnum === -1);
+					cell.isNum() && (this.pid !== "yajirushi2" || cell.qnum === -1);
 			}
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell0 = bd.cell[c];
@@ -753,7 +753,7 @@
 					if (
 						cell.isnull ||
 						cell.qnum === -2 ||
-						(this.pid === "arrows2" && cell.qnum !== -1)
+						(this.pid === "yajirushi2" && cell.qnum !== -1)
 					) {
 						ainfo.push([cell0]);
 						break;
@@ -929,7 +929,7 @@
 		}
 	},
 
-	"AnsCheck@arrows2": {
+	"AnsCheck@yajirushi2": {
 		checklist: [
 			"checkOverArrows",
 			"checkConnectEmpty",

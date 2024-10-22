@@ -95,7 +95,6 @@
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],
 			araf: [0, 0, "相ダ部屋", "Araf", "araf"],
 			armyants: [0, 0, "ぐんたいあり", "Army Ants", "kaero"],
-			arrows2: [0, 0, "見つめあう矢印２", "見つめあう矢印２", "toichika"],
 			arukone: [0, 0, "アルコネ", "Arukone", "numlin"],
 			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "Ayeheya", "heyawake"],
 			balance: [0, 0, "Balance Loop", "Balance Loop"],
@@ -460,6 +459,7 @@
 				"yajilin",
 				{ alias: "yajirin-regions" }
 			],
+			yajirushi2: [0, 0, "見つめあう矢印２", "Yajirushi 2", "toichika"],
 			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
