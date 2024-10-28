@@ -21,6 +21,7 @@ ui.keypopup = {
 	/* どの文字配置を作成するかのテーブル */
 	type: {
 		slither: [3, 0],
+		swslither: [5339, 0],
 		nawabari: [4, 0],
 		fourcells: [4, 0],
 		fivecells: [4, 0],
@@ -354,6 +355,8 @@ ui.keypopup = {
 			this.generate_lix(mode);
 		} else if (type === 131) {
 			this.generate_infinity(mode);
+		} else if (type === 5339) {
+			this.generate_swslither();
 		}
 	},
 	gentable4: function(mode) {
@@ -988,6 +991,13 @@ ui.keypopup = {
 	generate_lix: function(mode) {
 		this.generate_main(
 			[["l", "L"], ["i", "I"], ["x", "X"], ["-", "?"], " "],
+			3
+		);
+	},
+
+	generate_swslither: function() {
+		this.generate_main(
+			[["5", "🐑"], ["6", "🐺"], null, "1", "2", "3", "0", " ", ["-", "?"]],
 			3
 		);
 	},

@@ -620,7 +620,7 @@
 		if ("bgcolor" in imageopt) {
 			pc2.bgcolor = imageopt.bgcolor;
 		}
-		if (puzzle.pid === "kramma") {
+		if (puzzle.pid === "kramma" || puzzle.pid === "swslither") {
 			pc2.imgtile = puzzle.painter.imgtile;
 		}
 		if ("bank" in imageopt) {
