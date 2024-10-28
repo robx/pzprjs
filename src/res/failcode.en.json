@@ -189,6 +189,7 @@
     "bkNotSymSt.tentaisho": "An area is not point symmetric about the star.",
     "bkNotVRect.tatamibari": "A tatami is not a vertically long rectangle.",
     "bkNoUC.dosufuwa": "An area has no balloon.",
+    "bkNumDivisor.meidjuluk": "A number is not a factor of its room size.",
     "bkNumGe2.compass": "There is an area with more than one clue.",
     "bkNumGe2.fillmat": "A tatami has more than one number.",
     "bkNumGe2.hanare": "A room has more than one number.",
