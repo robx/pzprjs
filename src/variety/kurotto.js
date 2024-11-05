@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kurotto", "mines"], {
+})(["kurotto", "mines", "island"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -67,7 +67,12 @@
 			return this.checkComplete();
 		}
 	},
-	"Cell@kurotto": {
+	"Board@island": {
+		addExtraInfo: function() {
+			this.islandgraph = this.addInfoList(this.klass.AreaIslandGraph);
+		}
+	},
+	"Cell@kurotto,island": {
 		maxnum: function() {
 			var max = this.board.cell.length - 1;
 			return max <= 999 ? max : 999;
@@ -131,8 +136,26 @@
 		}
 	},
 
-	"AreaShadeGraph@kurotto": {
+	"AreaShadeGraph@kurotto,island": {
 		enabled: true
+	},
+	"AreaIslandGraph:AreaShadeGraph@island": {
+		enabled: true,
+		coloring: true,
+		relation: { "cell.qans": "node", "cell.qnum": "node" },
+		setComponentRefs: function(obj, component) {
+			obj.island = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.islandnodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.islandnodes = [];
+		},
+
+		isnodevalid: function(cell) {
+			return cell.isShade() || cell.isNum();
+		}
 	},
 
 	//---------------------------------------------------------
@@ -156,7 +179,7 @@
 			this.common.setRange.call(this, x1, y1, x2, y2);
 		}
 	},
-	"Graphic@kurotto": {
+	"Graphic@kurotto,island": {
 		hideHatena: true,
 
 		numbercolor_func: "qnum",
@@ -181,6 +204,29 @@
 				return this.qcmpcolor;
 			}
 			return null;
+		}
+	},
+	"Graphic@island#1": {
+		irowakeblk: true,
+
+		// TODO color numbers but only if shaded cells are present
+
+		getShadedCellColor: function(cell) {
+			if (cell.qans !== 1) {
+				return null;
+			}
+			var hasinfo = this.board.haserror || this.board.hasinfo;
+			var info = cell.error || cell.qinfo;
+			if (info === 1) {
+				return this.errcolor1;
+			} else if (info === 2) {
+				return this.errcolor2;
+			} else if (cell.trial) {
+				return this.trialcolor;
+			} else if (this.puzzle.execConfig("irowakeblk") && !hasinfo) {
+				return cell.island.color;
+			}
+			return this.shadecolor;
 		}
 	},
 	"Graphic@mines": {
@@ -260,11 +306,18 @@
 			}
 		}
 	},
-	"AnsCheck@kurotto": {
-		checklist: ["checkShadeCellExist", "checkCellNumber_kurotto"],
+	"AnsCheck@kurotto,island": {
+		checklist: [
+			"checkShadeCellExist",
+			"checkCellNumber_kurotto",
+			"checkConnectShaded_island@island"
+		],
 
 		checkCellNumber_kurotto: function() {
 			this.checkCellNumber("nmSumSizeNe");
+		},
+		checkConnectShaded_island: function() {
+			this.checkOneArea(this.board.islandgraph, "csDivide");
 		}
 	},
 	"AnsCheck@mines": {
