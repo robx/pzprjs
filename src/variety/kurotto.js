@@ -209,7 +209,21 @@
 	"Graphic@island#1": {
 		irowakeblk: true,
 
-		// TODO color numbers but only if shaded cells are present
+		getCircleFillColor: function(cell) {
+			if (!cell.isCmp()) {
+				return null;
+			}
+			var hasinfo = this.board.haserror || this.board.hasinfo;
+			if (this.puzzle.execConfig("irowakeblk") && !hasinfo) {
+				var color = cell.island.color;
+				if (typeof color !== "string") {
+					return color;
+				}
+
+				return color.replace("rgb", "rgba").replace(")", ",0.25)");
+			}
+			return this.qcmpcolor;
+		},
 
 		getShadedCellColor: function(cell) {
 			if (cell.qans !== 1) {
