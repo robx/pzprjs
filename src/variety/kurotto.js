@@ -40,6 +40,22 @@
 			this.mousereset();
 		}
 	},
+	"MouseEvent@island": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["shade", "unshade", "info-blk"]
+		},
+		dispInfoBlk: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull || !cell.island) {
+				return;
+			}
+			cell.island.clist.setinfo(1);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
