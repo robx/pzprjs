@@ -459,6 +459,7 @@
 				"yajilin",
 				{ alias: "yajirin-regions" }
 			],
+			yajirushi2: [0, 0, "見つめあう矢印２", "Yajirushi 2", "toichika"],
 			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
