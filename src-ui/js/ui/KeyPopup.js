@@ -210,6 +210,7 @@ ui.keypopup = {
 		snakeegg: [10, 0],
 		smullyan: [10, 0],
 		meidjuluk: [10, 0],
+		archipelago: [10, 0],
 		yajirushi2: [4, 0]
 	},
 
