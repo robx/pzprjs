@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["bonsan", "heyabon", "rectslider", "satogaeri"], {
+})(["bonsan", "heyabon", "rectslider", "satogaeri", "timebomb"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@bonsan,heyabon": {
@@ -162,6 +162,18 @@
 			return false;
 		}
 	},
+	"MouseEvent@timebomb": {
+		inputMoveLine: function() {
+			this.common.inputMoveLine.call(this);
+
+			// TODO this is sloppy
+			var cell = this.mouseCell;
+			if (cell.getNum() === 0) {
+				this.mouseCell = null;
+				cell.draw();
+			}
+		}
+	},
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
@@ -194,6 +206,11 @@
 				return num === 0;
 			} else {
 				var clist = this.path !== null ? this.path.clist : [this];
+
+				if (this.pid === "timebomb") {
+					return num === clist.length - 1;
+				}
+
 				var d = clist.getRectSize();
 				return (d.cols === 1 || d.rows === 1) && num === clist.length - 1;
 			}
@@ -216,11 +233,21 @@
 			}
 		}
 	},
+	"Cell@timebomb": {
+		maxnum: function() {
+			var max = this.board.cell.length - 1;
+			return Math.min(max, 999);
+		}
+	},
 
 	Border: {
 		prehook: {
 			line: function(num) {
-				return this.puzzle.execConfig("dispmove") && this.checkFormCurve(num);
+				return (
+					this.pid !== "timebomb" &&
+					this.puzzle.execConfig("dispmove") &&
+					this.checkFormCurve(num)
+				);
 			}
 		}
 	},
@@ -357,7 +384,7 @@
 
 	//---------------------------------------------------------
 	// 画像表示系
-	"Graphic@bonsan,heyabon,rectslider": {
+	"Graphic@bonsan,heyabon,rectslider,timebomb": {
 		bgcellcolor_func: "qsub2",
 		autocmp: "number"
 	},
@@ -446,6 +473,36 @@
 			return cell.isCmp() ? this.qcmpcolor : this.fontShadecolor;
 		}
 	},
+	"Graphic@timebomb": {
+		hideHatena: false,
+
+		getCircleFillColor: function(cell) {
+			if (cell.getNum() === 0) {
+				if (cell.error || cell.qinfo) {
+					return this.errcolor1;
+				}
+				return "black";
+			}
+			return this.getCircleFillColor_qcmp(cell);
+		},
+		getQuesNumberText: function(cell) {
+			if (this.puzzle.execConfig("dispmove")) {
+				var num = cell.base.getNum();
+				if (num <= 0) {
+					return num === -2 ? "?" : null;
+				}
+
+				if (cell.base.path) {
+					num -= cell.base.path.clist.length - 1;
+				}
+
+				return "" + Math.max(num, 0);
+			}
+
+			var num = cell.getNum();
+			return num > 0 ? "" + num : num === -2 ? "?" : "";
+		}
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -490,7 +547,7 @@
 			this.fio.encodeQnum_PBox_Sato();
 		}
 	},
-	"Encode@rectslider": {
+	"Encode@rectslider,timebomb": {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 		},
@@ -503,7 +560,7 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellQsubQcmp();
-			if (this.pid !== "rectslider") {
+			if (this.pid !== "rectslider" && this.pid !== "timebomb") {
 				this.decodeBorderQues();
 			}
 			this.decodeBorderLine();
@@ -511,7 +568,7 @@
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellQsubQcmp();
-			if (this.pid !== "rectslider") {
+			if (this.pid !== "rectslider" && this.pid !== "timebomb") {
 				this.encodeBorderQues();
 			}
 			this.encodeBorderLine();
@@ -613,7 +670,8 @@
 
 			"checkConnectObject",
 			"checkLineOverLetter",
-			"checkCurveLine",
+			"checkCurveLine@!timebomb",
+			"checkAdjacentLine@timebomb",
 
 			"checkMovedBlockRect@rectslider",
 			"checkMovedBlockSize@rectslider",
@@ -624,6 +682,7 @@
 			"checkNoObjectBlock@satogaeri,heyabon",
 
 			"checkNoMoveCircle",
+			"checkBoulders@timebomb",
 			"checkDisconnectLine"
 		],
 
@@ -703,6 +762,61 @@
 				},
 				"bkSize1"
 			);
+		}
+	},
+	"AnsCheck@timebomb": {
+		checkAdjacentLine: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				var num1 = cell1.getNum();
+				var num2 = cell2.getNum();
+
+				if (num1 === 0 || num2 === 0 || (num1 !== -1 && num2 !== -1)) {
+					return false;
+				}
+				if (
+					num1 !== -1 &&
+					cell2.path &&
+					!cell2.path.departure.isnull &&
+					cell2.path.departure !== cell1
+				) {
+					return true;
+				}
+				if (
+					num2 !== -1 &&
+					cell1.path &&
+					!cell1.path.departure.isnull &&
+					cell1.path.departure !== cell2
+				) {
+					return true;
+				}
+
+				return (
+					cell1.path &&
+					cell2.path &&
+					!cell1.path.departure.isnull &&
+					cell1.path.departure !== cell2.path.departure
+				);
+			}, "lnAdjacent");
+		},
+
+		checkBoulders: function() {
+			var bd = this.board;
+			this.checkAllCell(function(cell) {
+				if (cell.qnum !== 0) {
+					return false;
+				}
+
+				var around = bd.cellinside(
+					cell.bx - 2,
+					cell.by - 2,
+					cell.bx + 2,
+					cell.by + 2
+				);
+
+				return !around.some(function(c) {
+					return c.qnum !== 0 && c.path && !c.base.isnull;
+				});
+			}, "ceNoBomb");
 		}
 	}
 });

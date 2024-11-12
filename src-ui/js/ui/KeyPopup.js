@@ -208,6 +208,7 @@ ui.keypopup = {
 		batten: [10, 0],
 		firewalk: [10, 0],
 		snakeegg: [10, 0],
+		timebomb: [10, 0],
 		smullyan: [10, 0],
 		meidjuluk: [10, 0],
 		yajirushi2: [4, 0]
