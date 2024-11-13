@@ -14,32 +14,12 @@
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["line", "bgcolor", "bgcolor1", "bgcolor2", "clear", "completion"]
-		},
-		mouseinput: function() {
-			// オーバーライド
-			if (this.inputMode === "completion") {
-				if (this.mousestart) {
-					this.inputqcmp(1);
-				}
-			} else {
-				this.common.mouseinput.call(this);
-			}
 		}
 	},
 	"MouseEvent@satogaeri": {
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["line", "clear", "completion"]
-		},
-		mouseinput: function() {
-			// オーバーライド
-			if (this.inputMode === "completion") {
-				if (this.mousestart) {
-					this.inputqcmp(1);
-				}
-			} else {
-				this.common.mouseinput.call(this);
-			}
 		}
 	},
 	"MouseEvent@rectslider": {
@@ -49,6 +29,19 @@
 		}
 	},
 	MouseEvent: {
+		mouseinput: function() {
+			switch (this.inputMode) {
+				case "completion":
+					if (this.mousestart) {
+						this.inputqcmp(1);
+					}
+					break;
+				case "circle-shade":
+					return this.inputFixedNumber(0);
+				default:
+					return this.common.mouseinput.call(this);
+			}
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -163,6 +156,10 @@
 		}
 	},
 	"MouseEvent@timebomb": {
+		inputModes: {
+			edit: ["number", "clear", "circle-shade"],
+			play: ["line", "bgcolor", "bgcolor1", "bgcolor2", "clear", "completion"]
+		},
 		inputMoveLine: function() {
 			this.common.inputMoveLine.call(this);
 
@@ -234,6 +231,13 @@
 		}
 	},
 	"Cell@timebomb": {
+		posthook: {
+			qnum: function() {
+				if (this.path) {
+					this.path.clist.draw();
+				}
+			}
+		},
 		maxnum: function() {
 			var max = this.board.cell.length - 1;
 			return Math.min(max, 999);
@@ -488,7 +492,10 @@
 		hideHatena: false,
 
 		getCircleFillColor: function(cell) {
-			if (cell.getNum() === 0) {
+			var isdrawmove = this.puzzle.execConfig("dispmove");
+			var num = (!isdrawmove ? cell : cell.base).qnum;
+
+			if (num === 0) {
 				if (cell.error || cell.qinfo) {
 					return this.errcolor1;
 				}
@@ -499,8 +506,12 @@
 		getQuesNumberText: function(cell) {
 			if (this.puzzle.execConfig("dispmove")) {
 				var num = cell.base.getNum();
-				if (num <= 0) {
+				if (num === -2 || cell.distance === null) {
 					return num === -2 ? "?" : null;
+				}
+
+				if (cell.path && cell.path.departure.getNum() <= 0) {
+					return null;
 				}
 
 				return "" + Math.max(0, cell.distance);
