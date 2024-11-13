@@ -237,17 +237,21 @@
 		maxnum: function() {
 			var max = this.board.cell.length - 1;
 			return Math.min(max, 999);
+		},
+		noLP: function(dir) {
+			return (
+				this.qnum === 0 ||
+				(this.puzzle.execConfig("dispmove") &&
+					this.distance !== null &&
+					this.distance <= 0)
+			);
 		}
 	},
 
 	Border: {
 		prehook: {
 			line: function(num) {
-				return (
-					this.pid !== "timebomb" &&
-					this.puzzle.execConfig("dispmove") &&
-					this.checkFormCurve(num)
-				);
+				return this.puzzle.execConfig("dispmove") && this.checkFormCurve(num);
 			}
 		}
 	},
@@ -269,6 +273,13 @@
 						}
 					}
 				}
+			}
+		}
+	},
+	"Border@timebomb": {
+		prehook: {
+			line: function(num) {
+				return num !== 0 && this.isLineNG();
 			}
 		}
 	},
@@ -492,11 +503,7 @@
 					return num === -2 ? "?" : null;
 				}
 
-				if (cell.base.path) {
-					num -= cell.base.path.clist.length - 1;
-				}
-
-				return "" + Math.max(num, 0);
+				return "" + Math.max(0, cell.distance);
 			}
 
 			var num = cell.getNum();
