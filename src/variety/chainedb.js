@@ -391,7 +391,7 @@
 				for (var i = 0; actual >= 0 && i < chain.clist.length; i++) {
 					var cell = chain.clist[i];
 
-					if (cell.isNum() && cell.sblk.clist.length !== cell.getNum()) {
+					if (cell.isValidNum() && cell.sblk.clist.length !== cell.getNum()) {
 						actual = -1;
 					} else {
 						actual = Math.max(actual, cell.sblk.clist.length);
