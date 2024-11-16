@@ -331,7 +331,7 @@
     "bsNoArrow.evolmino": "The block isn't placed on an arrow.",
     "bsNoSequence.archipelago": "A chain does not contain one island of every size from 1 to N.",
     "bsNotEvol.evolmino": "The block doesn't have the same shape as the previous block with one additional square.",
-    "bsSameNum.archipelago": "A chain contains two island of identical size.",
+    "bsSameNum.archipelago": "A chain contains two islands of identical size.",
     "bsSameNum.fillomino": "Adjacent areas have the same number.",
     "bsSameShape.chainedb": "A chain contains two identical blocks.",
     "bsSameShape.lits": "Some tetrominoes that have the same shape are adjacent.",
