@@ -10,7 +10,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["chainedb", "mrtile"], {
+})(["chainedb", "mrtile", "archipelago"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -52,7 +52,7 @@
 		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true
 	},
-	"AreaShade8Graph:AreaShadeGraph@chainedb": {
+	"AreaShade8Graph:AreaShadeGraph@chainedb,archipelago": {
 		enabled: true,
 		setComponentRefs: function(obj, component) {
 			obj.blk8 = component;
@@ -74,10 +74,19 @@
 				}
 			}
 			return cells;
+		},
+
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			var set = new Set();
+			component.clist.each(function(cell) {
+				set.add(cell.sblk);
+			});
+			component.blockset = Array.from(set);
 		}
 	},
 
-	"Board@chainedb": {
+	"Board@chainedb,archipelago": {
 		addExtraInfo: function() {
 			this.sblk8mgr = this.addInfoList(this.klass.AreaShade8Graph);
 		}
@@ -112,6 +121,12 @@
 		maxnum: function() {
 			var bd = this.board;
 			return ((bd.cols * bd.rows) >> 1) - 1;
+		}
+	},
+	"Cell@archipelago": {
+		maxnum: function() {
+			var n = this.board.cols * this.board.rows;
+			return Math.ceil(Math.sqrt(n)) + 1;
 		}
 	},
 
@@ -155,7 +170,7 @@
 			return cell.qnum !== -1 ? this.shadecolor : this.qanscolor;
 		}
 	},
-	"Graphic@mrtile": {
+	"Graphic@mrtile,archipelago": {
 		hideHatena: true,
 		shadecolor: "#111111"
 	},
@@ -254,12 +269,7 @@
 
 			for (var r = 0; r < chains.length; r++) {
 				var chain = chains[r];
-
-				var set = new Set();
-				chain.clist.each(function(cell) {
-					set.add(cell.sblk);
-				});
-				var shapes = Array.from(set);
+				var shapes = chain.blockset;
 
 				for (var nna = 0; nna < shapes.length; nna++) {
 					for (var nnb = nna + 1; nnb < shapes.length; nnb++) {
@@ -359,6 +369,105 @@
 					blocks[r].clist.seterr(1);
 				}
 			}
+		}
+	},
+	"AnsCheck@archipelago": {
+		checklist: [
+			"checkNumberAndShadeSize",
+			"checkMaximumNumber",
+			"checkUniqueShapes",
+			"checkIsolated",
+			"doneShadingDecided"
+		],
+
+		checkMaximumNumber: function() {
+			var chains = this.board.sblk8mgr.components;
+
+			for (var r = 0; r < chains.length; r++) {
+				var chain = chains[r];
+				var expected = chain.blockset.length;
+				var actual = 0;
+
+				for (var i = 0; actual >= 0 && i < chain.clist.length; i++) {
+					var cell = chain.clist[i];
+
+					if (cell.isValidNum() && cell.sblk.clist.length !== cell.getNum()) {
+						actual = -1;
+					} else {
+						actual = Math.max(actual, cell.sblk.clist.length);
+					}
+				}
+
+				if (actual === -1) {
+					continue;
+				}
+
+				for (var i = 0; i < chain.blockset.length; i++) {
+					actual = Math.max(actual, chain.blockset[i].clist.length);
+				}
+
+				if (actual > expected) {
+					this.failcode.add("bsNoSequence");
+					if (this.checkOnly) {
+						return;
+					}
+					chain.clist.seterr(1);
+				}
+			}
+		},
+
+		checkUniqueShapes: function() {
+			var chains = this.board.sblk8mgr.components;
+			var valid = true;
+
+			for (var r = 0; r < chains.length; r++) {
+				var chain = chains[r];
+				var shapes = chain.blockset;
+
+				var sizemap = {};
+
+				for (var i = 0; i < shapes.length; i++) {
+					var clist = shapes[i].clist;
+
+					var size = clist.getQnumCell().qnum;
+					if (size < 0) {
+						size = clist.length;
+					}
+
+					if ("" + size in sizemap) {
+						this.failcode.add("bsSameNum");
+						if (this.checkOnly) {
+							return;
+						}
+
+						if (valid) {
+							this.board.cell.setnoerr();
+							valid = false;
+						}
+
+						chain.clist.each(function(cell) {
+							if (cell.error === -1) {
+								cell.seterr(0);
+							}
+						});
+
+						clist.seterr(1);
+						sizemap[size].seterr(1);
+					} else {
+						sizemap[size] = clist;
+					}
+				}
+			}
+		},
+
+		checkIsolated: function() {
+			this.checkAllArea(
+				this.board.sblk8mgr,
+				function(w, h, a, n) {
+					return a !== 1 || n > 1;
+				},
+				"bkNoChain"
+			);
 		}
 	}
 });
