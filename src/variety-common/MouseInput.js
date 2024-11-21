@@ -754,6 +754,7 @@ pzpr.classmgr.makeCommon({
 					cell.draw();
 				} else if (this.mousemove && !cell0.isnull && !cell.isDestination()) {
 					/* 移動中の場合 */
+					// TODO allow merger between qnum and anum
 					var border = this.prevPos.getnb(pos);
 					if (
 						!border.isnull &&

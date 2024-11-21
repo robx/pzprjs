@@ -164,7 +164,7 @@
 		inputMoveLine: function() {
 			this.common.inputMoveLine.call(this);
 			var cell = this.mouseCell;
-			if (cell.getNum() === 0) {
+			if (cell.qnum === 0) {
 				this.mouseCell = this.board.emptycell;
 				cell.draw();
 			}
@@ -176,7 +176,17 @@
 				return;
 			}
 
-			// TODO insert new circles
+			if (cell.qnum === -1) {
+				if (
+					!this.puzzle.execConfig("dispmove") ||
+					!cell.path ||
+					cell.path.departure === cell ||
+					(cell.lcnt === 1 && cell.path.departure.isnull)
+				) {
+					cell.setAnum(cell.anum === -1 ? 0 : -1);
+				}
+			}
+
 			// TODO right-click to drag multiple completion items on boulders
 			// TODO left-drag on boulders when in completion mode
 
@@ -249,6 +259,11 @@
 				if (this.path) {
 					this.path.clist.draw();
 				}
+			},
+			anum: function() {
+				if (this.path) {
+					this.path.clist.draw();
+				}
 			}
 		},
 		maxnum: function() {
@@ -256,6 +271,9 @@
 			return Math.min(max, 999);
 		},
 		noLP: function(dir) {
+			if (this.anum === 0) {
+				return false;
+			}
 			return (
 				this.qnum === 0 ||
 				(this.puzzle.execConfig("dispmove") &&
@@ -347,20 +365,34 @@
 	},
 
 	LineGraph: {
+		relation: {
+			"border.line": "link",
+			"cell.qnum": "move",
+			"cell.anum": "move"
+		},
+
 		enabled: true,
 		moveline: true,
 
 		resetExtraData: function(cell) {
-			cell.distance = cell.qnum >= 0 ? cell.qnum : null;
+			cell.distance = cell.qnum >= 0 ? cell.qnum : cell.anum === 0 ? 0 : null;
 
 			this.common.resetExtraData.call(this, cell);
 		},
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
 
-			var cell = component.departure,
-				num = cell.qnum;
-			num = num >= 0 ? num : this.board.cell.length;
+			var cell = component.departure;
+			if (cell.isnull) {
+				component.clist.each(function(c) {
+					c.distance = null;
+				});
+				return;
+			}
+
+			var num = cell.qnum,
+				isAnum = cell.anum !== -1;
+			num = num >= 0 ? num : isAnum ? 0 : this.board.cell.length;
 			cell.distance = num;
 			if (cell.lcnt === 0) {
 				return;
@@ -378,7 +410,8 @@
 					break;
 				}
 
-				cell.distance = --n;
+				n += isAnum ? +1 : -1;
+				cell.distance = n;
 				if (cell === component.destination) {
 					break;
 				} else if (dir !== 1 && adb.bottom.isLine()) {
@@ -453,6 +486,7 @@
 			this.drawLines();
 
 			this.drawCircledNumbers();
+			// TODO new graphic for anum circles
 
 			this.drawChassis();
 
@@ -529,19 +563,21 @@
 			}
 
 			if (this.puzzle.execConfig("dispmove")) {
-				var num = cell.base.getNum();
+				var num = cell.base.qnum;
 				if (num === -2 || cell.distance === null) {
 					return num === -2 ? "?" : null;
 				}
 
-				if (cell.path && cell.path.departure.getNum() <= 0) {
+				/* Don't show distance for boulders or question marks */
+				var dep = cell.path ? cell.path.departure.qnum : null;
+				if (dep === 0 || dep === -2) {
 					return null;
 				}
 
 				return "" + Math.max(0, cell.distance);
 			}
 
-			var num = cell.getNum();
+			var num = cell.qnum;
 			return num > 0 ? "" + num : num === -2 ? "?" : "";
 		}
 	},
@@ -627,6 +663,7 @@
 		},
 		encodeCellQsubQcmp: function() {
 			this.encodeCell(function(cell) {
+				// TODO save anum
 				return cell.qsub + (cell.qcmp << 4) + " ";
 			});
 		},
