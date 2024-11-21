@@ -146,6 +146,7 @@
 			if (
 				targetcell.isNum() &&
 				(this.inputMode === "completion" ||
+					(targetcell.qnum === 0 && this.pid === "timebomb") ||
 					(targetcell.qnum === -2 && dx * dx + dy * dy < distance * distance))
 			) {
 				targetcell.setQcmp(targetcell.qcmp !== val ? val : 0);
@@ -158,17 +159,29 @@
 	"MouseEvent@timebomb": {
 		inputModes: {
 			edit: ["number", "clear", "circle-shade"],
-			play: ["line", "bgcolor", "bgcolor1", "bgcolor2", "clear", "completion"]
+			play: ["line", "clear", "completion"]
 		},
 		inputMoveLine: function() {
 			this.common.inputMoveLine.call(this);
-
-			// TODO this is sloppy
 			var cell = this.mouseCell;
 			if (cell.getNum() === 0) {
-				this.mouseCell = null;
+				this.mouseCell = this.board.emptycell;
 				cell.draw();
 			}
+		},
+
+		inputBGcolor: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			// TODO insert new circles
+			// TODO right-click to drag multiple completion items on boulders
+			// TODO left-drag on boulders when in completion mode
+
+			cell.draw();
+			this.mouseCell = cell;
 		}
 	},
 	//---------------------------------------------------------
@@ -503,7 +516,18 @@
 			}
 			return this.getCircleFillColor_qcmp(cell);
 		},
+		getQuesNumberColor: function(cell) {
+			if (cell.qnum === 0) {
+				return "white";
+			}
+
+			return this.getQuesNumberColor_move(cell);
+		},
 		getQuesNumberText: function(cell) {
+			if (cell.qnum === 0 && cell.qcmp && cell.lcnt === 0) {
+				return "X";
+			}
+
 			if (this.puzzle.execConfig("dispmove")) {
 				var num = cell.base.getNum();
 				if (num === -2 || cell.distance === null) {
