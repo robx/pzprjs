@@ -271,7 +271,7 @@
 			return Math.min(max, 999);
 		},
 		noLP: function(dir) {
-			if (this.anum === 0) {
+			if (this.base.anum === 0) {
 				return false;
 			}
 			return (
@@ -657,14 +657,16 @@
 			this.decodeCell(function(cell, ca) {
 				if (ca !== "0") {
 					cell.qsub = +ca & 0x0f;
-					cell.qcmp = +ca >> 4; // int
+					cell.qcmp = (+ca >> 4) & 1; // int
+					cell.anum = +ca >> 5 ? 0 : -1;
 				}
 			});
 		},
 		encodeCellQsubQcmp: function() {
 			this.encodeCell(function(cell) {
-				// TODO save anum
-				return cell.qsub + (cell.qcmp << 4) + " ";
+				return (
+					cell.qsub + (cell.qcmp << 4) + (cell.anum === 0 ? 1 << 5 : 0) + " "
+				);
 			});
 		},
 
