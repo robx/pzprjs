@@ -402,7 +402,8 @@
 					exec = pid === "patchwork";
 					break;
 				case "undefcell":
-					exec = pid === "shugaku" || pid === "lightshadow";
+					exec =
+						pid === "shugaku" || pid === "lightshadow" || pid === "nibunnogo";
 					break;
 				case "autocmp":
 					exec = !!puzzle.painter.autocmp;

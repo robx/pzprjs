@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["lightshadow"], {
+})(["lightshadow", "nibunnogo"], {
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -108,6 +108,32 @@
 		}
 	},
 
+	"MouseEvent@nibunnogo": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["shade", "unshade"]
+		},
+		mouseinput_clear: function() {
+			this.inputclean_cross();
+		},
+		mouseinput_number: function() {
+			if (this.mousestart) {
+				this.inputqnum_cross();
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputcell();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart) {
+					this.inputqnum_cross();
+				}
+			}
+		}
+	},
+
 	KeyEvent: {
 		enablemake: true,
 
@@ -141,6 +167,22 @@
 				}
 			}
 		}
+	},
+	"KeyEvent@nibunnogo": {
+		moveTarget: function(ca) {
+			return this.moveTCross(ca);
+		},
+
+		keyinput: function(ca) {
+			this.key_inputcross(ca);
+		}
+	},
+	"TargetCursor@nibunnogo": {
+		crosstype: true
+	},
+	"Cross@nibunnogo": {
+		maxnum: 4,
+		minnum: 0
 	},
 
 	Cell: {
@@ -188,6 +230,10 @@
 			this.drawDotCells();
 
 			this.drawChassis();
+
+			if (this.pid === "nibunnogo") {
+				this.drawCrosses();
+			}
 
 			this.drawTarget();
 		},
@@ -238,6 +284,10 @@
 				}
 			}
 		}
+	},
+	"Graphic@nibunnogo": {
+		margin: 0.5,
+		crosssize: 0.35
 	},
 
 	Encode: {
@@ -334,6 +384,29 @@
 			});
 		}
 	},
+	"Encode@nibunnogo": {
+		decodePzpr: function(type) {
+			this.decode4Cross();
+		},
+		encodePzpr: function(type) {
+			this.encode4Cross();
+		}
+	},
+	//---------------------------------------------------------
+	"FileIO@nibunnogo": {
+		decodeData: function() {
+			this.decodeCrossNum();
+			this.decodeCell(function(cell, ca) {
+				cell.qans = +ca;
+			});
+		},
+		encodeData: function() {
+			this.encodeCrossNum();
+			this.encodeCell(function(cell) {
+				return cell.qans + " ";
+			});
+		}
+	},
 
 	AnsCheck: {
 		checklist: [
@@ -391,5 +464,58 @@
 				return cell.noNum() && cell.qans === 0;
 			}, "ceEmpty");
 		}
+	},
+	"AnsCheck@nibunnogo": {
+		checklist: [
+			"checkShadeSizeGt",
+			"checkShadeOverNum",
+			"checkShadeLessNum",
+			"checkEmptyCell+"
+		],
+		checkShadeOverNum: function() {
+			this.checkQnumCross(1, "crShadeGt");
+		},
+		checkShadeLessNum: function() {
+			this.checkQnumCross(2, "crShadeLt");
+		},
+		checkShadeSizeGt: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a <= 5;
+				},
+				"bkSizeGt5"
+			);
+		},
+		checkQnumCross: function(type, code) {
+			var bd = this.board;
+			for (var c = 0; c < bd.cross.length; c++) {
+				var cross = bd.cross[c],
+					qn = cross.qnum;
+				if (qn < 0) {
+					continue;
+				}
+
+				var bx = cross.bx,
+					by = cross.by;
+				var clist = bd.cellinside(bx - 1, by - 1, bx + 1, by + 1);
+				var cnt = clist.filter(function(cell) {
+					return cell.isShade();
+				}).length;
+				if ((type === 1 && qn >= cnt) || (type === 2 && qn <= cnt)) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				cross.seterr(1);
+			}
+		}
+	},
+	"FailCode@nibunnogo": {
+		crShadeGt: "crShadeGt.creek",
+		crShadeLt: "crShadeLt.creek"
 	}
 });
