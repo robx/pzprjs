@@ -322,7 +322,27 @@
 	"Border@timebomb": {
 		prehook: {
 			line: function(num) {
-				return num !== 0 && this.isLineNG();
+				if (!num) {
+					return false;
+				}
+				if (this.isLineNG()) {
+					return true;
+				}
+				if (
+					!this.puzzle.execConfig("dispmove") ||
+					!this.sidecell[0].path ||
+					!this.sidecell[1].path
+				) {
+					return false;
+				}
+
+				var higher = this.sidecell[0].path.departure.anum === 0 ? 1 : 0;
+				/* Difference in distance must be exactly 1 */
+				return (
+					this.sidecell[higher].distance -
+						this.sidecell[1 - higher].distance !==
+					1
+				);
 			}
 		}
 	},
