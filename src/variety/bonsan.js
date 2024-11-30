@@ -288,6 +288,14 @@
 			line: function(num) {
 				return this.puzzle.execConfig("dispmove") && this.checkFormCurve(num);
 			}
+		},
+		posthook: {
+			line: function(val) {
+				if (!val && this.sidecell[0].path && this.sidecell[1].path) {
+					/* Workaround for a common linegraph bug when disconnecting two circles */
+					this.board.linegraph.rebuild();
+				}
+			}
 		}
 	},
 	"Border@satogaeri": {
