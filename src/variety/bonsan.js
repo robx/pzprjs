@@ -588,13 +588,14 @@
 		},
 
 		getCircleFillColor: function(cell) {
-			var base = this.puzzle.execConfig("dispmove") ? cell.base : cell;
+			var dispmove = this.puzzle.execConfig("dispmove");
+			var base = dispmove ? cell.base : cell;
 			if (base.qnum === 0) {
 				if (cell.error || cell.qinfo) {
 					return this.errcolor1;
 				}
 				return "black";
-			} else if (base.anum === 0) {
+			} else if (base.anum === 0 && dispmove) {
 				return this.circlebasecolor;
 			}
 			return this.getCircleFillColor_qcmp(cell);
