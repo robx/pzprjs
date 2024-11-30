@@ -1304,7 +1304,7 @@ pzpr.classmgr.makeCommon({
 					border = null;
 				if (
 					cell.lcnt === 1 &&
-					cell.qnum === -1 &&
+					!cell.isNum() &&
 					!this.puzzle.execConfig("dispmove")
 				) {
 					var adb = cell.adjborder;

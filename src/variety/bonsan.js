@@ -486,7 +486,9 @@
 			this.drawLines();
 
 			this.drawCircledNumbers();
-			// TODO new graphic for anum circles
+			if (this.pid === "timebomb") {
+				this.drawStripedCircles();
+			}
 
 			this.drawChassis();
 
@@ -538,15 +540,62 @@
 	"Graphic@timebomb": {
 		hideHatena: false,
 
-		getCircleFillColor: function(cell) {
-			var isdrawmove = this.puzzle.execConfig("dispmove");
-			var num = (!isdrawmove ? cell : cell.base).qnum;
+		getStripedCircleColor: function(cell) {
+			var puzzle = this.puzzle;
+			var isdrawmove = puzzle.execConfig("dispmove");
+			var num = (!isdrawmove ? cell : cell.base).anum;
+			if (num !== -1) {
+				return "green";
+			}
+			return null;
+		},
 
-			if (num === 0) {
+		drawStripedCircles: function() {
+			var g = this.vinc("cell_striped", "auto", true);
+			var ra = this.circleratio;
+			var clist = this.range.cells;
+
+			g.lineWidth = Math.max(this.cw * (ra[0] - ra[1]), 1);
+
+			var rsize = (this.cw * (ra[0] + ra[1])) / 2;
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				var color = this.getStripedCircleColor(cell);
+				g.vid = "c_cirstr_" + cell.id;
+				if (!!color) {
+					var px = cell.bx * this.bw + this.getCellHorizontalOffset(cell),
+						py = cell.by * this.bh;
+
+					g.strokeStyle = color;
+					g.beginPath();
+					for (var start = 0; start < 360; start += 45) {
+						g.arc(
+							px,
+							py,
+							rsize,
+							((start - 15) * Math.PI) / 180,
+							((start + 15) * Math.PI) / 180,
+							false
+						);
+					}
+					g.stroke();
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		getCircleFillColor: function(cell) {
+			var base = this.puzzle.execConfig("dispmove") ? cell.base : cell;
+			if (base.qnum === 0) {
 				if (cell.error || cell.qinfo) {
 					return this.errcolor1;
 				}
 				return "black";
+			} else if (base.anum === 0) {
+				return this.circlebasecolor;
 			}
 			return this.getCircleFillColor_qcmp(cell);
 		},
@@ -846,6 +895,9 @@
 		}
 	},
 	"AnsCheck@timebomb": {
+		// TODO rule out lines that only have the anum circle
+		// TODO allow lines to connect both qnum and anum?
+
 		checkAdjacentLine: function() {
 			this.checkSideCell(function(cell1, cell2) {
 				var num1 = cell1.getNum();
