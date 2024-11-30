@@ -904,9 +904,6 @@
 		}
 	},
 	"AnsCheck@timebomb": {
-		// TODO rule out lines that only have the anum circle
-		// TODO allow lines to connect both qnum and anum?
-
 		checkAdjacentLine: function() {
 			this.checkSideCell(function(cell1, cell2) {
 				var num1 = cell1.getNum();
@@ -956,7 +953,7 @@
 				);
 
 				return !around.some(function(c) {
-					return c.qnum !== 0 && c.path && !c.base.isnull;
+					return c.qnum !== 0 && c.path && c.base.qnum !== -1;
 				});
 			}, "ceNoBomb");
 		}
