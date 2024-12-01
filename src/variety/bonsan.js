@@ -36,7 +36,7 @@
 						this.inputqcmp(1);
 					}
 					break;
-				case "circle-shade":
+				case "boulder":
 					return this.inputFixedNumber(0);
 				default:
 					return this.common.mouseinput.call(this);
@@ -174,7 +174,7 @@
 	},
 	"MouseEvent@timebomb": {
 		inputModes: {
-			edit: ["number", "clear", "circle-shade"],
+			edit: ["number", "clear", "boulder"],
 			play: ["line", "clear", "objblank", "completion"]
 		},
 		inputMoveLine: function() {
