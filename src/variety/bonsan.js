@@ -32,7 +32,7 @@
 		mouseinput: function() {
 			switch (this.inputMode) {
 				case "completion":
-					if (this.mousestart) {
+					if (this.mousestart || this.pid === "timebomb") {
 						this.inputqcmp(1);
 					}
 					break;
@@ -135,7 +135,7 @@
 		},
 		inputdark: function(cell, val) {
 			var cell = this.getcell();
-			if (cell.isnull) {
+			if (cell.isnull || cell === this.mouseCell) {
 				return false;
 			}
 
@@ -149,10 +149,16 @@
 					(targetcell.qnum === 0 && this.pid === "timebomb") ||
 					(targetcell.qnum === -2 && dx * dx + dy * dy < distance * distance))
 			) {
-				targetcell.setQcmp(targetcell.qcmp !== val ? val : 0);
+				if (this.inputData === null) {
+					this.inputData = targetcell.qcmp !== val ? 1 : 0;
+				}
+
+				targetcell.setQcmp(this.inputData ? val : 0);
 				cell.draw();
+				this.mouseCell = cell;
 				return true;
 			}
+			this.mouseCell = cell;
 			return false;
 		}
 	},
