@@ -295,6 +295,15 @@
 					/* Workaround for a common linegraph bug when disconnecting two circles */
 					this.board.linegraph.rebuild();
 				}
+
+				/* Redraw all endpoints when disconnecting two paths */
+				for (var id = 0; id <= 1; id++) {
+					if (!this.sidecell[id].path) {
+						continue;
+					}
+					this.sidecell[id].path.departure.draw();
+					this.sidecell[id].path.destination.draw();
+				}
 			}
 		}
 	},
