@@ -108,6 +108,7 @@ function toBGimage(pid) {
 		"akichi",
 		"alter",
 		"angleloop",
+		"archipelago",
 		"aquapelago",
 		"aquarium",
 		"araf",
