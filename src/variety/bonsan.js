@@ -45,9 +45,16 @@
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart) {
-					this.initFirstCell(this.getcell());
+					var cell = this.getcell();
+					this.initFirstCell(cell);
+					if (this.pid === "timebomb" && cell.qnum === 0) {
+						this.inputdark(cell, 1);
+					}
 				}
-				if (this.btn === "right" && this.pid === "timebomb") {
+
+				if (this.inputData >= 20) {
+					this.inputdark(cell, 1, true);
+				} else if (this.btn === "right" && this.pid === "timebomb") {
 					this.inputBGcolor();
 				} else if (this.mousestart || this.mousemove) {
 					this.inputLine();
@@ -153,10 +160,10 @@
 					(targetcell.qnum === -2 && dx * dx + dy * dy < distance * distance))
 			) {
 				if (this.inputData === null) {
-					this.inputData = targetcell.qcmp !== val ? 1 : 0;
+					this.inputData = targetcell.qcmp !== val ? 21 : 20;
 				}
 
-				targetcell.setQcmp(this.inputData ? val : 0);
+				targetcell.setQcmp(this.inputData === 21 ? val : 0);
 				cell.draw();
 				this.mouseCell = cell;
 				return true;
