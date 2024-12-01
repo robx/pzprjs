@@ -44,6 +44,9 @@
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
+				if (this.mousestart) {
+					this.initFirstCell(this.getcell());
+				}
 				if (this.mousestart || this.mousemove) {
 					if (this.btn === "left") {
 						this.inputLine();
@@ -182,7 +185,7 @@
 				return;
 			}
 
-			if (cell.qnum === -1) {
+			if (cell.qnum === -1 && cell === this.firstCell) {
 				if (
 					!this.puzzle.execConfig("dispmove") ||
 					!cell.path ||
@@ -194,7 +197,6 @@
 			}
 
 			// TODO right-click to drag multiple completion items on boulders
-			// TODO left-drag on boulders when in completion mode
 
 			cell.draw();
 			this.mouseCell = cell;
