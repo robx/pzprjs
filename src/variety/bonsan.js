@@ -47,10 +47,10 @@
 				if (this.mousestart) {
 					this.initFirstCell(this.getcell());
 				}
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left") {
-						this.inputLine();
-					}
+				if (this.btn === "right" && this.pid === "timebomb") {
+					this.inputBGcolor();
+				} else if (this.mousestart || this.mousemove) {
+					this.inputLine();
 				} else if (this.mouseend && this.notInputted()) {
 					this.inputlight();
 				}
@@ -168,7 +168,7 @@
 	"MouseEvent@timebomb": {
 		inputModes: {
 			edit: ["number", "clear", "circle-shade"],
-			play: ["line", "clear", "completion"]
+			play: ["line", "clear", "objblank", "completion"]
 		},
 		inputMoveLine: function() {
 			this.common.inputMoveLine.call(this);
@@ -179,13 +179,24 @@
 			}
 		},
 
+		inputDot: function() {
+			this.inputBGcolor();
+		},
+
 		inputBGcolor: function() {
 			var cell = this.getcell();
 			if (cell.isnull || cell === this.mouseCell) {
 				return;
 			}
+			if (this.mouseend && cell !== this.firstCell) {
+				return;
+			}
 
-			if (cell.qnum === -1 && cell === this.firstCell) {
+			if (
+				this.btn === "left" &&
+				this.inputMode !== "objblank" &&
+				cell.qnum === -1
+			) {
 				if (
 					!this.puzzle.execConfig("dispmove") ||
 					!cell.path ||
@@ -193,10 +204,14 @@
 					(cell.lcnt === 1 && cell.path.departure.isnull)
 				) {
 					cell.setAnum(cell.anum === -1 ? 0 : -1);
+					cell.setQsub(0);
 				}
+			} else if (cell.lcnt === 0 && !cell.isNum()) {
+				if (this.inputData === null) {
+					this.inputData = cell.qsub !== 1 ? 11 : 10;
+				}
+				cell.setQsub(this.inputData - 10);
 			}
-
-			// TODO right-click to drag multiple completion items on boulders
 
 			cell.draw();
 			this.mouseCell = cell;
@@ -288,6 +303,9 @@
 					this.distance !== null &&
 					this.distance <= 0)
 			);
+		},
+		isDot: function() {
+			return this.qsub === 1 && !this.isNum() && this.lcnt === 0;
 		}
 	},
 
@@ -490,7 +508,7 @@
 
 	//---------------------------------------------------------
 	// 画像表示系
-	"Graphic@bonsan,heyabon,rectslider,timebomb": {
+	"Graphic@bonsan,heyabon,rectslider": {
 		bgcellcolor_func: "qsub2",
 		autocmp: "number"
 	},
@@ -532,6 +550,7 @@
 
 			this.drawCircledNumbers();
 			if (this.pid === "timebomb") {
+				this.drawDotCells();
 				this.drawStripedCircles();
 			}
 
@@ -583,6 +602,7 @@
 		}
 	},
 	"Graphic@timebomb": {
+		autocmp: "number",
 		hideHatena: false,
 
 		getStripedCircleColor: function(cell) {
