@@ -134,11 +134,11 @@
 				return;
 			}
 
-			this.inputdark(cell, val);
+			this.inputdark(cell, val, true);
 		},
-		inputdark: function(cell, val) {
+		inputdark: function(cell, val, multi) {
 			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
+			if (cell.isnull || (cell === this.mouseCell && multi)) {
 				return false;
 			}
 
