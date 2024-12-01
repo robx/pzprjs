@@ -61,6 +61,7 @@ ui.debug.addDebugData("timebomb", {
 	],
 	inputs: [
 		{
+			label: "Editor",
 			input: [
 				"newboard,4,2",
 				"editmode",
@@ -73,11 +74,13 @@ ui.debug.addDebugData("timebomb", {
 				"pzprv3/timebomb/2/4/5 . . . /. 0 . . /0 0 0 0 /0 0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /"
 		},
 		{
+			label: "Block all lines into boulder",
 			input: ["playmode", "setconfig,dispmove,false", "mouse,left,1,1,3,1,3,3"],
 			result:
 				"pzprv3/timebomb/2/4/5 . . . /. 0 . . /0 0 0 0 /0 0 0 0 /1 0 0 /0 0 0 /0 0 0 0 /"
 		},
 		{
+			label: "Add anum bomb",
 			input: [
 				"setconfig,dispmove,true",
 				"mouse,left,7,1",
@@ -87,9 +90,22 @@ ui.debug.addDebugData("timebomb", {
 				"pzprv3/timebomb/2/4/5 . . . /. 0 . . /0 0 0 32 /0 0 0 0 /1 0 1 /0 0 0 /0 0 0 0 /"
 		},
 		{
+			label: "Only merge lines if numbers match",
 			input: ["mouse,left,5,1,7,1,7,3,5,3,5,1,3,1"],
 			result:
 				"pzprv3/timebomb/2/4/5 . . . /. 0 . . /0 0 0 32 /0 0 0 0 /1 1 0 /0 0 1 /0 0 1 1 /"
+		},
+		{
+			label: "Stop drawing when number runs out",
+			input: [
+				"newboard,5,1",
+				"editmode",
+				"cursor,1,1",
+				"key,3",
+				"playmode",
+				"mouse,left,1,1,9,1"
+			],
+			result: "pzprv3/timebomb/1/5/3 . . . . /0 0 0 0 0 /1 1 1 0 /"
 		}
 	]
 });
