@@ -664,7 +664,7 @@ pzpr.classmgr.makeCommon({
 				if (
 					evalfunc(
 						clist.filter(function(cell) {
-							return cell.isNum();
+							return cell.qnum !== -1;
 						}).length
 					)
 				) {

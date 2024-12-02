@@ -210,6 +210,7 @@ function toBGimage(pid) {
 		"teri",
 		"tetrochain",
 		"tetrominous",
+		"timebomb",
 		"tontonbeya",
 		"trainstations",
 		"tslither",

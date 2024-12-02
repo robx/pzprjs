@@ -422,6 +422,7 @@
 			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
+			timebomb: [0, 0, "時限爆弾", "Time Bomb", "bonsan"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
 			tontonbeya: [0, 0, "とんとんべや", "Tontonbeya", "hakoiri"],

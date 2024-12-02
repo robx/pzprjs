@@ -377,9 +377,14 @@ pzpr.classmgr.makeCommon({
 			if (clist.length < 1) {
 				return;
 			}
+
+			var hasQnum = false;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
 				cell.base = cell.isNum() ? cell : emptycell;
+				if (cell.anum === -1 && cell.isNum()) {
+					hasQnum = true;
+				}
 			}
 
 			var before = null,
@@ -393,7 +398,11 @@ pzpr.classmgr.makeCommon({
 					var cell = clist[i];
 					if (cell[this.countprop] === 1) {
 						point++;
-						if (cell.isNum()) {
+						if (cell.isNum() && (cell.anum === -1 || !hasQnum)) {
+							/*
+							 * Pick the before cell once. If a qnum and anum are both
+							 * present, only go for the cell with the qnum.
+							 */
 							before = cell;
 						} else {
 							after = cell;

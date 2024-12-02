@@ -752,12 +752,23 @@ pzpr.classmgr.makeCommon({
 					this.mouseCell = cell;
 					this.prevPos = pos;
 					cell.draw();
-				} else if (this.mousemove && !cell0.isnull && !cell.isDestination()) {
+				} else if (this.mousemove && !cell0.isnull) {
+					if (cell0.path && cell.path && cell.path !== cell0.path) {
+						if (cell.isDeparture() && !cell.isDestination()) {
+							return;
+						}
+
+						/* Allow connecting a qnum and an anum */
+						if ((cell0.base.qnum === -1) === (cell.base.qnum === -1)) {
+							return;
+						}
+					}
+
 					/* 移動中の場合 */
 					var border = this.prevPos.getnb(pos);
 					if (
 						!border.isnull &&
-						((!border.isLine() && cell.lcnt === 0) ||
+						((!border.isLine() && cell.lcnt <= 1) ||
 							(border.isLine() && cell0.lcnt === 1))
 					) {
 						var old = border.isLine();
@@ -768,10 +779,16 @@ pzpr.classmgr.makeCommon({
 						}
 						this.puzzle.opemgr.changeflag = true;
 						if (old !== border.isLine()) {
-							this.mouseCell = cell;
-							this.prevPos = pos;
+							if (!cell.isDestination()) {
+								this.mouseCell = this.board.emptycell;
+								cell.base.draw();
+								cell.path.destination.draw();
+							} else {
+								this.mouseCell = cell;
+								this.prevPos = pos;
+								moving = true;
+							}
 							border.draw();
-							moving = true;
 						}
 					}
 				}
