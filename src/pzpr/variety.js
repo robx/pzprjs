@@ -161,7 +161,7 @@
 				{ kanpen2: "fillomino01" }
 			],
 			firefly: [1, 0, "ホタルビーム", "Hotaru Beam"],
-			firewalk: [1, 0, "Fire Walk", "Fire Walk", "icewalk"],
+			firewalk: [1, 0, "ファイアウォーク", "Fire Walk", "icewalk"],
 			fivecells: [0, 0, "ファイブセルズ", "FiveCells", "nawabari"],
 			fourcells: [0, 0, "フォーセルズ", "FourCells", "nawabari"],
 			fracdiv: [0, 0, "分数分割", "Fractional Division"],
@@ -375,7 +375,7 @@
 			shugaku: [1, 0, "修学旅行の夜", "School Trip"],
 			shwolf: [0, 0, "ヤギとオオカミ", "Goats and Wolves", "kramma"],
 			simplegako: [0, 0, "シンプルガコ", "Simple Gako"],
-			simpleloop: [0, 0, "Simple Loop", "Simple Loop", "country"],
+			simpleloop: [0, 0, "シンプルループ", "Simple Loop", "country"],
 			slalom: [1, 1, "スラローム", "Slalom", "", { alias: "suraromu" }],
 			slashpack: [0, 0, "Slash Pack", "Slash Pack"],
 			slither: [
@@ -443,7 +443,7 @@
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
 			waterwalk: [0, 0, "ウォーターウォーク", "Water Walk", "icewalk"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
-			wittgen: [0, 0, "Wittgenstein Briquet", "Wittgenstein Briquet", "kaidan"],
+			wittgen: [0, 0, "デスクプレース", "Wittgenstein Briquet", "kaidan"],
 			yajikazu: [1, 0, "やじさんかずさん", "Yajisan-Kazusan"],
 			yajilin: [
 				0,
