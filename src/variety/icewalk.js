@@ -95,10 +95,21 @@
 		},
 		toggleArcs: function() {
 			var cell = this.getcell();
-			if (cell.isnull || !cell.ice() || cell.lcnt < 3) {
+			if (
+				cell.isnull ||
+				!cell.ice() ||
+				(cell.lcnt < 3 && !cell.isLineCurve())
+			) {
 				return;
 			}
-			cell.setQans(cell.qans !== 1 ? 1 : 2);
+
+			if (cell.lcnt > 2) {
+				cell.setQans(cell.qans !== 1 ? 1 : 2);
+			} else if (cell.qans === 3) {
+				cell.updateFireQans();
+			} else {
+				cell.setQans(3);
+			}
 			cell.drawaround();
 		},
 		inputLine: function() {
@@ -131,7 +142,13 @@
 							Math.max(horz.bx, vert.bx),
 							Math.max(horz.by, vert.by)
 						)[0];
-						if (cell && !cell.isnull && cell.ice() && cell.lcnt >= 3) {
+
+						if (
+							cell &&
+							!cell.isnull &&
+							cell.ice() &&
+							(cell.lcnt >= 3 || cell.qans === 3)
+						) {
 							var newQans =
 								(cell.adjborder.top === horz) ===
 								(cell.adjborder.left === vert);
@@ -211,7 +228,12 @@
 				var newQans =
 					this.adjborder.top.isLine() === this.adjborder.left.isLine();
 				this.setQans(newQans ? 1 : 2);
-			} else if (!this.ice() || this.lcnt < 2 || this.isLineStraight()) {
+			} else if (
+				!this.ice() ||
+				this.lcnt < 2 ||
+				this.isLineStraight() ||
+				this.qans === 3
+			) {
 				this.setQans(0);
 			}
 		}
@@ -282,7 +304,7 @@
 				var clist = this.board.cell;
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i];
-					cell.qans = { 0: 0, 1: 2, 2: 1 }[cell.qans];
+					cell.qans = { 0: 0, 1: 2, 2: 1, 3: 3 }[cell.qans];
 				}
 			}
 		}
@@ -365,6 +387,13 @@
 							cell.by * this.bh,
 							this.bw - pad,
 							this.bh - pad
+						);
+					} else if (cell.qans === 3) {
+						g.fillRectCenter(
+							cell.bx * this.bw,
+							cell.by * this.bh,
+							this.bw / 2,
+							this.bh / 2
 						);
 					} else {
 						var adj = cell.adjborder;
@@ -489,7 +518,7 @@
 				}
 			}
 
-			var otherdir = [cell.DN, cell.LT, cell.RT][cell.qans];
+			var otherdir = [cell.DN, cell.LT, cell.RT, cell.DN][cell.qans];
 
 			for (var dir = 1; dir <= 4; dir++) {
 				if (!reusenodes[dir]) {
@@ -535,7 +564,7 @@
 			return sidenodes;
 		},
 		usesSecondNode: function(cell, other) {
-			var otherdir = [cell.DN, cell.LT, cell.RT][cell.qans];
+			var otherdir = [cell.DN, cell.LT, cell.RT, cell.DN][cell.qans];
 			var dir = cell.getdir(other, 2);
 			return dir === cell.UP || dir === otherdir;
 		}
@@ -573,6 +602,9 @@
 				} else if (ca === "B") {
 					cell.ques = 6;
 					cell.qans = 2;
+				} else if (ca === "C") {
+					cell.ques = 6;
+					cell.qans = 3;
 				} else if (ca === "#") {
 					cell.ques = 6;
 				} else if (ca === "-") {
@@ -590,10 +622,8 @@
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
-				if (cell.qans === 1) {
-					return "A ";
-				} else if (cell.qans === 2) {
-					return "B ";
+				if (cell.qans > 0) {
+					return String.fromCharCode(64 + cell.qans) + " ";
 				} else if (cell.ques === 6) {
 					return "# ";
 				} else if (cell.qnum === -2) {
@@ -710,7 +740,11 @@
 		},
 		checkDeadendLine: function() {
 			this.checkAllCell(function(cell) {
-				return cell.lcnt === 1 || (cell.lcnt === 3 && cell.qans > 0);
+				return (
+					cell.lcnt === 1 ||
+					cell.qans === 3 ||
+					(cell.lcnt === 3 && cell.qans > 0)
+				);
 			}, "lnDeadEnd");
 		},
 		checkStraightOnFire: function() {
