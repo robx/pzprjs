@@ -378,6 +378,13 @@
 					return false;
 				}
 
+				if (
+					this.sidecell[0].path.departure.qnum === -2 ||
+					this.sidecell[1].path.departure.qnum === -2
+				) {
+					return false;
+				}
+
 				var higher = this.sidecell[0].path.departure.anum === 0 ? 1 : 0;
 				/* Difference in distance must be exactly 1 */
 				return (
@@ -457,6 +464,7 @@
 				component.clist.each(function(c) {
 					c.distance = null;
 				});
+				component.clist.draw();
 				return;
 			}
 
@@ -465,6 +473,7 @@
 			num = num >= 0 ? num : isAnum ? 0 : this.board.cell.length;
 			cell.distance = num;
 			if (cell.lcnt === 0) {
+				cell.draw();
 				return;
 			}
 
@@ -494,6 +503,7 @@
 					dir = 3;
 				}
 			}
+			component.clist.draw();
 		}
 	},
 

@@ -106,6 +106,19 @@ ui.debug.addDebugData("timebomb", {
 				"mouse,left,1,1,9,1"
 			],
 			result: "pzprv3/timebomb/1/5/3 . . . . /0 0 0 0 0 /1 1 1 0 /"
+		},
+		{
+			label: "Allow merging qnum -2 lines",
+			input: [
+				"ansclear",
+				"editmode",
+				"key,-",
+				"setconfig,dispmove,true",
+				"playmode",
+				"mouse,left,9,1",
+				"mouse,left,9,1,1,1"
+			],
+			result: "pzprv3/timebomb/1/5/- . . . . /0 0 0 0 32 /1 1 1 1 /"
 		}
 	]
 });
