@@ -695,13 +695,14 @@
 			}
 
 			if (this.puzzle.execConfig("dispmove")) {
-				var num = cell.base.qnum;
+				var num = cell.base ? cell.base.qnum : cell.qnum;
 				if (num === -2 || cell.distance === null) {
 					return num === -2 ? "?" : null;
 				}
 
 				/* Don't show distance for boulders or question marks */
-				var dep = cell.path ? cell.path.departure.qnum : null;
+				var dep =
+					cell.path && cell.path.departure ? cell.path.departure.qnum : null;
 				if (dep === 0 || dep === -2) {
 					return null;
 				}
