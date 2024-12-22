@@ -212,7 +212,8 @@ ui.keypopup = {
 		smullyan: [10, 0],
 		meidjuluk: [10, 0],
 		archipelago: [10, 0],
-		yajirushi2: [4, 0]
+		yajirushi2: [4, 0],
+		mintonette: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -461,7 +462,8 @@ ui.keypopup = {
 			pid === "aho" ||
 			pid === "bosanowa" ||
 			pid === "portal" ||
-			pid === "minarism"
+			pid === "minarism" ||
+			pid === "mintonette"
 		) {
 			cap = "○";
 		} else if (!ui.puzzle.painter.hideHatena) {

@@ -7,43 +7,38 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["firefly"], {
+})(["firefly", "mintonette"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
+		autoplay_func: "line"
+	},
+	"MouseEvent@firefly": {
 		inputModes: { edit: ["number", "direc", "clear"], play: ["line", "peke"] },
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.btn === "left") {
-					if (this.mousestart || this.mousemove) {
-						this.inputLine();
-					} else if (this.mouseend && this.notInputted()) {
-						this.inputpeke();
-					}
-				} else if (this.btn === "right") {
-					if (this.mousestart || this.mousemove) {
-						this.inputpeke();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (!this.notInputted()) {
-					return;
-				}
-				if (this.mousestart || this.mousemove) {
-					this.inputdirec();
-				} else if (this.mouseend) {
-					if (this.prevPos.getc() === this.getcell()) {
-						this.inputqnum();
-					}
+		mouseinputAutoEdit: function() {
+			if (!this.notInputted()) {
+				return;
+			}
+			if (this.mousestart || this.mousemove) {
+				this.inputdirec();
+			} else if (this.mouseend) {
+				if (this.prevPos.getc() === this.getcell()) {
+					this.inputqnum();
 				}
 			}
 		}
+	},
+	"MouseEvent@mintonette": {
+		inputModes: { edit: ["number", "clear"], play: ["line", "peke"] },
+		autoedit_func: "qnum"
 	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
-		enablemake: true,
+		enablemake: true
+	},
+	"KeyEvent@firefly": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -83,8 +78,6 @@
 	Graphic: {
 		hideHatena: true,
 
-		irowake: true,
-
 		gridcolor_type: "LIGHT",
 
 		numbercolor_func: "fixed",
@@ -93,16 +86,29 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawDashedCenterLines();
+			if (this.pid === "firefly") {
+				this.drawDashedCenterLines();
+			} else {
+				this.drawGrid();
+			}
 			this.drawLines();
 
 			this.drawPekes();
 
 			this.drawCircledNumbers();
-			this.drawFireflyDots();
+
+			if (this.pid === "firefly") {
+				this.drawFireflyDots();
+			} else {
+				this.drawChassis();
+			}
 
 			this.drawTarget();
-		},
+		}
+	},
+
+	"Graphic@firefly": {
+		irowake: true,
 
 		drawFireflyDots: function() {
 			var g = this.vinc("cell_firefly", "auto");
@@ -157,6 +163,14 @@
 			this.encodeArrowNumber16();
 		}
 	},
+	"Encode@mintonette": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
@@ -171,7 +185,7 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
+	"AnsCheck@firefly": {
 		checklist: [
 			"checkLineExist+",
 			"checkBranchConnectLine",
@@ -232,6 +246,35 @@
 					cell2 = path.cells[1];
 				var qn = (path.dir1 === cell1.qdir ? cell1 : cell2).qnum;
 				return !cell2.isnull && qn >= 0 && qn !== path.ccnt;
+			}, "lcCurveNe");
+		}
+	},
+
+	"AnsCheck@mintonette": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkLineOverLetter",
+
+			"checkCurveCount",
+
+			"checkDeadendConnectLine+",
+			"checkDisconnectLine",
+			"checkNoLine++"
+		],
+		checkCurveCount: function() {
+			this.checkLineShape(function(path) {
+				var cell1 = path.cells[0],
+					cell2 = path.cells[1];
+
+				if (cell1.isValidNum() && path.ccnt !== cell1.qnum) {
+					return true;
+				}
+				if (cell2.isValidNum() && path.ccnt !== cell2.qnum) {
+					return true;
+				}
+
+				return false;
 			}, "lcCurveNe");
 		}
 	}
