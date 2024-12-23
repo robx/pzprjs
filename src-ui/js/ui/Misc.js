@@ -159,6 +159,7 @@ function toBGimage(pid) {
 		"martini",
 		"maxi",
 		"midloop",
+		"mintonette",
 		"mirrorbk",
 		"moonsun",
 		"mrtile",
