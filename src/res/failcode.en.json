@@ -511,6 +511,7 @@
     "lcCurveGt2.kusabi": "A line turns more than twice.",
     "lcCurveLt2.kusabi": "A line turns less than twice.",
     "lcCurveNe.firefly": "The number of curves is different from a firefly's number.",
+    "lcCurveNe.mintonette": "A number doesn't indicate the amount of turns taken by the path.",
     "lcDeadEnd": "There is a dead-end line.",
     "lcDivided": "All lines and numbers are not connected to each other.",
     "lnDoubleTurn.firewalk": "A cell with double turns has its center outside of the loop.",
