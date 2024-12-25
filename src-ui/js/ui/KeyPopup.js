@@ -213,6 +213,7 @@ ui.keypopup = {
 		meidjuluk: [10, 0],
 		archipelago: [10, 0],
 		yajirushi2: [4, 0],
+		nibunnogo: [4, 0],
 		mintonette: [10, 0]
 	},
 

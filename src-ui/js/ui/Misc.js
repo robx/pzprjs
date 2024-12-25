@@ -165,6 +165,7 @@ function toBGimage(pid) {
 		"mrtile",
 		"mukkonn",
 		"nanameguri",
+		"nibunnogo",
 		"nondango",
 		"nonogram",
 		"norinuri",

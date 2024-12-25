@@ -283,6 +283,7 @@
 			nanro: [0, 1, "ナンロー", "Nanro"],
 			nawabari: [1, 0, "なわばり", "Nawabari", "nawabari"],
 			news: [0, 0, "NEWS", "NEWS", "toichika"],
+			nibunnogo: [0, 0, "ニブンノゴ", "Nibun-nogo", "lightshadow"],
 			nikoji: [0, 0, "NIKOJI", "NIKOJI", "cbblock"],
 			nondango: [0, 0, "ノンダンゴ", "Nondango"],
 			nonogram: [0, 0, "ののぐらむ", "Nonogram"],
