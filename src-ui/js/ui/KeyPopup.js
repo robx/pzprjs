@@ -214,7 +214,8 @@ ui.keypopup = {
 		archipelago: [10, 0],
 		yajirushi2: [4, 0],
 		nibunnogo: [4, 0],
-		mintonette: [10, 0]
+		mintonette: [10, 0],
+		balloon: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -482,14 +483,15 @@ ui.keypopup = {
 			pid === "icewalk" ||
 			pid === "waterwalk" ||
 			pid === "firewalk" ||
-			pid === "dbchoco"
+			pid === "dbchoco" ||
+			pid === "balloon"
 		) {
 			itemlist.push([
 				"q",
 				{
 					text: "■",
 					color:
-						pid === "dbchoco"
+						pid === "dbchoco" || pid === "balloon"
 							? "rgb(204,204,204)"
 							: pid === "firewalk"
 							? "rgb(255,192,192)"
