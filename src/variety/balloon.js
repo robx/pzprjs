@@ -166,9 +166,61 @@
 		makeClist: true
 	},
 	AreaRoomGraph: {
+		VALID: 0,
+		NO_LINE: 1,
+		MULTI_LINE: 2,
+		NOT_CLOSED: 3,
+		NOT_RECT: 4,
+
 		enabled: true,
 		isnodevalid: function(cell) {
 			return cell.ques === 6;
+		},
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			component.valid = this.VALID;
+
+			var d = component.clist.getRectSize();
+			if (d.cols * d.rows !== d.cnt) {
+				component.valid = this.NOT_RECT;
+			}
+
+			var borders = this.board.borderinside(
+				d.x1 - 1,
+				d.y1 - 1,
+				d.x2 + 1,
+				d.y2 + 1
+			);
+			var lines = 0;
+
+			for (var i = 0; i < borders.length; i++) {
+				var border = borders[i];
+				var expectLine =
+					border.bx === d.x1 - 1 ||
+					border.by === d.y1 - 1 ||
+					border.bx === d.x2 + 1 ||
+					border.by === d.y2 + 1;
+
+				if (border.isLine()) {
+					lines++;
+				}
+
+				if (expectLine && !border.isBorder()) {
+					component.valid = this.NOT_CLOSED;
+					return;
+				} else if (
+					!expectLine &&
+					component.valid === this.VALID &&
+					border.isBorder()
+				) {
+					component.valid = this.NOT_RECT;
+					return;
+				}
+			}
+
+			if (component.valid === this.VALID && lines !== 1) {
+				component.valid = lines === 0 ? this.NO_LINE : this.MULTI_LINE;
+			}
 		}
 	},
 	Encode: {
@@ -218,13 +270,14 @@
 			"checkLineOverLetter",
 			"checkAdjacency",
 			"checkEndpointIce",
-
-			// TODO check if rectangle is enclosed
-			// TODO check if valid area is rectangle
-			// TODO check if valid rectangle has more than 1 line (total lcnt of all cells > 1)
-			// TODO check if valid rectangle has less than 1 line (total lcnt of all cells === 0)
-			// TODO check if size lines up with valid rectangle size
 			"checkDisconnectLine",
+
+			"checkNumberMatch",
+			"checkRegionShape",
+			"checkRegionMultiLine",
+			"checkRegionNoLine",
+			"checkRegionEnclosed",
+
 			"checkDeadendLine",
 			"checkNoLine"
 		],
@@ -265,10 +318,79 @@
 			}, "lnDeadEnd");
 		},
 
+		checkDisconnectLine: function() {
+			var lines = this.board.linegraph.components;
+			for (var id = 0; id < lines.length; id++) {
+				var line = lines[id];
+
+				var ends = line.clist.filter(function(cell) {
+					return cell.ice();
+				});
+
+				if (ends.length < 2) {
+					continue;
+				}
+
+				this.failcode.add("lcIsolate");
+				if (this.checkOnly) {
+					break;
+				}
+				line.setedgeerr(1);
+				ends.seterr(1);
+			}
+		},
+
 		checkNoLine: function() {
 			this.checkAllCell(function(cell) {
 				return !cell.ice() && cell.lcnt === 0;
 			}, "ceNoLine");
+		},
+
+		checkNumberMatch: function() {
+			this.checkLineShape(function(path) {
+				var cell1 = path.cells[0],
+					cell2 = path.cells[1];
+
+				var num = cell1.isNum() ? cell1.qnum : cell2.qnum;
+				if (num < 0) {
+					return false;
+				}
+				var room = cell1.room ? cell1.room : cell2.room ? cell2.room : null;
+				if (!room || room.valid !== 0) {
+					return false;
+				}
+
+				return num !== room.clist.length;
+			}, "bkSizeNe");
+		},
+
+		checkRegionShape: function() {
+			this.checkRegionValue(this.board.roommgr.NOT_RECT, "bkNotRect");
+		},
+		checkRegionEnclosed: function() {
+			this.checkRegionValue(this.board.roommgr.NOT_CLOSED, "bkNotClosed");
+		},
+		checkRegionMultiLine: function() {
+			this.checkRegionValue(this.board.roommgr.MULTI_LINE, "bkLineGt1");
+		},
+		checkRegionNoLine: function() {
+			this.checkRegionValue(this.board.roommgr.NO_LINE, "bkLineLt1");
+		},
+		checkRegionValue: function(value, code) {
+			var areas = this.board.roommgr.components;
+			for (var id = 0; id < areas.length; id++) {
+				var area = areas[id];
+
+				if (area.valid !== value) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				area.clist.seterr(1);
+			}
 		}
 	}
 });
