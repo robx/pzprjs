@@ -139,7 +139,7 @@
 		}
 	},
 	Board: {
-		hasborder: 2
+		hasborder: 1
 	},
 	Graphic: {
 		bgcellcolor_func: "icebarn",
@@ -162,7 +162,8 @@
 		}
 	},
 	LineGraph: {
-		enabled: true
+		enabled: true,
+		makeClist: true
 	},
 	AreaRoomGraph: {
 		enabled: true,
@@ -215,22 +216,53 @@
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkLineOverLetter",
+			"checkAdjacency",
+			"checkEndpointIce",
 
-			// TODO check if line has both a number and a ice cell
 			// TODO check if rectangle is enclosed
 			// TODO check if valid area is rectangle
 			// TODO check if valid rectangle has more than 1 line (total lcnt of all cells > 1)
 			// TODO check if valid rectangle has less than 1 line (total lcnt of all cells === 0)
 			// TODO check if size lines up with valid rectangle size
-			// TODO check if line touches itself
 			"checkDisconnectLine",
+			"checkDeadendLine",
 			"checkNoLine"
 		],
 
-		checkDisconnectLine: function() {
+		checkEndpointIce: function() {
+			this.checkLineShape(function(path) {
+				var cell1 = path.cells[0],
+					cell2 = path.cells[1];
+				return cell1.isNum() && cell2.isNum();
+			}, "lnNoIce");
+		},
+
+		checkAdjacency: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				if (
+					cell1.ice() ||
+					cell2.ice() ||
+					!cell1.path ||
+					cell1.path !== cell2.path
+				) {
+					return false;
+				}
+
+				if (cell1.by === cell2.by && cell1.adjborder.right.line) {
+					return false;
+				}
+				if (cell1.bx === cell2.bx && cell1.adjborder.bottom.line) {
+					return false;
+				}
+
+				return true;
+			}, "lnAdjacent");
+		},
+
+		checkDeadendLine: function() {
 			return this.checkAllCell(function(cell) {
 				return cell.lcnt === 1 && cell.qnum === -1 && !cell.ice();
-			}, "lcIsolate");
+			}, "lnDeadEnd");
 		},
 
 		checkNoLine: function() {
