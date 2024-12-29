@@ -103,6 +103,22 @@
 			qans: function(num) {
 				return num !== 0 && this.isBorderNG();
 			}
+		},
+		rebuildRooms: function() {
+			for (var id = 0; id <= 1; id++) {
+				var cell = this.sidecell[id];
+				if (cell && cell.room) {
+					this.board.roommgr.setExtraData(cell.room);
+				}
+			}
+		},
+		posthook: {
+			line: function(num) {
+				this.rebuildRooms();
+			},
+			qans: function(num) {
+				this.rebuildRooms();
+			}
 		}
 	},
 	Cell: {
