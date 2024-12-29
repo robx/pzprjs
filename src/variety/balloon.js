@@ -7,8 +7,12 @@
 })(["balloon"], {
 	MouseEvent: {
 		inputModes: {
-			edit: ["ice", "number", "clear"],
+			edit: ["shade", "number", "clear"],
 			play: ["line", "border", "peke"]
+		},
+
+		inputShade: function() {
+			this.inputIcebarn();
 		},
 
 		initialize: function() {
