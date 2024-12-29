@@ -122,6 +122,9 @@
 		}
 	},
 	Cell: {
+		isLineShapeEndpoint: function() {
+			return this.isNum() || this.ice();
+		},
 		posthook: {
 			qnum: function(val) {
 				if (val !== -1 && this.ques === 6) {
@@ -335,25 +338,11 @@
 		},
 
 		checkDisconnectLine: function() {
-			var lines = this.board.linegraph.components;
-			for (var id = 0; id < lines.length; id++) {
-				var line = lines[id];
-
-				var ends = line.clist.filter(function(cell) {
-					return cell.ice();
-				});
-
-				if (ends.length < 2) {
-					continue;
-				}
-
-				this.failcode.add("lcIsolate");
-				if (this.checkOnly) {
-					break;
-				}
-				line.setedgeerr(1);
-				ends.seterr(1);
-			}
+			this.checkLineShape(function(path) {
+				var cell1 = path.cells[0],
+					cell2 = path.cells[1];
+				return cell1.ice() && cell2.ice();
+			}, "lcIsolate");
 		},
 
 		checkNoLine: function() {
@@ -363,6 +352,7 @@
 		},
 
 		checkNumberMatch: function() {
+			var bd = this.board;
 			this.checkLineShape(function(path) {
 				var cell1 = path.cells[0],
 					cell2 = path.cells[1];
@@ -376,7 +366,15 @@
 					return false;
 				}
 
-				return num !== room.clist.length;
+				if (num !== room.clist.length) {
+					if (!this.checkOnly) {
+						var d = room.clist.getRectSize();
+						bd.borderinside(d.x1 - 1, d.y1 - 1, d.x2 + 1, d.y2 + 1).seterr(1);
+						room.clist.seterr(1);
+					}
+					return true;
+				}
+				return false;
 			}, "bkSizeNe");
 		},
 

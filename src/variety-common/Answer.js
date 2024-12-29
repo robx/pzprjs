@@ -1091,7 +1091,7 @@ pzpr.classmgr.makeCommon({
 
 		//--------------------------------------------------------------------------------
 		// ans.getLineShapeInfo() 丸などで区切られた線を探索し情報を設定する
-		// ans.serachLineShapeInfo() 丸などで区切られた線を探索します
+		// ans.searchLineShapeInfo() 丸などで区切られた線を探索します
 		//--------------------------------------------------------------------------------
 		getLineShapeInfo: function() {
 			if (this._info.num) {
@@ -1106,7 +1106,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			var clist = bd.cell.filter(function(cell) {
-				return cell.isNum();
+				return cell.isLineShapeEndpoint();
 			});
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i],
@@ -1118,7 +1118,7 @@ pzpr.classmgr.makeCommon({
 						continue;
 					}
 
-					var pathseg = this.serachLineShapeInfo(cell, a + 1, passed);
+					var pathseg = this.searchLineShapeInfo(cell, a + 1, passed);
 					if (!!pathseg) {
 						pathsegs.push(pathseg);
 					}
@@ -1127,7 +1127,7 @@ pzpr.classmgr.makeCommon({
 
 			return (this._info.num = pathsegs);
 		},
-		serachLineShapeInfo: function(cell1, dir, passed) {
+		searchLineShapeInfo: function(cell1, dir, passed) {
 			var pathseg = {
 				objs: new this.klass.BorderList(),
 				cells: [cell1, null], // 出発したセル、到達したセル
@@ -1143,7 +1143,7 @@ pzpr.classmgr.makeCommon({
 				if (pos.oncell()) {
 					var cell = pos.getc(),
 						adb = cell.adjborder;
-					if (cell.isnull || cell1 === cell || cell.isNum()) {
+					if (cell.isnull || cell1 === cell || cell.isLineShapeEndpoint()) {
 						break;
 					} else if (this.board.linegraph.iscrossing(cell) && cell.lcnt >= 3) {
 					} else if (dir !== 1 && adb.bottom.isLine()) {
