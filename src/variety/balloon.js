@@ -34,7 +34,14 @@
 			}
 
 			if (this.mousestart) {
-				this.isDividing = null;
+				var border = this.getpos(0.16).getb();
+				var cross = this.getpos(0.16).getx();
+
+				if (!cross.isnull || (!border.isnull && !border.isBorderNG())) {
+					this.isDividing = true;
+				} else {
+					this.isDividing = null;
+				}
 			}
 
 			if (this.isDividing !== false) {
@@ -96,12 +103,12 @@
 		isLineNG: function() {
 			var cell1 = this.sidecell[0],
 				cell2 = this.sidecell[1];
-			return cell1.ice() && cell2.ice();
+			return cell1 && cell1.ice() && cell2 && cell2.ice();
 		},
 		isBorderNG: function() {
 			var cell1 = this.sidecell[0],
 				cell2 = this.sidecell[1];
-			return !cell1.ice() && !cell2.ice();
+			return cell1 && !cell1.ice() && cell2 && !cell2.ice();
 		},
 		prehook: {
 			qans: function(num) {
