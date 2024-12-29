@@ -172,13 +172,15 @@
 		hasborder: 1
 	},
 	Graphic: {
-		bgcellcolor_func: "icebarn",
 		bordercolor_func: "qans",
 		icecolor: "rgb(204,204,204)",
+		trialcolor: "rgb(80, 0, 80)",
+		linetrialcolor: "rgb(80, 0, 80)",
 
 		paint: function() {
-			this.drawLines();
 			this.drawBGCells();
+			this.drawLines();
+			this.drawIceCells();
 			this.drawDashedGrid();
 
 			this.drawBorders();
@@ -189,6 +191,25 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+		getBGCellColor: function(cell) {
+			if (cell.ques !== 6 && (cell.error === 1 || cell.qinfo === 1)) {
+				return this.errbcolor1;
+			}
+			return null;
+		},
+		drawIceCells: function() {
+			this.vinc("cell_ice", "crispEdges", true);
+			this.drawCells_common("c_fullice_", this.getIceCellColor);
+		},
+		getIceCellColor: function(cell) {
+			if (cell.ques !== 6) {
+				return null;
+			}
+			if (cell.error === 1 || cell.qinfo === 1) {
+				return this.erricecolor;
+			}
+			return this.icecolor;
 		}
 	},
 	LineGraph: {
