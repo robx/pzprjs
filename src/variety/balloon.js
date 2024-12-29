@@ -188,8 +188,8 @@
 		VALID: 0,
 		NO_LINE: 1,
 		MULTI_LINE: 2,
-		NOT_CLOSED: 3,
-		NOT_RECT: 4,
+		NOT_RECT: 3,
+		NOT_CLOSED: 4,
 
 		enabled: true,
 		isnodevalid: function(cell) {
@@ -204,36 +204,27 @@
 				component.valid = this.NOT_RECT;
 			}
 
-			var borders = this.board.borderinside(
-				d.x1 - 1,
-				d.y1 - 1,
-				d.x2 + 1,
-				d.y2 + 1
-			);
 			var lines = 0;
 
-			for (var i = 0; i < borders.length; i++) {
-				var border = borders[i];
-				var expectLine =
-					border.bx === d.x1 - 1 ||
-					border.by === d.y1 - 1 ||
-					border.bx === d.x2 + 1 ||
-					border.by === d.y2 + 1;
+			for (var i = 0; i < component.clist.length; i++) {
+				var cell = component.clist[i];
+				for (var dir in cell.adjborder) {
+					var border = cell.adjborder[dir];
+					if (!border || border.isnull) {
+						continue;
+					}
+					var expectLine = border.sidecell[0].room !== border.sidecell[1].room;
 
-				if (border.isLine()) {
-					lines++;
-				}
+					if (border.isLine()) {
+						lines++;
+					}
 
-				if (expectLine && !border.isBorder()) {
-					component.valid = this.NOT_CLOSED;
-					return;
-				} else if (
-					!expectLine &&
-					component.valid === this.VALID &&
-					border.isBorder()
-				) {
-					component.valid = this.NOT_RECT;
-					return;
+					if (expectLine && !border.isBorder()) {
+						component.valid = this.NOT_CLOSED;
+						return;
+					} else if (!expectLine && border.isBorder()) {
+						component.valid = this.NOT_RECT;
+					}
 				}
 			}
 
