@@ -500,6 +500,9 @@ pzpr.classmgr.makeCommon({
 				(this.qnum !== this.temp.qnum || this.anum !== this.temp.anum)
 			);
 		},
+		isLineShapeEndpoint: function() {
+			return this.isNum();
+		},
 		noNum: function() {
 			return (
 				!this.isnull &&

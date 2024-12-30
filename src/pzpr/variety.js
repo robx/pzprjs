@@ -99,6 +99,7 @@
 			arukone: [0, 0, "アルコネ", "Arukone", "numlin"],
 			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "Ayeheya", "heyawake"],
 			balance: [0, 0, "Balance Loop", "Balance Loop"],
+			balloon: [0, 0, "風船箱", "Balloon Box"],
 			barns: [1, 0, "バーンズ", "Barns"],
 			batten: [0, 0, "Battenberg Painting", "Battenberg Painting"],
 			battleship: [0, 0, "Battleship", "Battleship", "statuepark"],

@@ -114,6 +114,7 @@ function toBGimage(pid) {
 		"araf",
 		"skyscrapers",
 		"balance",
+		"balloon",
 		"batten",
 		"battleship",
 		"bdwalk",

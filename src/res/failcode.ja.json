@@ -677,7 +677,7 @@
     "lnOnShade.yajisoko": "線が黒マスの上を通っています。",
     "lnNoFish.anglers": "魚のいない線があります。",
     "ceEmpty.kaidan": "空白のマスがあります。",
-    "lnNoNum.anglers": "数字のない線があります。",
+    "lnNoNum": "数字のない線があります。",
     "bkCircleNe.familyphoto": "数字と人数が一致していません。",
     "bkMirror.mirrorbk": "鏡を軸に、ブロックが線対称になっていません。",
     "csAdjacent.kaidan": "「〇」がタテヨコに連続しています。",
