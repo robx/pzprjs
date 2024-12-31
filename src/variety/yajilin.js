@@ -558,9 +558,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellDirecQnum_kanpen(true);
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellDirecQnum_kanpen(true);
 		}
 	},
 	"Encode@yajilin-regions": {
@@ -610,10 +607,6 @@
 			this.decodeCellDirecQnum_kanpen(false);
 			this.decodeBorderLine();
 		},
-		kanpenSave: function() {
-			this.encodeCellDirecQnum_kanpen(false);
-			this.encodeBorderLine();
-		},
 
 		decodeCellDirecQnum_kanpen: function(isurl) {
 			this.decodeCell(function(cell, ca) {
@@ -639,41 +632,10 @@
 				}
 			});
 		},
-		encodeCellDirecQnum_kanpen: function(isurl) {
-			this.encodeCell(function(cell) {
-				var num = cell.qnum >= 0 && cell.qnum < 16 ? cell.qnum : -1,
-					dir;
-				if (num !== -1 && cell.qdir !== cell.NDIR) {
-					if (cell.qdir === cell.UP) {
-						dir = 0;
-					} else if (cell.qdir === cell.LT) {
-						dir = 1;
-					} else if (cell.qdir === cell.DN) {
-						dir = 2;
-					} else if (cell.qdir === cell.RT) {
-						dir = 3;
-					}
-					return "" + ((dir << 4) + (num & 0x0f)) + " ";
-				} else if (cell.qnum === -2) {
-					return "-4 ";
-				} else if (!isurl) {
-					if (cell.qans === 1) {
-						return "# ";
-					} else if (cell.qsub === 1) {
-						return "+ ";
-					}
-				}
-				return ". ";
-			});
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellDirecQnum_XMLBoard();
 			this.decodeBorderLine_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellDirecQnum_XMLBoard();
-			this.encodeBorderLine_XMLAnswer();
 		},
 
 		decodeCellDirecQnum_XMLBoard: function() {
@@ -697,31 +659,6 @@
 				} else if (val === -4) {
 					cell.qnum = -2;
 				}
-			});
-		},
-		encodeCellDirecQnum_XMLBoard: function() {
-			this.encodeCellXMLBoard(function(cell) {
-				var val = -3,
-					dir = 0;
-				if (cell.qnum !== -1 && cell.qdir !== cell.NDIR) {
-					if (cell.qdir === cell.UP) {
-						dir = 0;
-					} else if (cell.qdir === cell.LT) {
-						dir = 1;
-					} else if (cell.qdir === cell.DN) {
-						dir = 2;
-					} else if (cell.qdir === cell.RT) {
-						dir = 3;
-					}
-					val = (dir << 4) + (cell.qnum & 0x0f);
-				} else if (cell.qnum === -2) {
-					val = -4;
-				} else if (cell.qans === 1) {
-					val = -2;
-				} else if (cell.qsub === 1) {
-					val = -1;
-				}
-				return val;
 			});
 		}
 	},

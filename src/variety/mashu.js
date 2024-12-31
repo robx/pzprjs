@@ -140,11 +140,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum_kanpen();
 			this.board.revCircle();
-		},
-		encodeKanpen: function() {
-			this.board.revCircle();
-			this.fio.encodeCellQnum_kanpen();
-			this.board.revCircle();
 		}
 	},
 	//---------------------------------------------------------
@@ -166,22 +161,10 @@
 			this.decodeBorderLine();
 			this.board.revCircle();
 		},
-		kanpenSave: function() {
-			this.board.revCircle();
-			this.encodeCellQnum_kanpen();
-			this.encodeBorderLine();
-			this.board.revCircle();
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellQnum_XMLBoard();
 			this.decodeBorderLine_XMLAnswer();
-			this.board.revCircle();
-		},
-		kanpenSaveXML: function() {
-			this.board.revCircle();
-			this.encodeCellQnum_XMLBoard();
-			this.encodeBorderLine_XMLAnswer();
 			this.board.revCircle();
 		},
 

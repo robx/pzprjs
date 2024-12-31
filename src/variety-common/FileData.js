@@ -654,7 +654,6 @@ pzpr.classmgr.makeCommon({
 
 		//---------------------------------------------------------------------------
 		// fio.decodeCellQnum_kanpen() pencilbox用問題数字のデコードを行う
-		// fio.encodeCellQnum_kanpen() pencilbox用問題数字のエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeCellQnum_kanpen: function() {
 			this.decodeCell(function(cell, ca) {
@@ -663,14 +662,8 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
-		encodeCellQnum_kanpen: function() {
-			this.encodeCell(function(cell) {
-				return cell.qnum >= 0 ? cell.qnum + " " : ". ";
-			});
-		},
 		//---------------------------------------------------------------------------
 		// fio.decodeCellAnum_kanpen() pencilbox用回答数字のデコードを行う
-		// fio.encodeCellAnum_kanpen() pencilbox用回答数字のエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeCellAnum_kanpen: function() {
 			this.decodeCell(function(cell, ca) {
@@ -679,20 +672,8 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
-		encodeCellAnum_kanpen: function() {
-			this.encodeCell(function(cell) {
-				if (cell.qnum !== -1) {
-					return ". ";
-				} else if (cell.anum === -1) {
-					return "0 ";
-				} else {
-					return cell.anum + " ";
-				}
-			});
-		},
 		//---------------------------------------------------------------------------
 		// fio.decodeCellQnumAns_kanpen() pencilbox用問題数字＋黒マス白マスのデコードを行う
-		// fio.encodeCellQnumAns_kanpen() pencilbox用問題数字＋黒マス白マスのエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeCellQnumAns_kanpen: function() {
 			this.decodeCell(function(cell, ca) {
@@ -707,25 +688,9 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
-		encodeCellQnumAns_kanpen: function() {
-			this.encodeCell(function(cell) {
-				if (cell.qnum >= 0) {
-					return cell.qnum + " ";
-				} else if (cell.qnum === -2) {
-					return "? ";
-				} else if (cell.qans === 1) {
-					return "# ";
-				} else if (cell.qsub === 1) {
-					return "+ ";
-				} else {
-					return ". ";
-				}
-			});
-		},
 
 		//---------------------------------------------------------------------------
 		// fio.decodeCellQnum_XMLBoard() pencilbox XML用問題用数字のデコードを行う
-		// fio.encodeCellQnum_XMLBoard() pencilbox XML用問題用数字のエンコードを行う
 		//---------------------------------------------------------------------------
 		UNDECIDED_NUM_XML: -1,
 		decodeCellQnum_XMLBoard: function() {
@@ -739,23 +704,9 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
-		encodeCellQnum_XMLBoard: function() {
-			var minnum = this.board.cell[0].getminnum() > 0 ? 1 : 0;
-			var undecnum = this.UNDECIDED_NUM_XML;
-			this.encodeCellXMLBoard(function(cell) {
-				var val = null;
-				if (cell.qnum === -2) {
-					val = undecnum;
-				} else if (cell.qnum >= minnum) {
-					val = cell.qnum;
-				}
-				return val;
-			});
-		},
 
 		//---------------------------------------------------------------------------
 		// fio.decodeCellQnum_XMLBoard() pencilbox XML用問題用数字(browタイプ)のデコードを行う
-		// fio.encodeCellQnum_XMLBoard() pencilbox XML用問題用数字(browタイプ)のエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeCellQnum_XMLBoard_Brow: function() {
 			var undecnum = this.UNDECIDED_NUM_XML;
@@ -767,21 +718,9 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
-		encodeCellQnum_XMLBoard_Brow: function() {
-			var undecnum = this.UNDECIDED_NUM_XML;
-			this.encodeCellXMLBrow(function(cell) {
-				if (cell.qnum === -2) {
-					return "n" + undecnum;
-				} else if (cell.qnum >= 0) {
-					return "n" + cell.qnum;
-				}
-				return "s";
-			});
-		},
 
 		//---------------------------------------------------------------------------
 		// fio.decodeCellAnum_XMLBoard() pencilbox XML用回答用数字のデコードを行う
-		// fio.encodeCellAnum_XMLBoard() pencilbox XML用回答用数字のエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeCellAnum_XMLAnswer: function() {
 			this.decodeCellXMLArow(function(cell, name) {
@@ -792,20 +731,9 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
-		encodeCellAnum_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cell) {
-				if (cell.anum > 0) {
-					return "n" + cell.anum;
-				} else if (cell.anum === -1) {
-					return "n0";
-				}
-				return "s";
-			});
-		},
 
 		//---------------------------------------------------------------------------
 		// fio.decodeAreaRoom_XMLBoard() pencilbox XML用問題用不定形部屋のデコードを行う
-		// fio.encodeAreaRoom_XMLBoard() pencilbox XML用問題用不定形部屋のエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeAreaRoom_XMLBoard: function() {
 			var rdata = [];
@@ -815,22 +743,9 @@ pzpr.classmgr.makeCommon({
 			this.rdata2Border(true, rdata);
 			this.board.roommgr.rebuild();
 		},
-		encodeAreaRoom_XMLBoard: function() {
-			var bd = this.board;
-			bd.roommgr.rebuild();
-			var rooms = bd.roommgr.components;
-			this.xmldoc
-				.querySelector("board")
-				.appendChild(this.createXMLNode("areas", { N: rooms.length }));
-			this.encodeCellXMLBrow(function(cell) {
-				var roomid = rooms.indexOf(cell.room);
-				return "n" + (roomid > 0 ? roomid : -1);
-			});
-		},
 
 		//---------------------------------------------------------------------------
 		// fio.decodeCellAns_XMLAnswer() pencilbox XML用黒マスのデコードを行う
-		// fio.encodeCellAns_XMLAnswer() pencilbox XML用黒マスのエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeCellAns_XMLAnswer: function() {
 			this.decodeCellXMLArow(function(cell, name) {
@@ -841,20 +756,9 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
-		encodeCellAns_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cell) {
-				if (cell.qans === 1) {
-					return "w";
-				} else if (cell.qsub === 1) {
-					return "s";
-				}
-				return "u";
-			});
-		},
 
 		//---------------------------------------------------------------------------
 		// fio.decodeBorderLine_XMLAnswer() pencilbox XML用Lineのデコードを行う
-		// fio.encodeBorderLine_XMLAnswer() pencilbox XML用Lineのエンコードを行う
 		//---------------------------------------------------------------------------
 		decodeBorderLine_XMLAnswer: function() {
 			this.decodeCellXMLArow(function(cell, name) {
@@ -883,39 +787,6 @@ pzpr.classmgr.makeCommon({
 				if (val & 8) {
 					bdv.qsub = 2;
 				}
-			});
-		},
-		encodeBorderLine_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cell) {
-				var val = 0,
-					nodename = "";
-				var bdh = cell.adjborder.bottom,
-					bdv = cell.adjborder.right;
-				if (bdh.line === 1) {
-					val += 1;
-				}
-				if (bdv.line === 1) {
-					val += 2;
-				}
-				if (bdh.qsub === 2) {
-					val += 4;
-				}
-				if (bdv.qsub === 2) {
-					val += 8;
-				}
-
-				if (val === 0) {
-					nodename = "s";
-				} else if (val === 1) {
-					nodename = "h";
-				} else if (val === 2) {
-					nodename = "v";
-				} else if (val === 3) {
-					nodename = "hv";
-				} else {
-					nodename = "n" + val;
-				}
-				return nodename;
 			});
 		}
 	}

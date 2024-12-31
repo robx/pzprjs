@@ -217,9 +217,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen();
 		}
 	},
 	"Encode@arukone": {
@@ -249,18 +246,10 @@
 			this.decodeCellQnum_kanpen();
 			this.decodeBorderLine();
 		},
-		kanpenSave: function() {
-			this.encodeCellQnum_kanpen();
-			this.encodeBorderLine();
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellQnum_XMLBoard();
 			this.decodeBorderLine_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_XMLBoard();
-			this.encodeBorderLine_XMLAnswer();
 		},
 
 		UNDECIDED_NUM_XML: -1

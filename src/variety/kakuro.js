@@ -200,9 +200,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum51_kanpen();
 		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum51_kanpen();
-		},
 
 		decodeKakuro: function() {
 			// 盤面内数字のデコード
@@ -327,10 +324,6 @@
 			this.decodeCellQnum51_kanpen();
 			this.decodeQans_kanpen();
 		},
-		kanpenSave: function() {
-			this.encodeCellQnum51_kanpen();
-			this.encodeQans_kanpen();
-		},
 
 		decodeCellQnum51_kanpen: function() {
 			var bd = this.board;
@@ -358,34 +351,6 @@
 				}
 			}
 		},
-		encodeCellQnum51_kanpen: function() {
-			var bd = this.board;
-			for (var by = bd.minby + 1; by < bd.maxby; by += 2) {
-				for (var bx = bd.minbx + 1; bx < bd.maxbx; bx += 2) {
-					var item = [(by + 1) >> 1, (bx + 1) >> 1, 0, 0];
-
-					if (bx === -1 && by === -1) {
-					} else if (bx === -1 || by === -1) {
-						var excell = bd.getex(bx, by);
-						if (bx === -1) {
-							item[2] = excell.qnum;
-						}
-						if (by === -1) {
-							item[3] = excell.qnum2;
-						}
-					} else {
-						var cell = bd.getc(bx, by);
-						if (cell.ques !== 51) {
-							continue;
-						}
-						item[2] = cell.qnum;
-						item[3] = cell.qnum2;
-					}
-					this.writeLine(item.join(" "));
-				}
-			}
-			this.writeLine(""); // 空行を出力
-		},
 
 		decodeQans_kanpen: function() {
 			this.decodeCellExCell(function(obj, ca) {
@@ -394,22 +359,10 @@
 				}
 			});
 		},
-		encodeQans_kanpen: function() {
-			this.encodeCellExCell(function(obj) {
-				if (obj.ques !== 51) {
-					return (obj.anum > 0 ? obj.anum : "0") + " ";
-				}
-				return ". ";
-			});
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellQnum51_XMLBoard();
 			this.decodeCellAnum_kakuro_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum51_XMLBoard();
-			this.encodeCellAnum_kakuro_XMLAnswer();
 		},
 
 		decodeCellQnum51_XMLBoard: function() {
@@ -427,27 +380,6 @@
 				piece.qnum2 = b;
 			}
 		},
-		encodeCellQnum51_XMLBoard: function() {
-			var boardnode = this.xmldoc.querySelector("board");
-			var bd = this.board;
-			for (var by = -1; by < bd.maxby; by += 2) {
-				for (var bx = -1; bx < bd.maxbx; bx += 2) {
-					var piece = bd.getobj(bx, by); /* cell or excell */
-					if (piece.ques === 51) {
-						var a = piece.qnum;
-						var b = piece.qnum2;
-						boardnode.appendChild(
-							this.createXMLNode("wall", {
-								r: (by + 3) >> 1,
-								c: (bx + 3) >> 1,
-								a: a,
-								b: b
-							})
-						);
-					}
-				}
-			}
-		},
 
 		PBOX_ADJUST: 2,
 		decodeCellAnum_kakuro_XMLAnswer: function() {
@@ -455,14 +387,6 @@
 				if (name !== "n-1" && name !== "n0" && cell.ques !== 51) {
 					cell.anum = +name.substr(1);
 				}
-			});
-		},
-		encodeCellAnum_kakuro_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cell) {
-				if (cell.ques === 0 && cell.anum === -1) {
-					return "n0";
-				}
-				return "n" + cell.anum;
 			});
 		}
 	},

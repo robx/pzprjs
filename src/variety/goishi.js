@@ -237,9 +237,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeGoishi_kanpen();
 		},
-		encodeKanpen: function() {
-			this.fio.encodeGoishi_kanpen();
-		},
 
 		decodeGoishi: function() {
 			var bstr = this.outbstr,
@@ -299,10 +296,6 @@
 			this.decodeGoishi_kanpen();
 			this.decodeQansPos_kanpen();
 		},
-		kanpenSave: function() {
-			this.encodeGoishi_kanpen();
-			this.encodeQansPos_kanpen();
-		},
 
 		decodeGoishiFile: function() {
 			this.decodeCell(function(cell, ca) {
@@ -330,16 +323,6 @@
 				}
 			});
 		},
-		encodeGoishi_kanpen: function() {
-			var bd = this.board;
-			for (var by = bd.minby + 1; by < bd.maxby; by += 2) {
-				var data = "";
-				for (var bx = bd.minbx + 1; bx < bd.maxbx; bx += 2) {
-					data += bd.getc(bx, by).isStone() ? "1 " : ". ";
-				}
-				this.writeLine(data);
-			}
-		},
 
 		decodeQansPos_kanpen: function() {
 			for (;;) {
@@ -357,33 +340,10 @@
 				}
 			}
 		},
-		encodeQansPos_kanpen: function() {
-			var stones = [],
-				bd = this.board;
-			for (var by = bd.minby + 1; by < bd.maxby; by += 2) {
-				for (var bx = bd.minbx + 1; bx < bd.maxbx; bx += 2) {
-					var cell = bd.getc(bx, by);
-					if (cell.ques !== 0 || cell.anum === -1) {
-						continue;
-					}
-
-					var pos = [bx >> 1, by >> 1];
-					stones[cell.anum - 1] = pos;
-				}
-			}
-			for (var i = 0, len = stones.length; i < len; i++) {
-				var item = [i + 1, stones[i][1], stones[i][0]];
-				this.writeLine(item.join(" "));
-			}
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellQnum_goishi_XMLBoard();
 			this.decodeQansPos_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_goishi_XMLBoard();
-			this.encodeQansPos_XMLAnswer();
 		},
 
 		decodeCellQnum_goishi_XMLBoard: function() {
@@ -391,11 +351,6 @@
 				if (val === 1) {
 					cell.ques = 0;
 				}
-			});
-		},
-		encodeCellQnum_goishi_XMLBoard: function() {
-			this.encodeCellXMLBoard(function(cell) {
-				return cell.ques === 0 ? "1" : null;
 			});
 		},
 
@@ -406,29 +361,6 @@
 				var bx = 2 * +node.getAttribute("c") - 1;
 				var by = 2 * +node.getAttribute("r") - 1;
 				this.board.getc(bx, by).anum = +node.getAttribute("n");
-			}
-		},
-		encodeQansPos_XMLAnswer: function() {
-			var boardnode = this.xmldoc.querySelector("answer");
-			var bd = this.board;
-			for (var ans = 1; ; ans++) {
-				var cell = null;
-				for (var c = 0; c < bd.cell.length; c++) {
-					if (bd.cell[c].anum === ans) {
-						cell = bd.cell[c];
-						break;
-					}
-				}
-				if (!cell) {
-					break;
-				}
-				boardnode.appendChild(
-					this.createXMLNode("picked", {
-						n: ans,
-						r: (cell.by >> 1) + 1,
-						c: (cell.bx >> 1) + 1
-					})
-				);
 			}
 		}
 	},

@@ -41,27 +41,6 @@ pzpr.variety.each(function(pid) {
 					assert_equal_board(bd, bd2, false);
 				});
 			});
-			if (!pzpr.variety(pid).exists.pencilbox) {
-				return;
-			}
-			it("Kanpen file", function() {
-				var bd = puzzle.board,
-					bd2 = bd.freezecopy();
-				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX);
-
-				puzzle.open(outputstr, function() {
-					assert_equal_board(bd, bd2, true);
-				});
-			});
-			it("Kanpen XML file", function() {
-				var bd = puzzle.board,
-					bd2 = bd.freezecopy();
-				var outputstr = puzzle.getFileData(pzpr.parser.FILE_PBOX_XML);
-
-				puzzle.open(outputstr, function() {
-					assert_equal_board(bd, bd2, true);
-				});
-			});
 		});
 	});
 });

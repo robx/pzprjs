@@ -201,9 +201,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeSquareRoom();
 		},
-		encodeKanpen: function() {
-			this.fio.encodeSquareRoom();
-		},
 
 		decodeConfig: function() {},
 		encodeConfig: function() {},
@@ -242,17 +239,6 @@
 				i++;
 			}
 			fileio.rdata2Border(true, rdata);
-		},
-		encodeHeyaApp: function() {
-			var barray = [],
-				bd = this.board,
-				rooms = bd.roommgr.components;
-			for (var r = 0; r < rooms.length; r++) {
-				var d = rooms[r].clist.getRectSize();
-				var ul = bd.getc(d.x1, d.y1).qnum;
-				barray.push((ul >= 0 ? "" + ul + "in" : "") + d.cols + "x" + d.rows);
-			}
-			this.outbstr = barray.join("/");
 		}
 	},
 	"Encode@akichi": {
@@ -284,10 +270,6 @@
 		kanpenOpen: function() {
 			this.decodeSquareRoom();
 			this.decodeCellAns();
-		},
-		kanpenSave: function() {
-			this.encodeSquareRoom();
-			this.encodeCellAns();
 		},
 
 		decodeSquareRoom: function() {
@@ -338,10 +320,6 @@
 			this.decodeSquareRoom_XMLBoard();
 			this.decodeCellAns_XMLAnswer();
 		},
-		kanpenSaveXML: function() {
-			this.encodeSquareRoom_XMLBoard();
-			this.encodeCellAns_XMLAnswer();
-		},
 
 		decodeSquareRoom_XMLBoard: function() {
 			var nodes = this.xmldoc.querySelectorAll("board area");
@@ -365,25 +343,6 @@
 			}
 			this.rdata2Border(true, rdata);
 			bd.roommgr.rebuild();
-		},
-		encodeSquareRoom_XMLBoard: function() {
-			var boardnode = this.xmldoc.querySelector("board");
-			var bd = this.board;
-			bd.roommgr.rebuild();
-			var rooms = bd.roommgr.components;
-			for (var r = 0; r < rooms.length; r++) {
-				var d = rooms[r].clist.getRectSize(),
-					num = rooms[r].top.qnum;
-				boardnode.appendChild(
-					this.createXMLNode("area", {
-						r0: (d.y1 >> 1) + 1,
-						c0: (d.x1 >> 1) + 1,
-						r1: (d.y2 >> 1) + 1,
-						c1: (d.x2 >> 1) + 1,
-						n: num
-					})
-				);
-			}
 		}
 	},
 	"FileIO@akichi": {

@@ -210,10 +210,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeAreaRoom();
 			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeAreaRoom();
-			this.fio.encodeCellQnum_kanpen();
 		}
 	},
 	//---------------------------------------------------------

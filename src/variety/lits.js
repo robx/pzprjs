@@ -200,9 +200,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeAreaRoom();
 		},
-		encodeKanpen: function() {
-			this.fio.encodeAreaRoom();
-		},
 
 		decodeLITS_old: function() {
 			var bstr = this.outbstr,
@@ -237,18 +234,10 @@
 			this.decodeAreaRoom();
 			this.decodeCellAns();
 		},
-		kanpenSave: function() {
-			this.encodeAreaRoom();
-			this.encodeCellAns();
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeAreaRoom_XMLBoard();
 			this.decodeCellAns_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeAreaRoom_XMLBoard();
-			this.encodeCellAns_XMLAnswer();
 		}
 	},
 

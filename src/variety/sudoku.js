@@ -91,9 +91,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen();
 		}
 	},
 	//---------------------------------------------------------
@@ -111,18 +108,10 @@
 			this.decodeCellQnum_kanpen();
 			this.decodeCellAnum_kanpen();
 		},
-		kanpenSave: function() {
-			this.encodeCellQnum_kanpen();
-			this.encodeCellAnum_kanpen();
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellQnum_XMLBoard();
 			this.decodeCellAnum_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_XMLBoard();
-			this.encodeCellAnum_XMLAnswer();
 		},
 
 		UNDECIDED_NUM_XML: 0
