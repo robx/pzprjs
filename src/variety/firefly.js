@@ -78,6 +78,8 @@
 	Graphic: {
 		hideHatena: true,
 
+		irowake: true,
+
 		gridcolor_type: "LIGHT",
 
 		numbercolor_func: "fixed",
@@ -108,8 +110,6 @@
 	},
 
 	"Graphic@firefly": {
-		irowake: true,
-
 		drawFireflyDots: function() {
 			var g = this.vinc("cell_firefly", "auto");
 
