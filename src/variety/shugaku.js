@@ -349,6 +349,7 @@
 		bcolor: "rgb(208, 208, 208)",
 		targetbgcolor: "rgb(255, 192, 192)" /* 入力中の布団の色 */,
 		undefcolor: "silver" /* 未確定マスの色 */,
+		trialcolor: "rgb(80, 0, 80)",
 
 		circleratio: [0.47, 0.42],
 

@@ -208,9 +208,15 @@ ui.keypopup = {
 		batten: [10, 0],
 		firewalk: [10, 0],
 		snakeegg: [10, 0],
+		timebomb: [10, 0],
 		smullyan: [10, 0],
 		meidjuluk: [10, 0],
-		island: [10, 0]
+		island: [10, 0],
+		archipelago: [10, 0],
+		yajirushi2: [4, 0],
+		nibunnogo: [4, 0],
+		mintonette: [10, 0],
+		balloon: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -459,7 +465,8 @@ ui.keypopup = {
 			pid === "aho" ||
 			pid === "bosanowa" ||
 			pid === "portal" ||
-			pid === "minarism"
+			pid === "minarism" ||
+			pid === "mintonette"
 		) {
 			cap = "○";
 		} else if (!ui.puzzle.painter.hideHatena) {
@@ -477,14 +484,15 @@ ui.keypopup = {
 			pid === "icewalk" ||
 			pid === "waterwalk" ||
 			pid === "firewalk" ||
-			pid === "dbchoco"
+			pid === "dbchoco" ||
+			pid === "balloon"
 		) {
 			itemlist.push([
 				"q",
 				{
 					text: "■",
 					color:
-						pid === "dbchoco"
+						pid === "dbchoco" || pid === "balloon"
 							? "rgb(204,204,204)"
 							: pid === "firewalk"
 							? "rgb(255,192,192)"

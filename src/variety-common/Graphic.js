@@ -1304,8 +1304,10 @@ pzpr.classmgr.makeCommon({
 					border = null;
 				if (
 					cell.lcnt === 1 &&
+					!this.puzzle.execConfig("dispmove") &&
 					cell.qnum === -1 &&
-					!this.puzzle.execConfig("dispmove")
+					/* Inverse arrow direction if a temporary departure was added by the solver */
+					(cell.path.departure.anum === -1) ^ (cell.path.departure === cell)
 				) {
 					var adb = cell.adjborder;
 					if (adb.top.isLine()) {
