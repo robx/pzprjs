@@ -914,6 +914,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawCrosses()    Crossの丸数字をCanvasに書き込む
 		// pc.drawCrossMarks() Cross上の黒点をCanvasに書き込む
+		// pc.drawCrossErrors() Cross error dots
 		//---------------------------------------------------------------------------
 		drawCrosses: function() {
 			var g = this.vinc("cross_base", "auto", true);
@@ -964,6 +965,24 @@ pzpr.classmgr.makeCommon({
 							? this.errcolor1
 							: this.quescolor;
 					g.fillCircle(cross.bx * this.bw, cross.by * this.bh, csize);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+		drawCrossErrors: function(isdraw) {
+			var g = this.vinc("cross_error", "auto");
+			g.strokeStyle = this.errcolor1;
+			g.lineWidth = Math.max(this.cw * 0.04, 1);
+
+			var size = this.cw / 4;
+			var clist = this.range.crosses;
+			for (var i = 0; i < clist.length; i++) {
+				var cross = clist[i];
+				g.vid = "x_ce_" + cross.id;
+				if (cross.error) {
+					g.fillStyle = cross.lcnt === 2 ? this.errbcolor1 : "white";
+					g.shapeCircle(cross.bx * this.bw, cross.by * this.bh, size / 2);
 				} else {
 					g.vhide();
 				}

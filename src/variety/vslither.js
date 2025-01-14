@@ -180,6 +180,7 @@
 			this.drawBGCells();
 			this.drawLines();
 			this.drawBaseMarks();
+			this.drawCrossErrors();
 			this.drawQuesNumbers();
 			this.drawPekes();
 			this.drawDots();
@@ -251,14 +252,17 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decode4Cell();
+			this.puzzle.setConfig("slither_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("slither_full") ? "f" : null;
 			this.encode4Cell();
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "slither_full");
 			this.decodeCellQnum();
 			this.decodeCellQsub();
 			this.decodeBorderLine();
@@ -267,6 +271,7 @@
 			});
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "slither_full");
 			this.encodeCellQnum();
 			this.encodeCellQsub();
 			this.encodeBorderLine();
@@ -286,7 +291,8 @@
 			"checkdir4VertexLine@vslither",
 			"checkdir4TouchLine@tslither",
 			"checkOneLoop",
-			"checkDeadendLine+"
+			"checkDeadendLine+",
+			"checkNoLineIfVariant@tslither"
 		],
 
 		checkdir4VertexLine: function() {

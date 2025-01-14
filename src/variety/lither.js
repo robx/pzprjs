@@ -128,25 +128,6 @@
 			this.range.crosses = blist.crossinside();
 			this.drawBaseMarks();
 			this.drawCrossErrors();
-		},
-
-		drawCrossErrors: function(isdraw) {
-			var g = this.vinc("cross_error", "auto");
-			g.strokeStyle = this.errcolor1;
-			g.lineWidth = Math.max(this.cw * 0.04, 1);
-
-			var size = this.cw / 4;
-			var clist = this.range.crosses;
-			for (var i = 0; i < clist.length; i++) {
-				var cross = clist[i];
-				g.vid = "x_ce_" + cross.id;
-				if (cross.error) {
-					g.fillStyle = cross.lcnt === 2 ? this.errbcolor1 : "white";
-					g.shapeCircle(cross.bx * this.bw, cross.by * this.bh, size / 2);
-				} else {
-					g.vhide();
-				}
-			}
 		}
 	},
 

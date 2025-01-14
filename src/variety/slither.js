@@ -220,6 +220,7 @@
 			if (this.pid === "swslither") {
 				this.drawSheepWolf();
 			}
+			this.drawCrossErrors();
 			this.drawQuesNumbers();
 			this.drawPekes();
 			this.drawTarget();
@@ -261,8 +262,10 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decode4Cell();
+			this.puzzle.setConfig("slither_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("slither_full") ? "f" : null;
 			this.encode4Cell();
 		},
 
@@ -276,14 +279,17 @@
 	"Encode@swslither": {
 		decodePzpr: function(type) {
 			this.decodeNumber10();
+			this.puzzle.setConfig("slither_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("slither_full") ? "f" : null;
 			this.encodeNumber10();
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "slither_full");
 			if (this.filever === 1) {
 				this.decodeCellQnum();
 				this.decodeCellQsub();
@@ -295,6 +301,7 @@
 		},
 		encodeData: function() {
 			this.filever = 1;
+			this.encodeConfigFlag("f", "slither_full");
 			this.encodeCellQnum();
 			this.encodeCellQsub();
 			this.encodeBorderLine();
@@ -399,6 +406,7 @@
 
 			"checkOneLoop",
 			"checkDeadendLine+",
+			"checkNoLineIfVariant",
 
 			"checkSheepIn@swslither",
 			"checkWolvesOut@swslither"
