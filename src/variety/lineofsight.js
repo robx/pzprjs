@@ -79,6 +79,7 @@
 			this.drawBGCells();
 			this.drawLines();
 			this.drawBaseMarks();
+			this.drawCrossErrors();
 			this.drawArrowNumbers();
 			this.drawPekes();
 			this.drawTarget();
@@ -95,18 +96,22 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeArrowNumber16();
+			this.puzzle.setConfig("slither_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("slither_full") ? "f" : null;
 			this.encodeArrowNumber16();
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "slither_full");
 			this.decodeCellDirecQnum();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "slither_full");
 			this.encodeCellDirecQnum();
 			this.encodeBorderLine();
 		}
@@ -125,6 +130,7 @@
 
 			"checkOneLoop",
 			"checkDeadendLine+",
+			"checkNoLineIfVariant",
 			"checkNumberHasArrow"
 		],
 

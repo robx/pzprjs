@@ -457,6 +457,7 @@
     "cuRoomGt.akichi": "A cluster of unshaded cells is larger than the number.",
     "cuRoomLt.akichi": "All clusters of unshaded cells are smaller than the number.",
     "cxAdjacent.crossstitch": "Crossings are adjacent.",
+    "cxNoLine": "A point is not visited.",
     "cxOverlap.heyapin": "A pin overlaps a single region.",
     "exMinusNe.magnets": "The number of Minus signs in the row or column is not correct.",
     "exNoMatch.nonogram": "The shaded cells don't match the clues in the row or column.",
