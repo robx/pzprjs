@@ -130,8 +130,10 @@
 		decodePzpr: function(type) {
 			this.decodeCircle();
 			this.board.revCircle();
+			this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			this.board.revCircle();
 			this.encodeCircle();
 			this.board.revCircle();
@@ -150,11 +152,13 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "loop_full");
 			this.decodeCellQnum();
 			this.decodeBorderLine();
 			this.board.revCircle();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "loop_full");
 			this.board.revCircle();
 			this.encodeCellQnum();
 			this.encodeBorderLine();
@@ -201,6 +205,7 @@
 			"checkWhitePearl2",
 			"checkNoLinePearl",
 			"checkDeadendLine+",
+			"checkNoLineIfVariant",
 			"checkOneLoop"
 		],
 

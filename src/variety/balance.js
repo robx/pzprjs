@@ -277,8 +277,10 @@
 				}
 			}
 			this.outbstr = bstr.substr(i);
+			this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			var count = 0,
 				cm = "",
 				bd = this.board;
@@ -312,6 +314,7 @@
 	},
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "loop_full");
 			this.decodeCell(function(cell, ca) {
 				if (ca === ".") {
 					return;
@@ -323,6 +326,7 @@
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "loop_full");
 			this.encodeCell(function(cell) {
 				if (cell.qnum !== -1) {
 					return cell.ques + "," + cell.qnum + " ";
@@ -344,6 +348,7 @@
 			"checkBlackEqual",
 			"checkDeadendLine+",
 			"checkNoLineCircle",
+			"checkNoLineIfVariant",
 			"checkOneLoop"
 		],
 

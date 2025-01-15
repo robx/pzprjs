@@ -152,18 +152,22 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeDot();
+			this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			this.encodeDot();
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "loop_full");
 			this.decodeDotFile();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "loop_full");
 			this.encodeDotFile();
 			this.encodeBorderLine();
 		}
@@ -181,6 +185,7 @@
 			"checkDotOnLine",
 
 			"checkDeadendLine+",
+			"checkNoLineIfVariant",
 			"checkOneLoop"
 		],
 

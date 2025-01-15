@@ -139,6 +139,15 @@
 				case "lineofsight":
 					idname = "slither_full";
 					break;
+				case "mashu":
+				case "geradeweg":
+				case "disloop":
+				case "midloop":
+				case "ovotovata":
+				case "balance":
+				case "turnaround":
+					idname = "loop_full";
+					break;
 			}
 
 			if (typeof idname === "string") {
