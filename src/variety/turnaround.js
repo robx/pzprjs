@@ -111,17 +111,21 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
+			this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			this.encodeNumber16();
 		}
 	},
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "loop_full");
 			this.decodeCellQnum();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "loop_full");
 			this.encodeCellQnum();
 			this.encodeBorderLine();
 		}
@@ -136,6 +140,7 @@
 			"checkNoLineNumber",
 
 			"checkDeadendLine+",
+			"checkNoLineIfVariant",
 			"checkOneLoop"
 		],
 

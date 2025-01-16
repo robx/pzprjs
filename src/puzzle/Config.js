@@ -141,6 +141,10 @@
 				variant: true,
 				volatile: true
 			}); /* All vertices must be visited */
+			this.add("loop_full", false, {
+				variant: true,
+				volatile: true
+			}); /* All cells must be visited */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -479,6 +483,18 @@
 							"swslither",
 							"myopia",
 							"lineofsight"
+						].indexOf(pid) >= 0;
+					break;
+				case "loop_full":
+					exec =
+						[
+							"mashu",
+							"geradeweg",
+							"disloop",
+							"midloop",
+							"ovotovata",
+							"balance",
+							"turnaround"
 						].indexOf(pid) >= 0;
 					break;
 				default:

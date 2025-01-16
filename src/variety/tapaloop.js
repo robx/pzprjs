@@ -529,8 +529,10 @@
 	"Encode@disloop": {
 		decodePzpr: function(type) {
 			this.decodeArrowNumber_disloop();
+			this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			this.encodeArrowNumber_disloop();
 		},
 		decodeArrowNumber_disloop: function() {
@@ -588,11 +590,13 @@
 	},
 	"FileIO@disloop": {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "loop_full");
 			this.decodeQnums();
 			this.decodeDirs();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "loop_full");
 			this.encodeQnums();
 			this.encodeDirs();
 			this.encodeBorderLine();
@@ -620,6 +624,7 @@
 			"checkArrowLineExist@disloop",
 			"checkNumberHasArrow@disloop",
 			"checkDeadendLine+",
+			"checkNoLineIfVariant@disloop",
 			"checkOneLoop"
 		],
 

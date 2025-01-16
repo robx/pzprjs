@@ -400,7 +400,10 @@ pzpr.classmgr.makeCommon({
 			this.checkLineCount(0, this.board.borderAsLine ? "cxNoLine" : "ceNoLine");
 		},
 		checkNoLineIfVariant: function() {
-			if (this.puzzle.getConfig("slither_full")) {
+			if (
+				this.puzzle.getConfig("slither_full") ||
+				this.puzzle.getConfig("loop_full")
+			) {
 				this.checkNoLine();
 			}
 		},
