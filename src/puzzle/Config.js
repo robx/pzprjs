@@ -494,7 +494,8 @@
 							"midloop",
 							"ovotovata",
 							"balance",
-							"turnaround"
+							"turnaround",
+							"turnrun"
 						].indexOf(pid) >= 0;
 					break;
 				default:

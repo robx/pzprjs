@@ -168,6 +168,7 @@ ui.keypopup = {
 		pencils: [10, 0],
 		minarism: [10, 10],
 		trainstations: [124, 0],
+		turnrun: [124, 0],
 		wafusuma: [10, 0],
 		kuroclone: [10, 0],
 		martini: [10, 0],

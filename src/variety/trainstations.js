@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["trainstations"], {
+})(["trainstations", "turnrun"], {
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "undef", "empty", "clear", "info-line"],
@@ -72,6 +72,29 @@
 		},
 		noLP: function(dir) {
 			return this.isEmpty();
+		}
+	},
+	"Cell@turnrun": {
+		maxnum: function() {
+			var bd = this.board;
+			return Math.max(bd.cols, bd.rows) - 1;
+		},
+		getSegmentDir: function(dir) {
+			var llist = new this.klass.PieceList();
+			var pos = this.getaddr().movedir(dir, 1);
+			while (1) {
+				var border = pos.getb();
+				if (!border || border.isnull) {
+					break;
+				}
+				if (border.isLine()) {
+					llist.add(border);
+				} else {
+					break;
+				}
+				pos.movedir(dir, 2);
+			}
+			return llist;
 		}
 	},
 	Board: {
@@ -208,14 +231,17 @@
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodeEmpty();
+			this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			this.encodeNumber16();
 			this.encodeEmpty();
 		}
 	},
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "loop_full");
 			this.decodeCell(function(cell, ca) {
 				if (ca === "#") {
 					cell.ques = 7;
@@ -228,6 +254,7 @@
 			this.decodeBorderArrowAns();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "loop_full");
 			this.encodeCell(function(cell) {
 				if (cell.ques === 7) {
 					return "# ";
@@ -245,17 +272,21 @@
 
 	AnsCheck: {
 		checklist: [
-			"checkNumberRange",
+			"checkNumberRange@trainstations",
 			"checkBranchLine",
 			"checkCrossOutOfMark",
-			"checkCurveOnNumber",
-			"checkNumberConsecutive",
+			"checkCurveOnNumber@trainstations",
+			"checkStraightOnNumber@turnrun",
+			"checkNumberConsecutive@trainstations",
 
 			"checkNotCrossOnMark",
+			"checkNoLineNumber@turnrun",
 			"checkDeadendLine+",
 			"checkOneLoop",
-			"checkNumberFullSequence",
-			"checkNoLine"
+			"checkNumberFullSequence@trainstations",
+			"checkTurnLengths@turnrun",
+			"checkNoLine@trainstations",
+			"checkNoLineIfVariant@turnrun"
 		],
 
 		checkNumberRange: function() {
@@ -280,6 +311,21 @@
 				return cell.isLineCurve() && cell.qnum !== -1 && cell.qnum !== 0;
 			}, "lnCurveOnNum");
 		},
+		checkStraightOnNumber: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isLineStraight() && cell.qnum !== -1 && cell.qnum !== 0;
+			}, "lnStraightOnNum");
+		},
+
+		checkTurnLengths: function() {
+			this.checkWalkGeneric(this.turnrun_walkLine, "ceDirection");
+		},
+
+		checkNoLineNumber: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isNum() && cell.lcnt === 0;
+			}, "numNoLine");
+		},
 
 		checkNumberConsecutive: function() {
 			var max = this.board.getMaxFoundNumber();
@@ -302,6 +348,10 @@
 		},
 
 		checkNumberFullSequence: function() {
+			this.checkWalkGeneric(this.trainstations_walkLine, "nmNotConseqFull");
+		},
+
+		checkWalkGeneric: function(func, code) {
 			var bd = this.board,
 				paths = bd.linegraph.components,
 				path = paths[0];
@@ -327,7 +377,7 @@
 			var walks = [];
 			for (var dir = 1; dir <= 4; dir++) {
 				if (start.reldirbd(dir, 1).isLine()) {
-					walks.push(this.walkLine(start, dir));
+					walks.push(func.call(this, start, dir));
 				}
 			}
 
@@ -339,7 +389,7 @@
 				return;
 			}
 
-			this.failcode.add("nmNotConseqFull");
+			this.failcode.add(code);
 			if (this.checkOnly) {
 				return;
 			}
@@ -353,7 +403,7 @@
 			walk.blist.seterr(1);
 		},
 
-		walkLine: function(start, dir) {
+		trainstations_walkLine: function(start, dir) {
 			var clist = new this.klass.CellList();
 			var blist = new this.klass.BorderList();
 			var current = new this.klass.BorderList();
@@ -380,6 +430,49 @@
 				addr.movedir(dir, 1);
 				current.add(addr.getb());
 				addr.movedir(dir, 1);
+
+				var next = addr.getc();
+				var adb = next.adjborder;
+
+				if (next.lcnt === 4) {
+					/* Go straight at a crossing */
+				} else if (dir !== 1 && adb.bottom.isLine()) {
+					dir = 2;
+				} else if (dir !== 2 && adb.top.isLine()) {
+					dir = 1;
+				} else if (dir !== 3 && adb.right.isLine()) {
+					dir = 4;
+				} else if (dir !== 4 && adb.left.isLine()) {
+					dir = 3;
+				}
+			} while (
+				!addr.equals(start) &&
+				addr.getc().lcnt > 1 &&
+				!addr.getc().isEmpty()
+			);
+
+			return { clist: clist, blist: blist };
+		},
+
+		turnrun_walkLine: function(start, dir) {
+			var clist = new this.klass.CellList();
+			var blist = new this.klass.BorderList();
+			var addr = start.getaddr();
+
+			do {
+				var cell = addr.getc();
+
+				var segments =
+					cell.isLineCurve() && cell.isValidNum()
+						? cell.getSegmentDir(dir)
+						: null;
+
+				if (segments && segments.length !== cell.qnum) {
+					clist.add(cell);
+					blist.extend(segments);
+				}
+
+				addr.movedir(dir, 2);
 
 				var next = addr.getc();
 				var adb = next.adjborder;

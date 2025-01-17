@@ -146,6 +146,7 @@
 				case "ovotovata":
 				case "balance":
 				case "turnaround":
+				case "turnrun":
 					idname = "loop_full";
 					break;
 			}
