@@ -130,7 +130,14 @@
 
 	LineGraph: {
 		enabled: true,
-		isLineCross: true
+		isLineCross: true,
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			component.bounds = null;
+		}
+	},
+	"LineGraph@orbital": {
+		makeClist: true
 	},
 
 	"AreaRoomGraph@nagenawa": {
@@ -353,10 +360,10 @@
 			"checkDeadendLine+",
 			"checkLessLineCount@nagenawa",
 			"checkAllLoopRect",
+			"checkMultipleOrbit@orbital",
+			"checkOrbitNumber@orbital",
+			"checkOrbitExists@orbital",
 			"checkAllCirclePassed@orbital",
-			// TODO orbit line exists
-			// TODO multiple orbit lines
-			// TODO orbit count is not correct
 			"checkUnreachedUnshadeCell+@ringring"
 		],
 
@@ -389,8 +396,8 @@
 				bd = this.board;
 			var paths = bd.linegraph.components;
 			for (var r = 0; r < paths.length; r++) {
-				var borders = paths[r].getedgeobjs();
-				if (this.isLoopRect(borders)) {
+				var component = paths[r];
+				if (this.getComponentBounds(component)) {
 					continue;
 				}
 
@@ -398,14 +405,23 @@
 				if (this.checkOnly) {
 					break;
 				}
-				paths[r].setedgeerr(1);
+				component.setedgeerr(1);
 			}
 			if (!result) {
 				this.failcode.add("lnNotRect");
 				bd.border.setnoerr();
 			}
 		},
-		isLoopRect: function(borders) {
+		getComponentBounds: function(component) {
+			var bounds = component.bounds;
+			if (bounds === null) {
+				var borders = component.getedgeobjs();
+				component.bounds = this.calculateComponentBounds(borders);
+				return component.bounds;
+			}
+			return bounds;
+		},
+		calculateComponentBounds: function(borders) {
 			var bd = this.board;
 			var x1 = bd.maxbx,
 				x2 = bd.minbx,
@@ -425,6 +441,9 @@
 					y2 = borders[i].by;
 				}
 			}
+
+			// TODO add an expected count
+
 			for (var i = 0; i < borders.length; i++) {
 				var border = borders[i];
 				if (
@@ -436,8 +455,106 @@
 					return false;
 				}
 			}
-			return true;
+			return { x1: x1, x2: x2, y1: y1, y2: y2 };
+		}
+	},
+	"AnsCheck@orbital": {
+		checkOrbitExists: function() {
+			var orbits = this.getOrbitData();
+
+			this.checkAllCell(function(cell) {
+				return cell.isNum() && !orbits[cell.id];
+			}, "nmNoOrbit");
 		},
+		checkMultipleOrbit: function() {
+			var orbits = this.getOrbitData();
+			var result = true;
+
+			for (var id in orbits) {
+				var count = orbits[id].length;
+				if (count === 1) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.cell[+id].seterr(1);
+				for (var x = 0; x < count; x++) {
+					orbits[id][x].setedgeerr(1);
+				}
+			}
+			if (!result) {
+				this.failcode.add("nmPlOrbit");
+				this.board.border.setnoerr();
+			}
+		},
+		checkOrbitNumber: function() {
+			var orbits = this.getOrbitData();
+			var result = true;
+
+			for (var id in orbits) {
+				if (orbits[id].length !== 1) {
+					continue;
+				}
+				var cell = this.board.cell[+id];
+				if (!cell.isValidNum()) {
+					continue;
+				}
+
+				var circles = orbits[id][0].clist.filter(function(o) {
+					return o.ice();
+				});
+				if (circles.length === cell.getNum()) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.cell[+id].seterr(1);
+				orbits[id][0].setedgeerr(1);
+			}
+			if (!result) {
+				this.failcode.add("nmOrbitNe");
+				this.board.border.setnoerr();
+			}
+		},
+
+		getOrbitData: function() {
+			if (this._info.orbits) {
+				return this._info.orbits;
+			}
+
+			var ret = {};
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var component = paths[r];
+				var bounds = this.getComponentBounds(component);
+				if (!bounds) {
+					continue;
+				}
+
+				var cells = bd.cellinside(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
+				cells.each(function(cell) {
+					if (!cell.isNum()) {
+						return;
+					}
+
+					var id = cell.id + "";
+					if (!(id in ret)) {
+						ret[id] = [];
+					}
+					ret[id].push(component);
+				});
+			}
+
+			return (this._info.orbits = ret);
+		},
+
 		checkAllCirclePassed: function() {
 			this.checkAllCell(function(cell) {
 				return cell.lcnt === 0 && cell.ice();
