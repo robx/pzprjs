@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nagenawa", "ringring"], {
+})(["nagenawa", "ringring", "orbital"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@nagenawa": {
@@ -18,6 +18,13 @@
 	},
 	"MouseEvent@ringring": {
 		inputModes: { edit: ["info-line"], play: ["line", "peke", "info-line"] }
+	},
+	"MouseEvent@orbital": {
+		inputModes: {
+			edit: ["number", "ice", "info-line"],
+			play: ["line", "peke", "info-line"]
+		}
+		// TODO cycle white and black circles
 	},
 	MouseEvent: {
 		mouseinput_auto: function() {
@@ -45,6 +52,8 @@
 					if (this.mousestart) {
 						this.inputblock();
 					}
+				} else if (this.pid === "orbital") {
+					this.inputqnum();
 				}
 			}
 		},
@@ -61,8 +70,23 @@
 
 	//---------------------------------------------------------
 	// キーボード入力系
-	"KeyEvent@nagenawa": {
+	"KeyEvent@nagenawa,orbital": {
 		enablemake: true
+	},
+	"KeyEvent@orbital#1": {
+		keyinput: function(ca) {
+			if (ca === "q") {
+				var cell = this.cursor.getc();
+				cell.setQues(cell.ques !== 6 ? 6 : 0);
+				this.prev = cell;
+				cell.draw();
+				return;
+			} else if (ca === "w") {
+				ca = "s1";
+			}
+
+			this.key_inputqnum(ca);
+		}
 	},
 
 	//---------------------------------------------------------
@@ -73,7 +97,28 @@
 		},
 		minnum: 0
 	},
-	"Border@ringring": {
+	"Cell@orbital": {
+		maxnum: function() {
+			return (this.board.rows + this.board.cols - 2) << 1;
+		},
+		noLP: function(dir) {
+			return this.isNum();
+		},
+		posthook: {
+			qnum: function(val) {
+				if (val !== -1 && this.ques === 6) {
+					this.setQues(0);
+				}
+			},
+			ques: function(val) {
+				this.board.roommgr.isStale = true;
+				if (val === 6) {
+					this.setQnum(-1);
+				}
+			}
+		}
+	},
+	"Border@ringring,orbital": {
 		enableLineNG: true
 	},
 	Board: {
@@ -117,6 +162,8 @@
 				this.drawBorders();
 			} else if (pid === "ringring") {
 				this.drawQuesCells();
+			} else if (this.pid === "orbital") {
+				this.drawCircledNumbers();
 			}
 
 			this.drawLines();
@@ -129,6 +176,25 @@
 	},
 	"Graphic@ringring": {
 		drawTarget: function() {}
+	},
+	"Graphic@orbital": {
+		hideHatena: true,
+		fontShadecolor: "white",
+		numbercolor_func: "fixed_shaded",
+		getCircleStrokeColor: function(cell) {
+			if (!cell.ice()) {
+				return null;
+			}
+			var error = cell.error || cell.qinfo;
+			return error === 1 || error === 4 ? this.errcolor1 : this.quescolor;
+		},
+		getCircleFillColor: function(cell) {
+			if (!cell.isNum()) {
+				return null;
+			}
+			var error = cell.error || cell.qinfo;
+			return error === 1 || error === 4 ? this.errcolor1 : this.quescolor;
+		}
 	},
 
 	//---------------------------------------------------------
@@ -197,9 +263,17 @@
 					count = 0;
 				}
 			}
-			//if(count>0){ cm += count.toString(36);}
-
 			this.outbstr += cm;
+		}
+	},
+	"Encode@orbital": {
+		decodePzpr: function() {
+			this.decodeIce();
+			this.decodeNumber16();
+		},
+		encodePzpr: function() {
+			this.encodeIce();
+			this.encodeNumber16();
 		}
 	},
 	//---------------------------------------------------------
@@ -240,6 +314,34 @@
 			});
 		}
 	},
+	"FileIO@orbital": {
+		decodeData: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 6;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 6) {
+					return "# ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else {
+					return ". ";
+				}
+			});
+			this.encodeBorderLine();
+		}
+	},
 	//---------------------------------------------------------
 	// 正解判定処理実行部
 	AnsCheck: {
@@ -251,6 +353,10 @@
 			"checkDeadendLine+",
 			"checkLessLineCount@nagenawa",
 			"checkAllLoopRect",
+			"checkAllCirclePassed@orbital",
+			// TODO orbit line exists
+			// TODO multiple orbit lines
+			// TODO orbit count is not correct
 			"checkUnreachedUnshadeCell+@ringring"
 		],
 
@@ -331,6 +437,14 @@
 				}
 			}
 			return true;
+		},
+		checkAllCirclePassed: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.ice();
+			}, "lnIsolate");
 		}
+	},
+	"FailCode@orbital": {
+		lnIsolate: "lnIsolate.dotchi"
 	}
 });
