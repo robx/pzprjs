@@ -442,7 +442,15 @@
 				}
 			}
 
-			// TODO add an expected count
+			/* All coordinates must be even numbers, otherwise this can't be a cell rectangle */
+			if ((x1 & x2 & y1 & y2 & 1) === 0) {
+				return false;
+			}
+
+			var expected = x2 - x1 + (y2 - y1);
+			if (borders.length !== expected) {
+				return false;
+			}
 
 			for (var i = 0; i < borders.length; i++) {
 				var border = borders[i];
