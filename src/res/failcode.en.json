@@ -622,6 +622,7 @@
     "lpNoNum.onsen": "A loop has no numbers.",
     "lpNoNum.pipelink": "A loop has no numbers.",
     "lpNumGt2.onsen": "A loop has more than one number.",
+    "lpNumGt2.orbital": "A loop encloses more than one black circle.",
     "lpPlNum.pipelink": "A loop has multiple kinds of number.",
     "lpSepNum.pipelink": "A kind of number is in different loops.",
     "lrAcrossArrow.nagare": "The line doesn't go straight in the arrow's direction.",

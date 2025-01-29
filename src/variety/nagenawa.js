@@ -354,13 +354,14 @@
 	AnsCheck: {
 		checklist: [
 			"checkLineExist",
-			"checkLineOnShadeCell@ringring",
+			"checkLineOnShadeCell@ringring,orbital",
 			"checkOverLineCount@nagenawa",
 			"checkBranchLine",
 			"checkDeadendLine+",
 			"checkLessLineCount@nagenawa",
 			"checkAllLoopRect",
 			"checkMultipleOrbit@orbital",
+			"checkMultiplePlanets@orbital",
 			"checkOrbitNumber@orbital",
 			"checkOrbitExists@orbital",
 			"checkAllCirclePassed@orbital",
@@ -473,6 +474,50 @@
 			this.checkAllCell(function(cell) {
 				return cell.isNum() && !orbits[cell.id];
 			}, "nmNoOrbit");
+		},
+		checkLineOnShadeCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isNum() && cell.lcnt > 0;
+			}, "lnOnShade");
+		},
+		checkMultiplePlanets: function() {
+			var bd = this.board,
+				paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				paths[r]._id = r;
+			}
+
+			var orbits = this.getOrbitData();
+			var reverse = {};
+			var result = true;
+
+			for (var id in orbits) {
+				var count = orbits[id].length;
+				if (count !== 1) {
+					continue;
+				}
+
+				var cell = bd.cell[+id];
+
+				var loop = orbits[id][0];
+				var loopid = loop._id + "";
+				if (loopid in reverse) {
+					result = false;
+					if (this.checkOnly) {
+						break;
+					}
+					loop.setedgeerr(1);
+					cell.seterr(1);
+					reverse[loopid].seterr(1);
+				} else {
+					reverse[loopid] = cell;
+				}
+			}
+
+			if (!result) {
+				this.failcode.add("lpNumGt2");
+				this.board.border.setnoerr();
+			}
 		},
 		checkMultipleOrbit: function() {
 			var orbits = this.getOrbitData();
