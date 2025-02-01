@@ -21,8 +21,15 @@
 	},
 	"MouseEvent@orbital": {
 		inputModes: {
-			edit: ["number", "ice", "info-line"],
+			edit: ["number", "circle-unshade", "info-line"],
 			play: ["line", "peke", "info-line"]
+		},
+		mouseinput: function() {
+			if (this.inputMode === "circle-unshade") {
+				this.inputIcebarn();
+			} else {
+				this.common.mouseinput.call(this);
+			}
 		}
 		// TODO cycle white and black circles
 	},
