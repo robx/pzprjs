@@ -383,7 +383,7 @@
 					exec = pid === "yajilin" || pid === "koburin" || pid === "lixloop";
 					break;
 				case "disptype_interbd":
-					exec = pid === "interbd";
+					exec = pid === "interbd" || pid === "outofsight";
 					break;
 				case "bgcolor":
 					exec = pid === "slither" || pid === "myopia" || pid === "swslither";

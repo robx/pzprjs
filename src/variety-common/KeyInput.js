@@ -265,8 +265,10 @@ pzpr.classmgr.makeCommon({
 
 			if (dir !== cell.NDIR) {
 				cell.setQdir(cell.qdir !== dir ? dir : cell.NDIR);
-				if (!arrownum) {
+				if (arrownum === false) {
 					cell.setNum(-1);
+				} else if (cell.getNum() === -1) {
+					cell.setNum(-2);
 				}
 				this.cursor.draw();
 				return true;
