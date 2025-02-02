@@ -144,7 +144,6 @@
 				}
 			},
 			ques: function(val) {
-				this.board.roommgr.isStale = true;
 				if (val === 6) {
 					this.setQnum(-1);
 				}

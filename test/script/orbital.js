@@ -48,5 +48,31 @@ ui.debug.addDebugData("orbital", {
 			"pzprv3/orbital/6/6/. # . . . . /# . . . # # /. . 4 . . . /. # . . . . /. . . . - . /# # # . . . /1 1 1 1 0 /0 0 0 1 1 /0 0 0 0 0 /1 1 1 1 0 /1 1 0 0 0 /1 1 0 1 1 /1 0 0 0 1 0 /1 0 0 1 1 1 /1 0 0 1 1 1 /0 0 0 1 0 1 /1 0 1 1 0 1 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,2,2",
+				"editmode",
+				"mouse,leftx2,3,1",
+				"mouse,leftx3,1,3",
+				"mouse,leftx4,3,3"
+			],
+			result: "pzprv3/orbital/2/2/. # /- 0 /0 /0 /0 0 /"
+		},
+		{
+			input: [
+				"cursor,1,3",
+				"key,q",
+				"cursor,3,3",
+				"key,3",
+				"editmode,circle-unshade",
+				"mouse,left,1,1"
+			],
+			result: "pzprv3/orbital/2/2/# # /# 3 /0 /0 /0 0 /"
+		},
+		{
+			input: ["playmode", "mouse,left,1,3,1,1,3,1,3,3"],
+			result: "pzprv3/orbital/2/2/# # /# 3 /1 /0 /1 0 /"
+		}
+	]
 });
