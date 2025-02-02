@@ -757,6 +757,9 @@
 			if (this.pid === "country") {
 				this.puzzle.setConfig("country_empty", this.checkpflag("e"));
 			}
+			if (this.pid === "ovotovata") {
+				this.puzzle.setConfig("loop_full", this.checkpflag("f"));
+			}
 			if (this.pid !== "simpleloop") {
 				this.decodeBorder();
 			}
@@ -790,6 +793,9 @@
 		encodePzpr: function(type) {
 			if (this.pid === "country") {
 				this.outpflag = this.puzzle.getConfig("country_empty") ? "e" : null;
+			}
+			if (this.pid === "ovotovata") {
+				this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			}
 			if (this.pid !== "simpleloop") {
 				this.encodeBorder();
@@ -858,6 +864,9 @@
 			if (this.pid === "country" && this.filever >= 1) {
 				this.decodeFlags();
 			}
+			if (this.pid === "ovotovata") {
+				this.decodeConfigFlag("f", "loop_full");
+			}
 			if (this.pid !== "simpleloop") {
 				if (this.filever >= 2) {
 					this.decodeBorderQues();
@@ -886,6 +895,9 @@
 		encodeData: function() {
 			if (this.pid === "country") {
 				this.encodeFlags(["country_empty"]);
+			}
+			if (this.pid === "ovotovata") {
+				this.encodeConfigFlag("f", "loop_full");
 			}
 			if (this.pid !== "simpleloop") {
 				this.filever = 2;
@@ -1111,6 +1123,7 @@
 			"checkHatenaExit",
 
 			"checkDeadendLine+",
+			"checkNoLineIfVariant",
 			"checkOneLoop"
 		]
 	},

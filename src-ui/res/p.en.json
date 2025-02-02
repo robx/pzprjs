@@ -202,6 +202,8 @@
     "akichi_maximum": "Maximum numbers may be reduced",
     "magnets_anti": "Anti-Magnets (adjacent poles of different magnets must be equal)",
     "heyapin_overlap": "Pins must overlap 2 or more regions",
+    "slither_full": "All points must be visited",
+    "loop_full": "All cells must be visited",
     "variant": "This puzzle uses variant rules",
     "time": "Time:",
     "timer.menu": "Show timer",

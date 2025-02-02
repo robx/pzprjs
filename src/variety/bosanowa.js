@@ -309,27 +309,6 @@
 			return this.getBoardRows() + 2 * this.margin + (disptype === 2 ? 2 : 0);
 		},
 
-		drawErrorCells_bosanowa: function() {
-			var g = this.vinc("cell_back", "crispEdges", true);
-
-			g.fillStyle = this.errbcolor1;
-			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i];
-				g.vid = "c_fullerr_" + cell.id;
-				if (cell.error === 1) {
-					g.fillRectCenter(
-						cell.bx * this.bw,
-						cell.by * this.bh,
-						this.bw,
-						this.bh
-					);
-				} else {
-					g.vhide();
-				}
-			}
-		},
-
 		getCircleStrokeColor: function(cell) {
 			if (cell.isValid() && !cell.isNum()) {
 				return cell.error === 1 ? this.errcolor1 : this.quescolor;

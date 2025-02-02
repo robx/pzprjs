@@ -397,7 +397,15 @@ pzpr.classmgr.makeCommon({
 			this.checkLineCount(1, "lnDeadEnd");
 		},
 		checkNoLine: function() {
-			this.checkLineCount(0, "ceNoLine");
+			this.checkLineCount(0, this.board.borderAsLine ? "cxNoLine" : "ceNoLine");
+		},
+		checkNoLineIfVariant: function() {
+			if (
+				this.puzzle.getConfig("slither_full") ||
+				this.puzzle.getConfig("loop_full")
+			) {
+				this.checkNoLine();
+			}
 		},
 		checkLineCount: function(val, code) {
 			var result = true,
@@ -422,7 +430,10 @@ pzpr.classmgr.makeCommon({
 					if (this.checkOnly) {
 						break;
 					}
-					cross.seterr(1);
+
+					if (val === 0) {
+						cross.seterr(1);
+					}
 					bd.borderinside(
 						cross.bx - 1,
 						cross.by - 1,

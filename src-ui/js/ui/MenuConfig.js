@@ -132,6 +132,23 @@
 				case "bdwalk":
 					idname = "bdwalk_height";
 					break;
+				case "slither":
+				case "tslither":
+				case "swslither":
+				case "myopia":
+				case "lineofsight":
+					idname = "slither_full";
+					break;
+				case "mashu":
+				case "geradeweg":
+				case "disloop":
+				case "midloop":
+				case "ovotovata":
+				case "balance":
+				case "turnaround":
+				case "turnrun":
+					idname = "loop_full";
+					break;
 			}
 
 			if (typeof idname === "string") {

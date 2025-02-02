@@ -41,6 +41,7 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
+		irowake: true,
 		hideHatena: true,
 
 		gridcolor_type: "LIGHT",

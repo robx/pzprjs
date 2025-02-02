@@ -137,6 +137,14 @@
 				variant: true,
 				volatile: true
 			}); /* heyapin: Pins must overlap at least 2 regions */
+			this.add("slither_full", false, {
+				variant: true,
+				volatile: true
+			}); /* All vertices must be visited */
+			this.add("loop_full", false, {
+				variant: true,
+				volatile: true
+			}); /* All cells must be visited */
 			/* generic variant */
 			this.add("variant", false, { variant: true, volatile: true });
 			this.add("variantid", "", { volatile: true });
@@ -466,6 +474,29 @@
 					break;
 				case "heyapin_overlap":
 					exec = pid === "heyapin";
+					break;
+				case "slither_full":
+					exec =
+						[
+							"slither",
+							"tslither",
+							"swslither",
+							"myopia",
+							"lineofsight"
+						].indexOf(pid) >= 0;
+					break;
+				case "loop_full":
+					exec =
+						[
+							"mashu",
+							"geradeweg",
+							"disloop",
+							"midloop",
+							"ovotovata",
+							"balance",
+							"turnaround",
+							"turnrun"
+						].indexOf(pid) >= 0;
 					break;
 				default:
 					exec = !!this.list[name];
