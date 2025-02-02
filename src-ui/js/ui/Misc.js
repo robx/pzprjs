@@ -174,6 +174,7 @@ function toBGimage(pid) {
 		"nurimisaki",
 		"nuriuzu",
 		"oneroom",
+		"orbital",
 		"ovotovata",
 		"oyakodori",
 		"patchwork",
