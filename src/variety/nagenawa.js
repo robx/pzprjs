@@ -30,8 +30,23 @@
 			} else {
 				this.common.mouseinput.call(this);
 			}
+		},
+		getNewNumber: function(cell, val) {
+			if (this.btn === "left" && val === -1) {
+				return -3;
+			} else if (this.btn === "left" && val === -2) {
+				return 0;
+			} else if (this.btn === "left" && val === cell.getmaxnum()) {
+				return -1;
+			} else if (this.btn === "right" && val === 0) {
+				return -2;
+			} else if (this.btn === "right" && val === -1) {
+				return cell.getmaxnum();
+			}
+
+			val += this.btn === "left" ? 1 : -1;
+			return val < -3 ? -1 : val;
 		}
-		// TODO cycle white and black circles
 	},
 	MouseEvent: {
 		mouseinput_auto: function() {
@@ -110,6 +125,17 @@
 		},
 		noLP: function(dir) {
 			return this.isNum();
+		},
+		getNum: function() {
+			return this.ice() ? -3 : this.qnum;
+		},
+		setNum: function(val) {
+			if (val === -3) {
+				this.setQues(6);
+			} else {
+				this.setQues(0);
+				this.setQnum(val);
+			}
 		},
 		posthook: {
 			qnum: function(val) {
