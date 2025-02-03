@@ -425,6 +425,7 @@
 			teri: [0, 0, "テリトリー", "Territory", "kurodoko"],
 			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
+			tilecity: [0, 0, "タイルシティー", "Tile City"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			timebomb: [0, 0, "時限爆弾", "Time Bomb", "bonsan"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
