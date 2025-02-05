@@ -218,6 +218,7 @@ ui.keypopup = {
 		nibunnogo: [4, 0],
 		mintonette: [10, 0],
 		balloon: [10, 0],
+		tilecity: [10, 0],
 		orbital: [124, 0]
 	},
 
