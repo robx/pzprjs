@@ -16,7 +16,47 @@
 			play: ["line", "peke", "info-line"]
 		},
 		autoedit_func: "qnum",
-		autoplay_func: "line"
+		autoplay_func: "line",
+
+		dispInfoLine: function() {
+			var bd = this.board,
+				cell = this.getcell();
+			if (cell.isnull) {
+				return;
+			}
+
+			var number = cell.getNum();
+			if (number < 0 && cell.path) {
+				var numcell = cell.path.clist.filter(function(s) {
+					return s.isValidNum();
+				})[0];
+				if (numcell) {
+					number = numcell.getNum();
+				} else {
+					bd.border.setinfo(-1);
+					cell.path.setedgeinfo(1);
+					bd.hasinfo = true;
+					this.puzzle.redraw();
+					return;
+				}
+			}
+			if (number > 0) {
+				bd.border.setinfo(-1);
+
+				bd.cell.filter(function(c) {
+					if (c.getNum() !== number) {
+						return;
+					}
+					c.setinfo(1);
+
+					if (c.path) {
+						c.path.setedgeinfo(1);
+					}
+				});
+				bd.hasinfo = true;
+				this.puzzle.redraw();
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -80,7 +120,10 @@
 				var cell = clist[i];
 				g.vid = "c_sq_" + cell.id;
 				if (cell.qnum !== -1) {
-					g.fillStyle = cell.error === 1 ? this.errbcolor1 : this.bgcolor;
+					g.fillStyle =
+						cell.error === 1 || cell.qinfo === 1
+							? this.errbcolor1
+							: this.bgcolor;
 					g.fillRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
 				} else {
 					g.vhide();
