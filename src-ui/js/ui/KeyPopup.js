@@ -218,7 +218,8 @@ ui.keypopup = {
 		nibunnogo: [4, 0],
 		mintonette: [10, 0],
 		balloon: [10, 0],
-		tilecity: [10, 0]
+		tilecity: [10, 0],
+		orbital: [124, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -880,6 +881,7 @@ ui.keypopup = {
 	},
 
 	generate_trainstations: function(mode) {
+		var orbital = ui.puzzle.pid === "orbital";
 		this.generate_main(
 			[
 				"0",
@@ -893,8 +895,8 @@ ui.keypopup = {
 				"8",
 				"9",
 				" ",
-				["-", "?"],
-				["q", "╋"]
+				["-", orbital ? "●" : "?"],
+				["q", orbital ? "○" : "╋"]
 			],
 			4
 		);
