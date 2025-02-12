@@ -495,7 +495,10 @@
 							"ovotovata",
 							"balance",
 							"turnaround",
-							"turnrun"
+							"turnrun",
+							"icewalk",
+							"waterwalk",
+							"firewalk"
 						].indexOf(pid) >= 0;
 					break;
 				default:
