@@ -86,6 +86,18 @@
 		minnum: 1,
 		maxnum: 6
 	},
+	"Board@outofsight": {
+		rebuildInfo: function() {
+			var isMono = this.puzzle.playeronly;
+			this.cell.each(function(cell) {
+				if (cell.qnum === -2 || cell.qnum > 2) {
+					isMono = false;
+				}
+			});
+			this.isMono = isMono;
+			this.common.rebuildInfo.call(this);
+		}
+	},
 
 	BoardExec: {
 		adjustBoardData: function(key, d) {
@@ -128,7 +140,7 @@
 	"Graphic@outofsight": {
 		colors: ["gray", "red", "blue", "green", "#c000c0", "#ff8000", "#00c0c0"],
 		circlestrokecolor_func: "null",
-		circleratio: [0.2, 0.2],
+		circleratio: [0.2, 0.16],
 
 		getQuesNumberColor: function(cell) {
 			if (cell.getNum() === -1) {
@@ -145,17 +157,31 @@
 			}
 			return this.colors[0];
 		},
+		getCellArrowOutline: function(cell) {
+			if (this.board.isMono) {
+				return cell.qnum === 2 ? this.getQuesNumberColor_mixed(cell) : null;
+			}
+			return null;
+		},
 		getCellArrowColor: function(cell) {
-			if (this.puzzle.getConfig("disptype_interbd") === 1) {
+			if (this.board.isMono) {
+				return cell.qnum === 1 ? this.getQuesNumberColor_mixed(cell) : null;
+			} else if (this.puzzle.getConfig("disptype_interbd") === 1) {
 				return this.getQuesNumberColor(cell);
 			}
 			return null;
+		},
+		getCircleStrokeColor: function(cell) {
+			return cell.qdir === 0 ? this.getCellArrowOutline(cell) : null;
 		},
 		getCircleFillColor: function(cell) {
 			return cell.qdir === 0 ? this.getCellArrowColor(cell) : null;
 		},
 		getNumberText: function(cell, num) {
-			if (this.puzzle.getConfig("disptype_interbd") !== 1) {
+			if (
+				this.puzzle.getConfig("disptype_interbd") !== 1 &&
+				!this.board.isMono
+			) {
 				return this.getNumberTextCore_letter(num);
 			}
 			return "";

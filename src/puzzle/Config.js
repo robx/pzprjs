@@ -383,7 +383,8 @@
 					exec = pid === "yajilin" || pid === "koburin" || pid === "lixloop";
 					break;
 				case "disptype_interbd":
-					exec = pid === "interbd" || pid === "outofsight";
+					exec =
+						pid === "interbd" || (pid === "outofsight" && !puzzle.board.isMono);
 					break;
 				case "bgcolor":
 					exec = pid === "slither" || pid === "myopia" || pid === "swslither";
