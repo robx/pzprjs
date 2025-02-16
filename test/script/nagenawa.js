@@ -35,5 +35,9 @@ ui.debug.addDebugData("nagenawa", {
 	inputs: [
 		/* 回答入力はicebarn, countryと同じなので省略 */
 		/* 問題入力はcountryと同じなので省略 */
+		{
+			input: ["newboard,2,2", "editmode", "mouse,rightx2,3,3"],
+			result: "pzprv3/nagenawa/2/2/1/0 0 /0 0 /4 . /. . /0 /0 /0 0 /0 0 /0 0 /"
+		}
 	]
 });

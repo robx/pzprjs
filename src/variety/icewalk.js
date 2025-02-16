@@ -587,14 +587,17 @@
 		decodePzpr: function() {
 			this.decodeIce();
 			this.decodeNumber16();
+			this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 		},
 		encodePzpr: function() {
+			this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			this.encodeIce();
 			this.encodeNumber16();
 		}
 	},
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("f", "loop_full");
 			this.decodeCell(function(cell, ca) {
 				if (ca === "A") {
 					cell.ques = 6;
@@ -621,6 +624,7 @@
 			}
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("f", "loop_full");
 			this.encodeCell(function(cell) {
 				if (cell.qans > 0) {
 					return String.fromCharCode(64 + cell.qans) + " ";
@@ -661,6 +665,8 @@
 			"checkOneLoop",
 			"checkDoubleTurnOutside@firewalk",
 			"checkNoLineOnNum",
+			"checkNoLineIfVariant",
+
 			"checkDeadendLine+"
 		],
 

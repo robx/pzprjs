@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nagenawa", "ringring"], {
+})(["nagenawa", "ringring", "orbital"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@nagenawa": {
@@ -18,6 +18,35 @@
 	},
 	"MouseEvent@ringring": {
 		inputModes: { edit: ["info-line"], play: ["line", "peke", "info-line"] }
+	},
+	"MouseEvent@orbital": {
+		inputModes: {
+			edit: ["number", "circle-unshade", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		mouseinput: function() {
+			if (this.inputMode === "circle-unshade") {
+				this.inputIcebarn();
+			} else {
+				this.common.mouseinput.call(this);
+			}
+		},
+		getNewNumber: function(cell, val) {
+			if (this.btn === "left" && val === -1) {
+				return -3;
+			} else if (this.btn === "left" && val === -2) {
+				return 0;
+			} else if (this.btn === "left" && val === cell.getmaxnum()) {
+				return -1;
+			} else if (this.btn === "right" && val === 0) {
+				return -2;
+			} else if (this.btn === "right" && val === -1) {
+				return cell.getmaxnum();
+			}
+
+			val += this.btn === "left" ? 1 : -1;
+			return val < -3 ? -1 : val;
+		}
 	},
 	MouseEvent: {
 		mouseinput_auto: function() {
@@ -45,6 +74,8 @@
 					if (this.mousestart) {
 						this.inputblock();
 					}
+				} else if (this.pid === "orbital") {
+					this.inputqnum();
 				}
 			}
 		},
@@ -61,8 +92,23 @@
 
 	//---------------------------------------------------------
 	// キーボード入力系
-	"KeyEvent@nagenawa": {
+	"KeyEvent@nagenawa,orbital": {
 		enablemake: true
+	},
+	"KeyEvent@orbital#1": {
+		keyinput: function(ca) {
+			if (ca === "q") {
+				var cell = this.cursor.getc();
+				cell.setQues(cell.ques !== 6 ? 6 : 0);
+				this.prev = cell;
+				cell.draw();
+				return;
+			} else if (ca === "w") {
+				ca = "s1";
+			}
+
+			this.key_inputqnum(ca);
+		}
 	},
 
 	//---------------------------------------------------------
@@ -73,7 +119,38 @@
 		},
 		minnum: 0
 	},
-	"Border@ringring": {
+	"Cell@orbital": {
+		maxnum: function() {
+			return (this.board.rows + this.board.cols - 2) << 1;
+		},
+		noLP: function(dir) {
+			return this.isNum();
+		},
+		getNum: function() {
+			return this.ice() ? -3 : this.qnum;
+		},
+		setNum: function(val) {
+			if (val === -3) {
+				this.setQues(6);
+			} else {
+				this.setQues(0);
+				this.setQnum(val);
+			}
+		},
+		posthook: {
+			qnum: function(val) {
+				if (val !== -1 && this.ques === 6) {
+					this.setQues(0);
+				}
+			},
+			ques: function(val) {
+				if (val === 6) {
+					this.setQnum(-1);
+				}
+			}
+		}
+	},
+	"Border@ringring,orbital": {
 		enableLineNG: true
 	},
 	Board: {
@@ -85,7 +162,14 @@
 
 	LineGraph: {
 		enabled: true,
-		isLineCross: true
+		isLineCross: true,
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			component.bounds = null;
+		}
+	},
+	"LineGraph@orbital": {
+		makeClist: true
 	},
 
 	"AreaRoomGraph@nagenawa": {
@@ -117,6 +201,8 @@
 				this.drawBorders();
 			} else if (pid === "ringring") {
 				this.drawQuesCells();
+			} else if (this.pid === "orbital") {
+				this.drawCircledNumbers();
 			}
 
 			this.drawLines();
@@ -129,6 +215,25 @@
 	},
 	"Graphic@ringring": {
 		drawTarget: function() {}
+	},
+	"Graphic@orbital": {
+		hideHatena: true,
+		fontShadecolor: "white",
+		numbercolor_func: "fixed_shaded",
+		getCircleStrokeColor: function(cell) {
+			if (!cell.ice()) {
+				return null;
+			}
+			var error = cell.error || cell.qinfo;
+			return error === 1 || error === 4 ? this.errcolor1 : this.quescolor;
+		},
+		getCircleFillColor: function(cell) {
+			if (!cell.isNum()) {
+				return null;
+			}
+			var error = cell.error || cell.qinfo;
+			return error === 1 || error === 4 ? this.errcolor1 : this.quescolor;
+		}
 	},
 
 	//---------------------------------------------------------
@@ -197,9 +302,17 @@
 					count = 0;
 				}
 			}
-			//if(count>0){ cm += count.toString(36);}
-
 			this.outbstr += cm;
+		}
+	},
+	"Encode@orbital": {
+		decodePzpr: function() {
+			this.decodeIce();
+			this.decodeNumber16();
+		},
+		encodePzpr: function() {
+			this.encodeIce();
+			this.encodeNumber16();
 		}
 	},
 	//---------------------------------------------------------
@@ -240,17 +353,50 @@
 			});
 		}
 	},
+	"FileIO@orbital": {
+		decodeData: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 6;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 6) {
+					return "# ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else {
+					return ". ";
+				}
+			});
+			this.encodeBorderLine();
+		}
+	},
 	//---------------------------------------------------------
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
 			"checkLineExist",
-			"checkLineOnShadeCell@ringring",
+			"checkLineOnShadeCell@ringring,orbital",
 			"checkOverLineCount@nagenawa",
 			"checkBranchLine",
 			"checkDeadendLine+",
 			"checkLessLineCount@nagenawa",
 			"checkAllLoopRect",
+			"checkMultipleOrbit@orbital",
+			"checkMultiplePlanets@orbital",
+			"checkOrbitNumber@orbital",
+			"checkOrbitExists@orbital",
+			"checkAllCirclePassed@orbital",
 			"checkUnreachedUnshadeCell+@ringring"
 		],
 
@@ -283,8 +429,8 @@
 				bd = this.board;
 			var paths = bd.linegraph.components;
 			for (var r = 0; r < paths.length; r++) {
-				var borders = paths[r].getedgeobjs();
-				if (this.isLoopRect(borders)) {
+				var component = paths[r];
+				if (this.getComponentBounds(component)) {
 					continue;
 				}
 
@@ -292,14 +438,23 @@
 				if (this.checkOnly) {
 					break;
 				}
-				paths[r].setedgeerr(1);
+				component.setedgeerr(1);
 			}
 			if (!result) {
 				this.failcode.add("lnNotRect");
 				bd.border.setnoerr();
 			}
 		},
-		isLoopRect: function(borders) {
+		getComponentBounds: function(component) {
+			var bounds = component.bounds;
+			if (bounds === null) {
+				var borders = component.getedgeobjs();
+				component.bounds = this.calculateComponentBounds(borders);
+				return component.bounds;
+			}
+			return bounds;
+		},
+		calculateComponentBounds: function(borders) {
 			var bd = this.board;
 			var x1 = bd.maxbx,
 				x2 = bd.minbx,
@@ -319,6 +474,17 @@
 					y2 = borders[i].by;
 				}
 			}
+
+			/* All coordinates must be even numbers, otherwise this can't be a cell rectangle */
+			if ((x1 & x2 & y1 & y2 & 1) === 0) {
+				return false;
+			}
+
+			var expected = x2 - x1 + (y2 - y1);
+			if (borders.length !== expected) {
+				return false;
+			}
+
 			for (var i = 0; i < borders.length; i++) {
 				var border = borders[i];
 				if (
@@ -330,7 +496,157 @@
 					return false;
 				}
 			}
-			return true;
+			return { x1: x1, x2: x2, y1: y1, y2: y2 };
 		}
+	},
+	"AnsCheck@orbital": {
+		checkOrbitExists: function() {
+			var orbits = this.getOrbitData();
+
+			this.checkAllCell(function(cell) {
+				return cell.isNum() && !orbits[cell.id];
+			}, "nmNoOrbit");
+		},
+		checkLineOnShadeCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isNum() && cell.lcnt > 0;
+			}, "lnOnShade");
+		},
+		checkMultiplePlanets: function() {
+			var bd = this.board,
+				paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				paths[r]._id = r;
+			}
+
+			var orbits = this.getOrbitData();
+			var reverse = {};
+			var result = true;
+
+			for (var id in orbits) {
+				var count = orbits[id].length;
+				if (count !== 1) {
+					continue;
+				}
+
+				var cell = bd.cell[+id];
+
+				var loop = orbits[id][0];
+				var loopid = loop._id + "";
+				if (loopid in reverse) {
+					result = false;
+					if (this.checkOnly) {
+						break;
+					}
+					loop.setedgeerr(1);
+					cell.seterr(1);
+					reverse[loopid].seterr(1);
+				} else {
+					reverse[loopid] = cell;
+				}
+			}
+
+			if (!result) {
+				this.failcode.add("lpNumGt2");
+				this.board.border.setnoerr();
+			}
+		},
+		checkMultipleOrbit: function() {
+			var orbits = this.getOrbitData();
+			var result = true;
+
+			for (var id in orbits) {
+				var count = orbits[id].length;
+				if (count === 1) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.cell[+id].seterr(1);
+				for (var x = 0; x < count; x++) {
+					orbits[id][x].setedgeerr(1);
+				}
+			}
+			if (!result) {
+				this.failcode.add("nmPlOrbit");
+				this.board.border.setnoerr();
+			}
+		},
+		checkOrbitNumber: function() {
+			var orbits = this.getOrbitData();
+			var result = true;
+
+			for (var id in orbits) {
+				if (orbits[id].length !== 1) {
+					continue;
+				}
+				var cell = this.board.cell[+id];
+				if (!cell.isValidNum()) {
+					continue;
+				}
+
+				var circles = orbits[id][0].clist.filter(function(o) {
+					return o.ice();
+				});
+				if (circles.length === cell.getNum()) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.cell[+id].seterr(1);
+				orbits[id][0].setedgeerr(1);
+			}
+			if (!result) {
+				this.failcode.add("nmOrbitNe");
+				this.board.border.setnoerr();
+			}
+		},
+
+		getOrbitData: function() {
+			if (this._info.orbits) {
+				return this._info.orbits;
+			}
+
+			var ret = {};
+			var bd = this.board;
+			var paths = bd.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var component = paths[r];
+				var bounds = this.getComponentBounds(component);
+				if (!bounds) {
+					continue;
+				}
+
+				var cells = bd.cellinside(bounds.x1, bounds.y1, bounds.x2, bounds.y2);
+				cells.each(function(cell) {
+					if (!cell.isNum()) {
+						return;
+					}
+
+					var id = cell.id + "";
+					if (!(id in ret)) {
+						ret[id] = [];
+					}
+					ret[id].push(component);
+				});
+			}
+
+			return (this._info.orbits = ret);
+		},
+
+		checkAllCirclePassed: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.ice();
+			}, "lnIsolate");
+		}
+	},
+	"FailCode@orbital": {
+		lnIsolate: "lnIsolate.dotchi"
 	}
 });

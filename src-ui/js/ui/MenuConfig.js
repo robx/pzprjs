@@ -148,6 +148,9 @@
 				case "balance":
 				case "turnaround":
 				case "turnrun":
+				case "icewalk":
+				case "waterwalk":
+				case "firewalk":
 					idname = "loop_full";
 					break;
 			}
