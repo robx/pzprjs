@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["yajikazu"], {
+})(["yajikazu", "outofsight"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -35,6 +35,27 @@
 			}
 		}
 	},
+	"MouseEvent@outofsight": {
+		inputdirec: function() {
+			var pos = this.getpos(0);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+
+			var cell = this.prevPos.getc();
+			if (!cell.isnull) {
+				var dir = this.prevPos.getdir(pos, 2);
+				if (dir !== cell.NDIR) {
+					cell.setQdir(cell.qdir !== dir || cell.qnum === -1 ? dir : 0);
+					if (cell.qdir !== 0 && cell.qnum === -1) {
+						cell.setQnum(-2);
+					}
+					cell.draw();
+				}
+			}
+			this.prevPos = pos;
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -48,7 +69,7 @@
 		},
 
 		keyinput: function(ca) {
-			if (this.key_inputdirec(ca)) {
+			if (this.key_inputdirec_common(ca, null)) {
 				return;
 			}
 			this.key_inputqnum(ca);
@@ -59,6 +80,23 @@
 	// 盤面管理系
 	Cell: {
 		minnum: 0
+	},
+	"Cell@outofsight": {
+		numberAsLetter: true,
+		minnum: 1,
+		maxnum: 6
+	},
+	"Board@outofsight": {
+		rebuildInfo: function() {
+			var isMono = this.puzzle.playeronly;
+			this.cell.each(function(cell) {
+				if (cell.qnum === -2 || cell.qnum > 2) {
+					isMono = false;
+				}
+			});
+			this.isMono = isMono;
+			this.common.rebuildInfo.call(this);
+		}
 	},
 
 	BoardExec: {
@@ -81,14 +119,72 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawDashedGrid();
+			if (this.pid === "outofsight") {
+				this.drawGrid();
+			} else {
+				this.drawDashedGrid();
+			}
 			this.drawShadedCells();
 
+			if (this.pid === "outofsight") {
+				this.drawCellArrows(true);
+				this.drawCircles();
+			}
 			this.drawArrowNumbers();
 
 			this.drawChassis();
 
 			this.drawTarget();
+		}
+	},
+	"Graphic@outofsight": {
+		colors: ["gray", "red", "blue", "green", "#c000c0", "#ff8000", "#00c0c0"],
+		circlestrokecolor_func: "null",
+		circleratio: [0.2, 0.16],
+
+		getQuesNumberColor: function(cell) {
+			if (cell.getNum() === -1) {
+				return null;
+			}
+
+			if (this.puzzle.getConfig("disptype_interbd") === 2) {
+				return this.getQuesNumberColor_mixed(cell);
+			}
+
+			var num = cell.qnum;
+			if (num >= 1 && num <= 6) {
+				return this.colors[num];
+			}
+			return this.colors[0];
+		},
+		getCellArrowOutline: function(cell) {
+			if (this.board.isMono) {
+				return cell.qnum === 2 ? this.getQuesNumberColor_mixed(cell) : null;
+			}
+			return null;
+		},
+		getCellArrowColor: function(cell) {
+			if (this.board.isMono) {
+				return cell.qnum === 1 ? this.getQuesNumberColor_mixed(cell) : null;
+			} else if (this.puzzle.getConfig("disptype_interbd") === 1) {
+				return this.getQuesNumberColor(cell);
+			}
+			return null;
+		},
+		getCircleStrokeColor: function(cell) {
+			return cell.qdir === 0 ? this.getCellArrowOutline(cell) : null;
+		},
+		getCircleFillColor: function(cell) {
+			return cell.qdir === 0 ? this.getCellArrowColor(cell) : null;
+		},
+		getNumberText: function(cell, num) {
+			if (
+				this.puzzle.getConfig("disptype_interbd") !== 1 &&
+				!this.board.isMono
+			) {
+				return this.getNumberTextCore_letter(num);
+			}
+			return "";
 		}
 	},
 
@@ -143,12 +239,7 @@
 					}
 					clist.add(cell2);
 				}
-				if (
-					cell.qnum ===
-					clist.filter(function(cell) {
-						return cell.isShade();
-					}).length
-				) {
+				if (this.isValidArrow(cell, clist)) {
 					continue;
 				}
 
@@ -159,6 +250,21 @@
 				cell.seterr(1);
 				clist.seterr(1);
 			}
+		},
+		isValidArrow: function(cell, clist) {
+			return (
+				cell.qnum ===
+				clist.filter(function(c) {
+					return c.isShade();
+				}).length
+			);
+		}
+	},
+	"AnsCheck@outofsight": {
+		isValidArrow: function(cell, clist) {
+			return !clist.some(function(c) {
+				return c.isUnshade() && c.isValidNum() && c.qnum === cell.qnum;
+			});
 		}
 	}
 });

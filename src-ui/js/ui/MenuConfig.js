@@ -90,6 +90,7 @@
 					idname = "disptype_bosanowa";
 					break;
 				case "interbd":
+				case "outofsight":
 					idname = "disptype_interbd";
 					break;
 				case "arukone":

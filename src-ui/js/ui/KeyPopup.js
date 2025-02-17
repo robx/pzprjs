@@ -219,7 +219,8 @@ ui.keypopup = {
 		mintonette: [10, 0],
 		balloon: [10, 0],
 		tilecity: [10, 0],
-		orbital: [124, 0]
+		orbital: [124, 0],
+		outofsight: [132, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -365,6 +366,8 @@ ui.keypopup = {
 			this.generate_lix(mode);
 		} else if (type === 131) {
 			this.generate_infinity(mode);
+		} else if (type === 132) {
+			this.generate_outofsight(mode);
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -1011,6 +1014,22 @@ ui.keypopup = {
 	generate_swslither: function() {
 		this.generate_main(
 			[["5", "🐑"], ["6", "🐺"], null, "1", "2", "3", "0", " ", ["-", "?"]],
+			3
+		);
+	},
+
+	generate_outofsight: function() {
+		this.generate_main(
+			[
+				["a", { text: "A", color: "red" }],
+				["b", { text: "B", color: "blue" }],
+				["c", { text: "C", color: "green" }],
+				["d", { text: "D", color: "#c000c0" }],
+				["e", { text: "E", color: "#ff8000" }],
+				["f", { text: "F", color: "#00c0c0" }],
+				["-", { text: "?", color: "gray" }],
+				" "
+			],
 			3
 		);
 	},
