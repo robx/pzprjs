@@ -137,6 +137,10 @@
 				variant: true,
 				volatile: true
 			}); /* heyapin: Pins must overlap at least 2 regions */
+			this.add("aqre_borders", false, {
+				variant: true,
+				volatile: true
+			}); /* Borders must touch exactly one shaded cell */
 			this.add("slither_full", false, {
 				variant: true,
 				volatile: true
@@ -475,6 +479,9 @@
 					break;
 				case "heyapin_overlap":
 					exec = pid === "heyapin";
+					break;
+				case "aqre_borders":
+					exec = pid === "aqre";
 					break;
 				case "slither_full":
 					exec =

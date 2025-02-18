@@ -65,20 +65,29 @@
 		decodePzpr: function(type) {
 			this.decodeBorder();
 			this.decodeRoomNumber16();
+			this.puzzle.setConfig("aqre_borders", this.checkpflag("b"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("aqre_borders") ? "b" : null;
 			this.encodeBorder();
 			this.encodeRoomNumber16();
 		}
 	},
 	FileIO: {
 		decodeData: function() {
-			this.decodeAreaRoom();
+			this.decodeConfigFlag("b", "aqre_borders");
+			if (this.filever >= 1) {
+				this.decodeBorderQues();
+			} else {
+				this.decodeAreaRoom();
+			}
 			this.decodeCellQnum();
 			this.decodeCellAns();
 		},
 		encodeData: function() {
-			this.encodeAreaRoom();
+			this.filever = 1;
+			this.encodeConfigFlag("b", "aqre_borders");
+			this.encodeBorderQues();
 			this.encodeCellQnum();
 			this.encodeCellAns();
 		}
@@ -86,12 +95,61 @@
 
 	AnsCheck: {
 		checklist: [
+			"checkBorderShaded",
 			"checkConnectShade",
 			"checkShadeCellCount",
 			"checkContinuousShadeCell",
+			"checkBorderEmpty",
 			"checkContinuousUnshadeCell",
 			"doneShadingDecided"
 		],
+
+		checkBorderShaded: function() {
+			this.genericCheckBorder(function(cell) {
+				return cell.isShade();
+			}, "cbShade");
+		},
+
+		checkBorderEmpty: function() {
+			this.genericCheckBorder(function(cell) {
+				return !cell.isShade();
+			}, "cbUnshade");
+		},
+
+		genericCheckBorder: function(func, code) {
+			if (!this.puzzle.getConfig("aqre_borders")) {
+				return;
+			}
+
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+
+				if (!func(cell)) {
+					continue;
+				}
+
+				var dirs = ["right", "bottom"];
+				for (var i in dirs) {
+					var dir = dirs[i];
+					var border = cell.adjborder[dir];
+					if (!border || !border.isBorder()) {
+						continue;
+					}
+					var other = cell.adjacent[dir];
+					if (!func(other)) {
+						continue;
+					}
+
+					this.failcode.add(code);
+					if (this.checkOnly) {
+						return;
+					}
+					cell.seterr(1);
+					other.seterr(1);
+				}
+			}
+		},
 
 		checkRun3: function(func, code) {
 			var bd = this.board;

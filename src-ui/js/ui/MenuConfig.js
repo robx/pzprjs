@@ -133,6 +133,9 @@
 				case "bdwalk":
 					idname = "bdwalk_height";
 					break;
+				case "aqre":
+					idname = "aqre_borders";
+					break;
 				case "slither":
 				case "tslither":
 				case "swslither":
