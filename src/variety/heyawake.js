@@ -15,7 +15,7 @@
 		use: true,
 		inputModes: {
 			edit: ["border", "number", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		autoedit_func: "areanum",
 		autoplay_func: "cell"
@@ -173,6 +173,8 @@
 
 			this.drawBoxBorders(false);
 
+			this.drawPekes();
+
 			this.drawTarget();
 		},
 
@@ -270,12 +272,14 @@
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeConfig();
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		},
 
 		decodeConfig: function() {},

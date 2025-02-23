@@ -19,7 +19,7 @@
 	"MouseEvent@kurodoko": {
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		RBShadeCell: true
 	},
@@ -213,9 +213,7 @@
 	},
 	Board: {
 		cols: 9,
-		rows: 9
-	},
-	"Board@cave,teri": {
+		rows: 9,
 		hasborder: 1 // for pekes
 	},
 
@@ -248,6 +246,8 @@
 
 			if (this.pid === "teri") {
 				this.drawBorderQsubs();
+			} else if (this.pid === "kurodoko") {
+				this.drawPekes();
 			}
 
 			this.drawCircledNumbers();
@@ -336,6 +336,8 @@
 			this.decodeCellAns();
 			if (this.pid === "teri") {
 				this.decodeBorderAns();
+			} else if (this.pid === "kurodoko" || this.pid === "cave") {
+				this.decodeBorderLine();
 			}
 		},
 		encodeData: function() {
@@ -348,6 +350,8 @@
 				})
 			) {
 				this.encodeBorderAns();
+			} else if (this.pid === "kurodoko" || this.pid === "cave") {
+				this.encodeBorderLineIfPresent();
 			}
 		},
 
