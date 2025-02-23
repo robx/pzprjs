@@ -12,7 +12,7 @@
 		use: true,
 		inputModes: {
 			edit: ["circle-unshade", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		inputFixedNumber: function() {
 			this.inputdot();
@@ -92,6 +92,19 @@
 
 		dotCells: function() {
 			return new this.klass.CellList(this.sidecell);
+		},
+
+		prehook: {
+			qsub: function(num) {
+				return num && this.qnum;
+			}
+		},
+		posthook: {
+			qnum: function(num) {
+				if (num) {
+					this.setQsub(0);
+				}
+			}
 		}
 	},
 	Board: {
@@ -129,6 +142,8 @@
 
 			this.drawChassis();
 
+			this.drawPekes();
+
 			this.drawCursor(false, this.puzzle.editmode);
 		},
 
@@ -152,10 +167,12 @@
 		decodeData: function() {
 			this.decodeDotFile();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeDotFile();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		}
 	},
 
