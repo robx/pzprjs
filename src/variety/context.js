@@ -15,7 +15,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "cell"
@@ -35,6 +35,9 @@
 	},
 	"Cell@smullyan": {
 		maxnum: 9
+	},
+	Board: {
+		hasborder: 1
 	},
 
 	AreaUnshadeGraph: {
@@ -60,6 +63,7 @@
 				this.drawUnshadeTicks();
 			}
 			this.drawChassis();
+			this.drawPekes();
 			this.drawTarget();
 		},
 
@@ -193,10 +197,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		}
 	},
 

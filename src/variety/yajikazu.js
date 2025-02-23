@@ -15,7 +15,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "direc", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -86,6 +86,9 @@
 		minnum: 1,
 		maxnum: 6
 	},
+	Board: {
+		hasborder: 1
+	},
 	"Board@outofsight": {
 		rebuildInfo: function() {
 			var isMono = this.puzzle.playeronly;
@@ -133,6 +136,8 @@
 			this.drawArrowNumbers();
 
 			this.drawChassis();
+
+			this.drawPekes();
 
 			this.drawTarget();
 		}
@@ -203,10 +208,12 @@
 		decodeData: function() {
 			this.decodeCellDirecQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellDirecQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		}
 	},
 

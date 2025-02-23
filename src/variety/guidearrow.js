@@ -12,7 +12,7 @@
 		use: true,
 		inputModes: {
 			edit: ["info-blk", "arrow", "clear"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -258,6 +258,7 @@
 			this.drawHatenas();
 
 			this.drawChassis();
+			this.drawPekes();
 			this.drawTarget();
 		},
 		getCellArrowColor: null,
@@ -315,12 +316,14 @@
 			this.decodeG();
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 			this.board.isStale = true;
 		},
 		encodeData: function() {
 			this.encodeG();
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		},
 		decodeG: function() {
 			var str = this.readLine();

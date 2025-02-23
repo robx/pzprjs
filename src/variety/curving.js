@@ -13,7 +13,7 @@
 		use: true,
 		inputModes: {
 			edit: ["circle-unshade", "info-blk", "clear"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
@@ -49,6 +49,7 @@
 		numberRemainsUnshaded: true
 	},
 	Board: {
+		hasborder: 1,
 		addExtraInfo: function() {
 			this.horzStripes = this.addInfoList(this.klass.HorzStripeGraph);
 			this.vertStripes = this.addInfoList(this.klass.VertStripeGraph);
@@ -118,6 +119,7 @@
 			this.drawCircles();
 
 			this.drawChassis();
+			this.drawPekes();
 			this.drawTarget();
 		}
 	},
@@ -134,10 +136,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		}
 	},
 

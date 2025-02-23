@@ -15,7 +15,15 @@
 		use: true,
 		inputModes: {
 			edit: ["border", "number", "clear", "info-blk"],
-			play: ["shade", "unshade", "submark", "subcircle", "subcross", "info-blk"]
+			play: [
+				"shade",
+				"unshade",
+				"submark",
+				"subcircle",
+				"subcross",
+				"peke",
+				"info-blk"
+			]
 		},
 		mouseinput: function() {
 			// オーバーライド
@@ -168,6 +176,8 @@
 
 			this.drawBoxBorders(false);
 
+			this.drawPekes();
+
 			this.drawTarget();
 		},
 
@@ -223,11 +233,13 @@
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
 			this.decodeCellQanssubcmp2();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCellQanssubcmp2();
+			this.encodeBorderLineIfPresent();
 		},
 
 		decodeCellQanssubcmp2: function() {
