@@ -9,7 +9,7 @@
 		use: true,
 		inputModes: {
 			edit: ["border", "number", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		autoedit_func: "areanum",
 		autoplay_func: "cell"
@@ -57,6 +57,8 @@
 
 			this.drawBoxBorders(false);
 
+			this.drawPekes();
+
 			this.drawTarget();
 		}
 	},
@@ -83,6 +85,7 @@
 			}
 			this.decodeCellQnum();
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.filever = 1;
@@ -90,6 +93,7 @@
 			this.encodeBorderQues();
 			this.encodeCellQnum();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		}
 	},
 

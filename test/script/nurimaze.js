@@ -53,22 +53,22 @@ ui.debug.addDebugData("nurimaze", {
 				"key,right,w"
 			],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /s o t . /. o t g /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /s o t . /. o t g /. . . . /. . . . /"
 		},
 		{
 			input: ["cursor,3,1", "key,3", "key,right,e", "cursor,3,3", "key, "],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /s . . . /. . t g /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /s . . . /. . t g /. . . . /. . . . /"
 		},
 		{
 			input: ["cursor,7,1", "key,s", "key,left,g"],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. . g s /. . t . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. . g s /. . t . /. . . . /. . . . /"
 		},
 		{
 			input: ["cursor,7,1", "key,g"],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. . s g /. . t . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. . s g /. . t . /. . . . /. . . . /"
 		},
 		{ input: ["newboard,4,2", "editmode"] },
 		{
@@ -82,22 +82,22 @@ ui.debug.addDebugData("nurimaze", {
 				"mouse,rightx4, 5,3"
 			],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /s o t . /t o . g /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /s o t . /t o . g /. . . . /. . . . /"
 		},
 		{
 			input: ["mouse,left, 1,1, 7,1, 7,3"],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. o t g /t o . s /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. o t g /t o . s /. . . . /. . . . /"
 		},
 		{
 			input: ["mouse,left, 7,1, 1,1, 1,3, 7,3"],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. o t . /t o s g /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. o t . /t o s g /. . . . /. . . . /"
 		},
 		{
 			input: ["cursor,0,0", "mouse,leftx2, 5,3", "mouse,rightx2, 7,3"],
 			result:
-				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. o t . /t o s g /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/2/4/1/0 0 0 0 /0 0 0 0 /. o t . /t o s g /. . . . /. . . . /"
 		},
 		/* 回答入力テスト */
 		{
@@ -112,32 +112,32 @@ ui.debug.addDebugData("nurimaze", {
 		{
 			input: ["mouse,left, 1,3, 7,3"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /+ + + + /+ + + + /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /+ + + + /+ + + + /. . . . /"
 		},
 		{
 			input: ["mouse,left, 7,3, 1,3"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /+ # # # /+ # # # /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /+ # # # /+ # # # /. . . . /"
 		},
 		{
 			input: ["mouse,left, 1,3, 7,3"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /. . . . /"
 		},
 		{
 			input: ["mouse,left, 1,3, 7,3", "mouse,right, 7,3, 1,3"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /. . . . /"
 		},
 		{
 			input: ["mouse,right, 1,5, 7,5"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /+ + + + /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /+ + + + /"
 		},
 		{
 			input: ["mouse,left, 1,5, 7,5"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /# # # + /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . . . /. . . g /. . . . /. . . . /# # # + /"
 		},
 		{
 			input: [
@@ -153,18 +153,18 @@ ui.debug.addDebugData("nurimaze", {
 		{
 			input: ["mouse,left, 7,3, 1,3, 1,5, 7,5"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. # . # /. # . # /# . # . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. # . # /. # . # /# . # . /"
 		},
 		{
 			input: ["mouse,right, 7,3, 1,3, 1,5, 7,5"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /+ + + + /+ + + + /+ + + + /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /+ + + + /+ + + + /+ + + + /"
 		},
 		{ input: ["mouse,left, 7,3, 1,3, 1,5, 7,5"] },
 		{
 			input: ["mouse,left, 7,3, 1,3, 1,5, 7,5"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /"
 		},
 		{
 			input: ["ansclear", "playmode,line"]
@@ -182,7 +182,7 @@ ui.debug.addDebugData("nurimaze", {
 		{
 			input: ["subclear"],
 			result:
-				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 /0 0 0 0 /0 0 0 0 /"
+				"pzprv3/nurimaze/3/4/8/0 1 2 3 /0 1 2 3 /4 5 6 7 /s . . . /. . o . /. t . g /. . . . /. . . . /. . . . /"
 		}
 	]
 });

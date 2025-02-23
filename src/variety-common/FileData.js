@@ -416,6 +416,15 @@ pzpr.classmgr.makeCommon({
 				}
 			});
 		},
+		encodeBorderLineIfPresent: function() {
+			if (
+				this.board.border.some(function(border) {
+					return border.line > 0 || border.qsub === 2;
+				})
+			) {
+				this.encodeBorderLine();
+			}
+		},
 		encodeBorderLine: function() {
 			this.encodeBorder(function(border) {
 				if (border.line > 0) {

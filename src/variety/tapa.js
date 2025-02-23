@@ -14,7 +14,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "cell",
@@ -189,6 +189,10 @@
 		}
 	},
 
+	Board: {
+		hasborder: 1
+	},
+
 	AreaShadeGraph: {
 		enabled: true,
 		coloring: true
@@ -209,6 +213,8 @@
 			this.drawTapaNumbers();
 
 			this.drawChassis();
+
+			this.drawPekes();
 
 			this.drawTarget();
 		}
@@ -346,9 +352,11 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnumAns_tapa();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnumAns_tapa();
+			this.encodeBorderLineIfPresent();
 		},
 
 		decodeCellQnumAns_tapa: function() {

@@ -459,7 +459,7 @@
 			this.encodeAreaRoom();
 			this.encodeCellQues_nurimaze();
 			this.encodeCellAns();
-			this.encodeBorderLine();
+			this.encodeBorderLineIfPresent();
 		},
 
 		decodeCellQues_nurimaze: function() {
