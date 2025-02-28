@@ -1,6 +1,7 @@
 //
 // パズル固有スクリプト部 島国・チョコナ・ストストーン版 shimaguni.js
 //
+/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -15,7 +16,8 @@
 		"hinge",
 		"heyablock",
 		"cocktail",
-		"martini"
+		"martini",
+		"nuritwin"
 	],
 	{
 		//---------------------------------------------------------
@@ -35,7 +37,7 @@
 				play: ["shade", "unshade", "number"]
 			}
 		},
-		"MouseEvent@cocktail": {
+		"MouseEvent@cocktail,nuritwin": {
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
@@ -111,6 +113,12 @@
 				return Math.min(999, this.room.clist.length);
 			}
 		},
+		"Cell@nuritwin": {
+			maxnum: function() {
+				var half = (this.room.clist.length - 1) >> 1;
+				return Math.max(1, Math.min(999, half));
+			}
+		},
 		"Cell@shimaguni": {
 			enableSubNumberArray: true,
 			disableAnum: true
@@ -174,7 +182,7 @@
 		Board: {
 			hasborder: 1
 		},
-		"Board@shimaguni,stostone,heyablock,cocktail,martini": {
+		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin": {
 			addExtraInfo: function() {
 				this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
 				if (this.pid === "cocktail" || this.pid === "martini") {
@@ -296,7 +304,7 @@
 			}
 		},
 
-		"AreaShadeGraph@chocona": {
+		"AreaShadeGraph@chocona,nuritwin": {
 			enabled: true
 		},
 		"AreaShadeGraph@hinge": {
@@ -307,7 +315,7 @@
 				component.hinge = null;
 			}
 		},
-		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini": {
+		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin": {
 			// Same as LITS AreaTetrominoGraph
 			enabled: true,
 			relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -618,6 +626,17 @@
 				"checkShadeCellCount"
 			]
 		},
+		"AnsCheck@nuritwin#1": {
+			checklist: [
+				"check2x2ShadeCell",
+				"checkShadeBlockSize",
+				"checkSizesEqual",
+				"checkTwoBlocks",
+				"checkConnectShade",
+				"checkNoShadeCellInArea",
+				"doneShadingDecided"
+			]
+		},
 		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini": {
 			checkSideAreaShadeCell: function() {
 				this.checkSideAreaCell(
@@ -924,6 +943,74 @@
 
 			checkConnect8Shade: function() {
 				this.checkOneArea(this.board.sblk8mgr, "csDivide");
+			}
+		},
+		"AnsCheck@nuritwin": {
+			checkShadeBlockSize: function() {
+				var blocks = this.board.stonegraph.components;
+				for (var id = 0; id < blocks.length; id++) {
+					var block = blocks[id];
+					var room = block.clist[0].room;
+					if (!room || !room.top.isValidNum()) {
+						continue;
+					}
+
+					if (block.clist.length !== room.top.getNum()) {
+						this.failcode.add("bkSizeNe");
+						if (this.checkOnly) {
+							break;
+						}
+						room.clist.seterr(1);
+					}
+				}
+			},
+			checkSizesEqual: function() {
+				var rooms = this.board.roommgr.components;
+				for (var r = 0; r < rooms.length; r++) {
+					var room = rooms[r];
+					if (room.top.isValidNum()) {
+						continue;
+					}
+
+					var units = this.getUnits(room);
+					if (units.length !== 2) {
+						continue;
+					}
+					if (units[0].clist.length === units[1].clist.length) {
+						continue;
+					}
+
+					this.failcode.add("bkDifferentShape");
+					if (this.checkOnly) {
+						break;
+					}
+					room.clist.seterr(1);
+				}
+			},
+			checkTwoBlocks: function() {
+				var rooms = this.board.roommgr.components;
+				for (var r = 0; r < rooms.length; r++) {
+					var room = rooms[r];
+					var units = this.getUnits(room);
+					if (units.length === 0 || units.length === 2) {
+						continue;
+					}
+
+					this.failcode.add("bkUnitNe2");
+					if (this.checkOnly) {
+						break;
+					}
+					room.clist.seterr(1);
+				}
+			},
+			getUnits: function(room) {
+				var set = new Set();
+				room.clist.each(function(cell) {
+					if (cell.isShade()) {
+						set.add(cell.stone);
+					}
+				});
+				return Array.from(set);
 			}
 		},
 
