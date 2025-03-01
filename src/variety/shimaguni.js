@@ -304,8 +304,12 @@
 			}
 		},
 
-		"AreaShadeGraph@chocona,nuritwin": {
+		"AreaShadeGraph@chocona": {
 			enabled: true
+		},
+		"AreaShadeGraph@nuritwin": {
+			enabled: true,
+			coloring: true
 		},
 		"AreaShadeGraph@hinge": {
 			enabled: true,
@@ -536,6 +540,9 @@
 					? this.getCircleStrokeColor(cell)
 					: this.getCircleFillColor_qnum(cell);
 			}
+		},
+		"Graphic@nuritwin": {
+			irowakeblk: true
 		},
 
 		//---------------------------------------------------------
