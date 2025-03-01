@@ -398,6 +398,8 @@
 				this.drawGrid();
 				if (this.pid === "stostone") {
 					this.drawDotCells_stostone();
+				} else if (this.pid === "nuritwin") {
+					this.drawDotCells();
 				}
 				this.drawShadedCells();
 				this.drawTargetSubNumber(true);
@@ -542,7 +544,9 @@
 			}
 		},
 		"Graphic@nuritwin": {
-			irowakeblk: true
+			irowakeblk: true,
+			bgcellcolor_func: "error1",
+			shadecolor: "#444444"
 		},
 
 		//---------------------------------------------------------
