@@ -396,10 +396,8 @@
 			paint: function() {
 				this.drawBGCells();
 				this.drawGrid();
-				if (this.pid === "stostone") {
+				if (this.pid === "stostone" || this.pid === "nuritwin") {
 					this.drawDotCells_stostone();
-				} else if (this.pid === "nuritwin") {
-					this.drawDotCells();
 				}
 				this.drawShadedCells();
 				this.drawTargetSubNumber(true);
@@ -434,11 +432,9 @@
 				);
 			}
 		},
-		"Graphic@stostone": {
+		"Graphic@stostone,nuritwin#1": {
 			irowakeblk: true,
-			enablebcolor: false,
 			bgcellcolor_func: "error1",
-			qanscolor: "black",
 
 			minYdeg: 0.08,
 			maxYdeg: 0.5,
@@ -459,7 +455,11 @@
 						g.vhide();
 					}
 				}
-			},
+			}
+		},
+		"Graphic@stostone": {
+			enablebcolor: false,
+			qanscolor: "black",
 
 			drawNarrowBorders: function() {
 				this.vinc("border_narrow", "crispEdges", true);
@@ -531,7 +531,6 @@
 		},
 		"Graphic@martini": {
 			hideHatena: true,
-			shadecolor: "#444444",
 			circleratio: [0.35, 0.3],
 			textoption: { ratio: 0.5 },
 			getNumberText: function(cell, num) {
@@ -543,9 +542,7 @@
 					: this.getCircleFillColor_qnum(cell);
 			}
 		},
-		"Graphic@nuritwin": {
-			irowakeblk: true,
-			bgcellcolor_func: "error1",
+		"Graphic@martini,nuritwin#2": {
 			shadecolor: "#444444"
 		},
 
