@@ -395,11 +395,20 @@
 
 			paint: function() {
 				this.drawBGCells();
-				this.drawGrid();
+
+				if (this.pid !== "nuritwin") {
+					this.drawGrid();
+				}
+
 				if (this.pid === "stostone" || this.pid === "nuritwin") {
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
+
+				if (this.pid === "nuritwin") {
+					this.drawGrid();
+				}
+
 				this.drawTargetSubNumber(true);
 
 				if (this.pid === "martini") {
@@ -435,6 +444,7 @@
 		"Graphic@stostone,nuritwin#1": {
 			irowakeblk: true,
 			bgcellcolor_func: "error1",
+			bcolor: "rgb(80, 204, 80)",
 
 			minYdeg: 0.08,
 			maxYdeg: 0.5,
