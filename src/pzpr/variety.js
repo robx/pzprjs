@@ -306,6 +306,7 @@
 			nurikabe: [0, 1, "ぬりかべ", "Nurikabe", "nurikabe"],
 			nurimaze: [0, 0, "ぬりめいず", "Nuri-Maze", "nurimaze"],
 			nurimisaki: [0, 0, "ぬりみさき", "Nurimisaki", "kurodoko"],
+			nuritwin: [0, 0, "ぬりツイン", "Nuritwin", "shimaguni"],
 			nuriuzu: [0, 0, "ぬりうず", "Nuri-uzu", "tentaisho"],
 			ovotovata: [0, 0, "Ovotovata", "Ovotovata", "country"],
 			oneroom: [0, 0, "ワンルームワンドア", "One Room One Door", "heyawake"],
