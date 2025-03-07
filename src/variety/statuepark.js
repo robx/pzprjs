@@ -991,7 +991,7 @@
 	},
 	"BoardExec@pentopia": {
 		adjustBoardData: function(key, d) {
-			this.adjustCellQnumArrow(key, d);
+			this.adjustCellArrow(key, d);
 		},
 		getTranslateDir: function(key) {
 			var trans = {};
@@ -1064,7 +1064,7 @@
 	},
 	"BoardExec@battleship,retroships": {
 		adjustBoardData: function(key, d) {
-			this.adjustCellQnumArrow(key, d);
+			this.adjustCellArrow(key, d);
 			this.adjustExCellTopLeft_1(key, d);
 		},
 		adjustBoardData2: function(key, d) {

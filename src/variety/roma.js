@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["roma"], {
+})(["roma", "arrowflow"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -32,7 +32,9 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.inputqnum();
 				}
-			} else if (this.puzzle.editmode) {
+			} else if (this.puzzle.editmode && this.pid === "arrowflow") {
+				this.inputqnum();
+			} else {
 				if (this.mousestart || this.mousemove) {
 					if (this.isBorderMode()) {
 						this.inputborder();
@@ -49,13 +51,13 @@
 			if (cell.isnull) {
 				return;
 			}
+			if (this.pid === "arrowflow" && cell.qnum === 0) {
+				return;
+			}
 
 			var puzzle = this.puzzle;
-			var ldata = [],
+			var ldata = {},
 				bd = puzzle.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				ldata[c] = -1;
-			}
 			bd.trackBall1(cell.id, ldata);
 			for (var c = 0; c < bd.cell.length; c++) {
 				if (ldata[c] === 1) {
@@ -67,6 +69,12 @@
 			bd.hasinfo = true;
 			puzzle.redraw();
 			this.mousereset();
+		}
+	},
+	"MouseEvent@arrowflow": {
+		inputModes: {
+			edit: ["number", "clear", "info-road"],
+			play: ["arrow", "clear", "info-road"]
 		}
 	},
 
@@ -104,6 +112,15 @@
 			this.key_inputqnum(ca);
 		}
 	},
+	"KeyEvent@arrowflow": {
+		keyinput: function(ca) {
+			if (this.puzzle.editmode) {
+				this.key_inputqnum(ca);
+			} else {
+				this.key_roma(ca);
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
@@ -112,19 +129,41 @@
 
 		maxnum: function() {
 			return this.puzzle.editmode ? 5 : 4;
+		},
+
+		getArrow: function() {
+			return this.getNum();
+		},
+		isGoal: function() {
+			return this.getNum() === 5;
+		}
+	},
+	"Cell@arrowflow": {
+		minnum: function() {
+			return this.puzzle.editmode ? 0 : 1;
+		},
+		maxnum: function() {
+			return this.puzzle.editmode ? this.board.rows * this.board.cols - 1 : 4;
+		},
+		getArrow: function() {
+			return this.anum;
+		},
+		sameNumber: function(cell) {
+			return this.anum > 0 && this.anum === cell.anum;
+		},
+		isGoal: function() {
+			return this.qnum === -2 || this.qnum > 0;
 		}
 	},
 	Board: {
 		cols: 8,
 		rows: 8,
 
-		hasborder: 1,
-
 		trackBall1: function(startcc, ldata) {
 			var startcell = this.cell[startcc],
 				pos = startcell.getaddr();
-			var dir = startcell.getNum(),
-				result = dir === 5;
+			var dir = startcell.getArrow(),
+				result = startcell.isGoal();
 			ldata[startcell.id] = 0;
 
 			while (dir >= 1 && dir <= 4) {
@@ -134,35 +173,33 @@
 				if (cell.isnull) {
 					break;
 				}
-				if (ldata[cell.id] !== -1) {
+				if (ldata[cell.id] !== undefined) {
 					result = ldata[cell.id] === 2;
 					break;
 				}
 
 				ldata[cell.id] = 0;
 
-				dir = cell.getNum();
-				if (dir === 5) {
-					result = true;
-				}
+				dir = cell.getArrow();
+				result |= cell.isGoal();
 			}
 
 			var stack = [startcell];
 			while (stack.length > 0) {
 				var cell2 = stack.pop();
-				if (cell2 !== startcell && ldata[cell2.id] !== -1) {
+				if (cell2 !== startcell && ldata[cell2.id] !== undefined) {
 					continue;
 				}
 				ldata[cell2.id] = 0;
 				var tcell,
 					adc = cell2.adjacent,
-					dir = cell2.getNum();
+					dir = cell2.getArrow();
 				tcell = adc.top;
 				if (
 					dir !== 1 &&
 					!tcell.isnull &&
-					ldata[tcell.id] === -1 &&
-					tcell.getNum() === 2
+					ldata[tcell.id] === undefined &&
+					tcell.getArrow() === 2
 				) {
 					stack.push(tcell);
 				}
@@ -170,8 +207,8 @@
 				if (
 					dir !== 2 &&
 					!tcell.isnull &&
-					ldata[tcell.id] === -1 &&
-					tcell.getNum() === 1
+					ldata[tcell.id] === undefined &&
+					tcell.getArrow() === 1
 				) {
 					stack.push(tcell);
 				}
@@ -179,8 +216,8 @@
 				if (
 					dir !== 3 &&
 					!tcell.isnull &&
-					ldata[tcell.id] === -1 &&
-					tcell.getNum() === 4
+					ldata[tcell.id] === undefined &&
+					tcell.getArrow() === 4
 				) {
 					stack.push(tcell);
 				}
@@ -188,8 +225,8 @@
 				if (
 					dir !== 4 &&
 					!tcell.isnull &&
-					ldata[tcell.id] === -1 &&
-					tcell.getNum() === 3
+					ldata[tcell.id] === undefined &&
+					tcell.getArrow() === 3
 				) {
 					stack.push(tcell);
 				}
@@ -203,13 +240,22 @@
 			return result;
 		}
 	},
+	"Board@roma": {
+		hasborder: 1
+	},
+
 	BoardExec: {
 		adjustBoardData: function(key, d) {
 			this.adjustCellArrow(key, d);
 		}
 	},
+	"BoardExec@arrowflow": {
+		adjustBoardData: function(key, d) {
+			this.adjustCellArrowField(key, d, "anum");
+		}
+	},
 
-	AreaRoomGraph: {
+	"AreaRoomGraph@roma": {
 		enabled: true
 	},
 
@@ -224,11 +270,17 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
-			this.drawBorders();
+			if (this.pid === "roma") {
+				this.drawBorders();
+			}
 
 			this.drawCellArrows();
-			this.drawGoals();
-			this.drawHatenas();
+			if (this.pid === "roma") {
+				this.drawGoals();
+				this.drawHatenas();
+			} else {
+				this.drawQuesNumbers();
+			}
 
 			this.drawChassis();
 
@@ -236,7 +288,9 @@
 		},
 
 		getBGCellColor: function(cell) {
-			if (cell.error === 1) {
+			if (this.pid === "arrowflow" && cell.qnum === 0) {
+				return this.quescolor;
+			} else if (cell.error === 1) {
 				return this.errbcolor1;
 			} else if (cell.qinfo === 2) {
 				return this.errbcolor2;
@@ -263,6 +317,9 @@
 			}
 		}
 	},
+	"Graphic@arrowflow": {
+		numbercolor_func: "qnum"
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -276,15 +333,27 @@
 			this.encodeNumber10();
 		}
 	},
+	"Encode@arrowflow": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			this.decodeAreaRoom();
+			if (this.pid === "roma") {
+				this.decodeAreaRoom();
+			}
 			this.decodeCellQnum();
 			this.decodeCellAnumsub();
 		},
 		encodeData: function() {
-			this.encodeAreaRoom();
+			if (this.pid === "roma") {
+				this.encodeAreaRoom();
+			}
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
 		}
@@ -303,19 +372,25 @@
 		},
 		isDifferentNumber_roma: function(clist) {
 			return this.isIndividualObject(clist, function(cell) {
-				var n = cell.getNum();
+				var n = cell.getArrow();
 				return n >= 1 && n <= 4 ? n : -1;
 			});
 		},
 
 		checkBalls: function() {
-			var ldata = [],
+			var ldata = {},
 				bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
-				ldata[c] = bd.cell[c].getNum() === 5 ? 2 : -1;
+				var cell = bd.cell[c];
+				if (cell.isGoal()) {
+					ldata[c] = 2;
+				} else if (this.pid === "arrowflow" && cell.qnum === 0) {
+					ldata[c] = -3;
+				}
 			}
+			var valid = true;
 			for (var c = 0; c < bd.cell.length; c++) {
-				if (ldata[c] !== -1) {
+				if (ldata[c] !== undefined) {
 					continue;
 				}
 				if (bd.trackBall1(c, ldata)) {
@@ -323,14 +398,84 @@
 				}
 
 				this.failcode.add("stopHalfway");
+				valid = false;
 				if (this.checkOnly) {
-					break;
+					return;
 				}
+			}
+			if (!valid) {
 				bd.cell
 					.filter(function(cell) {
 						return ldata[cell.id] === 1;
 					})
 					.seterr(1);
+			}
+		}
+	},
+	"AnsCheck@arrowflow": {
+		checklist: [
+			"checkAdjacentDiffNumber",
+			"checkGoalCounts",
+			"checkGoalZero",
+			"checkBalls"
+		],
+
+		getGoalCounts: function() {
+			if (this._info.state) {
+				return this._info.state;
+			}
+
+			var ret = {};
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.qnum <= 0) {
+					continue;
+				}
+
+				var ldata = {};
+				bd.trackBall1(c, ldata);
+
+				ret[c] = Object.keys(ldata).map(function(key) {
+					return bd.cell[+key];
+				});
+			}
+
+			return (this._info.state = ret);
+		},
+
+		checkGoalZero: function() {
+			var bd = this.board,
+				counts = this.getGoalCounts();
+			for (var key in counts) {
+				if (counts[key].length > 1) {
+					continue;
+				}
+
+				this.failcode.add("arCountZero");
+				if (this.checkOnly) {
+					return;
+				}
+				bd.cell[+key].seterr(1);
+			}
+		},
+
+		checkGoalCounts: function() {
+			var bd = this.board,
+				counts = this.getGoalCounts();
+			for (var key in counts) {
+				var cell = bd.cell[+key];
+				var count = counts[key].length;
+
+				if (count === 1 || count === cell.qnum + 1) {
+					continue;
+				}
+
+				this.failcode.add("arCountNe");
+				if (this.checkOnly) {
+					return;
+				}
+				new this.klass.CellList(counts[key]).seterr(1);
 			}
 		}
 	}
