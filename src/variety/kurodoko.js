@@ -13,7 +13,7 @@
 	MouseEvent: {
 		use: true,
 		autoedit_func: "qnum",
-		autoplay_func: "cell"
+		autoplay_func: "cellpeke"
 	},
 
 	"MouseEvent@kurodoko": {
@@ -57,7 +57,8 @@
 		inputModes: {
 			edit: ["number", "clear", "info-ublk"],
 			play: ["shade", "unshade", "info-ublk"]
-		}
+		},
+		autoplay_func: "cell"
 	},
 	"MouseEvent@cave": {
 		inputModes: {

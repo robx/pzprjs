@@ -14,17 +14,12 @@
 			edit: ["info-blk", "arrow", "clear"],
 			play: ["shade", "unshade", "peke", "info-blk"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputEdit();
-				} else if (this.mouseend) {
-					this.inputEdit_end();
-				}
+		autoplay_func: "cellpeke",
+		mouseinputAutoEdit: function() {
+			if (this.mousestart || this.mousemove) {
+				this.inputEdit();
+			} else if (this.mouseend) {
+				this.inputEdit_end();
 			}
 		},
 

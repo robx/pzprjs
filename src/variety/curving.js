@@ -15,14 +15,9 @@
 			edit: ["circle-unshade", "info-blk", "clear"],
 			play: ["shade", "unshade", "peke", "info-blk"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
-				}
-			} else if (this.puzzle.editmode) {
-				this.inputFixedNumber(1);
-			}
+		autoplay_func: "cellpeke",
+		mouseinputAutoEdit: function() {
+			this.inputFixedNumber(1);
 		},
 		inputFixedNumber: function(num) {
 			var cell = this.getcell();

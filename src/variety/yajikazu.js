@@ -17,20 +17,15 @@
 			edit: ["number", "direc", "clear", "info-blk"],
 			play: ["shade", "unshade", "peke", "info-blk"]
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputcell();
+		autoplay_func: "cellpeke",
+		mouseinputAutoEdit: function() {
+			if (this.mousestart || this.mousemove) {
+				if (this.notInputted()) {
+					this.inputdirec();
 				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.notInputted()) {
-						this.inputdirec();
-					}
-				} else if (this.mouseend && this.notInputted()) {
-					if (this.prevPos.getc() === this.getcell()) {
-						this.inputqnum();
-					}
+			} else if (this.mouseend && this.notInputted()) {
+				if (this.prevPos.getc() === this.getcell()) {
+					this.inputqnum();
 				}
 			}
 		}

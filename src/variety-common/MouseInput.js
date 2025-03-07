@@ -1012,6 +1012,17 @@ pzpr.classmgr.makeCommon({
 		mouseinputAutoPlay_cell: function() {
 			this.inputcell();
 		},
+		mouseinputAutoPlay_cellpeke: function() {
+			if (this.mousestart) {
+				this.isDraggingPeke = this.puzzle.key.isALT;
+			}
+
+			if (this.isDraggingPeke) {
+				this.inputpeke();
+			} else {
+				this.inputcell();
+			}
+		},
 		mouseinputAutoPlay_qnum: function() {
 			if (this.mousestart) {
 				this.inputqnum();
