@@ -482,6 +482,7 @@
     "haisuError.haisu": "A number is not passed on the right visit.",
     "haisuError.kaisu": "A region visit contains an incorrect amount of circles.",
     "haisuSG.haisu": "The line goes through S/G.",
+    "haisuSG.recoil": "The start point has multiple lines.",
     "invalid": "Invalid Error",
     "curvingNoTurns.curving": "A path between circles does not turn.",
     "curvingOneTurn.curving": "A path between circles turns only once.",
@@ -877,5 +878,5 @@
     "tentAround.tents": "Some tents touch.",
     "tooFewUnspecified.railpool": "The region contains fewer unspecified segment lengths than question marks.",
     "tooManyUnspecified.railpool": "The region contains more unspecified segment lengths than question marks.",
-    "unusedCell.pencils": "A cell is unused."
+    "unusedCell": "A cell is unused."
 }

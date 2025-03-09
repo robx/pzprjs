@@ -634,7 +634,7 @@
     "tentAround.tents": "テント同士が接しています。",
     "tooManyUnspecified.railpool": "線分の長さの種類が多すぎます。",
     "tooFewUnspecified.railpool": "線分の長さの種類が少なすぎます。",
-    "unusedCell.pencils": "何も書かれていないマスがあります。",
+    "unusedCell": "何も書かれていないマスがあります。",
     "lcBalance.coffeemilk": "グループに含まれる白マルと黒マルの数が異なります。",
     "lcInvalid.coffeemilk": "白マルと黒マルが直接線で結ばれています。",
     "lcGrayGt.coffeemilk": "グループに2つ以上の灰マルがあります。",

@@ -1,3 +1,4 @@
+/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -94,6 +95,97 @@
 
 			this.startpos.init(x, y);
 			this.enableInfo();
+		},
+
+		rebuildInfo: function() {
+			this.infolist.forEach(function(info) {
+				info.rebuild();
+			});
+			this.retrace();
+		},
+
+		retrace: function() {
+			var addr = new this.klass.Address();
+			addr.set(this.startpos);
+
+			if (addr.getc().lcnt !== 1) {
+				this.cell.each(function(cell) {
+					if (cell.qcmp !== 0) {
+						cell.setQcmp(0);
+						cell.draw();
+					}
+				});
+				return;
+			}
+			var found = new Set();
+			found.add(addr.getc());
+			var prevcell = this.emptycell;
+			var nextborderaddr = new this.klass.Address();
+			var nextcelladdr = new this.klass.Address();
+			var removeaddr = new this.klass.Address();
+
+			do {
+				var dir = 0;
+				
+				// Find the next cell to move to, and keep track of direction used
+				for (dir = 1; dir <= 4; dir++) {
+					nextcelladdr.set(addr);
+					nextcelladdr.movedir(dir, 2);
+
+					if (nextcelladdr.getc() === prevcell) {
+						continue;
+					}
+
+					nextborderaddr.set(addr);
+					nextborderaddr.movedir(dir, 1);
+
+					if (nextborderaddr.getb().isLine()) {
+						prevcell = addr.getc();
+						addr.set(nextcelladdr);
+						break;
+					}
+				}
+
+				if (dir > 4) {
+					break;
+				}
+
+				// Tag every cell used by a line
+				removeaddr.set(addr);
+				var removecell = removeaddr.getc();
+
+				found.add(removecell);
+
+				while (!removecell.isnull) {
+					// Tag the first available cell in the opposite direction
+					if (
+						removecell.isValid() &&
+						removecell.lcnt === 0 &&
+						!found.has(removecell)
+					) {
+						break;
+					}
+					removeaddr.movedir(dir, -2);
+					removecell = removeaddr.getc();
+				}
+
+				if (!removecell.isnull) {
+					addr.getc().paired = removecell;
+					removecell.paired = addr.getc();
+					found.add(removecell);
+				}
+			} while (addr.getc().lcnt === 2);
+
+			this.cell.each(function(cell) {
+				var newCmp = found.has(cell);
+				if (cell.qcmp !== newCmp) {
+					cell.setQcmp(newCmp);
+					cell.draw();
+				}
+				if (!newCmp) {
+					cell.paired = this.emptycell;
+				}
+			});
 		}
 	},
 	BoardExec: {
@@ -130,6 +222,11 @@
 			qsub: function(val) {
 				return val !== 0 && !this.isGrid();
 			}
+		},
+		posthook: {
+			line: function() {
+				this.board.retrace();
+			}
 		}
 	},
 	Cell: {
@@ -139,6 +236,11 @@
 			},
 			qsub: function(val) {
 				return val !== 0 && this.noLP();
+			}
+		},
+		posthook: {
+			ques: function() {
+				this.board.retrace();
 			}
 		},
 		noLP: function(dir) {
@@ -158,6 +260,7 @@
 	// 画像表示系
 	Graphic: {
 		gridcolor_type: "LIGHT",
+		qsubcolor2: "rgb(224,224,224)",
 
 		paint: function() {
 			this.drawBGCells();
@@ -178,6 +281,8 @@
 				return this.errbcolor1;
 			} else if (cell.lcnt > 0) {
 				return this.qsubcolor1;
+			} else if (cell.qcmp > 0) {
+				return this.qsubcolor2;
 			}
 			return null;
 		},
@@ -302,10 +407,26 @@
 
 	AnsCheck: {
 		checklist: [
+			"checkPassThroughS",
 			"checkLineExist",
 			"checkBranchLine",
 			"checkCrossLine",
+			"checkUnused",
 			"checkOneLine+"
-		]
+		],
+
+		checkUnused: function() {
+			this.checkAllCell(function(cell) {
+				return !cell.qcmp;
+			}, "unusedCell");
+		},
+
+		checkPassThroughS: function() {
+			var start = this.board.startpos.getc();
+			if (start.lcnt > 1) {
+				this.failcode.add("haisuSG");
+				start.seterr(1);
+			}
+		}
 	}
 });
