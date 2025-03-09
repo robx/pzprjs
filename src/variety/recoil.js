@@ -75,7 +75,6 @@
 				this.draggingSG = false;
 				cell.setValid(0);
 				cell.draw();
-				this.board.retrace();
 			}
 		}
 	},
@@ -263,6 +262,12 @@
 		},
 		noLP: function(dir) {
 			return this.isEmpty();
+		}
+	},
+	StartAddress: {
+		set: function(pos) {
+			this.common.set.call(this, pos);
+			this.board.retrace();
 		}
 	},
 	OperationManager: {
