@@ -75,6 +75,7 @@
 				this.draggingSG = false;
 				cell.setValid(0);
 				cell.draw();
+				this.board.retrace();
 			}
 		}
 	},
@@ -122,16 +123,16 @@
 
 			if (addr.getc().lcnt !== 1) {
 				this.cell.each(function(cell) {
-					if (cell.qcmp === 0) {
-						return;
-					}
-					cell.setQcmp(0);
 					cell.pairedcross = ec;
 					cell.pairedline = ec;
-					cell.draw();
+					if (cell.qcmp !== 0) {
+						cell.setQcmp(0);
+						cell.draw();
+					}
 				});
 				return;
 			}
+
 			var found = new Set();
 			found.add(addr.getc());
 			var prevcell = ec;
@@ -194,13 +195,13 @@
 
 			this.cell.each(function(cell) {
 				var newCmp = found.has(cell) ? 1 : 0;
-				if (cell.qcmp !== newCmp) {
-					cell.setQcmp(newCmp);
-					cell.draw();
-				}
 				if (!newCmp) {
 					cell.pairedcross = ec;
 					cell.pairedline = ec;
+				}
+				if (cell.qcmp !== newCmp) {
+					cell.setQcmp(newCmp);
+					cell.draw();
 				}
 			});
 		}
