@@ -297,7 +297,13 @@
 		getBGCellColor: function(cell) {
 			if (cell.error === 1 || cell.qinfo === 1) {
 				return this.errbcolor1;
-			} else if (!cell.pairedline.isnull) {
+			}
+
+			if (cell.isEmpty()) {
+				return null;
+			}
+
+			if (!cell.pairedline.isnull) {
 				return this.qsubcolor2;
 			} else if (cell.lcnt > 0) {
 				return this.qsubcolor1;
@@ -425,6 +431,7 @@
 
 	AnsCheck: {
 		checklist: [
+			"checkLineOverBorder",
 			"checkPassThroughS",
 			"checkBranchLine",
 			"checkCrossLine",
@@ -463,6 +470,20 @@
 
 				return cell.pairedcross.isnull && cell.lcnt > 0 && cell.qcmp;
 			}, "lnNotValid");
+		},
+
+		checkLineOverBorder: function() {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				if (!cell.isEmpty() || cell.lcnt === 0) {
+					continue;
+				}
+				this.failcode.add("laOnBorder");
+				if (this.checkOnly) {
+					break;
+				}
+				cell.seterr(1);
+			}
 		}
 	}
 });
