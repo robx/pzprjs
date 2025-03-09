@@ -85,6 +85,10 @@
 
 		startpos: null,
 		createExtraObject: function() {
+			var ec = this.emptycell;
+			ec.pairedcross = ec;
+			ec.pairedline = ec;
+
 			this.startpos = new this.klass.StartAddress(1, 1);
 		},
 		initExtraObject: function(col, row) {
@@ -101,32 +105,43 @@
 			this.infolist.forEach(function(info) {
 				info.rebuild();
 			});
+
+			var ec = this.emptycell;
+			this.cell.each(function(cell) {
+				cell.pairedcross = ec;
+				cell.pairedline = ec;
+			});
+
 			this.retrace();
 		},
 
 		retrace: function() {
+			var ec = this.emptycell;
 			var addr = new this.klass.Address();
 			addr.set(this.startpos);
 
 			if (addr.getc().lcnt !== 1) {
 				this.cell.each(function(cell) {
-					if (cell.qcmp !== 0) {
-						cell.setQcmp(0);
-						cell.draw();
+					if (cell.qcmp === 0) {
+						return;
 					}
+					cell.setQcmp(0);
+					cell.pairedcross = ec;
+					cell.pairedline = ec;
+					cell.draw();
 				});
 				return;
 			}
 			var found = new Set();
 			found.add(addr.getc());
-			var prevcell = this.emptycell;
+			var prevcell = ec;
 			var nextborderaddr = new this.klass.Address();
 			var nextcelladdr = new this.klass.Address();
 			var removeaddr = new this.klass.Address();
 
 			do {
 				var dir = 0;
-				
+
 				// Find the next cell to move to, and keep track of direction used
 				for (dir = 1; dir <= 4; dir++) {
 					nextcelladdr.set(addr);
@@ -154,15 +169,14 @@
 				removeaddr.set(addr);
 				var removecell = removeaddr.getc();
 
-				found.add(removecell);
+				if (!found.has(removecell)) {
+					removecell.pairedline = ec;
+					found.add(removecell);
+				}
 
 				while (!removecell.isnull) {
 					// Tag the first available cell in the opposite direction
-					if (
-						removecell.isValid() &&
-						removecell.lcnt === 0 &&
-						!found.has(removecell)
-					) {
+					if (removecell.isValid() && !found.has(removecell)) {
 						break;
 					}
 					removeaddr.movedir(dir, -2);
@@ -170,20 +184,23 @@
 				}
 
 				if (!removecell.isnull) {
-					addr.getc().paired = removecell;
-					removecell.paired = addr.getc();
+					addr.getc().pairedcross = removecell;
+					removecell.pairedline = addr.getc();
 					found.add(removecell);
+				} else {
+					addr.getc().pairedcross = ec;
 				}
 			} while (addr.getc().lcnt === 2);
 
 			this.cell.each(function(cell) {
-				var newCmp = found.has(cell);
+				var newCmp = found.has(cell) ? 1 : 0;
 				if (cell.qcmp !== newCmp) {
 					cell.setQcmp(newCmp);
 					cell.draw();
 				}
 				if (!newCmp) {
-					cell.paired = this.emptycell;
+					cell.pairedcross = ec;
+					cell.pairedline = ec;
 				}
 			});
 		}
@@ -279,10 +296,10 @@
 		getBGCellColor: function(cell) {
 			if (cell.error === 1 || cell.qinfo === 1) {
 				return this.errbcolor1;
+			} else if (!cell.pairedline.isnull) {
+				return this.qsubcolor2;
 			} else if (cell.lcnt > 0) {
 				return this.qsubcolor1;
-			} else if (cell.qcmp > 0) {
-				return this.qsubcolor2;
 			}
 			return null;
 		},
@@ -408,16 +425,17 @@
 	AnsCheck: {
 		checklist: [
 			"checkPassThroughS",
-			"checkLineExist",
 			"checkBranchLine",
 			"checkCrossLine",
+			"checkInvalidMove",
+			"checkDoubleUsed",
 			"checkUnused",
 			"checkOneLine+"
 		],
 
 		checkUnused: function() {
 			this.checkAllCell(function(cell) {
-				return !cell.qcmp;
+				return !cell.qcmp && cell.lcnt === 0;
 			}, "unusedCell");
 		},
 
@@ -427,6 +445,23 @@
 				this.failcode.add("haisuSG");
 				start.seterr(1);
 			}
+		},
+
+		checkDoubleUsed: function() {
+			this.checkAllCell(function(cell) {
+				return !cell.pairedline.isnull && cell.lcnt > 0;
+			}, "lnOnShade");
+		},
+
+		checkInvalidMove: function() {
+			var start = this.board.startpos.getc();
+			this.checkAllCell(function(cell) {
+				if (cell === start) {
+					return false;
+				}
+
+				return cell.pairedcross.isnull && cell.lcnt > 0 && cell.qcmp;
+			}, "lnNotValid");
 		}
 	}
 });
