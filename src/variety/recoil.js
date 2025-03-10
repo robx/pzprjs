@@ -214,20 +214,10 @@
 			this.posinfo_start = this.getAfterPos(key, d, this.board.startpos.getc());
 		},
 		adjustBoardData2: function(key, d) {
-			var bd = this.board,
-				opemgr = this.puzzle.opemgr;
-			var info = this.posinfo_start,
-				isrec;
+			var bd = this.board;
+			var info = this.posinfo_start;
 
-			isrec =
-				key & this.REDUCE && info.isdel && !opemgr.undoExec && !opemgr.redoExec;
-			if (isrec) {
-				opemgr.forceRecord = true;
-			}
-			bd.startpos.set(info.pos.getc());
-			if (isrec) {
-				opemgr.forceRecord = false;
-			}
+			bd.startpos.set(info.pos, false);
 		}
 	},
 	Border: {
@@ -268,8 +258,8 @@
 		}
 	},
 	StartAddress: {
-		set: function(pos) {
-			this.common.set.call(this, pos);
+		set: function(pos, record) {
+			this.common.set.call(this, pos, record);
 			this.board.retrace();
 		}
 	},
