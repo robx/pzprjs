@@ -121,6 +121,10 @@
 				variant: true,
 				volatile: true
 			}); /* pentopia: Allow shading clues */
+			this.add("yajilin_out", false, {
+				variant: true,
+				volatile: true
+			}); /* yajilin: All shaded cells are outside the loop */
 			this.add("koburin_minesweeper", false, {
 				variant: true,
 				volatile: true

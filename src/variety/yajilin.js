@@ -367,6 +367,7 @@
 		enableLineNG: true,
 		posthook: {
 			line: function() {
+				this.board.scanResult = null;
 				var cells = [];
 				for (var i = 0; i < this.sidecell.length; i++) {
 					cells.push(this.sidecell[i]);
@@ -381,7 +382,39 @@
 		}
 	},
 	Board: {
-		hasborder: 1
+		hasborder: 1,
+
+		scanInside: function() {
+			if (this.scanResult !== null) {
+				return this.scanResult;
+			}
+
+			if (
+				this.cell.some(function(cell) {
+					return cell.lcnt !== 0 && cell.lcnt !== 2;
+				})
+			) {
+				this.scanResult = false;
+				return false;
+			}
+
+			for (var y = 2; y < this.maxby; y += 2) {
+				var inside = false;
+				for (var x = 1; x < this.maxbx; x += 2) {
+					if (this.getb(x, y).isLine()) {
+						inside ^= true;
+					}
+					this.getx(x + 1, y).inside = inside;
+				}
+			}
+
+			this.scanResult = true;
+			return true;
+		},
+		rebuildInfo: function() {
+			this.scanResult = null;
+			this.common.rebuildInfo.call(this);
+		}
 	},
 	"Board@yajilin,koburin,lixloop": {
 		redrawAffected: function(cells) {
@@ -547,13 +580,16 @@
 		decodePzpr: function(type) {
 			this.decodeArrowNumber16();
 
+			this.puzzle.setConfig("yajilin_out", this.checkpflag("o"));
 			this.puzzle.setConfig("disptype_yajilin", !this.checkpflag("b") ? 1 : 2);
 		},
 		encodePzpr: function(type) {
 			this.encodeArrowNumber16();
 
-			this.outpflag =
-				this.puzzle.getConfig("disptype_yajilin") === 2 ? "b" : null;
+			var flags = "";
+			flags += this.puzzle.getConfig("yajilin_out") ? "o" : "";
+			flags += this.puzzle.getConfig("disptype_yajilin") === 2 ? "b" : "";
+			this.outpflag = flags.length ? flags : null;
 		},
 
 		decodeKanpen: function() {
@@ -567,10 +603,12 @@
 		decodePzpr: function(type) {
 			this.decodeBorder();
 			this.decodeRoomNumber16();
+			this.puzzle.setConfig("yajilin_out", this.checkpflag("o"));
 		},
 		encodePzpr: function(type) {
 			this.encodeBorder();
 			this.encodeRoomNumber16();
+			this.outpflag = this.puzzle.getConfig("yajilin_out") ? "o" : null;
 		}
 	},
 	"Encode@koburin": {
@@ -578,11 +616,15 @@
 			this.decode4Cell();
 			this.puzzle.setConfig("koburin_minesweeper", this.checkpflag("m"));
 			this.puzzle.setConfig("disptype_yajilin", !this.checkpflag("b") ? 1 : 2);
+			this.puzzle.setConfig("yajilin_out", this.checkpflag("o"));
 		},
 		encodePzpr: function(type) {
 			this.encode4Cell();
 
 			var flags = "";
+			if (this.puzzle.getConfig("yajilin_out")) {
+				flags += "o";
+			}
 			if (this.puzzle.getConfig("koburin_minesweeper")) {
 				flags += "m";
 			}
@@ -596,11 +638,13 @@
 	//---------------------------------------------------------
 	"FileIO@yajilin,lixloop": {
 		decodeData: function() {
+			this.decodeConfigFlag("o", "yajilin_out");
 			this.decodeCellDirecQnum();
 			this.decodeCellAns();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("o", "yajilin_out");
 			this.encodeCellDirecQnum();
 			this.encodeCellAns();
 			this.encodeBorderLine();
@@ -727,12 +771,14 @@
 	},
 	"FileIO@yajilin-regions": {
 		decodeData: function() {
+			this.decodeConfigFlag("o", "yajilin_out");
 			this.decodeAreaRoom();
 			this.decodeCellQnum();
 			this.decodeCellAns();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("o", "yajilin_out");
 			this.encodeAreaRoom();
 			this.encodeCellQnum();
 			this.encodeCellAns();
@@ -754,11 +800,13 @@
 		},
 
 		decodeConfig: function() {
+			this.decodeConfigFlag("o", "yajilin_out");
 			this.decodeConfigFlag("m", "koburin_minesweeper");
 			this.decodeConfigFlag("b", "disptype_yajilin", 2, 1);
 		},
 
 		encodeConfig: function() {
+			this.encodeConfigFlag("o", "yajilin_out");
 			this.encodeConfigFlag("m", "koburin_minesweeper");
 			this.encodeConfigFlag("b", "disptype_yajilin", 2, 1);
 		}
@@ -777,6 +825,7 @@
 			"checkOneLoop",
 			"checkEmptyCell_yajilin+@yajilin,koburin,lixloop",
 			"checkEmptyCell_regions+@yajilin-regions",
+			"checkShadedOutside",
 			"checkNumberHasArrow@yajilin,lixloop"
 		],
 
@@ -808,6 +857,20 @@
 				cell.seterr(1);
 				clist.seterr(1);
 			}
+		},
+
+		checkShadedOutside: function() {
+			if (!this.puzzle.getConfig("yajilin_out")) {
+				return;
+			}
+
+			var bd = this.board;
+			if (!bd.scanInside()) {
+				return;
+			}
+			this.checkAllCell(function(cell) {
+				return cell.isShade() && bd.getx(cell.bx - 1, cell.by - 1).inside;
+			}, "shInside");
 		}
 	},
 	"FailCode@koburin": {

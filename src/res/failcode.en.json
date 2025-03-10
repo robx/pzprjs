@@ -854,7 +854,7 @@
     "shDiag": "Two pieces are diagonally adjacent.",
     "shEndpoint.snake": "A black circle is not on an endpoint.",
     "shIncorrect.curvedata": "A shape does not match the clue.",
-    "shInside.castle": "A shaded cell is inside of the loop.",
+    "shInside": "A shaded cell is inside of the loop.",
     "shLoop.snake": "The snake has no head or tail.",
     "shMidpoint.snake": "A white circle is not a middle.",
     "shMultiple.curvedata": "A shape is connected to multiple clues.",
