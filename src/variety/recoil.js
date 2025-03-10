@@ -121,6 +121,7 @@
 			addr.set(this.startpos);
 
 			if (addr.getc().lcnt !== 1) {
+				this.mainpath = null;
 				this.cell.each(function(cell) {
 					cell.pairedcross = ec;
 					cell.pairedline = ec;
@@ -131,6 +132,8 @@
 				});
 				return;
 			}
+
+			this.mainpath = this.startpos.getc().path;
 
 			var found = new Set();
 			found.add(addr.getc());
@@ -468,8 +471,9 @@
 
 		checkInvalidMove: function() {
 			var start = this.board.startpos.getc();
+			var mainpath = this.board.mainpath;
 			this.checkAllCell(function(cell) {
-				if (cell === start) {
+				if (cell === start || cell.path !== mainpath) {
 					return false;
 				}
 
