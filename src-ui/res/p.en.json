@@ -198,6 +198,7 @@
     "nuriuzu_connect": "All shaded cells must be connected",
     "bdwalk_height": "Maximum height is unknown",
     "pentopia_transparent": "Transparent mode (clues may be shaded)",
+    "yajilin_out": "All shaded cells are outside the loop",
     "koburin_minesweeper": "Minesweeper mode (numbers include diagonal cells)",
     "akichi_maximum": "Maximum numbers may be reduced",
     "magnets_anti": "Anti-Magnets (adjacent poles of different magnets must be equal)",

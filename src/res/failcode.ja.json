@@ -614,7 +614,7 @@
     "shDiag.snake": "スネークが自分自身とタテヨコナナメに接しています。",
     "shEndpoint.snake": "頭または尾になっていない黒丸があります。",
     "shIncorrect.curvedata": "記号の形に合っていない線があります。",
-    "shInside.castle": "黒マスがループの中にあります。",
+    "shInside": "黒マスがループの中にあります。",
     "shLoop.snake": "頭または尾がありません。",
     "shMidpoint.snake": "胴体になっていない白丸があります。",
     "shMultiple.curvedata": "2つ以上の記号マスを通る線があります。",

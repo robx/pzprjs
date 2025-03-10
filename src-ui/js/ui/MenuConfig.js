@@ -84,7 +84,10 @@
 			switch (ui.puzzle.pid) {
 				case "yajilin":
 				case "lixloop":
-					idname = "disptype_yajilin";
+					idname = ["yajilin_out", "disptype_yajilin"];
+					break;
+				case "yajilin-regions":
+					idname = "yajilin_out";
 					break;
 				case "bosanowa":
 					idname = "disptype_bosanowa";
@@ -116,7 +119,7 @@
 					idname = "pentopia_transparent";
 					break;
 				case "koburin":
-					idname = ["disptype_yajilin", "koburin_minesweeper"];
+					idname = ["yajilin_out", "disptype_yajilin", "koburin_minesweeper"];
 					break;
 				case "akichi":
 					idname = "akichi_maximum";
