@@ -21,6 +21,8 @@
 				if (this.mousestart) {
 					this.dispRoad();
 				}
+			} else if (this.inputMode === "diraux") {
+				this.inputarrow_cell();
 			} else {
 				this.common.mouseinput.call(this);
 			}
@@ -82,7 +84,7 @@
 	"MouseEvent@arrowflow": {
 		inputModes: {
 			edit: ["number", "clear", "info-road"],
-			play: ["arrow", "clear", "info-road"]
+			play: ["diraux", "arrow", "clear", "info-road"]
 		}
 	},
 
