@@ -13,7 +13,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["border", "arrow", "clear", "info-road"],
-			play: ["arrow", "clear", "info-road"]
+			play: ["diraux", "arrow", "clear", "info-road"]
 		},
 		mouseinput: function() {
 			// オーバーライド
@@ -44,6 +44,14 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.inputqnum();
 				}
+			}
+		},
+		inputarrow_cell_main: function(cell, dir) {
+			if (this.btn === "left" && this.inputMode !== "diraux") {
+				cell.setNum(dir);
+			} else {
+				var value = 1 << (dir + 1);
+				cell.setQsub(cell.qsub ^ value);
 			}
 		},
 		dispRoad: function() {
@@ -282,6 +290,8 @@
 				this.drawQuesNumbers();
 			}
 
+			this.drawArrowAuxMarks();
+
 			this.drawChassis();
 
 			this.drawCursor();
@@ -313,6 +323,53 @@
 					g.fillCircle(cell.bx * this.bw, cell.by * this.bh, rsize);
 				} else {
 					g.vhide();
+				}
+			}
+		},
+
+		drawArrowAuxMarks: function() {
+			var g = this.vinc("cell_ticks", "auto");
+			g.lineWidth = (1 + this.cw / 40) | 0;
+			var size = this.cw * 0.15;
+			if (size < 3) {
+				size = 3;
+			}
+
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				var bx = cell.bx,
+					by = cell.by,
+					px = bx * this.bw,
+					py = by * this.bh;
+				var color = "rgb(127,127,255)";
+				g.strokeStyle = color;
+				var tickMods = [
+					[-1, 1],
+					[1, 1],
+					[-1, 0],
+					[1, 0]
+				];
+				for (var m = 0; m < tickMods.length; m++) {
+					g.vid = "ut_cell" + m + "_" + cell.id;
+
+					if (cell.qsub & (1 << (m + 2))) {
+						var xmult = tickMods[m][0],
+							isvert = tickMods[m][1];
+						var c1 = !isvert ? px : py,
+							c2 = !isvert ? py : px,
+							p1 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 + size],
+							p2 = [c1 + xmult * this.bw - 0.5 * xmult * size, c2],
+							p3 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 - size];
+						g.beginPath();
+						g.moveTo(p1[+!!isvert], p1[+!isvert]);
+						g.lineTo(p2[+!!isvert], p2[+!isvert]);
+						g.lineTo(p3[+!!isvert], p3[+!isvert]);
+						g.moveTo(p2[+!!isvert], p2[+!isvert]);
+						g.closePath();
+						g.stroke();
+					} else {
+						g.vhide();
+					}
 				}
 			}
 		}
@@ -356,6 +413,28 @@
 			}
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
+		},
+		decodeCellAnumsub: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca[0] === "+") {
+					cell.qsub = +ca.substr(1);
+				} else if (ca !== ".") {
+					cell.anum = +ca;
+				}
+			});
+		},
+		encodeCellAnumsub: function() {
+			this.encodeCell(function(cell) {
+				var ca = ".";
+				if (cell.anum !== -1) {
+					ca = "" + cell.anum;
+				} else if (cell.qsub !== 0) {
+					ca = "+" + cell.qsub;
+				} else {
+					ca = ".";
+				}
+				return ca + " ";
+			});
 		}
 	},
 
