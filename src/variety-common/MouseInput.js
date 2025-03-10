@@ -211,7 +211,11 @@ pzpr.classmgr.makeCommon({
 			} else if (cell.numberWithMB) {
 				subtype = 2;
 				qs = cell.qsub;
-			} else if (puzzle.pid === "roma" || puzzle.pid === "yinyang") {
+			} else if (
+				puzzle.pid === "roma" ||
+				puzzle.pid === "arrowflow" ||
+				puzzle.pid === "yinyang"
+			) {
 				subtype = 0;
 			} // 全マス埋めるタイプのパズルは補助記号なし
 			else if (cell.numberAsObject || puzzle.pid === "hebi") {
