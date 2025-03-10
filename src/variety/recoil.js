@@ -9,7 +9,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: [],
-			play: ["line", "peke", "diraux", "subcircle", "subcross", "info-line"]
+			play: ["line", "peke", "diraux", "subcross", "info-line"]
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode && this.btn === "right") {
@@ -20,7 +20,7 @@
 				} else if (this.mousemove) {
 					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
-					this.inputMB();
+					this.inputFixedQsub(2);
 				}
 			} else if (this.puzzle.playmode && this.btn === "left") {
 				if (this.mousestart || this.mousemove) {
@@ -28,7 +28,7 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.clickdiraux();
 					if (this.notInputted()) {
-						this.inputMB();
+						this.inputFixedQsub(2);
 					}
 				}
 			} else if (this.puzzle.editmode) {
