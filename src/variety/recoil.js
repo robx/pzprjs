@@ -278,6 +278,8 @@
 		gridcolor_type: "LIGHT",
 		qsubcolor2: "rgb(224,224,224)",
 
+		autocmp: "recoil",
+
 		paint: function() {
 			this.drawBGCells();
 			this.drawValidGrid();
@@ -297,7 +299,7 @@
 				return this.errbcolor1;
 			}
 
-			if (cell.isEmpty()) {
+			if (cell.isEmpty() || !this.puzzle.execConfig("autocmp")) {
 				return null;
 			}
 
