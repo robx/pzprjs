@@ -186,6 +186,7 @@ function toBGimage(pid) {
 		"portal",
 		"ququ",
 		"rassi",
+		"recoil",
 		"regional-poly",
 		"remlen",
 		"retroships",
