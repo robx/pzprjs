@@ -303,7 +303,7 @@
 
 			if (!cell.pairedline.isnull) {
 				return this.qsubcolor2;
-			} else if (cell.lcnt > 0) {
+			} else if (cell.lcnt > 0 && cell.qcmp) {
 				return this.qsubcolor1;
 			}
 			return null;
