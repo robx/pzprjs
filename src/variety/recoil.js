@@ -276,7 +276,7 @@
 	// 画像表示系
 	Graphic: {
 		gridcolor_type: "LIGHT",
-		qsubcolor2: "rgb(224,224,224)",
+		qsubcolor2: "#c8c8c8",
 
 		autocmp: "recoil",
 
@@ -299,16 +299,18 @@
 				return this.errbcolor1;
 			}
 
-			if (cell.isEmpty() || !this.puzzle.execConfig("autocmp")) {
+			if (cell.isEmpty()) {
 				return null;
 			}
 
-			if (!cell.pairedline.isnull) {
-				return this.qsubcolor2;
-			} else if (cell.lcnt > 0 && cell.qcmp) {
-				return this.qsubcolor1;
+			if (this.puzzle.execConfig("autocmp")) {
+				if (!cell.pairedline.isnull) {
+					return this.qsubcolor2;
+				} else if (cell.lcnt > 0 && cell.qcmp) {
+					return this.qsubcolor1;
+				}
 			}
-			return null;
+			return "#f8f8f8";
 		},
 
 		getQuesBorderColor: function(border) {
