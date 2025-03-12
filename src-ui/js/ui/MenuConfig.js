@@ -139,6 +139,9 @@
 				case "aqre":
 					idname = "aqre_borders";
 					break;
+				case "fillomino":
+					idname = "fillomino_tri";
+					break;
 				case "slither":
 				case "tslither":
 				case "swslither":

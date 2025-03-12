@@ -145,6 +145,10 @@
 				variant: true,
 				volatile: true
 			}); /* Borders must touch exactly one shaded cell */
+			this.add("fillomino_tri", false, {
+				variant: true,
+				volatile: true
+			}); /* Maximum number is 3 */
 			this.add("slither_full", false, {
 				variant: true,
 				volatile: true
@@ -486,6 +490,14 @@
 					break;
 				case "aqre_borders":
 					exec = pid === "aqre";
+					break;
+				case "fillomino_tri":
+					exec = pid === "fillomino";
+					break;
+				case "yajilin_out":
+					exec =
+						["yajilin", "yajilin-regions", "koburin", "lixloop"].indexOf(pid) >=
+						0;
 					break;
 				case "slither_full":
 					exec =
