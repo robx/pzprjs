@@ -260,6 +260,15 @@ ui.keypopup = {
 			type = [0, 0];
 		}
 
+		/* Change maximum number for Fillomino variant */
+		if (
+			ui.puzzle.playeronly &&
+			ui.puzzle.pid === "fillomino" &&
+			ui.puzzle.getConfig("fillomino_tri")
+		) {
+			type = [3, 3];
+		}
+
 		this.paneltype = { 1: !ui.puzzle.playeronly ? type[0] : 0, 3: type[1] };
 		if (!this.paneltype[1] && !this.paneltype[3]) {
 			return;
@@ -536,7 +545,11 @@ ui.keypopup = {
 	// kp.gentable8()  キーポップアップの0～8を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	gentable3: function(mode) {
-		this.generate_main(["1", "2", "3", "0", " ", ["-", "?"]], 3);
+		var itemlist = ["1", "2", "3", "0", " "];
+		if (mode === 1) {
+			itemlist.push(["-", "?"]);
+		}
+		this.generate_main(itemlist, 3);
 	},
 	gentable5: function(mode) {
 		this.generate_main(
