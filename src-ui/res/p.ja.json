@@ -294,5 +294,6 @@
     "inputmode.fire": "火",
     "inputmode.mark-checkerboard": "市松模様",
     "pause.header": "ポーズ中",
-    "pause.desc": "再開をクリックするか、F4キーを押してください"
+    "pause.desc": "再開をクリックするか、F4キーを押してください",
+    "fillomino_tri": "すべての数字は3以下になります"
 }
