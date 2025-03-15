@@ -86,8 +86,9 @@
 		startpos: null,
 		createExtraObject: function() {
 			var ec = this.emptycell;
-			ec.pairedcross = ec;
+			ec.pairedblock = ec;
 			ec.pairedline = ec;
+			ec.entrydir = 0;
 
 			this.startpos = new this.klass.StartAddress(1, 1);
 		},
@@ -108,8 +109,9 @@
 
 			var ec = this.emptycell;
 			this.cell.each(function(cell) {
-				cell.pairedcross = ec;
+				cell.pairedblock = ec;
 				cell.pairedline = ec;
+				cell.entrydir = 0;
 			});
 
 			this.retrace();
@@ -123,8 +125,9 @@
 			if (addr.getc().lcnt !== 1) {
 				this.mainpath = null;
 				this.cell.each(function(cell) {
-					cell.pairedcross = ec;
+					cell.pairedblock = ec;
 					cell.pairedline = ec;
+					cell.entrydir = 0;
 					if (cell.qcmp !== 0) {
 						cell.setQcmp(0);
 						cell.draw();
@@ -160,6 +163,7 @@
 					if (nextborderaddr.getb().isLine()) {
 						prevcell = addr.getc();
 						addr.set(nextcelladdr);
+						addr.getc().entrydir = dir;
 						break;
 					}
 				}
@@ -187,19 +191,20 @@
 				}
 
 				if (!removecell.isnull) {
-					addr.getc().pairedcross = removecell;
+					addr.getc().pairedblock = removecell;
 					removecell.pairedline = addr.getc();
 					found.add(removecell);
 				} else {
-					addr.getc().pairedcross = ec;
+					addr.getc().pairedblock = ec;
 				}
 			} while (addr.getc().lcnt === 2);
 
 			this.cell.each(function(cell) {
 				var newCmp = found.has(cell) ? 1 : 0;
 				if (!newCmp) {
-					cell.pairedcross = ec;
+					cell.pairedblock = ec;
 					cell.pairedline = ec;
+					cell.entrydir = 0;
 				}
 				if (cell.qcmp !== newCmp) {
 					cell.setQcmp(newCmp);
@@ -466,13 +471,29 @@
 		checkInvalidMove: function() {
 			var start = this.board.startpos.getc();
 			var mainpath = this.board.mainpath;
-			this.checkAllCell(function(cell) {
+
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
 				if (cell === start || cell.path !== mainpath) {
-					return false;
+					continue;
+				}
+				if (!(cell.pairedblock.isnull && cell.lcnt > 0 && cell.qcmp)) {
+					continue;
 				}
 
-				return cell.pairedcross.isnull && cell.lcnt > 0 && cell.qcmp;
-			}, "lnNotValid");
+				this.failcode.add("lnNotValid");
+				if (this.checkOnly) {
+					break;
+				}
+
+				var addr = new this.klass.Address();
+				addr.set(cell);
+				addr.movedir(cell.entrydir, -1);
+
+				this.board.border.setnoerr();
+				addr.getb().seterr(1);
+				cell.seterr(1);
+			}
 		},
 
 		checkLineOverBorder: function() {
