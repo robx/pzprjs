@@ -297,6 +297,40 @@
 
 			this.drawPekes();
 			this.drawBorderAuxDir();
+			this.drawDirectionError();
+		},
+
+		getLineColor: function(border) {
+			var color = this.common.getLineColor.call(this, border);
+			var info = border.error || border.qinfo;
+			if (border.isLine() && info > 10) {
+				color = "rgb(100,0,0)";
+			}
+			return color;
+		},
+
+		drawDirectionError: function() {
+			var g = this.vinc("border_direrr", "crispEdges");
+			var ssize = this.cw * 0.12;
+
+			g.lineWidth = this.cw * 0.12;
+
+			var blist = this.range.borders;
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i],
+					px = border.bx * this.bw,
+					py = border.by * this.bh,
+					dir = border.error - 10;
+
+				// 向き補助記号の描画
+				g.vid = "b_derr_" + border.id;
+				if (dir >= 1 && dir <= 8) {
+					g.strokeStyle = this.errlinecolor;
+					this.strokeSingleAuxDir(g, dir, px, py, ssize);
+				} else {
+					g.vhide();
+				}
+			}
 		},
 
 		getBGCellColor: function(cell) {
@@ -491,8 +525,7 @@
 				addr.movedir(cell.entrydir, -1);
 
 				this.board.border.setnoerr();
-				addr.getb().seterr(1);
-				cell.seterr(1);
+				addr.getb().seterr(cell.entrydir + 10);
 			}
 		},
 
