@@ -173,6 +173,7 @@
     "autocmp.akari": "Paint background of each illuminated block",
     "autocmp.kouchoku": "Grey each letter which links over two segments",
     "autocmp.border": "Grey border between different areas",
+    "autocmp.recoil": "Paint background of path obstacles",
     "autoerr.tool.hitori": "Show overlapped number as red",
     "autoerr.tool.gokigen": "Draw loop line as red",
     "autoerr.tool.wagiri": "Draw loop line as bold",

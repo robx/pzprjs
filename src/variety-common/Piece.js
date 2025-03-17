@@ -23,9 +23,11 @@ pzpr.classmgr.makeCommon({
 				this.board.exchangestartgoal();
 			}
 		},
-		set: function(pos) {
+		set: function(pos, record) {
 			var pos0 = this.getaddr();
-			this.addOpe(pos.bx, pos.by);
+			if (record !== false) {
+				this.addOpe(pos.bx, pos.by);
+			}
 
 			this.bx = pos.bx;
 			this.by = pos.by;

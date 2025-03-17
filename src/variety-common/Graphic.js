@@ -1576,66 +1576,70 @@ pzpr.classmgr.makeCommon({
 				g.vid = "b_daux_" + border.id;
 				if (dir >= 1 && dir <= 8) {
 					g.strokeStyle = !border.trial ? "rgb(64,64,64)" : this.linetrialcolor;
-					g.beginPath();
-					switch (dir) {
-						case border.UP:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize * 2,
-								+ssize,
-								0,
-								-ssize,
-								+ssize * 2,
-								+ssize,
-								false
-							);
-							break;
-						case border.DN:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize * 2,
-								-ssize,
-								0,
-								+ssize,
-								+ssize * 2,
-								-ssize,
-								false
-							);
-							break;
-						case border.LT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								+ssize,
-								-ssize * 2,
-								-ssize,
-								0,
-								+ssize,
-								+ssize * 2,
-								false
-							);
-							break;
-						case border.RT:
-							g.setOffsetLinePath(
-								px,
-								py,
-								-ssize,
-								-ssize * 2,
-								+ssize,
-								0,
-								-ssize,
-								+ssize * 2,
-								false
-							);
-							break;
-					}
-					g.stroke();
+					this.strokeSingleAuxDir(g, dir, px, py, ssize);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+		strokeSingleAuxDir: function(g, dir, px, py, ssize) {
+			var piece = this.board.emptycell;
+
+			switch (dir) {
+				case piece.UP:
+					g.setOffsetLinePath(
+						px,
+						py,
+						-ssize * 2,
+						+ssize,
+						0,
+						-ssize,
+						+ssize * 2,
+						+ssize,
+						false
+					);
+					break;
+				case piece.DN:
+					g.setOffsetLinePath(
+						px,
+						py,
+						-ssize * 2,
+						-ssize,
+						0,
+						+ssize,
+						+ssize * 2,
+						-ssize,
+						false
+					);
+					break;
+				case piece.LT:
+					g.setOffsetLinePath(
+						px,
+						py,
+						+ssize,
+						-ssize * 2,
+						-ssize,
+						0,
+						+ssize,
+						+ssize * 2,
+						false
+					);
+					break;
+				case piece.RT:
+					g.setOffsetLinePath(
+						px,
+						py,
+						-ssize,
+						-ssize * 2,
+						+ssize,
+						0,
+						-ssize,
+						+ssize * 2,
+						false
+					);
+					break;
+			}
+			g.stroke();
 		},
 
 		//---------------------------------------------------------------------------

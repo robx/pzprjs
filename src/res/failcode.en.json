@@ -482,6 +482,7 @@
     "haisuError.haisu": "A number is not passed on the right visit.",
     "haisuError.kaisu": "A region visit contains an incorrect amount of circles.",
     "haisuSG.haisu": "The line goes through S/G.",
+    "haisuSG.recoil": "The start point has multiple lines.",
     "invalid": "Invalid Error",
     "curvingNoTurns.curving": "A path between circles does not turn.",
     "curvingOneTurn.curving": "A path between circles turns only once.",
@@ -597,6 +598,7 @@
     "lnNoIce.balloon": "A string doesn't connect to a balloon.",
     "lnNoNum": "A line has no number.",
     "lnNotCrossMk": "A cross-joint cell doesn't have four-way lines.",
+    "lnNotValid.recoil": "A move doesn't add a recoiled cell.",
     "lnNoTip.pencils": "A line is not connected to a pencil tip.",
     "lnNotRect.nagenawa": "There is a non-rectangle loop.",
     "lnNotSq.tajmahal": "A segment doesn't form a square.",
@@ -606,6 +608,7 @@
     "lnOnDot.midloop": "A line doesn't go over a circle.",
     "lnOnShade.dotchi": "A line goes over a shaded circle.",
     "lnOnShade.kaidan": "A rectangle overlaps an obstacle.",
+    "lnOnShade.recoil": "There is a line on a recoiled cell.",
     "lnOnShade.yajisoko": "A line goes over a shaded cell.",
     "lnOnShade": "There is a line on a shaded cell.",
     "lnOverlap.kouchoku": "Some segments overlap.",
@@ -877,5 +880,5 @@
     "tentAround.tents": "Some tents touch.",
     "tooFewUnspecified.railpool": "The region contains fewer unspecified segment lengths than question marks.",
     "tooManyUnspecified.railpool": "The region contains more unspecified segment lengths than question marks.",
-    "unusedCell.pencils": "A cell is unused."
+    "unusedCell": "A cell is unused."
 }
