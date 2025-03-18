@@ -85,8 +85,9 @@
 		hascross: 2,
 
 		rows: 6,
-		cols: 6,
-
+		cols: 6
+	},
+	"Board@tontti": {
 		addExtraInfo: function() {
 			this.tonttigraph = this.addInfoList(this.klass.AreaTonttiGraph);
 		},
@@ -103,7 +104,7 @@
 	"Board@tjunction": {
 		disable_subclear: true
 	},
-	Border: {
+	"Border@tontti": {
 		posthook: {
 			line: function(val) {
 				// TODO Actually fix the tonttigraph not merging nodes
@@ -111,13 +112,41 @@
 					this.board.tonttigraph.rebuild();
 				}
 			}
-		}
-	},
-	"Border@tontti": {
+		},
 		enableLineNG: true
 	},
-	// TODO: disable lines between two obstacles
-	"AreaTonttiGraph:AreaRoomGraph": {
+	"Border@tjunction": {
+		// TODO: disable lines between two obstacles
+	},
+	"LineGraph@tjunction": {
+		enabled: true,
+
+		rebuild2: function() {
+			var excells = this.board.excell;
+			for (var c = 0; c < excells.length; c++) {
+				this.setComponentRefs(excells[c], null);
+				this.resetObjNodeList(excells[c]);
+			}
+
+			this.common.rebuild2.call(this);
+		}
+	},
+	"AreaRoomGraph@tjunction": {
+		countprop: "l2cnt",
+		enabled: true,
+		relation: {
+			"cell.ques": "node",
+			"border.line": "separator"
+		},
+		isedgevalidbylinkobj: function(border) {
+			return border.isLine();
+		},
+		isnodevalid: function(cell) {
+			return !cell.isNum();
+		}
+	},
+
+	"AreaTonttiGraph:AreaRoomGraph@tontti": {
 		enabled: true,
 		pointgroup: "cross",
 		relation: { "border.line": "separator" },
@@ -487,15 +516,29 @@
 			}, "nmConnBarWrong");
 		},
 		checkConnectAllJunction: function() {
-			// TODO connectivity
-			// var bd = this.board,
-			// 	paths = bd.linegraph.components;
-			// if (paths.length > 1) {
-			// 	this.failcode.add("lcDivided");
-			// 	bd.border.setnoerr();
-			// 	paths[0].setedgeerr(1);
-			// 	paths[0].clist.seterr(4);
-			// }
+			var bd = this.board,
+				paths = bd.roommgr.components;
+
+			var found = null;
+
+			for (var p = 0; p < paths.length; p++) {
+				var path = paths[p];
+
+				if (
+					!path.clist.some(function(cell) {
+						return cell.lcnt === 3;
+					})
+				) {
+					continue;
+				}
+
+				if (found) {
+					this.failcode.add("lcDivided");
+					found.clist.seterr(1);
+					return;
+				}
+				found = path;
+			}
 		},
 
 		getJunctionShapes: function() {
