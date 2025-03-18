@@ -7,7 +7,7 @@
 })(["tontti", "tjunction"], {
 	//---------------------------------------------------------
 	// マウス入力系
-	MouseEvent: {
+	"MouseEvent@tontti": {
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["line", "peke", "subcircle", "subcross", "clear"]
@@ -25,9 +25,7 @@
 					if (this.inputpeke_ifborder()) {
 						return;
 					}
-					if (this.pid === "tontti") {
-						this.inputMB();
-					}
+					this.inputMB();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
@@ -40,6 +38,11 @@
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["line", "clear"]
+		},
+		autoedit_func: "qnum",
+		mouseinputAutoPlay: function() {
+			/* Only support Line without peke */
+			this.inputLine();
 		}
 	},
 
