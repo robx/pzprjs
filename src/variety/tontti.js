@@ -467,7 +467,14 @@
 		}
 	},
 	"AnsCheck@tjunction": {
-		checklist: ["checkSameConnected", "checkOutgoingLine", "checkNotBranch"],
+		checklist: [
+			"checkSameAdjacent",
+			"checkSameShadedConnected",
+
+			"checkOutgoingLine",
+			"checkNotBranch",
+			"checkConnectAllJunction"
+		],
 
 		checkNotBranch: function() {
 			this.checkAllCell(function(cell) {
@@ -479,7 +486,17 @@
 				return cell.isValidNum() && cell.qnum !== cell.lcnt;
 			}, "nmConnBarWrong");
 		},
-		// TODO connectivity
+		checkConnectAllJunction: function() {
+			// TODO connectivity
+			// var bd = this.board,
+			// 	paths = bd.linegraph.components;
+			// if (paths.length > 1) {
+			// 	this.failcode.add("lcDivided");
+			// 	bd.border.setnoerr();
+			// 	paths[0].setedgeerr(1);
+			// 	paths[0].clist.seterr(4);
+			// }
+		},
 
 		getJunctionShapes: function() {
 			if (this._info.junctions) {
@@ -507,7 +524,7 @@
 			return (this._info.junctions = ret);
 		},
 
-		checkSameConnected: function() {
+		checkSameAdjacent: function() {
 			var junctions = this.getJunctionShapes();
 
 			this.checkSideCell(function(cell1, cell2) {
@@ -520,7 +537,34 @@
 
 				return t1 && t1 === t2;
 			}, "lnAdjacent");
+		},
+		checkSameShadedConnected: function() {
+			var junctions = this.getJunctionShapes();
+
+			this.checkAllCell(function(cell) {
+				if (!cell.isNum()) {
+					return false;
+				}
+
+				var dirs = ["left", "right", "top", "bottom"];
+				var found = {};
+
+				for (var i = 0; i < 4; i++) {
+					var dir = dirs[i];
+					if (!cell.adjborder[dir].isLine()) {
+						continue;
+					}
+					var other = cell.adjacent[dir];
+					var t = junctions[other.id];
+					if (t && found[t]) {
+						found[t].seterr(1);
+						other.seterr(1);
+						return true;
+					}
+					found[t] = other;
+				}
+				return false;
+			}, "csSameJunction");
 		}
-		// TODO uniqueness touching shaded cells
 	}
 });
