@@ -489,7 +489,7 @@
     "nmAround.ripple": "同じ数字がタテヨコナナメに隣接しています。",
     "nmBorderNe.nawabari": "数字の周りにある境界線の本数が違います。",
     "nmCircleNe.crossstitch": "丸囲みの数字と、線が通る格子点の数が異なります。",
-    "nmConnBarWrong.tateyoko": "黒マスに繋がる線の数が正しくありません。",
+    "nmConnBarWrong": "黒マスに繋がる線の数が正しくありません。",
     "nmConnDiff.arukone": "異なるアルファベットがつながっています。",
     "nmConnDiff.kouchoku": "異なる文字が直接繋がっています。",
     "nmConnDiff.numlin": "異なる数字がつながっています。",

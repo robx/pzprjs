@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["tontti"], {
+})(["tontti", "tjunction"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -25,13 +25,21 @@
 					if (this.inputpeke_ifborder()) {
 						return;
 					}
-					this.inputMB();
+					if (this.pid === "tontti") {
+						this.inputMB();
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
 					this.inputqnum();
 				}
 			}
+		}
+	},
+	"MouseEvent@tjunction": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["line", "clear"]
 		}
 	},
 
@@ -59,6 +67,10 @@
 			return this.getNum() !== -1;
 		}
 	},
+	"Cell@tjunction": {
+		minnum: 0,
+		maxnum: 4
+	},
 	CellList: {
 		singleQnumCell: true
 	},
@@ -78,7 +90,6 @@
 		addExtraInfo: function() {
 			this.tonttigraph = this.addInfoList(this.klass.AreaTonttiGraph);
 		},
-
 		setposCrosses: function() {
 			this.common.setposCrosses.call(this);
 
@@ -89,9 +100,10 @@
 			}
 		}
 	},
+	"Board@tjunction": {
+		disable_subclear: true
+	},
 	Border: {
-		enableLineNG: true,
-
 		posthook: {
 			line: function(val) {
 				// TODO Actually fix the tonttigraph not merging nodes
@@ -101,6 +113,10 @@
 			}
 		}
 	},
+	"Border@tontti": {
+		enableLineNG: true
+	},
+	// TODO: disable lines between two obstacles
 	"AreaTonttiGraph:AreaRoomGraph": {
 		enabled: true,
 		pointgroup: "cross",
@@ -203,10 +219,16 @@
 			this.drawBGCrosses();
 			this.drawGrid();
 			this.drawBorders();
-			this.drawDotCells();
 
-			this.drawQuesNumbers();
+			if (this.pid === "tontti") {
+				this.drawDotCells();
+			}
+
 			this.drawLines();
+			if (this.pid === "tjunction") {
+				this.drawQuesCells();
+			}
+			this.drawQuesNumbers();
 			this.drawPekes();
 
 			this.drawChassis();
@@ -319,6 +341,11 @@
 			return this.outputImage ? 0 : 0.5;
 		}
 	},
+	"Graphic@tjunction": {
+		hideHatena: true,
+		fgcellcolor_func: "qnum",
+		numbercolor_func: "fixed_shaded"
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -328,6 +355,14 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16();
+		}
+	},
+	"Encode@tjunction": {
+		decodePzpr: function(type) {
+			this.decode4Cell();
+		},
+		encodePzpr: function(type) {
+			this.encode4Cell();
 		}
 	},
 	FileIO: {
@@ -345,7 +380,7 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
+	"AnsCheck@tontti": {
 		checklist: [
 			"checkCrossLine",
 			"checkLineOverlap",
@@ -430,5 +465,62 @@
 				"bkSizeNe"
 			);
 		}
+	},
+	"AnsCheck@tjunction": {
+		checklist: ["checkSameConnected", "checkOutgoingLine", "checkNotBranch"],
+
+		checkNotBranch: function() {
+			this.checkAllCell(function(cell) {
+				return !cell.isNum() && cell.lcnt !== 3;
+			}, "lnNoBranch");
+		},
+		checkOutgoingLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isValidNum() && cell.qnum !== cell.lcnt;
+			}, "nmConnBarWrong");
+		},
+		// TODO connectivity
+
+		getJunctionShapes: function() {
+			if (this._info.junctions) {
+				return this._info.junctions;
+			}
+
+			var ret = {};
+			var bd = this.board;
+
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.isNum() || cell.lcnt !== 3) {
+					continue;
+				}
+				for (var dir = 1; dir <= 4; dir++) {
+					var addr = cell.getaddr();
+					addr.movedir(dir, 1);
+					if (!addr.getb().isLine()) {
+						break;
+					}
+				}
+				ret[c] = dir;
+			}
+
+			return (this._info.junctions = ret);
+		},
+
+		checkSameConnected: function() {
+			var junctions = this.getJunctionShapes();
+
+			this.checkSideCell(function(cell1, cell2) {
+				if (cell1.group !== "cell" || cell2.group !== "cell") {
+					return false;
+				}
+
+				var t1 = junctions[cell1.id],
+					t2 = junctions[cell2.id];
+
+				return t1 && t1 === t2;
+			}, "lnAdjacent");
+		}
+		// TODO uniqueness touching shaded cells
 	}
 });

@@ -432,6 +432,7 @@
 			tilecity: [0, 0, "タイルシティー", "Tile City"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
 			timebomb: [0, 0, "時限爆弾", "Time Bomb", "bonsan"],
+			tjunction: [0, 0, "T-Junction", "T-Junction", "tontti"],
 			toichika: [0, 0, "遠い誓い", "Toichika"],
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
 			tontonbeya: [0, 0, "とんとんべや", "Tontonbeya", "hakoiri"],
