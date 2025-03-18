@@ -20,7 +20,7 @@
 				} else if (this.mousemove) {
 					this.inputdiraux_mousemove();
 				} else if (this.mouseend && this.notInputted()) {
-					this.inputFixedQsub(2);
+					this.inputMB();
 				}
 			} else if (this.puzzle.playmode && this.btn === "left") {
 				if (this.mousestart || this.mousemove) {
@@ -28,7 +28,7 @@
 				} else if (this.mouseend && this.notInputted()) {
 					this.clickdiraux();
 					if (this.notInputted()) {
-						this.inputFixedQsub(2);
+						this.inputMB();
 					}
 				}
 			} else if (this.puzzle.editmode) {
@@ -298,6 +298,31 @@
 			this.drawPekes();
 			this.drawBorderAuxDir();
 			this.drawDirectionError();
+		},
+
+		drawMBs: function() {
+			var g = this.vinc("cell_mb", "auto");
+			var rsize = this.cw * 0.3;
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_MB_" + cell.id;
+				if (cell.qsub > 0) {
+					var px = cell.bx * this.bw;
+					var py = cell.by * this.bh;
+					g.lineWidth = cell.qsub === 2 ? 2 : 1;
+					g.strokeStyle = cell.trial
+						? "rgb(192, 192, 192)"
+						: cell.qsub === 2
+						? "rgb(40, 40, 40)"
+						: this.mbcolor;
+					g.strokeCross(px, py, rsize);
+				} else {
+					g.vhide();
+				}
+			}
 		},
 
 		getLineColor: function(border) {
