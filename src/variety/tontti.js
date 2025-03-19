@@ -72,7 +72,19 @@
 	},
 	"Cell@tjunction": {
 		minnum: 0,
-		maxnum: 4
+		maxnum: 4,
+
+		posthook: {
+			qnum: function() {
+				for (var dir in this.adjborder) {
+					var border = this.adjborder[dir];
+
+					if (border.isLine() && border.checkStableLine(1)) {
+						border.removeLine();
+					}
+				}
+			}
+		}
 	},
 	CellList: {
 		singleQnumCell: true
@@ -119,7 +131,16 @@
 		enableLineNG: true
 	},
 	"Border@tjunction": {
-		// TODO: disable lines between two obstacles
+		checkStableLine: function(num) {
+			if (!num) {
+				return false;
+			}
+
+			var c1 = this.sidecell[0],
+				c2 = this.sidecell[1];
+
+			return c1.isNum() && c2.isNum();
+		}
 	},
 	"LineGraph@tjunction": {
 		enabled: true,
