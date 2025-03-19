@@ -218,6 +218,7 @@ function toBGimage(pid) {
 		"tetrominous",
 		"tilecity",
 		"timebomb",
+		"tjunction",
 		"tontonbeya",
 		"trainstations",
 		"tslither",
