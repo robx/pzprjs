@@ -92,6 +92,9 @@
 	ExCell: {
 		noLP: function(dir) {
 			return false;
+		},
+		isNum: function() {
+			return false;
 		}
 	},
 	Board: {
