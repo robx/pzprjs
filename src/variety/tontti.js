@@ -97,6 +97,11 @@
 			return false;
 		}
 	},
+	"ExCell@tjunction": {
+		isNum: function() {
+			return true;
+		}
+	},
 	Board: {
 		hasborder: 2,
 		hasexcell: 2,
