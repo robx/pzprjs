@@ -221,7 +221,8 @@ ui.keypopup = {
 		tilecity: [10, 0],
 		orbital: [124, 0],
 		outofsight: [132, 0],
-		nuritwin: [10, 0]
+		nuritwin: [10, 0],
+		tjunction: [4, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -399,6 +400,7 @@ ui.keypopup = {
 				switch (pid) {
 					case "lightup":
 					case "shakashaka":
+					case "tjunction":
 						cap = "■";
 						break;
 					case "gokigen":
