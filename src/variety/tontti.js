@@ -4,10 +4,10 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["tontti"], {
+})(["tontti", "tjunction"], {
 	//---------------------------------------------------------
 	// マウス入力系
-	MouseEvent: {
+	"MouseEvent@tontti": {
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["line", "peke", "subcircle", "subcross", "clear"]
@@ -32,6 +32,17 @@
 					this.inputqnum();
 				}
 			}
+		}
+	},
+	"MouseEvent@tjunction": {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["line", "clear"]
+		},
+		autoedit_func: "qnum",
+		mouseinputAutoPlay: function() {
+			/* Only support Line without peke */
+			this.inputLine();
 		}
 	},
 
@@ -59,12 +70,36 @@
 			return this.getNum() !== -1;
 		}
 	},
+	"Cell@tjunction": {
+		minnum: 0,
+		maxnum: 4,
+
+		posthook: {
+			qnum: function() {
+				for (var dir in this.adjborder) {
+					var border = this.adjborder[dir];
+
+					if (border.isLine() && border.checkStableLine(1)) {
+						border.removeLine();
+					}
+				}
+			}
+		}
+	},
 	CellList: {
 		singleQnumCell: true
 	},
 	ExCell: {
 		noLP: function(dir) {
 			return false;
+		},
+		isNum: function() {
+			return false;
+		}
+	},
+	"ExCell@tjunction": {
+		isNum: function() {
+			return true;
 		}
 	},
 	Board: {
@@ -73,12 +108,12 @@
 		hascross: 2,
 
 		rows: 6,
-		cols: 6,
-
+		cols: 6
+	},
+	"Board@tontti": {
 		addExtraInfo: function() {
 			this.tonttigraph = this.addInfoList(this.klass.AreaTonttiGraph);
 		},
-
 		setposCrosses: function() {
 			this.common.setposCrosses.call(this);
 
@@ -89,9 +124,10 @@
 			}
 		}
 	},
-	Border: {
-		enableLineNG: true,
-
+	"Board@tjunction": {
+		disable_subclear: true
+	},
+	"Border@tontti": {
 		posthook: {
 			line: function(val) {
 				// TODO Actually fix the tonttigraph not merging nodes
@@ -99,9 +135,50 @@
 					this.board.tonttigraph.rebuild();
 				}
 			}
+		},
+		enableLineNG: true
+	},
+	"Border@tjunction": {
+		checkStableLine: function(num) {
+			if (!num) {
+				return false;
+			}
+
+			var c1 = this.sidecell[0],
+				c2 = this.sidecell[1];
+
+			return c1.isNum() && c2.isNum();
 		}
 	},
-	"AreaTonttiGraph:AreaRoomGraph": {
+	"LineGraph@tjunction": {
+		enabled: true,
+
+		rebuild2: function() {
+			var excells = this.board.excell;
+			for (var c = 0; c < excells.length; c++) {
+				this.setComponentRefs(excells[c], null);
+				this.resetObjNodeList(excells[c]);
+			}
+
+			this.common.rebuild2.call(this);
+		}
+	},
+	"AreaRoomGraph@tjunction": {
+		countprop: "l2cnt",
+		enabled: true,
+		relation: {
+			"cell.ques": "node",
+			"border.line": "separator"
+		},
+		isedgevalidbylinkobj: function(border) {
+			return border.isLine();
+		},
+		isnodevalid: function(cell) {
+			return !cell.isNum();
+		}
+	},
+
+	"AreaTonttiGraph:AreaRoomGraph@tontti": {
 		enabled: true,
 		pointgroup: "cross",
 		relation: { "border.line": "separator" },
@@ -203,10 +280,16 @@
 			this.drawBGCrosses();
 			this.drawGrid();
 			this.drawBorders();
-			this.drawDotCells();
 
-			this.drawQuesNumbers();
+			if (this.pid === "tontti") {
+				this.drawDotCells();
+			}
+
 			this.drawLines();
+			if (this.pid === "tjunction") {
+				this.drawQuesCells();
+			}
+			this.drawQuesNumbers();
 			this.drawPekes();
 
 			this.drawChassis();
@@ -319,6 +402,11 @@
 			return this.outputImage ? 0 : 0.5;
 		}
 	},
+	"Graphic@tjunction": {
+		hideHatena: true,
+		fgcellcolor_func: "qnum",
+		numbercolor_func: "fixed_shaded"
+	},
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -328,6 +416,14 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16();
+		}
+	},
+	"Encode@tjunction": {
+		decodePzpr: function(type) {
+			this.decode4Cell();
+		},
+		encodePzpr: function(type) {
+			this.encode4Cell();
 		}
 	},
 	FileIO: {
@@ -345,7 +441,7 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
+	"AnsCheck@tontti": {
 		checklist: [
 			"checkCrossLine",
 			"checkLineOverlap",
@@ -429,6 +525,121 @@
 				},
 				"bkSizeNe"
 			);
+		}
+	},
+	"AnsCheck@tjunction": {
+		checklist: [
+			"checkSameAdjacent",
+			"checkSameShadedConnected",
+
+			"checkOutgoingLine",
+			"checkNotBranch",
+			"checkConnectAllJunction"
+		],
+
+		checkNotBranch: function() {
+			this.checkAllCell(function(cell) {
+				return !cell.isNum() && cell.lcnt !== 3;
+			}, "lnNoBranch");
+		},
+		checkOutgoingLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isValidNum() && cell.qnum !== cell.lcnt;
+			}, "nmConnBarWrong");
+		},
+		checkConnectAllJunction: function() {
+			var bd = this.board,
+				paths = bd.roommgr.components;
+
+			var found = null;
+
+			for (var p = 0; p < paths.length; p++) {
+				var path = paths[p];
+
+				if (
+					!path.clist.some(function(cell) {
+						return cell.lcnt === 3;
+					})
+				) {
+					continue;
+				}
+
+				if (found) {
+					this.failcode.add("lcDivided");
+					found.clist.seterr(1);
+					return;
+				}
+				found = path;
+			}
+		},
+
+		getJunctionShapes: function() {
+			if (this._info.junctions) {
+				return this._info.junctions;
+			}
+
+			var ret = {};
+			var bd = this.board;
+
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.isNum() || cell.lcnt !== 3) {
+					continue;
+				}
+				for (var dir = 1; dir <= 4; dir++) {
+					var addr = cell.getaddr();
+					addr.movedir(dir, 1);
+					if (!addr.getb().isLine()) {
+						break;
+					}
+				}
+				ret[c] = dir;
+			}
+
+			return (this._info.junctions = ret);
+		},
+
+		checkSameAdjacent: function() {
+			var junctions = this.getJunctionShapes();
+
+			this.checkSideCell(function(cell1, cell2) {
+				if (cell1.group !== "cell" || cell2.group !== "cell") {
+					return false;
+				}
+
+				var t1 = junctions[cell1.id],
+					t2 = junctions[cell2.id];
+
+				return t1 && t1 === t2;
+			}, "lnAdjacent");
+		},
+		checkSameShadedConnected: function() {
+			var junctions = this.getJunctionShapes();
+
+			this.checkAllCell(function(cell) {
+				if (!cell.isNum()) {
+					return false;
+				}
+
+				var dirs = ["left", "right", "top", "bottom"];
+				var found = {};
+
+				for (var i = 0; i < 4; i++) {
+					var dir = dirs[i];
+					if (!cell.adjborder[dir].isLine()) {
+						continue;
+					}
+					var other = cell.adjacent[dir];
+					var t = junctions[other.id];
+					if (t && found[t]) {
+						found[t].seterr(1);
+						other.seterr(1);
+						return true;
+					}
+					found[t] = other;
+				}
+				return false;
+			}, "csSameJunction");
 		}
 	}
 });
