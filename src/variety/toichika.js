@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["toichika", "toichika2", "news", "yajirushi2"], {
+})(["toichika", "toichika2", "news", "yajirushi", "yajirushi2"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -22,7 +22,7 @@
 		},
 		mouseinputAutoEdit: function() {
 			if (this.mousestart || this.mousemove) {
-				if (this.isBorderMode()) {
+				if (this.board.roommgr.enabled && this.isBorderMode()) {
 					this.inputborder();
 				} else {
 					this.inputarrow_cell();
@@ -161,6 +161,15 @@
 			this.inputFixedNumber(-2);
 		}
 	},
+	"MouseEvent@yajirushi": {
+		inputModes: {
+			edit: ["arrow", "empty", "clear"],
+			play: ["arrow", "objblank", "clear"]
+		},
+		inputempty: function() {
+			this.inputFixedNumber(-2);
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -168,7 +177,7 @@
 		enablemake: true,
 		enableplay: true
 	},
-	"KeyEvent@toichika,yajirushi2": {
+	"KeyEvent@toichika,yajirushi,yajirushi2": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -350,7 +359,7 @@
 			);
 		}
 	},
-	"BoardExec@toichika,news": {
+	"BoardExec@toichika,news,yajirushi": {
 		adjustBoardData: function(key, d) {
 			this.adjustCellArrow(key, d);
 		}
@@ -432,6 +441,9 @@
 				this.drawQuesNumbers();
 				this.drawCellArrows();
 				this.drawMBs();
+			} else if (this.pid === "yajirushi") {
+				this.drawQuesCells();
+				this.drawCellArrows();
 			} else if (this.pid === "toichika") {
 				this.drawCellArrows();
 				this.drawHatenas();
@@ -448,6 +460,13 @@
 			this.drawChassis();
 
 			this.drawCursor();
+		}
+	},
+	"Graphic@yajirushi": {
+		autocmp: null,
+		hideHatena: true,
+		getQuesCellColor: function(cell) {
+			return cell.qnum === -2 ? this.quescolor : null;
 		}
 	},
 	"Graphic@yajirushi2": {
@@ -555,7 +574,7 @@
 		}
 	},
 
-	"Encode@yajirushi2": {
+	"Encode@yajirushi,yajirushi2": {
 		decodePzpr: function(type) {
 			this.decode4Cell();
 		},
@@ -736,8 +755,13 @@
 				bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
+				cell.isBetween = false;
 				isarrow[c] =
-					cell.isNum() && (this.pid !== "yajirushi2" || cell.qnum === -1);
+					this.pid === "yajirushi"
+						? cell.isValidNum()
+						: this.pid === "yajirushi2"
+						? cell.anum > 0
+						: cell.isNum();
 			}
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell0 = bd.cell[c];
@@ -750,6 +774,7 @@
 				while (1) {
 					pos.movedir(dir, 2);
 					var cell = pos.getc();
+					cell.isBetween = true;
 					if (
 						cell.isnull ||
 						cell.qnum === -2 ||
@@ -929,14 +954,7 @@
 		}
 	},
 
-	"AnsCheck@yajirushi2": {
-		checklist: [
-			"checkOverArrows",
-			"checkConnectEmpty",
-			"checkArrowsAdjacent",
-			"checkDirectionOfArrow",
-			"checkLessArrows"
-		],
+	"AnsCheck@yajirushi,yajirushi2#1": {
 		checkArrowsAdjacent: function() {
 			var ainfo = this.getPairArrowsInfo();
 			for (var i = 0; i < ainfo.length; i++) {
@@ -954,7 +972,29 @@
 				ainfo[i][0].seterr(1);
 				ainfo[i][1].seterr(1);
 			}
-		},
+		}
+	},
+	"AnsCheck@yajirushi": {
+		checklist: [
+			"checkArrowsAdjacent",
+			"checkDirectionOfArrow",
+			"checkEmptyInsidePair"
+		],
+		checkEmptyInsidePair: function() {
+			this.checkAllCell(function(cell) {
+				return !cell.isNum() && !cell.isBetween;
+			}, "cuNotPointed");
+		}
+	},
+	"AnsCheck@yajirushi2": {
+		checklist: [
+			"checkOverArrows",
+			"checkConnectEmpty",
+			"checkArrowsAdjacent",
+			"checkDirectionOfArrow",
+			"checkLessArrows"
+		],
+
 		checkArrows4Cell: function(type, code) {
 			for (var c = 0; c < this.board.cell.length; c++) {
 				var cell = this.board.cell[c];
@@ -1071,5 +1111,8 @@
 		arAlone: "bkNumLt2.news",
 		bkNoNum: "bkNoNum.nikoji",
 		nmDupRow: "nmDupRow.easyasabc"
+	},
+	"FailCode@yajirushi": {
+		arAdjPair: "arAdjPair.yajirushi2"
 	}
 });
