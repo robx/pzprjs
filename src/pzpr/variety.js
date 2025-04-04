@@ -146,6 +146,7 @@
 			doppelblock: [0, 0, "Doppelblock", "Doppelblock", "doppelblock"],
 			dosufuwa: [0, 0, "ドッスンフワリ", "Dosun-Fuwari"],
 			dotchi: [0, 0, "ドッチループ", "Dotchi-Loop", "country"],
+			dotchi2: [0, 0, "ドッチドッチループ", "Dotchi Dotchi Loop", "country"],
 			doubleback: [0, 0, "Double Back", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
 			evolmino: [0, 0, "シンカミノ", "Evolmino"],
