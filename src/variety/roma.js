@@ -83,8 +83,11 @@
 	},
 	"MouseEvent@arrowflow": {
 		inputModes: {
-			edit: ["number", "clear", "info-road"],
+			edit: ["number", "clear", "empty", "info-road"],
 			play: ["diraux", "arrow", "clear", "info-road"]
+		},
+		inputempty: function() {
+			this.inputFixedNumber(0);
 		}
 	},
 
