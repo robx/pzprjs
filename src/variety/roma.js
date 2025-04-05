@@ -496,8 +496,8 @@
 	"AnsCheck@arrowflow": {
 		checklist: [
 			"checkAdjacentDiffNumber",
-			"checkGoalCounts",
-			"checkGoalZero",
+			"checkGoalGt",
+			"checkGoalLt",
 			"checkBalls"
 		],
 
@@ -525,15 +525,17 @@
 			return (this._info.state = ret);
 		},
 
-		checkGoalZero: function() {
+		checkGoalLt: function() {
 			var bd = this.board,
 				counts = this.getGoalCounts();
 			for (var key in counts) {
-				if (counts[key].length > 1) {
+				var cell = bd.cell[+key];
+
+				if (counts[key].length >= cell.qnum + 1) {
 					continue;
 				}
 
-				this.failcode.add("arCountZero");
+				this.failcode.add("arCountLt");
 				if (this.checkOnly) {
 					return;
 				}
@@ -541,18 +543,17 @@
 			}
 		},
 
-		checkGoalCounts: function() {
+		checkGoalGt: function() {
 			var bd = this.board,
 				counts = this.getGoalCounts();
 			for (var key in counts) {
 				var cell = bd.cell[+key];
-				var count = counts[key].length;
 
-				if (count === 1 || count === cell.qnum + 1) {
+				if (counts[key].length <= cell.qnum + 1) {
 					continue;
 				}
 
-				this.failcode.add("arCountNe");
+				this.failcode.add("arCountGt");
 				if (this.checkOnly) {
 					return;
 				}
