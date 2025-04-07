@@ -135,6 +135,7 @@ function toBGimage(pid) {
 		"dominion",
 		"doppelblock",
 		"dotchi",
+		"dotchi2",
 		"doubleback",
 		"easyasabc",
 		"evolmino",
