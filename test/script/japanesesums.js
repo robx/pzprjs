@@ -28,7 +28,7 @@ ui.debug.addDebugData("japanesesums", {
 				"newboard,4,4",
 				"editmode",
 				"cursor,3,-1",
-				"key,3",
+				"key,2",
 				"cursor,3,3",
 				"mouse,left,3,3"
 			],

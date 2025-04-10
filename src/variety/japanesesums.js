@@ -329,6 +329,15 @@
 		}
 	},
 
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			this.adjustExCellTopLeft_1(key, d);
+		},
+		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d);
+		}
+	},
+
 	//---------------------------------------------------------
 	// 使用可能数字管理系
 	Indicator: {
