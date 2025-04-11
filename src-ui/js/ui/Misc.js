@@ -147,7 +147,6 @@ function toBGimage(pid) {
 		"icewalk",
 		"invlitso",
 		"island",
-		"japanesesums",
 		"kaidan",
 		"kaisu",
 		"kissing",

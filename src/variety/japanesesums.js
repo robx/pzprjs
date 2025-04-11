@@ -448,9 +448,6 @@
 		},
 
 		/* 下に入力可能数字の表示領域を追加 */
-		setRangeObject: function(x1, y1, x2, y2) {
-			this.common.setRangeObject.call(this, x1, y1, x2, y2);
-		},
 		drawIndicator: function() {
 			var g = this.vinc("indicator", "auto", true),
 				bd = this.board;
