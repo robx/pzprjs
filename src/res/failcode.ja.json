@@ -571,6 +571,7 @@
     "nmSum.doppelblock": "黒マスに挟まれた数字の和と、枠外の数字が一致していません。",
     "nmSumNe.kazunori": "丸付き数字とその両側の数字の和が一致していません。",
     "nmSumOfDiff.bosanowa": "数字とその隣の数字の差の合計が合っていません。",
+    "nmSumOrderRowNe.japanesesums": "黒マスを挟まずに連続した数字の和の順番が、枠外の数字と一致していません。",
     "nmSumRowNe.kakuro": "数字の下か右にある数字の合計が間違っています。",
     "nmSumRowShadeNe.box": "数字と黒マスになった数字の合計が正しくありません。",
     "nmSumSizeNe.kurotto": "隣り合う黒マスの個数の合計が数字と違います。",
