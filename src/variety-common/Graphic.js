@@ -569,11 +569,7 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		getNumberTextCore: function(num) {
-			var hideHatena =
-				this.pid !== "yajilin" && this.pid !== "koburin"
-					? this.hideHatena
-					: this.puzzle.getConfig("disptype_yajilin") === 2;
-			return num >= 0 ? "" + num : !hideHatena && num === -2 ? "?" : "";
+			return num >= 0 ? "" + num : !this.hideHatena && num === -2 ? "?" : "";
 		},
 		getNumberTextCore_letter: function(num) {
 			var text = "" + num;

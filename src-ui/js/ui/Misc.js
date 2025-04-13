@@ -191,6 +191,7 @@ function toBGimage(pid) {
 		"regional-poly",
 		"remlen",
 		"retroships",
+		"retsurin",
 		"roundtrip",
 		"sananko",
 		"sashikazune",
