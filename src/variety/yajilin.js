@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["yajilin", "yajilin-regions", "koburin", "lixloop"], {
+})(["yajilin", "yajilin-regions", "koburin", "lixloop", "retsurin"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -38,7 +38,7 @@
 					}
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.pid === "koburin") {
+				if (this.pid === "koburin" || this.pid === "retsurin") {
 					if (this.mousestart) {
 						this.inputqnum();
 					}
@@ -77,7 +77,7 @@
 			play: ["line", "peke", "shade", "unshade", "info-line"]
 		}
 	},
-	"MouseEvent@koburin": {
+	"MouseEvent@koburin,retsurin": {
 		inputModes: {
 			edit: ["number", "clear", "info-line"],
 			play: ["line", "peke", "shade", "unshade", "info-line", "completion"]
@@ -140,11 +140,11 @@
 				return cell.isShade();
 			}).length;
 		},
-		countUndecided: function(clist) {
+		hasUndecided: function(clist) {
 			if (!clist) {
-				return -1;
+				return false;
 			}
-			return clist.filter(function(cell) {
+			return clist.some(function(cell) {
 				if (cell.qans !== 0) {
 					return false;
 				}
@@ -152,7 +152,7 @@
 					return false;
 				}
 				return true;
-			}).length;
+			});
 		},
 
 		// trigger redraw for autocompletion
@@ -175,10 +175,10 @@
 			}
 		}
 	},
-	"Cell@yajilin,koburin,lixloop": {
+	"Cell@yajilin,koburin,lixloop,retsurin": {
 		minnum: 0,
 		maxnum: function() {
-			return Math.max((this.board.cols + 1) >> 1, (this.board.rows + 1) >> 1);
+			return Math.max(this.board.cols, this.board.rows) >> 1;
 		},
 
 		// 線を引かせたくないので上書き
@@ -221,7 +221,7 @@
 				return false;
 			}
 
-			if (this.countUndecided(clist) !== 0) {
+			if (this.hasUndecided(clist)) {
 				return false;
 			}
 			return this.qnum === this.countShade(clist);
@@ -284,6 +284,9 @@
 		minnum: 1,
 		maxnum: 7,
 
+		hasUndecided: function() {
+			return false; /* Not applicable */
+		},
 		countShade: function(clist) {
 			if (!clist) {
 				return -1;
@@ -357,10 +360,41 @@
 				return false;
 			}
 			var clist = this.room.clist;
-			if (this.countUndecided(clist) !== 0) {
+			if (this.hasUndecided(clist)) {
 				return false;
 			}
 			return this.qnum === this.countShade(clist);
+		}
+	},
+	"Cell@retsurin#2": {
+		isCmp: function() {
+			if (this.qcmp === 1) {
+				return true;
+			}
+			if (!this.puzzle.execConfig("autocmp") || !this.isValidNum()) {
+				return false;
+			}
+
+			var bd = this.board;
+			var horz = bd.cellinside(bd.minbx, this.by, bd.maxbx, this.by);
+			var vert = bd.cellinside(this.bx, bd.minby, this.bx, bd.maxby);
+
+			var horzDecided = !this.hasUndecided(horz),
+				vertDecided = !this.hasUndecided(vert),
+				horzShaded = this.countShade(horz),
+				vertShaded = this.countShade(vert);
+
+			if (horzDecided && horzShaded === this.qnum) {
+				return (
+					vertShaded > this.qnum || (vertShaded < this.qnum && vertDecided)
+				);
+			}
+			if (vertDecided && vertShaded === this.qnum) {
+				return (
+					horzShaded > this.qnum || (horzShaded < this.qnum && horzDecided)
+				);
+			}
+			return false;
 		}
 	},
 	Border: {
@@ -376,7 +410,7 @@
 			}
 		}
 	},
-	"Border@yajilin,koburin,lixloop": {
+	"Border@yajilin,koburin,lixloop,retsurin": {
 		isBorder: function() {
 			return (this.sidecell[0].qnum === -1) !== (this.sidecell[1].qnum === -1);
 		}
@@ -416,7 +450,7 @@
 			this.common.rebuildInfo.call(this);
 		}
 	},
-	"Board@yajilin,koburin,lixloop": {
+	"Board@yajilin,lixloop,retsurin": {
 		redrawAffected: function(cells) {
 			var minx = this.maxbx,
 				maxx = this.minbx,
@@ -460,6 +494,13 @@
 				}
 				done[top.id] = true;
 				top.draw();
+			}
+		}
+	},
+	"Board@koburin": {
+		redrawAffected: function(cells) {
+			for (var i = 0; i < cells.length; i++) {
+				cells[i].drawaround();
 			}
 		}
 	},
@@ -523,7 +564,7 @@
 			this.drawTarget();
 		}
 	},
-	"Graphic@yajilin,koburin,lixloop": {
+	"Graphic@yajilin,koburin,lixloop,retsurin": {
 		getBGCellColor: function(cell) {
 			var info = cell.error || cell.qinfo;
 			if (this.puzzle.getConfig("disptype_yajilin") === 2 && cell.qnum !== -1) {
@@ -548,6 +589,10 @@
 				return this.quescolor;
 			}
 			return null;
+		},
+		getNumberTextCore: function(num) {
+			var hideHatena = this.puzzle.getConfig("disptype_yajilin") === 2;
+			return num >= 0 ? "" + num : !hideHatena && num === -2 ? "?" : "";
 		}
 	},
 	"Graphic@lixloop#2": {
@@ -632,6 +677,22 @@
 				flags += "b";
 			}
 
+			this.outpflag = flags.length ? flags : null;
+		}
+	},
+	"Encode@retsurin": {
+		decodePzpr: function(type) {
+			this.decodeNumber16();
+
+			this.puzzle.setConfig("yajilin_out", this.checkpflag("o"));
+			this.puzzle.setConfig("disptype_yajilin", !this.checkpflag("b") ? 1 : 2);
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16();
+
+			var flags = "";
+			flags += this.puzzle.getConfig("yajilin_out") ? "o" : "";
+			flags += this.puzzle.getConfig("disptype_yajilin") === 2 ? "b" : "";
 			this.outpflag = flags.length ? flags : null;
 		}
 	},
@@ -785,7 +846,7 @@
 			this.encodeBorderLine();
 		}
 	},
-	"FileIO@koburin": {
+	"FileIO@koburin,retsurin": {
 		decodeData: function() {
 			this.decodeConfig();
 			this.decodeCellQnum();
@@ -822,8 +883,10 @@
 			"checkDeadendLine+",
 			"checkArrowNumber@yajilin,koburin,lixloop",
 			"checkShadeCellCount@yajilin-regions",
+			"checkCountsEqual@retsurin",
+			"checkCountsDiffer@retsurin",
 			"checkOneLoop",
-			"checkEmptyCell_yajilin+@yajilin,koburin,lixloop",
+			"checkEmptyCell_yajilin+@!yajilin-regions",
 			"checkEmptyCell_regions+@yajilin-regions",
 			"checkShadedOutside",
 			"checkNumberHasArrow@yajilin,lixloop"
@@ -871,6 +934,55 @@
 			this.checkAllCell(function(cell) {
 				return cell.isShade() && bd.getx(cell.bx - 1, cell.by - 1).inside;
 			}, "shInside");
+		}
+	},
+	"AnsCheck@retsurin": {
+		checkCountsEqual: function() {
+			var counts = this.getRowColCounts();
+
+			this.checkAllCell(function(cell) {
+				return (
+					cell.isValidNum() &&
+					counts.x[cell.bx] === cell.qnum &&
+					counts.y[cell.by] === cell.qnum
+				);
+			}, "nmShadeEq");
+		},
+		checkCountsDiffer: function() {
+			var counts = this.getRowColCounts();
+
+			this.checkAllCell(function(cell) {
+				return (
+					cell.isValidNum() &&
+					counts.x[cell.bx] !== cell.qnum &&
+					counts.y[cell.by] !== cell.qnum
+				);
+			}, "nmShadeNe");
+		},
+
+		getRowColCounts: function() {
+			if (this._info.counts) {
+				return this._info.counts;
+			}
+			var x = [],
+				y = [];
+
+			for (var i = this.board.minbx; i <= this.board.maxbx; i++) {
+				x[i] = 0;
+			}
+			for (var i = this.board.minby; i <= this.board.maxby; i++) {
+				y[i] = 0;
+			}
+
+			this.board.cell.each(function(cell) {
+				if (cell.isShade()) {
+					x[cell.bx]++;
+					y[cell.by]++;
+				}
+			});
+
+			var ret = { x: x, y: y };
+			return (this._info.counts = ret);
 		}
 	},
 	"FailCode@koburin": {

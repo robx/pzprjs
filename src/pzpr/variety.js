@@ -356,6 +356,7 @@
 				"Retrograde Battleships",
 				"statuepark"
 			],
+			retsurin: [0, 0, "Retsurin", "Retsurin", "yajilin"],
 			ringring: [0, 0, "リングリング", "Ring-ring", "nagenawa"],
 			ripple: [
 				0,

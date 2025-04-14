@@ -392,7 +392,11 @@
 					exec = pid === "context";
 					break;
 				case "disptype_yajilin":
-					exec = pid === "yajilin" || pid === "koburin" || pid === "lixloop";
+					exec =
+						pid === "yajilin" ||
+						pid === "koburin" ||
+						pid === "lixloop" ||
+						pid === "retsurin";
 					break;
 				case "disptype_interbd":
 					exec =
@@ -496,8 +500,13 @@
 					break;
 				case "yajilin_out":
 					exec =
-						["yajilin", "yajilin-regions", "koburin", "lixloop"].indexOf(pid) >=
-						0;
+						[
+							"yajilin",
+							"yajilin-regions",
+							"koburin",
+							"lixloop",
+							"retsurin"
+						].indexOf(pid) >= 0;
 					break;
 				case "slither_full":
 					exec =

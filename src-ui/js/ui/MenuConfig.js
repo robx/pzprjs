@@ -84,6 +84,7 @@
 			switch (ui.puzzle.pid) {
 				case "yajilin":
 				case "lixloop":
+				case "retsurin":
 					idname = ["yajilin_out", "disptype_yajilin"];
 					break;
 				case "yajilin-regions":
