@@ -752,10 +752,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeAreaRoom();
 			this.fio.decodeQnum_PBox_Sato();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeAreaRoom();
-			this.fio.encodeQnum_PBox_Sato();
 		}
 	},
 	"Encode@rectslider,timebomb": {
@@ -809,11 +805,6 @@
 			this.decodeQnum_PBox_Sato();
 			this.decodeLine_PBox_Sato();
 		},
-		kanpenSave: function() {
-			this.encodeAreaRoom();
-			this.encodeQnum_PBox_Sato();
-			this.encodeLine_PBox_Sato();
-		},
 		decodeQnum_PBox_Sato: function() {
 			this.decodeCell(function(cell, ca) {
 				if (ca === "-") {
@@ -854,22 +845,12 @@
 			this.decodeCellQnum_XMLBoard();
 			this.decodeBorderLine_satogaeri_XMLAnswer();
 		},
-		kanpenSaveXML: function() {
-			this.encodeAreaRoom_XMLBoard();
-			this.encodeCellQnum_XMLBoard();
-			this.encodeBorderLine_satogaeri_XMLAnswer();
-		},
 
 		UNDECIDED_NUM_XML: -2,
 
 		decodeBorderLine_satogaeri_XMLAnswer: function() {
 			this.decodeCellXMLArow(function(cell, name) {
 				cell.setState(+name.substr(1));
-			});
-		},
-		encodeBorderLine_satogaeri_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cell) {
-				return "n" + cell.getState();
 			});
 		}
 	},
