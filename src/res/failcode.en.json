@@ -809,6 +809,7 @@
     "nmSumNe.kazunori": "The sum between two adjacent cells is not equal to the number on circle.",
     "nmSumNe.wafusuma": "The sum of the size of the two adjacent areas is not equal to the number on the circle.",
     "nmSumOfDiff.bosanowa": "Sum of the differences between the number and adjacent numbers is not equal to the number.",
+    "nmSumOrderRowNe.japanesesums": "The numbers don't match the sums in the row or column.",
     "nmSumRowNe.kakuro": "The sum of the cells is not correct.",
     "nmSumRowShadeNe.box": "A number is not equal to the sum of the number of shaded cells.",
     "nmSumSizeNe.kurotto": "A number doesn't indicate the sum of the size of the adjacent blocks.",
