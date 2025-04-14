@@ -15,42 +15,28 @@ pzpr.classmgr.makeCommon({
 		// bd.exec.adjustBorderArrow()  回転・反転開始前の境界線にある矢印セル等の調整
 		//------------------------------------------------------------------------------
 		adjustNumberArrow: function(key, d) {
-			if (key & this.TURNFLIP) {
-				this.adjustCellQdirArrow(key, d);
-			}
+			this.adjustCellArrowField(key, d, "qdir");
 		},
 		adjustCellArrow: function(key, d) {
-			if (key & this.TURNFLIP) {
-				if (this.klass.Cell.prototype.numberAsObject) {
-					this.adjustCellQnumArrow(key, d);
-				} else {
-					this.adjustCellQdirArrow(key, d);
-				}
+			if (this.klass.Cell.prototype.numberAsObject) {
+				this.adjustCellArrowField(key, d, "qnum");
+				this.adjustCellArrowField(key, d, "anum");
+			} else {
+				this.adjustCellArrowField(key, d, "qdir");
 			}
 		},
-		adjustCellQdirArrow: function(key, d) {
+		adjustCellArrowField: function(key, d, field) {
+			if (!(key & this.TURNFLIP)) {
+				return;
+			}
+
 			var trans = this.getTranslateDir(key);
 			var clist = this.board.cellinside(d.x1, d.y1, d.x2, d.y2);
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
-				var val = trans[cell.qdir];
+				var val = trans[cell[field]];
 				if (!!val) {
-					cell.qdir = val;
-				}
-			}
-		},
-		adjustCellQnumArrow: function(key, d) {
-			var trans = this.getTranslateDir(key);
-			var clist = this.board.cellinside(d.x1, d.y1, d.x2, d.y2);
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i];
-				var val = trans[cell.qnum];
-				if (!!val) {
-					cell.qnum = val;
-				}
-				var val = trans[cell.anum];
-				if (!!val) {
-					cell.anum = val;
+					cell[field] = val;
 				}
 			}
 		},

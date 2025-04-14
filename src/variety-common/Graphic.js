@@ -281,7 +281,11 @@ pzpr.classmgr.makeCommon({
 
 				for (var i = 0; i < clist.length; i++) {
 					var cell = clist[i],
-						dir = !cell.numberAsObject ? cell.qdir : cell.getNum();
+						dir = !!cell.getArrow
+							? cell.getArrow()
+							: !cell.numberAsObject
+							? cell.qdir
+							: cell.getNum();
 					var color = dir >= 1 && dir <= 4 ? func.call(this, cell) : null;
 
 					g.vid = "c_arrow_" + item + "_" + cell.id;

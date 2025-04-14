@@ -115,7 +115,7 @@
 
 	BoardExec: {
 		adjustBoardData: function(key, d) {
-			this.adjustCellQnumArrow(key, d);
+			this.adjustCellArrow(key, d);
 		},
 		getTranslateDir: function(key) {
 			var trans = {};
