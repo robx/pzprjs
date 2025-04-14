@@ -288,7 +288,10 @@ pzpr.classmgr.makeCommon({
 				// 両方左右線の場合はnodes[0], nodes[1]を交換してnodes[0]に0本、nodes[1]に2本付加する
 				else {
 					this.createNode(cell);
-					if (!isvert[0] && !isvert[1]) {
+					if (
+						isvert[0] === isvert[1] &&
+						isvert[0] === this.board.borderAsLine
+					) {
 						nodes.push(nodes.shift());
 					}
 				}

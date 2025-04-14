@@ -1,5 +1,5 @@
 //
-// パズル固有スクリプト部 ABCプレース版 easyasabc.js
+// パズル固有スクリプト部 Japanese Sums版 japanesesums.js
 //
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
@@ -7,14 +7,15 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["easyasabc"], {
+})(["japanesesums"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
 		inputModes: {
 			edit: ["number"],
-			play: ["number", "numexist", "numblank", "clear"]
+			play: ["number", "objblank", "shade"]
 		},
+
 		mouseinput_number: function() {
 			if (this.mousestart) {
 				if (!this.puzzle.editmode || !this.inputqnum_excell()) {
@@ -60,6 +61,57 @@
 					indicator.set(val);
 				}
 			}
+		},
+
+		getNewNumber: function(cell, val) {
+			var bound = -3;
+			if (this.puzzle.editmode) {
+				bound = cell.group === "excell" ? -2 : -1;
+			}
+			if (this.btn === "left") {
+				val = val + 1;
+				if (val > cell.getmaxnum()) {
+					return bound;
+				} else {
+					var minnum = cell.getminnum();
+					if (val >= 0 && val < minnum) {
+						return minnum;
+					}
+					return val;
+				}
+			} else if (this.btn === "right") {
+				val = val - 1;
+				if (val < bound) {
+					return cell.getmaxnum();
+				} else {
+					if (val >= 0 && val < cell.getminnum()) {
+						return -1;
+					}
+					return val;
+				}
+			} else {
+				return val + 1;
+			}
+		},
+
+		inputDot: function() {
+			this.inputFixedNumber(-2);
+		},
+		inputShade: function() {
+			this.inputFixedNumber(-3);
+		},
+		inputFixedNumber: function(num) {
+			var cell = this.getcell();
+			if (cell.isnull) {
+				return;
+			}
+			if (this.inputData === null) {
+				this.inputData = cell.getNum() === num ? -1 : num;
+			}
+
+			cell.setNum(this.inputData);
+			this.mouseCell = cell;
+			cell.draw();
 		}
 	},
 
@@ -72,19 +124,19 @@
 			if (this.puzzle.playmode) {
 				var isSnum = this.cursor.targetdir !== 0;
 				if (isSnum) {
-				} else if (ca === "1") {
+				} else if (ca === "q" || ca === "a" || ca === "z") {
 					ca = "s1";
-				} else if (ca === "2") {
+				} else if (ca === "w" || ca === "s" || ca === "x") {
 					ca = "s2";
-				} else if (ca === "3") {
-					ca = "BS";
+				} else if (ca === "e" || ca === "d" || ca === "c" || ca === "-") {
+					ca = " ";
 				}
 				this.key_inputqnum(ca);
 				if (!isSnum && ca === " ") {
 					this.cursor.getc().clrSnum();
 				}
 			} else {
-				if (this.cursor.by >= this.board.minby) {
+				if (this.cursor.by <= this.board.maxby) {
 					var excell = this.cursor.getex();
 					if (!excell.isnull) {
 						this.key_inputqnum_main(excell, ca);
@@ -96,6 +148,7 @@
 				}
 			}
 		},
+
 		key_inputqnum_indicator: function(ca) {
 			var bd = this.puzzle.board;
 			var val = this.getNewNumber(bd.indicator, ca, bd.indicator.count);
@@ -108,56 +161,131 @@
 	},
 
 	TargetCursor: {
-		draw: function() {
-			if (this.by >= this.board.minby) {
-				this.common.draw.call(this);
-			} else {
-				this.board.indicator.draw();
-			}
-		},
-
 		initCursor: function() {
 			this.init(-1, -1);
 			this.adjust_init();
 		},
 		setminmax_customize: function() {
 			if (this.puzzle.editmode) {
+				// インジケーター分、カーソルの可動範囲を下に伸ばす
+				this.maxy += 2;
 				return;
 			}
-			this.minx += 2;
-			this.miny += 2;
-			this.maxx -= 2;
-			this.maxy -= 2;
+
+			// 解答モードはグリッド内のみ選択できれば良い
+			this.minx = 1;
+			this.miny = 1;
 		}
 	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		disInputHatena: true,
 		enableSubNumberArray: true,
 		numberWithMB: true,
-		numberAsLetter: true,
 
 		maxnum: function() {
 			return this.board.indicator.count;
+		},
+
+		noNum: function() {
+			return this.qnum < 0 && this.anum < 0 && this.qans !== 1;
+		},
+
+		getNum: function() {
+			if (this.qnum !== -1) {
+				return this.qnum;
+			}
+			if (this.anum > 0) {
+				return this.anum;
+			}
+			if (this.qans > 0) {
+				return -3;
+			}
+			if (this.qsub > 0) {
+				return -2;
+			}
+			return -1;
+		},
+
+		setNum: function(val) {
+			if (this.puzzle.editmode) {
+				this.setQnum(val);
+				this.setAnum(-1);
+				this.setQsub(0);
+				this.setQans(0);
+				this.clrSnum();
+				return;
+			}
+			if (this.qnum !== -1) {
+				return;
+			}
+
+			if (val > 0) {
+				this.setAnum(val);
+				this.setQsub(0);
+				this.setQans(0);
+			} else {
+				this.setAnum(-1);
+				switch (val) {
+					case -1:
+						this.setQsub(0);
+						this.setQans(0);
+						break;
+					case -2:
+						this.setQsub(1);
+						this.setQans(0);
+						break;
+					case -3:
+						this.setQsub(0);
+						this.setQans(1);
+						break;
+				}
+			}
+			this.clrSnum();
 		}
 	},
 
+	//---------------------------------------------------------
+	// 盤面外管理系
 	ExCell: {
-		disInputHatena: true,
-		numberAsLetter: true,
+		disInputHatena: false,
 
 		maxnum: function() {
-			return this.board.indicator.count;
+			var bx = this.bx,
+				by = this.by;
+			if (bx < 0 && by < 0) {
+				return 0;
+			}
+
+			// 1~nまでの数字からm(m<=n)個の数字を足した場合の最大値
+			// 同じ数字は選べないものとする
+			var n = this.board.indicator.count;
+			var m = 0;
+			if (by < 0) {
+				m = Math.min(this.board.rows, n);
+			} else {
+				m = Math.min(this.board.cols, n);
+			}
+			return (n * (n + 1) - (n - m) * (n - m + 1)) / 2;
 		}
 	},
 
 	Board: {
 		cols: 5,
 		rows: 5,
-		hasexcell: 2,
+		hasexcell: 1,
+		hasflush: 1,
 
 		indicator: null,
+
+		excellRows: function(cols, rows) {
+			return (rows + 1) >> 1;
+		},
+		excellCols: function(cols, rows) {
+			return (cols + 1) >> 1;
+		},
 
 		createExtraObject: function() {
 			this.indicator = new this.klass.Indicator();
@@ -167,60 +295,59 @@
 			this.indicator.count = this.klass.Indicator.prototype.count;
 		},
 		getex: function(bx, by) {
-			if (by > this.minby) {
+			if (by <= this.maxby) {
 				return this.common.getex.call(this, bx, by);
-			} else if (by === -3) {
-				return this.indicator;
 			}
-			return this.emptyexcell;
+			return this.indicator;
 		},
 
-		searchSight: function(startexcell, seterror) {
-			var pos = startexcell.getaddr(),
-				dir = 0,
-				cell = this.emptycell;
-			if (pos.by === this.minby + 1) {
-				dir = 2;
-			} else if (pos.by === this.maxby - 1) {
-				dir = 1;
-			} else if (pos.bx === this.minbx + 1) {
-				dir = 4;
-			} else if (pos.bx === this.maxbx - 1) {
-				dir = 3;
+		// 盤面外の余分な余白を消す
+		excellOffsets: null,
+		getOffsets: function() {
+			if (this.excellOffsets !== null) {
+				return this.excellOffsets;
 			}
+			this.excellOffsets = [this.minbx / -2, this.minby / -2];
 
-			while (dir !== 0) {
-				pos.movedir(dir, 2);
-				var cell2 = pos.getc();
-				if (cell2.isnull) {
-					break;
+			for (var bx = this.minbx + 1; bx < 0; bx += 2) {
+				for (var by = 1; by < this.maxby; by += 2) {
+					if (this.getex(bx, by).qnum !== -1) {
+						this.excellOffsets[0] = (this.minbx + 1 - bx) / -2;
+						bx = 0;
+					}
 				}
+			}
 
-				if (!cell2.isNumberObj()) {
-					continue;
+			for (var by = this.minby + 1; by < 0; by += 2) {
+				for (var bx = 1; bx < this.maxbx; bx += 2) {
+					if (this.getex(bx, by).qnum !== -1) {
+						this.excellOffsets[1] = (this.minby + 1 - by) / -2;
+						by = 0;
+					}
 				}
-				cell = cell2;
-				break;
 			}
 
-			if (!!seterror) {
-				startexcell.error = 1;
-				cell.error = 1;
-			}
-
-			return { dest: cell };
+			return this.excellOffsets;
 		}
 	},
+
 	BoardExec: {
+		adjustBoardData: function(key, d) {
+			this.adjustExCellTopLeft_1(key, d);
+		},
 		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d);
 			this.board.indicator.init();
 		}
 	},
+
+	//---------------------------------------------------------
+	// 使用可能数字管理系
 	Indicator: {
-		count: 3,
+		count: 4,
 		rect: null,
-		numberAsLetter: true,
-		qnum: -1 /* no text for drawNumbersExcell() */,
+		qnum: -1,
+
 		initialize: function(val) {
 			if (!!val) {
 				this.count = val;
@@ -229,11 +356,12 @@
 		},
 		init: function() {
 			var bd = this.puzzle.board;
+			// インジケーターを囲む位の大きさ
 			this.rect = {
-				bx1: bd.maxbx - 3.15,
-				by1: -3.8,
-				bx2: bd.maxbx - 0.15,
-				by2: -2.2
+				bx1: bd.maxbx - 3.5,
+				by1: bd.maxby + 0.2,
+				bx2: bd.maxbx + 0.1,
+				by2: bd.maxby + 1.9
 			};
 		},
 		set: function(val) {
@@ -247,8 +375,7 @@
 			}
 		},
 		getmaxnum: function() {
-			var bd = this.board;
-			return Math.max(bd.rows, bd.cols);
+			return 9;
 		},
 		getminnum: function() {
 			return 1;
@@ -258,10 +385,10 @@
 		},
 		draw: function() {
 			this.puzzle.painter.paintRange(
-				this.board.minbx,
-				-1,
-				this.board.maxbx,
-				-1
+				this.puzzle.board.maxbx - 3.5,
+				this.puzzle.board.maxby + 0.2,
+				this.puzzle.board.maxbx + 0.1,
+				this.puzzle.board.maxby + 1.9
 			);
 		}
 	},
@@ -298,20 +425,19 @@
 		}
 	},
 
-	//---------------------------------------------------------
-	// 画像表示系
 	Graphic: {
 		gridcolor_type: "LIGHT",
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawBGExCells();
+			this.drawShadedCells();
+			this.drawDotCells();
 			this.drawTargetSubNumber();
 
 			this.drawGrid();
 			this.drawBorders();
 
-			this.drawMBs();
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
@@ -320,56 +446,20 @@
 			this.drawChassis();
 
 			this.drawIndicator();
-			this.drawCursor_easyasbac();
+			this.drawCursor_japanesesums();
 		},
 
-		/* 上にアルファベット範囲の個数表示領域を追加 */
-		getCanvasRows: function() {
-			return this.getBoardRows() + 2 * this.margin + 0.8;
-		},
-		getOffsetRows: function() {
-			return 1.45;
-		},
-		setRangeObject: function(x1, y1, x2, y2) {
-			this.common.setRangeObject.call(this, x1, y1, x2, y2);
-			this.range.indicator = y1 < 0;
-		},
-		copyBufferData: function(g, g2, x1, y1, x2, y2) {
-			this.common.copyBufferData.call(this, g, g2, x1, y1, x2, y2);
-			if (g.use.canvas && this.range.indicator) {
-				var bd = this.board;
-				var sx1 = 0,
-					sy1 = 0,
-					sx2 = g2.child.width,
-					sy2 = bd.minby * this.bh + this.y0;
-				g.context.clearRect(sx1, sy1 - this.y0, sx2, sy2);
-				g.drawImage(
-					g2.child,
-					sx1,
-					sy1,
-					sx2 - sx1,
-					sy2 - sy1,
-					sx1 - this.x0,
-					sy1 - this.y0,
-					sx2 - sx1,
-					sy2 - sy1
-				);
-			}
-		},
-
+		/* 下に入力可能数字の表示領域を追加 */
 		drawIndicator: function() {
 			var g = this.vinc("indicator", "auto", true),
 				bd = this.board;
-			if (!this.range.indicator) {
-				return;
-			}
 
 			if (g.use.canvas) {
 				g.context.clearRect(
 					0,
-					-this.y0,
+					bd.maxby * this.bh + 5,
 					g.child.width,
-					bd.minby * this.bh + this.y0
+					bd.maxby * this.bh + 10
 				);
 			}
 
@@ -380,13 +470,13 @@
 			g.textAlign = "right";
 			g.textBaseline = "middle";
 			g.fillText(
-				"(A-" + this.getNumberTextCore_letter(bd.indicator.count) + ")",
-				(bd.maxbx - 0.2) * this.bw,
-				-3 * this.bh
+				"[1-" + bd.indicator.count + "]",
+				bd.maxbx * this.bw,
+				(bd.rows * 2 + 1) * this.bh
 			);
 		},
-		drawCursor_easyasbac: function() {
-			var isOnBoard = this.puzzle.board.minby <= this.puzzle.cursor.by;
+		drawCursor_japanesesums: function() {
+			var isOnBoard = this.puzzle.board.maxby >= this.puzzle.cursor.by;
 			var isOnIndicator = !isOnBoard;
 			this.drawCursor(true, isOnBoard);
 			this.drawCursorOnIndicator(isOnIndicator);
@@ -394,9 +484,6 @@
 		drawCursorOnIndicator: function(isdraw) {
 			var g = this.vinc("target_cursor_indicator", "crispEdges", true),
 				bd = this.board;
-			if (!this.range.indicator) {
-				return;
-			}
 
 			var isdraw =
 				isdraw &&
@@ -417,6 +504,26 @@
 			} else {
 				g.vhide();
 			}
+		},
+
+		getBoardCols: function() {
+			return this.getOffsetCols() + this.board.maxbx / 2;
+		},
+		getBoardRows: function() {
+			return this.getOffsetRows() + this.board.maxby / 2 + 1;
+		},
+
+		getOffsetCols: function() {
+			var bd = this.board;
+			var offset =
+				this.puzzle.playeronly || this.outputImage ? bd.getOffsets()[0] : 0;
+			return (0 - bd.minbx) / 2 - offset;
+		},
+		getOffsetRows: function() {
+			var bd = this.board;
+			var offset =
+				this.puzzle.playeronly || this.outputImage ? bd.getOffsets()[1] : 0;
+			return (0 - bd.minby) / 2 - offset;
 		}
 	},
 
@@ -430,7 +537,7 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeIndicator();
-			this.encodeNumber16ExCell();
+			this.encodeNumber16ExCellFlushed();
 			if (
 				this.board.cell.some(function(b) {
 					return b.qnum !== -1;
@@ -450,7 +557,7 @@
 			this.outbstr = this.board.indicator.count + "/";
 		}
 	},
-	//---------------------------------------------------------
+
 	FileIO: {
 		decodeData: function() {
 			this.decodeIndicator();
@@ -485,7 +592,7 @@
 					if (ca === "+") {
 						obj.qsub = 1;
 					} else if (ca === "-") {
-						obj.qsub = 2;
+						obj.qans = 1;
 					} else if (ca !== ".") {
 						obj.anum = +ca;
 					}
@@ -507,7 +614,7 @@
 						ca = "" + obj.anum;
 					} else if (obj.qsub === 1) {
 						ca = "+";
-					} else if (obj.qsub === 2) {
+					} else if (obj.qans === 1) {
 						ca = "-";
 					}
 					if (obj.anum === -1) {
@@ -520,72 +627,75 @@
 		}
 	},
 
-	//---------------------------------------------------------
-	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
 			"checkDifferentNumberInLine",
-			"checkSight+",
-			"checkNumberSaturatedInLine"
+			"checkRowColSum",
+			"checkNoNumCell+"
 		],
 
-		checkNumberSaturatedInLine: function() {
-			this.checkRowsCols(this.isNumberSaturatedInClist, "nmMissRow");
+		checkRowColSum: function() {
+			this.checkRowsCols(this.isSumOrder, "nmSumOrderRowNe");
 		},
-		isNumberSaturatedInClist: function(clist) {
-			if (clist.length <= 0) {
+
+		isSumOrder: function(clist) {
+			var noNumCells = clist.filter(function(cell) {
+				return cell.noNum();
+			});
+			if (noNumCells.length !== 0) {
 				return true;
 			}
-			var result = true,
-				d = [];
-			var max = this.board.indicator.count,
-				bottom = 1;
-			for (var n = bottom; n <= max; n++) {
-				d[n] = 0;
+
+			var d = clist.getRectSize(),
+				bd = this.board;
+			var excells =
+				d.x1 === d.x2
+					? bd.excellinside(d.x1, bd.minby, d.x1, -1)
+					: bd.excellinside(bd.minbx, d.y1, -1, d.y1);
+			excells = excells.filter(function(excell) {
+				return excell.qnum !== -1;
+			});
+			var nums = [];
+			for (var i = 0; i < excells.length; i++) {
+				nums.push(excells[i].qnum);
 			}
+
+			if (nums.length === 0) {
+				return true;
+			}
+
+			var sum = 0,
+				sums = [];
 			for (var i = 0; i < clist.length; i++) {
-				var num = clist[i].getNum();
-				if (num >= bottom) {
-					d[num]++;
+				var cell = clist[i];
+				if (cell.isShade()) {
+					if (sum > 0) {
+						sums.push(sum);
+						sum = 0;
+					}
 				}
+				var n = cell.getNum();
+				sum += n > 0 ? n : 0;
 			}
-			for (var n = bottom; n <= max; n++) {
-				if (d[n] === 0) {
-					result = false;
-					break;
-				}
+			if (sum > 0) {
+				sums.push(sum);
 			}
 
-			if (!result) {
+			if (nums.length !== sums.length) {
 				clist.seterr(1);
+				excells.seterr(1);
+				return false;
 			}
-			return result;
-		},
 
-		checkSight: function() {
-			var bd = this.board,
-				result = true;
-			for (var ec = 0; ec < bd.excell.length; ec++) {
-				var excell = bd.excell[ec];
-				if (excell.qnum === -1) {
-					continue;
+			for (var i = 0; i < nums.length; i++) {
+				if (nums[i] !== -2 && nums[i] !== sums[i]) {
+					clist.seterr(1);
+					excells.seterr(1);
+					return false;
 				}
-				var cell = bd.searchSight(excell, false).dest;
-				if (cell.isnull || excell.qnum === cell.getNum() || cell.qsub === 1) {
-					continue;
-				}
-
-				result = false;
-				if (this.checkOnly) {
-					break;
-				}
-
-				excell.seterr(1);
-				bd.searchSight(excell, true);
 			}
-			if (!result) {
-				this.failcode.add("nmSightNe");
-			}
+
+			return true;
 		}
 	}
 });

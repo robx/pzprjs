@@ -41,6 +41,11 @@ pzpr.classmgr.makeCommon({
 				if (isexist) {
 					prio = (item.match(/\+/) || []).length;
 					item = item.replace(/\+/g, "");
+
+					if (!(item in this)) {
+						throw Error("Function " + item + " does not exist in AnsCheck");
+					}
+
 					order.push([this[item], prio]);
 				}
 			}

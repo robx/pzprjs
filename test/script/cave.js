@@ -78,6 +78,16 @@ ui.debug.addDebugData("cave", {
 				"mouse,rightx4, 9,3"
 			],
 			result: "pzprv3/cave/2/5/- 2 3 4 5 /6 . 6 5 4 /. . . . . /. . . . . /"
+		},
+		{
+			input: [
+				"playmode",
+				"mouse,left,3,3,3,5",
+				"mouse,right,1,1,1,3",
+				"mouse,alt+left,8,1,7,2,8,3"
+			],
+			result:
+				"pzprv3/cave/2/5/- 2 3 4 5 /6 . 6 5 4 /+ . . . . /+ # . . . /0 0 0 -1 /0 0 0 -1 /0 0 0 -1 0 /"
 		}
 	]
 });

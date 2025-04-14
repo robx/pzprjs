@@ -18,7 +18,7 @@
 			play: ["shade", "unshade", "peke", "info-blk"]
 		},
 		autoedit_func: "areanum",
-		autoplay_func: "cell"
+		autoplay_func: "cellpeke"
 	},
 
 	//---------------------------------------------------------

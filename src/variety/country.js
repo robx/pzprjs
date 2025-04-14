@@ -14,7 +14,8 @@
 		"ovotovata",
 		"rassi",
 		"remlen",
-		"nothing"
+		"nothing",
+		"dotchi2"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -39,7 +40,7 @@
 	"MouseEvent@moonsun": {
 		inputModes: {
 			edit: ["border", "moon", "sun", "clear", "info-line"],
-			play: ["line", "peke", "lineblank", "clear", "info-line"]
+			play: ["line", "peke", "clear", "info-line"]
 		},
 		mouseinput_other: function() {
 			switch (this.inputMode) {
@@ -110,10 +111,10 @@
 			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@dotchi": {
+	"MouseEvent@dotchi,dotchi2": {
 		inputModes: {
 			edit: ["border", "circle-shade", "circle-unshade", "clear", "info-line"],
-			play: ["line", "peke", "lineblank", "clear", "info-line"]
+			play: ["line", "peke", "clear", "info-line"]
 		}
 	},
 	"MouseEvent@ovotovata": {
@@ -230,7 +231,7 @@
 			}
 		}
 	},
-	"MouseEvent@moonsun#2": {
+	"MouseEvent@moonsun,dotchi2#2": {
 		// オーバーライド
 		inputMB: function() {
 			var cell = this.getcell();
@@ -341,7 +342,7 @@
 	"Cell@detour": {
 		minnum: 0
 	},
-	"Cell@moonsun,dotchi": {
+	"Cell@moonsun,dotchi,dotchi2": {
 		disInputHatena: true,
 		numberAsObject: true,
 
@@ -371,7 +372,7 @@
 	"Border@doubleback,simpleloop,dotchi,remlen": {
 		enableLineNG: true
 	},
-	"Border@moonsun,dotchi#1": {
+	"Border@moonsun,dotchi,dotchi2#1": {
 		posthook: {
 			line: function(num) {
 				var room1 = this.sidecell[0].room,
@@ -492,13 +493,13 @@
 			}
 		}
 	},
-	"AreaRoomGraph@moonsun,dotchi": {
+	"AreaRoomGraph@moonsun,dotchi,dotchi2": {
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
 			component.countMarkAndLine();
 		}
 	},
-	"GraphComponent@moonsun": {
+	"GraphComponent@moonsun,dotchi2": {
 		countMarkAndLine: function() {
 			var count = (this.count = {
 				moon: { exists: 0, passed: 0 },
@@ -578,7 +579,7 @@
 				this.drawMarks();
 			} else if (this.pid === "onsen") {
 				this.drawCircledNumbers();
-			} else if (this.pid === "dotchi") {
+			} else if (this.pid === "dotchi" || this.pid === "dotchi2") {
 				this.drawCircles();
 			}
 
@@ -709,9 +710,10 @@
 	"Graphic@maxi,detour,remlen": {
 		textoption: { ratio: 0.4, position: 5, hoffset: 0.8, voffset: 0.75 }
 	},
-	"Graphic@dotchi": {
+	"Graphic@dotchi,dotchi2": {
 		circlefillcolor_func: "qnum2",
-		circlestrokecolor_func: "qnum2"
+		circlestrokecolor_func: "qnum2",
+		mbcolor: "#0096ff"
 	},
 	"Graphic@ovotovata": {
 		gridcolor_type: "LIGHT",
@@ -778,7 +780,11 @@
 				this.pid === "remlen"
 			) {
 				this.decodeRoomNumber16();
-			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
+			} else if (
+				this.pid === "moonsun" ||
+				this.pid === "dotchi" ||
+				this.pid === "dotchi2"
+			) {
 				this.decodeCircle();
 			} else if (this.pid === "onsen") {
 				this.decodeNumber16();
@@ -811,7 +817,11 @@
 				this.pid === "remlen"
 			) {
 				this.encodeRoomNumber16();
-			} else if (this.pid === "moonsun" || this.pid === "dotchi") {
+			} else if (
+				this.pid === "moonsun" ||
+				this.pid === "dotchi" ||
+				this.pid === "dotchi2"
+			) {
 				this.encodeCircle();
 			} else if (this.pid === "onsen") {
 				this.encodeNumber16();
@@ -1164,6 +1174,25 @@
 			"checkOneLoop"
 		]
 	},
+	"AnsCheck@dotchi2#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkShadedTurn",
+			"checkUnshadedStraight",
+
+			"checkPassesSingleMarks",
+
+			"checkAllMoonPassed",
+			"checkAllSunPassed",
+
+			"checkPassesAnyMarks",
+
+			"checkDeadendLine+",
+			"checkOneLoop"
+		]
+	},
 	AnsCheck: {
 		checkNoRoadCountry: function() {
 			if (this.puzzle.getConfig("country_empty")) {
@@ -1272,7 +1301,7 @@
 			);
 		}
 	},
-	"AnsCheck@moonsun": {
+	"AnsCheck@moonsun,dotchi2": {
 		checkPassesSingleMarks: function() {
 			this.checkAllRoom(
 				function(count) {
@@ -1977,6 +2006,18 @@
 					room.clist.seterr(1);
 				}
 			}
+		}
+	},
+	"AnsCheck@dotchi2#2": {
+		checkShadedTurn: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum === 2 && cell.isLineStraight();
+			}, "mashuBStrig");
+		},
+		checkUnshadedStraight: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum === 1 && cell.isLineCurve();
+			}, "mashuWCurve");
 		}
 	}
 });

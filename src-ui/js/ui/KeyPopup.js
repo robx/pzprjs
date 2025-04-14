@@ -103,6 +103,7 @@ ui.keypopup = {
 		kusabi: [114, 0],
 		aqre: [10, 0],
 		doppelblock: [10, 115],
+		japanesesums: [10, 115],
 		interbd: [116, 0],
 		toichika2: [10, 10],
 		crossstitch: [10, 0],
@@ -222,7 +223,8 @@ ui.keypopup = {
 		orbital: [124, 0],
 		outofsight: [132, 0],
 		nuritwin: [10, 0],
-		arrowflow: [10, 0]
+		arrowflow: [10, 0],
+		tjunction: [4, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -259,6 +261,15 @@ ui.keypopup = {
 		var type = this.type[ui.puzzle.pid];
 		if (!type) {
 			type = [0, 0];
+		}
+
+		/* Change maximum number for Fillomino variant */
+		if (
+			ui.puzzle.playeronly &&
+			ui.puzzle.pid === "fillomino" &&
+			ui.puzzle.getConfig("fillomino_tri")
+		) {
+			type = [3, 3];
 		}
 
 		this.paneltype = { 1: !ui.puzzle.playeronly ? type[0] : 0, 3: type[1] };
@@ -391,6 +402,7 @@ ui.keypopup = {
 				switch (pid) {
 					case "lightup":
 					case "shakashaka":
+					case "tjunction":
 						cap = "■";
 						break;
 					case "gokigen":
@@ -537,7 +549,11 @@ ui.keypopup = {
 	// kp.gentable8()  キーポップアップの0～8を入力できるテーブルを作成する
 	//---------------------------------------------------------------------------
 	gentable3: function(mode) {
-		this.generate_main(["1", "2", "3", "0", " ", ["-", "?"]], 3);
+		var itemlist = ["1", "2", "3", "0", " "];
+		if (mode === 1) {
+			itemlist.push(["-", "?"]);
+		}
+		this.generate_main(itemlist, 3);
 	},
 	gentable5: function(mode) {
 		this.generate_main(

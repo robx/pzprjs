@@ -175,6 +175,7 @@ window.ui = {
 			case "kinkonkan":
 			case "skyscrapers":
 			case "easyasabc":
+			case "japanesesums":
 			case "box":
 				padding = 0.05;
 				break;

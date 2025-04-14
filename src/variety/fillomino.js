@@ -376,6 +376,10 @@
 	Cell: {
 		enableSubNumberArray: true,
 		maxnum: function() {
+			if (this.puzzle.getConfig("fillomino_tri")) {
+				return 3;
+			}
+
 			return this.board.cols * this.board.rows;
 		},
 
@@ -837,8 +841,10 @@
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodeBorder();
+			this.puzzle.setConfig("fillomino_tri", this.checkpflag("t"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("fillomino_tri") ? "t" : null;
 			this.encodeNumber16();
 			this.encodeBorderIfPresent();
 		},
@@ -943,6 +949,7 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("t", "fillomino_tri");
 			if (this.puzzle.pid === "wafusuma") {
 				this.decodeBorder(function(border, ca) {
 					if (ca !== ".") {
@@ -962,6 +969,7 @@
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("t", "fillomino_tri");
 			if (this.puzzle.pid === "wafusuma") {
 				this.encodeBorder(function(border) {
 					return border.qnum === -1 ? ". " : border.qnum + " ";
@@ -1097,6 +1105,7 @@
 			"checkMidpoints@snakepit",
 
 			"checkSmallArea",
+			"checkMaxNum",
 			"checkSideAreaNumberSize",
 			"checkLargeArea",
 			"checkNumKinds",
@@ -1106,6 +1115,16 @@
 			"checkGivenLines",
 			"checkNoNumCell_fillomino+"
 		],
+
+		checkMaxNum: function() {
+			if (!this.puzzle.getConfig("fillomino_tri")) {
+				return;
+			}
+
+			this.checkAllErrorRoom(function(area) {
+				return area.clist.length <= 3;
+			}, "bkSizeGt3");
+		},
 
 		checkSideAreaNumberSize: function() {
 			this.checkSideAreaSize(
