@@ -164,6 +164,7 @@
 		},
 		initExtraObject: function(col, row) {
 			this.indicator.init();
+			this.indicator.count = this.klass.Indicator.prototype.count;
 		},
 		getex: function(bx, by) {
 			if (by > this.minby) {
@@ -210,6 +211,11 @@
 			return { dest: cell };
 		}
 	},
+	BoardExec: {
+		adjustBoardData2: function(key, d) {
+			this.board.indicator.init();
+		}
+	},
 	Indicator: {
 		count: 3,
 		rect: null,
@@ -221,8 +227,7 @@
 			}
 			this.rect = { bx1: -1, by1: -1, bx2: -1, by2: -1 };
 		},
-		init: function(val) {
-			this.count = this.constructor.prototype.count;
+		init: function() {
 			var bd = this.puzzle.board;
 			this.rect = {
 				bx1: bd.maxbx - 3.15,
