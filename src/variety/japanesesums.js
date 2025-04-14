@@ -276,6 +276,7 @@
 		cols: 5,
 		rows: 5,
 		hasexcell: 1,
+		hasflush: 1,
 
 		indicator: null,
 
@@ -536,7 +537,7 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeIndicator();
-			this.encodeNumber16ExCell();
+			this.encodeNumber16ExCellFlushed();
 			if (
 				this.board.cell.some(function(b) {
 					return b.qnum !== -1;
