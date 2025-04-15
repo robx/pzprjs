@@ -175,6 +175,7 @@
 		},
 		initExtraObject: function(col, row) {
 			this.indicator.init();
+			this.count = this.constructor.prototype.count;
 		},
 		getex: function(bx, by) {
 			if (by <= this.maxby) {
@@ -238,7 +239,7 @@
 			}
 			this.rect = { bx1: -1, by1: -1, bx2: -1, by2: -1 };
 		},
-		init: function(val) {
+		init: function() {
 			this.count = this.constructor.prototype.count;
 			var bd = this.puzzle.board;
 			// インジケーターを囲む位の大きさ
