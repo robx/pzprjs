@@ -276,6 +276,7 @@
 		cols: 5,
 		rows: 5,
 		hasexcell: 1,
+		hasflush: 1,
 
 		indicator: null,
 
@@ -291,6 +292,7 @@
 		},
 		initExtraObject: function(col, row) {
 			this.indicator.init();
+			this.indicator.count = this.klass.Indicator.prototype.count;
 		},
 		getex: function(bx, by) {
 			if (by <= this.maxby) {
@@ -335,6 +337,7 @@
 		},
 		adjustBoardData2: function(key, d) {
 			this.adjustExCellTopLeft_2(key, d);
+			this.board.indicator.init();
 		}
 	},
 
@@ -351,8 +354,7 @@
 			}
 			this.rect = { bx1: -1, by1: -1, bx2: -1, by2: -1 };
 		},
-		init: function(val) {
-			this.count = this.constructor.prototype.count;
+		init: function() {
 			var bd = this.puzzle.board;
 			// インジケーターを囲む位の大きさ
 			this.rect = {
@@ -535,7 +537,7 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeIndicator();
-			this.encodeNumber16ExCell();
+			this.encodeNumber16ExCellFlushed();
 			if (
 				this.board.cell.some(function(b) {
 					return b.qnum !== -1;
