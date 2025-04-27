@@ -97,7 +97,7 @@
 		enablemake: true,
 		enableplay: true,
 		moveTarget: function(ca) {
-			if (ca.match(/shift/) || this.isZ) {
+			if (ca.match(/shift/) || ca.match(/ctrl/) || ca.match(/meta/)) {
 				return false;
 			}
 			return this.moveTCell(ca);
@@ -107,9 +107,12 @@
 			this.key_roma(ca);
 		},
 		key_roma: function(ca) {
-			if (this.isZ && this.puzzle.playmode) {
+			if (
+				this.puzzle.playmode &&
+				(ca.startsWith("ctrl+") || ca.startsWith("meta+"))
+			) {
 				var cell = this.cursor.getc();
-				switch (ca) {
+				switch (ca.split("+")[1]) {
 					case "up":
 						cell.setQsub(cell.qsub ^ 4);
 						break;

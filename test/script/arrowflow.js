@@ -24,5 +24,10 @@ ui.debug.addDebugData("arrowflow", {
 			"pzprv3/arrowflow/4/4/1 . 0 - /. . . . /5 . . 0 /. . . 2 /. 3 . . /4 2 4 1 /. 3 2 . /4 1 4 . /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,3,3", "editmode", "cursor,3,1", "key,8"],
+			result: "pzprv3/arrowflow/3/3/. 8 . /. . . /. . . /. . . /. . . /. . . /"
+		}
+	]
 });
