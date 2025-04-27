@@ -97,7 +97,7 @@
 		enablemake: true,
 		enableplay: true,
 		moveTarget: function(ca) {
-			if (ca.match(/shift/)) {
+			if (ca.match(/shift/) || this.isZ) {
 				return false;
 			}
 			return this.moveTCell(ca);
@@ -107,6 +107,26 @@
 			this.key_roma(ca);
 		},
 		key_roma: function(ca) {
+			if (this.isZ && this.puzzle.playmode) {
+				var cell = this.cursor.getc();
+				switch (ca) {
+					case "up":
+						cell.setQsub(cell.qsub ^ 4);
+						break;
+					case "down":
+						cell.setQsub(cell.qsub ^ 8);
+						break;
+					case "left":
+						cell.setQsub(cell.qsub ^ 16);
+						break;
+					case "right":
+						cell.setQsub(cell.qsub ^ 32);
+						break;
+				}
+				cell.draw();
+				return;
+			}
+
 			if (ca === "1" || ca === "shift+up") {
 				ca = "1";
 			} else if (ca === "2" || ca === "shift+right") {
@@ -149,6 +169,13 @@
 		},
 		isGoal: function() {
 			return this.getNum() === 5;
+		}
+	},
+	"Cell@roma": {
+		prehook: {
+			qsub: function() {
+				return this.qnum !== -1;
+			}
 		}
 	},
 	"Cell@arrowflow": {
