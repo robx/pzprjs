@@ -96,6 +96,7 @@
 			aquarium: [0, 0, "アクアプレース", "Aquarium", "aquarium"],
 			araf: [0, 0, "相ダ部屋", "Araf", "araf"],
 			armyants: [0, 0, "ぐんたいあり", "Army Ants", "kaero"],
+			arrowflow: [0, 0, "アローフロー", "Arrow Flow", "roma"],
 			arukone: [0, 0, "アルコネ", "Arukone", "numlin"],
 			ayeheya: [0, 1, "∀人∃ＨＥＹＡ", "Ayeheya", "heyawake"],
 			balance: [0, 0, "Balance Loop", "Balance Loop"],

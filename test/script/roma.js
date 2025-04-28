@@ -131,24 +131,23 @@ ui.debug.addDebugData("roma", {
 			],
 			result: "pzprv3/roma/1/5/1/0 0 0 0 0 /. . . . . /. . . . . /"
 		},
-		/* 通る道チェックでエラーにならないか確認 */
-		{ input: ["newboard,5,1", "playmode", "setconfig,redload,true"] },
+
 		{
+			label: "Aux marks with keyboard",
 			input: [
 				"cursor,1,1",
-				"key,1",
-				"key,right,2",
-				"key,right,3",
-				"key,right,4"
-			]
-		},
-		{
-			input: [
-				"cursor,3,1",
-				"mouse,left, 3,1",
-				"mouse,left, 5,1",
-				"mouse,left, 9,1"
-			]
+				"key,ctrl+right",
+				"key,right",
+				"key,ctrl+left",
+				"key,right",
+				"key,ctrl+down",
+				"key,right",
+				"key,ctrl+up",
+				"key,right",
+				"key,ctrl+up",
+				"key,ctrl+down"
+			],
+			result: "pzprv3/roma/1/5/1/0 0 0 0 0 /. . . . . /+32 +16 +8 +4 +12 /"
 		}
 	]
 });

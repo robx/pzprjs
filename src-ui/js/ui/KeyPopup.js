@@ -223,6 +223,7 @@ ui.keypopup = {
 		orbital: [124, 0],
 		outofsight: [132, 0],
 		nuritwin: [10, 0],
+		arrowflow: [10, 0],
 		tjunction: [4, 0],
 		retsurin: [10, 0]
 	},
