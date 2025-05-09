@@ -354,7 +354,7 @@
 		icecolor: "rgb(163, 216, 255)"
 	},
 	"Graphic@forestwalk": {
-		icecolor: "rgb(163, 255, 216)"
+		icecolor: "rgb(195, 253, 186)"
 	},
 	"Graphic@firewalk": {
 		icecolor: "rgb(255, 192, 192)",

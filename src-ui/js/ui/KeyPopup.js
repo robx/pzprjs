@@ -225,7 +225,8 @@ ui.keypopup = {
 		nuritwin: [10, 0],
 		arrowflow: [10, 0],
 		tjunction: [4, 0],
-		retsurin: [10, 0]
+		retsurin: [10, 0],
+		forestwalk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -505,6 +506,7 @@ ui.keypopup = {
 			pid === "icewalk" ||
 			pid === "waterwalk" ||
 			pid === "firewalk" ||
+			pid === "forestwalk" ||
 			pid === "dbchoco" ||
 			pid === "balloon"
 		) {
@@ -517,6 +519,8 @@ ui.keypopup = {
 							? "rgb(204,204,204)"
 							: pid === "firewalk"
 							? "rgb(255,192,192)"
+							: pid === "forestwalk"
+							? "rgb(195,253,186)"
 							: "rgb(192,224,255)"
 				}
 			]);
