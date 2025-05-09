@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["icewalk", "waterwalk", "firewalk"], {
+})(["icewalk", "waterwalk", "firewalk", "forestwalk"], {
 	MouseEvent: {
 		inputModes: {
 			edit: ["ice", "number", "clear", "info-line"],
@@ -53,6 +53,18 @@
 		},
 		mouseinput_other: function() {
 			if (this.inputMode === "water") {
+				this.inputIcebarn();
+			}
+		}
+	},
+	"MouseEvent@forestwalk": {
+		// TODO add button for forest input mode
+		inputModes: {
+			edit: ["forest", "number", "clear", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "forest") {
 				this.inputIcebarn();
 			}
 		}
@@ -340,6 +352,9 @@
 	},
 	"Graphic@waterwalk": {
 		icecolor: "rgb(163, 216, 255)"
+	},
+	"Graphic@forestwalk": {
+		icecolor: "rgb(163, 255, 216)"
 	},
 	"Graphic@firewalk": {
 		icecolor: "rgb(255, 192, 192)",
@@ -654,13 +669,14 @@
 	AnsCheck: {
 		checklist: [
 			"checkBranchLine",
-			"checkCrossLine@waterwalk,firewalk",
+			"checkCrossLine@!icewalk",
 			"checkCrossOutOfIce@icewalk",
 			"checkIceLines@icewalk",
 			"checkWaterWalk@waterwalk",
 			"checkStraightOnFire@firewalk",
 			"checkLessWalk",
 			"checkOverWalk",
+			"checkForestCell@forestwalk",
 
 			"checkOneLoop",
 			"checkDoubleTurnOutside@firewalk",
@@ -769,6 +785,18 @@
 						(cell.qans === 2 && cell.relcross(1, -1).inside))
 				);
 			}, "lnDoubleTurn");
+		}
+	},
+	"AnsCheck@forestwalk": {
+		checkBranchLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 3 && !cell.ice();
+			}, "lnBranch");
+		},
+		checkForestCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt > 0 && cell.lcnt < 3 && cell.ice();
+			}, "lnNoBranch");
 		}
 	}
 });
