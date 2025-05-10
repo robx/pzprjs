@@ -58,7 +58,6 @@
 		}
 	},
 	"MouseEvent@forestwalk": {
-		// TODO add button for forest input mode
 		inputModes: {
 			edit: ["forest", "number", "clear", "info-line"],
 			play: ["line", "peke", "info-line"]

@@ -40,5 +40,10 @@ ui.debug.addDebugData("forestwalk", {
 			"pzprv3/forestwalk/5/5/. . . . . /. # . # . /. . 1 # 10 /. # # # . /. . 4 . 4 /0 1 1 1 1 0 /0 0 0 0 0 0 /0 1 0 1 1 0 /0 1 0 1 1 0 /0 1 0 1 1 0 /0 0 0 0 0 /1 0 0 0 1 /1 0 0 0 1 /0 1 1 1 0 /1 1 1 0 1 /0 0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,2,2", "editmode,forest", "mouse,left,1,1,3,1"],
+			result: "pzprv3/forestwalk/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /"
+		}
+	]
 });
