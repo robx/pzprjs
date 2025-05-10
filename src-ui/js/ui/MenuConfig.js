@@ -161,6 +161,7 @@
 				case "icewalk":
 				case "waterwalk":
 				case "firewalk":
+				case "forestwalk":
 					idname = "loop_full";
 					break;
 			}

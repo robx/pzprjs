@@ -141,6 +141,7 @@ function toBGimage(pid) {
 		"evolmino",
 		"fakearrow",
 		"firewalk",
+		"forestwalk",
 		"geradeweg",
 		"heteromino",
 		"heyapin",

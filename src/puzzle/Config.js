@@ -531,7 +531,8 @@
 							"turnrun",
 							"icewalk",
 							"waterwalk",
-							"firewalk"
+							"firewalk",
+							"forestwalk"
 						].indexOf(pid) >= 0;
 					break;
 				default:

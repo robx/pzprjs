@@ -166,6 +166,7 @@
 			firefly: [1, 0, "ホタルビーム", "Hotaru Beam"],
 			firewalk: [1, 0, "ファイアウォーク", "Fire Walk", "icewalk"],
 			fivecells: [0, 0, "ファイブセルズ", "FiveCells", "nawabari"],
+			forestwalk: [0, 0, "Forest Walk", "Forest Walk", "icewalk"],
 			fourcells: [0, 0, "フォーセルズ", "FourCells", "nawabari"],
 			fracdiv: [0, 0, "分数分割", "Fractional Division"],
 			geradeweg: [0, 0, "グラーデヴェグ", "Geradeweg"],
