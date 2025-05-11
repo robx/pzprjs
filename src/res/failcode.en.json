@@ -604,7 +604,7 @@
     "lnLenLt.reflect": "The lines passing a triangle are too short.",
     "lnMultipleTips.pencils": "A line connects to more than one pencil tip.",
     "lnNoBorder.ladders": "A ladder doesn't touch two region borders.",
-    "lnNoBranch.forestwalk": "A forest cell doesn't contain a T-junction.",
+    "lnNoBranch.forestwalk": "A visited forest cell doesn't contain a T-junction.",
     "lnNoBranch.tjunction": "A cell doesn't contain a T-junction.",
     "lnNoBranchOrTerm.lither": "A line does not branch or terminate at a grid vertex.",
     "lnNoFish.anglers": "A line has no fish.",
