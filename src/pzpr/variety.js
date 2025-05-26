@@ -412,6 +412,7 @@
 			sudoku: [0, 1, "数独", "Sudoku"],
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
+			sumiwake: [0, 0, "すみわけ", "Sumiwake", "heyawake"],
 			swslither: [
 				0,
 				0,
