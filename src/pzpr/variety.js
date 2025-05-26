@@ -457,6 +457,7 @@
 			wafusuma: [0, 0, "和フスマ", "Wafusuma", "fillomino"],
 			wagiri: [0, 0, "ごきげんななめ・輪切", "Wagiri", "gokigen"],
 			walllogic: [0, 0, "ウォールロジック", "Wall Logic"],
+			wataridori: [0, 0, "わたりどり", "Wataridori", "country"],
 			waterwalk: [0, 0, "ウォーターウォーク", "Water Walk", "icewalk"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
 			wittgen: [0, 0, "デスクプレース", "Wittgenstein Briquet", "kaidan"],
