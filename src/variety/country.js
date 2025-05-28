@@ -15,7 +15,8 @@
 		"rassi",
 		"remlen",
 		"nothing",
-		"dotchi2"
+		"dotchi2",
+		"wataridori"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -25,7 +26,7 @@
 })({
 	//---------------------------------------------------------
 	// マウス入力系
-	"MouseEvent@country,onsen,detour": {
+	"MouseEvent@country,onsen,detour,wataridori": {
 		inputModes: {
 			edit: ["border", "number", "clear", "info-line"],
 			play: ["line", "peke", "subcircle", "subcross", "clear", "info-line"]
@@ -316,11 +317,13 @@
 			return Math.min(999, this.room.clist.length);
 		}
 	},
-	"Cell@remlen": {
-		disInputHatena: true,
+	"Cell@wataridori,remlen#1": {
 		maxnum: function() {
 			return Math.min(999, this.board.cols * this.board.rows);
-		},
+		}
+	},
+	"Cell@remlen": {
+		disInputHatena: true,
 		seterr: function(num) {
 			if (this.board.isenableSetError()) {
 				if (num > 0) {
@@ -392,7 +395,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@onsen,maxi,detour,remlen": {
+	"Board@onsen,maxi,detour,remlen,wataridori": {
 		cols: 8,
 		rows: 8,
 
@@ -416,10 +419,10 @@
 	LineGraph: {
 		enabled: true
 	},
-	"LineGraph@onsen,maxi,detour,rassi,remlen": {
+	"LineGraph@onsen,maxi,detour,rassi,remlen,wataridori": {
 		makeClist: true
 	},
-	"LineBlockGraph:LineGraph@onsen,maxi,detour,remlen": {
+	"LineBlockGraph:LineGraph@onsen,maxi,detour,remlen,wataridori": {
 		enabled: true,
 		relation: { "border.line": "link", "border.ques": "separator" },
 		makeClist: true,
@@ -577,7 +580,7 @@
 				this.drawQuesNumbers();
 			} else if (this.pid === "moonsun") {
 				this.drawMarks();
-			} else if (this.pid === "onsen") {
+			} else if (this.pid === "onsen" || this.pid === "wataridori") {
 				this.drawCircledNumbers();
 			} else if (this.pid === "dotchi" || this.pid === "dotchi2") {
 				this.drawCircles();
@@ -585,7 +588,11 @@
 
 			this.drawBorders();
 
-			if (this.pid !== "onsen" && this.pid !== "nothing") {
+			if (
+				this.pid !== "onsen" &&
+				this.pid !== "nothing" &&
+				this.pid !== "wataridori"
+			) {
 				this.drawMBs();
 			}
 			this.drawLines();
@@ -607,7 +614,7 @@
 			}
 		}
 	},
-	"Graphic@onsen": {
+	"Graphic@onsen,wataridori": {
 		hideHatena: true,
 		circleratio: [0.4, 0.37],
 		gridcolor_type: "LIGHT",
@@ -759,7 +766,7 @@
 			if (this.pid === "country") {
 				this.puzzle.setConfig("country_empty", this.checkpflag("e"));
 			}
-			if (this.pid === "ovotovata") {
+			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 			}
 			if (this.pid !== "simpleloop") {
@@ -786,7 +793,7 @@
 				this.pid === "dotchi2"
 			) {
 				this.decodeCircle();
-			} else if (this.pid === "onsen") {
+			} else if (this.pid === "onsen" || this.pid === "wataridori") {
 				this.decodeNumber16();
 			} else if (
 				this.pid === "doubleback" ||
@@ -800,7 +807,7 @@
 			if (this.pid === "country") {
 				this.outpflag = this.puzzle.getConfig("country_empty") ? "e" : null;
 			}
-			if (this.pid === "ovotovata") {
+			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			}
 			if (this.pid !== "simpleloop") {
@@ -823,7 +830,7 @@
 				this.pid === "dotchi2"
 			) {
 				this.encodeCircle();
-			} else if (this.pid === "onsen") {
+			} else if (this.pid === "onsen" || this.pid === "wataridori") {
 				this.encodeNumber16();
 			} else if (
 				this.pid === "doubleback" ||
@@ -897,7 +904,11 @@
 				this.decodeBorderArrowAns();
 			} else {
 				this.decodeBorderLine();
-				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
+				if (
+					this.pid !== "onsen" &&
+					this.pid !== "simpleloop" &&
+					this.pid !== "wataridori"
+				) {
 					this.decodeCellQsub();
 				}
 			}
@@ -926,7 +937,11 @@
 				this.encodeBorderArrowAns();
 			} else {
 				this.encodeBorderLine();
-				if (this.pid !== "onsen" && this.pid !== "simpleloop") {
+				if (
+					this.pid !== "onsen" &&
+					this.pid !== "simpleloop" &&
+					this.pid !== "wataridori"
+				) {
 					this.encodeCellQsub();
 				}
 			}
@@ -1193,6 +1208,17 @@
 			"checkOneLoop"
 		]
 	},
+	"AnsCheck@wataridori#1": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+			"checkLineOverLetter",
+			"checkLineRoomPassOnce",
+			"checkNumberVisits",
+			"checkDeadendConnectLine",
+			"checkIsolatedCircle+"
+		]
+	},
 	AnsCheck: {
 		checkNoRoadCountry: function() {
 			if (this.puzzle.getConfig("country_empty")) {
@@ -1404,7 +1430,7 @@
 			}
 		}
 	},
-	"AnsCheck@onsen": {
+	"AnsCheck@onsen,wataridori": {
 		checkLineRoomPassOnce: function() {
 			var bd = this.board;
 			var paths = bd.linegraph.components;
@@ -2018,6 +2044,30 @@
 			this.checkAllCell(function(cell) {
 				return cell.qnum === 1 && cell.isLineCurve();
 			}, "mashuWCurve");
+		}
+	},
+	"AnsCheck@wataridori#2": {
+		checkNumberVisits: function() {
+			this.checkLineShape(function(path) {
+				var bdcount =
+					path.objs.filter(function(bd) {
+						return bd.isBorder();
+					}).length + 1;
+
+				var cell1 = path.cells[0].qnum,
+					cell2 = path.cells[1].qnum;
+				var expect =
+					cell1 <= 0 ? cell2 : cell2 > 0 && cell1 !== cell2 ? 0 : cell1;
+
+				if (expect < 0) {
+					return false;
+				}
+
+				if (cell1 === -1 || cell2 === -1) {
+					return expect < bdcount;
+				}
+				return expect !== bdcount;
+			}, "blLineNe");
 		}
 	}
 });

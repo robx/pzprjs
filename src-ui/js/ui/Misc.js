@@ -230,6 +230,7 @@ function toBGimage(pid) {
 		"vslither",
 		"wafusuma",
 		"walllogic",
+		"wataridori",
 		"waterwalk",
 		"wittgen",
 		"yinyang",

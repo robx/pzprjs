@@ -226,7 +226,9 @@ ui.keypopup = {
 		arrowflow: [10, 0],
 		tjunction: [4, 0],
 		retsurin: [10, 0],
-		forestwalk: [10, 0]
+		forestwalk: [10, 0],
+		onsen: [10, 0],
+		wataridori: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -488,7 +490,9 @@ ui.keypopup = {
 			pid === "bosanowa" ||
 			pid === "portal" ||
 			pid === "minarism" ||
-			pid === "mintonette"
+			pid === "mintonette" ||
+			pid === "onsen" ||
+			pid === "wataridori"
 		) {
 			cap = "○";
 		} else if (!ui.puzzle.painter.hideHatena) {
