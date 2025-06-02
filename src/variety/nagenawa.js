@@ -647,6 +647,6 @@
 		}
 	},
 	"FailCode@orbital": {
-		lnIsolate: "lnIsolate.dotchi"
+		lnIsolate: "lnIsolate.country"
 	}
 });
