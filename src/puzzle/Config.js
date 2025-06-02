@@ -532,7 +532,8 @@
 							"icewalk",
 							"waterwalk",
 							"firewalk",
-							"forestwalk"
+							"forestwalk",
+							"wataridori"
 						].indexOf(pid) >= 0;
 					break;
 				default:

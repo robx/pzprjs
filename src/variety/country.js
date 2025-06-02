@@ -881,7 +881,7 @@
 			if (this.pid === "country" && this.filever >= 1) {
 				this.decodeFlags();
 			}
-			if (this.pid === "ovotovata") {
+			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.decodeConfigFlag("f", "loop_full");
 			}
 			if (this.pid !== "simpleloop") {
@@ -917,7 +917,7 @@
 			if (this.pid === "country") {
 				this.encodeFlags(["country_empty"]);
 			}
-			if (this.pid === "ovotovata") {
+			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.encodeConfigFlag("f", "loop_full");
 			}
 			if (this.pid !== "simpleloop") {
@@ -1216,6 +1216,7 @@
 			"checkLineRoomPassOnce",
 			"checkNumberVisits",
 			"checkDeadendConnectLine",
+			"checkNoLineIfVariant",
 			"checkIsolatedCircle+"
 		]
 	},

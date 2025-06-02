@@ -162,6 +162,7 @@
 				case "waterwalk":
 				case "firewalk":
 				case "forestwalk":
+				case "wataridori":
 					idname = "loop_full";
 					break;
 			}
