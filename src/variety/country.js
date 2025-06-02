@@ -26,13 +26,13 @@
 })({
 	//---------------------------------------------------------
 	// マウス入力系
-	"MouseEvent@country,onsen,detour,wataridori": {
+	"MouseEvent@country,onsen,detour": {
 		inputModes: {
 			edit: ["border", "number", "clear", "info-line"],
 			play: ["line", "peke", "subcircle", "subcross", "clear", "info-line"]
 		}
 	},
-	"MouseEvent@maxi": {
+	"MouseEvent@maxi,wataridori": {
 		inputModes: {
 			edit: ["border", "number", "clear", "info-line"],
 			play: ["line", "peke", "clear", "info-line"]
