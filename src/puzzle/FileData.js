@@ -85,15 +85,6 @@
 
 				this.filever = 0;
 				this.datastr = "";
-				if (filetype === pzl.FILE_PBOX_XML) {
-					this.xmldoc = new DOMParser().parseFromString(
-						'<?xml version="1.0" encoding="utf-8" ?><puzzle />',
-						"text/xml"
-					);
-					var puzzlenode = this.xmldoc.querySelector("puzzle");
-					puzzlenode.appendChild(this.createXMLNode("board"));
-					puzzlenode.appendChild(this.createXMLNode("answer"));
-				}
 
 				// メイン処理
 				switch (filetype) {
@@ -104,14 +95,6 @@
 						}
 						break;
 
-					case pzl.FILE_PBOX:
-						this.kanpenSave();
-						break;
-
-					case pzl.FILE_PBOX_XML:
-						this.kanpenSaveXML();
-						break;
-
 					default:
 						throw Error("invalid filetype");
 				}
@@ -120,11 +103,7 @@
 				pzl.filever = this.filever;
 				pzl.cols = bd.cols;
 				pzl.rows = bd.rows;
-				if (filetype !== pzl.FILE_PBOX_XML) {
-					pzl.body = this.datastr;
-				} else {
-					pzl.body = this.xmldoc;
-				}
+				pzl.body = this.datastr;
 				pzl.metadata.update(puzzle.metadata);
 				if (option.history && filetype === pzl.FILE_PZPR) {
 					pzl.history = puzzle.opemgr.encodeHistory({ time: !!option.time });
@@ -139,9 +118,7 @@
 			decodeData: throwNoImplementation,
 			encodeData: throwNoImplementation,
 			kanpenOpen: throwNoImplementation,
-			kanpenSave: throwNoImplementation,
 			kanpenOpenXML: throwNoImplementation,
-			kanpenSaveXML: throwNoImplementation,
 
 			//---------------------------------------------------------------------------
 			// fio.decodeTrial() 仮置きデータを復旧する
@@ -447,10 +424,6 @@
 			// fio.decodeCellXMLBoard()  配列で、個別文字列から個別セルの設定を行う (XML board用)
 			// fio.decodeCellXMLBrow()   配列で、個別文字列から個別セルの設定を行う (XML board用)
 			// fio.decodeCellXMLArow()   配列で、個別文字列から個別セルの設定を行う (XML answer用)
-			// fio.encodeCellXMLBoard()  個別セルデータから個別文字列の設定を行う (XML board用)
-			// fio.encodeCellXMLBrow()   個別セルデータから個別文字列の設定を行う (XML board用)
-			// fio.encodeCellXMLArow()   個別セルデータから個別文字列の設定を行う (XML answer用)
-			// fio.createXMLNode()  指定されたattributeを持つXMLのノードを作成する
 			//---------------------------------------------------------------------------
 			decodeCellXMLBoard: function(func) {
 				var nodes = this.xmldoc.querySelectorAll("board number");
@@ -465,36 +438,13 @@
 					}
 				}
 			},
-			encodeCellXMLBoard: function(func) {
-				var boardnode = this.xmldoc.querySelector("board");
-				var bd = this.board;
-				for (var i = 0; i < bd.cell.length; i++) {
-					var cell = bd.cell[i],
-						val = func(cell);
-					if (val !== null) {
-						boardnode.appendChild(
-							this.createXMLNode("number", {
-								r: ((cell.by / 2) | 0) + 1,
-								c: ((cell.bx / 2) | 0) + 1,
-								n: val
-							})
-						);
-					}
-				}
-			},
 
 			PBOX_ADJUST: 0,
 			decodeCellXMLBrow: function(func) {
 				this.decodeCellXMLrow_com(func, "board", "brow");
 			},
-			encodeCellXMLBrow: function(func) {
-				this.encodeCellXMLrow_com(func, "board", "brow");
-			},
 			decodeCellXMLArow: function(func) {
 				this.decodeCellXMLrow_com(func, "answer", "arow");
-			},
-			encodeCellXMLArow: function(func) {
-				this.encodeCellXMLrow_com(func, "answer", "arow");
 			},
 			decodeCellXMLrow_com: function(func, parentnodename, targetnodename) {
 				var rownodes = this.xmldoc.querySelectorAll(
@@ -522,40 +472,6 @@
 						}
 					}
 				}
-			},
-			encodeCellXMLrow_com: function(func, parentnodename, targetnodename) {
-				var boardnode = this.xmldoc.querySelector(parentnodename);
-				var ADJ = this.PBOX_ADJUST;
-				var bd = this.board;
-				for (var by = 1 - ADJ; by <= bd.maxby; by += 2) {
-					var rownode = this.createXMLNode(targetnodename, {
-						row: (((by + ADJ) / 2) | 0) + 1
-					});
-					for (var bx = 1 - ADJ; bx <= bd.maxbx; bx += 2) {
-						var piece = bd.getobj(bx, by),
-							nodename = func(piece),
-							node;
-						if (nodename.match(/n(\d\d+)/) || nodename.match(/n(\-\d+)/)) {
-							node = this.createXMLNode("n", { v: RegExp.$1 });
-						} else if (nodename === "n0") {
-							node = this.createXMLNode("z");
-						} else {
-							node = this.createXMLNode(nodename);
-						}
-						rownode.appendChild(node);
-					}
-					boardnode.appendChild(rownode);
-				}
-			},
-
-			createXMLNode: function(name, attrs) {
-				var node = this.xmldoc.createElement(name);
-				if (!!attrs) {
-					for (var i in attrs) {
-						node.setAttribute(i, attrs[i]);
-					}
-				}
-				return node;
 			}
 		}
 	});
