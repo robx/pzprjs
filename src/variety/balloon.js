@@ -269,14 +269,23 @@
 		decodePzpr: function() {
 			this.decodeIce();
 			this.decodeNumber16();
+			this.puzzle.setConfig("balloon_adjacent", !this.checkpflag("a"));
 		},
 		encodePzpr: function() {
+			this.outpflag = !this.puzzle.getConfig("balloon_adjacent") ? "a" : null;
 			this.encodeIce();
 			this.encodeNumber16();
 		}
 	},
 	FileIO: {
 		decodeData: function() {
+			if (this.dataarray[this.lineseek] === "a") {
+				this.puzzle.setConfig("balloon_adjacent", false);
+				this.readLine();
+			} else {
+				this.puzzle.setConfig("balloon_adjacent", true);
+			}
+
 			this.decodeCell(function(cell, ca) {
 				if (ca === "#") {
 					cell.ques = 6;
@@ -290,6 +299,9 @@
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			if (!this.puzzle.getConfig("balloon_adjacent")) {
+				this.writeLine("a");
+			}
 			this.encodeCell(function(cell) {
 				if (cell.ques === 6) {
 					return "# ";
@@ -333,6 +345,10 @@
 		},
 
 		checkAdjacency: function() {
+			if (!this.puzzle.getConfig("balloon_adjacent")) {
+				return;
+			}
+
 			this.checkSideCell(function(cell1, cell2) {
 				if (
 					cell1.ice() ||

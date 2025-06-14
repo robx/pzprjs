@@ -113,6 +113,10 @@
 				variant: true,
 				volatile: true
 			}); /* nuriuzu: Rule variation for shaded connectivity */
+			this.add("balloon_adjacent", false, {
+				variant: true,
+				volatile: true
+			}); /* balloon: Disallow strings being adjacent */
 			this.add("bdwalk_height", false, {
 				variant: true,
 				volatile: true
@@ -476,6 +480,9 @@
 					break;
 				case "bdwalk_height":
 					exec = pid === "bdwalk";
+					break;
+				case "balloon_adjacent":
+					exec = pid === "balloon";
 					break;
 				case "pentopia_transparent":
 					exec = pid === "pentopia";
