@@ -228,6 +228,7 @@
 		gridcolor_type: "",
 		shadecolor: "#222222",
 		margin: 0.5,
+		crosssize: 0.33,
 		drawCrosses: function() {
 			var g = this.vinc("cross_base", "auto", true);
 
