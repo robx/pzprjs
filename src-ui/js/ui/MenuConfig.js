@@ -137,6 +137,9 @@
 				case "bdwalk":
 					idname = "bdwalk_height";
 					break;
+				case "balloon":
+					idname = "balloon_adjacent";
+					break;
 				case "aqre":
 					idname = "aqre_borders";
 					break;
@@ -162,6 +165,7 @@
 				case "waterwalk":
 				case "firewalk":
 				case "forestwalk":
+				case "wataridori":
 					idname = "loop_full";
 					break;
 			}

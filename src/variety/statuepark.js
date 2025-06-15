@@ -703,6 +703,11 @@
 				]
 			},
 			{
+				name: "preset.tetrominoes",
+				shortkey: "t",
+				constant: ["14u", "23bg", "22u", "23f", "23eg"]
+			},
+			{
 				name: "preset.pentominoes",
 				shortkey: "p",
 				constant: [
