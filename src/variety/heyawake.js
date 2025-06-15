@@ -21,15 +21,14 @@
 		autoplay_func: "cellpeke"
 	},
 	"MouseEvent@sumiwake": {
+		inputModes: {
+			edit: ["border", "clear", "info-blk"],
+			play: ["shade", "unshade", "peke", "info-blk"]
+		},
 		mouseinputAutoEdit: function() {
 			if (this.mousestart || this.mousemove) {
 				this.inputborder();
 			} else if (this.mouseend && this.notInputted()) {
-				this.inputqnum_cross();
-			}
-		},
-		mouseinput_number: function() {
-			if (this.mousestart) {
 				this.inputqnum_cross();
 			}
 		}
