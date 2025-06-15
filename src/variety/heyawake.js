@@ -745,6 +745,7 @@
 					break;
 				}
 				cross.seterr(1);
+				clist.seterr(1);
 			}
 		}
 	}
