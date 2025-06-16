@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["heyawake", "ayeheya", "oneroom", "akichi"], {
+})(["heyawake", "ayeheya", "oneroom", "akichi", "sumiwake"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -20,11 +20,33 @@
 		autoedit_func: "areanum",
 		autoplay_func: "cellpeke"
 	},
+	"MouseEvent@sumiwake": {
+		inputModes: {
+			edit: ["border", "clear", "info-blk"],
+			play: ["shade", "unshade", "peke", "info-blk"]
+		},
+		mouseinputAutoEdit: function() {
+			if (this.mousestart || this.mousemove) {
+				this.inputborder();
+			} else if (this.mouseend && this.notInputted()) {
+				this.inputqnum_cross();
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
 		enablemake: true
+	},
+	"KeyEvent@sumiwake": {
+		moveTarget: function(ca) {
+			return this.moveTCross(ca);
+		},
+
+		keyinput: function(ca) {
+			this.key_inputcross(ca);
+		}
 	},
 
 	//---------------------------------------------------------
@@ -70,8 +92,18 @@
 			return this.room.clist.length;
 		}
 	},
+	"Cross@sumiwake": {
+		disInputHatena: true,
+		maxnum: 2
+	},
 	Board: {
 		hasborder: 1
+	},
+	"Board@sumiwake": {
+		hascross: 2
+	},
+	"TargetCursor@sumiwake": {
+		crosstype: true
 	},
 	"Board@oneroom,akichi": {
 		addExtraInfo: function() {
@@ -134,6 +166,9 @@
 			return (this.allborderlist = borders);
 		}
 	},
+	"AreaRoomGraph@sumiwake": {
+		hastop: false
+	},
 	"AreaUnshadeRoomGraph:AreaUnshadeGraph@oneroom,akichi": {
 		enabled: true,
 		relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -175,6 +210,10 @@
 
 			this.drawPekes();
 
+			if (this.pid === "sumiwake") {
+				this.drawCrosses();
+			}
+
 			this.drawTarget();
 		},
 
@@ -183,6 +222,39 @@
 				return border.error === 1 ? this.errcolor1 : this.quescolor;
 			}
 			return null;
+		}
+	},
+	"Graphic@sumiwake": {
+		gridcolor_type: "",
+		shadecolor: "#222222",
+		margin: 0.5,
+		crosssize: 0.33,
+		drawCrosses: function() {
+			var g = this.vinc("cross_base", "auto", true);
+
+			var csize = this.cw * this.crosssize + 1;
+			g.lineWidth = 2.5;
+
+			var clist = this.range.crosses;
+			for (var i = 0; i < clist.length; i++) {
+				var cross = clist[i],
+					px = cross.bx * this.bw,
+					py = cross.by * this.bh;
+
+				// ○の描画
+				g.vid = "x_cp_" + cross.id;
+				g.strokeStyle =
+					cross.error === 1 || cross.qinfo === 1 ? this.errcolor1 : "black";
+				if (cross.qnum === 1) {
+					g.fillStyle = null;
+					g.shapeCircle(px, py, csize);
+				} else if (cross.qnum === 2) {
+					g.fillStyle = g.strokeStyle;
+					g.shapeCircle(px, py, csize);
+				} else {
+					g.vhide();
+				}
+			}
 		}
 	},
 
@@ -265,19 +337,37 @@
 			this.outpflag = this.puzzle.getConfig("akichi_maximum") ? "x" : null;
 		}
 	},
+	"Encode@sumiwake": {
+		decodePzpr: function(type) {
+			this.decode4Cross();
+			this.decodeBorder();
+		},
+		encodePzpr: function(type) {
+			this.encode4Cross();
+			this.encodeBorder();
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
 			this.decodeConfig();
 			this.decodeAreaRoom();
-			this.decodeCellQnum();
+			if (this.pid === "sumiwake") {
+				this.decodeCrossNum();
+			} else {
+				this.decodeCellQnum();
+			}
 			this.decodeCellAns();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeConfig();
 			this.encodeAreaRoom();
-			this.encodeCellQnum();
+			if (this.pid === "sumiwake") {
+				this.encodeCrossNum();
+			} else {
+				this.encodeCellQnum();
+			}
 			this.encodeCellAns();
 			this.encodeBorderLineIfPresent();
 		},
@@ -410,6 +500,9 @@
 			"checkRegionDivided@oneroom",
 			"checkFractal@ayeheya",
 			"checkShadeCellCount@!akichi",
+			"checkQnumOverOne@sumiwake",
+			"checkQnumUnderOne@sumiwake",
+			"checkQnumTwo@sumiwake",
 			"checkAttainedSize@akichi",
 			"checkUnshadedSize@akichi",
 			"checkOneDoor@oneroom",
@@ -614,6 +707,45 @@
 					break;
 				}
 				unshrs[r].clist.seterr(1);
+			}
+		}
+	},
+	"AnsCheck@sumiwake": {
+		checkQnumUnderOne: function() {
+			this.checkQnumCross(1, "csLt1");
+		},
+		checkQnumOverOne: function() {
+			this.checkQnumCross(2, "csGt1");
+		},
+		checkQnumTwo: function() {
+			this.checkQnumCross(3, "csLt2");
+		},
+
+		checkQnumCross: function(num, code) {
+			var bd = this.board;
+			for (var c = 0; c < bd.cross.length; c++) {
+				var cross = bd.cross[c],
+					qn = cross.qnum;
+				if (qn !== (num === 3 ? 2 : 1)) {
+					continue;
+				}
+
+				var bx = cross.bx,
+					by = cross.by;
+				var clist = bd.cellinside(bx - 1, by - 1, bx + 1, by + 1);
+				var cnt = clist.filter(function(cell) {
+					return cell.isShade();
+				}).length;
+				if (num === 2 ? qn >= cnt : qn <= cnt) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				cross.seterr(1);
+				clist.seterr(1);
 			}
 		}
 	}
