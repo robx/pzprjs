@@ -242,7 +242,7 @@
     "bkPluralShade.parquet": "A region has multiple shaded tiles.",
     "bkRect": "A block is rectangle.",
     "bkSameNumGt2.kazunori": "The room has three or more same numbers.",
-    "bkSameShape.narrow": "Two blocks with the same symbol have the same shape.",
+    "bkSameShape.narrow": "Two regions with the same symbol have the same shape.",
     "bkSameTouch.zabajaba": "Two blocks of the same shape and orientation are adjacent.",
     "bkSameTouch": "Two areas of the same shape and orientation are adjacent.",
     "bkSCGe2.dosufuwa": "An area has two or more iron balls.",

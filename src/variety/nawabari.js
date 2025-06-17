@@ -280,6 +280,60 @@
 		}
 	},
 
+	"Graphic@narrow": {
+		drawQuesNumbers: function() {
+			var g = this.vinc("cell_mark", "auto");
+
+			g.lineWidth = Math.max(this.cw / 18, 2);
+			var rsize = this.cw * 0.3;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_mk_" + cell.id;
+				g.strokeStyle = this.getQuesNumberColor(cell);
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				switch (cell.getNum()) {
+					case 1:
+						g.strokeCircle(px, py, rsize);
+						break;
+					case 2:
+						g.beginPath();
+						g.moveTo(px - rsize, py);
+						g.lineTo(px + rsize, py);
+						g.moveTo(px, py - rsize);
+						g.lineTo(px, py + rsize);
+						g.stroke();
+						break;
+					case 3:
+						g.strokeCross(px, py, rsize);
+						break;
+					case 4:
+						g.beginPath();
+						g.setOffsetLinePath(
+							px,
+							py,
+							0,
+							-rsize,
+							rsize,
+							0,
+							0,
+							rsize,
+							-rsize,
+							0,
+							true
+						);
+						g.stroke();
+						break;
+					default:
+						g.vhide();
+						break;
+				}
+			}
+		}
+	},
+
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
