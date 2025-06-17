@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino"], {
+})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino", "narrow"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -29,7 +29,7 @@
 			this.inputempty();
 		}
 	},
-	"MouseEvent@fourcells,fivecells,subomino": {
+	"MouseEvent@fourcells,fivecells,subomino,narrow": {
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
@@ -89,6 +89,10 @@
 	"Cell@fivecells": {
 		maxnum: 3,
 		minnum: 0
+	},
+	"Cell@narrow": {
+		maxnum: 4,
+		disInputHatena: true
 	},
 	"Cell@subomino": {
 		maxnum: function() {
@@ -185,6 +189,17 @@
 			component.valid = !component.clist.some(function(cell) {
 				return cell.qnum > 0 && cell.qnum !== component.clist.length;
 			});
+		}
+	},
+	"AreaRoomGraph@narrow": {
+		setExtraData: function(component) {
+			var clist = (component.clist = new this.klass.CellList(
+				component.getnodeobjs()
+			));
+			var numlist = clist.filter(function(cell) {
+				return cell.isNum();
+			});
+			component.num = numlist.length === 1 ? numlist[0].getNum() : -1;
 		}
 	},
 
@@ -341,7 +356,7 @@
 			this.outbstr += cm;
 		}
 	},
-	"Encode@subomino": {
+	"Encode@subomino,narrow": {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodeEmpty();
@@ -395,11 +410,14 @@
 			"checkTouchDifferent@heteromino",
 			"checkLessThreeCells@heteromino",
 			"checkRoomRect@nawabari",
-			"checkNoNumber@nawabari",
-			"checkDoubleNumber@nawabari",
+			"checkRoom2x2@narrow",
+			"checkRoomIdentical@narrow",
+			"checkNoNumber@nawabari,narrow",
+			"checkRoomNotRect@narrow",
+			"checkDoubleNumber@nawabari,narrow",
 			"checkOverFourCells@fourcells",
 			"checkOverFiveCells@fivecells",
-			"checkdir4BorderAns@!heteromino",
+			"checkdir4BorderAns@!heteromino,!narrow",
 			"checkBorderDeadend+",
 			"checkLessFourCells@fourcells",
 			"checkLessFiveCells@fivecells"
@@ -568,6 +586,75 @@
 					break;
 				}
 				area.clist.seterr(1);
+			}
+		}
+	},
+
+	"AnsCheck@narrow": {
+		checkRoomNotRect: function() {
+			this.checkAllArea(
+				this.board.roommgr,
+				function(w, h, a, n) {
+					return w * h !== a;
+				},
+				"bkRect"
+			);
+		},
+
+		checkRoom2x2: function() {
+			var bd = this.board;
+			allloop: for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c],
+					bx = cell.bx,
+					by = cell.by;
+				if (bx >= bd.maxbx - 1 || by >= bd.maxby - 1) {
+					continue;
+				}
+
+				var clist = bd.cellinside(bx, by, bx + 2, by + 2);
+				if (!clist[0].room || clist[0].room.num <= 0) {
+					continue;
+				}
+				for (var i = 1; i < 4; i++) {
+					if (!clist[i].room || clist[0].room.num !== clist[i].room.num) {
+						continue allloop;
+					}
+				}
+
+				this.failcode.add("nmSame2x2");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		},
+
+		checkRoomIdentical: function() {
+			var found = {};
+
+			var rooms = this.board.roommgr.components;
+			for (var i = 0; i < rooms.length; i++) {
+				var room = rooms[i];
+				if (room.num <= 0) {
+					continue;
+				}
+				var tag = room.num + "";
+
+				if (!(tag in found)) {
+					found[tag] = {};
+				}
+
+				var shape = room.clist.getBlockShapes().canon;
+				if (!(shape in found[tag])) {
+					found[tag][shape] = room;
+				} else {
+					this.failcode.add("bkSameShape");
+					if (this.checkOnly) {
+						return;
+					}
+					found[tag][shape].clist.seterr(1);
+					room.clist.seterr(1);
+				}
 			}
 		}
 	}
