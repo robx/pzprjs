@@ -117,6 +117,7 @@
 					idname = "nuriuzu_connect";
 					break;
 				case "pentopia":
+				case "distopia":
 					idname = "pentopia_transparent";
 					break;
 				case "koburin":
