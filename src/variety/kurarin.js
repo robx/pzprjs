@@ -106,6 +106,9 @@
 		noLP: function(dir) {
 			return this.isShade();
 		},
+		allowShade: function() {
+			return this.lcnt === 0;
+		},
 
 		qnum: 0,
 		minnum: 0,
