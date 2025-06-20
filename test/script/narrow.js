@@ -1,7 +1,7 @@
 /* narrow.js */
 
 ui.debug.addDebugData("narrow", {
-	url: "5/5/3i2g3i2q1h",
+	url: "5/5/3i2g3i1q2h",
 	failcheck: [
 		[
 			"nmSame2x2",
