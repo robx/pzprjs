@@ -8,5 +8,35 @@ ui.debug.addDebugData("kurarin", {
 			"pzprv3/kurarin/6/6/...1.2...../.........3./.........../..3....1.../.........../.1.......2./.........../...2....2../.........../.1........./.....2.3.../# # # . . . /# . . . # . /# . + # # . /# # . # # . /# # . . . . /# # # . . # /0 0 0 1 1 /0 1 1 0 0 /0 1 0 0 0 /0 0 0 0 0 /0 0 1 0 1 /0 0 0 1 0 /0 0 0 1 0 1 /0 1 0 0 0 1 /0 0 1 0 0 1 /0 0 1 0 0 1 /0 0 0 1 1 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,3,2",
+				"editmode",
+				"mouse,rightx2,4,2",
+				"mouse,leftx2,2,3",
+				"key,up,left,2"
+			],
+			result:
+				"pzprv3/kurarin/2/3/...../2..3./.1.../. . . /. . . /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			label: "Don't place line over shade",
+			input: ["playmode", "mouse,left,3,1", "mouse,left,1,1,5,1,5,3,3,3"],
+			result:
+				"pzprv3/kurarin/2/3/...../2..3./.1.../. # . /. . . /0 0 /0 1 /0 0 1 /"
+		},
+		{
+			label: "Copy drag shaded cells",
+			input: ["mouse,left,3,1,3,3,1,3"],
+			result:
+				"pzprv3/kurarin/2/3/...../2..3./.1.../. # . /# . . /0 0 /0 1 /0 0 1 /"
+		},
+		{
+			label: "Erase shaded cell",
+			input: ["mouse,left,3,1", "mouse,right,1,3"],
+			result:
+				"pzprv3/kurarin/2/3/...../2..3./.1.../. . . /+ . . /0 0 /0 1 /0 0 1 /"
+		}
+	]
 });

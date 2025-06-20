@@ -157,19 +157,6 @@
 
 		dotCells: function() {
 			return new this.klass.CellList(this.sidecell);
-		},
-
-		prehook: {
-			qsub: function(num) {
-				return num && this.qnum;
-			}
-		},
-		posthook: {
-			qnum: function(num) {
-				if (num) {
-					this.setQsub(0);
-				}
-			}
 		}
 	},
 	Board: {
