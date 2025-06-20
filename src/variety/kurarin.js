@@ -17,6 +17,7 @@
 		mouseinputAutoPlay: function() {
 			if (this.mousestart || this.mousemove) {
 				if (this.btn === "left") {
+					this.inputCopyShade();
 					this.inputLine();
 				} else if (this.btn === "right") {
 					if (this.mousestart && this.inputpeke_ifborder()) {
@@ -27,15 +28,33 @@
 					}
 				}
 			} else if (this.mouseend && this.notInputted()) {
-				var cell = this.getcell();
-				if (!this.firstCell.isnull && cell !== this.firstCell) {
-					return;
-				}
-				if (!cell.isnull && cell.isNum() && this.pid !== "yajilin-regions") {
-					this.inputqcmp();
-				} else {
-					this.inputcell();
-				}
+				this.inputData = null;
+				this.mouseCell = this.board.emptycell;
+				this.inputcell();
+			}
+		},
+
+		inputCopyShade: function() {
+			if (this.inputData !== 10 && !this.mousestart) {
+				return;
+			}
+
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.mousestart && !cell.isShade()) {
+				return;
+			}
+
+			this.inputData = 10;
+
+			this.mouseCell = cell;
+			if (cell.allowShade() && cell.qans !== 1) {
+				cell.setQans(1);
+				cell.setQsub(0);
+
+				cell.draw();
 			}
 		},
 
