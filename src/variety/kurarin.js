@@ -135,6 +135,11 @@
 
 		dotCells: function() {
 			return new this.klass.CellList([this]);
+		},
+
+		// not to be confused with the Dot class
+		isDot: function() {
+			return this.lcnt === 0 && this.qsub === 1;
 		}
 	},
 	Cross: {
