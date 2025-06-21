@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino"], {
+})(["nawabari", "fourcells", "fivecells", "heteromino", "subomino", "narrow"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -29,7 +29,7 @@
 			this.inputempty();
 		}
 	},
-	"MouseEvent@fourcells,fivecells,subomino": {
+	"MouseEvent@fourcells,fivecells,subomino,narrow": {
 		inputModes: {
 			edit: ["empty", "number", "clear"],
 			play: ["border", "subline"]
@@ -89,6 +89,10 @@
 	"Cell@fivecells": {
 		maxnum: 3,
 		minnum: 0
+	},
+	"Cell@narrow": {
+		maxnum: 4,
+		disInputHatena: true
 	},
 	"Cell@subomino": {
 		maxnum: function() {
@@ -187,6 +191,17 @@
 			});
 		}
 	},
+	"AreaRoomGraph@narrow": {
+		setExtraData: function(component) {
+			var clist = (component.clist = new this.klass.CellList(
+				component.getnodeobjs()
+			));
+			var numlist = clist.filter(function(cell) {
+				return cell.isNum();
+			});
+			component.num = numlist.length === 1 ? numlist[0].getNum() : -1;
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -262,6 +277,60 @@
 		},
 		getCircleFillColor: function(cell) {
 			return cell.error === 3 ? this.errbcolor2 : null;
+		}
+	},
+
+	"Graphic@narrow": {
+		drawQuesNumbers: function() {
+			var g = this.vinc("cell_mark", "auto");
+
+			g.lineWidth = Math.max(this.cw / 18, 2);
+			var rsize = this.cw * 0.3;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_mk_" + cell.id;
+				g.strokeStyle = this.getQuesNumberColor(cell);
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				switch (cell.getNum()) {
+					case 1:
+						g.strokeCircle(px, py, rsize);
+						break;
+					case 2:
+						g.beginPath();
+						g.moveTo(px - rsize, py);
+						g.lineTo(px + rsize, py);
+						g.moveTo(px, py - rsize);
+						g.lineTo(px, py + rsize);
+						g.stroke();
+						break;
+					case 3:
+						g.strokeCross(px, py, rsize);
+						break;
+					case 4:
+						g.beginPath();
+						g.setOffsetLinePath(
+							px,
+							py,
+							0,
+							-rsize,
+							rsize,
+							0,
+							0,
+							rsize,
+							-rsize,
+							0,
+							true
+						);
+						g.stroke();
+						break;
+					default:
+						g.vhide();
+						break;
+				}
+			}
 		}
 	},
 
@@ -341,7 +410,7 @@
 			this.outbstr += cm;
 		}
 	},
-	"Encode@subomino": {
+	"Encode@subomino,narrow": {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodeEmpty();
@@ -395,11 +464,14 @@
 			"checkTouchDifferent@heteromino",
 			"checkLessThreeCells@heteromino",
 			"checkRoomRect@nawabari",
-			"checkNoNumber@nawabari",
-			"checkDoubleNumber@nawabari",
+			"checkRoom2x2@narrow",
+			"checkRoomIdentical@narrow",
+			"checkNoNumber@nawabari,narrow",
+			"checkRoomNotRect@narrow",
+			"checkDoubleNumber@nawabari,narrow",
 			"checkOverFourCells@fourcells",
 			"checkOverFiveCells@fivecells",
-			"checkdir4BorderAns@!heteromino",
+			"checkdir4BorderAns@!heteromino,!narrow",
 			"checkBorderDeadend+",
 			"checkLessFourCells@fourcells",
 			"checkLessFiveCells@fivecells"
@@ -568,6 +640,75 @@
 					break;
 				}
 				area.clist.seterr(1);
+			}
+		}
+	},
+
+	"AnsCheck@narrow": {
+		checkRoomNotRect: function() {
+			this.checkAllArea(
+				this.board.roommgr,
+				function(w, h, a, n) {
+					return w * h !== a;
+				},
+				"bkRect"
+			);
+		},
+
+		checkRoom2x2: function() {
+			var bd = this.board;
+			allloop: for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c],
+					bx = cell.bx,
+					by = cell.by;
+				if (bx >= bd.maxbx - 1 || by >= bd.maxby - 1) {
+					continue;
+				}
+
+				var clist = bd.cellinside(bx, by, bx + 2, by + 2);
+				if (!clist[0].room || clist[0].room.num <= 0) {
+					continue;
+				}
+				for (var i = 1; i < 4; i++) {
+					if (!clist[i].room || clist[0].room.num !== clist[i].room.num) {
+						continue allloop;
+					}
+				}
+
+				this.failcode.add("nmSame2x2");
+				if (this.checkOnly) {
+					break;
+				}
+				clist.seterr(1);
+			}
+		},
+
+		checkRoomIdentical: function() {
+			var found = {};
+
+			var rooms = this.board.roommgr.components;
+			for (var i = 0; i < rooms.length; i++) {
+				var room = rooms[i];
+				if (room.num <= 0) {
+					continue;
+				}
+				var tag = room.num + "";
+
+				if (!(tag in found)) {
+					found[tag] = {};
+				}
+
+				var shape = room.clist.getBlockShapes().canon;
+				if (!(shape in found[tag])) {
+					found[tag][shape] = room;
+				} else {
+					this.failcode.add("bkSameShape");
+					if (this.checkOnly) {
+						return;
+					}
+					found[tag][shape].clist.seterr(1);
+					room.clist.seterr(1);
+				}
 			}
 		}
 	}

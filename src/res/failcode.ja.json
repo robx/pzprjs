@@ -180,7 +180,7 @@
     "bkPlNum": "複数種類の数字が入っているブロックがあります。",
     "bkPlStar.tentaisho": "星が複数含まれる領域があります。",
     "bkPluralShade.parquet": "複数のタイルが黒く塗られている領域があります。",
-    "bkRect.cbblock": "ブロックが四角形になっています。",
+    "bkRect": "ブロックが四角形になっています。",
     "bkSameNumGt2.kazunori": "部屋に同じ数字が3つ以上入っています。",
     "bkSameTouch": "向きも形も同じブロックが接しています。",
     "bkSCGe2.dosufuwa": "1つの領域に鉄球が複数入っています。",
