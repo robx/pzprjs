@@ -276,7 +276,6 @@
     "ceDark.lightup": "照明に照らされていないセルがあります。",
     "ceDirection.compass": "数字の方向にあるブロック内のマス数が、数字と一致していないブロックがあります。",
     "ceEmpty.shugaku": "布団でも黒マスでもないマスがあります。",
-    "ceEmpty.yajilin-regions": "黒マスも線も引かれていないマスがあります。",
     "ceEmpty.yajilin": "黒マスも線も引かれていないマスがあります。",
     "ceNoBar.juosan": "何も入っていないマスがあります。",
     "ceNoBar.tateyoko": "何も入っていないマスがあります。",
