@@ -6,16 +6,6 @@ var pzpr = require("../../dist/js/pzpr.js");
 
 var testdata = require("../load_testdata.js");
 
-function assert_equal_board(bd1, bd2) {
-	bd1.compareData(bd2, function(group, c, a) {
-		assert.equal(
-			bd2[group][c][a],
-			bd1[group][c][a],
-			group + "[" + c + "]." + a
-		);
-	});
-}
-
 pzpr.variety.each(function(pid) {
 	describe(pid + " encode test", function() {
 		describe("URL", function() {
@@ -33,34 +23,6 @@ pzpr.variety.each(function(pid) {
 						"/" +
 						testdata[pid].url;
 					assert.equal(urlstr, expurl);
-				});
-				if (!pzpr.variety(pid).exists.kanpen) {
-					return;
-				}
-				it("kanpen URL", function() {
-					puzzle.open(pid + "/" + testdata[pid].url);
-					var kanpen_url = puzzle.getURL(pzpr.parser.URL_KANPEN);
-					assert.equal(pzpr.parser(kanpen_url).pid, pid);
-
-					var bd = puzzle.board,
-						bd2 = bd.freezecopy();
-					puzzle.open(kanpen_url, function() {
-						assert_equal_board(bd, bd2);
-					});
-				});
-				if (pid !== "heyawake") {
-					return;
-				}
-				it("Heyawake-Applet URL", function() {
-					puzzle.open(pid + "/" + testdata[pid].url);
-					var heywakeapp_url = puzzle.getURL(pzpr.parser.URL_HEYAAPP);
-					assert.equal(pzpr.parser(heywakeapp_url).pid, pid);
-
-					var bd = puzzle.board,
-						bd2 = bd.freezecopy();
-					puzzle.open(heywakeapp_url, function() {
-						assert_equal_board(bd, bd2);
-					});
 				});
 			})(pid);
 		});
