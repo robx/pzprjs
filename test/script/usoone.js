@@ -192,8 +192,12 @@ ui.debug.addDebugData("usoone", {
 			result: "pzprv3/usoone/1/4/1/0 0 0 0 /1 . . . /. . . . /"
 		},
 		{
-			input: ["mouse,leftx2, 1,1", "mouse,left, 1,1, 7,1"],
-			result: "pzprv3/usoone/1/4/1/0 0 0 0 /1 . . . /+ + + + /"
+			input: [
+				"mouse,leftx2, 1,1",
+				"mouse,left, 1,1, 7,1",
+				"mouse,alt+left,4,1,6,1"
+			],
+			result: "pzprv3/usoone/1/4/1/0 0 0 0 /1 . . . /+ + + + /0 -1 -1 /"
 		}
 	]
 });

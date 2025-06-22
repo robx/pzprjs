@@ -43,6 +43,11 @@
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart) {
+					this.isDraggingPeke = this.puzzle.key.isALT;
+				}
+				if (this.isDraggingPeke) {
+					this.inputpeke();
+				} else if (this.mousestart) {
 					this.inputcell_usoone();
 				} else if (this.mousemove) {
 					this.inputcell();
