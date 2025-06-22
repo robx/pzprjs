@@ -143,6 +143,7 @@
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
 			detour: [0, 0, "Detour", "Detour", "country"],
 			disloop: [0, 0, "Disorderly Loop", "Disorderly Loop", "tapaloop"],
+			distopia: [0, 0, "Distopia", "Distopia", "statuepark"],
 			dominion: [0, 0, "ドミニオン", "Dominion"],
 			doppelblock: [0, 0, "Doppelblock", "Doppelblock", "doppelblock"],
 			dosufuwa: [0, 0, "ドッスンフワリ", "Dosun-Fuwari"],
