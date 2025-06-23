@@ -338,7 +338,7 @@
 
 		checkEmptyCell_kurarin: function() {
 			this.checkAllCell(function(cell) {
-				return cell.lcnt === 0 && !cell.isShade() && cell.noNum();
+				return cell.lcnt === 0 && !cell.isShade();
 			}, "ceEmpty");
 		}
 	},
