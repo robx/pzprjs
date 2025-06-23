@@ -1,7 +1,7 @@
 /* kurarin.js */
 
 ui.debug.addDebugData("kurarin", {
-	url: "6/6/g12mcl3h4m4i8m8g2m4l23g",
+	url: "6/6/g12mcl3h4m4i8m8g2m4l23h",
 	failcheck: [
 		[
 			"lnBranch",
