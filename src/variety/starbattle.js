@@ -429,7 +429,7 @@
 				g.vid = "bd_star";
 				this.fillStar(
 					g,
-					(bd.maxby - 1) * this.bw,
+					(bd.maxbx - 1) * this.bw,
 					-this.bh,
 					this.bw * 0.7,
 					this.bh * 0.7
