@@ -669,6 +669,12 @@
 	},
 
 	"AnsCheck@disloop": {
+		checkNoLine: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && !cell.noLP();
+			}, "ceNoLine");
+		},
+
 		checkArrowLineExist: function() {
 			this.checkAllCell(function(cell) {
 				if (cell.qdir === 0) {
