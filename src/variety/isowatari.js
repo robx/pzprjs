@@ -159,8 +159,8 @@
 			}
 		},
 		getmaxnum: function() {
-		//	var bd = this.board;
-			return 999;
+			var bd = this.board;
+			return bd.rows * bd.cols;
 		},
 		getminnum: function() {
 			return 1;
@@ -204,6 +204,12 @@
 			this.board.clusterSize.set(num);
 		}
 	},
+	AreaShadeGraph: {
+		enabled: true
+	},
+	AreaUnshadeGraph: {
+		enabled: true
+	},
 	OperationManager: {
 		addExtraOperation: function() {
 			this.operationlist.push(this.klass.ClusterSizeOperation);
@@ -230,7 +236,6 @@
 
 			this.drawClusterSize();
 			this.drawCursor_isowatari();
-			this.drawTarget();
 		},
 
 		getBGCellColor_error1: function(cell) {
@@ -320,11 +325,11 @@
 		},
 		setRangeObject: function(x1, y1, x2, y2) {
 			this.common.setRangeObject.call(this, x1, y1, x2, y2);
-			this.range.starCount = y1 < 0;
+			this.range.clusterSize = y1 < 0;
 		},
 		copyBufferData: function(g, g2, x1, y1, x2, y2) {
 			this.common.copyBufferData.call(this, g, g2, x1, y1, x2, y2);
-			if (g.use.canvas && this.range.starCount) {
+			if (g.use.canvas && this.range.clusterSize) {
 				var bd = this.board;
 				var sx1 = 0,
 					sy1 = 0,
