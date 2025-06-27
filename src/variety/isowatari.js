@@ -24,7 +24,6 @@
 			if (this.inputData === null) {
 				this.inputData = cell.isEmpty() ? 0 : 7;
 			}
-			this.inputclean_cell();
 			cell.setValid(this.inputData);
 			this.mouseCell = cell;
 		},
@@ -253,15 +252,15 @@
 			this.board.clusterSize.set(num);
 		}
 	},
-	Relation: { 
-		"cell.ques": "node",
-		"cell.qans": "node"
-	},
 	AreaShadeGraph: {
 		enabled: true
 	},
 	AreaUnshadeGraph: {
-		enabled: true
+		enabled: true,
+		relation: { 
+		  "cell.ques": "node",
+		  "cell.qans": "node"
+		}
 	},
 	OperationManager: {
 		addExtraOperation: function() {
