@@ -15,6 +15,37 @@
 			play: ["shade", "unshade", "clear"]
 		},
 
+		inputEdit: function() {
+			// 初回はこの中に入ってきます。
+			if (this.inputData === null) {
+				this.inputEdit_first();
+			}
+			// 境界線の入力中の場合
+		},
+		inputEdit_first: function() {
+			var bd = this.board,
+				bx = this.inputPoint.bx,
+				by = this.inputPoint.by,
+				rect = bd.clusterSize.rect;
+			if (
+				bx >= rect.bx1 &&
+				bx <= rect.bx2 &&
+				by >= rect.by1 &&
+				by <= rect.by2
+			) {
+				var val = this.getNewNumber(bd.clusterSize, bd.clusterSize.count);
+				if (val === null) {
+					return;
+				}
+				bd.clusterSizes.set(val);
+				this.mousereset();
+			}
+			// その他は境界線の入力へ
+			else {
+				this.inputborder();
+			}
+		},
+
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
@@ -85,7 +116,7 @@
 	},
 
 	Board: {
-		hasborder: 1,
+		hasborder: 2,
 
 		disable_subclear: true,
 
@@ -220,6 +251,14 @@
 	Graphic: {
 		gridcolor_type: "DLIGHT",
 
+		enablebcolor: true,
+
+		shadecolor: "rgb(80, 80, 80)",
+		bgcellcolor_func: "qsub1",
+
+		circlefillcolor_func: "qnum2",
+		circleratio: [0.3, 0.25],
+
 		numbercolor_func: "qnum",
 		
 		bordercolor_func: "qans",
@@ -228,16 +267,21 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 			this.drawValidDashedGrid();
-			this.drawBorders();
-			this.drawBorderQsubs();
+			this.drawQuesBorders();
+
+			this.drawQansBorders();
+
 			this.drawCircles();
 
-			this.drawChassis();
 
 			this.drawClusterSize();
 			this.drawCursor_isowatari();
 		},
 
+
+		getQuesBorderColor: function(border) {
+			return border.isQuesBorder() ? this.quescolor : null;
+		},
 		getBGCellColor_error1: function(cell) {
 			if (cell.error === 1 || cell.qinfo === 1) {
 				return this.errbcolor1;
@@ -287,6 +331,16 @@
 				cell.error === 0
 			) {
 				return "white";
+			}
+			return null;
+		},
+
+
+		getBGCellColor: function(cell) {
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errbcolor1;
+			} else if (cell.qans === 1 || cell.qsub === 1) {
+				return cell.trial ? this.trialbcolor : this.bcolor;
 			}
 			return null;
 		},
