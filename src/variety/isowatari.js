@@ -490,11 +490,13 @@
 			this.decodeClusterSize();
 			this.decodeCircle();
 			this.decodeEmpty();
+
 		},
 		encodePzpr: function(type) {
 			this.encodeClusterSize();
 			this.encodeCircle();
 			this.encodeEmpty();
+	
 		},
 
 		decodeClusterSize: function() {
@@ -523,6 +525,7 @@
 			});
 			this.decodeCellQnum();
 			this.decodeCellAnumsub();
+			this.decodeCellAns();
 		},
 		encodeData: function() {
 			this.writeLine(this.board.clusterSize.count);
@@ -539,6 +542,7 @@
 			});
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
+			this.encodeCellAns();
 		}
 	},
 
@@ -546,10 +550,10 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"check2x2UnshadeCell",
 			"checkShadeOnCircle",
 			"checkUnshadeOnCircle",
 			"checkConnectUnshade",
+			"check2x2UnshadeCell",
 			"checkGreaterThanN",
 			"checkSmallerThanN"
 		],
@@ -566,20 +570,22 @@
 		},
 
 		checkGreaterThanN: function() {
+			var bd = this.board;
 			this.checkAllArea(
 				this.board.sblkmgr,
 				function(w, h, a, n) {
-					return a <= this.board.clusterSize.count;
+					return a <= bd.clusterSize.count;
 				},
 				"csGtN"
 			);
 		},
 
 		checkSmallerThanN: function() {
+			var bd = this.board;
 			this.checkAllArea(
 				this.board.sblkmgr,
 				function(w, h, a, n) {
-					return a >= this.board.ClusterSize.count;
+					return a >= bd.clusterSize.count;
 				},
 				"csLtN"
 			);

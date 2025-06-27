@@ -480,7 +480,7 @@
 						x1 >= bd.maxbx + bm ||
 						y1 >= bd.maxby + bm ||
 						x2 <= bd.minbx - bm ||
-						y2 <= bd.minby - (bm + (this.pid === "starbattle" ? 2 : 0)))
+					y2 <= bd.minby - (bm + ((this.pid === "starbattle" || this.pid === "isowatari") ? 2 : 0)))
 				) {
 					/* 入力が範囲外ならば何もしない */
 				} else if (!this.useBuffer) {
