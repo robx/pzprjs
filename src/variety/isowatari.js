@@ -10,6 +10,7 @@
 	}
 })(["isowatari"], {
 	MouseEvent: {
+  use: true,
 		inputModes: {
 			edit: ["circle-shade", "circle-unshade", "empty", "clear"],
 			play: ["shade", "unshade", "clear"]
