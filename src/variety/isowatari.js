@@ -268,10 +268,6 @@
 		circleratio: [0.3, 0.25],
 
 		numbercolor_func: "qnum",
-<<<<<<< HEAD
-		
-=======
->>>>>>> 91079d47fdeecf501906971f698c67b5c34aad03
 
 		paint: function() {
 			this.drawBGCells();
