@@ -15,6 +15,20 @@
 			play: ["shade", "unshade", "clear"]
 		},
 
+		inputempty: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			if (this.inputData === null) {
+				this.inputData = cell.isEmpty() ? 0 : 7;
+			}
+			this.inputclean_cell();
+			cell.setValid(this.inputData);
+			this.mouseCell = cell;
+		},
+
 		inputEdit: function() {
 			// 初回はこの中に入ってきます。
 			if (this.inputData === null) {
@@ -37,7 +51,7 @@
 				if (val === null) {
 					return;
 				}
-				bd.clusterSizes.set(val);
+				bd.clusterSize.set(val);
 				this.mousereset();
 			}
 			// その他は境界線の入力へ
@@ -85,11 +99,15 @@
 		maxnum: 2,
 
 		allowShade: function() {
-			return this.qnum !== 1;
+			return this.qnum !== 1 && !this.isEmpty();
 		},
 
 		allowUnshade: function() {
-			return this.qnum !== 2;
+			return this.qnum !== 2 && !this.isEmpty();
+		},
+
+		isUnshade: function() {
+			return !this.isnull && this.qans !== 1 && !this.isEmpty();
 		}
 	},
 
@@ -234,6 +252,10 @@
 		exec: function(num) {
 			this.board.clusterSize.set(num);
 		}
+	},
+	Relation: { 
+		"cell.ques": "node",
+		"cell.qans": "node"
 	},
 	AreaShadeGraph: {
 		enabled: true
@@ -406,7 +428,7 @@
 
 
 		drawClusterSize: function() {
-			var g = this.vinc("clusterSize", "auto", true),
+			var g = this.vinc("clustersize", "auto", true),
 				bd = this.board;
 			if (!this.range.clusterSize) {
 				return;
@@ -468,9 +490,12 @@
 		decodePzpr: function(type) {
 			this.decodeClusterSize();
 			this.decodeCircle();
+			this.decodeEmpty();
 		},
 		encodePzpr: function(type) {
+			this.encodeClusterSize();
 			this.encodeCircle();
+			this.encodeEmpty();
 		},
 
 		decodeClusterSize: function() {
@@ -487,13 +512,32 @@
 	FileIO: {
 		decodeData: function() {
 			this.board.clusterSize.count = +this.readLine();
-
+			this.decodeCell(function(cell, ca) {
+				cell.ques = 0;
+				if (ca === "*") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
 			this.decodeCellQnum();
 			this.decodeCellAnumsub();
 		},
 		encodeData: function() {
 			this.writeLine(this.board.clusterSize.count);
-
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "* ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else {
+					return ". ";
+				}
+			});
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
 		}
