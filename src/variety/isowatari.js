@@ -15,19 +15,6 @@
 			play: ["shade", "unshade", "clear"]
 		},
 
-		inputempty: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-
-			if (this.inputData === null) {
-				this.inputData = cell.isEmpty() ? 0 : 7;
-			}
-			cell.setValid(this.inputData);
-			this.mouseCell = cell;
-		},
-
 		inputEdit: function() {
 			// 初回はこの中に入ってきます。
 			if (this.inputData === null) {
@@ -281,19 +268,15 @@
 		circleratio: [0.3, 0.25],
 
 		numbercolor_func: "qnum",
-		
-		bordercolor_func: "qans",
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
+
 			this.drawValidDashedGrid();
 			this.drawQuesBorders();
 
-			this.drawQansBorders();
-
 			this.drawCircles();
-
 
 			this.drawClusterSize();
 			this.drawCursor_isowatari();
