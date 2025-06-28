@@ -10,7 +10,6 @@
 	}
 })(["isowatari"], {
 	MouseEvent: {
-		RBShadeCell: true,
 		use: true,
 		inputModes: {
 			edit: ["circle-shade", "circle-unshade", "empty", "clear"],
