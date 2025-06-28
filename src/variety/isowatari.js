@@ -272,7 +272,7 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 
-			this.drawValidDashedGrid();
+			this.drawValidGrid();
 			this.drawQuesBorders();
 
 			this.drawCircles();
@@ -285,51 +285,6 @@
 			return border.isQuesBorder() ? this.quescolor : null;
 		},
 
-		getCircleStrokeColor: function(cell) {
-			if (cell.qnum === 1 || cell.anum === 1) {
-				if (cell.error === 1) {
-					return this.errcolor1;
-				} else if (cell.qnum === 1) {
-					return this.quescolor;
-				} else if (cell.trial) {
-					return this.trialcolor;
-				} else if (
-					this.puzzle.editmode &&
-					!this.puzzle.execConfig("dispqnumbg")
-				) {
-					return "silver";
-				} else {
-					return this.quescolor;
-				}
-			}
-			return null;
-		},
-		getCircleFillColor: function(cell) {
-			if (cell.qnum === 2 || cell.anum === 2) {
-				if (cell.error === 1) {
-					return this.errcolor1;
-				} else if (cell.qnum === 2) {
-					return this.quescolor;
-				} else if (cell.trial) {
-					return this.trialcolor;
-				} else if (
-					this.puzzle.editmode &&
-					!this.puzzle.execConfig("dispqnumbg")
-				) {
-					return "silver";
-				} else {
-					return this.quescolor;
-				}
-			} else if (
-				cell.qnum === 1 &&
-				this.puzzle.execConfig("dispqnumbg") &&
-				cell.error === 0
-			) {
-				return "white";
-			}
-			return null;
-		},
-
 		getBGCellColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errbcolor1;
@@ -339,10 +294,10 @@
 			return null;
 		},
 
-		drawValidDashedGrid: function() {
+		drawValidGrid: function() {
 			var g = this.vinc("grid_waritai", "crispEdges", true);
 
-			var dasharray = this.getDashArray();
+			// var dasharray = this.getDashArray();
 
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
@@ -355,9 +310,9 @@
 					var px = border.bx * this.bw,
 						py = border.by * this.bh;
 					if (border.isVert()) {
-						g.strokeDashedLine(px, py - this.bh, px, py + this.bh, dasharray);
+						g.strokeLine(px, py - this.bh, px, py + this.bh);
 					} else {
-						g.strokeDashedLine(px - this.bw, py, px + this.bw, py, dasharray);
+						g.strokeLine(px - this.bw, py, px + this.bw, py);
 					}
 				} else {
 					g.vhide();
