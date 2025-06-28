@@ -56,7 +56,7 @@ ui.debug.addDebugData("isowatari", {
 			result: "pzprv3/isowatari/1/1/1/. /. /. /. /"
 		},
 		{
-			label: "Can't input numbers too big",
+			label: "Invalid cells erasing data",
 			input: [
 				"newboard,1,1",
 				"ansclear",
