@@ -39,7 +39,7 @@ ui.debug.addDebugData("isowatari", {
 				"newboard,1,1",
 				"ansclear",
 				"editmode",
-				"key,2",
+				"mouse,left,1,1",
 				"playmode",
 				"mouse,left,1,1"
 			],
@@ -49,6 +49,26 @@ ui.debug.addDebugData("isowatari", {
 			label: "Can unshade shaded circles",
 			input: ["setconfig,use,2", "mouse,left,1,1"],
 			result: "pzprv3/isowatari/1/1/1/2 /2 /. /. /"
+		},
+		{
+			label: "Can't input numbers too big",
+			input: ["newboard,1,1", "ansclear", "editmode", "key,2"],
+			result: "pzprv3/isowatari/1/1/1/. /. /. /. /"
+		},
+		{
+			label: "Can't input numbers too big",
+			input: [
+				"newboard,1,1",
+				"ansclear",
+				"editmode",
+				"mouse,left,1,1",
+				"playmode",
+				"mouse,left,1,1",
+				"editmode,empty",
+				"mouse,left,1,1",
+				"mouse,left,1,1"
+			],
+			result: "pzprv3/isowatari/1/1/1/. /. /. /. /"
 		}
 	]
 });

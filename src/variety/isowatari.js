@@ -59,7 +59,7 @@
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
-					this.inputqnum();
+					this.inputqnum_main(this.getcell());
 					this.inputEdit();
 				}
 			}
@@ -278,7 +278,7 @@
 			this.drawCircles();
 
 			this.drawClusterSize();
-			this.drawTarget();
+			this.drawCursor_isowatari();
 		},
 
 		getQuesBorderColor: function(border) {
@@ -432,6 +432,7 @@
 
 			var isdraw =
 				this.puzzle.editmode &&
+				this.puzzle.mouse.inputMode === "auto" &&
 				this.puzzle.getConfig("cursor") &&
 				!this.outputImage;
 			g.vid = "ti";
