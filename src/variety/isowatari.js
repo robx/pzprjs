@@ -43,7 +43,7 @@
 			}
 			// その他は境界線の入力へ
 			else {
-				this.inputborder();
+				this.inputqnum();
 			}
 		},
 
@@ -57,7 +57,7 @@
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
-					this.inputqnum();
+					this.inputEdit();
 				}
 				
 			}
