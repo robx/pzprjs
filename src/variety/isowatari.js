@@ -20,6 +20,8 @@
 			// 初回はこの中に入ってきます。
 			if (this.inputData === null) {
 				this.inputEdit_first();
+			} else {
+				this.inputqnum();
 			}
 			// 境界線の入力中の場合
 		},
@@ -36,7 +38,7 @@
 			) {
 				var val = this.getNewNumber(bd.clusterSize, bd.clusterSize.count);
 				if (val === null) {
-					return;
+					this.inputqnum();
 				}
 				bd.clusterSize.set(val);
 				this.mousereset();
@@ -57,6 +59,7 @@
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
+					this.inputqnum();
 					this.inputEdit();
 				}
 			}
@@ -99,9 +102,6 @@
 
 	KeyEvent: {
 		enablemake: true,
-		moveTarget: function() {
-			return false;
-		},
 
 		keyinput: function(ca) {
 			if (this.keydown && this.puzzle.editmode) {
@@ -278,7 +278,7 @@
 			this.drawCircles();
 
 			this.drawClusterSize();
-			this.drawCursor_isowatari();
+			this.drawTarget();
 		},
 
 		getQuesBorderColor: function(border) {
