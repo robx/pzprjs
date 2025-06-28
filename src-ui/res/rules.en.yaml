@@ -21,7 +21,7 @@ dotchi: "Draw lines through orthogonally adjacent cells to form a loop.\n1. The 
 
 hinge: "Shade some cells on the board.\n1. A group of orthogonally connected shaded cells is called a block. Each block is cut exactly once by a single straight segment of region borders, across which it must have reflectional symmetry.\n2. Numbered regions must contain the indicated amount of shaded cells."
 
-isowatari: "Shade all black circles and no white circles. \n All unshaded cells must be orthogonally connected. \n No 2x2 area should be left entirely unshaded. \n Shaded areas should match the indicated size."
+isowatari: "Shade some cells on the board. \n 1. All black circles must be shaded and no white circles must be shaded. \n 2. No 2x2 area may be left entirely unshaded. \n 3. All unshaded cells form an orthogonally continuous area. \n 4. Blocks of shaded cells must match the indicated size on the upper right of the grid."
 
 lapaz: "Shade some cells on the board, and divide the rest into regions of 2 cells.\n 1. No two shaded cells are horizontally or vertically adjacent.\n2. Numbers must be contained in a 1x2 region. It's possible for a region to have multiple numbers.\n 3. A clue in a horizontal region indicates the amount of shaded cells in the same row as the clue. Likewise, a clue in a vertical region indicates the amount of shaded cells in the same column."
 
