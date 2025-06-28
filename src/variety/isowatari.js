@@ -59,7 +59,6 @@
 				if (this.mousestart) {
 					this.inputEdit();
 				}
-				
 			}
 		},
 
@@ -134,7 +133,6 @@
 		initExtraObject: function(col, row) {
 			this.clusterSize.init(1);
 		}
-
 	},
 
 	AreaRoomGraph: {
@@ -161,7 +159,7 @@
 			}
 		}
 	},
-	
+
 	ClusterSize: {
 		count: 1,
 		rect: null,
@@ -245,9 +243,9 @@
 	},
 	AreaUnshadeGraph: {
 		enabled: true,
-		relation: { 
-		  "cell.ques": "node",
-		  "cell.qans": "node"
+		relation: {
+			"cell.ques": "node",
+			"cell.qans": "node"
 		}
 	},
 	OperationManager: {
@@ -265,7 +263,6 @@
 		shadecolor: "rgb(80, 80, 80)",
 		bgcellcolor_func: "qsub1",
 
-		
 		circlefillcolor_func: "qnum2",
 		circleratio: [0.3, 0.25],
 		trialbcolor: this.bcolor,
@@ -274,7 +271,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-			
+
 			this.drawValidDashedGrid();
 			this.drawQuesBorders();
 
@@ -284,13 +281,10 @@
 			this.drawCursor_isowatari();
 		},
 
-		
-
-
 		getQuesBorderColor: function(border) {
 			return border.isQuesBorder() ? this.quescolor : null;
 		},
-		
+
 		getCircleStrokeColor: function(cell) {
 			if (cell.qnum === 1 || cell.anum === 1) {
 				if (cell.error === 1) {
@@ -335,7 +329,6 @@
 			}
 			return null;
 		},
-
 
 		getBGCellColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
@@ -405,7 +398,6 @@
 			}
 		},
 
-
 		drawClusterSize: function() {
 			var g = this.vinc("clustersize", "auto", true),
 				bd = this.board;
@@ -428,38 +420,34 @@
 			g.font = ((this.ch * 0.66) | 0) + "px " + this.fontfamily;
 			g.textAlign = "right";
 			g.textBaseline = "middle";
-			g.fillText(
-				"" + bd.clusterSize.count,
-				(bd.maxbx - 1) * this.bw,
-				-this.bh
-			);
+			g.fillText("" + bd.clusterSize.count, (bd.maxbx - 1) * this.bw, -this.bh);
 		},
 
 		drawCursor_isowatari: function() {
-				var g = this.vinc("target_cursor", "crispEdges", true),
-					bd = this.board;
-				if (!this.range.clusterSize) {
-					return;
-				}
+			var g = this.vinc("target_cursor", "crispEdges", true),
+				bd = this.board;
+			if (!this.range.clusterSize) {
+				return;
+			}
 
-				var isdraw =
-					this.puzzle.editmode &&
-					this.puzzle.getConfig("cursor") &&
-					!this.outputImage;
-				g.vid = "ti";
-				if (isdraw) {
-					var rect = bd.clusterSize.rect;
-					g.strokeStyle = this.targetColorEdit;
-					g.lineWidth = Math.max(this.cw / 16, 2) | 0;
-					g.strokeRect(
-						rect.bx1 * this.bw,
-						rect.by1 * this.bh,
-						(rect.bx2 - rect.bx1) * this.bw,
-						(rect.by2 - rect.by1) * this.bh
-					);
-				} else {
-					g.vhide();
-				}
+			var isdraw =
+				this.puzzle.editmode &&
+				this.puzzle.getConfig("cursor") &&
+				!this.outputImage;
+			g.vid = "ti";
+			if (isdraw) {
+				var rect = bd.clusterSize.rect;
+				g.strokeStyle = this.targetColorEdit;
+				g.lineWidth = Math.max(this.cw / 16, 2) | 0;
+				g.strokeRect(
+					rect.bx1 * this.bw,
+					rect.by1 * this.bh,
+					(rect.bx2 - rect.bx1) * this.bw,
+					(rect.by2 - rect.by1) * this.bh
+				);
+			} else {
+				g.vhide();
+			}
 		}
 	},
 
@@ -470,13 +458,11 @@
 			this.decodeClusterSize();
 			this.decodeCircle();
 			this.decodeEmpty();
-
 		},
 		encodePzpr: function(type) {
 			this.encodeClusterSize();
 			this.encodeCircle();
 			this.encodeEmpty();
-	
 		},
 
 		decodeClusterSize: function() {
