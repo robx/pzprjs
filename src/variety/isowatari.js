@@ -10,7 +10,8 @@
 	}
 })(["isowatari"], {
 	MouseEvent: {
-  use: true,
+		RBShadeCell: true,
+		use: true,
 		inputModes: {
 			edit: ["circle-shade", "circle-unshade", "empty", "clear"],
 			play: ["shade", "unshade", "clear"]
@@ -265,15 +266,16 @@
 		shadecolor: "rgb(80, 80, 80)",
 		bgcellcolor_func: "qsub1",
 
+		
 		circlefillcolor_func: "qnum2",
 		circleratio: [0.3, 0.25],
-
+		trialbcolor: this.bcolor,
 		numbercolor_func: "qnum",
 
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
-
+			
 			this.drawValidDashedGrid();
 			this.drawQuesBorders();
 
@@ -283,18 +285,13 @@
 			this.drawCursor_isowatari();
 		},
 
+		
+
 
 		getQuesBorderColor: function(border) {
 			return border.isQuesBorder() ? this.quescolor : null;
 		},
-		getBGCellColor_error1: function(cell) {
-			if (cell.error === 1 || cell.qinfo === 1) {
-				return this.errbcolor1;
-			} else if (this.puzzle.execConfig("dispqnumbg") && cell.qnum !== -1) {
-				return "silver";
-			}
-			return null;
-		},
+		
 		getCircleStrokeColor: function(cell) {
 			if (cell.qnum === 1 || cell.anum === 1) {
 				if (cell.error === 1) {
@@ -344,8 +341,8 @@
 		getBGCellColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errbcolor1;
-			} else if (cell.qans === 1 || cell.qsub === 1) {
-				return cell.trial ? this.trialbcolor : this.bcolor;
+			} else if (cell.qans === 2 || cell.qsub === 1) {
+				return this.bcolor;
 			}
 			return null;
 		},
