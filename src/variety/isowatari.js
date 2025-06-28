@@ -21,7 +21,7 @@
 			if (this.inputData === null) {
 				this.inputEdit_first();
 			} else {
-				this.inputqnum();
+				this.inputqnum_main(this.getcell());
 			}
 			// 境界線の入力中の場合
 		},
@@ -38,14 +38,14 @@
 			) {
 				var val = this.getNewNumber(bd.clusterSize, bd.clusterSize.count);
 				if (val === null) {
-					this.inputqnum();
+					this.inputqnum_main(this.getcell());
 				}
 				bd.clusterSize.set(val);
 				this.mousereset();
 			}
 			// その他は境界線の入力へ
 			else {
-				this.inputqnum();
+				this.inputqnum_main(this.getcell());
 			}
 		},
 
