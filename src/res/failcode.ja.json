@@ -883,5 +883,12 @@
     "lnAdjacent.timebomb": "異なる爆弾の移動経路が隣り合っています。",
     "lnNotValid.recoil": "線が障害物の置かれないマスの通り方をしています。",
     "bsNoSequence.tilecity": "県が、1からその県の最大面積の市までの全ての大きさの市を含んでいません。",
-    "cuNotPointed.yajirushi": "矢印にはさまれていない白マスがあります。"
+    "cuNotPointed.yajirushi": "矢印にはさまれていない白マスがあります。",
+    "bkSize1.archipelago": "他の島と接していない島があります。",
+    "bsNoSequence.archipelago": "1つの群島に、1マスから最大のマス数の島までの、各マス数の島々が含まれていません。",
+    "bsSameNum.archipelago": "1つの群島に同じ大きさの島が2つ以上含まれています。",
+    "csDotBlack": "黒丸に接する黒マスの数が白マスの数を上回っていません。",
+    "csDotGray": "灰色の丸に接する白マスの数と黒マスの数が同じではありません。",
+    "csDotWhite": "白丸に接する白マスの数が黒マスの数を上回っていません。",
+    "lcCurveNe.mintonette": "線が曲がる回数が数字と違います。"
 }
