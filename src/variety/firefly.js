@@ -60,6 +60,7 @@
 		minnum: 0
 	},
 	"Cell@uturns": {
+		disInputHatena: true,
 		maxnum: 3,
 		noLP: function(dir) {
 			return this.qnum === 1;
