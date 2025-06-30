@@ -288,6 +288,7 @@
 			nagenawa: [0, 0, "なげなわ", "Nagenawa", "nagenawa"],
 			nanameguri: [0, 0, "ななめぐり", "Nanameguri"],
 			nanro: [0, 1, "ナンロー", "Nanro"],
+			narrow: [0, 0, "Narrowfence", "Narrowfence", "nawabari"],
 			nawabari: [1, 0, "なわばり", "Nawabari", "nawabari"],
 			news: [0, 0, "NEWS", "NEWS", "toichika"],
 			nibunnogo: [0, 0, "ニブンノゴ", "Nibun-nogo", "lightshadow"],
