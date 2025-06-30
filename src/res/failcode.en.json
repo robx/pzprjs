@@ -793,7 +793,7 @@
     "nmRange.sananko": "A number is larger than 3.",
     "nmRange.trainstations": "A number is out of range.",
     "nmSame2x2.kazunori": "There is a 2x2 block of the same number.",
-    "nmSame2x2.narrow": "A 2x2 block of cells belong to regions with the same symbol.",
+    "nmSame2x2.narrow": "A 2x2 block of cells belongs to regions with the same symbol.",
     "nmSame2x2.snakepit": "A snake loops back on itself.",
     "nmShade5Ne.lookair": "The number is not equal to the number of shaded cells in the cell and the four adjacent cells.",
     "nmShadeDiagNe.context": "The number of shaded cells diagonally adjacent to a shaded number is not correct.",
