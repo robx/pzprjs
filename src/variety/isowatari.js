@@ -122,8 +122,6 @@
 	Board: {
 		hasborder: 2,
 
-		disable_subclear: true,
-
 		clusterSize: null,
 
 		createExtraObject: function() {
@@ -148,15 +146,6 @@
 		},
 		isQuesBorder: function() {
 			return !!(this.sidecell[0].isEmpty() ^ this.sidecell[1].isEmpty());
-		},
-
-		prehook: {
-			qans: function() {
-				return !this.isGrid();
-			},
-			qsub: function() {
-				return !this.isGrid();
-			}
 		}
 	},
 
@@ -285,19 +274,8 @@
 			return border.isQuesBorder() ? this.quescolor : null;
 		},
 
-		getBGCellColor: function(cell) {
-			if ((cell.error || cell.qinfo) === 1) {
-				return this.errbcolor1;
-			} else if (cell.qans === 2 || cell.qsub === 1) {
-				return this.bcolor;
-			}
-			return null;
-		},
-
 		drawValidGrid: function() {
 			var g = this.vinc("grid_waritai", "crispEdges", true);
-
-			// var dasharray = this.getDashArray();
 
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
