@@ -59,6 +59,12 @@ ui.debug.addDebugData("isowatari", {
 				"pzprv3/isowatari/8/8/1/. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /"
 		},
 		{
+			label: "Cannot decrease cluster size under 1",
+			input: ["mouse,right, 15,-1"],
+			result:
+				"pzprv3/isowatari/8/8/1/. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /"
+		},
+		{
 			label: "Can shade shaded circles",
 			input: [
 				"newboard,1,1",
@@ -70,6 +76,7 @@ ui.debug.addDebugData("isowatari", {
 			],
 			result: "pzprv3/isowatari/1/1/1/2 /2 /. /# /"
 		},
+
 		{
 			label: "Can unshade shaded circles",
 			input: ["setconfig,use,2", "mouse,left,1,1"],
@@ -79,11 +86,6 @@ ui.debug.addDebugData("isowatari", {
 			label: "Can't input numbers too big",
 			input: ["newboard,1,1", "ansclear", "editmode", "key,2"],
 			result: "pzprv3/isowatari/1/1/1/. /. /. /. /"
-		},
-		{
-			label: "Cannot shade or unshade empty cells, but can do with non empty cells",
-			input: ["newboard,1,1",  "ansclear", "editmode,empty", "mouse,left,1,1", "playmode", "setconfig,use,1", "mouse,left,1,1", "mouse,right,2,2", "mouse,left,3,3", "mouse,right,4,4"],
-			result: "pzprv3/isowatari/4/4/1/* . . . /. * . . /. . . . /. . . . /. . . . /. . . . /. . . . /. . . . /. . . . /. . . . /. . . . /. . . + /. . . . /. . . . /. . # . /. . . + /"
 		},
 		{
 			label: "Invalid cells erasing data",
@@ -99,6 +101,21 @@ ui.debug.addDebugData("isowatari", {
 				"mouse,left,1,1"
 			],
 			result: "pzprv3/isowatari/1/1/1/. /. /. /. /"
+		},
+		{
+			label: "Invalid cell",
+			input: ["newboard,1,1", "editmode,empty", "mouse,left,1,1"],
+			result: "pzprv3/isowatari/1/1/1/* /. /. /. /"
+		},
+		{
+			label: "Cannot shade invalid cell",
+			input: ["playmode", "mouse,left,1,1"],
+			result: "pzprv3/isowatari/1/1/1/* /. /. /. /"
+		},
+		{
+			label: "Cannot unshade invalid cell",
+			input: ["mouse,right,1,1"],
+			result: "pzprv3/isowatari/1/1/1/* /. /. /. /"
 		}
 	]
 });
