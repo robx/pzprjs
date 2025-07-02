@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["firefly", "mintonette", "uturns"], {
+})(["firefly", "mintonette"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -28,7 +28,7 @@
 			}
 		}
 	},
-	"MouseEvent@mintonette,uturns": {
+	"MouseEvent@mintonette": {
 		inputModes: { edit: ["number", "clear"], play: ["line", "peke"] },
 		autoedit_func: "qnum"
 	},
@@ -56,18 +56,8 @@
 
 	//---------------------------------------------------------
 	// 盤面管理系
-	"Cell@firefly,mintonette": {
+	Cell: {
 		minnum: 0
-	},
-	"Cell@uturns": {
-		disInputHatena: true,
-		maxnum: 3,
-		noLP: function(dir) {
-			return this.qnum === 1;
-		}
-	},
-	"Border@uturns": {
-		enableLineNG: true
 	},
 	Board: {
 		hasborder: 1
@@ -107,11 +97,7 @@
 
 			this.drawPekes();
 
-			if (this.pid === "uturns") {
-				this.drawCircles();
-			} else {
-				this.drawCircledNumbers();
-			}
+			this.drawCircledNumbers();
 
 			if (this.pid === "firefly") {
 				this.drawFireflyDots();
@@ -120,20 +106,6 @@
 			}
 
 			this.drawTarget();
-		}
-	},
-	"Graphic@uturns": {
-		getCircleFillColor: function(cell) {
-			switch (cell.qnum) {
-				case 1:
-					return this.quescolor;
-				case 2:
-					return "#ccc";
-				case 3:
-					return "white";
-				default:
-					return null;
-			}
 		}
 	},
 
@@ -191,7 +163,7 @@
 			this.encodeArrowNumber16();
 		}
 	},
-	"Encode@mintonette,uturns": {
+	"Encode@mintonette": {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 		},
@@ -304,48 +276,6 @@
 
 				return false;
 			}, "lcCurveNe");
-		}
-	},
-	"AnsCheck@uturns": {
-		checklist: [
-			"checkBranchLine",
-			"checkCrossLine",
-
-			"checkLineOnShadedCircle",
-			"checkCurveCount",
-			"checkLineInWhiteCircle",
-			"checkLineOverGrayCircle",
-
-			"checkDeadendConnectLine+",
-			"checkDisconnectLine"
-		],
-
-		checkLineOnShadedCircle: function() {
-			this.checkAllCell(function(cell) {
-				return cell.noLP() && cell.lcnt > 0;
-			}, "lnOnShade");
-		},
-
-		checkLineInWhiteCircle: function() {
-			this.checkAllCell(function(cell) {
-				return cell.qnum === 3 && cell.lcnt !== 2;
-			}, "lnOnWhite");
-		},
-
-		checkLineOverGrayCircle: function() {
-			this.checkAllCell(function(cell) {
-				return cell.lcnt >= 2 && cell.qnum === 2;
-			}, "lcOnNum");
-		},
-
-		checkCurveCount: function() {
-			this.checkLineShape(function(path) {
-				if (path.cells[1].isnull) {
-					return false;
-				}
-
-				return path.ccnt !== 2 || path.dir1 !== path.dir2;
-			}, "lcNotUTurns");
 		}
 	}
 });
