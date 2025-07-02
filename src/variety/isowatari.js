@@ -54,9 +54,6 @@
 				if (this.mousestart || this.mousemove) {
 					this.inputcell();
 				}
-				if (this.notInputted() && this.mousestart) {
-					this.inputqcmp();
-				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
 					this.inputqnum_main(this.getcell());
@@ -276,6 +273,8 @@
 
 		drawValidGrid: function() {
 			var g = this.vinc("grid_waritai", "crispEdges", true);
+
+			// var dasharray = this.getDashArray();
 
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
