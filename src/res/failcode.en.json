@@ -553,6 +553,7 @@
     "lcIsolate.arukone": "A line doesn't connect any alphabet.",
     "lcIsolate.balloon": "A string doesn't connect to any number.",
     "lcIsolate.kusabi": "A line isn't connected to any circle.",
+    "lcIsolate.uturns": "A line doesn't connect two gray circles.",
     "lcIsolate": "A line doesn't connect to any number.",
     "lcLenInvDiff.kusabi": "The relative lengths of the legs of a U don't match the clues.",
     "lcLenInvNe.kusabi": "The legs of a U have different lengths.",

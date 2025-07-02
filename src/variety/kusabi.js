@@ -35,6 +35,9 @@
 			return this.qnum === 1;
 		}
 	},
+	"Border@uturns": {
+		enableLineNG: true
+	},
 	Board: {
 		hasborder: 1
 	},
@@ -208,9 +211,38 @@
 			"checkLineInWhiteCircle",
 			"checkLineOverGrayCircle",
 
-			"checkDeadendConnectLine+",
-			"checkDisconnectLine"
+			"checkDisconnectLine+",
+			"checkNoLineObject"
 		],
+
+		checkConnectObjectCount: function(evalfunc, code) {
+			var result = true,
+				paths = this.board.linegraph.components;
+			for (var id = 0; id < paths.length; id++) {
+				var clist = paths[id].clist;
+				if (
+					evalfunc(
+						clist.filter(function(cell) {
+							return cell.qnum === 2;
+						}).length
+					)
+				) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				paths[id].setedgeerr(1);
+				paths[id].clist.seterr(4);
+			}
+			if (!result) {
+				this.failcode.add(code);
+				this.board.border.setnoerr();
+			}
+		},
 
 		checkLineOnShadedCircle: function() {
 			this.checkAllCell(function(cell) {
@@ -220,8 +252,14 @@
 
 		checkLineInWhiteCircle: function() {
 			this.checkAllCell(function(cell) {
-				return cell.qnum === 3 && cell.lcnt !== 2;
+				return cell.qnum === 3 && cell.lcnt === 1;
 			}, "lnOnWhite");
+		},
+
+		checkNoLineObject: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.qnum > 1;
+			}, "nmNoLine");
 		},
 
 		checkLineOverGrayCircle: function() {
