@@ -274,8 +274,6 @@
 		drawValidGrid: function() {
 			var g = this.vinc("grid_waritai", "crispEdges", true);
 
-			// var dasharray = this.getDashArray();
-
 			g.lineWidth = 1;
 			g.strokeStyle = this.gridcolor;
 
