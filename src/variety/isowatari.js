@@ -21,9 +21,8 @@
 			if (this.inputData === null) {
 				this.inputEdit_first();
 			} else {
-				this.inputqnum_main(this.getcell());
+				this.inputqnum();
 			}
-			// 境界線の入力中の場合
 		},
 		inputEdit_first: function() {
 			var bd = this.board,
@@ -36,16 +35,20 @@
 				by >= rect.by1 &&
 				by <= rect.by2
 			) {
+				if (this.cursor.by >= bd.minby) {
+					var pos = new this.klass.Address(bd.maxbx - 1, -1);
+					this.setcursor(pos);
+					return;
+				}
+
 				var val = this.getNewNumber(bd.clusterSize, bd.clusterSize.count);
 				if (val === null) {
-					this.inputqnum_main(this.getcell());
+					return;
 				}
 				bd.clusterSize.set(val);
 				this.mousereset();
-			}
-			// その他は境界線の入力へ
-			else {
-				this.inputqnum_main(this.getcell());
+			} else {
+				this.inputqnum();
 			}
 		},
 
@@ -56,7 +59,6 @@
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
-					this.inputqnum_main(this.getcell());
 					this.inputEdit();
 				}
 			}
@@ -101,7 +103,9 @@
 		enablemake: true,
 
 		keyinput: function(ca) {
-			if (this.keydown && this.puzzle.editmode) {
+			if (this.cursor.by >= this.board.minby) {
+				this.key_inputqnum(ca);
+			} else {
 				this.key_inputqnum_isowatari(ca);
 			}
 		},
@@ -113,6 +117,16 @@
 			}
 			bd.clusterSize.set(val);
 			this.prev = bd.clusterSize;
+		}
+	},
+
+	TargetCursor: {
+		draw: function() {
+			if (this.by >= this.board.minby) {
+				this.common.draw.call(this);
+			} else {
+				this.board.clusterSize.draw();
+			}
 		}
 	},
 
@@ -354,6 +368,13 @@
 		},
 
 		drawCursor_isowatari: function() {
+			var isOnBoard = this.puzzle.board.minby <= this.puzzle.cursor.by;
+			var isOnIndicator = !isOnBoard;
+			this.drawCursor(true, isOnBoard && this.puzzle.editmode);
+			this.drawCursorOnIndicator(isOnIndicator);
+		},
+
+		drawCursorOnIndicator: function(visible) {
 			var g = this.vinc("target_cursor", "crispEdges", true),
 				bd = this.board;
 			if (!this.range.clusterSize) {
@@ -361,6 +382,7 @@
 			}
 
 			var isdraw =
+				visible &&
 				this.puzzle.editmode &&
 				this.puzzle.mouse.inputMode === "auto" &&
 				this.puzzle.getConfig("cursor") &&

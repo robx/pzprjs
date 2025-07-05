@@ -36,7 +36,7 @@ ui.debug.addDebugData("isowatari", {
 		{ input: ["newboard,8,8", "editmode"] },
 		{
 			label: "Can input new number at start",
-			input: ["key,2"],
+			input: ["key,up", "key,2"],
 			result:
 				"pzprv3/isowatari/8/8/2/. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /"
 		},
@@ -48,7 +48,7 @@ ui.debug.addDebugData("isowatari", {
 		},
 		{
 			label: "Can increase cluster size",
-			input: ["newboard,8,8", "mouse, left, 15,-1"],
+			input: ["newboard,8,8", "mouse, leftx2, 15,-1"],
 			result:
 				"pzprv3/isowatari/8/8/2/. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /. . . . . . . . /"
 		},
@@ -68,9 +68,8 @@ ui.debug.addDebugData("isowatari", {
 			label: "Can shade shaded circles",
 			input: [
 				"newboard,1,1",
-				"ansclear",
 				"editmode",
-				"mouse,left,1,1",
+				"mouse,leftx2,1,1",
 				"playmode",
 				"mouse,left,1,1"
 			],
@@ -84,7 +83,7 @@ ui.debug.addDebugData("isowatari", {
 		},
 		{
 			label: "Can't input numbers too big",
-			input: ["newboard,1,1", "ansclear", "editmode", "key,2"],
+			input: ["newboard,1,1", "ansclear", "editmode", "cursor,-1,1", "key,2"],
 			result: "pzprv3/isowatari/1/1/1/. /. /. /. /"
 		},
 		{
