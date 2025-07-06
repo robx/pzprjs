@@ -115,6 +115,16 @@ ui.debug.addDebugData("isowatari", {
 			label: "Cannot unshade invalid cell",
 			input: ["mouse,right,1,1"],
 			result: "pzprv3/isowatari/1/1/1/* /. /. /. /"
+		},
+		{
+			label: "Can input with keyboard",
+			input: [
+				"newboard,3,1",
+				"editmode",
+				"cursor,1,1",
+				"key,1,right,2,right,w"
+			],
+			result: "pzprv3/isowatari/1/3/1/1 2 * /1 2 . /. . . /. . . /"
 		}
 	]
 });

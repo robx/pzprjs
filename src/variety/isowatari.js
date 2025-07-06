@@ -103,7 +103,12 @@
 		enablemake: true,
 
 		keyinput: function(ca) {
-			if (this.cursor.by >= this.board.minby) {
+			if (ca === "w") {
+				var cell = this.cursor.getc();
+				if (!cell.isnull) {
+					cell.setValid(cell.ques !== 7 ? 7 : 0);
+				}
+			} else if (this.cursor.by >= this.board.minby) {
 				this.key_inputqnum(ca);
 			} else {
 				this.key_inputqnum_isowatari(ca);
