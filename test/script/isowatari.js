@@ -29,6 +29,16 @@ ui.debug.addDebugData("isowatari", {
 		],
 		[
 			null,
+			"pzprv3/isowatari/3/3/1/* 1 . /* . . /* * * /. 1 . /. . . /. . . /. . . /. + + /. . . /. . # /. + + /. . . /",
+			{ undecided: true, skiprules: true }
+		],
+		[
+			null,
+			"pzprv3/isowatari/3/3/1/* 1 . /* . . /* * * /. 1 . /. . . /. . . /. + . /. + + /. . . /. + # /. + + /. . . /",
+			{ undecided: false, skiprules: true }
+		],
+		[
+			null,
 			"pzprv3/isowatari/5/5/3/. . . . . /1 . . 2 2 /. . . . . /2 2 . . . /. . . 1 . /. . . . . /1 . . 2 2 /. . . . . /2 2 . . . /. . . 1 . /. . . . . /. . . . . /. . . . . /. . . . . /. . . . . /# # . . # /. # . # # /. . . . . /# # . # # /# . . . # /"
 		]
 	],

@@ -96,6 +96,10 @@
 
 		isUnshade: function() {
 			return !this.isnull && this.qans !== 1 && !this.isEmpty();
+		},
+
+		isShadeDecided: function() {
+			return this.isnull || this.isEmpty() || this.isShade() || this.qsub > 0;
 		}
 	},
 
@@ -479,7 +483,8 @@
 			"checkConnectUnshade",
 			"check2x2UnshadeCell",
 			"checkGreaterThanN",
-			"checkSmallerThanN"
+			"checkSmallerThanN",
+			"doneShadingDecided"
 		],
 		checkShadeOnCircle: function() {
 			this.checkAllCell(function(cell) {
