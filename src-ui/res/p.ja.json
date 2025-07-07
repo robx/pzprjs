@@ -300,5 +300,6 @@
     "yajilin_out": "黒マスは線の外側にする",
     "autocmp.recoil": "障害物が置かれるマスに背景色を付ける",
     "inputmode.boulder": "岩",
-    "loop_full": "線の引かれないマスがあってはいけないとする"
+    "loop_full": "線の引かれないマスがあってはいけないとする",
+    "pause.desc.mobile": "「スタート」を押して再開"
 }

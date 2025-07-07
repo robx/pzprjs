@@ -890,5 +890,10 @@
     "csDotBlack": "黒丸に接する黒マスの数が白マスの数を上回っていません。",
     "csDotGray": "灰色の丸に接する白マスの数と黒マスの数が同じではありません。",
     "csDotWhite": "白丸に接する白マスの数が黒マスの数を上回っていません。",
-    "lcCurveNe.mintonette": "線が曲がる回数が数字と違います。"
+    "lcCurveNe.mintonette": "線が曲がる回数が数字と違います。",
+    "anTurn.turnaround": "線が曲がる回数と数字が違います。",
+    "bkNoNum.narrow": "マークが入っていない領域があります。",
+    "bkNumGe2.narrow": "1つの領域に2つ以上のマークが入っています。",
+    "bkSameShape.narrow": "同じマークの入った2つの領域が同じ形をしています。",
+    "nmSame2x2.narrow": "2×2の白マスが同じマークの入った領域にあります。"
 }
