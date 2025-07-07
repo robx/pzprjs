@@ -216,6 +216,7 @@
 			interbd: [0, 0, "International Borders", "International Borders"],
 			invlitso: [0, 0, "Inverse LITSO", "Inverse LITSO", "lits"],
 			island: [0, 0, "アイランド", "Inaba's Island", "kurotto"],
+			isowatari: [0, 0, "イソワタリ", "Isowatari"],
 			japanesesums: [0, 0, "Japanese Sums", "Japanese Sums"],
 			juosan: [0, 0, "縦横さん", "Juosan"],
 			kaero: [1, 0, "お家に帰ろう", "Return Home"],
