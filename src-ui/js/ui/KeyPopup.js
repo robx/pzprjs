@@ -230,6 +230,8 @@ ui.keypopup = {
 		onsen: [10, 0],
 		wataridori: [10, 0],
 		kurarin: [133, 0],
+		narrow: [134, 0],
+		isowatari: [10, 0],
 		uturns: [133, 0]
 	},
 
@@ -389,6 +391,8 @@ ui.keypopup = {
 			this.generate_outofsight(mode);
 		} else if (type === 133) {
 			this.generate_kurarin(mode);
+		} else if (type === 134) {
+			this.generate_narrowfence(mode);
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -1073,6 +1077,13 @@ ui.keypopup = {
 				["-", { text: "?", color: "gray" }],
 				" "
 			],
+			3
+		);
+	},
+
+	generate_narrowfence: function(mode) {
+		this.generate_main(
+			[["1", "○"], ["2", "╋"], " ", ["3", "×"], ["4", "◇"]],
 			3
 		);
 	},
