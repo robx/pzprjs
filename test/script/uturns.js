@@ -40,5 +40,20 @@ ui.debug.addDebugData("uturns", {
 			"pzprv3/uturns/6/6/2 . 1 . 2 . /. . 3 . 3 . /. . . . . . /. . 3 . . . /. . . 2 . . /. 2 1 . . . /0 0 0 0 1 /0 0 1 0 1 /1 1 0 0 0 /1 1 1 0 0 /0 0 0 0 0 /1 0 0 1 0 /1 0 0 0 0 1 /1 0 1 1 1 0 /0 0 0 1 1 0 /1 0 0 0 1 0 /1 0 0 1 1 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,3,2",
+				"editmode,circle-shade",
+				"mouse,left,1,1,3,1",
+				"editmode,circle-unshade",
+				"mouse,left,3,3,5,3"
+			],
+			result: "pzprv3/uturns/2/3/1 1 . /. 3 3 /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			input: ["playmode,auto", "mouse,left,1,3,5,3,5,1"],
+			result: "pzprv3/uturns/2/3/1 1 . /. 3 3 /0 0 /1 1 /0 0 1 /"
+		}
+	]
 });

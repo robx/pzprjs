@@ -15,6 +15,22 @@
 		autoedit_func: "qnum",
 		autoplay_func: "line"
 	},
+	"MouseEvent@uturns": {
+		inputModes: {
+			edit: ["number", "circle-shade", "circle-unshade", "clear"],
+			play: ["line", "peke"]
+		},
+		mouseinput: function() {
+			switch (this.inputMode) {
+				case "circle-unshade":
+					return this.inputFixedNumber(3);
+				case "circle-shade":
+					return this.inputFixedNumber(1);
+				default:
+					return this.common.mouseinput.call(this);
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
