@@ -455,6 +455,7 @@
 			twinarea: [0, 0, "ツインエリア", "Twin Area", "hanare"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],
+			uturns: [0, 0, "U-Turns", "U-Turns", "kusabi"],
 			view: [1, 0, "ヴィウ", "View", "sukoro"],
 			voxas: [0, 0, "Voxas", "Voxas"],
 			vslither: [0, 0, "Vertex Slitherlink", "Vertex Slitherlink"],

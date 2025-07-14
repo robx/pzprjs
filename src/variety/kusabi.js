@@ -7,13 +7,29 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kusabi"], {
+})(["kusabi", "uturns"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
 		inputModes: { edit: ["number", "clear"], play: ["line", "peke"] },
 		autoedit_func: "qnum",
 		autoplay_func: "line"
+	},
+	"MouseEvent@uturns": {
+		inputModes: {
+			edit: ["number", "circle-shade", "circle-unshade", "clear"],
+			play: ["line", "peke"]
+		},
+		mouseinput: function() {
+			switch (this.inputMode) {
+				case "circle-unshade":
+					return this.inputFixedNumber(3);
+				case "circle-shade":
+					return this.inputFixedNumber(1);
+				default:
+					return this.common.mouseinput.call(this);
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -28,6 +44,15 @@
 		numberAsObject: true,
 
 		maxnum: 3
+	},
+	"Cell@uturns": {
+		disInputHatena: true,
+		noLP: function(dir) {
+			return this.qnum === 1;
+		}
+	},
+	"Border@uturns": {
+		enableLineNG: true
 	},
 	Board: {
 		hasborder: 1
@@ -56,7 +81,11 @@
 			this.drawPekes();
 			this.drawLines();
 
-			this.drawCircledNumbers();
+			if (this.pid === "uturns") {
+				this.drawCircles();
+			} else {
+				this.drawCircledNumbers();
+			}
 
 			this.drawChassis();
 
@@ -65,6 +94,20 @@
 
 		getNumberTextCore: function(num) {
 			return { 1: "同", 2: "短", 3: "長" }[num] || "";
+		}
+	},
+	"Graphic@uturns": {
+		getCircleFillColor: function(cell) {
+			switch (cell.qnum) {
+				case 1:
+					return this.quescolor;
+				case 2:
+					return "#ccc";
+				case 3:
+					return "white";
+				default:
+					return null;
+			}
 		}
 	},
 
@@ -172,6 +215,83 @@
 						((qn1 === 3 || qn2 === 2) && length[0] <= length[2]))
 				);
 			}, "lcLenInvDiff");
+		}
+	},
+	"AnsCheck@uturns": {
+		checklist: [
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkLineOnShadedCircle",
+			"checkCurveCount",
+			"checkLineInWhiteCircle",
+			"checkLineOverGrayCircle",
+
+			"checkDisconnectLine+",
+			"checkNoLineObject"
+		],
+
+		checkConnectObjectCount: function(evalfunc, code) {
+			var result = true,
+				paths = this.board.linegraph.components;
+			for (var id = 0; id < paths.length; id++) {
+				var clist = paths[id].clist;
+				if (
+					evalfunc(
+						clist.filter(function(cell) {
+							return cell.qnum === 2;
+						}).length
+					)
+				) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				paths[id].setedgeerr(1);
+				paths[id].clist.seterr(4);
+			}
+			if (!result) {
+				this.failcode.add(code);
+				this.board.border.setnoerr();
+			}
+		},
+
+		checkLineOnShadedCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.noLP() && cell.lcnt > 0;
+			}, "lnOnShade");
+		},
+
+		checkLineInWhiteCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qnum === 3 && cell.lcnt === 1;
+			}, "lnOnWhite");
+		},
+
+		checkNoLineObject: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt === 0 && cell.qnum > 1;
+			}, "nmNoLine");
+		},
+
+		checkLineOverGrayCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.lcnt >= 2 && cell.qnum === 2;
+			}, "lcOnNum");
+		},
+
+		checkCurveCount: function() {
+			this.checkLineShape(function(path) {
+				if (path.cells[1].isnull) {
+					return false;
+				}
+
+				return path.ccnt !== 2 || path.dir1 !== path.dir2;
+			}, "lcNotUTurns");
 		}
 	}
 });
