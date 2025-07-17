@@ -297,5 +297,9 @@
     "pause.desc": "再開をクリックするか、F4キーを押してください",
     "fillomino_tri": "すべての数字は3以下になります",
     "inputmode.forest": "森",
-    "yajilin_out": "黒マスは線の外側にする"
+    "yajilin_out": "黒マスは線の外側にする",
+    "autocmp.recoil": "障害物が置かれるマスに背景色を付ける",
+    "inputmode.boulder": "岩",
+    "loop_full": "線の引かれないマスがあってはいけないとする",
+    "pause.desc.mobile": "「スタート」を押して再開"
 }

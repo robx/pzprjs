@@ -69,8 +69,8 @@ ui.debug.addDebugData("kurochute", {
 		},
 		{ input: ["setconfig,use,1", "ansclear"] },
 		{
-			input: ["mouse,left, 1,1"],
-			result: "pzprv3/kurochute/1/5/1 . . . . /- . . . . /"
+			input: ["mouse,left, 1,1", "mouse,alt+left,4,1,6,1"],
+			result: "pzprv3/kurochute/1/5/1 . . . . /- . . . . /0 -1 -1 0 /"
 		}
 	]
 });

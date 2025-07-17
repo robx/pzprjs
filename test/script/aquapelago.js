@@ -80,6 +80,12 @@ ui.debug.addDebugData("aquapelago", {
 			label: "Dragging from shaded cell clears",
 			input: ["mouse,left,5,3,5,5,3,5"],
 			result: "pzprv3/aquapelago/3/3/. # + /5 . . /+ . . /"
+		},
+		{
+			label: "Alt+click",
+			input: ["mouse,alt+left,3,4,4,5"],
+			result:
+				"pzprv3/aquapelago/3/3/. # + /5 . . /+ . . /0 0 /0 0 /0 -1 /0 0 0 /0 -1 0 /"
 		}
 	]
 });
