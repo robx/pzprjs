@@ -227,6 +227,7 @@
 			"checkLineInWhiteCircle",
 			"checkLineOverGrayCircle",
 
+			"checkLineShapeDeadend+",
 			"checkDisconnectLine+",
 			"checkNoLineObject"
 		],
