@@ -1,0 +1,355 @@
+//
+// パズル固有スクリプト部 ぼんさん・へやぼん・四角スライダー版 bonsan.js
+//
+(function(pidlist, classbase) {
+	if (typeof module === "object" && module.exports) {
+		module.exports = [pidlist, classbase];
+	} else {
+		pzpr.classmgr.makeCustom(pidlist, classbase);
+	}
+})(["blindrush"], {
+	//---------------------------------------------------------
+	MouseEvent: {
+		inputModes: {
+			edit: ["number", "clear"],
+			play: ["line", "bgcolor", "bgcolor1", "bgcolor2", "clear", "completion"]
+		},
+
+		// TODO clean up all these background colors
+
+		mouseinput: function() {
+			switch (this.inputMode) {
+				case "completion":
+					if (this.mousestart) {
+						this.inputqcmp(1);
+					}
+					break;
+				default:
+					return this.common.mouseinput.call(this);
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputLine();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputlight();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputborder();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputqnum();
+				}
+			}
+		},
+
+		inputLine: function() {
+			this.common.inputLine.call(this);
+
+			/* "丸数字を移動表示しない"場合の背景色描画準備 */
+			if (
+				this.puzzle.execConfig("autocmp") &&
+				!this.puzzle.execConfig("dispmove") &&
+				!this.notInputted()
+			) {
+				this.inputautodark();
+			}
+		},
+		inputautodark: function() {
+			/* 最後に入力した線を取得する */
+			var opemgr = this.puzzle.opemgr,
+				lastope = opemgr.lastope;
+			if (lastope.group !== "border" || lastope.property !== "line") {
+				return;
+			}
+			var border = this.board.getb(lastope.bx, lastope.by);
+
+			/* 線を引いた/消した箇所にある領域を取得 */
+			var clist = new this.klass.CellList();
+			Array.prototype.push.apply(clist, border.sideobj);
+			clist = clist.notnull().filter(function(cell) {
+				return cell.path !== null || cell.isNum();
+			});
+
+			/* 改めて描画対象となるセルを取得して再描画 */
+			clist.each(function(cell) {
+				if (cell.path === null) {
+					if (cell.isNum()) {
+						cell.draw();
+					}
+				} else {
+					cell.path.clist.each(function(cell) {
+						if (cell.isNum()) {
+							cell.draw();
+						}
+					});
+				}
+			});
+		},
+
+		inputlight: function() {
+			var cell = this.getcell();
+			if (cell.isnull) {
+				return;
+			}
+
+			if (this.inputdark(cell, 1)) {
+				return;
+			}
+
+			if (this.mouseend && this.notInputted()) {
+				this.mouseCell = this.board.emptycell;
+			}
+			this.inputBGcolor();
+		},
+		inputqcmp: function(val) {
+			var cell = this.getcell();
+			if (cell.isnull) {
+				return;
+			}
+
+			this.inputdark(cell, val, true);
+		},
+		inputdark: function(cell, val, multi) {
+			var cell = this.getcell();
+			if (cell.isnull || (cell === this.mouseCell && multi)) {
+				return false;
+			}
+
+			var targetcell = !this.puzzle.execConfig("dispmove") ? cell : cell.base,
+				distance = 0.6,
+				dx = this.inputPoint.bx - cell.bx /* ここはtargetcellではなくcell */,
+				dy = this.inputPoint.by - cell.by;
+			if (
+				targetcell.isNum() &&
+				(this.inputMode === "completion" ||
+					(targetcell.qnum === -2 && dx * dx + dy * dy < distance * distance))
+			) {
+				if (this.inputData === null) {
+					this.inputData = targetcell.qcmp !== val ? 21 : 20;
+				}
+
+				targetcell.setQcmp(this.inputData === 21 ? val : 0);
+				cell.draw();
+				this.mouseCell = cell;
+				return true;
+			}
+			this.mouseCell = cell;
+			return false;
+		}
+	},
+	//---------------------------------------------------------
+	// キーボード入力系
+	KeyEvent: {
+		enablemake: true
+	},
+
+	//---------------------------------------------------------
+	// 盤面管理系
+	Cell: {
+		isCmp: function() {
+			return this.isCmp_blindrush(
+				this.puzzle.execConfig("autocmp"),
+				this.puzzle.execConfig("dispmove"),
+				false
+			);
+		},
+
+		getBurstCount: function() {
+			if (this.path === null) {
+				return 0;
+			}
+			var borders = this.path.getedgeobjs();
+			var count = 0;
+			for (var i = 0; i < borders.length; i++) {
+				if (i > 0 && borders[i].isvert !== borders[i - 1].isvert) {
+					return -1;
+				}
+				if (borders[i].isBorder()) {
+					count++;
+				}
+			}
+			return count;
+		},
+
+		isStoppedAtWall: function() {
+			if (this.path === null || this.path.destination.isnull) {
+				return false;
+			}
+			var borders = this.path.destination.adjborder;
+			if (borders.left.isLine()) {
+				return borders.right.isnull || borders.right.isBorder();
+			} else if (borders.right.isLine()) {
+				return borders.left.isnull || borders.left.isBorder();
+			} else if (borders.top.isLine()) {
+				return borders.bottom.isnull || borders.bottom.isBorder();
+			} else if (borders.bottom.isLine()) {
+				return borders.top.isnull || borders.top.isBorder();
+			}
+			return false;
+		},
+
+		isCmp_blindrush: function(is_autocmp, is_dispmove) {
+			var targetcell = !is_dispmove ? this : this.base;
+			if (targetcell.qcmp === 1) {
+				return true;
+			} else if (!is_autocmp) {
+				return false;
+			}
+
+			if (!this.isStoppedAtWall()) {
+				return false;
+			}
+
+			var burst = this.getBurstCount();
+			return burst >= 0 && targetcell.getNum() === burst;
+		},
+
+		maxnum: function() {
+			var bd = this.board,
+				bx = this.bx,
+				by = this.by;
+			var col = (bx < bd.maxbx >> 1 ? bd.maxbx - bx : bx) >> 1;
+			var row = (by < bd.maxby >> 1 ? bd.maxby - by : by) >> 1;
+			return Math.max(col, row);
+		},
+		minnum: 0
+	},
+	Border: {
+		prehook: {
+			line: function(num) {
+				return this.puzzle.execConfig("dispmove") && this.checkFormCurve(num);
+			}
+		}
+	},
+
+	Board: {
+		cols: 8,
+		rows: 8,
+
+		hasborder: 1
+	},
+
+	LineGraph: {
+		enabled: true,
+		moveline: true
+	},
+	//---------------------------------------------------------
+	// 画像表示系
+	Graphic: {
+		bgcellcolor_func: "qsub2",
+		autocmp: "number",
+		hideHatena: true,
+
+		gridcolor_type: "LIGHT",
+
+		numbercolor_func: "move",
+		qsubcolor1: "rgb(224, 224, 255)",
+		qsubcolor2: "rgb(255, 255, 144)",
+
+		circlefillcolor_func: "qcmp",
+
+		paint: function() {
+			this.drawBGCells();
+			this.drawGrid();
+			this.drawBorders();
+
+			this.drawTip();
+			this.drawDepartures();
+			this.drawLines();
+
+			this.drawCircledNumbers();
+
+			this.drawChassis();
+
+			this.drawTarget();
+		}
+	},
+
+	//---------------------------------------------------------
+	// URLエンコード/デコード処理
+	Encode: {
+		decodePzpr: function(type) {
+			this.decodeBorder();
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeBorder();
+			this.encodeNumber16();
+		}
+	},
+	//---------------------------------------------------------
+	FileIO: {
+		decodeData: function() {
+			this.decodeCellQnum();
+			this.decodeCellQsubQcmp();
+			this.decodeBorderQues();
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeCellQnum();
+			this.encodeCellQsubQcmp();
+			this.encodeBorderQues();
+			this.encodeBorderLine();
+		},
+
+		/* decode/encodeCellQsubの上位互換です */
+		decodeCellQsubQcmp: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca !== "0") {
+					cell.qsub = +ca & 0x0f;
+					cell.qcmp = (+ca >> 4) & 1; // int
+					cell.anum = +ca >> 5 ? 0 : -1;
+				}
+			});
+		},
+		encodeCellQsubQcmp: function() {
+			this.encodeCell(function(cell) {
+				return (
+					cell.qsub + (cell.qcmp << 4) + (cell.anum === 0 ? 1 << 5 : 0) + " "
+				);
+			});
+		}
+	},
+
+	//---------------------------------------------------------
+	// 正解判定処理実行部
+	AnsCheck: {
+		checklist: [
+			"checkLineExist+",
+			"checkBranchLine",
+			"checkCrossLine",
+
+			"checkConnectObject",
+			"checkLineOverLetter",
+			"checkCurveLine",
+
+			// TODO check Burst count
+			// TODO check Wall network pierced more than once
+			// TODO check Wall network not pierced
+			// TODO check object not stopped in front of wall
+
+			"checkNoMoveCircle",
+			"checkDisconnectLine"
+		],
+
+		checkCurveLine: function() {
+			this.checkAllArea(
+				this.board.linegraph,
+				function(w, h, a, n) {
+					return w === 1 || h === 1;
+				},
+				"laCurve"
+			);
+		},
+		checkNoMoveCircle: function() {
+			this.checkAllCell(function(cell) {
+				return cell.isNum() && cell.lcnt === 0;
+			}, "nmNoMove");
+		}
+	},
+	FailCode: {
+		nmNoMove: "nmNoMove.bonsan"
+	}
+});
