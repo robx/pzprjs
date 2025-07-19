@@ -17,9 +17,8 @@
 
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputLine();
-				} else if (this.mouseend && this.notInputted()) {
+				this.mouseinputAutoPlay_line();
+				if (this.mouseend && this.notInputted()) {
 					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode) {
@@ -114,7 +113,7 @@
 		},
 
 		getBurstCount: function() {
-			if (this.path === null) {
+			if (!this.path) {
 				return 0;
 			}
 			var borders = this.path.getedgeobjs();
@@ -131,7 +130,11 @@
 		},
 
 		isStoppedAtWall: function() {
-			if (!this.path || !this.path.destination) {
+			if (
+				!this.path ||
+				!this.path.destination ||
+				this.path.destination.isnull
+			) {
 				return false;
 			}
 			var borders = this.path.destination.adjborder;
@@ -259,6 +262,7 @@
 			this.drawCircledNumbers();
 
 			this.drawChassis();
+			this.drawPekes();
 
 			this.drawTarget();
 		},
@@ -287,33 +291,15 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeCellQnum();
-			this.decodeCellQsubQcmp();
 			this.decodeBorderQues();
+			this.decodeCellAnumsub();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
-			this.encodeCellQsubQcmp();
 			this.encodeBorderQues();
+			this.encodeCellAnumsub();
 			this.encodeBorderLine();
-		},
-
-		/* decode/encodeCellQsubの上位互換です */
-		decodeCellQsubQcmp: function() {
-			this.decodeCell(function(cell, ca) {
-				if (ca !== "0") {
-					cell.qsub = +ca & 0x0f;
-					cell.qcmp = (+ca >> 4) & 1; // int
-					cell.anum = +ca >> 5 ? 0 : -1;
-				}
-			});
-		},
-		encodeCellQsubQcmp: function() {
-			this.encodeCell(function(cell) {
-				return (
-					cell.qsub + (cell.qcmp << 4) + (cell.anum === 0 ? 1 << 5 : 0) + " "
-				);
-			});
 		}
 	},
 
