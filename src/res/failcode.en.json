@@ -69,6 +69,8 @@
     "bdNotChassis.shwolf": "A line doesn't connect to the chassis.",
     "bdPassStar.nuriuzu": "A star overlaps a shaded cell.",
     "bdPassStar.tentaisho": "A line goes over a star.",
+    "bdPierceGt1.blindrush": "A network of walls is pierced more than once.",
+    "bdPierceLt1.blindrush": "A network of walls is not pierced by a line.",
     "bdUnequal.antmill": "A cross clue does not overlap exactly 1 shaded cell.",
     "bdUnused.fillomino": "A given border does not divide two regions.",
     "bdUnused.kissing": "A bar is not adjacent to two different blocks.",

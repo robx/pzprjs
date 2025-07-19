@@ -223,12 +223,55 @@
 			}
 		}
 	},
+	"BorderGraph:AreaGraphBase": {
+		enabled: true,
+		pointgroup: "border",
+		relation: { "border.ques": "node" },
+
+		setComponentRefs: function(obj, component) {
+			obj.bdarea = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.bdareanodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.bdareanodes = [];
+		},
+
+		isnodevalid: function(nodeobj) {
+			return nodeobj.isBorder();
+		},
+
+		getSideObjByNodeObj: function(border) {
+			var borders = [
+				border.relbd(-1, -1),
+				border.relbd(-1, 1),
+				border.relbd(1, -1),
+				border.relbd(1, 1)
+			];
+			if (border.isvert) {
+				borders.push(border.relbd(0, -2));
+				borders.push(border.relbd(0, 2));
+			} else {
+				borders.push(border.relbd(-2, 0));
+				borders.push(border.relbd(2, 0));
+			}
+
+			return borders.filter(function(b) {
+				return !b.isnull;
+			});
+		}
+	},
 
 	Board: {
 		cols: 8,
 		rows: 8,
 
-		hasborder: 1
+		hasborder: 1,
+
+		addExtraInfo: function() {
+			this.bordergraph = this.addInfoList(this.klass.BorderGraph);
+		}
 	},
 
 	LineGraph: {
@@ -328,8 +371,8 @@
 			"checkBurstCount",
 			"checkRestingPosition",
 
-			// TODO check Wall network pierced more than once
-			// TODO check Wall network not pierced
+			"checkPierceMultiple",
+			"checkPierceNone",
 
 			"checkNoMoveCircle",
 			"checkDisconnectLine"
@@ -363,6 +406,35 @@
 			this.movementCheck(function(cell) {
 				return !cell.isStoppedAtWall();
 			}, "laWallStop");
+		},
+
+		pierceCheck: function(flag, code) {
+			var walls = this.board.bordergraph.components;
+			for (var id = 0; id < walls.length; id++) {
+				var wall = walls[id];
+				var count = wall.clist.filter(function(border) {
+					return border.isLine();
+				}).length;
+
+				if ((count > 0 && flag === 0) || (count <= 1 && flag > 0)) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				wall.clist.seterr(1);
+			}
+		},
+
+		checkPierceNone: function() {
+			this.pierceCheck(0, "bdPierceLt1");
+		},
+
+		checkPierceMultiple: function() {
+			this.pierceCheck(1, "bdPierceGt1");
 		},
 
 		checkCurveLine: function() {
