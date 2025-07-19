@@ -174,7 +174,7 @@
 		},
 
 		isStoppedAtWall: function() {
-			if (this.path === null || this.path.destination.isnull) {
+			if (!this.path || !this.path.destination) {
 				return false;
 			}
 			var borders = this.path.destination.adjborder;
@@ -325,14 +325,45 @@
 			"checkLineOverLetter",
 			"checkCurveLine",
 
-			// TODO check Burst count
+			"checkBurstCount",
+			"checkRestingPosition",
+
 			// TODO check Wall network pierced more than once
 			// TODO check Wall network not pierced
-			// TODO check object not stopped in front of wall
 
 			"checkNoMoveCircle",
 			"checkDisconnectLine"
 		],
+
+		movementCheck: function(func, code) {
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				if (!cell.isNum() || !cell.path || cell.path.destination === cell) {
+					continue;
+				}
+				if (!func(cell)) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				cell.path.clist.seterr(1);
+			}
+		},
+
+		checkBurstCount: function() {
+			this.movementCheck(function(cell) {
+				return cell.isValidNum() && cell.getBurstCount() !== cell.getNum();
+			}, "laLenNe");
+		},
+
+		checkRestingPosition: function() {
+			this.movementCheck(function(cell) {
+				return !cell.isStoppedAtWall();
+			}, "laWallStop");
+		},
 
 		checkCurveLine: function() {
 			this.checkAllArea(
