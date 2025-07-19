@@ -12,28 +12,15 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["number", "clear"],
-			play: ["line", "bgcolor", "bgcolor1", "bgcolor2", "clear", "completion"]
+			play: ["line", "peke", "clear", "completion"]
 		},
 
-		// TODO clean up all these background colors
-
-		mouseinput: function() {
-			switch (this.inputMode) {
-				case "completion":
-					if (this.mousestart) {
-						this.inputqcmp(1);
-					}
-					break;
-				default:
-					return this.common.mouseinput.call(this);
-			}
-		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
 					this.inputLine();
 				} else if (this.mouseend && this.notInputted()) {
-					this.inputlight();
+					this.inputqcmp();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -88,49 +75,19 @@
 			});
 		},
 
-		inputlight: function() {
+		inputqcmp: function() {
 			var cell = this.getcell();
 			if (cell.isnull) {
-				return;
-			}
-
-			if (this.inputdark(cell, 1)) {
-				return;
-			}
-
-			if (this.mouseend && this.notInputted()) {
-				this.mouseCell = this.board.emptycell;
-			}
-			this.inputBGcolor();
-		},
-		inputqcmp: function(val) {
-			var cell = this.getcell();
-			if (cell.isnull) {
-				return;
-			}
-
-			this.inputdark(cell, val, true);
-		},
-		inputdark: function(cell, val, multi) {
-			var cell = this.getcell();
-			if (cell.isnull || (cell === this.mouseCell && multi)) {
 				return false;
 			}
 
-			var targetcell = !this.puzzle.execConfig("dispmove") ? cell : cell.base,
-				distance = 0.6,
-				dx = this.inputPoint.bx - cell.bx /* ここはtargetcellではなくcell */,
-				dy = this.inputPoint.by - cell.by;
-			if (
-				targetcell.isNum() &&
-				(this.inputMode === "completion" ||
-					(targetcell.qnum === -2 && dx * dx + dy * dy < distance * distance))
-			) {
+			var targetcell = !this.puzzle.execConfig("dispmove") ? cell : cell.base;
+			if (targetcell.isNum()) {
 				if (this.inputData === null) {
-					this.inputData = targetcell.qcmp !== val ? 21 : 20;
+					this.inputData = targetcell.qcmp !== 1 ? 21 : 20;
 				}
 
-				targetcell.setQcmp(this.inputData === 21 ? val : 0);
+				targetcell.setQcmp(this.inputData === 21 ? 1 : 0);
 				cell.draw();
 				this.mouseCell = cell;
 				return true;
@@ -281,15 +238,12 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
-		bgcellcolor_func: "qsub2",
 		autocmp: "number",
 		hideHatena: true,
 
 		gridcolor_type: "LIGHT",
 
 		numbercolor_func: "move",
-		qsubcolor1: "rgb(224, 224, 255)",
-		qsubcolor2: "rgb(255, 255, 144)",
 
 		circlefillcolor_func: "qcmp",
 
@@ -307,6 +261,13 @@
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		getBorderColor: function(border) {
+			if (border.ques) {
+				return border.error === 2 ? this.errcolor1 : this.quescolor;
+			}
+			return null;
 		}
 	},
 
@@ -425,7 +386,7 @@
 					break;
 				}
 				this.board.border.setnoerr();
-				wall.clist.seterr(1);
+				wall.clist.seterr(2);
 			}
 		},
 
