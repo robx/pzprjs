@@ -13,7 +13,8 @@
 		"pentatouch",
 		"kissing",
 		"retroships",
-		"regional-poly"
+		"regional-poly",
+		"distopia"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -152,6 +153,12 @@
 				newdir = -1;
 			}
 			cell.setNum(newdir);
+		}
+	},
+	"MouseEvent@distopia#1": {
+		inputModes: {
+			edit: ["number", "clear", "completion"],
+			play: ["shade", "unshade", "clear", "completion"]
 		}
 	},
 
@@ -880,6 +887,18 @@
 		}
 	},
 
+	"Cell@distopia": {
+		minnum: 0,
+		maxnum: function() {
+			var a = this.board.rows - 1,
+				b = this.board.cols - 1;
+			return Math.max(a, b, 2 * Math.min(a, b));
+		},
+		allowShade: function() {
+			return this.puzzle.getConfig("pentopia_transparent") || this.qnum === -1;
+		}
+	},
+
 	"Cell@pentopia": {
 		numberAsObject: true,
 		maxnum: 15,
@@ -1167,6 +1186,8 @@
 				this.drawCrossMarks();
 			} else if (this.pid === "statuepark") {
 				this.drawCircles();
+			} else if (this.pid === "distopia") {
+				this.drawQuesNumbers();
 			} else if (this.pid === "pentopia") {
 				this.drawArrowCombinations();
 				this.drawHatenas();
@@ -1206,7 +1227,7 @@
 		}
 	},
 
-	"Graphic@pentopia": {
+	"Graphic@pentopia,distopia#1": {
 		enablebcolor: true,
 
 		shadecolor: "rgb(80, 80, 80)",
@@ -1217,8 +1238,9 @@
 				return cell.isShade() ? this.errbcolor1 : this.errcolor1;
 			}
 			return cell.isShade() ? "white" : this.quescolor;
-		},
-
+		}
+	},
+	"Graphic@pentopia": {
 		drawArrowCombinations: function() {
 			var g = this.vinc("cell_arrow");
 
@@ -1749,7 +1771,7 @@
 			this.encodePieceBank();
 		}
 	},
-	"Encode@pentopia,retroships": {
+	"Encode@pentopia,distopia,retroships": {
 		decodePzpr: function(type) {
 			this.puzzle.setConfig("pentopia_transparent", this.checkpflag("t"));
 			if (this.outbstr[0] !== "/") {
@@ -1873,7 +1895,7 @@
 		encodeConfig: function() {}
 	},
 
-	"FileIO@pentopia": {
+	"FileIO@pentopia,distopia": {
 		decodeConfig: function() {
 			this.decodeConfigFlag("t", "pentopia_transparent");
 		},
@@ -2052,7 +2074,7 @@
 		}
 	},
 
-	"AnsCheck@pentopia,battleship,retroships,pentatouch,regional-poly#1": {
+	"AnsCheck@pentopia,distopia,battleship,retroships,pentatouch,regional-poly#1": {
 		checkShadeDiagonal: function() {
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
@@ -2092,14 +2114,16 @@
 		}
 	},
 
-	"AnsCheck@pentopia": {
+	"AnsCheck@pentopia,distopia#1": {
 		checklist: [
 			"checkShadeOnArrow",
 			"checkBankPiecesAvailable",
 			"checkShadeDiagonal",
-			"checkShadeDirCloser",
-			"checkShadeDirUnequal",
-			"checkShadeDirExist",
+			"checkShadeDirCloser@pentopia",
+			"checkShadeDirUnequal@pentopia",
+			"checkShadeDirExist@pentopia",
+			"checkNumberEqual@distopia",
+			"checkNumberExist@distopia",
 			"checkBankPiecesInvalid+"
 		],
 
@@ -2121,7 +2145,10 @@
 
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell0 = bd.cell[c];
-				if (cell0.qnum <= 0) {
+				if (this.pid === "pentopia" && cell0.qnum <= 0) {
+					continue;
+				}
+				if (this.pid === "distopia" && !cell0.isValidNum()) {
 					continue;
 				}
 				var row = [cell0, -1, -1, -1, -1];
@@ -2143,7 +2170,9 @@
 			}
 
 			return (this._info.shadeDirs = ret);
-		},
+		}
+	},
+	"AnsCheck@pentopia": {
 		checkShadeDirExist: function() {
 			var clues = this.getShadeDirs();
 			for (var i in clues) {
@@ -2232,6 +2261,57 @@
 							addr.getc().seterr(1);
 						}
 					}
+				}
+			}
+		}
+	},
+	"AnsCheck@distopia": {
+		checkNumberEqual: function() {
+			var clues = this.getShadeDirs();
+			for (var i in clues) {
+				var dist = this.board.cols * this.board.rows;
+				var count = 0;
+
+				for (var dir = 1; dir <= 4; dir++) {
+					var d = clues[i][dir];
+					if (d !== -1 && d < dist) {
+						count = 1;
+						dist = d;
+					} else if (d === dist) {
+						count++;
+					}
+				}
+
+				if (count > 0 && clues[i][0].qnum !== dist * count) {
+					this.failcode.add("arDistance");
+					if (this.checkOnly) {
+						return;
+					}
+					clues[i][0].seterr(1);
+				}
+			}
+		},
+
+		checkNumberExist: function() {
+			var clues = this.getShadeDirs();
+			for (var i in clues) {
+				if (clues[i][0].qnum <= 0) {
+					continue;
+				}
+
+				var found = false;
+				for (var dir = 1; dir <= 4 && !found; dir++) {
+					if (clues[i][dir] !== -1) {
+						found = true;
+					}
+				}
+
+				if (!found) {
+					this.failcode.add("arNoShade");
+					if (this.checkOnly) {
+						return;
+					}
+					clues[i][0].seterr(1);
 				}
 			}
 		}

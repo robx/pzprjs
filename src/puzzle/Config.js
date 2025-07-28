@@ -485,7 +485,7 @@
 					exec = pid === "balloon";
 					break;
 				case "pentopia_transparent":
-					exec = pid === "pentopia";
+					exec = pid === "pentopia" || pid === "distopia";
 					break;
 				case "koburin_minesweeper":
 					exec = pid === "koburin";
