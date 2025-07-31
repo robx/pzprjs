@@ -1486,6 +1486,7 @@
 		checklist: [
 			"checkAdjacentDiffNumber",
 			"checkNumberCounts",
+			"checkNumberMissing",
 			"checkNumberSeparated",
 			"checkNoNumCell+"
 		],
@@ -1518,7 +1519,14 @@
 			}
 		},
 
+		checkNumberMissing: function() {
+			this.genericCheckNumber(true, "nmNoSequence");
+		},
 		checkNumberCounts: function() {
+			this.genericCheckNumber(false, "nmOrder");
+		},
+
+		genericCheckNumber: function(flag, code) {
 			var rooms = this.board.roommgr.components;
 			for (var r = 0; r < rooms.length; r++) {
 				rooms[r].counts = {};
@@ -1536,7 +1544,8 @@
 				b[num].add(cell);
 			}
 			for (var r = 0; r < rooms.length; r++) {
-				var b = rooms[r].counts;
+				var room = rooms[r];
+				var b = room.counts;
 				for (var key in b) {
 					if (key === "1") {
 						continue;
@@ -1544,12 +1553,17 @@
 
 					var numblk = b[key];
 					var prevlist = b[+key - 1];
+
+					if ((flag && prevlist) || (!flag && !prevlist)) {
+						continue;
+					}
+
 					if (!prevlist || prevlist.length <= numblk.length) {
-						this.failcode.add("nmOrder");
+						this.failcode.add(code);
 						if (this.checkOnly) {
 							return;
 						}
-						numblk.seterr(1);
+						(flag ? room.clist : numblk).seterr(1);
 					}
 				}
 			}
