@@ -897,5 +897,9 @@
     "bkSameShape.narrow": "同じマークの入った2つの領域が同じ形をしています。",
     "nmSame2x2.narrow": "2×2の白マスが同じマークの入った領域にあります。",
     "csGtN.isowatari": "黒マスのカタマリの大きさが指定された数字より大きいです。",
-    "csLtN.isowatari": "黒マスのカタマリの大きさが示された数字より小さいです。"
+    "csLtN.isowatari": "黒マスのカタマリの大きさが示された数字より小さいです。",
+    "lcIsolate.uturns": "2つの灰色の丸が線で繋がれていません。",
+    "lcOnNum.uturns": "線が灰色の丸を通り過ぎています。",
+    "lcNotUTurns.uturns": "線が2つの丸の間で同じ方向に2回曲がっていません。",
+    "lnOnWhite.uturns": "線が白丸を経由地点としていません。"
 }
