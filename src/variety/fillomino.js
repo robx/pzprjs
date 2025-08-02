@@ -485,6 +485,7 @@
 		}
 	},
 	"Cell@numcity": {
+		disInputHatena: true,
 		maxnum: function() {
 			var size = this.room.clist.length;
 			return Math.floor(Math.sqrt(size / 2) * 2);
@@ -608,6 +609,10 @@
 				border.updateGhostBorder();
 			});
 		}
+	},
+	"Board@numcity": {
+		rows: 7,
+		cols: 7
 	},
 
 	"AreaRoomGraph@numcity": {
