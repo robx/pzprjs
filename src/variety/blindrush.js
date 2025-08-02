@@ -267,6 +267,13 @@
 			this.drawTarget();
 		},
 
+		getLineColor: function(border) {
+			if (border.isLine() && border.error === 2) {
+				return this.noerrcolor;
+			}
+			return this.common.getLineColor.call(this, border);
+		},
+
 		getBorderColor: function(border) {
 			if (border.ques) {
 				return border.error === 2 ? this.errcolor1 : this.quescolor;
