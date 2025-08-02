@@ -176,6 +176,7 @@ function toBGimage(pid) {
 		"nonogram",
 		"norinuri",
 		"nothing",
+		"numcity",
 		"nurimisaki",
 		"nuritwin",
 		"nuriuzu",
