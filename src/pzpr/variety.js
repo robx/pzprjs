@@ -301,6 +301,7 @@
 			norinuri: [0, 0, "海苔ぬり", "Norinuri", "nurikabe"],
 			nothing: [0, 0, "オールｏｒナッシング", "All or Nothing", "country"],
 			nothree: [0, 0, "ノースリー", "No Three"],
+			numcity: [0, 0, "ナンバーシティ一", "Number City", "fillomino"],
 			numlin: [
 				0,
 				1,
