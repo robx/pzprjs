@@ -488,7 +488,7 @@
 		disInputHatena: true,
 		maxnum: function() {
 			var size = this.room.clist.length;
-			return Math.floor(Math.sqrt(size / 2) * 2);
+			return Math.floor(Math.sqrt(size * 2 + 0.25) - 0.5);
 		}
 	},
 	Border: {
