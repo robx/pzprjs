@@ -130,6 +130,7 @@
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
 			chainedb: [0, 0, "チェンブロ", "Chained Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
+			cityspace: [1, 0, "City Space", "City Space", "kurodoko"],
 			cocktail: [0, 0, "カクテルランプ", "Cocktail Lamp", "shimaguni"],
 			coffeemilk: [0, 0, "コーヒー牛乳", "Coffee Milk", "wblink"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
