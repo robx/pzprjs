@@ -231,7 +231,7 @@
 	"AreaShadeGraph@cave": {
 		enabled: true
 	},
-	
+
 	"AreaShadeGraph@cityspace": {
 		enabled: true
 	},
@@ -322,8 +322,6 @@
 			this.drawTarget();
 		}
 	},
-
-	
 
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
@@ -479,7 +477,6 @@
 				"cs1x1"
 			);
 		}
-
 	},
 
 	"AnsCheck@nurimisaki": {

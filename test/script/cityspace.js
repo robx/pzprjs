@@ -31,7 +31,8 @@ ui.debug.addDebugData("cityspace", {
 
 		[
 			null,
-			"pzprv3/cityspace/6/6/8 . . . 3 . /. . . . . . /. . . . . . /. 2 . . . 3 /. . . . . . /. . . . . . /+ + + # + # /+ # + # + # /+ # + + + + /+ + # # # + /+ # + + + + /+ # + # # # /"		]
+			"pzprv3/cityspace/6/6/8 . . . 3 . /. . . . . . /. . . . . . /. 2 . . . 3 /. . . . . . /. . . . . . /+ + + # + # /+ # + # + # /+ # + + + + /+ + # # # + /+ # + + + + /+ # + # # # /"
+		]
 	],
 	inputs: [
 		/* 回答入力はslitherと同じなので省略 */
@@ -78,7 +79,8 @@ ui.debug.addDebugData("cityspace", {
 				"mouse,rightx3, 7,3",
 				"mouse,rightx4, 9,3"
 			],
-			result: "pzprv3/cityspace/2/5/- 2 3 4 5 /6 . 6 5 4 /. . . . . /. . . . . /"
+			result:
+				"pzprv3/cityspace/2/5/- 2 3 4 5 /6 . 6 5 4 /. . . . . /. . . . . /"
 		}
 	]
 });
