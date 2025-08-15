@@ -415,7 +415,7 @@
     "crNoSegment.tajmahal": "A clue is not inside a square.",
     "crShadeGt.creek": "The number of shaded cells overlapping a number is too high.",
     "crShadeLt.creek": "The number of shaded cells overlapping a number is too low.",
-    "cs1x1.cityspace": "A rectangle doesn't have area at least 2.",
+    "cs1x1.cityspace": "There is an isolated shaded cell.",
     "cs2x2.bosnianroad": "The loop goes back on itself.",
     "cs2x2.snake": "The snake loops back on itself.",
     "cs2x2": "There is a 2x2 block of shaded cells.",
