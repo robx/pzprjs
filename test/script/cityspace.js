@@ -35,7 +35,6 @@ ui.debug.addDebugData("cityspace", {
 		]
 	],
 	inputs: [
-		/* 回答入力はslitherと同じなので省略 */
 		{ input: ["newboard,5,1", "editmode"] },
 		{
 			input: [
