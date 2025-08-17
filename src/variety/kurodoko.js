@@ -60,13 +60,7 @@
 		},
 		autoplay_func: "cell"
 	},
-	"MouseEvent@cave": {
-		inputModes: {
-			edit: ["number", "clear", "info-ublk"],
-			play: ["shade", "unshade", "peke", "info-ublk"]
-		}
-	},
-	"MouseEvent@cityspace": {
+	"MouseEvent@cave,cityspace": {
 		inputModes: {
 			edit: ["number", "clear", "info-ublk"],
 			play: ["shade", "unshade", "peke", "info-ublk"]
@@ -228,11 +222,7 @@
 		enabled: true
 	},
 
-	"AreaShadeGraph@cave": {
-		enabled: true
-	},
-
-	"AreaShadeGraph@cityspace": {
+	"AreaShadeGraph@cave,cityspace": {
 		enabled: true
 	},
 
