@@ -11,7 +11,6 @@ ui.debug.addDebugData("cityspace", {
 			"cuLoop",
 			"pzprv3/cityspace/6/6/8 . . . 3 . /. . . . . . /. . . . . . /. 2 . . . 3 /. . . . . . /. . . . . . /+ + + # + # /+ # + # + # /+ # + + + + /+ + # # # + /+ # + + + + /+ + + # # # /"
 		],
-		// 2x2 unshaded being loop
 		[
 			"cuLoop",
 			"pzprv3/cityspace/6/6/8 . . . 3 . /. . . . . . /. . . . . . /. 2 . . . 3 /. . . . . . /. . . . . . /+ + + # + # /+ # + # + # /+ # + + + + /+ + # # # + /+ # + + + + /+ # + + # # /"
@@ -35,7 +34,6 @@ ui.debug.addDebugData("cityspace", {
 		]
 	],
 	inputs: [
-		/* 回答入力はslitherと同じなので省略 */
 		{ input: ["newboard,5,1", "editmode"] },
 		{
 			input: [
