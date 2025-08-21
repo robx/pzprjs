@@ -171,7 +171,7 @@
 			component.number = filled;
 			component.numcnt = filled === -1 ? circlecnt : nums[filled] + circlecnt;
 			component.numkind = numkind;
-		} // If we don't check if filled is -1, nums[-1] return NaN which makes the checkNoEmptyArea (numcnt != 0) yield true if a room only has circles
+		} 
 	},
 
 	//---------------------------------------------------------
