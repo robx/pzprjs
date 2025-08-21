@@ -171,7 +171,7 @@
 			component.number = filled;
 			component.numcnt = filled === -1 ? circlecnt : nums[filled] + circlecnt;
 			component.numkind = numkind;
-		} 
+		}
 	},
 
 	//---------------------------------------------------------
