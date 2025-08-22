@@ -153,13 +153,12 @@
 			var nums = [];
 			var numkind = 0,
 				filled = -1,
-				circlecnt = 0,
-				questionmarkcnt = 0;
+				othercnt = 0;
 			for (var i = 0; i < clist.length; i++) {
 				var num = clist[i].getNum();
 				if (num !== -1) {
 					if (num === -2) {
-						questionmarkcnt++;
+						othercnt++;
 					} else if (isNaN(nums[num])) {
 						numkind++;
 						filled = num;
@@ -168,14 +167,11 @@
 						nums[num]++;
 					}
 				} else if (clist[i].qsub === 1) {
-					circlecnt++;
+					othercnt++;
 				}
 			}
 			component.number = filled;
-			component.numcnt =
-				filled === -1
-					? circlecnt + questionmarkcnt
-					: nums[filled] + circlecnt + questionmarkcnt;
+			component.numcnt = filled === -1 ? othercnt : nums[filled] + othercnt;
 			component.numkind = numkind;
 		}
 	},
