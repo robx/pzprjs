@@ -35,7 +35,47 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
-		numberRemainsUnshaded: true
+		numberRemainsUnshaded: true,
+
+		isCmp: function() {
+			if (!(this.qnum === -2 || this.isNum())) {
+				return false;
+			}
+			if (this.qcmp === 1) {
+				return true;
+			}
+			if (!this.puzzle.execConfig("autocmp")) {
+				return false;
+			}
+			return this.checkComplete();
+		},
+
+		checkComplete: function() {
+			if (!this.isNum()) {
+				return true;
+			}
+
+			var cnt = 0,
+				arealist = [],
+				list = this.getdir4clist();
+			for (var i = 0; i < list.length; i++) {
+				var area = list[i][0].sblk;
+				if (area !== null) {
+					for (var j = 0; j < arealist.length; j++) {
+						if (arealist[j] === area) {
+							area = null;
+							break;
+						}
+					}
+					if (area !== null) {
+						cnt += area.clist.length;
+						arealist.push(area);
+					}
+				}
+			}
+
+			return this.isValidNum() ? this.qnum === cnt : cnt > 0;
+		}
 	},
 
 	AreaShadeGraph: {
@@ -48,6 +88,8 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
+		autocmp: "number",
+
 		hideHatena: true,
 
 		fontsizeratio: 0.65 /* 丸数字 */,
@@ -83,7 +125,12 @@
 				var cell = clist[i];
 				g.vid = "c_sq_" + cell.id;
 				if (cell.qnum !== -1) {
-					g.fillStyle = cell.error === 1 ? this.errbcolor1 : "white";
+					g.fillStyle =
+						cell.error === 1
+							? this.errbcolor1
+							: cell.isCmp()
+							? this.qcmpcolor
+							: "white";
 					g.shapeRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
 				} else {
 					g.vhide();
