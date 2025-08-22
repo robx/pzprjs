@@ -30,7 +30,7 @@ ui.debug.addDebugData("nanro", {
 		],
 		[
 			null,
-			"pzprv3/nanro/1/4/2/0 0 1 1 /2 . . 2 /. + + . /",
+			"pzprv3/nanro/1/4/2/0 0 1 1 /2 - - . /. . . . /",
 			{ skiprules: true }
 		],
 		[
