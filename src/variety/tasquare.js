@@ -97,6 +97,19 @@
 		qanscolor: "black",
 		numbercolor_func: "qnum",
 
+		setRange: function(x1, y1, x2, y2) {
+			var puzzle = this.puzzle,
+				bd = puzzle.board;
+			if (puzzle.execConfig("autocmp")) {
+				x1 = bd.minbx - 2;
+				y1 = bd.minby - 2;
+				x2 = bd.maxbx + 2;
+				y2 = bd.maxby + 2;
+			}
+
+			this.common.setRange.call(this, x1, y1, x2, y2);
+		},
+
 		paint: function() {
 			this.drawBGCells();
 			this.drawShadedCells();
