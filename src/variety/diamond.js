@@ -141,8 +141,8 @@
 		enabled: true,
 		pointgroup: "cross",
 		relation: {
-			"cross.qans": "etc",
-			"cell.qnum": "etc"
+			"cross.qans": "other",
+			"cell.qnum": "other"
 		},
 		setComponentRefs: function(obj, component) {
 			obj.dblk = component;
@@ -170,6 +170,32 @@
 				return cell.isNum();
 			});
 		},
+		isedgevalidbynodeobj: function(nodeobj1, nodeobj2) {
+			if (nodeobj1.qans === 1 || nodeobj2.qans === 1) {
+				return true;
+			} else if (nodeobj1.bx === nodeobj2.bx) {
+				var c1 = this.board.getc(
+					nodeobj1.bx - 1,
+					(nodeobj1.by + nodeobj2.by) >> 1
+				);
+				var c2 = this.board.getc(
+					nodeobj1.bx + 1,
+					(nodeobj1.by + nodeobj2.by) >> 1
+				);
+				return c1.isNum() || c2.isNum();
+			} else if (nodeobj1.by === nodeobj2.by) {
+				var c1 = this.board.getc(
+					(nodeobj1.bx + nodeobj2.bx) >> 1,
+					nodeobj1.by - 1
+				);
+				var c2 = this.board.getc(
+					(nodeobj1.bx + nodeobj2.bx) >> 1,
+					nodeobj1.by + 1
+				);
+				return c1.isNum() || c2.isNum();
+			}
+			return false;
+		},
 		getSideObjByNodeObj: function(cross) {
 			return new this.klass.CrossList([
 				cross.relcross(0, -2),
@@ -182,6 +208,7 @@
 		},
 		modifyOtherInfo: function(obj, relation) {
 			if (obj.group === "cross") {
+				this.setEdgeByNodeObj(obj);
 				var crosses = this.getSideObjByNodeObj(obj);
 				for (var i = 0; i < crosses.length; i++) {
 					this.setEdgeByNodeObj(crosses[i]);
