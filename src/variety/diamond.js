@@ -8,8 +8,8 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["number", "clear"],
-			play: ["pin", "peke", "clear"]
+			edit: ["number", "clear", "info-blk"],
+			play: ["pin", "peke", "clear", "info-blk"]
 		},
 
 		mouseinput_auto: function() {
@@ -22,6 +22,24 @@
 			} else if (this.puzzle.editmode) {
 				this.inputqnum();
 			}
+		},
+
+		dispInfoBlk: function() {
+			var cell = this.getcell();
+			var crosses = cell.dotCrosses();
+			var cross = cell.isNum()
+				? crosses[0]
+				: crosses.filter(function(c) {
+						return c.qans === 1;
+				  })[0];
+
+			this.mousereset();
+			if (!cross || !cross.dblk) {
+				return;
+			}
+			cross.dblk.clist.setinfo(1);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
 		},
 
 		mouseinput_other: function() {
@@ -243,6 +261,23 @@
 			this.drawTarget();
 		},
 
+		getQuesCellColor: function(cell) {
+			if (cell.qnum === -1) {
+				return null;
+			}
+			var err = cell.error || cell.qinfo;
+			if (!err) {
+				var cross = cell.dotCrosses().filter(function(c) {
+					return c.error || c.qinfo;
+				})[0];
+				err = cross ? cross.error || cross.qinfo : 0;
+			}
+			if (err === 1) {
+				return this.errcolor1;
+			}
+			return this.quescolor;
+		},
+
 		getQuesNumberColor: function(cell) {
 			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
 		},
@@ -295,9 +330,10 @@
 			if (!dot.qans) {
 				return this.pekecolor;
 			}
-			return dot.error === 1
+			var err = dot.error || dot.qinfo;
+			return err === 1
 				? this.errcolor1
-				: dot.error === -1
+				: err === -1
 				? this.noerrcolor
 				: this.qanscolor;
 		}
@@ -327,7 +363,16 @@
 		}
 	},
 	AnsCheck: {
-		checklist: ["checkOverlap", "checkDir4DiamondOver", "checkDir4DiamondLess"],
+		checklist: [
+			"checkOverlap",
+			"checkDir4DiamondOver",
+			"checkDir4DiamondLess",
+			"checkDiamondConnect+"
+		],
+
+		checkDiamondConnect: function() {
+			this.checkOneArea(this.board.diamondgraph, "lnPlLoop");
+		},
 
 		checkOverlap: function() {
 			for (var c = 0; c < this.board.cross.length; c++) {
