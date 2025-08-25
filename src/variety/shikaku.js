@@ -81,9 +81,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen();
 		}
 	},
 	//---------------------------------------------------------
@@ -100,10 +97,6 @@
 		kanpenOpen: function() {
 			this.decodeCellQnum_kanpen();
 			this.decodeAnsSquareRoom();
-		},
-		kanpenSave: function() {
-			this.encodeCellQnum_kanpen();
-			this.encodeAnsSquareRoom();
 		},
 
 		decodeAnsSquareRoom: function() {
@@ -144,10 +137,6 @@
 			this.decodeCellQnum_shikaku_XMLBoard();
 			this.decodeAnsSquareRoom_XMLAnswer();
 		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_shikaku_XMLBoard();
-			this.encodeAnsSquareRoom_XMLAnswer();
-		},
 
 		decodeCellQnum_shikaku_XMLBoard: function() {
 			this.decodeCellXMLBoard(function(cell, val) {
@@ -156,17 +145,6 @@
 				} else if (val === -1) {
 					cell.qnum = -2;
 				}
-			});
-		},
-		encodeCellQnum_shikaku_XMLBoard: function() {
-			this.encodeCellXMLBoard(function(cell) {
-				var val = 0;
-				if (cell.qnum >= 1) {
-					val = cell.qnum;
-				} else if (cell.qnum === -2) {
-					val = -1;
-				}
-				return val;
 			});
 		},
 
@@ -188,23 +166,6 @@
 			}
 			this.rdata2Border(false, rdata);
 			bd.roommgr.rebuild();
-		},
-		encodeAnsSquareRoom_XMLAnswer: function() {
-			var boardnode = this.xmldoc.querySelector("answer");
-			var bd = this.board;
-			bd.roommgr.rebuild();
-			var rooms = bd.roommgr.components;
-			for (var id = 0; id < rooms.length; id++) {
-				var d = rooms[id].clist.getRectSize();
-				boardnode.appendChild(
-					this.createXMLNode("area", {
-						r0: (d.y1 >> 1) + 1,
-						c0: (d.x1 >> 1) + 1,
-						r1: (d.y2 >> 1) + 1,
-						c1: (d.x2 >> 1) + 1
-					})
-				);
-			}
 		}
 	},
 	//---------------------------------------------------------
