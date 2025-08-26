@@ -56,5 +56,25 @@ ui.debug.addDebugData("blindrush", {
 			"pzprv3/blindrush/5/5/- . . . . /. . . . . /. . . 1 . /. . . . . /. 2 . . . /0 0 0 0 /0 1 0 0 /0 1 0 0 /0 0 0 1 /0 1 0 1 /1 1 0 0 0 /0 0 0 0 0 /0 0 0 1 0 /0 1 0 0 0 /c . . . . /. . . . . /. . . . . /. . . . . /. . . . . /1 1 1 1 /0 0 0 0 /1 1 1 0 /0 0 0 0 /0 1 1 1 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: [
+				"newboard,5,1",
+				"editmode",
+				"cursor,1,1",
+				"mouse,left,1,1",
+				"mouse,left,2,0,2,2"
+			],
+			result: "pzprv3/blindrush/1/5/- . . . . /1 0 0 0 /. . . . . /0 0 0 0 /"
+		},
+		{
+			input: [
+				"playmode",
+				"mouse,left,1,1,5,1",
+				"mouse,left,5,1",
+				"mouse,left,6,1"
+			],
+			result: "pzprv3/blindrush/1/5/- . . . . /1 0 0 0 /c . . . . /1 1 -1 0 /"
+		}
+	]
 });

@@ -30,50 +30,6 @@
 			}
 		},
 
-		inputLine: function() {
-			this.common.inputLine.call(this);
-
-			/* "丸数字を移動表示しない"場合の背景色描画準備 */
-			if (
-				this.puzzle.execConfig("autocmp") &&
-				!this.puzzle.execConfig("dispmove") &&
-				!this.notInputted()
-			) {
-				this.inputautodark();
-			}
-		},
-		inputautodark: function() {
-			/* 最後に入力した線を取得する */
-			var opemgr = this.puzzle.opemgr,
-				lastope = opemgr.lastope;
-			if (lastope.group !== "border" || lastope.property !== "line") {
-				return;
-			}
-			var border = this.board.getb(lastope.bx, lastope.by);
-
-			/* 線を引いた/消した箇所にある領域を取得 */
-			var clist = new this.klass.CellList();
-			Array.prototype.push.apply(clist, border.sideobj);
-			clist = clist.notnull().filter(function(cell) {
-				return cell.path !== null || cell.isNum();
-			});
-
-			/* 改めて描画対象となるセルを取得して再描画 */
-			clist.each(function(cell) {
-				if (cell.path === null) {
-					if (cell.isNum()) {
-						cell.draw();
-					}
-				} else {
-					cell.path.clist.each(function(cell) {
-						if (cell.isNum()) {
-							cell.draw();
-						}
-					});
-				}
-			});
-		},
-
 		inputqcmp: function() {
 			var cell = this.getcell();
 			if (cell.isnull) {
