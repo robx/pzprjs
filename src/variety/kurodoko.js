@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kurodoko", "nurimisaki", "cave", "teri"], {
+})(["kurodoko", "nurimisaki", "cave", "teri", "cityspace"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -60,7 +60,7 @@
 		},
 		autoplay_func: "cell"
 	},
-	"MouseEvent@cave": {
+	"MouseEvent@cave,cityspace": {
 		inputModes: {
 			edit: ["number", "clear", "info-ublk"],
 			play: ["shade", "unshade", "peke", "info-ublk"]
@@ -222,7 +222,7 @@
 		enabled: true
 	},
 
-	"AreaShadeGraph@cave": {
+	"AreaShadeGraph@cave,cityspace": {
 		enabled: true
 	},
 
@@ -266,7 +266,7 @@
 		}
 	},
 
-	"Graphic@cave": {
+	"Graphic@cave,cityspace": {
 		hideHatena: false,
 
 		gridcolor_type: "DLIGHT",
@@ -396,11 +396,14 @@
 			"check2x2ShadeCell@nurimisaki",
 			"checkAdjacentShadeCell@kurodoko,teri",
 			"checkConnectUnshadeRB@kurodoko,teri",
-			"checkConnectUnshade@nurimisaki,cave",
+			"checkConnectUnshade@nurimisaki,cave,cityspace",
 			"checkConnectShadeOutside@cave",
 			"checkViewOfNumber",
 			"check2x2UnshadeCell@nurimisaki",
 			"checkCirclePromontory@nurimisaki",
+			"checkUnshadeLoop@cityspace",
+			"checkShadeRect@cityspace",
+			"check1x1ShadeCell@cityspace",
 			"checkNonCircleNotPromontory@nurimisaki",
 			"doneShadingDecided"
 		],
@@ -425,6 +428,44 @@
 				cell.seterr(1);
 				clist.seterr(2);
 			}
+		}
+	},
+
+	"AnsCheck@cityspace": {
+		checkUnshadeLoop: function() {
+			var bd = this.board,
+				ublks = bd.ublkmgr.components;
+			for (var r = 0; r < ublks.length; r++) {
+				if (ublks[r].circuits === 0) {
+					continue;
+				}
+
+				this.failcode.add("cuLoop");
+				if (this.checkOnly) {
+					return;
+				}
+				this.searchloop(ublks[r], bd.ublkmgr).seterr(1);
+			}
+		},
+
+		checkShadeRect: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return w === 1 || h === 1;
+				},
+				"csWidthGt1"
+			);
+		},
+
+		check1x1ShadeCell: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a >= 2;
+				},
+				"cs1x1"
+			);
 		}
 	},
 

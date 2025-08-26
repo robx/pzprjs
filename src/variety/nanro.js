@@ -153,11 +153,13 @@
 			var nums = [];
 			var numkind = 0,
 				filled = -1,
-				circlecnt = 0;
+				othercnt = 0;
 			for (var i = 0; i < clist.length; i++) {
 				var num = clist[i].getNum();
 				if (num !== -1) {
-					if (isNaN(nums[num])) {
+					if (num === -2) {
+						othercnt++;
+					} else if (isNaN(nums[num])) {
 						numkind++;
 						filled = num;
 						nums[num] = 1;
@@ -165,11 +167,11 @@
 						nums[num]++;
 					}
 				} else if (clist[i].qsub === 1) {
-					circlecnt++;
+					othercnt++;
 				}
 			}
 			component.number = filled;
-			component.numcnt = nums[filled] + circlecnt;
+			component.numcnt = filled === -1 ? othercnt : nums[filled] + othercnt;
 			component.numkind = numkind;
 		}
 	},
@@ -243,15 +245,32 @@
 			"checkNoEmptyArea"
 		],
 
+		getNanroNum: function(cell) {
+			if (!cell.isValidNum()) {
+				if (cell.room.numkind === 0) {
+					return cell.room.numcnt;
+				}
+				if (cell.room.numkind === 1) {
+					return cell.room.number;
+				}
+			}
+
+			return cell.getNum();
+		},
 		check2x2NumberCell: function() {
 			this.check2x2Block(function(cell) {
-				return cell.isNum();
+				return cell.isNumberObj();
 			}, "nm2x2");
 		},
 		checkSideAreaNumber: function() {
+			var ansCheck = this;
 			this.checkSideAreaCell(
 				function(cell1, cell2) {
-					return cell1.sameNumber(cell2);
+					return (
+						cell1.isNumberObj() &&
+						cell2.isNumberObj() &&
+						ansCheck.getNanroNum(cell1) === ansCheck.getNanroNum(cell2)
+					);
 				},
 				false,
 				"cbSameNum"
@@ -274,7 +293,7 @@
 		},
 		checkNoEmptyArea: function() {
 			this.checkAllErrorRoom(function(area) {
-				return area.numkind !== 0;
+				return area.numcnt !== 0;
 			}, "bkNoNum");
 		},
 		checkAllErrorRoom: function(evalfunc, code) {

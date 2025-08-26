@@ -131,6 +131,7 @@
 			cbblock: [0, 0, "コンビブロック", "Combi Block"],
 			chainedb: [0, 0, "チェンブロ", "Chained Block"],
 			chocona: [0, 0, "チョコナ", "Chocona", "shimaguni"],
+			cityspace: [1, 0, "City Space", "City Space", "kurodoko"],
 			cocktail: [0, 0, "カクテルランプ", "Cocktail Lamp", "shimaguni"],
 			coffeemilk: [0, 0, "コーヒー牛乳", "Coffee Milk", "wblink"],
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
@@ -144,6 +145,7 @@
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
 			detour: [0, 0, "Detour", "Detour", "country"],
 			disloop: [0, 0, "Disorderly Loop", "Disorderly Loop", "tapaloop"],
+			distopia: [0, 0, "Distopia", "Distopia", "statuepark"],
 			dominion: [0, 0, "ドミニオン", "Dominion"],
 			doppelblock: [0, 0, "Doppelblock", "Doppelblock", "doppelblock"],
 			dosufuwa: [0, 0, "ドッスンフワリ", "Dosun-Fuwari"],
@@ -301,6 +303,7 @@
 			norinuri: [0, 0, "海苔ぬり", "Norinuri", "nurikabe"],
 			nothing: [0, 0, "オールｏｒナッシング", "All or Nothing", "country"],
 			nothree: [0, 0, "ノースリー", "No Three"],
+			numcity: [0, 0, "ナンバーシティ一", "Number City", "fillomino"],
 			numlin: [
 				0,
 				1,
