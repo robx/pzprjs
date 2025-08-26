@@ -18,11 +18,26 @@
 				if (this.mousestart || this.mousemove) {
 					this.inputcell();
 				}
+				if (this.mouseend && this.notInputted()) {
+					this.inputqcmp();
+				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
 					this.inputqnum();
 				}
 			}
+		},
+
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell.noNum()) {
+				return;
+			}
+
+			cell.setQcmp(+!cell.qcmp);
+			cell.draw();
+
+			this.mousereset();
 		}
 	},
 
@@ -56,21 +71,16 @@
 			}
 
 			var cnt = 0,
-				arealist = [],
 				list = this.getdir4clist();
 			for (var i = 0; i < list.length; i++) {
-				var area = list[i][0].sblk;
-				if (area !== null) {
-					for (var j = 0; j < arealist.length; j++) {
-						if (arealist[j] === area) {
-							area = null;
-							break;
-						}
+				var block = list[i][0].sblk;
+				if (block !== null) {
+					var shape = block.clist.getRectSize();
+					var area = block.clist.length;
+					if (area !== shape.cols * shape.rows || shape.cols !== shape.rows) {
+						return false;
 					}
-					if (area !== null) {
-						cnt += area.clist.length;
-						arealist.push(area);
-					}
+					cnt += area;
 				}
 			}
 
