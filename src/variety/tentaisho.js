@@ -254,6 +254,7 @@
 
 			var cell = this.validcell();
 			if (cell) {
+				this.puzzle.board.roommgr.rebuild();
 				this.puzzle.board.roommgr.setExtraData(cell.room);
 			}
 		},
