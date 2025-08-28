@@ -76,11 +76,13 @@
 				var block = list[i][0].sblk;
 				if (block !== null) {
 					var shape = block.clist.getRectSize();
-					var area = block.clist.length;
-					if (area !== shape.cols * shape.rows || shape.cols !== shape.rows) {
+					if (
+						shape.cnt !== shape.cols * shape.rows ||
+						shape.cols !== shape.rows
+					) {
 						return false;
 					}
-					cnt += area;
+					cnt += shape.cnt;
 				}
 			}
 
