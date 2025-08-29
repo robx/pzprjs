@@ -231,6 +231,7 @@ ui.keypopup = {
 		wataridori: [10, 0],
 		kurarin: [133, 0],
 		narrow: [134, 0],
+		blindrush: [10, 0],
 		isowatari: [10, 0],
 		uturns: [133, 0],
 		distopia: [10, 0],
@@ -485,29 +486,8 @@ ui.keypopup = {
 				text: "■",
 				color: "rgb(204,204,204)"
 			};
-		} else if (
-			pid === "kurotto" ||
-			pid === "bonsan" ||
-			pid === "satogaeri" ||
-			pid === "heyabon" ||
-			pid === "yosenabe" ||
-			pid === "herugolf" ||
-			pid === "kazunori" ||
-			pid === "nurimisaki" ||
-			pid === "amibo" ||
-			pid === "firefly" ||
-			pid === "shikaku" ||
-			pid === "aho" ||
-			pid === "bosanowa" ||
-			pid === "portal" ||
-			pid === "minarism" ||
-			pid === "mintonette" ||
-			pid === "onsen" ||
-			pid === "wataridori"
-		) {
-			cap = "○";
-		} else if (!ui.puzzle.painter.hideHatena) {
-			cap = "?";
+		} else {
+			cap = ui.puzzle.painter.hideHatena ? "○" : "?";
 		}
 		if (cap !== null) {
 			itemlist.push(["-", cap]);
