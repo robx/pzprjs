@@ -1211,6 +1211,8 @@
 		}
 	},
 	"FailCode@brownies": {
+		nmNoMove: "nmNoMove.bonsan",
+		laIsolate: "laIsolate.bonsan",
 		nmConnected: "nmConnected.bonsan",
 		laOnNum: "laOnNum.bonsan"
 	}
