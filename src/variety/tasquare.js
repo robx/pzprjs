@@ -18,11 +18,26 @@
 				if (this.mousestart || this.mousemove) {
 					this.inputcell();
 				}
+				if (this.mouseend && this.notInputted()) {
+					this.inputqcmp();
+				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
 					this.inputqnum();
 				}
 			}
+		},
+
+		inputqcmp: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell.noNum()) {
+				return;
+			}
+
+			cell.setQcmp(+!cell.qcmp);
+			cell.draw();
+
+			this.mousereset();
 		}
 	},
 
@@ -35,7 +50,44 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
-		numberRemainsUnshaded: true
+		numberRemainsUnshaded: true,
+
+		isCmp: function() {
+			if (!(this.qnum === -2 || this.isNum())) {
+				return false;
+			}
+			if (this.qcmp === 1) {
+				return true;
+			}
+			if (!this.puzzle.execConfig("autocmp")) {
+				return false;
+			}
+			return this.checkComplete();
+		},
+
+		checkComplete: function() {
+			if (!this.isNum()) {
+				return true;
+			}
+
+			var cnt = 0,
+				list = this.getdir4clist();
+			for (var i = 0; i < list.length; i++) {
+				var block = list[i][0].sblk;
+				if (block !== null) {
+					var shape = block.clist.getRectSize();
+					if (
+						shape.cnt !== shape.cols * shape.rows ||
+						shape.cols !== shape.rows
+					) {
+						return false;
+					}
+					cnt += shape.cnt;
+				}
+			}
+
+			return this.isValidNum() ? this.qnum === cnt : cnt > 0;
+		}
 	},
 
 	AreaShadeGraph: {
@@ -48,12 +100,27 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
+		autocmp: "number",
+
 		hideHatena: true,
 
 		fontsizeratio: 0.65 /* 丸数字 */,
 
 		qanscolor: "black",
 		numbercolor_func: "qnum",
+
+		setRange: function(x1, y1, x2, y2) {
+			var puzzle = this.puzzle,
+				bd = puzzle.board;
+			if (puzzle.execConfig("autocmp")) {
+				x1 = bd.minbx - 2;
+				y1 = bd.minby - 2;
+				x2 = bd.maxbx + 2;
+				y2 = bd.maxby + 2;
+			}
+
+			this.common.setRange.call(this, x1, y1, x2, y2);
+		},
 
 		paint: function() {
 			this.drawBGCells();
@@ -83,7 +150,12 @@
 				var cell = clist[i];
 				g.vid = "c_sq_" + cell.id;
 				if (cell.qnum !== -1) {
-					g.fillStyle = cell.error === 1 ? this.errbcolor1 : "white";
+					g.fillStyle =
+						cell.error === 1
+							? this.errbcolor1
+							: cell.isCmp()
+							? this.qcmpcolor
+							: "white";
 					g.shapeRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
 				} else {
 					g.vhide();

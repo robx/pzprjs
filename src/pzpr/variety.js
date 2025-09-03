@@ -106,6 +106,7 @@
 			battleship: [0, 0, "Battleship", "Battleship", "statuepark"],
 			bdblock: [1, 0, "ボーダーブロック", "Border Block"],
 			bdwalk: [0, 0, "ビルウォーク", "Building Walk", "haisu"],
+			blindrush: [0, 0, "猪突猛進", "Blind Rush"],
 			bonsan: [1, 0, "ぼんさん", "Bonsan", "bonsan"],
 			bosanowa: [1, 0, "ボサノワ", "Bosanowa", "", { alias: "bossanova" }],
 			bosnianroad: [0, 0, "Bosnian Road", "Bosnian Road"],
