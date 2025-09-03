@@ -9,7 +9,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
-			play: ["pin", "peke", "clear", "info-blk"]
+			play: ["diamond", "peke", "clear", "info-blk"]
 		},
 
 		mouseinput_auto: function() {
@@ -43,7 +43,7 @@
 		},
 
 		mouseinput_other: function() {
-			if (this.inputMode === "pin") {
+			if (this.inputMode === "diamond") {
 				this.inputdot(1);
 			}
 		},
@@ -67,14 +67,14 @@
 
 			if (this.inputData === null) {
 				if (fixed !== undefined) {
-					this.inputData = cross.getPin() === fixed ? 0 : fixed;
+					this.inputData = cross.getDiamond() === fixed ? 0 : fixed;
 				} else if (this.btn === "left") {
-					this.inputData = { 0: 1, 1: 2, 2: 0 }[cross.getPin()];
+					this.inputData = { 0: 1, 1: 2, 2: 0 }[cross.getDiamond()];
 				} else if (this.btn === "right") {
-					this.inputData = { 0: 2, 1: 0, 2: 1 }[cross.getPin()];
+					this.inputData = { 0: 2, 1: 0, 2: 1 }[cross.getDiamond()];
 				}
 			}
-			cross.setPin(this.inputData);
+			cross.setDiamond(this.inputData);
 			cross.draw();
 		}
 	},
@@ -84,7 +84,7 @@
 	},
 
 	Cross: {
-		getPin: function() {
+		getDiamond: function() {
 			return this.qans ? 1 : this.qsub ? 2 : 0;
 		},
 		overlapsDiamond: function() {
@@ -107,7 +107,7 @@
 				return cell.isNum();
 			});
 		},
-		setPin: function(val) {
+		setDiamond: function(val) {
 			if (val === 1 && this.overlapsDiamond()) {
 				return;
 			}
@@ -301,7 +301,7 @@
 					py = by * this.bh;
 
 				g.vid = "s_dot_" + dot.id;
-				var outline = this.getPinOutlineColor(dot);
+				var outline = this.getDiamondColor(dot);
 				if (dot.qans === 1) {
 					g.lineWidth = (1 + this.cw / 20) | 0;
 					g.fillStyle = outline;
@@ -323,7 +323,7 @@
 			}
 		},
 
-		getPinOutlineColor: function(dot) {
+		getDiamondColor: function(dot) {
 			if (dot.trial) {
 				return this.trialcolor;
 			}
@@ -335,7 +335,7 @@
 				? this.errcolor1
 				: err === -1
 				? this.noerrcolor
-				: this.qanscolor;
+				: this.quescolor;
 		}
 	},
 
@@ -351,14 +351,14 @@
 		decodeData: function() {
 			this.decodeCellQnumAns();
 			this.decodeCross(function(cross, ca) {
-				cross.setPin(+ca);
+				cross.setDiamond(+ca);
 			});
 		},
 		encodeData: function() {
 			this.encodeCellQnumAns();
 			// TODO remove crosses along edge
 			this.encodeCross(function(cross) {
-				return cross.getPin() + " ";
+				return cross.getDiamond() + " ";
 			});
 		}
 	},

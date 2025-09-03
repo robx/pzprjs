@@ -113,6 +113,7 @@
     "inputmode.nabe": "Crocks",
     "inputmode.box": "Boxes",
     "inputmode.pin": "Pins",
+    "inputmode.diamond": "Diamonds",
     "inputmode.crossdot": "Shaded dots",
     "inputmode.ineq": "Inequality marks",
     "inputmode.move-clue": "Move clue",
