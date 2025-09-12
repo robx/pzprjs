@@ -30,7 +30,8 @@
 		},
 
 		inputqnum_bosanowa: function() {
-			var pos = this.getpos(0.31);
+			var threshold = this.puzzle.playmode ? 0.31 : 1;
+			var pos = this.getpos(threshold);
 			if (!pos.isinside()) {
 				return;
 			}
@@ -121,6 +122,30 @@
 				border.drawaround();
 			}
 		},
+		inputqnum: function() {
+			var cell = this.getcell();
+			if (
+				cell.isnull ||
+				cell === this.mouseCell ||
+				(cell.ques !== 0 && this.puzzle.playmode)
+			) {
+				return;
+			}
+
+			if (
+				this.cursor.modesnum &&
+				this.puzzle.playmode &&
+				!this.cursor.checksnum(this.inputPoint) &&
+				cell.noNum()
+			) {
+				this.setcursorsnum(cell);
+			} else if (cell !== this.cursor.getc()) {
+				this.setcursor(cell);
+			} else {
+				this.inputqnum_main(cell);
+			}
+			this.mouseCell = cell;
+		},
 		inputclean_all: function() {
 			var pos = this.getpos(0.31);
 			if (this.prevPos.equals(pos)) {
@@ -146,7 +171,15 @@
 		enablemake: true,
 		enableplay: true,
 		moveTarget: function(ca) {
-			return this.moveTBorder(ca);
+			if (this.puzzle.editmode) {
+				if (this.cursor.onborder() || this.cursor.oncross()) {
+					// If switching from playmode on border, makes going back to cells only easier
+					return this.moveTBorder(ca);
+				}
+				return this.moveTCell(ca);
+			} else {
+				return this.moveTBorder(ca);
+			}
 		},
 
 		keyinput: function(ca) {
@@ -572,6 +605,8 @@
 						pstr = qn.toString(16);
 					} else if (qn >= 16 && qn < 256) {
 						pstr = "-" + qn.toString(16);
+					} else if (qn >= 256 && qn < 4096) {
+						pstr = "+" + qn.toString(16);
 					} else {
 						count++;
 					}
