@@ -108,6 +108,16 @@
 			});
 		},
 		setDiamond: function(val, force) {
+			var bd = this.board;
+			if (
+				this.bx === bd.minbx ||
+				this.bx === bd.maxbx ||
+				this.by === bd.minby ||
+				this.by === bd.maxby
+			) {
+				return;
+			}
+
 			if (val === 1 && this.overlapsDiamond() && !force) {
 				return;
 			}
@@ -352,33 +362,13 @@
 			this.decodeCellQnumAns();
 			this.decodeCross(function(cross, ca) {
 				cross.setDiamond(+ca, true);
-			});
+			}, true);
 		},
 		encodeData: function() {
 			this.encodeCellQnumAns();
 			this.encodeCross(function(cross) {
 				return cross.getDiamond() + " ";
-			});
-		},
-		decodeCross: function(func) {
-			this.decodeObj(
-				func,
-				"cross",
-				2,
-				2,
-				2 * (this.board.cols - 1),
-				2 * (this.board.rows - 1)
-			);
-		},
-		encodeCross: function(func) {
-			this.encodeObj(
-				func,
-				"cross",
-				2,
-				2,
-				2 * (this.board.cols - 1),
-				2 * (this.board.rows - 1)
-			);
+			}, true);
 		}
 	},
 	AnsCheck: {
