@@ -107,8 +107,8 @@
 				return cell.isNum();
 			});
 		},
-		setDiamond: function(val) {
-			if (val === 1 && this.overlapsDiamond()) {
+		setDiamond: function(val, force) {
+			if (val === 1 && this.overlapsDiamond() && !force) {
 				return;
 			}
 
@@ -351,15 +351,34 @@
 		decodeData: function() {
 			this.decodeCellQnumAns();
 			this.decodeCross(function(cross, ca) {
-				cross.setDiamond(+ca);
+				cross.setDiamond(+ca, true);
 			});
 		},
 		encodeData: function() {
 			this.encodeCellQnumAns();
-			// TODO remove crosses along edge
 			this.encodeCross(function(cross) {
 				return cross.getDiamond() + " ";
 			});
+		},
+		decodeCross: function(func) {
+			this.decodeObj(
+				func,
+				"cross",
+				2,
+				2,
+				2 * (this.board.cols - 1),
+				2 * (this.board.rows - 1)
+			);
+		},
+		encodeCross: function(func) {
+			this.encodeObj(
+				func,
+				"cross",
+				2,
+				2,
+				2 * (this.board.cols - 1),
+				2 * (this.board.rows - 1)
+			);
 		}
 	},
 	AnsCheck: {
