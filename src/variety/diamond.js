@@ -118,7 +118,7 @@
 				return;
 			}
 
-			if (val === 1 && this.overlapsDiamond() && !force) {
+			if (!force && val === 1 && this.overlapsDiamond()) {
 				return;
 			}
 
