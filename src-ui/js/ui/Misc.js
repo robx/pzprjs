@@ -200,6 +200,7 @@ function toBGimage(pid) {
 		"retsurin",
 		"roundtrip",
 		"sananko",
+		"sashikabe",
 		"sashikazune",
 		"satogaeri",
 		"scrin",

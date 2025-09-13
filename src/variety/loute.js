@@ -7,27 +7,37 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["loute", "sashigane", "sashikazune"], {
+})(["loute", "sashigane", "sashikazune", "sashikabe"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@loute": {
+		autoplay_func: "border",
 		inputModes: {
 			edit: ["arrow", "circle-unshade", "undef", "clear"],
 			play: ["border", "subline"]
 		}
 	},
 	"MouseEvent@sashigane": {
+		autoplay_func: "border",
 		inputModes: {
 			edit: ["arrow", "number", "undef", "clear"],
 			play: ["border", "subline"]
-		},
+		}
+	},
+	"MouseEvent@sashikabe": {
+		use: true,
+		autoplay_func: "cell",
+		inputModes: {
+			edit: ["arrow", "number", "undef", "clear", "info-blk"],
+			play: ["shade", "unshade", "info-blk"]
+		}
+	},
+	"MouseEvent@loute,sashigane,sashikabe#1": {
 		mouseinput_number: function() {
 			if (this.mousestart) {
 				this.inputqnum_loute();
 			}
-		}
-	},
-	"MouseEvent@loute,sashigane#1": {
+		},
 		mouseinput: function() {
 			// オーバーライド
 			if (this.inputMode === "undef" || this.inputMode === "circle-unshade") {
@@ -38,21 +48,11 @@
 				this.common.mouseinput.call(this);
 			}
 		},
-		mouseinput_auto: function() {
-			if (this.puzzle.playmode) {
-				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left" && this.isBorderMode()) {
-						this.inputborder();
-					} else {
-						this.inputQsubLine();
-					}
-				}
-			} else if (this.puzzle.editmode) {
-				if (this.mousestart || this.mousemove) {
-					this.inputarrow_cell();
-				} else if (this.mouseend && this.notInputted()) {
-					this.inputqnum_loute();
-				}
+		mouseinputAutoEdit: function() {
+			if (this.mousestart || this.mousemove) {
+				this.inputarrow_cell();
+			} else if (this.mouseend && this.notInputted()) {
+				this.inputqnum_loute();
 			}
 		},
 
@@ -157,7 +157,7 @@
 	KeyEvent: {
 		enablemake: true
 	},
-	"KeyEvent@loute,sashigane": {
+	"KeyEvent@loute,sashigane,sashikabe": {
 		moveTarget: function(ca) {
 			if (ca.match(/shift/)) {
 				return false;
@@ -172,7 +172,7 @@
 
 			if (this.pid === "loute") {
 				this.key_arrow_loute(ca);
-			} else if (this.pid === "sashigane") {
+			} else {
 				this.key_inputqnum_sashigane(ca);
 			}
 		},
@@ -251,6 +251,13 @@
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
+		allowShade: function() {
+			return !this.qdir;
+		},
+		allowUnshade: function() {
+			return !this.qdir;
+		},
+
 		maxnum: function() {
 			var bd = this.board,
 				bx = this.bx,
@@ -269,6 +276,16 @@
 			return this.qdir === 5;
 		}
 	},
+	"Cell@sashikabe": {
+		posthook: {
+			qdir: function(num) {
+				if (num) {
+					this.setQans(0);
+					this.setQsub(0);
+				}
+			}
+		}
+	},
 	"Cell@sashikazune": {
 		minnum: 1,
 		maxnum: function() {
@@ -280,16 +297,41 @@
 		cols: 8,
 		rows: 8,
 
-		hasborder: 1
+		hasborder: 1,
+		addExtraInfo: function() {
+			this.lgraph = this.addInfoList(this.klass.AreaLGraph);
+		}
 	},
-	"BoardExec@loute,sashigane": {
+	"BoardExec@loute,sashigane,sashikabe": {
 		adjustBoardData: function(key, d) {
 			this.adjustNumberArrow(key, d);
 		}
 	},
 
-	AreaRoomGraph: {
+	"AreaShadeGraph@sashikabe": {
 		enabled: true,
+		coloring: true
+	},
+	"AreaLGraph:AreaUnshadeGraph@sashikabe#1": {
+		enabled: true
+	},
+	"AreaLGraph:AreaRoomGraph@loute,sashigane,sashikazune#1": {
+		enabled: true
+	},
+
+	"AreaLGraph#3": {
+		getComponentRefs: function(obj) {
+			return obj.lcomp;
+		}, // getSideAreaInfo用
+		setComponentRefs: function(obj, component) {
+			obj.lcomp = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.lcompnodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.lcompnodes = [];
+		},
 
 		// オーバーライド
 		resetExtraData: function(cell) {
@@ -306,7 +348,7 @@
 			var subclist = this.board
 				.cellinside(d.x1, d.y1, d.x2, d.y2)
 				.filter(function(cell) {
-					return cell.room !== component;
+					return cell.lcomp !== component;
 				});
 			var dl = subclist.getRectSize();
 			if (
@@ -357,7 +399,7 @@
 		}
 	},
 
-	"AreaRoomGraph@sashikazune": {
+	"AreaLGraph@sashikazune#2": {
 		setCellPlaces: function(clist, d, dl) {
 			var bd = this.board;
 			var corner = null;
@@ -395,12 +437,18 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawDashedGrid();
-			this.drawBorders();
+			if (this.pid === "sashikabe") {
+				this.drawShadedCells();
+				this.drawDotCells();
+				this.drawGrid();
+			} else {
+				this.drawDashedGrid();
+				this.drawBorders();
+			}
 
 			this.drawCellArrows();
 			this.drawHatenas_loute();
-			if (this.pid === "sashigane") {
+			if (this.pid === "sashigane" || this.pid === "sashikabe") {
 				this.drawCircledNumbers();
 			} else if (this.pid === "loute") {
 				this.drawCircles();
@@ -438,6 +486,10 @@
 				}
 			}
 		}
+	},
+	"Graphic@sashikabe": {
+		gridcolor_type: "DARK",
+		irowakeblk: true
 	},
 	"Graphic@sashikazune": {
 		fontsizeratio: 0.75,
@@ -553,7 +605,7 @@
 			this.outbstr += cm;
 		}
 	},
-	"Encode@sashigane": {
+	"Encode@sashigane,sashikabe": {
 		decodePzpr: function(type) {
 			this.decodeSashigane();
 		},
@@ -651,28 +703,40 @@
 					}
 				} else if (ca === "-") {
 					cell.qdir = -2;
+				} else if (ca === "#") {
+					cell.qans = 1;
+				} else if (ca === "_") {
+					cell.qsub = 1;
 				} else if (ca !== ".") {
 					cell.qdir = +ca;
 				}
 			});
 
-			this.decodeBorderAns();
+			if (this.pid !== "sashikabe") {
+				this.decodeBorderAns();
+			}
 		},
 		encodeData: function() {
 			var pid = this.pid;
 			this.encodeCell(function(cell) {
-				if (pid === "sashigane" && cell.qdir === 5) {
+				if ((pid === "sashigane" || pid === "sashikabe") && cell.qdir === 5) {
 					return "o" + (cell.qnum !== -1 ? cell.qnum : "") + " ";
 				} else if (cell.qdir === -2) {
 					return "- ";
 				} else if (cell.qdir !== 0) {
 					return cell.qdir + " ";
+				} else if (cell.qsub) {
+					return "_ ";
+				} else if (cell.qans) {
+					return "# ";
 				} else {
 					return ". ";
 				}
 			});
 
-			this.encodeBorderAns();
+			if (pid !== "sashikabe") {
+				this.encodeBorderAns();
+			}
 		}
 	},
 	"FileIO@sashikazune": {
@@ -692,16 +756,29 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"check2x2ShadeCell@sashikabe",
 			"checkArrowCorner1",
 			"checkArrowCorner2",
 			"checkCircleCorner",
-			"checkNumberAndSize+@sashigane",
-			"checkBorderDeadend",
-			"checkLblock"
+			"checkNumberAndSize+@sashigane,sashikabe",
+			"checkBorderDeadend@!sashikabe",
+			"checkLblock",
+			"checkConnectShade@sashikabe",
+			"doneShadingDecided@sashikabe"
 		],
 
+		checkNumberAndSize: function() {
+			this.checkAllArea(
+				this.board.lgraph,
+				function(w, h, a, n) {
+					return n <= 0 || n === a;
+				},
+				"bkSizeNe"
+			);
+		},
+
 		checkArrowCorner1: function() {
-			var rooms = this.board.roommgr.components;
+			var rooms = this.board.lgraph.components;
 			allloop: for (var id = 0; id < rooms.length; id++) {
 				if (rooms[id].shape === 0) {
 					continue;
@@ -726,7 +803,7 @@
 		},
 
 		checkArrowCorner2: function() {
-			var rooms = this.board.roommgr.components;
+			var rooms = this.board.lgraph.components;
 			allloop: for (var id = 0; id < rooms.length; id++) {
 				if (rooms[id].shape === 0) {
 					continue;
@@ -761,7 +838,7 @@
 		},
 
 		checkCircleCorner: function() {
-			var rooms = this.board.roommgr.components;
+			var rooms = this.board.lgraph.components;
 			allloop: for (var id = 0; id < rooms.length; id++) {
 				if (rooms[id].shape === 0) {
 					continue;
@@ -785,7 +862,7 @@
 		},
 
 		checkLblock: function() {
-			var rooms = this.board.roommgr.components;
+			var rooms = this.board.lgraph.components;
 			for (var id = 0; id < rooms.length; id++) {
 				if (rooms[id].shape !== 0) {
 					continue;
@@ -797,6 +874,22 @@
 				}
 				rooms[id].clist.seterr(1);
 			}
+		}
+	},
+	"AnsCheck@sashikabe": {
+		checkArrowCorner2: function() {
+			this.checkAllCell(function(cell) {
+				var dir = cell.getObjNum();
+				if (dir < 1 || dir > 4) {
+					return false;
+				}
+
+				var next = cell
+					.getaddr()
+					.movedir(dir, 2)
+					.getc();
+				return next.isnull || next.isShade();
+			}, "arNotPtCnr");
 		}
 	},
 	"AnsCheck@sashikazune": {
@@ -817,7 +910,7 @@
 
 		checkNumber3Count: function() {
 			this.checkAllBlock(
-				this.board.roommgr,
+				this.board.lgraph,
 				function(cell) {
 					return cell.isNum() && cell.place !== 0;
 				},
