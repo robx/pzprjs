@@ -901,5 +901,9 @@
     "lcIsolate.uturns": "2つの灰色の丸が線で繋がれていません。",
     "lcOnNum.uturns": "線が灰色の丸を通り過ぎています。",
     "lcNotUTurns.uturns": "線が2つの丸の間で同じ方向に2回曲がっていません。",
-    "lnOnWhite.uturns": "線が白丸を経由地点としていません。"
+    "lnOnWhite.uturns": "線が白丸を経由地点としていません。",
+    "bdPierceGt1.blindrush": "ひとつながりになった壁が2回以上突き破られています。",
+    "bdPierceLt1.blindrush": "ひとつながりになった壁が一度も突き破られていません。",
+    "laLenNe.blindrush": "丸が壁を突き破った回数と数字が一致していません。",
+    "laWallStop.blindrush": "丸が壁にぶつかる前に止まっています。"
 }
