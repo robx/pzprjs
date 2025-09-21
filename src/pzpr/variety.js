@@ -112,6 +112,7 @@
 			bosnianroad: [0, 0, "Bosnian Road", "Bosnian Road"],
 			box: [0, 0, "ボックス", "Box"],
 			brownies: [0, 0, "ブラウニー", "Brownies", "yosenabe"],
+			bunnyhop: [0, 0, "Bunnyhop", "Bunnyhop", "", { alias: "bnuuyhop" }],
 			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
 			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
 			circlesquare: [0, 0, "Circles and Squares", "Circles and Squares"],
