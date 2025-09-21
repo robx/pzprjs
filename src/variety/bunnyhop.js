@@ -8,13 +8,26 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		inputModes: { edit: ["info-line"], play: ["line", "info-line"] },
+		inputModes: { edit: ["info-line"], play: ["line", "peke", "info-line"] },
 		autoplay_func: "line",
 		mouseinputAutoEdit: function() {
 			this.inputempty();
 		},
-
-		// TODO implement 4-dir peke on cell
+		mouseinputAutoPlay: function() {
+			if (this.btn === "left") {
+				this.inputLine();
+			} else if (this.btn === "right") {
+				this.inputpeke();
+			}
+		},
+		inputpeke: function() {
+			// TODO replace with triangle inputs
+			this.inputarrow_cell();
+		},
+		inputarrow_cell_main: function(cell, dir) {
+			var value = 1 << (dir + 1);
+			cell.setQsub(cell.qsub ^ value);
+		},
 
 		inputLine: function() {
 			var cell = this.getcell();
@@ -77,20 +90,20 @@
 	},
 	Cell: {
 		visited: function() {
-			var ret = 0;
+			var blist = new this.klass.BorderList();
 			if (this.adjborder.top.line === 2) {
-				ret++;
+				blist.add(this.adjborder.top);
 			}
 			if (this.adjborder.bottom.line === 1) {
-				ret++;
+				blist.add(this.adjborder.bottom);
 			}
 			if (this.adjborder.left.line === 2) {
-				ret++;
+				blist.add(this.adjborder.left);
 			}
 			if (this.adjborder.right.line === 1) {
-				ret++;
+				blist.add(this.adjborder.right);
 			}
-			return ret;
+			return blist;
 		}
 	},
 
@@ -108,6 +121,7 @@
 			this.drawBGCells();
 			this.drawGrid();
 			this.drawLines();
+			this.drawPekes();
 		},
 
 		getBGCellColor: function(cell) {
@@ -165,6 +179,54 @@
 				}
 			}
 			this.addlw = 0;
+		},
+
+		drawPekes: function() {
+			var g = this.vinc("cell_peke", "auto");
+			g.lineWidth = (1 + this.cw / 40) | 0;
+			var size = this.cw * 0.15;
+			if (size < 3) {
+				size = 3;
+			}
+
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				var bx = cell.bx,
+					by = cell.by,
+					px = bx * this.bw,
+					py = by * this.bh;
+				var color = "rgb(127,127,255)";
+				g.strokeStyle = color;
+				// TODO replace entire function with 4 pekes
+				var tickMods = [
+					[-1, 1],
+					[1, 1],
+					[-1, 0],
+					[1, 0]
+				];
+				for (var m = 0; m < tickMods.length; m++) {
+					g.vid = "ut_peke" + m + "_" + cell.id;
+
+					if (cell.qsub & (1 << (m + 2))) {
+						var xmult = tickMods[m][0],
+							isvert = tickMods[m][1];
+						var c1 = !isvert ? px : py,
+							c2 = !isvert ? py : px,
+							p1 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 + size],
+							p2 = [c1 + xmult * this.bw - 0.5 * xmult * size, c2],
+							p3 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 - size];
+						g.beginPath();
+						g.moveTo(p1[+!!isvert], p1[+!isvert]);
+						g.lineTo(p2[+!!isvert], p2[+!isvert]);
+						g.lineTo(p3[+!!isvert], p3[+!isvert]);
+						g.moveTo(p2[+!!isvert], p2[+!isvert]);
+						g.closePath();
+						g.stroke();
+					} else {
+						g.vhide();
+					}
+				}
+			}
 		}
 	},
 
@@ -185,12 +247,14 @@
 				cell.ques = ca === "#" ? 7 : 0;
 			});
 			this.decodeBorderLine();
+			this.decodeCellQsub();
 		},
 		encodeData: function() {
 			this.encodeCell(function(cell) {
 				return cell.isEmpty() ? "# " : ". ";
 			});
 			this.encodeBorderLine();
+			this.encodeCellQsub();
 		}
 	},
 
@@ -225,7 +289,8 @@
 					continue;
 				}
 
-				var actual = cell.visited();
+				var visited = cell.visited();
+				var actual = visited.length;
 
 				if (actual > 0 && count === 0) {
 					continue;
@@ -238,7 +303,13 @@
 				if (this.checkOnly) {
 					break;
 				}
-				cell.seterr(1);
+
+				if (count === 0) {
+					cell.seterr(1);
+				} else {
+					this.board.border.setnoerr();
+					visited.seterr(1);
+				}
 			}
 		}
 	}
