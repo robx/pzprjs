@@ -57,6 +57,24 @@
 		hasborder: 2,
 		borderAsLine: true
 	},
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			var blist = this.board.border;
+
+			var flipvert = key === this.TURNL || key === this.FLIPX;
+			var fliphorz = key === this.TURNR || key === this.FLIPY;
+
+			for (var i = 0; i < blist.length; i++) {
+				var border = blist[i];
+				if (!border.line) {
+					continue;
+				}
+				if (border.isVert() ? flipvert : fliphorz) {
+					border.line = 3 - border.line;
+				}
+			}
+		}
+	},
 	Cell: {
 		visited: function() {
 			var ret = 0;
