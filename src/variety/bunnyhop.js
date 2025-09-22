@@ -92,6 +92,42 @@
 					border.line = 3 - border.line;
 				}
 			}
+		},
+		adjustBoardData2: function(key, d) {
+			var bd = this.board;
+
+			// TODO total breakage when undoing REDUCEUP or REDUCELT
+			for (var x = 1; x < bd.maxbx; x += 2) {
+				if (key === this.REDUCEUP) {
+					var top = bd.getb(x, bd.minby);
+					if (top.line === 1) {
+						top.setLineVal(0);
+					}
+				}
+
+				if (key === this.REDUCEDN) {
+					var bottom = bd.getb(x, bd.maxby);
+					if (bottom.line === 2) {
+						bottom.setLineVal(0);
+					}
+				}
+			}
+
+			for (var y = 1; y < bd.maxby; y += 2) {
+				if (key === this.REDUCELT) {
+					var left = bd.getb(bd.minbx, y);
+					if (left.line === 1) {
+						left.setLineVal(0);
+					}
+				}
+
+				if (key === this.REDUCERT) {
+					var right = bd.getb(bd.maxbx, y);
+					if (right.line === 2) {
+						right.setLineVal(0);
+					}
+				}
+			}
 		}
 	},
 	Cell: {
@@ -151,7 +187,7 @@
 		},
 
 		drawLines: function() {
-			var g = this.vinc("line", "crispEdges");
+			var g = this.vinc("line");
 
 			var basewidth = Math.max(this.bw / 4, 2);
 			var blist = this.range.borders;
