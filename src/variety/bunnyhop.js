@@ -41,20 +41,26 @@
 			border = this.prevPos.getborderobj(pos);
 
 			if (!border.isnull) {
-				// TODO search for nearby blocks up/down
+				var preferOne = border.isVert()
+					? border.bx > this.inputPoint.bx
+					: border.by > this.inputPoint.by;
+				var hasOne = (border.isVert()
+					? border.relcell(-1, 0)
+					: border.relcell(0, -1)
+				).isValid();
+				var hasTwo = (border.isVert()
+					? border.relcell(1, 0)
+					: border.relcell(0, 1)
+				).isValid();
 
 				if (this.inputData === null) {
 					this.inputData = border.isLine() ? 0 : 1;
 				}
 				if (this.inputData === 0) {
 					border.removeLine();
-				} else if (
-					border.isVert()
-						? border.bx > this.inputPoint.bx
-						: border.by > this.inputPoint.by
-				) {
+				} else if ((preferOne || !hasTwo) && hasOne) {
 					border.setLineVal(1);
-				} else {
+				} else if (hasTwo) {
 					border.setLineVal(2);
 				}
 				border.draw();
