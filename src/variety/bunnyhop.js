@@ -201,44 +201,32 @@
 		drawPekes: function() {
 			var g = this.vinc("cell_peke", "auto");
 			g.lineWidth = (1 + this.cw / 40) | 0;
-			var size = this.cw * 0.15;
+			var size = this.cw * 0.13;
+			var color = "rgb(127,127,255)";
 			if (size < 3) {
 				size = 3;
 			}
 
 			for (var c = 0; c < this.board.cell.length; c++) {
 				var cell = this.board.cell[c];
-				var bx = cell.bx,
-					by = cell.by,
-					px = bx * this.bw,
-					py = by * this.bh;
-				var color = "rgb(127,127,255)";
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
 				g.strokeStyle = color;
-				// TODO replace entire function with 4 pekes
-				var tickMods = [
-					[-1, 1],
-					[1, 1],
+
+				var dirs = [
+					[0, -1],
+					[0, 1],
 					[-1, 0],
 					[1, 0]
 				];
-				for (var m = 0; m < tickMods.length; m++) {
+				for (var m = 0; m < dirs.length; m++) {
 					g.vid = "ut_peke" + m + "_" + cell.id;
 
 					if (cell.qsub & (1 << (m + 2))) {
-						var xmult = tickMods[m][0],
-							isvert = tickMods[m][1];
-						var c1 = !isvert ? px : py,
-							c2 = !isvert ? py : px,
-							p1 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 + size],
-							p2 = [c1 + xmult * this.bw - 0.5 * xmult * size, c2],
-							p3 = [c1 + xmult * this.bw - 1.0 * xmult * size, c2 - size];
-						g.beginPath();
-						g.moveTo(p1[+!!isvert], p1[+!isvert]);
-						g.lineTo(p2[+!!isvert], p2[+!isvert]);
-						g.lineTo(p3[+!!isvert], p3[+!isvert]);
-						g.moveTo(p2[+!!isvert], p2[+!isvert]);
-						g.closePath();
-						g.stroke();
+						var sx = px + dirs[m][0] * this.bw * 0.6,
+							sy = py + dirs[m][1] * this.bh * 0.6;
+
+						g.strokeCross(sx, sy, size - 1);
 					} else {
 						g.vhide();
 					}
