@@ -260,14 +260,15 @@
 					2 * this.board.rows - 1
 				);
 			},
-			decodeCross: function(func) {
+			decodeCross: function(func, isInset) {
+				var inset = isInset ? 2 : 0;
 				this.decodeObj(
 					func,
 					"cross",
-					0,
-					0,
-					2 * this.board.cols,
-					2 * this.board.rows
+					inset,
+					inset,
+					2 * this.board.cols - inset,
+					2 * this.board.rows - inset
 				);
 			},
 			decodeBorder: function(func, hasborder) {
@@ -343,14 +344,15 @@
 					2 * this.board.rows - 1
 				);
 			},
-			encodeCross: function(func) {
+			encodeCross: function(func, isInset) {
+				var inset = isInset ? 2 : 0;
 				this.encodeObj(
 					func,
 					"cross",
-					0,
-					0,
-					2 * this.board.cols,
-					2 * this.board.rows
+					inset,
+					inset,
+					2 * this.board.cols - inset,
+					2 * this.board.rows - inset
 				);
 			},
 			encodeBorder: function(func, hasborder) {
