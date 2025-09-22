@@ -95,6 +95,17 @@
 		}
 	},
 	Cell: {
+		posthook: {
+			ques: function(num) {
+				if (!num) {
+					return;
+				}
+				this.visited().each(function(border) {
+					border.setLineVal(0);
+				});
+			}
+		},
+
 		visited: function() {
 			var blist = new this.klass.BorderList();
 			if (this.adjborder.top.line === 2) {
