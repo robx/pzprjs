@@ -30,8 +30,7 @@
 		},
 
 		inputqnum_bosanowa: function() {
-			var threshold = this.puzzle.playmode ? 0.31 : 1;
-			var pos = this.getpos(threshold);
+			var pos = this.getpos(0.31);
 			if (!pos.isinside()) {
 				return;
 			}
@@ -122,6 +121,7 @@
 				border.drawaround();
 			}
 		},
+		
 		inputqnum: function() {
 			var cell = this.getcell();
 			if (
@@ -171,15 +171,7 @@
 		enablemake: true,
 		enableplay: true,
 		moveTarget: function(ca) {
-			if (this.puzzle.editmode) {
-				if (this.cursor.onborder() || this.cursor.oncross()) {
-					// If switching from playmode on border, makes going back to cells only easier
-					return this.moveTBorder(ca);
-				}
-				return this.moveTCell(ca);
-			} else {
-				return this.moveTBorder(ca);
-			}
+			return this.moveTBorder(ca);
 		},
 
 		keyinput: function(ca) {
