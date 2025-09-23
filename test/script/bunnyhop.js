@@ -37,5 +37,29 @@ ui.debug.addDebugData("bunnyhop", {
 			"pzprv3/bunnyhop/4/4/# . . . /. . . # /. # . . /. . . # /0 0 1 2 0 /0 1 0 1 0 /0 1 0 2 0 /0 1 2 0 0 /0 0 2 0 /0 2 0 0 /0 0 0 0 /0 0 1 0 /0 1 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,2,2", "playmode", "mouse,left,2,0,1.9,1,2,2,2.1,3,2,4"],
+			result:
+				"pzprv3/bunnyhop/2/2/. . /. . /0 1 0 /0 2 0 /0 0 /0 0 /0 0 /0 0 /0 0 /"
+		},
+		{
+			label: "Edit line value as first move",
+			input: ["mouse,left,2,0,2.1,1,2,2,1,1.9,0,2"],
+			result:
+				"pzprv3/bunnyhop/2/2/. . /. . /0 2 0 /0 2 0 /0 0 /1 0 /0 0 /0 0 /0 0 /"
+		},
+		{
+			label: "Clear line with leftclick",
+			input: ["mouse,left,2,0,2.1,1,2,4"],
+			result:
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /1 0 /0 0 /0 0 /0 0 /"
+		},
+		{
+			label: "Erase with invalid cells",
+			input: ["mouse,left,2,2,3,2.1,4,2", "editmode", "mouse,left,1,1,3,1"],
+			result:
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /0 0 /0 0 /0 0 /"
+		}
+	]
 });
