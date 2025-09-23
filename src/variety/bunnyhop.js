@@ -77,15 +77,15 @@
 					: border.relcell(0, 1)
 				).isValid();
 
+				var newValue = (preferOne || !hasTwo) && hasOne ? 1 : hasTwo ? 2 : -1;
+
 				if (this.inputData === null) {
-					this.inputData = border.isLine() ? 0 : 1;
+					this.inputData = border.line === newValue ? 0 : 1;
 				}
 				if (this.inputData === 0) {
 					border.removeLine();
-				} else if ((preferOne || !hasTwo) && hasOne) {
-					border.setLineVal(1);
-				} else if (hasTwo) {
-					border.setLineVal(2);
+				} else if (newValue >= 0) {
+					border.setLineVal(newValue);
 				}
 				border.draw();
 			}
