@@ -20,13 +20,37 @@
 				this.inputpeke();
 			}
 		},
-		inputpeke: function() {
-			// TODO replace with triangle inputs
-			this.inputarrow_cell();
+
+		mousereset: function() {
+			this.prevPekeDir = 0;
+			this.common.mousereset.call(this);
 		},
-		inputarrow_cell_main: function(cell, dir) {
-			var value = 1 << (dir + 1);
-			cell.setQsub(cell.qsub ^ value);
+
+		inputpeke: function() {
+			var cell = this.getcell();
+			if (!cell.isValid()) {
+				return;
+			}
+
+			var dx = this.inputPoint.bx - cell.bx,
+				dy = this.inputPoint.by - cell.by;
+
+			var dir = 0;
+			if (Math.abs(dx) > Math.abs(dy)) {
+				dir = dx > 0.2 ? 4 : dx < -0.2 ? 3 : 0;
+			} else {
+				dir = dy > 0.2 ? 2 : dy < -0.2 ? 1 : 0;
+			}
+
+			if (dir && (dir !== this.prevPekeDir || this.mouseCell !== cell)) {
+				this.mouseCell = cell;
+				this.prevPekeDir = dir;
+
+				// TODO inputData for set/unset instead of xor
+				var value = 1 << (dir + 1);
+				cell.setQsub(cell.qsub ^ value);
+				cell.draw();
+			}
 		},
 
 		inputLine: function() {
