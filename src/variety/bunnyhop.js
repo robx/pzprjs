@@ -46,9 +46,17 @@
 				this.mouseCell = cell;
 				this.prevPekeDir = dir;
 
-				// TODO inputData for set/unset instead of xor
 				var value = 1 << (dir + 1);
-				cell.setQsub(cell.qsub ^ value);
+
+				if (this.inputData === null) {
+					this.inputData = cell.qsub & value ? 2 : 3;
+				}
+
+				if (this.inputData === 2) {
+					cell.setQsub(cell.qsub & ~value);
+				} else {
+					cell.setQsub(cell.qsub | value);
+				}
 				cell.draw();
 			}
 		},
