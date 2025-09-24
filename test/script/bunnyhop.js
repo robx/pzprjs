@@ -72,6 +72,18 @@ ui.debug.addDebugData("bunnyhop", {
 			input: ["mouse,right,2.5,3,1.5,3"],
 			result:
 				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /0 0 /0 0 /8 8 /"
+		},
+		{
+			label: "Overwrite peke with line",
+			input: ["mouse,left,0,4,2,4"],
+			result:
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /1 0 /0 0 /0 8 /"
+		},
+		{
+			label: "Peke erases line",
+			input: ["mouse,right,3,2.5"],
+			result:
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 0 /1 0 /0 0 /0 12 /"
 		}
 	]
 });

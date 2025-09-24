@@ -57,6 +57,16 @@
 					cell.setQsub(cell.qsub & ~value);
 				} else {
 					cell.setQsub(cell.qsub | value);
+
+					if (dir === 1 && cell.adjborder.top.line === 2) {
+						cell.adjborder.top.setLineVal(0);
+					} else if (dir === 2 && cell.adjborder.bottom.line === 1) {
+						cell.adjborder.bottom.setLineVal(0);
+					} else if (dir === 3 && cell.adjborder.left.line === 2) {
+						cell.adjborder.left.setLineVal(0);
+					} else if (dir === 4 && cell.adjborder.right.line === 1) {
+						cell.adjborder.right.setLineVal(0);
+					}
 				}
 				cell.draw();
 			}
@@ -88,8 +98,22 @@
 					border.removeLine();
 				} else if (newValue > 0) {
 					border.setLineVal(newValue);
-					this.mouseCell = border.sidecell[newValue - 1];
+					var cell = border.sidecell[newValue - 1];
+					this.mouseCell = cell;
 					this.mouseBorder = border;
+
+					var dir = border.isVert()
+						? newValue === 1
+							? 4
+							: 3
+						: newValue === 1
+						? 2
+						: 1;
+					var peke = 1 << (dir + 1);
+
+					if (cell.qsub & peke) {
+						cell.setQsub(cell.qsub & ~peke);
+					}
 				}
 				border.draw();
 			}
