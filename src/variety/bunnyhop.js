@@ -130,7 +130,8 @@
 	},
 	BoardExec: {
 		adjustBoardData: function(key, d) {
-			var blist = this.board.border;
+			var bd = this.board;
+			var blist = bd.border;
 
 			var flipvert = key === this.TURNL || key === this.FLIPX;
 			var fliphorz = key === this.TURNR || key === this.FLIPY;
@@ -144,21 +145,17 @@
 					border.line = 3 - border.line;
 				}
 			}
-		},
-		adjustBoardData2: function(key, d) {
-			var bd = this.board;
 
-			// TODO total breakage when undoing REDUCEUP or REDUCELT
 			for (var x = 1; x < bd.maxbx; x += 2) {
 				if (key === this.REDUCEUP) {
-					var top = bd.getb(x, bd.minby);
+					var top = bd.getb(x, bd.minby + 2);
 					if (top.line === 1) {
 						top.setLineVal(0);
 					}
 				}
 
 				if (key === this.REDUCEDN) {
-					var bottom = bd.getb(x, bd.maxby);
+					var bottom = bd.getb(x, bd.maxby - 2);
 					if (bottom.line === 2) {
 						bottom.setLineVal(0);
 					}
@@ -167,14 +164,14 @@
 
 			for (var y = 1; y < bd.maxby; y += 2) {
 				if (key === this.REDUCELT) {
-					var left = bd.getb(bd.minbx, y);
+					var left = bd.getb(bd.minbx + 2, y);
 					if (left.line === 1) {
 						left.setLineVal(0);
 					}
 				}
 
 				if (key === this.REDUCERT) {
-					var right = bd.getb(bd.maxbx, y);
+					var right = bd.getb(bd.maxbx - 2, y);
 					if (right.line === 2) {
 						right.setLineVal(0);
 					}
