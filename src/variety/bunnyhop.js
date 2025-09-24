@@ -23,6 +23,7 @@
 
 		mousereset: function() {
 			this.prevPekeDir = 0;
+			this.mouseBorder = this.board.emptyborder;
 			this.common.mousereset.call(this);
 		},
 
@@ -62,28 +63,21 @@
 		},
 
 		inputLine: function() {
-			var cell = this.getcell();
-			this.initFirstCell(cell);
-
-			var pos, border;
-			pos = this.getpos(0.35);
+			var pos = this.getpos(0.35);
 			if (this.prevPos.equals(pos)) {
 				return;
 			}
-			border = this.prevPos.getborderobj(pos);
+			var border = this.prevPos.getborderobj(pos);
 
-			if (!border.isnull) {
+			if (!border.isnull && border !== this.mouseBorder) {
 				var preferOne = border.isVert()
 					? border.bx > this.inputPoint.bx
 					: border.by > this.inputPoint.by;
-				var hasOne = (border.isVert()
-					? border.relcell(-1, 0)
-					: border.relcell(0, -1)
-				).isValid();
-				var hasTwo = (border.isVert()
-					? border.relcell(1, 0)
-					: border.relcell(0, 1)
-				).isValid();
+
+				var hasOne =
+					border.sidecell[0].isValid() && border.sidecell[0] !== this.mouseCell;
+				var hasTwo =
+					border.sidecell[1].isValid() && border.sidecell[1] !== this.mouseCell;
 
 				var newValue = (preferOne || !hasTwo) && hasOne ? 1 : hasTwo ? 2 : -1;
 
@@ -92,8 +86,10 @@
 				}
 				if (this.inputData === 0) {
 					border.removeLine();
-				} else if (newValue >= 0) {
+				} else if (newValue > 0) {
 					border.setLineVal(newValue);
+					this.mouseCell = border.sidecell[newValue - 1];
+					this.mouseBorder = border;
 				}
 				border.draw();
 			}
@@ -213,7 +209,7 @@
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errbcolor1;
 			} else if (cell.isEmpty()) {
-				return "black";
+				return "#444";
 			}
 			return null;
 		},
