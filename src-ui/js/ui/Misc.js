@@ -119,6 +119,7 @@ function toBGimage(pid) {
 		"bdwalk",
 		"bosnianroad",
 		"brownies",
+		"bunnyhop",
 		"castle",
 		"cbanana",
 		"chainedb",
