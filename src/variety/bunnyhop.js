@@ -38,9 +38,9 @@
 
 			var dir = 0;
 			if (Math.abs(dx) > Math.abs(dy)) {
-				dir = dx > 0.2 ? 4 : dx < -0.2 ? 3 : 0;
+				dir = dx > 0.25 ? 4 : dx < -0.25 ? 3 : 0;
 			} else {
-				dir = dy > 0.2 ? 2 : dy < -0.2 ? 1 : 0;
+				dir = dy > 0.25 ? 2 : dy < -0.25 ? 1 : 0;
 			}
 
 			if (dir && (dir !== this.prevPekeDir || this.mouseCell !== cell)) {
