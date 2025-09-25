@@ -47,7 +47,7 @@
 				this.mouseCell = cell;
 				this.prevPekeDir = dir;
 
-				var value = 1 << (dir + 1);
+				var value = 1 << (dir - 1);
 
 				if (this.inputData === null) {
 					this.inputData = cell.qsub & value ? 2 : 3;
@@ -109,7 +109,7 @@
 						: newValue === 1
 						? 2
 						: 1;
-					var peke = 1 << (dir + 1);
+					var peke = 1 << (dir - 1);
 
 					if (cell.qsub & peke) {
 						cell.setQsub(cell.qsub & ~peke);
@@ -307,7 +307,7 @@
 				for (var m = 0; m < dirs.length; m++) {
 					g.vid = "ut_peke" + m + "_" + cell.id;
 
-					if (cell.qsub & (1 << (m + 2))) {
+					if (cell.qsub & (1 << m)) {
 						var sx = px + dirs[m][0] * this.bw * 0.6,
 							sy = py + dirs[m][1] * this.bh * 0.6;
 

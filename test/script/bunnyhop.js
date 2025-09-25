@@ -65,25 +65,25 @@ ui.debug.addDebugData("bunnyhop", {
 			label: "Add pekes",
 			input: ["playmode", "mouse,right,1.5,3,2.5,3,3,3.5,1,3.5"],
 			result:
-				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /0 0 /0 0 /40 24 /"
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /0 0 /0 0 /10 6 /"
 		},
 		{
 			label: "Remove pekes",
 			input: ["mouse,right,2.5,3,1.5,3"],
 			result:
-				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /0 0 /0 0 /8 8 /"
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /0 0 /0 0 /2 2 /"
 		},
 		{
 			label: "Overwrite peke with line",
 			input: ["mouse,left,0,4,2,4"],
 			result:
-				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /1 0 /0 0 /0 8 /"
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 2 /1 0 /0 0 /0 2 /"
 		},
 		{
 			label: "Peke erases line",
 			input: ["mouse,right,3,2.5"],
 			result:
-				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 0 /1 0 /0 0 /0 12 /"
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 0 /1 0 /0 0 /0 3 /"
 		}
 	]
 });
