@@ -222,6 +222,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
+			this.drawCaps();
 			this.drawLines();
 			this.drawPekes();
 		},
@@ -233,6 +234,46 @@
 				return "#444";
 			}
 			return null;
+		},
+
+		getCrossColor: function(cross) {
+			var color = null;
+			for (var dir in cross.adjborder) {
+				var border = cross.adjborder[dir];
+				var newColor = this.getLineColor(border);
+
+				if (border.error === 1) {
+					return newColor;
+				} else if (!color) {
+					color = newColor;
+				}
+			}
+			return color;
+		},
+
+		drawCaps: function() {
+			var g = this.vinc("caps");
+			g.strokeStyle = null;
+
+			var basewidth = Math.max(this.bw / 4, 2);
+			var xlist = this.range.crosses;
+			for (var i = 0; i < xlist.length; i++) {
+				var cross = xlist[i];
+				g.vid = "b_cap" + cross.id;
+
+				var color = this.getCrossColor(cross);
+
+				if (!!color) {
+					var px = cross.bx * this.bw,
+						py = cross.by * this.bh;
+
+					var radius = basewidth / 2;
+					g.fillStyle = color;
+					g.shapeCircle(px, py, radius);
+				} else {
+					g.vhide();
+				}
+			}
 		},
 
 		drawLines: function() {
@@ -260,18 +301,18 @@
 						g.beginPath();
 						g.moveTo(px, py - this.bh);
 						if (border.line === 1) {
-							g.lineTo(px - this.bw / 2, py);
+							g.lineTo(px - this.bw / 1.5, py);
 						} else {
-							g.lineTo(px + this.bw / 2, py);
+							g.lineTo(px + this.bw / 1.5, py);
 						}
 						g.lineTo(px, py + this.bh);
 					} else {
 						g.beginPath();
 						g.moveTo(px - this.bw, py);
 						if (border.line === 1) {
-							g.lineTo(px, py - this.bh / 2);
+							g.lineTo(px, py - this.bh / 1.5);
 						} else {
-							g.lineTo(px, py + this.bh / 2);
+							g.lineTo(px, py + this.bh / 1.5);
 						}
 						g.lineTo(px + this.bw, py);
 					}
