@@ -222,8 +222,8 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawGrid();
-			this.drawCaps();
 			this.drawLines();
+			this.drawCaps();
 			this.drawPekes();
 		},
 
@@ -232,8 +232,8 @@
 
 			this.range.borders = blist;
 			this.range.crosses = xlist;
-			this.drawCaps();
 			this.drawLines();
+			this.drawCaps();
 
 			if (this.context.use.canvas) {
 				this.repaintParts(blist);
@@ -256,7 +256,7 @@
 				var border = cross.adjborder[dir];
 				var newColor = this.getLineColor(border);
 
-				if (border.error === 1) {
+				if (border.error === -1 && newColor) {
 					return newColor;
 				} else if (!color) {
 					color = newColor;
