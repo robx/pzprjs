@@ -227,6 +227,20 @@
 			this.drawPekes();
 		},
 
+		repaintLines: function(blist) {
+			var xlist = blist.crossinside();
+
+			this.range.borders = blist;
+			this.range.crosses = xlist;
+			this.drawCaps();
+			this.drawLines();
+
+			if (this.context.use.canvas) {
+				this.repaintParts(blist);
+				this.repaintParts(xlist);
+			}
+		},
+
 		getBGCellColor: function(cell) {
 			if ((cell.error || cell.qinfo) === 1) {
 				return this.errbcolor1;
