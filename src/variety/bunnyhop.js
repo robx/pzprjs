@@ -203,6 +203,26 @@
 			}
 		}
 	},
+	CrossList: {
+		cellinside: function() {
+			var clist = new this.klass.CellList(),
+				pushed = [];
+			for (var i = 0; i < this.length; i++) {
+				var cross = this[i],
+					bx = cross.bx,
+					by = cross.by;
+				this.board
+					.cellinside(bx - 1, by - 1, bx + 1, by + 1)
+					.each(function(cell) {
+						if (!pushed[cell.id]) {
+							clist.add(cell);
+							pushed[cell.id] = true;
+						}
+					});
+			}
+			return clist;
+		}
+	},
 	Cell: {
 		toggleLineHalf: function(val) {
 			var dirs = [
@@ -309,11 +329,10 @@
 
 		repaintLines: function(blist) {
 			var xlist = blist.crossinside();
-			var clist = blist.cellinside();
+			var clist = xlist.cellinside();
 
 			this.range.borders = blist;
 			this.range.crosses = xlist;
-			// TODO this should include more items
 			this.range.cells = clist;
 			this.drawLines();
 			this.drawHalfLines();
@@ -378,7 +397,7 @@
 					}
 
 					g.lineWidth = basewidth + addwidth;
-					
+
 					// TODO draw cap as well
 					var dir = dirs[half - 1];
 
