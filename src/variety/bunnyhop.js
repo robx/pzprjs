@@ -206,13 +206,36 @@
 	},
 	Cell: {
 		toggleLineHalf: function(val) {
-			// TODO merge lines, enforce single value etc.
-			var newVal = this.qsub;
-
+			var dirs = [
+				[-1, -1],
+				[1, -1],
+				[-1, 1],
+				[1, 1]
+			];
 			var prev = this.qsub & (7 << 4);
+			var dir1 = dirs[(val >> 4) - 1];
+			var dir2 = dirs[(prev >> 4) - 1];
+
+			var common = dir2
+				? [dir1[0] === dir2[0] ? dir1[0] : 0, dir1[1] === dir2[1] ? dir1[1] : 0]
+				: [0, 0];
+
+			var newVal = this.qsub;
 			newVal &= ~(7 << 4);
 
-			if (prev !== val) {
+			if (common[0] || common[1]) {
+				var border = this.relbd(common[0], common[1]);
+				this.visited().each(function(other) {
+					if (other !== border) {
+						other.setLineVal(0);
+						other.draw();
+					}
+				});
+
+				border.setLineVal(common[0] + common[1] > 0 ? 1 : 2);
+				border.draw();
+			} else {
+				// TODO remove borders where possible
 				newVal |= val;
 			}
 			this.setQsub(newVal);
