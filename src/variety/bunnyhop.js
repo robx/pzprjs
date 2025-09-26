@@ -73,6 +73,31 @@
 		},
 
 		inputLine: function() {
+			this.inputBunnyhop();
+
+			if (this.mouseend && this.notInputted()) {
+				var cell = this.getcell();
+				if (!cell.isValid()) {
+					return;
+				}
+
+				var dx = this.inputPoint.bx - cell.bx,
+					dy = this.inputPoint.by - cell.by;
+
+				if (dx < 0 && dy < 0) {
+					cell.toggleLineHalf(16);
+				} else if (dx > 0 && dy < 0) {
+					cell.toggleLineHalf(32);
+				} else if (dx < 0 && dy > 0) {
+					cell.toggleLineHalf(48);
+				} else if (dx > 0 && dy > 0) {
+					cell.toggleLineHalf(64);
+				}
+
+				cell.draw();
+			}
+		},
+		inputBunnyhop: function() {
 			var pos = this.getpos(0.35);
 			if (this.prevPos.equals(pos)) {
 				return;
@@ -180,6 +205,19 @@
 		}
 	},
 	Cell: {
+		toggleLineHalf: function(val) {
+			// TODO merge lines, enforce single value etc.
+			var newVal = this.qsub;
+
+			var prev = this.qsub & (7 << 4);
+			newVal &= ~(7 << 4);
+
+			if (prev !== val) {
+				newVal |= val;
+			}
+			this.setQsub(newVal);
+		},
+
 		posthook: {
 			ques: function(num) {
 				if (!num) {
@@ -223,20 +261,25 @@
 			this.drawBGCells();
 			this.drawGrid();
 			this.drawLines();
+			this.drawHalfLines();
 			this.drawCaps();
 			this.drawPekes();
 		},
 
 		repaintLines: function(blist) {
 			var xlist = blist.crossinside();
+			var clist = blist.cellinside();
 
 			this.range.borders = blist;
 			this.range.crosses = xlist;
+			this.range.cells = clist;
 			this.drawLines();
+			this.drawHalfLines();
 			this.drawCaps();
 
 			if (this.context.use.canvas) {
 				this.repaintParts(blist);
+				this.repaintParts(clist);
 				this.repaintParts(xlist);
 			}
 		},
@@ -263,6 +306,50 @@
 				}
 			}
 			return color;
+		},
+
+		drawHalfLines: function() {
+			var g = this.vinc("halves");
+			var basewidth = Math.max(this.bw / 4, 2);
+
+			var clist = this.range.cells;
+
+			var dirs = [
+				[-1, -1],
+				[1, -1],
+				[-1, 1],
+				[1, 1]
+			];
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				g.vid = "c_half" + cell.id;
+
+				var half = (cell.qsub >> 4) & 7;
+				if (half) {
+					var px = cell.bx * this.bw,
+						py = cell.by * this.bh,
+						addwidth = 0;
+
+					if (cell.trial && this.puzzle.execConfig("irowake")) {
+						addwidth = -basewidth / 2;
+					}
+
+					g.lineWidth = basewidth + addwidth;
+					// TODO get color
+					// TODO draw cap as well
+					g.strokeStyle = this.linecolor;
+
+					var dir = dirs[half - 1];
+
+					g.beginPath();
+					g.moveTo(px + this.bw * dir[0] * 0.2, py + this.bh * dir[1] * 0.2);
+					g.lineTo(px + this.bw * dir[0], py + this.bh * dir[1]);
+					g.stroke();
+				} else {
+					g.vhide();
+				}
+			}
 		},
 
 		drawCaps: function() {
