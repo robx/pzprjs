@@ -135,10 +135,9 @@
 						? 2
 						: 1;
 					var peke = 1 << (dir - 1);
+					peke |= 7 << 4;
 
-					if (cell.qsub & peke) {
-						cell.setQsub(cell.qsub & ~peke);
-					}
+					cell.setQsub(cell.qsub & ~peke);
 				}
 				border.draw();
 			}
@@ -235,8 +234,27 @@
 				border.setLineVal(common[0] + common[1] > 0 ? 1 : 2);
 				border.draw();
 			} else {
-				// TODO remove borders where possible
-				newVal |= val;
+				var oldLine = this.visited()[0];
+				if (oldLine) {
+					/* Find the other direction that would merge into the old line */
+					for (var i = 0; i < dirs.length; i++) {
+						var otherDir = dirs[i];
+						if (otherDir[0] === dir1[0] && otherDir[1] === dir1[1]) {
+							continue;
+						} else if (
+							(otherDir[0] === dir1[0] &&
+								otherDir[0] === oldLine.bx - this.bx) ||
+							(otherDir[1] === dir1[1] && otherDir[1] === oldLine.by - this.by)
+						) {
+							oldLine.setLineVal(0);
+							oldLine.draw();
+							newVal |= (i + 1) << 4;
+							break;
+						}
+					}
+				} else {
+					newVal |= val;
+				}
 			}
 			this.setQsub(newVal);
 		},
@@ -295,6 +313,7 @@
 
 			this.range.borders = blist;
 			this.range.crosses = xlist;
+			// TODO this should include more items
 			this.range.cells = clist;
 			this.drawLines();
 			this.drawHalfLines();
@@ -359,11 +378,12 @@
 					}
 
 					g.lineWidth = basewidth + addwidth;
-					// TODO get color
+					
 					// TODO draw cap as well
-					g.strokeStyle = this.linecolor;
-
 					var dir = dirs[half - 1];
+
+					var cross = cell.relcross(dir[0], dir[1]);
+					g.strokeStyle = this.getCrossColor(cross) || this.linecolor;
 
 					g.beginPath();
 					g.moveTo(px + this.bw * dir[0] * 0.2, py + this.bh * dir[1] * 0.2);
