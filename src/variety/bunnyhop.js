@@ -328,7 +328,9 @@
 			var newVal = this.qsub;
 			newVal &= ~(7 << 4);
 
-			if (common[0] || common[1]) {
+			if (prev === val) {
+				// Don't set a new line
+			} else if (common[0] || common[1]) {
 				var border = this.relbd(common[0], common[1]);
 				this.visited().each(function(other) {
 					if (other !== border) {
@@ -337,8 +339,14 @@
 					}
 				});
 
-				border.setLineVal(common[0] + common[1] > 0 ? 1 : 2);
+				var lv = common[0] + common[1] > 0 ? 1 : 2;
+				border.setLineVal(lv);
 				border.draw();
+
+				/* Remove peke overlapping new line */
+				var pekedir = border.isVert() ? (lv === 1 ? 4 : 3) : lv === 1 ? 2 : 1;
+				var peke = 1 << (pekedir - 1);
+				newVal &= ~peke;
 			} else {
 				var oldLine = this.visited()[0];
 				if (oldLine) {

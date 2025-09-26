@@ -39,7 +39,12 @@ ui.debug.addDebugData("bunnyhop", {
 	],
 	inputs: [
 		{
-			input: ["newboard,2,2", "playmode", "mouse,left,2,0,1.9,1,2,2,2.1,3,2,4"],
+			input: [
+				"newboard,2,2",
+				"setconfig,irowake,true",
+				"playmode",
+				"mouse,left,2,0,1.9,1,2,2,2.1,3,2,4"
+			],
 			result:
 				"pzprv3/bunnyhop/2/2/. . /. . /0 1 0 /0 2 0 /0 0 /0 0 /0 0 /0 0 /0 0 /"
 		},
