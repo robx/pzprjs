@@ -153,13 +153,82 @@
 		borderAsLine: true
 	},
 	BoardExec: {
+		getTranslatePekes: function(key) {
+			var trans = {};
+			switch (key) {
+				case this.FLIPY:
+					trans = { 1: 2, 2: 1, 5: 6, 6: 5, 9: 10, 10: 9, 13: 14, 14: 13 };
+					break;
+				case this.FLIPX:
+					trans = { 4: 8, 5: 9, 6: 10, 7: 11, 8: 4, 9: 5, 10: 6, 11: 7 };
+					break;
+				case this.TURNR:
+					trans = {
+						1: 8,
+						2: 4,
+						3: 12,
+						4: 1,
+						5: 9,
+						6: 5,
+						7: 13,
+						8: 2,
+						9: 10,
+						10: 6,
+						11: 14,
+						12: 3,
+						13: 11,
+						14: 7
+					};
+					break;
+				case this.TURNL:
+					trans = {
+						1: 4,
+						2: 8,
+						3: 12,
+						4: 2,
+						5: 6,
+						6: 10,
+						7: 14,
+						8: 1,
+						9: 5,
+						10: 9,
+						11: 13,
+						12: 3,
+						13: 7,
+						14: 11
+					};
+					break;
+			}
+			return trans;
+		},
+		getTranslateHalves: function(key) {
+			var trans = {};
+			switch (key) {
+				case this.FLIPY:
+					trans = { 1: 3, 3: 1, 2: 4, 4: 2 };
+					break;
+				case this.FLIPX:
+					trans = { 1: 2, 2: 1, 3: 4, 4: 3 };
+					break;
+				case this.TURNR:
+					trans = { 1: 2, 2: 4, 4: 3, 3: 1 };
+					break;
+				case this.TURNL:
+					trans = { 1: 3, 3: 4, 4: 2, 2: 1 };
+					break;
+			}
+			return trans;
+		},
+
 		adjustBoardData: function(key, d) {
 			var bd = this.board;
-			var blist = bd.border;
+			var blist = bd.border,
+				clist = bd.cell;
 
 			var flipvert = key === this.TURNL || key === this.FLIPX;
 			var fliphorz = key === this.TURNR || key === this.FLIPY;
 
+			/* Invert line values */
 			for (var i = 0; i < blist.length; i++) {
 				var border = blist[i];
 				if (!border.line) {
@@ -170,6 +239,23 @@
 				}
 			}
 
+			var pekeTrans = this.getTranslatePekes(key);
+			var halfTrans = this.getTranslateHalves(key);
+
+			/* Flip cell marks */
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				var pekes = cell.qsub & 15,
+					half = (cell.qsub >> 4) & 7;
+
+				pekes = pekeTrans[pekes] || pekes;
+				half = halfTrans[half];
+
+				cell.qsub = pekes | (half << 4);
+			}
+
+			/* Clear lines that point outside of the grid */
 			for (var x = 1; x < bd.maxbx; x += 2) {
 				if (key === this.REDUCEUP) {
 					var top = bd.getb(x, bd.minby + 2);
@@ -398,7 +484,6 @@
 
 					g.lineWidth = basewidth + addwidth;
 
-					// TODO draw cap as well
 					var dir = dirs[half - 1];
 
 					var cross = cell.relcross(dir[0], dir[1]);
