@@ -301,5 +301,8 @@
     "autocmp.recoil": "障害物が置かれるマスに背景色を付ける",
     "inputmode.boulder": "岩",
     "loop_full": "線の引かれないマスがあってはいけないとする",
-    "pause.desc.mobile": "「スタート」を押して再開"
+    "pause.desc.mobile": "「スタート」を押して再開",
+    "aqre_borders": "線が黒マスに触れるのは一度だけ",
+    "slither_full": "全ての点に線が通る",
+    "outlineshaded": "黒マスを線で囲む"
 }
