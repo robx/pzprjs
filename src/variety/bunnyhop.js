@@ -8,7 +8,10 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		inputModes: { edit: ["info-line"], play: ["line", "peke", "info-line"] },
+		inputModes: {
+			edit: ["info-line"],
+			play: ["line", "peke", "subline", "info-line"]
+		},
 		autoplay_func: "line",
 		mouseinputAutoEdit: function() {
 			this.inputempty();
@@ -25,6 +28,12 @@
 			this.prevPekeDir = 0;
 			this.mouseBorder = this.board.emptyborder;
 			this.common.mousereset.call(this);
+		},
+
+		inputQsubLine: function() {
+			if (this.mousestart) {
+				this.inputLineHalf();
+			}
 		},
 
 		inputpeke: function() {
@@ -76,26 +85,29 @@
 			this.inputBunnyhop();
 
 			if (this.mouseend && this.notInputted()) {
-				var cell = this.getcell();
-				if (!cell.isValid()) {
-					return;
-				}
-
-				var dx = this.inputPoint.bx - cell.bx,
-					dy = this.inputPoint.by - cell.by;
-
-				if (dx < 0 && dy < 0) {
-					cell.toggleLineHalf(16);
-				} else if (dx > 0 && dy < 0) {
-					cell.toggleLineHalf(32);
-				} else if (dx < 0 && dy > 0) {
-					cell.toggleLineHalf(48);
-				} else if (dx > 0 && dy > 0) {
-					cell.toggleLineHalf(64);
-				}
-
-				cell.draw();
+				this.inputLineHalf();
 			}
+		},
+		inputLineHalf: function() {
+			var cell = this.getcell();
+			if (!cell.isValid()) {
+				return;
+			}
+
+			var dx = this.inputPoint.bx - cell.bx,
+				dy = this.inputPoint.by - cell.by;
+
+			if (dx < 0 && dy < 0) {
+				cell.toggleLineHalf(16);
+			} else if (dx > 0 && dy < 0) {
+				cell.toggleLineHalf(32);
+			} else if (dx < 0 && dy > 0) {
+				cell.toggleLineHalf(48);
+			} else if (dx > 0 && dy > 0) {
+				cell.toggleLineHalf(64);
+			}
+
+			cell.draw();
 		},
 		inputBunnyhop: function() {
 			var pos = this.getpos(0.35);
