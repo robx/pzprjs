@@ -162,7 +162,21 @@
 		rows: 8,
 
 		hasborder: 2,
-		borderAsLine: true
+		borderAsLine: true,
+
+		irowakeRemake: function() {
+			this.common.irowakeRemake.call(this);
+			var gfx = this.puzzle.painter;
+			this.cross.each(function(cross) {
+				cross.color = gfx.getNewLineColor();
+			});
+		}
+	},
+	Cross: {
+		initialize: function() {
+			var gfx = this.puzzle.painter;
+			this.color = gfx.getNewLineColor();
+		}
 	},
 	BoardExec: {
 		getTranslatePekes: function(key) {
@@ -479,6 +493,7 @@
 		drawHalfLines: function() {
 			var g = this.vinc("halves");
 			var basewidth = Math.max(this.bw / 4, 2);
+			var irowake = this.puzzle.execConfig("irowake");
 
 			var clist = this.range.cells;
 
@@ -499,7 +514,7 @@
 						py = cell.by * this.bh,
 						addwidth = 0;
 
-					if (cell.trial && this.puzzle.execConfig("irowake")) {
+					if (cell.trial && irowake) {
 						addwidth = -basewidth / 2;
 					}
 
@@ -508,7 +523,14 @@
 					var dir = dirs[half - 1];
 
 					var cross = cell.relcross(dir[0], dir[1]);
-					g.strokeStyle = this.getCrossColor(cross) || this.linecolor;
+					var color = this.getCrossColor(cross);
+					g.strokeStyle =
+						color ||
+						(irowake
+							? cross.color
+							: cell.trial
+							? this.trialcolor
+							: this.linecolor);
 
 					g.beginPath();
 					g.moveTo(px + this.bw * dir[0] * 0.2, py + this.bh * dir[1] * 0.2);

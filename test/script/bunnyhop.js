@@ -123,6 +123,11 @@ ui.debug.addDebugData("bunnyhop", {
 			input: ["mouse,left,1.5,1.5", "mouse,left,3.5,3.5"],
 			result:
 				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /0 0 /0 32 /"
+		},
+		{
+			result: function(puzzle) {
+				puzzle.board.irowakeRemake();
+			}
 		}
 	]
 });
