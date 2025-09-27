@@ -251,20 +251,22 @@
 				}
 			}
 
-			var pekeTrans = this.getTranslatePekes(key);
-			var halfTrans = this.getTranslateHalves(key);
+			if (key & (this.TURN | this.FLIP)) {
+				var pekeTrans = this.getTranslatePekes(key);
+				var halfTrans = this.getTranslateHalves(key);
 
-			/* Flip cell marks */
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i];
+				/* Flip cell marks */
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
 
-				var pekes = cell.qsub & 15,
-					half = (cell.qsub >> 4) & 7;
+					var pekes = cell.qsub & 15,
+						half = (cell.qsub >> 4) & 7;
 
-				pekes = pekeTrans[pekes] || pekes;
-				half = halfTrans[half];
+					pekes = pekeTrans[pekes] || pekes;
+					half = halfTrans[half];
 
-				cell.qsub = pekes | (half << 4);
+					cell.qsub = pekes | (half << 4);
+				}
 			}
 
 			/* Clear lines that point outside of the grid */
@@ -344,12 +346,6 @@
 				// Don't set a new line
 			} else if (common[0] || common[1]) {
 				var border = this.relbd(common[0], common[1]);
-				this.visited().each(function(other) {
-					if (other !== border) {
-						other.setLineVal(0);
-						other.draw();
-					}
-				});
 
 				var lv = common[0] + common[1] > 0 ? 1 : 2;
 				border.setLineVal(lv);
@@ -440,6 +436,11 @@
 			this.range.borders = blist;
 			this.range.crosses = xlist;
 			this.range.cells = clist;
+
+			if (!this.context) {
+				return;
+			}
+
 			this.drawLines();
 			this.drawHalfLines();
 			this.drawCaps();

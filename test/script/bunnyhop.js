@@ -89,6 +89,40 @@ ui.debug.addDebugData("bunnyhop", {
 			input: ["mouse,right,3,2.5"],
 			result:
 				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 0 /1 0 /0 0 /0 3 /"
+		},
+		{
+			label: "Line between invalid does nothing",
+			input: ["mouse,left,2,0,2,1.9"],
+			result:
+				"pzprv3/bunnyhop/2/2/# # /. . /0 0 0 /0 0 0 /0 0 /0 0 /1 0 /0 0 /0 3 /"
+		},
+		{
+			label: "Click for half lines",
+			input: [
+				"newboard,2,2",
+				"mouse,left,1.5,1.5",
+				"mouse,left,1.5,2.5",
+				"playmode,subline",
+				"mouse,left,0.2,2.5"
+			],
+			result:
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /2 0 /0 0 /64 0 /0 0 /"
+		},
+		{
+			label: "Disconnect graph",
+			input: [
+				"playmode,auto",
+				"mouse,left,2,1.8,4,1.8,4,4",
+				"mouse,left,4,1.9,0,2"
+			],
+			result:
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 1 /0 0 /0 0 /0 0 /64 0 /0 0 /"
+		},
+		{
+			label: "Unset half line",
+			input: ["mouse,left,1.5,1.5", "mouse,left,3.5,3.5"],
+			result:
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /0 0 /0 32 /"
 		}
 	]
 });
