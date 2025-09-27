@@ -397,6 +397,7 @@
     "ceNumGtSize.armyants": "A number is greater than the size of the ant.",
     "ceOverlap.tachibk": "A block in the left grid overlaps an equally sized block in the right grid.",
     "cePortalMiscount.portal": "There aren't exactly two portals with the same number.",
+    "cePluralLine.bunnyhop": "A cell is visited multiple times.",
     "ceSuspend.sukoro": "There is a cell that is not filled in number.",
     "ceSuspend.sukororoom": "There is a cell that is not filled in number.",
     "ceSuspend.view": "There is a cell that is not filled in number.",
