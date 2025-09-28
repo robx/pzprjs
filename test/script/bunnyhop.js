@@ -100,13 +100,14 @@ ui.debug.addDebugData("bunnyhop", {
 			label: "Click for half lines",
 			input: [
 				"newboard,2,2",
+				"mouse,right,3,0.5",
 				"mouse,left,1.5,1.5",
 				"mouse,left,1.5,2.5",
 				"playmode,subline",
 				"mouse,left,0.2,2.5"
 			],
 			result:
-				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /2 0 /0 0 /64 0 /0 0 /"
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /2 0 /0 0 /64 1 /0 0 /"
 		},
 		{
 			label: "Disconnect graph",
@@ -116,18 +117,24 @@ ui.debug.addDebugData("bunnyhop", {
 				"mouse,left,4,1.9,0,2"
 			],
 			result:
-				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 1 /0 0 /0 0 /0 0 /64 0 /0 0 /"
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 1 /0 0 /0 0 /0 0 /64 1 /0 0 /"
 		},
 		{
 			label: "Unset half line",
 			input: ["mouse,left,1.5,1.5", "mouse,left,3.5,3.5"],
 			result:
-				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /0 0 /0 32 /"
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /0 1 /0 32 /"
 		},
 		{
 			result: function(puzzle) {
 				puzzle.board.irowakeRemake();
 			}
+		},
+		{
+			label: "Subclear",
+			input: ["subclear"],
+			result:
+				"pzprv3/bunnyhop/2/2/. . /. . /0 0 0 /0 0 0 /0 0 /0 0 /0 0 /0 0 /0 32 /"
 		}
 	]
 });

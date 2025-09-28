@@ -317,6 +317,14 @@
 			}
 		}
 	},
+	CellList: {
+		subclear: function() {
+			this.each(function(cell) {
+				cell.setQsub(cell.qsub & (7 << 4));
+			});
+			this.errclear();
+		}
+	},
 	CrossList: {
 		cellinside: function() {
 			var clist = new this.klass.CellList(),
