@@ -698,7 +698,8 @@
 			"checkMultiOverlap",
 			"checkDeadendLine",
 			"checkNoLine",
-			"checkOneLoop+"
+			"checkOneLoop+",
+			"checkHalfLines"
 		],
 
 		checkMultiOverlap: function() {
@@ -741,6 +742,11 @@
 					visited.seterr(1);
 				}
 			}
+		},
+		checkHalfLines: function() {
+			this.checkAllCell(function(cell) {
+				return cell.qsub & (7 << 4);
+			}, "lcDeadEnd");
 		}
 	}
 });
