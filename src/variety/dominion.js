@@ -129,7 +129,7 @@
 			this.checkAllBlock(
 				this.board.ublkmgr,
 				function(cell) {
-					return cell.isNum();
+					return cell.isValidNum();
 				},
 				function(w, h, a, n) {
 					return a !== 0;

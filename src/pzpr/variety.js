@@ -112,6 +112,7 @@
 			bosnianroad: [0, 0, "Bosnian Road", "Bosnian Road"],
 			box: [0, 0, "ボックス", "Box"],
 			brownies: [0, 0, "ブラウニー", "Brownies", "yosenabe"],
+			bunnyhop: [0, 0, "Bunnyhop", "Bunnyhop", "", { alias: "bnuuyhop" }],
 			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
 			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
 			circlesquare: [0, 0, "Circles and Squares", "Circles and Squares"],
@@ -379,6 +380,7 @@
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
 			roundtrip: [0, 0, "Round Trip", "Round Trip"],
 			sananko: [0, 0, "サンアンコー", "San-Anko", "kakuru"],
+			sashikabe: [0, 0, "Sashikabe", "Sashikabe", "loute"],
 			sashigane: [0, 0, "さしがね", "Sashigane", "loute"],
 			sashikazune: [0, 0, "さしカズね", "Sashikazune", "loute"],
 			satogaeri: [
