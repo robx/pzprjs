@@ -9,15 +9,15 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
-			play: ["diamond", "peke", "clear", "info-blk"]
+			play: ["diamond", "peke", "unshade", "info-blk"]
 		},
 
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.puzzle.getConfig("use") === 1) {
-					this.inputdot(this.btn === "left" ? 1 : 2);
+					this.inputcross(this.btn === "left" ? 1 : 2);
 				} else {
-					this.inputdot();
+					this.inputcross();
 				}
 			} else if (this.puzzle.editmode) {
 				this.inputqnum();
@@ -44,21 +44,17 @@
 
 		mouseinput_other: function() {
 			if (this.inputMode === "diamond") {
-				this.inputdot(1);
+				this.inputcross(1);
 			}
 		},
 		inputpeke: function() {
-			this.inputdot(2);
+			this.inputcross(2);
 		},
 		mouseinput_clear: function() {
-			if (this.puzzle.playmode) {
-				this.inputdot(0);
-			} else {
-				this.inputFixedNumber(-1);
-			}
+			this.inputFixedNumber(-1);
 		},
 
-		inputdot: function(fixed) {
+		inputcross: function(fixed) {
 			var cross = this.getcross();
 			if (this.prevPos.equals(cross)) {
 				return;
@@ -124,6 +120,12 @@
 
 			this.setQans(val === 1 ? 1 : 0);
 			this.setQsub(val === 2 ? 1 : 0);
+
+			if (val === 1) {
+				this.dotCells().each(function(cell) {
+					cell.setQsub(0);
+				});
+			}
 		},
 		dotCells: function() {
 			var bx = this.bx,
@@ -266,7 +268,8 @@
 
 			this.drawChassis();
 
-			this.drawDots();
+			this.drawDiamonds();
+			this.drawDotCells();
 
 			this.drawTarget();
 		},
@@ -291,7 +294,7 @@
 		getQuesNumberColor: function(cell) {
 			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
 		},
-		drawDots: function() {
+		drawDiamonds: function() {
 			var g = this.vinc("dot", "auto");
 
 			var d = this.range;
