@@ -12,9 +12,23 @@
 			play: ["diamond", "peke", "unshade", "info-blk"]
 		},
 
+		decIC: function(cell) {
+			this.inputData = cell.qsub !== 1 ? 2 : 0;
+		},
+
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if (this.puzzle.getConfig("use") === 1) {
+				if (this.mousestart && this.btn === "right") {
+					var cell = this.getcell();
+					if (cell.isNum() || this.getpos(0.25).equals(cell)) {
+						// Cell center clicked, go to qsub mode
+						this.decIC(cell);
+					}
+				}
+
+				if (this.inputData !== null && this.inputData < 8) {
+					this.inputcell();
+				} else if (this.puzzle.getConfig("use") === 1) {
 					this.inputcross(this.btn === "left" ? 1 : 2);
 				} else {
 					this.inputcross();
@@ -55,6 +69,9 @@
 		},
 
 		inputcross: function(fixed) {
+			if (this.inputData !== null && this.inputData < 8) {
+				return;
+			}
 			var cross = this.getcross();
 			if (this.prevPos.equals(cross)) {
 				return;
@@ -69,8 +86,9 @@
 				} else if (this.btn === "right") {
 					this.inputData = { 0: 2, 1: 0, 2: 1 }[cross.getDiamond()];
 				}
+				this.inputData |= 8;
 			}
-			cross.setDiamond(this.inputData);
+			cross.setDiamond(this.inputData & 7);
 			cross.draw();
 		}
 	},
@@ -137,6 +155,7 @@
 	Cell: {
 		minnum: 0,
 		maxnum: 4,
+		numberRemainsUnshaded: true,
 
 		diamonds: function() {
 			var crosses = new this.klass.CrossList([
