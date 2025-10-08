@@ -101,7 +101,7 @@
 		getDiamond: function() {
 			return this.qans ? 1 : this.qsub ? 2 : 0;
 		},
-		overlapsDiamond: function() {
+		overlapsDiamond: function(lenient) {
 			var self = this;
 			var crosses = this.board.crossinside(
 				this.bx - 2,
@@ -111,6 +111,9 @@
 			);
 			if (
 				crosses.some(function(cross) {
+					if (lenient && cross.bx !== self.bx && cross.by !== self.by) {
+						return false;
+					}
 					return cross !== self && cross.qans === 1;
 				})
 			) {
@@ -132,7 +135,9 @@
 				return;
 			}
 
-			if (!force && val === 1 && this.overlapsDiamond()) {
+			// When placing a diamond, the `lenient` parameter is false,
+			// when placing an aux. mark `lenient` is true.
+			if (!force && val && this.overlapsDiamond(val === 2)) {
 				return;
 			}
 
@@ -143,6 +148,13 @@
 				this.dotCells().each(function(cell) {
 					cell.setQsub(0);
 				});
+				for (var dir in this.adjacent) {
+					var other = this.adjacent[dir];
+					if (other.qsub) {
+						other.setQsub(0);
+						other.draw();
+					}
+				}
 			}
 		},
 		dotCells: function() {
@@ -192,6 +204,12 @@
 		hascross: 1,
 		addExtraInfo: function() {
 			this.diamondgraph = this.addInfoList(this.klass.AreaDiamondGraph);
+		},
+		setposCrosses: function() {
+			this.common.setposCrosses.call(this);
+			this.cross.each(function(cross) {
+				cross.initAdjacent();
+			});
 		}
 	},
 
