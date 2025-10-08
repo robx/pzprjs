@@ -157,6 +157,15 @@
 		maxnum: 4,
 		numberRemainsUnshaded: true,
 
+		allowUnshade: function() {
+			if (!this.common.allowUnshade()) {
+				return false;
+			}
+			return !this.dotCrosses().some(function(cross) {
+				return cross.qans;
+			});
+		},
+
 		diamonds: function() {
 			var crosses = new this.klass.CrossList([
 				this.relobj(-1, -3),
