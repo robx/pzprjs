@@ -10,9 +10,8 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["info-line"],
-			play: ["line", "peke", "subline", "info-line"]
+			play: ["line", "peke", "info-line"]
 		},
-		autoplay_func: "line",
 		mouseinputAutoEdit: function() {
 			this.inputempty();
 		},
@@ -25,15 +24,10 @@
 		},
 
 		mousereset: function() {
+			// TODO replace these
 			this.prevPekeDir = 0;
 			this.mouseBorder = this.board.emptyborder;
 			this.common.mousereset.call(this);
-		},
-
-		inputQsubLine: function() {
-			if (this.mousestart) {
-				this.inputLineHalf();
-			}
 		},
 
 		inputpeke: function() {
@@ -82,13 +76,6 @@
 		},
 
 		inputLine: function() {
-			this.inputBunnyhop();
-
-			if (this.mouseend && this.notInputted()) {
-				this.inputLineHalf();
-			}
-		},
-		inputLineHalf: function() {
 			var cell = this.getcell();
 			if (!cell.isValid()) {
 				return;
@@ -97,63 +84,27 @@
 			var dx = this.inputPoint.bx - cell.bx,
 				dy = this.inputPoint.by - cell.by;
 
+			var value = 0;
+
 			if (dx < 0 && dy < 0) {
-				cell.toggleLineHalf(16);
+				value = 16;
 			} else if (dx > 0 && dy < 0) {
-				cell.toggleLineHalf(32);
+				value = 32;
 			} else if (dx < 0 && dy > 0) {
-				cell.toggleLineHalf(48);
+				value = 48;
 			} else if (dx > 0 && dy > 0) {
-				cell.toggleLineHalf(64);
+				value = 64;
 			}
 
-			cell.draw();
-		},
-		inputBunnyhop: function() {
-			var pos = this.getpos(0.35);
-			if (this.prevPos.equals(pos)) {
-				return;
-			}
-			var border = this.prevPos.getborderobj(pos);
-
-			if (!border.isnull && border !== this.mouseBorder) {
-				var preferOne = border.isVert()
-					? border.bx > this.inputPoint.bx
-					: border.by > this.inputPoint.by;
-
-				var hasOne =
-					border.sidecell[0].isValid() && border.sidecell[0] !== this.mouseCell;
-				var hasTwo =
-					border.sidecell[1].isValid() && border.sidecell[1] !== this.mouseCell;
-
-				var newValue = (preferOne || !hasTwo) && hasOne ? 1 : hasTwo ? 2 : -1;
-
+			if (value) {
 				if (this.inputData === null) {
-					this.inputData = border.line === newValue ? 0 : 1;
+					this.inputData = cell.qsub & value ? 0 : 1;
 				}
-				if (this.inputData === 0) {
-					border.removeLine();
-				} else if (newValue > 0) {
-					border.setLineVal(newValue);
-					var cell = border.sidecell[newValue - 1];
-					this.mouseCell = cell;
-					this.mouseBorder = border;
 
-					var dir = border.isVert()
-						? newValue === 1
-							? 4
-							: 3
-						: newValue === 1
-						? 2
-						: 1;
-					var peke = 1 << (dir - 1);
-					peke |= 7 << 4;
-
-					cell.setQsub(cell.qsub & ~peke);
-				}
-				border.draw();
+				// TODO replace true with something??
+				cell.setLineHalf(value, this.inputData === 1);
+				cell.draw();
 			}
-			this.prevPos = pos;
 		}
 	},
 
@@ -346,7 +297,9 @@
 		}
 	},
 	Cell: {
-		toggleLineHalf: function(val) {
+		setLineHalf: function(val, add) {
+			// TODO read add parameter
+
 			var dirs = [
 				[-1, -1],
 				[1, -1],
