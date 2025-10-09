@@ -10,9 +10,8 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["info-line"],
-			play: ["line", "peke", "subline", "info-line"]
+			play: ["line", "peke", "info-line"]
 		},
-		autoplay_func: "line",
 		mouseinputAutoEdit: function() {
 			this.inputempty();
 		},
@@ -26,14 +25,7 @@
 
 		mousereset: function() {
 			this.prevPekeDir = 0;
-			this.mouseBorder = this.board.emptyborder;
 			this.common.mousereset.call(this);
-		},
-
-		inputQsubLine: function() {
-			if (this.mousestart) {
-				this.inputLineHalf();
-			}
 		},
 
 		inputpeke: function() {
@@ -82,13 +74,6 @@
 		},
 
 		inputLine: function() {
-			this.inputBunnyhop();
-
-			if (this.mouseend && this.notInputted()) {
-				this.inputLineHalf();
-			}
-		},
-		inputLineHalf: function() {
 			var cell = this.getcell();
 			if (!cell.isValid()) {
 				return;
@@ -97,63 +82,29 @@
 			var dx = this.inputPoint.bx - cell.bx,
 				dy = this.inputPoint.by - cell.by;
 
-			if (dx < 0 && dy < 0) {
-				cell.toggleLineHalf(16);
+			var value = 0;
+
+			if (dx * dx + dy * dy > 0.9 * 0.9) {
+				/* Do nothing */
+			} else if (dx < 0 && dy < 0) {
+				value = 16;
 			} else if (dx > 0 && dy < 0) {
-				cell.toggleLineHalf(32);
+				value = 32;
 			} else if (dx < 0 && dy > 0) {
-				cell.toggleLineHalf(48);
+				value = 48;
 			} else if (dx > 0 && dy > 0) {
-				cell.toggleLineHalf(64);
+				value = 64;
 			}
 
-			cell.draw();
-		},
-		inputBunnyhop: function() {
-			var pos = this.getpos(0.35);
-			if (this.prevPos.equals(pos)) {
-				return;
-			}
-			var border = this.prevPos.getborderobj(pos);
-
-			if (!border.isnull && border !== this.mouseBorder) {
-				var preferOne = border.isVert()
-					? border.bx > this.inputPoint.bx
-					: border.by > this.inputPoint.by;
-
-				var hasOne =
-					border.sidecell[0].isValid() && border.sidecell[0] !== this.mouseCell;
-				var hasTwo =
-					border.sidecell[1].isValid() && border.sidecell[1] !== this.mouseCell;
-
-				var newValue = (preferOne || !hasTwo) && hasOne ? 1 : hasTwo ? 2 : -1;
-
+			if (value) {
 				if (this.inputData === null) {
-					this.inputData = border.line === newValue ? 0 : 1;
+					this.inputData =
+						cell.visited().length > 0 || cell.qsub & value ? 0 : 1;
 				}
-				if (this.inputData === 0) {
-					border.removeLine();
-				} else if (newValue > 0) {
-					border.setLineVal(newValue);
-					var cell = border.sidecell[newValue - 1];
-					this.mouseCell = cell;
-					this.mouseBorder = border;
 
-					var dir = border.isVert()
-						? newValue === 1
-							? 4
-							: 3
-						: newValue === 1
-						? 2
-						: 1;
-					var peke = 1 << (dir - 1);
-					peke |= 7 << 4;
-
-					cell.setQsub(cell.qsub & ~peke);
-				}
-				border.draw();
+				cell.setLineHalf(value, this.inputData === 1);
+				cell.draw();
 			}
-			this.prevPos = pos;
 		}
 	},
 
@@ -346,7 +297,9 @@
 		}
 	},
 	Cell: {
-		toggleLineHalf: function(val) {
+		setLineHalf: function(val, add) {
+			// TODO read add parameter
+
 			var dirs = [
 				[-1, -1],
 				[1, -1],
@@ -365,18 +318,22 @@
 			newVal &= ~(7 << 4);
 
 			if (prev === val) {
-				// Don't set a new line
-			} else if (common[0] || common[1]) {
+				// Don't set a new line when not adding
+				if (add) {
+					newVal |= val;
+				}
+			} else if ((common[0] || common[1]) && add) {
 				var border = this.relbd(common[0], common[1]);
+				if (border.line === 0) {
+					var lv = common[0] + common[1] > 0 ? 1 : 2;
+					border.setLineVal(lv);
+					border.draw();
 
-				var lv = common[0] + common[1] > 0 ? 1 : 2;
-				border.setLineVal(lv);
-				border.draw();
-
-				/* Remove peke overlapping new line */
-				var pekedir = border.isVert() ? (lv === 1 ? 4 : 3) : lv === 1 ? 2 : 1;
-				var peke = 1 << (pekedir - 1);
-				newVal &= ~peke;
+					/* Remove peke overlapping new line */
+					var pekedir = border.isVert() ? (lv === 1 ? 4 : 3) : lv === 1 ? 2 : 1;
+					var peke = 1 << (pekedir - 1);
+					newVal &= ~peke;
+				}
 			} else {
 				var oldLine = this.visited()[0];
 				if (oldLine) {
@@ -390,14 +347,16 @@
 								otherDir[0] === oldLine.bx - this.bx) ||
 							(otherDir[1] === dir1[1] && otherDir[1] === oldLine.by - this.by)
 						) {
-							oldLine.setLineVal(0);
-							oldLine.draw();
-							newVal |= (i + 1) << 4;
-							break;
+							if (!add) {
+								oldLine.setLineVal(0);
+								oldLine.draw();
+								newVal |= (i + 1) << 4;
+								break;
+							}
 						}
 					}
 				} else {
-					newVal |= val;
+					newVal |= add ? val : prev;
 				}
 			}
 			this.setQsub(newVal);
