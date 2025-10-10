@@ -98,10 +98,10 @@
 
 			if (value) {
 				if (this.inputData === null) {
+					// TODO change to erase mode when first-click is on line
 					this.inputData = cell.qsub & value ? 0 : 1;
 				}
 
-				// TODO replace true with something??
 				cell.setLineHalf(value, this.inputData === 1);
 				cell.draw();
 			}
@@ -318,18 +318,26 @@
 			newVal &= ~(7 << 4);
 
 			if (prev === val) {
-				// Don't set a new line
-			} else if (common[0] || common[1]) {
+				// Don't set a new line when not adding
+				if (add) {
+					console.log("change back to no-op");
+					newVal |= val;
+				}
+			} else if ((common[0] || common[1]) && add) {
 				var border = this.relbd(common[0], common[1]);
+				if (border.line === 0) {
+					var lv = common[0] + common[1] > 0 ? 1 : 2;
+					border.setLineVal(lv);
+					border.draw();
 
-				var lv = common[0] + common[1] > 0 ? 1 : 2;
-				border.setLineVal(lv);
-				border.draw();
-
-				/* Remove peke overlapping new line */
-				var pekedir = border.isVert() ? (lv === 1 ? 4 : 3) : lv === 1 ? 2 : 1;
-				var peke = 1 << (pekedir - 1);
-				newVal &= ~peke;
+					/* Remove peke overlapping new line */
+					var pekedir = border.isVert() ? (lv === 1 ? 4 : 3) : lv === 1 ? 2 : 1;
+					var peke = 1 << (pekedir - 1);
+					newVal &= ~peke;
+					console.log("line merge");
+				} else {
+					console.log("swallow");
+				}
 			} else {
 				var oldLine = this.visited()[0];
 				if (oldLine) {
@@ -343,14 +351,21 @@
 								otherDir[0] === oldLine.bx - this.bx) ||
 							(otherDir[1] === dir1[1] && otherDir[1] === oldLine.by - this.by)
 						) {
-							oldLine.setLineVal(0);
-							oldLine.draw();
-							newVal |= (i + 1) << 4;
-							break;
+							if (!add) {
+								oldLine.setLineVal(0);
+								oldLine.draw();
+								newVal |= (i + 1) << 4;
+								console.log("break up two halves");
+								break;
+							}
 						}
 					}
-				} else {
+				} else if (add) {
+					console.log("final fallback add");
 					newVal |= val;
+				} else {
+					console.log("no-op erase");
+					newVal |= prev;
 				}
 			}
 			this.setQsub(newVal);
