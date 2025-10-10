@@ -24,9 +24,7 @@
 		},
 
 		mousereset: function() {
-			// TODO replace these
 			this.prevPekeDir = 0;
-			this.mouseBorder = this.board.emptyborder;
 			this.common.mousereset.call(this);
 		},
 
@@ -86,7 +84,9 @@
 
 			var value = 0;
 
-			if (dx < 0 && dy < 0) {
+			if (dx * dx + dy * dy > 0.9 * 0.9) {
+				/* Do nothing */
+			} else if (dx < 0 && dy < 0) {
 				value = 16;
 			} else if (dx > 0 && dy < 0) {
 				value = 32;
@@ -98,8 +98,8 @@
 
 			if (value) {
 				if (this.inputData === null) {
-					// TODO change to erase mode when first-click is on line
-					this.inputData = cell.qsub & value ? 0 : 1;
+					this.inputData =
+						cell.visited().length > 0 || cell.qsub & value ? 0 : 1;
 				}
 
 				cell.setLineHalf(value, this.inputData === 1);
@@ -320,7 +320,6 @@
 			if (prev === val) {
 				// Don't set a new line when not adding
 				if (add) {
-					console.log("change back to no-op");
 					newVal |= val;
 				}
 			} else if ((common[0] || common[1]) && add) {
@@ -334,9 +333,6 @@
 					var pekedir = border.isVert() ? (lv === 1 ? 4 : 3) : lv === 1 ? 2 : 1;
 					var peke = 1 << (pekedir - 1);
 					newVal &= ~peke;
-					console.log("line merge");
-				} else {
-					console.log("swallow");
 				}
 			} else {
 				var oldLine = this.visited()[0];
@@ -355,17 +351,12 @@
 								oldLine.setLineVal(0);
 								oldLine.draw();
 								newVal |= (i + 1) << 4;
-								console.log("break up two halves");
 								break;
 							}
 						}
 					}
-				} else if (add) {
-					console.log("final fallback add");
-					newVal |= val;
 				} else {
-					console.log("no-op erase");
-					newVal |= prev;
+					newVal |= add ? val : prev;
 				}
 			}
 			this.setQsub(newVal);
