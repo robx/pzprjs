@@ -52,30 +52,8 @@
 		relation: { "cell.qans": "node", "cell.qnum": "node" },
 		enabled: true
 	},
-	"AreaShade8Graph:AreaShadeGraph@chainedb,archipelago": {
+	"AreaShade8Graph@chainedb,archipelago": {
 		enabled: true,
-		setComponentRefs: function(obj, component) {
-			obj.blk8 = component;
-		},
-		getObjNodeList: function(nodeobj) {
-			return nodeobj.blk8nodes;
-		},
-		resetObjNodeList: function(nodeobj) {
-			nodeobj.blk8nodes = [];
-		},
-
-		getSideObjByNodeObj: function(cell) {
-			var list = cell.getdir8clist(),
-				cells = [];
-			for (var i = 0; i < list.length; i++) {
-				var cell2 = list[i][0];
-				if (this.isnodevalid(cell2)) {
-					cells.push(cell2);
-				}
-			}
-			return cells;
-		},
-
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
 			var set = new Set();
@@ -83,12 +61,6 @@
 				set.add(cell.sblk);
 			});
 			component.blockset = Array.from(set);
-		}
-	},
-
-	"Board@chainedb,archipelago": {
-		addExtraInfo: function() {
-			this.sblk8mgr = this.addInfoList(this.klass.AreaShade8Graph);
 		}
 	},
 

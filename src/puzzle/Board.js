@@ -54,6 +54,7 @@ pzpr.classmgr.makeCommon({
 			this.linegraph = this.addInfoList(classes.LineGraph); // 交差なし線のグラフ
 			this.roommgr = this.addInfoList(classes.AreaRoomGraph); // 部屋情報を保持する
 			this.sblkmgr = this.addInfoList(classes.AreaShadeGraph); // 黒マス情報を保持する
+			this.sblk8mgr = this.addInfoList(classes.AreaShade8Graph);
 			this.ublkmgr = this.addInfoList(classes.AreaUnshadeGraph); // 白マス情報を保持する
 			this.nblkmgr = this.addInfoList(classes.AreaNumberGraph); // 数字情報を保持する
 
