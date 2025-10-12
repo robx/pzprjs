@@ -443,6 +443,7 @@
 			tents: [0, 0, "Tents", "Tents", "tents"],
 			teri: [0, 0, "テリトリー", "Territory", "kurodoko"],
 			tetrochain: [0, 0, "テトロチェーン", "Tetrochain"],
+			tetrochaink: [0, 0, "テトロチェーンＫ", "Tetrochain-K", "kurarin"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilecity: [0, 0, "タイルシティー", "Tile City"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
