@@ -225,6 +225,7 @@ function toBGimage(pid) {
 		"tents",
 		"teri",
 		"tetrochain",
+		"tetrochaink",
 		"tetrominous",
 		"tilecity",
 		"timebomb",
