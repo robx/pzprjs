@@ -487,17 +487,9 @@ ui.popupmgr.addpopup("urloutput", {
 	},
 
 	reset: function(px, py) {
-		var form = this.form,
-			pid = ui.puzzle.pid,
-			exists = pzpr.variety(pid).exists,
-			parser = pzpr.parser;
+		var parser = pzpr.parser;
 		var url = ui.puzzle.getURL(parser.URL_PZPRV3);
 		this.urlanchor.href = this.urlanchor.textContent = url;
-		form.kanpen.style.display = form.kanpen.nextSibling.style.display = exists.kanpen
-			? ""
-			: "none";
-		form.heyaapp.style.display = form.heyaapp.nextSibling.style.display =
-			pid === "heyawake" ? "" : "none";
 	},
 
 	show: function(px, py) {
@@ -513,16 +505,10 @@ ui.popupmgr.addpopup("urloutput", {
 		var url = "",
 			parser = pzpr.parser;
 		switch (e.target.name) {
-			case "kanpen":
-				url = ui.puzzle.getURL(parser.URL_KANPEN);
-				break;
 			case "pzprv3e":
 				url = ui.puzzle
 					.getURL(parser.URL_PZPRV3)
 					.replace(/\?(\w+)/, "?$1_edit");
-				break;
-			case "heyaapp":
-				url = ui.puzzle.getURL(parser.URL_HEYAAPP);
 				break;
 		}
 		this.urlanchor.href = this.urlanchor.textContent = url;
@@ -577,9 +563,6 @@ ui.popupmgr.addpopup("filesave", {
 	},
 	reset: function() {
 		/* ファイル形式選択オプション */
-		var ispencilbox = pzpr.variety(ui.puzzle.pid).exists.pencilbox;
-		this.form.filetype.options[1].disabled = !ispencilbox;
-		this.form.filetype.options[2].disabled = !ispencilbox;
 		var parser = pzpr.parser;
 		this.form.ta.value = ui.puzzle.getFileData(parser.FILE_PZPR, {});
 		this.form.ta2.value = this.form.ta.value.replace(/\n/g, "/");
@@ -637,12 +620,6 @@ ui.popupmgr.addpopup("filesave", {
 			filetype = parser.FILE_PZPR,
 			option = {};
 		switch (form.filetype.value) {
-			case "filesave2":
-				filetype = parser.FILE_PBOX;
-				break;
-			case "filesave4":
-				filetype = parser.FILE_PBOX_XML;
-				break;
 			case "filesave3":
 				filetype = parser.FILE_PZPR;
 				option.history = true;
