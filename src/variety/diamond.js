@@ -177,7 +177,7 @@
 		numberRemainsUnshaded: true,
 
 		allowUnshade: function() {
-			if (!this.common.allowUnshade()) {
+			if (this.qnum !== -1) {
 				return false;
 			}
 			return !this.dotCrosses().some(function(cross) {
