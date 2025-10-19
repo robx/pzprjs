@@ -193,6 +193,7 @@
 				"",
 				{ pzprurl: "hashi", kanpen: "hashi", alias: "bridges" }
 			],
+			heavydots: [0, 0, "Heavy Dots", "Heavy Dots"],
 			hebi: [1, 0, "へびいちご", "Hebi-Ichigo", "", { old: "snakes" }],
 			herugolf: [0, 0, "ヘルゴルフ", "Herugolf"],
 			heteromino: [0, 0, "ヘテロミノ", "Heteromino", "nawabari"],
