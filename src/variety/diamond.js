@@ -86,6 +86,13 @@
 				} else if (this.btn === "right") {
 					this.inputData = { 0: 2, 1: 0, 2: 1 }[cross.getDiamond()];
 				}
+				if (
+					fixed !== 1 &&
+					this.inputData === 1 &&
+					cross.overlapsDiamond(false)
+				) {
+					this.inputData = this.btn === "left" ? 2 : 0;
+				}
 				this.inputData |= 8;
 			}
 			cross.setDiamond(this.inputData & 7);
