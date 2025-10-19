@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["kurarin"], {
+})(["kurarin", "tetrochaink"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -95,6 +95,25 @@
 			}
 		}
 	},
+	"MouseEvent@tetrochaink": {
+		inputModes: {
+			edit: ["info-blk"],
+			play: ["shade", "unshade", "info-blk"]
+		},
+		mouseinputAutoPlay: function() {
+			this.inputShade();
+		},
+		dispInfoBlk: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull || !cell.isShade()) {
+				return;
+			}
+			cell.blk8.clist.setinfo(1);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -177,16 +196,19 @@
 		}
 	},
 
-	LineGraph: {
+	"LineGraph@kurarin": {
+		enabled: true
+	},
+	"AreaShadeGraph@tetrochaink": {
+		enabled: true
+	},
+	"AreaShade8Graph@tetrochaink": {
 		enabled: true
 	},
 
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
-		gridcolor_type: "LIGHT",
-		irowake: true,
-
 		shadecolor: "#444444",
 		enablebcolor: true,
 
@@ -194,16 +216,19 @@
 			this.drawBGCells();
 
 			this.drawShadedCells();
-			this.drawDotCells();
+			if (this.pid === "kurarin") {
+				this.drawDotCells();
+			}
 			this.drawGrid();
 
 			this.drawDots();
 
 			this.drawChassis();
 
-			this.drawLines();
-
-			this.drawPekes();
+			if (this.pid === "kurarin") {
+				this.drawLines();
+				this.drawPekes();
+			}
 
 			this.drawCursor(false, this.puzzle.editmode);
 		},
@@ -230,6 +255,13 @@
 			}
 			return null;
 		}
+	},
+	"Graphic@kurarin": {
+		gridcolor_type: "LIGHT",
+		irowake: true
+	},
+	"Graphic@tetrochaink": {
+		bgcellcolor_func: "qsub1"
 	},
 
 	//---------------------------------------------------------
@@ -269,12 +301,16 @@
 		decodeData: function() {
 			this.decodeDotFile();
 			this.decodeCellAns();
-			this.decodeBorderLine();
+			if (this.pid === "kurarin") {
+				this.decodeBorderLine();
+			}
 		},
 		encodeData: function() {
 			this.encodeDotFile();
 			this.encodeCellAns();
-			this.encodeBorderLine();
+			if (this.pid === "kurarin") {
+				this.encodeBorderLine();
+			}
 		}
 	},
 
@@ -340,6 +376,84 @@
 			this.checkAllCell(function(cell) {
 				return cell.lcnt === 0 && !cell.isShade();
 			}, "ceEmpty");
+		}
+	},
+	"AnsCheck@tetrochaink": {
+		checklist: [
+			"checkOverShadeCell",
+			"checkAdjacentShapes",
+
+			"checkShadeWhite",
+			"checkUnderShadeCell",
+			"checkShadeBlack",
+			"checkShadeGray",
+
+			"checkConnect8Shade",
+			"doneShadingDecided"
+		],
+
+		checkOverShadeCell: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a <= 4;
+				},
+				"csGt4"
+			);
+		},
+		checkUnderShadeCell: function() {
+			this.checkAllArea(
+				this.board.sblkmgr,
+				function(w, h, a, n) {
+					return a >= 4;
+				},
+				"csLt4"
+			);
+		},
+		checkConnect8Shade: function() {
+			this.checkOneArea(this.board.sblk8mgr, "csDivide");
+		},
+
+		checkAdjacentShapes: function() {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (cell.bx === bd.maxbx - 1 || cell.by === bd.maxby - 1) {
+					continue;
+				}
+
+				var i,
+					adc = cell.adjacent;
+				var cells = [
+					[cell, adc.right.adjacent.bottom],
+					[adc.right, adc.bottom]
+				];
+				for (i = 0; i < 2; i++) {
+					if (cells[i][0].isShade() && cells[i][1].isShade()) {
+						break;
+					}
+				}
+				if (i === 2) {
+					continue;
+				}
+
+				var block1 = cells[i][0].sblk,
+					block2 = cells[i][1].sblk;
+				if (
+					block1 === block2 ||
+					block1.clist.length !== 4 ||
+					this.isDifferentShapeBlock(block1, block2)
+				) {
+					continue;
+				}
+
+				this.failcode.add("bsSameShape");
+				if (this.checkOnly) {
+					break;
+				}
+				block1.clist.seterr(1);
+				block2.clist.seterr(1);
+			}
 		}
 	},
 	FailCode: {

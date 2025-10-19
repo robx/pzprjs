@@ -161,6 +161,29 @@ pzpr.classmgr.makeCommon({
 			this.puzzle.painter.repaintBlocks(clist_all);
 		}
 	},
+	"AreaShade8Graph:AreaShadeGraph": {
+		setComponentRefs: function(obj, component) {
+			obj.blk8 = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.blk8nodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.blk8nodes = [];
+		},
+
+		getSideObjByNodeObj: function(cell) {
+			var list = cell.getdir8clist(),
+				cells = [];
+			for (var i = 0; i < list.length; i++) {
+				var cell2 = list[i][0];
+				if (this.isnodevalid(cell2)) {
+					cells.push(cell2);
+				}
+			}
+			return cells;
+		}
+	},
 
 	"AreaUnshadeGraph:AreaGraphBase": {
 		relation: { "cell.qans": "node" },
