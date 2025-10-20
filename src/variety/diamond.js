@@ -67,12 +67,42 @@
 		mouseinput_clear: function() {
 			this.inputFixedNumber(-1);
 		},
+		initialize: function() {
+			this.prevDiamond = new this.klass.Address();
+			this.common.initialize.call(this);
+		},
+		mousereset: function() {
+			this.prevDiamond.reset();
+			this.common.mousereset.call(this);
+		},
 
 		inputcross: function(fixed) {
 			if (this.inputData !== null && this.inputData < 8) {
 				return;
 			}
+
+			var prev = this.prevDiamond.getx();
 			var cross = this.getcross();
+			if (!prev.isnull) {
+				var cell = this.getcell();
+				var candidate = null;
+
+				// Prefer crosses that share a parity with the last placed diamond
+				if (Math.abs(cell.bx - prev.bx) + Math.abs(cell.by - prev.by) === 4) {
+					if (cell.bx > prev.bx + 1) {
+						candidate = prev.relcross(4, 0);
+					} else if (cell.bx < prev.bx - 1) {
+						candidate = prev.relcross(-4, 0);
+					} else if (cell.by > prev.by + 1) {
+						candidate = prev.relcross(0, 4);
+					} else if (cell.by < prev.by - 1) {
+						candidate = prev.relcross(0, -4);
+					}
+				}
+				if (candidate && !candidate.overlapsDiamond()) {
+					cross = candidate;
+				}
+			}
 			if (this.prevPos.equals(cross)) {
 				return;
 			}
@@ -96,6 +126,9 @@
 				this.inputData |= 8;
 			}
 			cross.setDiamond(this.inputData & 7);
+			if (cross.getDiamond() === 1) {
+				this.prevDiamond.set(cross);
+			}
 			cross.draw();
 		}
 	},
