@@ -188,14 +188,8 @@
 				this.dotCells().each(function(cell) {
 					cell.setQsub(0);
 				});
-				for (var dir in this.adjacent) {
-					var other = this.adjacent[dir];
-					if (other.qsub) {
-						other.setQsub(0);
-						other.draw();
-					}
-				}
 			}
+			this.drawaround();
 		},
 		dotCells: function() {
 			var bx = this.bx,
@@ -401,12 +395,13 @@
 
 				g.vid = "s_dot_" + dot.id;
 				var outline = this.getDiamondColor(dot);
-				if (dot.qans === 1) {
+				var value = dot.getDiamond();
+				if (value === 1) {
 					g.lineWidth = (1 + this.cw / 20) | 0;
 					g.fillStyle = outline;
 					g.setOffsetLinePath(px, py, -bw, 0, 0, bh, bw, 0, 0, -bh, true);
 					g.fill();
-				} else if (dot.qsub === 1) {
+				} else if (value === 2 && !dot.overlapsDiamond(true)) {
 					g.lineWidth = (1 + this.cw / 30) | 0;
 					g.strokeStyle = outline;
 					g.beginPath();

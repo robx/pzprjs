@@ -71,7 +71,7 @@ ui.debug.addDebugData("diamond", {
 		},
 		{
 			input: ["playmode,diamond", "mouse,right,6,2", "mouse,right,6,4"],
-			result: "pzprv3/diamond/3/4/. . . . /. . . . /. . . . /1 0 0 /0 0 1 /"
+			result: "pzprv3/diamond/3/4/. . . . /. . . . /. . . . /1 0 0 /0 2 1 /"
 		}
 	]
 });
