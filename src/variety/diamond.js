@@ -341,7 +341,7 @@
 
 		paint: function() {
 			this.drawBGCells();
-			this.drawGrid();
+			this.drawBaseMarks();
 
 			this.drawQuesCells();
 			this.drawQuesNumbers();
@@ -352,6 +352,46 @@
 			this.drawDotCells();
 
 			this.drawTarget();
+		},
+
+		drawBaseMarks: function() {
+			var bd = this.board;
+			var g = this.vinc("cross_mark", "auto", true);
+			g.strokeStyle = this.quescolor;
+			g.fillStyle = this.quescolor;
+			g.lineWidth = 1;
+
+			var size = this.cw / 10;
+			var clist = this.range.crosses;
+			for (var i = 0; i < clist.length; i++) {
+				var cross = clist[i];
+				g.vid = "x_cm_" + cross.id;
+
+				if (
+					cross.bx === bd.minbx ||
+					cross.bx === bd.maxbx ||
+					cross.by === bd.minby ||
+					cross.by === bd.maxby
+				) {
+					g.vhide();
+					continue;
+				}
+
+				var px = cross.bx * this.bw,
+					py = cross.by * this.bh;
+
+				if ((cross.bx + cross.by) & 2) {
+					g.beginPath();
+					g.moveTo(px - size, py);
+					g.lineTo(px + size, py);
+					g.moveTo(px, py - size);
+					g.lineTo(px, py + size);
+					g.closePath();
+					g.stroke();
+				} else {
+					g.fillCircle(px, py, size / 2);
+				}
+			}
 		},
 
 		getQuesCellColor: function(cell) {
