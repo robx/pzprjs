@@ -268,9 +268,6 @@ pzpr.classmgr.makeCommon({
 		},
 
 		isNoop: function() {
-			if (this.num === null) {
-				return false;
-			}
 			return this.old === this.num;
 		},
 

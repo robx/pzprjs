@@ -373,6 +373,13 @@
 		isBankEdit: true,
 		disInputHatena: true,
 
+		isNoop: function() {
+			if (this.num === null) {
+				return false;
+			}
+			return this.old === this.num;
+		},
+
 		isModify: function(lastope) {
 			if (
 				lastope.isBankEdit &&
