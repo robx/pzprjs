@@ -371,8 +371,7 @@
 					cross.bx === bd.minbx ||
 					cross.bx === bd.maxbx ||
 					cross.by === bd.minby ||
-					cross.by === bd.maxby ||
-					cross.overlapsDiamond(true)
+					cross.by === bd.maxby
 				) {
 					g.vhide();
 					continue;
