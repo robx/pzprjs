@@ -138,6 +138,12 @@
 	},
 
 	Cross: {
+		posthook: {
+			qans: function() {
+				this.drawaround();
+			}
+		},
+
 		getDiamond: function() {
 			return this.qans ? 1 : this.qsub ? 2 : 0;
 		},
@@ -189,7 +195,6 @@
 					cell.setQsub(0);
 				});
 			}
-			this.drawaround();
 		},
 		dotCells: function() {
 			var bx = this.bx,
