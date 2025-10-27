@@ -134,6 +134,7 @@ function toBGimage(pid) {
 		"curving",
 		"dbchoco",
 		"detour",
+		"diamond",
 		"dominion",
 		"doppelblock",
 		"dotchi",

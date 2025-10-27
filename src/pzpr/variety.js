@@ -145,6 +145,7 @@
 			curving: [0, 0, "カービングロード", "Curving Road"],
 			dbchoco: [0, 0, "ダブルチョコ", "Double Choco", "cbblock"],
 			detour: [0, 0, "Detour", "Detour", "country"],
+			diamond: [0, 0, "Diamond Chain", "Diamond Chain"],
 			disloop: [0, 0, "Disorderly Loop", "Disorderly Loop", "tapaloop"],
 			distopia: [0, 0, "Distopia", "Distopia", "statuepark"],
 			dominion: [0, 0, "ドミニオン", "Dominion"],
