@@ -9,7 +9,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear", "info-blk"],
-			play: ["diamond", "peke", "unshade", "info-blk"]
+			play: ["diamond", "peke", "unshade", "dot", "info-blk"]
 		},
 
 		decIC: function(cell) {
@@ -18,6 +18,14 @@
 
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
+				if (this.mousestart) {
+					this.isInputtingDot = this.puzzle.key.isALT;
+				}
+				if (this.isInputtingDot) {
+					this.inputdot();
+					return;
+				}
+
 				if (this.mousestart && this.btn === "right") {
 					var cell = this.getcell();
 					if (cell.isNum() || this.getpos(0.25).equals(cell)) {
@@ -59,7 +67,37 @@
 		mouseinput_other: function() {
 			if (this.inputMode === "diamond") {
 				this.inputcross(1);
+			} else if (this.inputMode === "dot") {
+				this.inputdot();
 			}
+		},
+		inputdot: function() {
+			if (!this.mousestart) {
+				return;
+			}
+
+			var pos = this.getpos(0.15);
+			if (this.prevPos.equals(pos)) {
+				return;
+			}
+
+			var dot = pos.getDot();
+			if (!dot) {
+				return;
+			}
+			if (this.inputData === null) {
+				if (this.puzzle.getConfig("use") === 1) {
+					var fixed = this.btn === "left" ? 2 : 3;
+					this.inputData = dot.getDot() === fixed ? 0 : fixed;
+				} else if (this.btn === "left") {
+					this.inputData = { 2: 3, 3: -1 }[dot.getDot()] || 2;
+				} else if (this.btn === "right") {
+					this.inputData = { 3: 2, 2: -1 }[dot.getDot()] || 3;
+				}
+			}
+			dot.setDot(Math.max(0, this.inputData));
+			dot.draw();
+			this.prevPos = pos;
 		},
 		inputpeke: function() {
 			this.inputcross(2);
@@ -145,7 +183,7 @@
 		},
 
 		getDiamond: function() {
-			return this.qans ? 1 : this.qsub ? 2 : 0;
+			return this.qans ? 1 : this.qsub === 1 ? 2 : 0;
 		},
 		overlapsDiamond: function(lenient) {
 			var self = this;
@@ -189,12 +227,6 @@
 
 			this.setQans(val === 1 ? 1 : 0);
 			this.setQsub(val === 2 ? 1 : 0);
-
-			if (val === 1) {
-				this.dotCells().each(function(cell) {
-					cell.setQsub(0);
-				});
-			}
 		},
 		dotCells: function() {
 			var bx = this.bx,
@@ -202,7 +234,16 @@
 			return this.board.cellinside(bx - 1, by - 1, bx + 1, by + 1);
 		}
 	},
-
+	Border: {
+		overlapsDiamond: function() {
+			for (var i = 0; i < 2; i++) {
+				if (this.sidecross[i].qans === 1) {
+					return true;
+				}
+			}
+			return false;
+		}
+	},
 	Cell: {
 		minnum: 0,
 		maxnum: 4,
@@ -237,10 +278,16 @@
 			var bx = this.bx,
 				by = this.by;
 			return this.board.crossinside(bx - 1, by - 1, bx + 1, by + 1);
+		},
+		/* Check if a regular qsub=1 should be drawn here */
+		isDot: function() {
+			return this.qsub === 1 && this.allowUnshade();
 		}
 	},
 	Board: {
+		hasborder: 1,
 		hascross: 1,
+		hasdots: 1,
 		addExtraInfo: function() {
 			this.diamondgraph = this.addInfoList(this.klass.AreaDiamondGraph);
 		},
@@ -337,12 +384,40 @@
 		}
 	},
 
+	Dot: {
+		getTrial: function() {
+			return this.piece.trial;
+		},
+		getDot: function() {
+			return this.piece.qsub;
+		},
+		isHidden: function() {
+			if (this.piece.allowUnshade && !this.piece.allowUnshade()) {
+				return true;
+			}
+			if (this.piece.group === "border" && this.piece.overlapsDiamond()) {
+				return true;
+			}
+			return this.piece.qans === 1;
+		},
+		setDot: function(val) {
+			if (val && this.isHidden()) {
+				return;
+			}
+
+			this.puzzle.opemgr.disCombine = true;
+			this.piece.setQsub(val);
+			this.puzzle.opemgr.disCombine = false;
+		}
+	},
+
 	Graphic: {
 		hideHatena: true,
 
 		fgcellcolor_func: "qnum",
 		fontShadecolor: "white",
 		pekecolor: "rgb(127,127,255)",
+		altpekecolor: "rgb(80,80,127)",
 
 		paint: function() {
 			this.drawBGCells();
@@ -355,8 +430,23 @@
 
 			this.drawDiamonds();
 			this.drawDotCells();
+			this.drawDots();
 
 			this.drawTarget();
+		},
+
+		getDotFillColor: function(dot) {
+			var value = dot.isHidden() ? 0 : dot.getDot();
+			if (value === 2) {
+				return dot.getTrial() ? this.trialcolor : this.altpekecolor;
+			}
+			return value === 3 ? "white" : null;
+		},
+		getDotOutlineColor: function(dot) {
+			if (!dot.isHidden() && dot.getDot() === 3) {
+				return dot.getTrial() ? this.trialcolor : this.altpekecolor;
+			}
+			return null;
 		},
 
 		drawBaseMarks: function() {
@@ -420,7 +510,7 @@
 			return cell.qcmp === 1 ? this.qcmpcolor : this.fontShadecolor;
 		},
 		drawDiamonds: function() {
-			var g = this.vinc("dot", "auto");
+			var g = this.vinc("diamond", "auto");
 
 			var d = this.range;
 			var size = this.cw * 0.2;
@@ -438,7 +528,7 @@
 					px = bx * this.bw,
 					py = by * this.bh;
 
-				g.vid = "s_dot_" + dot.id;
+				g.vid = "s_diamond_" + dot.id;
 				var outline = this.getDiamondColor(dot);
 				var value = dot.getDiamond();
 				if (value === 1) {
@@ -492,12 +582,21 @@
 			this.decodeCross(function(cross, ca) {
 				cross.setDiamond(+ca, true);
 			}, true);
+			this.decodeDotFile();
 		},
 		encodeData: function() {
 			this.encodeCellQnumAns();
 			this.encodeCross(function(cross) {
 				return cross.getDiamond() + " ";
 			}, true);
+
+			if (
+				this.board.dots.find(function(dot) {
+					return dot.getDot() >= 2;
+				})
+			) {
+				this.encodeDotFile();
+			}
 		}
 	},
 	AnsCheck: {
