@@ -100,12 +100,12 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeBorderLine();
-			// TODO anum
+			this.decodeCellAnumsub();
 		},
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeBorderLine();
-			// TODO anum
+			this.encodeCellAnumsub();
 		}
 	},
 
