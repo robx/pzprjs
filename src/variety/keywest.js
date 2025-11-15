@@ -54,8 +54,7 @@
 		gridcolor_type: "THIN",
 		irowake: true,
 
-		// TODO change
-		circleratio: [0.35, 0.3],
+		circleratio: [0.37, 0.33],
 
 		lwratio: 8,
 
@@ -79,8 +78,12 @@
 			);
 		},
 
-		getCircleStrokeColor: function(cell) {
+		getQuesNumberColor: function(cell) {
 			return cell.error === 1 ? this.errcolor1 : this.quescolor;
+		},
+		getCircleStrokeColor: function(cell) {
+			// Also shows connectivity error
+			return cell.error ? this.errcolor1 : this.quescolor;
 		},
 		getCircleFillColor: function(cell) {
 			return cell.error === 1 ? this.errbcolor1 : "white";
