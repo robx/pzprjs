@@ -396,6 +396,7 @@
 				{ alias: "sato", kanpen: "satogaeri" }
 			],
 			scrin: [0, 0, "スクリン", "Scrin"],
+			sendai: [0, 0, "宮城県仙台市", "Sendai-Miyagi"],
 			shakashaka: [0, 1, "シャカシャカ", "Shakashaka"],
 			shikaku: [0, 1, "四角に切れ", "Shikaku", "shikaku"],
 			shimaguni: [1, 0, "島国", "Shimaguni", "shimaguni"],
