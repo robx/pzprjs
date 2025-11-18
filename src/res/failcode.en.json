@@ -274,6 +274,7 @@
     "bkSize1.rectslider": "There is an isolated shaded cell.",
     "bkSize1.yajitatami": "The length of the tatami is one.",
     "bkSizeEq.fillmat": "The number is equal to the size of the tatami.",
+    "bkSizeEq.morningwalk": "A shaded visit and the following unshaded visit have the same length.",
     "bkSizeGt.aquapelago": "A group of shaded cells is larger than the number.",
     "bkSizeGt.dbchoco": "A number is smaller than the size of the shape.",
     "bkSizeGt.fillomino": "A number is smaller than the size of the area.",

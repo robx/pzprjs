@@ -237,7 +237,8 @@ ui.keypopup = {
 		distopia: [10, 0],
 		numcity: [10, 10],
 		cityspace: [10, 0],
-		diamond: [4, 0]
+		diamond: [4, 0],
+		morningwalk: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -503,6 +504,7 @@ ui.keypopup = {
 			pid === "waterwalk" ||
 			pid === "firewalk" ||
 			pid === "forestwalk" ||
+			pid === "morningwalk" ||
 			pid === "dbchoco" ||
 			pid === "balloon"
 		) {
@@ -511,7 +513,7 @@ ui.keypopup = {
 				{
 					text: "■",
 					color:
-						pid === "dbchoco" || pid === "balloon"
+						pid === "dbchoco" || pid === "balloon" || pid === "morningwalk"
 							? "rgb(204,204,204)"
 							: pid === "firewalk"
 							? "rgb(255,192,192)"

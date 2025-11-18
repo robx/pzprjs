@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["icewalk", "waterwalk", "firewalk", "forestwalk"], {
+})(["icewalk", "waterwalk", "firewalk", "forestwalk", "morningwalk"], {
 	MouseEvent: {
 		inputModes: {
 			edit: ["ice", "number", "clear", "info-line"],
@@ -66,6 +66,15 @@
 			if (this.inputMode === "forest") {
 				this.inputIcebarn();
 			}
+		}
+	},
+	"MouseEvent@morningwalk": {
+		inputModes: {
+			edit: ["shade", "number", "clear", "info-line"],
+			play: ["line", "peke", "info-line"]
+		},
+		inputShade: function() {
+			this.inputIcebarn();
 		}
 	},
 	"MouseEvent@firewalk": {
@@ -355,6 +364,9 @@
 	"Graphic@forestwalk": {
 		icecolor: "rgb(195, 253, 186)"
 	},
+	"Graphic@morningwalk": {
+		icecolor: "rgb(204, 204, 204)"
+	},
 	"Graphic@firewalk": {
 		icecolor: "rgb(255, 192, 192)",
 
@@ -595,6 +607,12 @@
 				return false;
 			}
 			return border.sidecell[0].ice() === border.sidecell[1].ice();
+		},
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			component.isClosed = !component.clist.some(function(c) {
+				return c.lcnt !== 2;
+			});
 		}
 	},
 	Encode: {
@@ -675,6 +693,7 @@
 			"checkStraightOnFire@firewalk",
 			"checkLessWalk",
 			"checkOverWalk",
+			"checkSequentialVisit@morningwalk",
 			"checkForestCell@forestwalk",
 
 			"checkOneLoop",
@@ -715,12 +734,7 @@
 					continue;
 				}
 
-				if (
-					flag < 0 &&
-					cell.room.clist.some(function(c) {
-						return c.lcnt !== 2;
-					})
-				) {
+				if (flag < 0 && !cell.room.isClosed) {
 					continue;
 				}
 
@@ -796,6 +810,36 @@
 			this.checkAllCell(function(cell) {
 				return cell.lcnt > 0 && cell.lcnt < 3 && cell.ice();
 			}, "lnNoBranch");
+		}
+	},
+	"AnsCheck@morningwalk": {
+		checkSequentialVisit: function() {
+			for (var r = 0; r < this.board.border.length; r++) {
+				var border = this.board.border[r];
+				if (!border.isLine()) {
+					continue;
+				}
+				var room1 = border.sidecell[0].room,
+					room2 = border.sidecell[1].room;
+
+				if (
+					!room1 ||
+					!room2 ||
+					room1 === room2 ||
+					!room1.isClosed ||
+					!room2.isClosed ||
+					room1.clist.length !== room2.clist.length
+				) {
+					continue;
+				}
+
+				this.failcode.add("bkSizeEq");
+				if (this.checkOnly) {
+					break;
+				}
+				room1.clist.seterr(1);
+				room2.clist.seterr(1);
+			}
 		}
 	}
 });
