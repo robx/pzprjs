@@ -155,6 +155,7 @@
 			dotchi2: [0, 0, "ドッチドッチループ", "Dotchi Dotchi Loop", "country"],
 			doubleback: [0, 0, "Double Back", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
+			energywalk: [0, 0, "Energy Walk", "Energy Walk", "icewalk"],
 			evolmino: [0, 0, "シンカミノ", "Evolmino"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
 			fakearrow: [0, 0, "フェイクアロー", "Fake Arrow", "nagare"],
