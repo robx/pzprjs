@@ -1,7 +1,6 @@
 // Boot.js v3.4.0
 
 (function() {
-
 	/********************************/
 	/* 初期化時のみ使用するルーチン */
 	/********************************/
@@ -17,18 +16,18 @@
 		var pzl;
 		// Get URL search hash and check localStorage to see if a board state is saved
 		if (!localStorageAvailable()) {
-			pzl = importData()
+			pzl = importData();
 		} else {
-			var key = 'pzpr_' + getPuzzleString()
-			var puzzleStr = localStorage.getItem(key)
+			var key = "pzpr_" + getPuzzleString();
+			var puzzleStr = localStorage.getItem(key);
 			if (!puzzleStr) {
-				pzl = importData()
+				pzl = importData();
 			} else {
-				pzl = importData(puzzleStr) // Local storage was available and key was found
+				pzl = importData(puzzleStr); // Local storage was available and key was found
 			}
 		}
 		if (!pzl) {
-			setTimeout(boot,0);
+			setTimeout(boot, 0);
 		}
 		startPuzzle();
 	});
@@ -42,7 +41,7 @@
 			} else {
 				onload_pzl = importFromString(string);
 			}
-			
+
 			/* 指定されたパズルがない場合はさようなら～ */
 			if (!onload_pzl || !onload_pzl.pid) {
 				failOpen();
@@ -126,7 +125,7 @@
 			onload_option[RegExp.$1] = RegExp.$2;
 			search = RegExp.$3;
 		}
-		return search
+		return search;
 	}
 	//Import from a puzzle string. This can come from the URL or from localStorage
 	function importFromString(string) {
@@ -148,10 +147,10 @@
 
 	//Taken directly from stackoverflow. Apparently this is the most broadly compatible version. https://stackoverflow.com/questions/16427636/check-if-localstorage-is-available
 	function localStorageAvailable() {
-		var test = 'test';
+		var test = "test";
 		try {
-			localStorage.setItem(test,test);
-			localStorage.removeItem(test)
+			localStorage.setItem(test, test);
+			localStorage.removeItem(test);
 			return true;
 		} catch (e) {
 			return false;
@@ -161,27 +160,27 @@
 	//Save board state. Creates an entry in localStorage whose key is a 'pzpr_' identifier plus the current board state puzzle string.
 	//Board state puzzle string is the same thing you get from duplicating the board state
 	function saveBoardState() {
-		var key = 'pzpr_' + getPuzzleString()
+		var key = "pzpr_" + getPuzzleString();
 		var url = ui.puzzle.getURL(
-					pzpr.parser.URL_PZPRFILE,
-					ui.puzzle.playeronly ? "player" : "editor"
-				);
+			pzpr.parser.URL_PZPRFILE,
+			ui.puzzle.playeronly ? "player" : "editor"
+		);
 		//Strip url to the last option. This is the "puzzle string" we want
-		url = url.substring(url.indexOf('?')+1) //Skip to the search parameters part of the url
+		url = url.substring(url.indexOf("?") + 1); //Skip to the search parameters part of the url
 		while (url.match(/^(\w+)\=(\w+)\&(.*)/)) {
 			url = RegExp.$3;
 		}
 		try {
-			localStorage.setItem(key,url)
+			localStorage.setItem(key, url);
 		} catch (e) {
-			console.log(e)
+			console.log(e);
 		}
 	}
 
 	//Events that trigger a board state save
 	document.addEventListener("visibilitychange", function() {
-        if (document.visibilityState === "hidden") {
-            saveBoardState();
-        }
-    });
+		if (document.visibilityState === "hidden") {
+			saveBoardState();
+		}
+	});
 })();
