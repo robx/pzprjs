@@ -171,7 +171,11 @@
 		while (url.match(/^(\w+)\=(\w+)\&(.*)/)) {
 			url = RegExp.$3;
 		}
-		localStorage.setItem(key,url)
+		try {
+			localStorage.setItem(key,url)
+		} catch (e) {
+			console.log(e)
+		}
 	}
 
 	//Events that trigger a board state save
