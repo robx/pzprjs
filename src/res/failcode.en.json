@@ -602,6 +602,7 @@
     "lnCross": "There is a crossing line.",
     "lnCrossExCir.pipelink": "There is a crossing line out of circles.",
     "lnCrossExIce": "A line is crossed outside of ice.",
+    "lnCrossExIce.energywalk": "A line is crossed outside of an energy cell.",
     "lnCrossExMk": "There is a crossing outside given crosses.",
     "lnCrossOnNum.pipelink": "Lines are crossed on a number.",
     "lnCrossPencil.pencils": "A line crosses a pencil.",
