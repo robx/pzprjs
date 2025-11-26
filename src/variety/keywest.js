@@ -120,7 +120,8 @@
 			"checkCellNumberNotOver",
 			"checkCellNumberNotLess",
 			"checkConnectAllNumber",
-			"checkNoNumCell+"
+			"checkAdjacentDiffWithoutNumber",
+			"checkNoNumCell_keywest+"
 		],
 
 		checkCellNumberNotOver: function() {
@@ -132,6 +133,22 @@
 			this.checkAllCell(function(cell) {
 				return cell.isValidNum() && cell.getNum() > cell.lcnt;
 			}, "nmLineLt");
+		},
+		checkAdjacentDiffWithoutNumber: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				if (cell1.isValidNum() && cell2.isValidNum()) {
+					return false;
+				}
+
+				return cell1.lcnt === cell2.lcnt;
+			}, "nmLineAdjacent");
+		},
+		checkNoNumCell_keywest: function() {
+			if (this.puzzle.getConfig("forceallcell")) {
+				this.checkAllCell(function(cell) {
+					return cell.noNum();
+				}, "ceNoNum");
+			}
 		}
 	},
 	FailCode: {
