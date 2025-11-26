@@ -231,7 +231,7 @@
 			kakuro: [0, 1, "カックロ", "Kakuro"],
 			kakuru: [0, 0, "カックル", "Kakuru"],
 			kazunori: [0, 0, "かずのりのへや", "Kazunori Room"],
-			keywest: [0, 0, "", "Key West"],
+			keywest: [0, 0, "キーウエスト", "Key West"],
 			kinkonkan: [1, 0, "キンコンカン", "Kin-Kon-Kan"],
 			kissing: [
 				0,
