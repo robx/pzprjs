@@ -458,7 +458,10 @@
 					break;
 				case "forceallcell":
 					exec =
-						pid === "fillomino" || pid === "symmarea" || pid === "snakepit";
+						pid === "fillomino" ||
+						pid === "symmarea" ||
+						pid === "snakepit" ||
+						pid === "keywest";
 					break;
 				case "dontpassallcell":
 					exec = pid === "arukone";

@@ -239,7 +239,8 @@ ui.keypopup = {
 		cityspace: [10, 0],
 		diamond: [4, 0],
 		morningwalk: [10, 0],
-		energywalk: [10, 0]
+		energywalk: [10, 0],
+		keywest: [4, 4]
 	},
 
 	//---------------------------------------------------------------------------
