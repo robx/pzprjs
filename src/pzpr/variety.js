@@ -326,6 +326,7 @@
 			nurimisaki: [0, 0, "ぬりみさき", "Nurimisaki", "kurodoko"],
 			nuritwin: [0, 0, "ぬりツイン", "Nuritwin", "shimaguni"],
 			nuriuzu: [0, 0, "ぬりうず", "Nuri-uzu", "tentaisho"],
+			oasis: [0, 0, "Oasis", "Oasis"],
 			ovotovata: [0, 0, "Ovotovata", "Ovotovata", "country"],
 			oneroom: [0, 0, "ワンルームワンドア", "One Room One Door", "heyawake"],
 			onsen: [0, 0, "温泉めぐり", "Onsen-meguri", "country"],

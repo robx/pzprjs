@@ -815,6 +815,8 @@
     "nmNumberNe.sukoro": "The number of numbers placed in four adjacent cells is not equal to the number.",
     "nmNumberNe.sukororoom": "The number of numbers placed in four adjacent cells is not equal to the number.",
     "nmNumberNe.view": "The number of numbers placed in four adjacent cells is not equal to the number.",
+    "nmOasisGt": "A number is larger than the amount of circles that can be reached.",
+    "nmOasisLt": "A number is smaller than the amount of circles that can be reached.",
     "nmOrbitNe.orbital": "A number does not indicate the amount of white circles used by the loop.",
     "nmOrder.numcity": "The size of a district is larger or equal to the size of the previous district.",
     "nmOutOfBk.oyakodori": "A bird is outside a nest.",
