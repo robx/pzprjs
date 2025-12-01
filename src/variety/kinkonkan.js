@@ -508,14 +508,13 @@
 			for (var i = 0; i < bstr.length; i++) {
 				var ca = bstr.charAt(i),
 					excell = bd.excell[ec];
-
 				if (this.include(ca, "A", "Z")) {
 					subint.push(ec);
 					excell.qchar = parseInt(ca, 36) - 9;
 				} else if (this.include(ca, "0", "9")) {
 					subint.push(ec);
 					excell.qchar =
-						parseInt(ca, 36) - 9 + (parseInt(bstr.charAt(i + 1), 10) + 1) * 26;
+						parseInt(bstr.charAt(i + 1), 36) - 9 + (parseInt(ca, 10) + 1) * 26;
 					i++;
 				} else if (this.include(ca, "a", "z")) {
 					ec += parseInt(ca, 36) - 10;
