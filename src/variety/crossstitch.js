@@ -888,5 +888,8 @@
 				return cell.qans === 33;
 			}).length;
 		}
+	},
+	FailCode: {
+		lnCross: "lnCrossSelf"
 	}
 });
