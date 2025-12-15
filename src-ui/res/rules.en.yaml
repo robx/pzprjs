@@ -358,3 +358,29 @@ sendai: "Draw lines over the dotted lines to divide each larger region (prefectu
 keywest: "Place a number between 0 and 4 in every island, and draw orthogonal bridges connecting them.\n1. Orthogonally adjacent islands cannot have the same number.\n2. Numbers indicate how many bridges are connected to this island.\n3. All islands with a number above 0 must be connected into a single network."
 energywalk: "Draw lines to form a single network that goes through every numbered cell.\n1. The network cannot have dead ends.\n2. Every visited energy cell must split off in all possible directions.\n3. The network cannot branch off or cross on unshaded cells.\n4. The network must not connect an energy cell to itself via only unshaded cells.\n5. A number indicates how many cells make up the continuous unshaded section of the network that the number is on."
 morningwalk: "Draw a loop that goes through every numbered cell.\n1. The loop cannot branch off or cross itself.\n2. A number indicates how many cells make up the continuous white section of the loop that the number is on.\n3. The lengths of two successive differently coloured sections of the loop must not be equal."
+cornerch: |-
+  Shade some cells on the board to form regions of unshaded cells.
+  1. A number indicates the size of the region that contains it..
+  2. Clues represent the number of cells in the region they belong to. A region can contain one or more identical numbers, or none at all.
+  3. If the number of cells in an unshaded group is even, the area must be rectangular. If the number of cells is odd, the area must not be rectangular.
+  4. All unshaded areas must be connected diagonally.
+oasis: |-
+  Shade some cells on the board.
+  1. Shaded cells cannot be horizontally or vertically adjacent.
+  2. Numbers cannot be shaded.
+  3. The unshaded cells cannot form a 2x2 square.
+  4. A circled number indicates how many other circles it could reach by traveling only through empty unshaded cells.
+  5. All unshaded cells on the board form an orthogonally connected area.
+circuitwalk: |-
+  Draw one or more loops so every number is visited once.
+  1. A loop cannot branch off or overlap itself or another loop.
+  2. Every visited shaded cell must consist of exactly two straight line segments belonging to different loops crossing over each other.
+  3. Crossings cannot appear outside of a shaded cell.
+  4. A number indicates how many cells make up the continuous white section of the loop that the number is on.
+  5. All loops must form a single connected network.
+edamame: |-
+  Draw several rectangles of length 1xN (at least 3), then place circles inside them.
+  1. Rectangles cannot overlap numbers.
+  2. Every rectangle contains exactly three circles: One on each endpoint, and another somewhere in the middle.
+  3. A number indicates the amount of circles in the 4 orthogonally adjacent cells. Circles cannot appear outside of rectangles.
+  4. All cells not used by rectangles form an orthogonally contiguous area.
