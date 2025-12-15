@@ -23,7 +23,7 @@
 				if (this.isDraggingPeke) {
 					this.inputpeke();
 				} else if (this.btn === "left" && this.mousestart) {
-					if (!this.inputdark()) {
+					if (!this.inputqcmp()) {
 						this.inputcell();
 					}
 				} else if (this.inputData === null || this.inputData < 20) {
@@ -35,33 +35,18 @@
 				}
 			}
 		},
-		inputdark: function() {
+		inputqcmp: function() {
 			var cell = this.getcell();
-			if (cell.isnull) {
+			if (cell.isnull || !cell.isNum()) {
 				return false;
 			}
 
-			var distance = 0.6,
-				dx = this.inputPoint.bx - cell.bx /* ここはtargetcellではなくcell */,
-				dy = this.inputPoint.by - cell.by;
-			if (cell.isNum() && dx * dx + dy * dy < distance * distance) {
-				this.inputData = cell.qcmp !== 1 ? 21 : 20;
-				cell.setQcmp(this.inputData === 21 ? 1 : 0);
-				cell.draw();
-				return true;
-			}
-			return false;
-		},
-		inputqcmp: function() {
-			var cell = this.getcell();
-			if (cell.isnull) {
-				return;
-			}
-
+			this.inputData = 20;
 			cell.setQcmp(+!cell.qcmp);
 			cell.draw();
 
 			this.mousereset();
+			return true;
 		}
 	},
 
@@ -231,15 +216,14 @@
 	// 画像表示系
 	Graphic: {
 		qanscolor: "black",
-		bgcellcolor_func: "qsub1",
 		gridcolor_type: "LIGHT",
 
 		autocmp: "number",
 		hideHatena: true,
-		enablebcolor: true,
 
 		paint: function() {
 			this.drawBGCells();
+			this.drawDotCells();
 			this.drawGrid();
 			this.drawShadedCells();
 
@@ -287,9 +271,6 @@
 			this.decodeCell(function(cell, ca) {
 				if (ca === "+") {
 					cell.qsub = 1;
-				} else if (ca === "c") {
-					cell.qsub = 1;
-					cell.qcmp = 1;
 				} else if (ca === "-") {
 					cell.qcmp = 1;
 				} else if (ca === "1") {
@@ -302,7 +283,7 @@
 				if (cell.qans === 1) {
 					return "1 ";
 				} else if (cell.qsub === 1) {
-					return cell.qcmp ? "c " : "+ ";
+					return "+ ";
 				} else if (cell.qcmp === 1) {
 					return "- ";
 				} else {

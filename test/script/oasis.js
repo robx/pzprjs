@@ -46,23 +46,12 @@ ui.debug.addDebugData("oasis", {
 			result: "pzprv3/oasis/3/3/. 1 . /. . . /. . . /. . . /. 1 + /. . . /"
 		},
 		{
-			input: [
-				"editmode",
-				"cursor,5,5",
-				"key,2",
-				"playmode",
-				"mouse,left,3,1",
-				"mouse,left,4.1,4.1"
-			],
+			input: ["editmode", "cursor,5,5", "key,2", "playmode", "mouse,left,3,1"],
 			result: "pzprv3/oasis/3/3/. 1 . /. . . /. . 2 /. - . /. 1 + /. . . /"
 		},
 		{
-			input: ["setconfig,use,2", "mouse,left,4.1,4.1"],
-			result: "pzprv3/oasis/3/3/. 1 . /. . . /. . 2 /. - . /. 1 + /. . + /"
-		},
-		{
 			input: ["mouse,left,5,5", "playmode,completion", "mouse,left,3,1"],
-			result: "pzprv3/oasis/3/3/. 1 . /. . . /. . 2 /. . . /. 1 + /. . c /"
+			result: "pzprv3/oasis/3/3/. 1 . /. . . /. . 2 /. . . /. 1 + /. . - /"
 		}
 	]
 });
