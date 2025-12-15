@@ -85,11 +85,7 @@ pzpr.classmgr.makeCommon({
 				bd = puzzle.board;
 			var pzl = new pzpr.parser.URLData("", mode);
 
-			type =
-				type || pzl.URL_PZPRV3; /* type===pzl.URL_AUTO(0)もまとめて変換する */
-			if (type === pzl.URL_KANPEN && pid === "lits") {
-				type = pzl.URL_KANPENP;
-			}
+			type = type || pzl.URL_PZPRV3;
 
 			this.outpflag = null;
 			var variant = puzzle.getConfig("variant");
@@ -107,30 +103,6 @@ pzpr.classmgr.makeCommon({
 					var lines = this.puzzle.getFileData(pzl.FILE_PZPRV3).split("\n");
 					lines = lines.map(encodeURIComponent);
 					this.outbstr = lines.join("/");
-					break;
-
-				case pzl.URL_PZPRAPP:
-					throw Error("no implementation");
-
-				case pzl.URL_KANPENP:
-					if (!puzzle.info.exists.kanpen) {
-						throw Error("no implementation");
-					}
-					this.encodePzpr(pzl.URL_PZPRAPP);
-					this.outpflag = this.outpflag || "";
-					break;
-
-				case pzl.URL_KANPEN:
-					this.fio = new puzzle.klass.FileIO();
-					this.encodeKanpen();
-					this.outbstr = this.fio.datastr
-						.replace(/\r?\n/g, "/")
-						.replace(/ /g, "_");
-					this.fio = null;
-					break;
-
-				case pzl.URL_HEYAAPP:
-					this.encodeHeyaApp();
 					break;
 
 				default:
@@ -158,13 +130,7 @@ pzpr.classmgr.makeCommon({
 		decodeKanpen: function() {
 			throw Error("no implementation");
 		},
-		encodeKanpen: function() {
-			throw Error("no implementation");
-		},
 		decodeHeyaApp: function() {
-			throw Error("no implementation");
-		},
-		encodeHeyaApp: function() {
 			throw Error("no implementation");
 		}
 	}

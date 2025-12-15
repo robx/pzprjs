@@ -271,9 +271,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen();
 		}
 	},
 	"Encode@swslither": {
@@ -310,22 +307,12 @@
 			this.decodeCellQnum_kanpen();
 			this.decodeBorderLine();
 		},
-		kanpenSave: function() {
-			this.encodeCellQnum_kanpen();
-			this.encodeBorderLine();
-		},
 
 		kanpenOpenXML: function() {
 			this.PBOX_ADJUST = 0;
 			this.decodeCellQnum_XMLBoard_Brow();
 			this.PBOX_ADJUST = 1;
 			this.decodeBorderLine_slither_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.PBOX_ADJUST = 0;
-			this.encodeCellQnum_XMLBoard_Brow();
-			this.PBOX_ADJUST = 1;
-			this.encodeBorderLine_slither_XMLAnswer();
 		},
 
 		UNDECIDED_NUM_XML: 5,
@@ -357,39 +344,6 @@
 				if (val & 8) {
 					bdv.qsub = 2;
 				}
-			});
-		},
-		encodeBorderLine_slither_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cross) {
-				var val = 0,
-					nodename = "";
-				var bdh = cross.relbd(0, 1),
-					bdv = cross.relbd(1, 0);
-				if (bdh.line === 1) {
-					val += 1;
-				}
-				if (bdv.line === 1) {
-					val += 2;
-				}
-				if (bdh.qsub === 2) {
-					val += 4;
-				}
-				if (bdv.qsub === 2) {
-					val += 8;
-				}
-
-				if (val === 0) {
-					nodename = "s";
-				} else if (val === 1) {
-					nodename = "h";
-				} else if (val === 2) {
-					nodename = "v";
-				} else if (val === 3) {
-					nodename = "hv";
-				} else {
-					nodename = "n" + val;
-				}
-				return nodename;
 			});
 		}
 	},

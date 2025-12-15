@@ -804,9 +804,6 @@
 		decodeKanpen: function() {
 			this.fio.decodeBoard_kanpen();
 		},
-		encodeKanpen: function() {
-			this.fio.encodeBoard_kanpen();
-		},
 
 		decodeSlalom: function(ver) {
 			var bstr = this.outbstr;
@@ -1034,10 +1031,6 @@
 			this.decodeBoard_kanpen();
 			this.decodeBorderLine();
 		},
-		kanpenSave: function() {
-			this.encodeBoard_kanpen();
-			this.encodeBorderLine();
-		},
 
 		decodeBoard_pzpr1: function() {
 			var bd = this.board;
@@ -1116,30 +1109,10 @@
 			});
 			bd.gatemgr.rebuild();
 		},
-		encodeBoard_kanpen: function() {
-			var bd = this.board;
-			this.encodeCell(function(cell) {
-				if (bd.startpos.equals(cell)) {
-					return "+ ";
-				} else if (cell.ques === 21) {
-					return "| ";
-				} else if (cell.ques === 22) {
-					return "- ";
-				} else if (cell.ques === 1) {
-					return cell.qnum > 0 ? cell.qnum + " " : "0 ";
-				} else {
-					return ". ";
-				}
-			});
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellSlalom_XMLBoard();
 			this.decodeBorderLine_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellSlalom_XMLBoard();
-			this.encodeBorderLine_XMLAnswer();
 		},
 
 		UNDECIDED_NUM_XML: -3,
@@ -1160,22 +1133,6 @@
 				}
 			});
 			bd.gatemgr.rebuild();
-		},
-		encodeCellSlalom_XMLBoard: function() {
-			var bd = this.board;
-			this.encodeCellXMLBoard(function(cell) {
-				var val = -3;
-				if (cell.ques === 1) {
-					val = cell.qnum > 0 ? cell.qnum : 0;
-				} else if (cell.ques === 21) {
-					val = -5;
-				} else if (cell.ques === 22) {
-					val = -4;
-				} else if (bd.startpos.equals(cell)) {
-					val = -1;
-				}
-				return val;
-			});
 		},
 
 		decodeBoard_old: function() {

@@ -225,15 +225,6 @@
 				case URL_PZPRV3:
 					url = url + "?%PID%/";
 					break;
-				case URL_KANPEN:
-					url = "http://www.kanpen.net/%KID%.html?problem=";
-					break;
-				case URL_KANPENP:
-					url = "http://www.kanpen.net/%KID%.html?pzpr=";
-					break;
-				case URL_HEYAAPP:
-					url = "http://www.geocities.co.jp/heyawake/?problem=";
-					break;
 				case URL_PZPRFILE:
 					url = url + "?";
 					break;
@@ -253,9 +244,7 @@
 			if (this.type === URL_PZPRFILE) {
 				url = url + typ;
 			}
-			return url
-				.replace("%PID%", pzpr.variety(pid).urlid)
-				.replace("%KID%", pzpr.variety(this.pid).kanpenid);
+			return url.replace("%PID%", pzpr.variety(pid).urlid);
 		},
 
 		//---------------------------------------------------------------------------
@@ -329,29 +318,15 @@
 				out = [];
 
 			/* URLにつけるオプション */
-			if (pzl.type !== URL_KANPEN && pzl.type !== URL_HEYAAPP) {
-				if (pzl.variant !== null) {
-					out.push("v:" + pzl.variant);
-				}
-				if (pzl.type === URL_KANPENP || !!pzl.pflag) {
-					out.push(pzl.pflag);
-				}
+			if (pzl.variant !== null) {
+				out.push("v:" + pzl.variant);
+			}
+			if (!!pzl.pflag) {
+				out.push(pzl.pflag);
 			}
 
 			/* サイズを表す文字列 */
-			if (pzl.type === URL_KANPEN) {
-				if (pzl.pid === "kakuro") {
-					out.push(row + 1);
-					out.push(col + 1);
-				} else if (pzl.pid === "sudoku") {
-					out.push(col);
-				} else {
-					out.push(row);
-					out.push(col);
-				}
-			} else if (pzl.type === URL_HEYAAPP) {
-				out.push([col, row].join("x"));
-			} else if (pzl.type !== URL_PZPRFILE) {
+			if (pzl.type !== URL_PZPRFILE) {
 				out.push(col);
 				out.push(row);
 			}
@@ -661,26 +636,9 @@
 				col = pzl.cols,
 				row = pzl.rows,
 				out = [];
-			var puzzlenode =
-				this.type === FILE_PBOX_XML ? this.body.querySelector("puzzle") : null;
 
 			/* サイズを表す文字列 */
-			if (pzl.type === FILE_PBOX_XML) {
-				var sizenode = puzzlenode.querySelector("size");
-				if (sizenode) {
-					puzzlenode.removeChild(sizenode);
-				}
-				if (pzl.pid === "slither" || pzl.pid === "kakuro") {
-					row++;
-					col++;
-				}
-				puzzlenode.appendChild(
-					this.createXMLNode("size", { row: row, col: col })
-				);
-			} else if (pzl.type === FILE_PBOX && pzl.pid === "kakuro") {
-				out.push(row + 1);
-				out.push(col + 1);
-			} else if (pzl.pid === "sudoku") {
+			if (pzl.pid === "sudoku") {
 				out.push(col);
 			} else {
 				out.push(row);
@@ -688,9 +646,7 @@
 			}
 
 			/* サイズ以降のデータを設定 */
-			if (pzl.type !== FILE_PBOX_XML) {
-				out.push(pzl.body);
-			}
+			out.push(pzl.body);
 
 			/* 履歴・メタデータ出力がある形式ならば出力する */
 			if (pzl.type === FILE_PZPR && !!JSON) {
@@ -703,54 +659,9 @@
 				} else if (pzl.history) {
 					out.push("history:" + JSON.stringify(pzl.history, null, 1));
 				}
-			} else if (pzl.type === FILE_PBOX_XML) {
-				var propnode = puzzlenode.querySelector("property");
-				if (propnode) {
-					puzzlenode.removeChild(propnode);
-				}
-				propnode = this.createXMLNode("property");
-				var meta = pzl.metadata;
-				propnode.appendChild(
-					this.createXMLNode("author", { value: meta.author })
-				);
-				propnode.appendChild(
-					this.createXMLNode("source", { value: meta.source })
-				);
-				propnode.appendChild(
-					this.createXMLNode("difficulty", { value: meta.hard })
-				);
-				if (!!meta.comment) {
-					var commentnode = this.createXMLNode("comment");
-					commentnode.appendChild(this.body.createTextNode(meta.comment));
-					propnode.appendChild(commentnode);
-				}
-				puzzlenode.appendChild(propnode);
-
-				// 順番を入れ替え
-				puzzlenode.appendChild(puzzlenode.querySelector("board"));
-				puzzlenode.appendChild(puzzlenode.querySelector("answer"));
 			}
 
-			var outputdata;
-			if (pzl.type !== FILE_PBOX_XML) {
-				outputdata = out.join("\n");
-			} else {
-				outputdata = new XMLSerializer().serializeToString(this.body);
-				if (!outputdata.match(/^\<\?xml/)) {
-					outputdata = '<?xml version="1.0" encoding="UTF-8"?>\n' + outputdata;
-				}
-			}
-			return outputdata;
-		},
-
-		createXMLNode: function(name, attrs) {
-			var node = this.body.createElement(name);
-			if (!!attrs) {
-				for (var i in attrs) {
-					node.setAttribute(i, attrs[i]);
-				}
-			}
-			return node;
+			return out.join("\n");
 		},
 
 		//---------------------------------------------------------------------------

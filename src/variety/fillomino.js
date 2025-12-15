@@ -894,9 +894,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum_kanpen();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen();
 		}
 	},
 	"Encode@pentominous,tetrominous": {
@@ -1061,10 +1058,6 @@
 
 			this.inputBorderFromNumber(); // 境界線を自動入力
 		},
-		kanpenSave: function() {
-			this.encodeCellQnum_kanpen();
-			this.encodeCellAnum_kanpen();
-		},
 
 		inputBorderFromNumber: function() {
 			var bd = this.board;
@@ -1088,10 +1081,6 @@
 			this.decodeCellAnum_XMLAnswer();
 
 			this.inputBorderFromNumber(); // 境界線を自動入力
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_XMLBoard();
-			this.encodeCellAnum_XMLAnswer();
 		},
 
 		UNDECIDED_NUM_XML: 0

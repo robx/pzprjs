@@ -509,9 +509,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnumb();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnumb();
 		}
 	},
 	//---------------------------------------------------------
@@ -566,34 +563,9 @@
 				}
 			});
 		},
-		kanpenSave: function() {
-			this.encodeCell(function(cell) {
-				if (cell.qnum >= 0) {
-					return cell.qnum + " ";
-				} else if (cell.qnum === -2) {
-					return "5 ";
-				} else {
-					return ". ";
-				}
-			});
-			this.encodeCell(function(cell) {
-				if (cell.qsub === 1) {
-					return "+ ";
-				} else if (cell.qans >= 2) {
-					return cell.qans + " ";
-				} else {
-					return ". ";
-				}
-			});
-		},
-
 		kanpenOpenXML: function() {
 			this.decodeCellQnum_XMLBoard();
 			this.decodeCellShakashaka_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_XMLBoard();
-			this.encodeCellShakashaka_XMLAnswer();
 		},
 
 		UNDECIDED_NUM_XML: -2,
@@ -605,16 +577,6 @@
 				} else if (name === "s") {
 					cell.qsub = 1;
 				}
-			});
-		},
-		encodeCellShakashaka_XMLAnswer: function() {
-			this.encodeCellXMLArow(function(cell) {
-				if (cell.qans > 0) {
-					return "n" + (((cell.qans - 1) & 3) + 4);
-				} else if (cell.qsub === 1) {
-					return "s";
-				}
-				return "u";
 			});
 		}
 	},

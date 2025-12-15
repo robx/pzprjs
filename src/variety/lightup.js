@@ -313,9 +313,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnumb();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnumb();
 		}
 	},
 	//---------------------------------------------------------
@@ -366,29 +363,10 @@
 				}
 			});
 		},
-		kanpenSave: function() {
-			this.encodeCell(function(cell) {
-				if (cell.qans === 1) {
-					return "+ ";
-				} else if (cell.qsub === 1) {
-					return "* ";
-				} else if (cell.qnum >= 0) {
-					return cell.qnum + " ";
-				} else if (cell.qnum === -2) {
-					return "5 ";
-				} else {
-					return ". ";
-				}
-			});
-		},
 
 		kanpenOpenXML: function() {
 			this.decodeCellQnum_XMLBoard();
 			this.decodeCellAns_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_XMLBoard();
-			this.encodeCellAns_XMLAnswer();
 		},
 
 		UNDECIDED_NUM_XML: 5

@@ -197,9 +197,6 @@
 
 		decodeKanpen: function() {
 			this.fio.decodeCellQnum_kanpen_hitori();
-		},
-		encodeKanpen: function() {
-			this.fio.encodeCellQnum_kanpen_hitori();
 		}
 	},
 	//---------------------------------------------------------
@@ -219,10 +216,6 @@
 			this.decodeCellQnum_kanpen_hitori();
 			this.decodeCellAns();
 		},
-		kanpenSave: function() {
-			this.encodeCellQnum_kanpen_hitori();
-			this.encodeCellAns();
-		},
 
 		decodeCellQnum_kanpen_hitori: function() {
 			this.decodeCell(function(cell, ca) {
@@ -240,10 +233,6 @@
 		kanpenOpenXML: function() {
 			this.decodeCellQnum_XMLBoard_Brow();
 			this.decodeCellAns_XMLAnswer();
-		},
-		kanpenSaveXML: function() {
-			this.encodeCellQnum_XMLBoard_Brow();
-			this.encodeCellAns_XMLAnswer();
 		}
 	},
 
