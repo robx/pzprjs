@@ -15,15 +15,16 @@
 	pzpr.on("load", function boot() {
 		var pzl;
 		// Get URL search hash and check localStorage to see if a board state is saved
-		if (!localStorageAvailable()) {
+		if (!pzpr.env.localStorageAvailable) {
 			pzl = importData();
 		} else {
 			var key = "pzpr_" + getPuzzleString();
-			var puzzleStr = localStorage.getItem(key);
-			if (!puzzleStr) {
+			var valStr = localStorage.getItem(key);
+			if (!valStr) {
 				pzl = importData();
 			} else {
-				pzl = importData(puzzleStr); // Local storage was available and key was found
+				var valObject = JSON.parse(valStr)
+				pzl = importData(valObject.pzl); // Local storage was available and key was found
 			}
 		}
 		if (!pzl) {
@@ -145,18 +146,6 @@
 	// Functionality to support browser caching
 	//---------------------------------------------------------------------------
 
-	//Taken directly from stackoverflow. Apparently this is the most broadly compatible version. https://stackoverflow.com/questions/16427636/check-if-localstorage-is-available
-	function localStorageAvailable() {
-		var test = "test";
-		try {
-			localStorage.setItem(test, test);
-			localStorage.removeItem(test);
-			return true;
-		} catch (e) {
-			return false;
-		}
-	}
-
 	//Save board state. Creates an entry in localStorage whose key is a 'pzpr_' identifier plus the current board state puzzle string.
 	//Board state puzzle string is the same thing you get from duplicating the board state
 	function saveBoardState() {
@@ -170,10 +159,43 @@
 		while (url.match(/^(\w+)\=(\w+)\&(.*)/)) {
 			url = RegExp.$3;
 		}
+		//Add a time signifier so that we can sort and delete oldest if setting fails
+		var valObject = {
+			t: Date.now(),
+			pzl: url
+			// bufferToForceStorageLimitErrors: "0".repeat(1700000) //Include for testing to force out-of-storage errors
+		}
 		try {
-			localStorage.setItem(key, url);
+			localStorage.setItem(key, JSON.stringify(valObject));
 		} catch (e) {
-			console.log(e);
+			if (e.name === "QuotaExceededError") {
+				//If storage was full: load all of the puzzles in localStorage, sort by least recent, and delete until saving is successful
+				var saveSuccess = false
+				var pairs = []
+				for (var i = 0; i < localStorage.length; i++) {
+					var lsKey = localStorage.key(i)
+					var lsValue = localStorage.getItem(lsKey)
+					pairs.push({key: lsKey, value: lsValue})
+				}
+				pairs = pairs.filter(function(item) {
+					return item.key.indexOf("pzpr_") === 0
+				})
+				pairs = pairs.sort(function(a,b) {
+					var ta = JSON.parse(a.value).t
+					var tb = JSON.parse(b.value).t
+					return ta > tb
+				})
+				while (!saveSuccess && pairs.length > 0) {
+					console.log(pairs)
+					try {
+						localStorage.setItem(key, JSON.stringify(valObject));
+						saveSuccess = true
+					} catch (e) {
+						localStorage.removeItem(pairs[0].key)
+						pairs = pairs.slice(1)
+					}
+				}
+			}
 		}
 	}
 
