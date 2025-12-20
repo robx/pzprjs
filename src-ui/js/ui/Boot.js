@@ -23,7 +23,7 @@
 			if (!valStr) {
 				pzl = importData();
 			} else {
-				var valObject = JSON.parse(valStr)
+				var valObject = JSON.parse(valStr);
 				pzl = importData(valObject.pzl); // Local storage was available and key was found
 			}
 		}
@@ -164,35 +164,35 @@
 			t: Date.now(),
 			pzl: url
 			// bufferToForceStorageLimitErrors: "0".repeat(1700000) //Include for testing to force out-of-storage errors
-		}
+		};
 		try {
 			localStorage.setItem(key, JSON.stringify(valObject));
 		} catch (e) {
 			if (e.name === "QuotaExceededError") {
 				//If storage was full: load all of the puzzles in localStorage, sort by least recent, and delete until saving is successful
-				var saveSuccess = false
-				var pairs = []
+				var saveSuccess = false;
+				var pairs = [];
 				for (var i = 0; i < localStorage.length; i++) {
-					var lsKey = localStorage.key(i)
-					var lsValue = localStorage.getItem(lsKey)
-					pairs.push({key: lsKey, value: lsValue})
+					var lsKey = localStorage.key(i);
+					var lsValue = localStorage.getItem(lsKey);
+					pairs.push({ key: lsKey, value: lsValue });
 				}
 				pairs = pairs.filter(function(item) {
-					return item.key.indexOf("pzpr_") === 0
-				})
-				pairs = pairs.sort(function(a,b) {
-					var ta = JSON.parse(a.value).t
-					var tb = JSON.parse(b.value).t
-					return ta > tb
-				})
+					return item.key.indexOf("pzpr_") === 0;
+				});
+				pairs = pairs.sort(function(a, b) {
+					var ta = JSON.parse(a.value).t;
+					var tb = JSON.parse(b.value).t;
+					return ta > tb;
+				});
 				while (!saveSuccess && pairs.length > 0) {
-					console.log(pairs)
+					console.log(pairs);
 					try {
 						localStorage.setItem(key, JSON.stringify(valObject));
-						saveSuccess = true
+						saveSuccess = true;
 					} catch (e) {
-						localStorage.removeItem(pairs[0].key)
-						pairs = pairs.slice(1)
+						localStorage.removeItem(pairs[0].key);
+						pairs = pairs.slice(1);
 					}
 				}
 			}
