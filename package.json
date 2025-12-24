@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/sabo2/pzprjs",
   "engines": {
-    "node": ">= 14.0"
+    "node": ">= 22.0"
   },
   "scripts": {
     "build": "eslint --cache --quiet src src-ui && \"./git-hash.sh\" && grunt default",
