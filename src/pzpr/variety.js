@@ -116,6 +116,7 @@
 			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
 			cbanana: [0, 0, "チョコバナナ", "Choco Banana"],
 			circlesquare: [0, 0, "Circles and Squares", "Circles and Squares"],
+			circuitwalk: [0, 0, "Circuit Walk", "Circuit Walk", "icewalk"],
 			context: [0, 0, "Context", "Context"],
 			crossstitch: [0, 0, "Crossstitch", "Crossstitch"],
 			cts: [0, 0, "Cross the Streams", "Cross the Streams", "nonogram"],
