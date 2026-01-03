@@ -360,7 +360,7 @@ energywalk: "Draw lines to form a single network that goes through every numbere
 morningwalk: "Draw a loop that goes through every numbered cell.\n1. The loop cannot branch off or cross itself.\n2. A number indicates how many cells make up the continuous white section of the loop that the number is on.\n3. The lengths of two successive differently coloured sections of the loop must not be equal."
 cornerch: |-
   Shade some cells on the board to form regions of unshaded cells.
-  1. A number indicates the size of the region that contains it..
+  1. A number indicates the size of the region that contains it.
   2. Clues represent the number of cells in the region they belong to. A region can contain one or more identical numbers, or none at all.
   3. If the number of cells in an unshaded group is even, the area must be rectangular. If the number of cells is odd, the area must not be rectangular.
   4. All unshaded areas must be connected diagonally.
