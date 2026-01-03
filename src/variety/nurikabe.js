@@ -75,7 +75,10 @@
 		//---------------------------------------------------------
 		// 盤面管理系
 		Cell: {
-			numberRemainsUnshaded: true
+			numberRemainsUnshaded: true,
+			maxnum: function() {
+				return this.board.cols * this.board.rows;
+			}
 		},
 		"Cell@canal": {
 			maxnum: function() {
