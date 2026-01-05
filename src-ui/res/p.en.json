@@ -183,7 +183,7 @@
     "enline.tool": "Enable to draw line only between the points",
     "lattice.tool": "Disable drawing segment passing over a lattice point",
     "uramashu": "Change to Ura-Mashu",
-    "singlenum.tool": "Ensure that a region has a number",
+    "singlenum.tool": "Ensure that each region has one number",
     "singleregion": "Ensure that only one tile is shaded in each region",
     "forceallcell.tool": "Force each cell to have a number",
     "snakebd": "Draw border around a snake",
