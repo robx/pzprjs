@@ -242,6 +242,7 @@ ui.keypopup = {
 		circuitwalk: [10, 0],
 		morningwalk: [10, 0],
 		energywalk: [10, 0],
+		cornerch: [10, 0],
 		keywest: [4, 4]
 	},
 

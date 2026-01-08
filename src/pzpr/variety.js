@@ -139,6 +139,7 @@
 			cojun: [0, 0, "コージュン", "Cojun", "ripple"],
 			compass: [0, 0, "Compass", "Compass", "compass"],
 			coral: [0, 0, "Coral", "Coral", "nonogram"],
+			cornerch: [0, 0, "隅角チェーン", "Corner Chain", "nurikabe"],
 			country: [1, 0, "カントリーロード", "Country Road"],
 			creek: [1, 0, "クリーク", "Creek"],
 			curvedata: [0, 0, "カーブデータ", "Curve Data"],
