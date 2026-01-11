@@ -124,6 +124,7 @@ function toBGimage(pid) {
 		"cbanana",
 		"chainedb",
 		"circlesquare",
+		"circuitwalk",
 		"cityspace",
 		"cocktail",
 		"coffeemilk",
