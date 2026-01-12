@@ -741,6 +741,7 @@
 		},
 		AnsCheck: {
 			checklist: [
+				"checkLineExist+",
 				"checkBranchLine",
 				"checkCrossLine",
 				"checkIceLines@icewalk",
