@@ -2,8 +2,6 @@
 // chainedb.js: Implementation of Chained Block puzzle type.
 //
 
-/* global Set:false */
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];

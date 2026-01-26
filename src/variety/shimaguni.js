@@ -1,7 +1,6 @@
 //
 // パズル固有スクリプト部 島国・チョコナ・ストストーン版 shimaguni.js
 //
-/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
