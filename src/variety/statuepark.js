@@ -2,8 +2,6 @@
 // statuepark.js
 //
 
-/* global Set:false */
-
 (function(classbase) {
 	var pidlist = [
 		"statuepark",

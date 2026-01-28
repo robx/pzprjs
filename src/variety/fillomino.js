@@ -2,7 +2,6 @@
 // パズル固有スクリプト部 フィルオミノ版 fillomino.js
 //
 
-/* global Set:false */
 (function(classbase) {
 	var pidlist = [
 		"fillomino",
