@@ -269,14 +269,11 @@
 			}
 
 			try {
-				pzpr.util.localStorageSafeSet(
+				pzpr.util.store(
 					"pzprv3_config:puzzle",
 					JSON.stringify(ui.puzzle.saveConfig())
 				);
-				pzpr.util.localStorageSafeSet(
-					"pzprv3_config:ui",
-					JSON.stringify(this.getAll())
-				);
+				pzpr.util.store("pzprv3_config:ui", JSON.stringify(this.getAll()));
 			} catch (ex) {
 				console.warn(ex);
 			}
@@ -344,7 +341,15 @@
 		// config.configevent()  設定変更時の動作を記述する (modeはlistener.onModeChangeで変更)
 		//---------------------------------------------------------------------------
 		configevent: function(idname, newval) {
-			console.log(idname, newval);
+			//Need to set save icon visibility here to make sure it goes off before the early exit
+			if (idname === "autosave") {
+				var saveIcon = document.getElementById("saveicon");
+				if (!!newval) {
+					saveIcon.classList.remove("hide");
+				} else {
+					saveIcon.classList.add("hide");
+				}
+			}
 			if (!ui.menuarea.menuitem) {
 				return;
 			}
@@ -373,15 +378,6 @@
 
 				case "lrinvert":
 					ui.puzzle.mouse.setInversion(newval);
-					break;
-
-				case "autosave":
-					var saveIcon = document.getElementById("saveicon");
-					if (!!newval) {
-						saveIcon.classList.remove("hide");
-					} else {
-						saveIcon.classList.add("hide");
-					}
 					break;
 			}
 		}

@@ -176,7 +176,7 @@
 			pzl: url
 			// bufferToForceStorageLimitErrors: "0".repeat(1700000) //Include for testing to force out-of-storage errors
 		};
-		pzpr.util.localStorageSafeSet(key, JSON.stringify(valObject));
+		pzpr.util.store(key, JSON.stringify(valObject));
 	}
 
 	//Events that trigger a board state save

@@ -103,10 +103,7 @@
 				localStorage.getItem("pzprv3_config:ui") || "{}"
 			);
 			setting.listsort = typename;
-			pzpr.util.localStorageSafeSet(
-				"pzprv3_config:ui",
-				JSON.stringify(setting)
-			);
+			pzpr.util.store("pzprv3_config:ui", JSON.stringify(setting));
 			self.apply_sort();
 		},
 

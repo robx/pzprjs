@@ -224,7 +224,7 @@
 
 		// "Safe" set to local storage. Catches quota exceeded errors and removes the oldest puzzles.
 		// Separated here so that settings can be set safely as well
-		localStorageSafeSet: function(key, value) {
+		store: function(key, value) {
 			try {
 				localStorage.setItem(key, value);
 			} catch (e) {
@@ -248,7 +248,6 @@
 					var maxIters = 10000; //Generous limit, only here to avoid infinite looping
 					var iterTracker = 0;
 					while (!saveSuccess && pairs.length > 0 && iterTracker < maxIters) {
-						console.log(pairs);
 						try {
 							localStorage.setItem(key, value);
 							saveSuccess = true;
