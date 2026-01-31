@@ -103,7 +103,8 @@
 				localStorage.getItem("pzprv3_config:ui") || "{}"
 			);
 			setting.listsort = typename;
-			localStorage.setItem("pzprv3_config:ui", JSON.stringify(setting));
+			// localStorage.setItem("pzprv3_config:ui", JSON.stringify(setting));
+			pzpr.localStorageSafeSet("pzprv3_config:ui", JSON.stringify(setting))
 			self.apply_sort();
 		},
 

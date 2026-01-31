@@ -148,7 +148,9 @@
 
 	//Save board state. Creates an entry in localStorage whose key is a 'pzpr_' identifier plus the current board state puzzle string.
 	//Board state puzzle string is the same thing you get from duplicating the board state
+	//Auto-exits if the correct setting is not set, so safe to call from anywhere without checking
 	function saveBoardState() {
+		if (!ui.menuconfig.get("autosave")) {return}
 		var key = "pzpr_" + getPuzzleString();
 		var url = ui.puzzle.getURL(
 			pzpr.parser.URL_PZPRFILE,
@@ -165,8 +167,13 @@
 			pzl: url
 			// bufferToForceStorageLimitErrors: "0".repeat(1700000) //Include for testing to force out-of-storage errors
 		};
+		pzpr.localStorageSafeSet(key, JSON.stringify(valObject))
+	}
+
+	//"Safe" set to local storage. Catches quota exceeded errors and removes the oldest puzzles. Separated here so that settings don't run into this issue either
+	pzpr.localStorageSafeSet = function(key, value) {
 		try {
-			localStorage.setItem(key, JSON.stringify(valObject));
+			localStorage.setItem(key, value);
 		} catch (e) {
 			if (e.name === "QuotaExceededError") {
 				//If storage was full: load all of the puzzles in localStorage, sort by least recent, and delete until saving is successful
@@ -185,15 +192,18 @@
 					var tb = JSON.parse(b.value).t;
 					return ta > tb;
 				});
-				while (!saveSuccess && pairs.length > 0) {
+				var maxIters = 10000; //Generous limit, only here to avoid infinite looping
+				var iterTracker = 0;
+				while (!saveSuccess && pairs.length > 0 && iterTracker < maxIters) {
 					console.log(pairs);
 					try {
-						localStorage.setItem(key, JSON.stringify(valObject));
+						localStorage.setItem(key, value);
 						saveSuccess = true;
 					} catch (e) {
 						localStorage.removeItem(pairs[0].key);
 						pairs = pairs.slice(1);
 					}
+					iterTracker++;
 				}
 			}
 		}
