@@ -233,14 +233,14 @@
 					var pairs = [];
 					for (var i = 0; i < localStorage.length; i++) {
 						var lsKey = localStorage.key(i);
-						var lsValue = localStorage.getItem(lsKey);
+						var lsValue = JSON.parse(localStorage.getItem(lsKey));
 						if (lsKey.indexOf("pzpr_") === 0) {
 							pairs.push({ key: lsKey, value: lsValue });
 						}
 					}
 					pairs.sort(function(a, b) {
-						var ta = JSON.parse(a.value).t;
-						var tb = JSON.parse(b.value).t;
+						var ta = a.value.t;
+						var tb = b.value.t;
 						return ta - tb;
 					});
 					for (var i = 0; i < pairs.length; i++) {
