@@ -51,9 +51,9 @@
 			}); /* マウスの左右ボタンを反転する設定 */
 
 			//Autosave feature. Not on by default, but persists once enabled
-			this.add("autosave",false, {
+			this.add("autosave", false, {
 				volatile: false
-			})
+			});
 
 			this.add("language", pzpr.lang, { option: ["en", "ja"] }); /* 言語設定 */
 
@@ -269,16 +269,14 @@
 			}
 
 			try {
-				// localStorage.setItem(
-				// 	"pzprv3_config:puzzle",
-				// 	JSON.stringify(ui.puzzle.saveConfig())
-				// );
-				pzpr.localStorageSafeSet(
+				pzpr.util.localStorageSafeSet(
 					"pzprv3_config:puzzle",
 					JSON.stringify(ui.puzzle.saveConfig())
 				);
-				// localStorage.setItem("pzprv3_config:ui", JSON.stringify(this.getAll()));
-				pzpr.localStorageSafeSet("pzprv3_config:ui", JSON.stringify(this.getAll()));
+				pzpr.util.localStorageSafeSet(
+					"pzprv3_config:ui",
+					JSON.stringify(this.getAll())
+				);
 			} catch (ex) {
 				console.warn(ex);
 			}
@@ -346,7 +344,7 @@
 		// config.configevent()  設定変更時の動作を記述する (modeはlistener.onModeChangeで変更)
 		//---------------------------------------------------------------------------
 		configevent: function(idname, newval) {
-			console.log(idname,newval)
+			console.log(idname, newval);
 			if (!ui.menuarea.menuitem) {
 				return;
 			}
@@ -378,11 +376,11 @@
 					break;
 
 				case "autosave":
-					var saveIcon = document.getElementById("saveicon")
+					var saveIcon = document.getElementById("saveicon");
 					if (!!newval) {
-						saveIcon.classList.remove("hide")
+						saveIcon.classList.remove("hide");
 					} else {
-						saveIcon.classList.add("hide")
+						saveIcon.classList.add("hide");
 					}
 					break;
 			}

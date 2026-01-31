@@ -615,12 +615,12 @@ form#fileform2 {
 }
 
 div#saveicon {
-  float:right;
-  position:relative;
-  height:100%;
-  display:flex;
-  align-items:center;
-  margin-right:2px
+  float: right;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
 }
 .hide {
   visibility: hidden;
@@ -679,4 +679,3 @@ div#pauseoverlay div.header {
     opacity: 0.25;
   }
 }
-

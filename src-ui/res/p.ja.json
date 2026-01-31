@@ -56,6 +56,7 @@
     "autocheck.off": "正答を自動で判定しない",
     "autocheck.guarded": "自動(guarded)",
     "autocheck.simple": "自動(常に)",
+    "autosave": "Autosave board state",
     "menu_help": "ヘルプ",
     "rules": "ルール",
     "about": "puzz.linkについて",
