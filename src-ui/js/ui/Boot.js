@@ -126,7 +126,7 @@
 			return null;
 		}
 		if (search.charAt(0) === "?") {
-			search = search.slice(1); //Non-deprecated version of substr
+			search = search.slice(1);
 		}
 
 		while (search.match(/^(\w+)\=(\w+)\&(.*)/)) {

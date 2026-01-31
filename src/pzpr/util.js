@@ -230,32 +230,26 @@
 			} catch (e) {
 				if (e.name === "QuotaExceededError") {
 					//If storage was full: load all of the puzzles in localStorage, sort by least recent, and delete until saving is successful
-					var saveSuccess = false;
 					var pairs = [];
 					for (var i = 0; i < localStorage.length; i++) {
 						var lsKey = localStorage.key(i);
 						var lsValue = localStorage.getItem(lsKey);
-						pairs.push({ key: lsKey, value: lsValue });
+						if (lsKey.indexOf("pzpr_") === 0) {
+							pairs.push({ key: lsKey, value: lsValue });
+						}
 					}
-					pairs = pairs.filter(function(item) {
-						return item.key.indexOf("pzpr_") === 0;
-					});
-					pairs = pairs.sort(function(a, b) {
+					pairs.sort(function(a, b) {
 						var ta = JSON.parse(a.value).t;
 						var tb = JSON.parse(b.value).t;
-						return ta > tb;
+						return ta - tb;
 					});
-					var maxIters = 10000; //Generous limit, only here to avoid infinite looping
-					var iterTracker = 0;
-					while (!saveSuccess && pairs.length > 0 && iterTracker < maxIters) {
+					for (var i = 0; i < pairs.length; i++) {
 						try {
 							localStorage.setItem(key, value);
-							saveSuccess = true;
+							break;
 						} catch (e) {
-							localStorage.removeItem(pairs[0].key);
-							pairs = pairs.slice(1);
+							localStorage.removeItem(pairs[i].key);
 						}
-						iterTracker++;
 					}
 				}
 			}
