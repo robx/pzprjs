@@ -57,6 +57,7 @@
     "autocheck.off": "Manual",
     "autocheck.guarded": "Automatic (guarded)",
     "autocheck.simple": "Automatic (always)",
+    "autosave": "Autosave board state [beta]",
     "menu_help": "Help",
     "rules": "Rules",
     "about": "About puzz.link",

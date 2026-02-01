@@ -13,18 +13,42 @@
 	// ★boot() window.onload直後の処理
 	//---------------------------------------------------------------------------
 	pzpr.on("load", function boot() {
-		if (importData()) {
-			startPuzzle();
+		var pzl;
+		var storedGame = null;
+
+		if (pzpr.env.localStorageAvailable) {
+			// If localStorage is available and autosave is enabled:
+			// Get URL search hash and check localStorage to see if a board state is saved
+
+			// ui.menuconfig is not yet populated, so need to manually check
+			var json_menu = localStorage.getItem("pzprv3_config:ui");
+			if (json_menu && JSON.parse(json_menu)["autosave"]) {
+				var key = "pzpr_" + getPuzzleString();
+				storedGame = localStorage.getItem(key);
+			}
+		}
+
+		if (storedGame) {
+			var valObject = JSON.parse(storedGame);
+			pzl = importData(valObject.pzl);
 		} else {
+			pzl = importData();
+		}
+		if (!pzl) {
 			setTimeout(boot, 0);
 		}
+		startPuzzle();
 	});
 
-	function importData() {
+	function importData(string) {
 		if (!onload_pzl) {
 			/* 1) 盤面複製・index.htmlからのファイル入力/Database入力か */
 			/* 2) URL(?以降)をチェック */
-			onload_pzl = importURL();
+			if (!string) {
+				onload_pzl = importURL();
+			} else {
+				onload_pzl = importFromString(string);
+			}
 
 			/* 指定されたパズルがない場合はさようなら～ */
 			if (!onload_pzl || !onload_pzl.pid) {
@@ -90,26 +114,75 @@
 	//---------------------------------------------------------------------------
 	function importURL() {
 		/* index.htmlからURLが入力されていない場合は現在のURLの?以降をとってくる */
+		var puzString = getPuzzleString();
+		return importFromString(puzString);
+	}
+	//Splitting functionality from above for flexibility.
+
+	//Return the string associated with the puzzle
+	function getPuzzleString() {
 		var search = location.search;
 		if (!search) {
 			return null;
 		}
-
-		/* 一旦先頭の?記号を取り除く */
 		if (search.charAt(0) === "?") {
-			search = search.substr(1);
+			search = search.slice(1);
 		}
 
 		while (search.match(/^(\w+)\=(\w+)\&(.*)/)) {
 			onload_option[RegExp.$1] = RegExp.$2;
 			search = RegExp.$3;
 		}
+		return search;
+	}
+	//Import from a puzzle string. This can come from the URL or from localStorage
+	function importFromString(string) {
+		if (!string) {
+			return null;
+		}
 
-		onload_pzv = search;
-		var pzl = pzpr.parser.parseURL(search);
+		onload_pzv = string;
+		var pzl = pzpr.parser.parseURL(string);
 		var startmode = pzl.mode || (!pzl.body ? "editor" : "player");
 		onload_option.type = onload_option.type || startmode;
 
 		return pzl;
 	}
+
+	//---------------------------------------------------------------------------
+	// Functionality to support browser caching
+	//---------------------------------------------------------------------------
+
+	//Save board state. Creates an entry in localStorage whose key is a 'pzpr_' identifier plus the current board state puzzle string.
+	//Board state puzzle string is the same thing you get from duplicating the board state
+	//Auto-exits if the correct setting is not set, so safe to call from anywhere without checking
+	function saveBoardState() {
+		if (!ui.menuconfig.get("autosave")) {
+			return;
+		}
+		var key = "pzpr_" + getPuzzleString();
+		var url = ui.puzzle.getURL(
+			pzpr.parser.URL_PZPRFILE,
+			ui.puzzle.playeronly ? "player" : "editor"
+		);
+		//Strip url to the last option. This is the "puzzle string" we want
+		url = url.substring(url.indexOf("?") + 1); //Skip to the search parameters part of the url
+		while (url.match(/^(\w+)\=(\w+)\&(.*)/)) {
+			url = RegExp.$3;
+		}
+		//Add a time signifier so that we can sort and delete oldest if setting fails
+		var valObject = {
+			t: Date.now(),
+			pzl: url
+			// bufferToForceStorageLimitErrors: "0".repeat(1700000) //Include for testing to force out-of-storage errors
+		};
+		pzpr.util.store(key, JSON.stringify(valObject));
+	}
+
+	//Events that trigger a board state save
+	document.addEventListener("visibilitychange", function() {
+		if (document.visibilityState === "hidden") {
+			saveBoardState();
+		}
+	});
 })();
