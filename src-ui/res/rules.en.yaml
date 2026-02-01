@@ -367,7 +367,7 @@ cornerch: |-
 oasis: |-
   Shade some cells on the board.
   1. Shaded cells cannot be horizontally or vertically adjacent.
-  2. Numbers cannot be shaded.
+  2. Circles cannot be shaded.
   3. The unshaded cells cannot form a 2x2 square.
   4. A circled number indicates how many other circles it could reach by traveling only through empty unshaded cells.
   5. All unshaded cells on the board form an orthogonally connected area.
