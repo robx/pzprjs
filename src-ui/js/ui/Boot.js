@@ -14,23 +14,23 @@
 	//---------------------------------------------------------------------------
 	pzpr.on("load", function boot() {
 		var pzl;
-		// If localStorage is available and autosave is enabled:
-		// Get URL search hash and check localStorage to see if a board state is saved
-		//ui.menuconfig is not yet populated, so need to manually check
-		var loadFromLocalStorage = !!pzpr.env.localStorageAvailable;
-		if (loadFromLocalStorage) {
+		var storedGame = null;
+
+		if (pzpr.env.localStorageAvailable) {
+			// If localStorage is available and autosave is enabled:
+			// Get URL search hash and check localStorage to see if a board state is saved
+
+			// ui.menuconfig is not yet populated, so need to manually check
 			var json_menu = localStorage.getItem("pzprv3_config:ui");
-			loadFromLocalStorage = !!json_menu && !!JSON.parse(json_menu)["autosave"];
-		}
-		if (loadFromLocalStorage) {
-			var key = "pzpr_" + getPuzzleString();
-			var valStr = localStorage.getItem(key);
-			if (!valStr) {
-				pzl = importData();
-			} else {
-				var valObject = JSON.parse(valStr);
-				pzl = importData(valObject.pzl); // Local storage was available and key was found
+			if (json_menu && JSON.parse(json_menu)["autosave"]) {
+				var key = "pzpr_" + getPuzzleString();
+				storedGame = localStorage.getItem(key);
 			}
+		}
+
+		if (storedGame) {
+			var valObject = JSON.parse(storedGame);
+			pzl = importData(valObject.pzl);
 		} else {
 			pzl = importData();
 		}
