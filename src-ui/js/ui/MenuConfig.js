@@ -341,15 +341,11 @@
 		// config.configevent()  設定変更時の動作を記述する (modeはlistener.onModeChangeで変更)
 		//---------------------------------------------------------------------------
 		configevent: function(idname, newval) {
-			//Need to set save icon visibility here to make sure it goes off before the early exit
 			if (idname === "autosave") {
 				var saveIcon = document.getElementById("saveicon");
-				if (!!newval) {
-					saveIcon.classList.remove("hide");
-				} else {
-					saveIcon.classList.add("hide");
-				}
+				saveIcon.style.display = newval ? null : "none";
 			}
+
 			if (!ui.menuarea.menuitem) {
 				return;
 			}
