@@ -259,6 +259,7 @@
     "filesave.title": "Save File",
     "filesave.format": "File format",
     "filesave.format.pzprv3": "Puz-Pre v3 format",
+    "filesave.format.pzprv3.history": "Puz-Pre v3 with history",
     "filesave.format.penciltxt": "Pencilbox Text format",
     "filesave.format.pencilxml": "Pencilbox XML format",
     "filesave.filename": "Filename",

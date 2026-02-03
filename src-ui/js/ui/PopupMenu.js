@@ -570,6 +570,10 @@ ui.popupmgr.addpopup("filesave", {
 	init: function() {
 		ui.popupmgr.popups.template.init.call(this);
 
+		pzpr.util.addEvent(this.form.filetype, "change", this, function(e) {
+			this.updatetextarea();
+		});
+
 		this.anchor =
 			!ui.enableSaveBlob && pzpr.env.API.anchor_download
 				? getEL("saveanchor")
@@ -578,11 +582,9 @@ ui.popupmgr.addpopup("filesave", {
 	reset: function() {
 		/* ファイル形式選択オプション */
 		var ispencilbox = pzpr.variety(ui.puzzle.pid).exists.pencilbox;
-		this.form.filetype.options[1].disabled = !ispencilbox;
 		this.form.filetype.options[2].disabled = !ispencilbox;
-		var parser = pzpr.parser;
-		this.form.ta.value = ui.puzzle.getFileData(parser.FILE_PZPR, {});
-		this.form.ta2.value = this.form.ta.value.replace(/\n/g, "/");
+		this.form.filetype.options[3].disabled = !ispencilbox;
+		this.updatetextarea();
 	},
 	/* オーバーライド */
 	show: function(px, py) {
@@ -617,6 +619,30 @@ ui.popupmgr.addpopup("filesave", {
 		}
 		this.form.filename.value = filename + ext;
 	},
+	updatetextarea: function() {
+		this.form.ta.value = this.getdata();
+		this.form.ta2.style.display =
+			this.form.filetype.value === "filesave" ? "" : "none";
+		this.form.ta2.value = this.form.ta.value.replace(/\n/g, "/");
+	},
+	getdata: function() {
+		var parser = pzpr.parser,
+			filetype = parser.FILE_PZPR,
+			option = {};
+		switch (this.form.filetype.value) {
+			case "filesave2":
+				filetype = parser.FILE_PBOX;
+				break;
+			case "filesave4":
+				filetype = parser.FILE_PBOX_XML;
+				break;
+			case "filesave3":
+				filetype = parser.FILE_PZPR;
+				option.history = true;
+				break;
+		}
+		return ui.puzzle.getFileData(filetype, option);
+	},
 
 	//------------------------------------------------------------------------------
 	// filesave()  ファイルを保存する
@@ -633,30 +659,14 @@ ui.popupmgr.addpopup("filesave", {
 			}
 		}
 
-		var parser = pzpr.parser,
-			filetype = parser.FILE_PZPR,
-			option = {};
-		switch (form.filetype.value) {
-			case "filesave2":
-				filetype = parser.FILE_PBOX;
-				break;
-			case "filesave4":
-				filetype = parser.FILE_PBOX_XML;
-				break;
-			case "filesave3":
-				filetype = parser.FILE_PZPR;
-				option.history = true;
-				break;
-		}
-
 		var blob = null,
 			filedata = null;
 		if (ui.enableSaveBlob || !!this.anchor) {
-			blob = new Blob([ui.puzzle.getFileData(filetype, option)], {
+			blob = new Blob([this.getdata()], {
 				type: "text/plain"
 			});
 		} else {
-			filedata = ui.puzzle.getFileData(filetype, option);
+			filedata = this.getdata();
 		}
 
 		if (ui.enableSaveBlob) {
