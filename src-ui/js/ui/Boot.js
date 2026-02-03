@@ -23,8 +23,17 @@
 			// ui.menuconfig is not yet populated, so need to manually check
 			var json_menu = localStorage.getItem("pzprv3_config:ui");
 			if (json_menu && JSON.parse(json_menu)["autosave"]) {
-				var key = "pzpr_" + getPuzzleString();
-				storedGame = localStorage.getItem(key);
+				var str = getPuzzleString();
+				var index = str.indexOf("/");
+
+				if (index !== -1 && index < str.length - 1) {
+					var pid = str.substring(0, index);
+					// Filter out editor URLs and Duplicate Board items
+					if (pid.indexOf("_edit") === -1 && pid.indexOf("pzprv") === -1) {
+						var key = "pzpr_" + str;
+						storedGame = localStorage.getItem(key);
+					}
+				}
 			}
 		}
 
@@ -157,7 +166,7 @@
 	//Board state puzzle string is the same thing you get from duplicating the board state
 	//Auto-exits if the correct setting is not set, so safe to call from anywhere without checking
 	function saveBoardState() {
-		if (!ui.menuconfig.get("autosave")) {
+		if (!ui.menuconfig.get("autosave") || !ui.puzzle.playeronly) {
 			return;
 		}
 		var key = "pzpr_" + getPuzzleString();
