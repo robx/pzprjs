@@ -278,7 +278,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		updateSolverAnswerForCells: function(result) {
-			if ((this.clearSolverAnswerForCells(), "string" !== typeof result)) {
+			if ((this.clearSolverAnswerForCells(), "string" !== typeof result) && result.hasAnswer) {
 				for (var b = [], c = 0; c < this.rows; ++c) {
 					for (var d = [], e = 0; e < this.cols; ++e) {
 						d.push([]);
@@ -340,17 +340,19 @@ pzpr.classmgr.makeCommon({
 								"yinyang" !== this.pid) ||
 							"firewalkCellUl" === j[k] ||
 							"firewalkCellDr" === j[k] ||
-							"firewalkCellUlDr" === j[k]
+							"firewalkCellUlDr" === j[k] ||
+							"arrowUp" === j[k]
 						) {
 							i.qansBySolver = 1;
 						} else if (
 							"triangle" === j[k] ||
 							"firewalkCellUr" === j[k] ||
 							"firewalkCellDl" === j[k] ||
-							"firewalkCellUrDl" === j[k]
+							"firewalkCellUrDl" === j[k] ||
+							"arrowDown" === j[k]
 						) {
 							i.qansBySolver = 2;
-						} else if ("square" === j[k] || "firewalkCellUnknown" === j[k]) {
+						} else if ("square" === j[k] || "firewalkCellUnknown" === j[k] || "arrowLeft" === j[k]) {
 							i.qansBySolver = 3;
 						} else if (
 							"dot" === j[k] ||
@@ -360,7 +362,7 @@ pzpr.classmgr.makeCommon({
 							i.qsubBySolver = 1;
 						} else if ("aboloUpperLeft" === j[k]) {
 							i.qansBySolver = 5;
-						} else if ("aboloUpperRight" === j[k]) {
+						} else if ("aboloUpperRight" === j[k] || "arrowRight" === j[k]) {
 							i.qansBySolver = 4;
 						} else if ("aboloLowerLeft" === j[k]) {
 							i.qansBySolver = 2;
@@ -436,7 +438,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		updateSolverAnswerForBorders: function(result) {
-			if ((this.clearSolverAnswerForBorders(), "string" !== typeof result)) {
+			if ((this.clearSolverAnswerForBorders(), "string" !== typeof result) && result.hasAnswer) {
 				for (var b = [], c = 0; c < 2 * this.rows + 1; ++c) {
 					for (var d = [], e = 0; e < 2 * this.cols + 1; ++e) {
 						d.push([]);
@@ -498,7 +500,7 @@ pzpr.classmgr.makeCommon({
 			return a;
 		},
 		updateSolverAnswerForCrosses: function(result) {
-			if ((this.clearSolverAnswerForCrosses(), "string" !== typeof result)) {
+			if ((this.clearSolverAnswerForCrosses(), "string" !== typeof result) && result.hasAnswer) {
 				for (var b = [], c = 0; c < 2 * this.rows + 1; ++c) {
 					for (var d = [], e = 0; e < 2 * this.cols + 1; ++e) {
 						d.push([]);

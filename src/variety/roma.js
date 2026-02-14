@@ -170,6 +170,9 @@
 		getArrow: function() {
 			return this.getNum();
 		},
+		getSolverArrow: function() {
+			return this.qansBySolver;
+		},
 		isGoal: function() {
 			return this.getNum() === 5;
 		}
@@ -318,6 +321,7 @@
 			}
 
 			this.drawCellArrows();
+			this.drawCellSolverArrows();
 			if (this.pid === "roma") {
 				this.drawGoals();
 				this.drawHatenas();

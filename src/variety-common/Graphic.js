@@ -38,12 +38,12 @@ pzpr.classmgr.makeCommon({
 			return this.quescolor;
 		},
 
-		getColorSolverAware: function(a, b, c) {
-			return a && b
+		getColorSolverAware: function(answerBool, solverBool, color) {
+			return answerBool && solverBool
 				? this.solverqanscolor
-				: b
+				: solverBool
 				? this.solvercolor
-				: c || this.qanscolor;
+				: color || this.qanscolor;
 		},
 
 		isSameSymbol: function(answerKey, answerDict, solverKey, solverDict) {
@@ -327,12 +327,17 @@ pzpr.classmgr.makeCommon({
 				}
 
 				for (var i = 0; i < clist.length; i++) {
-					var cell = clist[i],
-						dir = !!cell.getArrow
-							? cell.getArrow()
-							: !cell.numberAsObject
-							? cell.qdir
-							: cell.getNum();
+					var cell = clist[i];
+					var dir;
+					if (!!cell.getArrow) {
+						dir = cell.getArrow();
+					}
+					else if (!cell.numberAsObject) {
+						dir = cell.qdir;
+					}
+					else {
+						dir = cell.getNum();
+					}
 					var color = dir >= 1 && dir <= 4 ? func.call(this, cell) : null;
 
 					g.vid = "c_arrow_" + item + "_" + cell.id;
@@ -344,88 +349,89 @@ pzpr.classmgr.makeCommon({
 							py = cell.by * this.bh;
 						switch (dir) {
 							case cell.UP:
-								g.setOffsetLinePath(
-									px,
-									py,
-									0,
-									-al,
-									-tw,
-									-tl,
-									-aw,
-									-tl,
-									-aw,
-									al,
-									aw,
-									al,
-									aw,
-									-tl,
-									tw,
-									-tl,
-									true
-								);
+								g.setOffsetLinePath(px, py, 0, -al, -tw, -tl, -aw, -tl, -aw, al, aw, al, aw, -tl, tw, -tl, true);
 								break;
 							case cell.DN:
-								g.setOffsetLinePath(
-									px,
-									py,
-									0,
-									al,
-									-tw,
-									tl,
-									-aw,
-									tl,
-									-aw,
-									-al,
-									aw,
-									-al,
-									aw,
-									tl,
-									tw,
-									tl,
-									true
-								);
+								g.setOffsetLinePath(px, py, 0, al, -tw, tl, -aw, tl, -aw, -al, aw, -al, aw, tl, tw, tl, true);
 								break;
 							case cell.LT:
-								g.setOffsetLinePath(
-									px,
-									py,
-									-al,
-									0,
-									-tl,
-									-tw,
-									-tl,
-									-aw,
-									al,
-									-aw,
-									al,
-									aw,
-									-tl,
-									aw,
-									-tl,
-									tw,
-									true
-								);
+								g.setOffsetLinePath(px, py, -al, 0, -tl, -tw, -tl, -aw, al, -aw, al, aw, -tl, aw, -tl, tw, true);
 								break;
 							case cell.RT:
-								g.setOffsetLinePath(
-									px,
-									py,
-									al,
-									0,
-									tl,
-									-tw,
-									tl,
-									-aw,
-									-al,
-									-aw,
-									-al,
-									aw,
-									tl,
-									aw,
-									tl,
-									tw,
-									true
-								);
+								g.setOffsetLinePath(px, py, al, 0, tl, -tw, tl, -aw, -al, -aw, -al, aw, tl, aw, tl, tw, true);
+								break;
+						}
+						if (item === 1) {
+							g.stroke();
+						} else {
+							g.fill();
+						}
+					} else {
+						g.vhide();
+					}
+				}
+			}
+		},
+		drawCellSolverArrows: function(wide) {
+			var g = this.vinc("cell_solver_arrow", "auto");
+			var al, aw, tl, tw;
+
+			if (!wide) {
+				al = this.cw * 0.4; // ArrowLength
+				aw = this.cw * 0.03; // ArrowWidth
+				tl = this.cw * 0.16; // 矢じりの長さの座標(中心-長さ)
+				tw = this.cw * 0.16; // 矢じりの幅
+			} else if (wide === 0.5) {
+				/* 太い矢印 */
+				al = this.cw * 0.35; // ArrowLength
+				aw = this.cw * 0.1; // ArrowWidth
+				tl = 0; // 矢じりの長さの座標(中心-長さ)
+				tw = this.cw * 0.27; // 矢じりの幅
+			} else {
+				/* 太い矢印 */
+				al = this.cw * 0.35; // ArrowLength
+				aw = this.cw * 0.12; // ArrowWidth
+				tl = 0; // 矢じりの長さの座標(中心-長さ)
+				tw = this.cw * 0.35; // 矢じりの幅
+			}
+			aw = aw >= 1 ? aw : 1;
+			tw = tw >= 5 ? tw : 5;
+
+			var clist = this.range.cells;
+			for (var item = 0; item < 2; item++) {
+				var func =
+					item === 1 ? this.getCellArrowOutline : this.getCellArrowColor;
+				if (!func) {
+					continue;
+				}
+
+				for (var i = 0; i < clist.length; i++) {
+					var cell = clist[i];
+					var dir;
+					if (!!cell.getSolverArrow) {
+						dir = cell.getSolverArrow();
+					}
+					var color = dir >= 1 && dir <= 4 ? func.call(this, cell) : null;
+
+					g.vid = "c_solver_arrow_" + item + "_" + cell.id;
+					if (!!color) {
+						g.lineWidth = 1.5;
+						g.strokeStyle = g.fillStyle = color;
+						g.beginPath();
+						var px = cell.bx * this.bw,
+							py = cell.by * this.bh;
+						switch (dir) {
+							case cell.UP:
+								g.setOffsetLinePath(px, py, 0, -al, -tw, -tl, -aw, -tl, -aw, al, aw, al, aw, -tl, tw, -tl, true);
+								break;
+							case cell.DN:
+								g.setOffsetLinePath(px, py, 0, al, -tw, tl, -aw, tl, -aw, -al, aw, -al, aw, tl, tw, tl, true);
+								break;
+							case cell.LT:
+								g.setOffsetLinePath(px, py, -al, 0, -tl, -tw, -tl, -aw, al, -aw, al, aw, -tl, aw, -tl, tw, true);
+								break;
+							case cell.RT:
+								g.setOffsetLinePath(px, py, al, 0, tl, -tw, tl, -aw, -al, -aw, -al, aw, tl, aw, tl, tw, true);
 								break;
 						}
 						if (item === 1) {
@@ -442,11 +448,12 @@ pzpr.classmgr.makeCommon({
 		getCellArrowOutline: null,
 		getCellArrowColor: function(cell) {
 			var dir = !cell.numberAsObject ? cell.qdir : cell.getNum();
-			if (dir >= 1 && dir <= 4) {
+			var solverdir = cell.qansBySolver;
+			if ((dir >= 1 && dir <= 4) || (solverdir >= 1 && solverdir <= 4)) {
 				if (!cell.numberAsObject || cell.qnum !== -1) {
 					return this.quescolor;
 				} else {
-					return !cell.trial ? this.qanscolor : this.trialcolor;
+					return !cell.trial ? this.getColorSolverAware(dir >= 1 && dir <= 4, solverdir >= 1 && solverdir <= 4, this.qanscolor ) : this.trialcolor;
 				}
 			}
 			return null;
@@ -931,8 +938,7 @@ pzpr.classmgr.makeCommon({
 						case cell.UP:
 							g.setOffsetLinePath(
 								px + dx[digit] * scale,
-								py,
-								0,
+								py, 0,
 								-al,
 								-tw,
 								-tl,
