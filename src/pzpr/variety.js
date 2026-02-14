@@ -278,6 +278,7 @@
 			makaro: [0, 0, "マカロ", "Makaro"],
 			mannequin: [0, 0, "マネキンゲート", "Mannequin Gate"],
 			martini: [0, 0, "マティーニ", "Martini", "shimaguni"],
+			marutaring: [0, 0, "マルタリング", "Marutaring", "shimaguni"],
 			mashu: [0, 1, "ましゅ", "Masyu", "", { kanpen: "masyu", alias: "pearl" }],
 			maxi: [0, 0, "Maxi Loop", "Maxi Loop", "country"],
 			meander: [0, 0, "にょろにょろナンバー", "Meandering Numbers", "ripple"],
