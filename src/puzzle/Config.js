@@ -544,7 +544,8 @@
 							"firewalk",
 							"forestwalk",
 							"morningwalk",
-							"wataridori"
+							"wataridori",
+							"bhaibahan"
 						].indexOf(pid) >= 0;
 					break;
 				default:
