@@ -939,6 +939,19 @@
 			);
 		},
 
+		isShadeSolverDecided: function() {
+			if (this.isnull) {
+				return true;
+			}
+			if (this.qnum > -1 || this.qansBySolver === 1) {
+				return true;
+			}
+			if (this.qsubBySolver > 0) {
+				return true;
+			}
+			return false;
+		},
+
 		posthook: {
 			qnum: function() {
 				this.drawaround();
@@ -972,6 +985,14 @@
 				this.adjacent.right.isShade()
 			);
 		},
+		getSolverShape: function() {
+			return this.board.getShape(
+				this.adjacent.top.qansBySolver === 1 || this.adjacent.top.qnum > 0,
+				this.adjacent.bottom.qansBySolver === 1 || this.adjacent.bottom.qnum > 0,
+				this.adjacent.left.qansBySolver === 1 || this.adjacent.left.qnum > 0,
+				this.adjacent.right.qansBySolver === 1 || this.adjacent.right.qnum > 0
+			);
+		},
 
 		isAdjacentDecided: function() {
 			if (this.board.bank.isSimpleBank) {
@@ -994,6 +1015,30 @@
 				this.adjacent.bottom.isShadeDecided() &&
 				this.adjacent.left.isShadeDecided() &&
 				this.adjacent.right.isShadeDecided()
+			);
+		},
+
+		isAdjacentSolverDecided: function() {
+			if (this.board.bank.isSimpleBank) {
+				if (this.adjacent.top.isShade() || this.adjacent.bottom.isShade() || this.adjacent.top.qansBySolver === 1 || this.adjacent.bottom.qansBySolver === 1) {
+					return (
+						this.adjacent.top.isShadeSolverDecided() &&
+						this.adjacent.bottom.isShadeSolverDecided()
+					);
+				}
+				if (this.adjacent.left.isShade() || this.adjacent.right.isShade() || this.adjacent.left.qansBySolver === 1 || this.adjacent.right.qansBySolver === 1) {
+					return (
+						this.adjacent.left.isShadeSolverDecided() &&
+						this.adjacent.right.isShadeSolverDecided()
+					);
+				}
+			}
+
+			return (
+				this.adjacent.top.isShadeSolverDecided() &&
+				this.adjacent.bottom.isShadeSolverDecided() &&
+				this.adjacent.left.isShadeSolverDecided() &&
+				this.adjacent.right.isShadeSolverDecided()
 			);
 		}
 	},
@@ -1083,6 +1128,9 @@
 			return false;
 		},
 		isShadeDecided: function() {
+			return true;
+		},
+		isShadeSolverDecided: function() {
 			return true;
 		}
 	},
@@ -1495,6 +1543,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawBoardPieces();
+			this.drawBoardPiecesForSolver();
 			this.drawWaterClues();
 
 			if (this.pid === "retroships") {
@@ -1626,6 +1675,49 @@
 				}
 
 				var vid = "c_piece_" + cell.id;
+
+				this.drawSinglePiece(g, vid, px, py, r, shape, color, mode);
+			}
+		},
+
+		drawBoardPiecesForSolver: function() {
+			var g = this.vinc("cell_bpiece_solver", "auto");
+			var clist = this.range.cells;
+
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i],
+					color,
+					shape,
+					px = cell.bx * this.bw,
+					py = cell.by * this.bh,
+					r = this.bw * 0.9;
+					if (cell.qansBySolver === 1) 
+						color = this.getColorSolverAware(cell.isShade(), cell.qansBySolver === 1);
+					else {
+						color = null
+					}
+					shape =
+						cell.qnum === -2
+							? this.board.CENTER
+							: cell.qnum !== -1
+							? cell.qnum
+							: cell.getSolverShape();
+
+				var isCircled =
+					(cell.qnum !== -2 &&
+					(this.board.assumeAllUnshaded ||
+						cell.isAdjacentSolverDecided() ||
+						cell.qnum > 0));
+
+
+				var mode;
+				if (this.pid === "battleship") {
+					mode = isCircled ? this.MODE_ROUNDED : this.MODE_SHARP;
+				} else {
+					mode = cell.qansBySolver === 1 ? this.MODE_ROUNDED : this.MODE_OUTLINE;
+				}
+
+				var vid = "c_piece_solver_" + cell.id;
 
 				this.drawSinglePiece(g, vid, px, py, r, shape, color, mode);
 			}
