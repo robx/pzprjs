@@ -987,10 +987,10 @@
 		},
 		getSolverShape: function() {
 			return this.board.getShape(
-				this.adjacent.top.qansBySolver === 1 || this.adjacent.top.qnum > 0,
-				this.adjacent.bottom.qansBySolver === 1 || this.adjacent.bottom.qnum > 0,
-				this.adjacent.left.qansBySolver === 1 || this.adjacent.left.qnum > 0,
-				this.adjacent.right.qansBySolver === 1 || this.adjacent.right.qnum > 0
+				this.adjacent.top.qansBySolver === 1 || this.adjacent.top.isClue(),
+				this.adjacent.bottom.qansBySolver === 1 || this.adjacent.bottom.isClue(),
+				this.adjacent.left.qansBySolver === 1 || this.adjacent.left.isClue(),
+				this.adjacent.right.qansBySolver === 1 || this.adjacent.right.isClue()
 			);
 		},
 
@@ -1132,6 +1132,9 @@
 		},
 		isShadeSolverDecided: function() {
 			return true;
+		},
+		isClue: function() {
+			return false;
 		}
 	},
 	"BoardExec@battleship,retroships": {
