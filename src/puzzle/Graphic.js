@@ -263,7 +263,6 @@
 				if (!insuspend) {
 					this.unsuspend();
 				}
-				this.board.autoSolve();
 			},
 			resizeCanvasByCellSize: function(cellsize, absolute) {
 				var insuspend = this.suspended;
@@ -308,7 +307,6 @@
 
 				// contextのclear等を呼び出す
 				this.clearObject();
-				this.board.autoSolve();
 			},
 
 			setParameter: function() {
