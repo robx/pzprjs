@@ -307,6 +307,7 @@
 					conf[key] = this.get(key);
 				}
 			}
+
 			return conf;
 		},
 
@@ -610,8 +611,6 @@
 				case "undefcell":
 				case "autocmp":
 				case "autoerr":
-				case "aquarium_regions":
-				case "koburin_minesweeper":
 				case "snakebd":
 				case "context_marks":
 				case "disptype_yajilin":
@@ -619,6 +618,20 @@
 				case "dispqnumbg":
 				case "mouseonly":
 					puzzle.redraw();
+					break;
+				case "aquarium_regions":
+				case "koburin_minesweeper":
+					puzzle.redraw();
+					puzzle.board.autoSolve();
+					break;
+				case "loop_full":
+				case "aqre_borders":
+				case "fillomino_tri":
+				case "akichi_maximum":
+				case "balloon_adjacent":
+				case "country_empty":
+				case "yajilin_out":
+					puzzle.board.autoSolve();
 					break;
 
 				case "font":
