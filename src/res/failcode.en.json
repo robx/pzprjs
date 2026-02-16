@@ -626,6 +626,7 @@
     "lnCrossPencil.pencils": "A line crosses a pencil.",
     "lnCrossSelf": "A loop crosses itself.",
     "lnCurveEq.bhaibahan": "Two adjacent circles don't have one straight line and one turn.",
+    "lnCurveEq.roboticwalk": "Two connected gray cells don't have one straight line and one turn.",
     "lnCurveOnCir.pipelink": "A line turns on a circle.",
     "lnCurveOnCir.portal": "A line turns on an unmarked portal.",
     "lnCurveOnIce": "A line turns on ice.",
