@@ -175,6 +175,7 @@
 					bd.bank.performLayout();
 				}
 
+				this.board.autoSolve();
 				this.adjustBoardData2(key, d);
 			},
 
