@@ -396,10 +396,10 @@
 				var border = blist[i];
 
 				g.vid = "b_qsub1_" + border.id;
-				if (border.qsub === 1) {
+				if (border.qsub === 1 || border.lineBySolver === 1) {
 					var px = border.bx * this.bw,
 						py = border.by * this.bh;
-					g.fillStyle = !border.trial ? this.pekecolor : this.linetrialcolor;
+					g.fillStyle = !border.trial ? this.getColorSolverAware(border.qsub === 1, border.lineBySolver === 1, this.pekecolor) : this.linetrialcolor;
 					if (border.isHorz()) {
 						g.fillRectCenter(px, py, 1, this.bh);
 					} else {
@@ -432,70 +432,64 @@
 				if (num === -1 && !cell.isDot()) {
 					num = cell.qinfo;
 				}
-				switch (num) {
-					case 2:
-						g.vid = "c_tentouter_" + cell.id;
-						var color = this.getAnsNumberColor(cell);
-						if (cell.getNum() === -1 && this.board.trialstage > 0) {
-							color = this.trialcolor;
-						}
-						g.fillStyle = color;
-						g.beginPath();
-						g.setOffsetLinePath(
-							px,
-							py,
-							0,
-							-osize,
-							-osize,
-							osize,
-							osize,
-							osize,
-							true
-						);
-						g.fill();
+				if (num === 2 || (cell.qansBySolver === 2 || cell.qansBySolver === 1)) {
+					g.vid = "c_tentouter_" + cell.id;
+					var color = this.getColorSolverAware(num === 2, (cell.qansBySolver === 2 || cell.qansBySolver === 1), this.getAnsNumberColor(cell));
+					g.fillStyle = color;
+					g.beginPath();
+					g.setOffsetLinePath(
+						px,
+						py,
+						0,
+						-osize,
+						-osize,
+						osize,
+						osize,
+						osize,
+						true
+					);
+					g.fill();
 
-						g.vid = "c_tentinner_" + cell.id;
-						g.fillStyle = "white";
-						g.beginPath();
-						g.setOffsetLinePath(
-							px,
-							py,
-							0,
-							0,
-							-isize,
-							osize,
-							isize,
-							osize,
-							true
-						);
-						g.fill();
+					g.vid = "c_tentinner_" + cell.id;
+					g.fillStyle = "white";
+					g.beginPath();
+					g.setOffsetLinePath(
+						px,
+						py,
+						0,
+						0,
+						-isize,
+						osize,
+						isize,
+						osize,
+						true
+					);
+					g.fill();
 
-						g.vid = "c_tentline_" + cell.id;
-						g.lineWidth = Math.max(this.cw / 32, 2);
-						g.strokeStyle = color;
-						g.beginPath();
+					g.vid = "c_tentline_" + cell.id;
+					g.lineWidth = Math.max(this.cw / 32, 2);
+					g.strokeStyle = color;
+					g.beginPath();
 
-						g.moveTo(px - fsize, py + osize);
-						g.lineTo(px + fsize, py + osize);
+					g.moveTo(px - fsize, py + osize);
+					g.lineTo(px + fsize, py + osize);
 
-						g.moveTo(px - osize, py + osize);
-						g.lineTo(px + thsize, py - (osize + tvsize));
+					g.moveTo(px - osize, py + osize);
+					g.lineTo(px + thsize, py - (osize + tvsize));
 
-						g.moveTo(px + osize, py + osize);
-						g.lineTo(px - thsize, py - (osize + tvsize));
+					g.moveTo(px + osize, py + osize);
+					g.lineTo(px - thsize, py - (osize + tvsize));
 
-						g.closePath();
-						g.stroke();
-
-						break;
-					default:
+					g.closePath();
+					g.stroke();
+				}
+				else {
 						g.vid = "c_tentouter_" + cell.id;
 						g.vhide();
 						g.vid = "c_tentinner_" + cell.id;
 						g.vhide();
 						g.vid = "c_tentline_" + cell.id;
 						g.vhide();
-						break;
 				}
 			}
 		},

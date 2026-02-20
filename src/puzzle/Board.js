@@ -308,6 +308,8 @@ pzpr.classmgr.makeCommon({
 					if (
 						("kakuro" === this.pid ||
 							"doppelblock" === this.pid ||
+							"battleship" === this.pid ||
+							"tents" === this.pid ||
 							"aquarium" === this.pid) &&
 						"green" === h.color &&
 						h.x % 2 === 1 &&
@@ -451,7 +453,13 @@ pzpr.classmgr.makeCommon({
 						"green" === h.color &&
 							h.x + (1 % 2) !== h.y + (1 % 2) &&
 							b[h.y + 1][h.x + 1].push(h.item);
-					} else {
+					}
+					else if ("tents" === this.pid) {
+						"green" === h.color &&
+							h.x + (1 % 2) !== h.y + (1 % 2) &&
+							b[h.y - 2][h.x - 2].push(h.item);
+					}
+					else {
 						"green" === h.color &&
 							h.x % 2 !== h.y % 2 &&
 							b[h.y][h.x].push(h.item);
