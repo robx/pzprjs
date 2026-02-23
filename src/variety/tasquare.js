@@ -65,6 +65,14 @@
 			return this.checkComplete();
 		},
 
+		allowShade: function() {
+			return !this.isNum();
+		},
+
+		allowUnshade: function() {
+			return !this.isNum();
+		},
+
 		checkComplete: function() {
 			if (!this.isNum()) {
 				return true;
@@ -75,6 +83,13 @@
 			for (var i = 0; i < list.length; i++) {
 				var block = list[i][0].sblk;
 				if (block !== null) {
+					for (var j = 0; j < block.clist.length; j++) {
+						for (var k = 0; k < block.clist[j].getdir4clist().length; k++) {
+							if (!block.clist[j].getdir4clist()[k][0].isShadeDecided()) {
+								return false;
+							}
+						}
+					}
 					var shape = block.clist.getRectSize();
 					if (
 						shape.cnt !== shape.cols * shape.rows ||

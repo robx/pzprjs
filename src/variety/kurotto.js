@@ -70,6 +70,14 @@
 
 		minnum: 0,
 
+		allowShade: function() {
+			return !(this.isValidNum() || this.qnum === -2);
+		},
+
+		allowUnshade: function() {
+			return !(this.isValidNum() || this.qnum === -2);
+		},
+
 		isCmp: function() {
 			if (!(this.qnum === -2 || this.isValidNum())) {
 				return false;
@@ -105,6 +113,13 @@
 			for (var i = 0; i < list.length; i++) {
 				var area = list[i][0].sblk;
 				if (area !== null) {
+					for (var j = 0; j < area.clist.length; j++) {
+						for (var k = 0; k < area.clist[j].getdir4clist().length; k++) {
+							if (!area.clist[j].getdir4clist()[k][0].isShadeDecided()) {
+								return false;
+							}
+						}
+					}
 					for (var j = 0; j < arealist.length; j++) {
 						if (arealist[j] === area) {
 							area = null;
