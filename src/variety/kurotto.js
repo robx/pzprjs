@@ -70,14 +70,6 @@
 
 		minnum: 0,
 
-		allowShade: function() {
-			return !(this.isValidNum() || this.qnum === -2);
-		},
-
-		allowUnshade: function() {
-			return !(this.isValidNum() || this.qnum === -2);
-		},
-
 		isCmp: function() {
 			if (!(this.qnum === -2 || this.isValidNum())) {
 				return false;
@@ -88,7 +80,7 @@
 			if (!this.puzzle.execConfig("autocmp")) {
 				return false;
 			}
-			return this.checkComplete();
+			return this.checkComplete() && this.checkUnambiguous();
 		}
 	},
 	"Board@island": {
@@ -96,45 +88,7 @@
 			this.islandgraph = this.addInfoList(this.klass.AreaIslandGraph);
 		}
 	},
-	"Cell@kurotto,island": {
-		maxnum: function() {
-			var max = this.board.cell.length - 1;
-			return max <= 999 ? max : 999;
-		},
 
-		checkComplete: function() {
-			if (!this.isValidNum()) {
-				return true;
-			}
-
-			var cnt = 0,
-				arealist = [],
-				list = this.getdir4clist();
-			for (var i = 0; i < list.length; i++) {
-				var area = list[i][0].sblk;
-				if (area !== null) {
-					for (var j = 0; j < area.clist.length; j++) {
-						for (var k = 0; k < area.clist[j].getdir4clist().length; k++) {
-							if (!area.clist[j].getdir4clist()[k][0].isShadeDecided()) {
-								return false;
-							}
-						}
-					}
-					for (var j = 0; j < arealist.length; j++) {
-						if (arealist[j] === area) {
-							area = null;
-							break;
-						}
-					}
-					if (area !== null) {
-						cnt += area.clist.length;
-						arealist.push(area);
-					}
-				}
-			}
-			return this.qnum === cnt;
-		}
-	},
 	"Cell@mines": {
 		maxnum: 8,
 
@@ -164,6 +118,77 @@
 				}
 			}
 			return this.qnum === cnt;
+		},
+
+		checkUnambiguous: function() {
+			return true;
+		}
+	},
+
+	"Cell@kurotto,island": {
+		allowShade: function() {
+			return !(this.isValidNum() || this.qnum === -2);
+		},
+
+		allowUnshade: function() {
+			return !(this.isValidNum() || this.qnum === -2);
+		},
+
+		maxnum: function() {
+			var max = this.board.cell.length - 1;
+			return max <= 999 ? max : 999;
+		},
+
+		checkComplete: function() {
+			if (!this.isValidNum()) {
+				return true;
+			}
+
+			var cnt = 0,
+				arealist = [],
+				list = this.getdir4clist();
+			for (var i = 0; i < list.length; i++) {
+				var area = list[i][0].sblk;
+				if (area !== null) {
+					for (var j = 0; j < arealist.length; j++) {
+						if (arealist[j] === area) {
+							area = null;
+							break;
+						}
+					}
+					if (area !== null) {
+						cnt += area.clist.length;
+						arealist.push(area);
+					}
+				}
+			}
+			return this.qnum === cnt;
+		},
+
+		checkUnambiguous: function() {
+			if (!this.isValidNum()) {
+				return true;
+			}
+			var cellsAndAdjacent = new Set();
+			var list = this.getdir4clist();
+			for (var i = 0; i < list.length; i++) {
+				var area = list[i][0].sblk;
+				if (area !== null) {
+					for (var j = 0; j < area.clist.length; j++) {
+						var sublist = area.clist[j].getdir4clist();
+						for (var k = 0; k < sublist.length; k++) {
+							cellsAndAdjacent.add(sublist[k][0]);
+						}
+					}
+				}
+			}
+			var satisfied = true;
+			cellsAndAdjacent.forEach(function(cell) {
+				if (!cell.isShadeDecided()) {
+					satisfied = false;
+				}
+			});
+			return satisfied;
 		}
 	},
 
