@@ -395,3 +395,10 @@ bhaibahan: |-
   1. The loop cannot branch off or cross itself.
   2. When two circles are orthogonally adjacent, the loop goes straight in one and turns in the other.
   3. The loop is split into segments, alternating between a segment where the loop turns in every cell and a segment where the loop goes straight in every cell. A number indicates the size of the segment that the number is on.
+heavydots: |-
+  Draw lines over the dotted lines to divide the board into several blocks.
+  1. A number indicates the size of the block in cells.
+  2. A block can contain no more than one number.
+  3. A black dot touches exactly 3 lines, and a white dot touches exactly 4 lines.
+  4. A regular grid point that's located next to a white/black dot cannot have more than 2 lines touching it.
+  5. A block cannot contain a 2x2 square of cells.
