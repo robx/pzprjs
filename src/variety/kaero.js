@@ -344,11 +344,11 @@
 			this.drawBGCells();
 			this.drawDashedGrid();
 			this.drawBorders();
-
+			this.drawLines();
 			this.drawTip();
 			this.drawPekes();
 			this.drawDepartures();
-			this.drawLines();
+	
 
 			if (this.pid === "oyakodori") {
 				this.drawCircles();
@@ -356,6 +356,8 @@
 				this.drawCellSquare();
 				this.drawQuesNumbers();
 			}
+
+			this.drawSolverAnsNumbers();
 
 			this.drawChassis();
 

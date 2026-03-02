@@ -1516,7 +1516,12 @@ pzpr.classmgr.makeCommon({
 				} else if (info === -1) {
 					return this.noerrcolor;
 				} else if (isDispmove) {
-					return border.trial ? this.movetrialcolor : this.movelinecolor;
+					return border.trial ? this.movetrialcolor : 
+					this.getColorSolverAware(
+						1 === border.line,
+						1 === border.lineBySolver,
+						this.movelinecolor
+					);
 				} else if (isIrowake) {
 					return border.path.color;
 				} else {
