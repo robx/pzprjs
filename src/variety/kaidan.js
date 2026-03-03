@@ -21,10 +21,6 @@
 				case "mark-circle":
 					this.inputShade();
 					break;
-				case "bgcolor1":
-				case "bgcolor2":
-					this.inputBGcolor();
-					break;
 				default:
 					this.common.mouseinput.call(this);
 					break;
@@ -39,13 +35,35 @@
 				this.common.decIC.call(this, cell);
 			}
 		},
+		inputDotOrDrag: function() {
+			if (this.mousestart) {
+				if (this.puzzle.key.isALT) {
+					this.isDraggingBG = 1;
+				} else if (this.btn === "left" && this.getcell().qsub === 2) {
+					// Copy dots
+					this.isDraggingBG = 2;
+					this.inputData = 2;
+				} else {
+					this.isDraggingBG = 0;
+				}
+			}
+			if (this.isDraggingBG === 2 && this.mouseend && this.notInputted()) {
+				var cell = this.getcell();
+				if (!cell.isnull) {
+					cell.setQsub(0);
+					cell.draw();
+				}
+				return true;
+			}
+			if (this.isDraggingBG) {
+				this.inputDot();
+				return true;
+			}
+			return false;
+		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
-				if (this.mousestart) {
-					this.isDraggingBG = this.pid === "edamame" && this.puzzle.key.isALT;
-				}
-				if (this.isDraggingBG) {
-					this.inputBGcolor();
+				if (this.pid === "edamame" && this.inputDotOrDrag()) {
 					return;
 				}
 
@@ -209,31 +227,12 @@
 				"mark-circle",
 				"peke",
 				"subcross",
-				"bgcolor",
-				"bgcolor1",
-				"bgcolor2",
+				"objblank",
 				"completion"
 			]
 		},
-		inputBGcolor: function() {
-			var cell = this.getcell();
-			if (cell.isnull || cell === this.mouseCell) {
-				return;
-			}
-			if (this.inputData !== null) {
-			} else if (this.inputMode === "bgcolor1") {
-				this.inputData = cell.qsub2 !== 1 ? 11 : 10;
-			} else if (this.inputMode === "bgcolor2") {
-				this.inputData = cell.qsub2 !== 2 ? 12 : 10;
-			} else if (this.btn === "left") {
-				this.inputData = cell.qsub2 === 0 ? 11 : cell.qsub2 === 1 ? 12 : 10;
-			} else {
-				this.inputData = cell.qsub2 === 0 ? 12 : cell.qsub2 === 1 ? 10 : 11;
-			}
-			cell.setQsub2(this.inputData - 10);
-			cell.draw();
-
-			this.mouseCell = cell;
+		inputDot: function() {
+			this.inputFixedQsub(2);
 		}
 	},
 	"MouseEvent@wittgen#1": {
@@ -489,6 +488,14 @@
 	"Cell@edamame#1": {
 		isUnshade: function() {
 			return !this.isnull && this.lcnt === 0 && !this.isShade();
+		},
+		isDot: function() {
+			return this.qsub === 2 && this.lcnt === 0;
+		},
+		prehook: {
+			qsub: function(num) {
+				return num === 2 && (this.isNum() || this.lcnt > 0);
+			}
 		}
 	},
 	"Cell@wittgen,zabajaba": {
@@ -592,6 +599,9 @@
 				this.drawDotCells();
 				this.drawMBs();
 			}
+			if (this.pid === "edamame") {
+				this.drawDotCells();
+			}
 
 			this.drawLines();
 			if (
@@ -647,7 +657,7 @@
 					py,
 					shrink = this.pid === "kaidan" && cell.lcnt;
 				g.vid = "c_MB2_" + cell.id;
-				if (cell.qsub > 0) {
+				if (cell.qsub === 1) {
 					px = cell.bx * this.bw;
 					py = cell.by * this.bh;
 					g.lineWidth = (1 + this.cw / 40) | 0;
@@ -827,17 +837,6 @@
 				return this.errcolor1;
 			}
 			return cell.qcmp ? this.qcmpcolor : this.quescolor;
-		},
-
-		getBGCellColor: function(cell) {
-			if ((cell.error || cell.qinfo) === 1) {
-				return this.errbcolor1;
-			} else if (cell.qsub2 === 1) {
-				return this.qsubcolor1;
-			} else if (cell.qsub2 === 2) {
-				return this.qsubcolor2;
-			}
-			return null;
 		}
 	},
 
@@ -880,10 +879,7 @@
 					cell.qcmp = 1;
 				}
 				if (val & 16) {
-					cell.qsub2 = 1;
-				}
-				if (val & 32) {
-					cell.qsub2 = 2;
+					cell.qsub = 2;
 				}
 			});
 			this.decodeBorderLine();
@@ -894,13 +890,14 @@
 			this.encodeCell(function(cell) {
 				var ans = hasQans ? cell.qans === 1 : cell.qsub === 2;
 				var sub = cell.qsub === 1;
+				var sub2 = cell.qsub === 2 && hasQans;
 
 				var value =
 					+ans |
 					(cell.line << 1) |
 					(+sub << 2) |
 					(cell.qcmp << 3) |
-					(cell.qsub2 << 4);
+					(+sub2 << 4);
 
 				return value + " ";
 			});
