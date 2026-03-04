@@ -245,7 +245,7 @@
 		},
 
 		getShadedCellColor: function(cell) {
-			if (cell.qans !== 1) {
+			if (cell.qans !== 1 && cell.qansBySolver !== 1) {
 				return null;
 			}
 			var hasinfo = this.board.haserror || this.board.hasinfo;
@@ -259,7 +259,7 @@
 			} else if (this.puzzle.execConfig("irowakeblk") && !hasinfo) {
 				return cell.island.color;
 			}
-			return this.shadecolor;
+			return this.getColorSolverAware(cell.qans === 1, cell.qansBySolver === 1, this.shadecolor);
 		}
 	},
 	"Graphic@mines": {

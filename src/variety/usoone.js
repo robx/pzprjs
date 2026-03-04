@@ -196,26 +196,26 @@
 				var cell = clist[i],
 					px,
 					py;
-				if (cell.qcmp > 0) {
+				if (cell.qcmp > 0 || cell.qsubBySolver > 1) {
 					px = cell.bx * this.bw;
 					py = cell.by * this.bh;
 				}
 
 				g.vid = "c_MB1_" + cell.id;
-				if (cell.qcmp === 1) {
-					g.strokeStyle = !cell.trial ? this.mbcolor : this.trialcolor;
+				if (cell.qcmp === 1 || cell.qsubBySolver === 3) {
+					g.strokeStyle = !cell.trial ?  this.getColorSolverAware(cell.qcmp === 1, cell.qsubBySolver === 3, this.mbcolor) : this.trialcolor;
 					g.strokeCircle(px, py, rsize);
 				} else {
 					g.vhide();
 				}
 
 				g.vid = "c_MB2_" + cell.id;
-				if (cell.qcmp === 2) {
-					g.strokeStyle = !cell.trial ? this.shadecolor : this.trialcolor;
+				if (cell.qcmp === 2 || cell.qsubBySolver === 2) {
+					g.strokeStyle = !cell.trial ? this.getColorSolverAware(cell.qcmp === 2, cell.qsubBySolver === 2, this.shadecolor) : this.trialcolor;
 					g.strokeCross(px, py, rsize);
 				} else {
 					g.vhide();
-				}
+				}		
 			}
 		}
 	},
