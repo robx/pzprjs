@@ -31,6 +31,8 @@
 				this.inputData = cell.qans !== 1 ? 1 : 0;
 			} else if (this.inputMode === "subcross") {
 				this.inputData = cell.qsub !== 1 ? 2 : 0;
+			} else if (this.pid === "edamame" && this.puzzle.getConfig("use") === 2) {
+				this.decIC_edamame(cell);
 			} else {
 				this.common.decIC.call(this, cell);
 			}
@@ -233,6 +235,37 @@
 		},
 		inputDot: function() {
 			this.inputFixedQsub(2);
+		},
+		decIC_edamame: function(cell) {
+			var current = cell.qsub > 0 ? cell.qsub + 1 : cell.qans;
+			var next = this.btn === "left" ? current + 1 : current - 1;
+			this.inputData = (next + 4) % 4;
+		},
+		inputcell: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+			if (this.inputData === null) {
+				this.decIC(cell);
+			}
+
+			this.mouseCell = cell;
+			this.initFirstCell(cell);
+
+			if (!cell.allowShade()) {
+				return;
+			}
+
+			if (this.inputData <= 1) {
+				cell.setQans(this.inputData);
+				cell.setQsub(0);
+			} else {
+				cell.setQans(0);
+				cell.setQsub(this.inputData - 1);
+			}
+
+			cell.draw();
 		}
 	},
 	"MouseEvent@wittgen#1": {
@@ -830,6 +863,7 @@
 	"Graphic@edamame": {
 		circleratio: [0.25, 0.2],
 		doubleLineWidth: 0.7,
+		qanscolor: "black",
 		circlestrokecolor: "rgb(0, 160, 0)",
 
 		getQuesNumberColor: function(cell) {
