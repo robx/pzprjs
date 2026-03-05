@@ -861,7 +861,7 @@
 
 			var isTrial = !!cell.trial;
 			for (var dir in cell.adjborder) {
-				if (cell.adjborder[dir].error) {
+				if (cell.adjborder[dir].error > 0) {
 					return this.errbcolor1;
 				}
 				if (cell.adjborder[dir].trial) {
