@@ -97,6 +97,21 @@ ui.debug.addDebugData("edamame", {
 			input: ["playmode,objblank", "mouse,left,3,1,3,3", "mouse,left,5,1,3,1"],
 			result:
 				"pzprv3/edamame/2/3/. . . /. . . /1 0 0 /1 16 4 /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			input: ["playmode,auto", "mouse,left,1,1,5,1", "mouse,leftx2,3,1"],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 4 0 /1 16 4 /1 1 /0 0 /0 0 0 /"
+		},
+		{
+			input: ["mouse,left,3,1"],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 0 0 /1 16 4 /1 1 /0 0 /0 0 0 /"
+		},
+		{
+			input: ["mouse,right,3,1"],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 4 0 /1 16 4 /1 1 /0 0 /0 0 0 /"
 		}
 	]
 });

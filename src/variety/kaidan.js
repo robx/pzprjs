@@ -239,7 +239,13 @@
 		decIC_edamame: function(cell) {
 			var current = cell.qsub > 0 ? cell.qsub + 1 : cell.qans;
 			var next = this.btn === "left" ? current + 1 : current - 1;
-			this.inputData = (next + 4) % 4;
+			next = (next + 4) % 4;
+
+			if (cell.lcnt > 0 && next === 3) {
+				next = this.btn === "left" ? 0 : 2;
+			}
+
+			this.inputData = next;
 		},
 		inputcell: function() {
 			var cell = this.getcell();
@@ -835,14 +841,20 @@
 		}
 	},
 	"Graphic@wittgen#2": {
-		qsubcolor1: "rgb(224, 224, 255)",
+		qsubcolor1: "rgb(224, 224, 255)"
+	},
+	"Graphic@wittgen,edamame#3": {
 		getBGCellColor: function(cell) {
 			if (cell.error === 1 || cell.qinfo === 1) {
 				return this.errbcolor1;
 			}
-			if (cell.qsub === 1) {
+			if (
+				(this.pid === "wittgen" && cell.qsub === 1) ||
+				(this.pid === "edamame" && cell.qans === 1)
+			) {
 				return this.qsubcolor1;
 			}
+
 			if (cell.lcnt === 0) {
 				return null;
 			}
@@ -864,6 +876,7 @@
 		circleratio: [0.25, 0.2],
 		doubleLineWidth: 0.7,
 		qanscolor: "black",
+		qsubcolor1: "rgba(200, 255, 200, 0.68)",
 		circlestrokecolor: "rgb(0, 160, 0)",
 
 		getQuesNumberColor: function(cell) {
