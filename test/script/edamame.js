@@ -60,6 +60,43 @@ ui.debug.addDebugData("edamame", {
 			input: ["mouse,left,1,3,3,3", "mouse,left,1,3", "mouse,leftx2,3,3"],
 			result:
 				"pzprv3/edamame/2/3/. . . /. . . /1 4 16 /1 3 0 /0 0 /1 0 /0 0 0 /"
+		},
+		{
+			input: ["mouse,left,1,3,3,3", "mouse,left,5,1,5,3,3,3,3,1"],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 16 16 /1 1 16 /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			label: "Cycle through options",
+			input: [
+				"setconfig,use,2",
+				"mouse,left,5,1",
+				"mouse,leftx2,3,1",
+				"mouse,left,3,3",
+				"mouse,leftx2,1,3"
+			],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 1 0 /16 4 16 /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			input: ["mouse,right,3,1", "mouse,right,5,1", "mouse,right,5,3"],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 0 16 /16 4 4 /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			input: [
+				"playmode,mark-circle",
+				"mouse,left,1,3",
+				"playmode,subcross",
+				"mouse,left,3,1"
+			],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 4 16 /1 4 4 /0 0 /0 0 /0 0 0 /"
+		},
+		{
+			input: ["playmode,objblank", "mouse,left,3,1,3,3", "mouse,left,5,1,3,1"],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 0 0 /1 16 4 /0 0 /0 0 /0 0 0 /"
 		}
 	]
 });

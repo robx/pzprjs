@@ -527,7 +527,7 @@
 		},
 		prehook: {
 			qsub: function(num) {
-				return num === 2 && (this.isNum() || this.lcnt > 0);
+				return num === 2 && (this.isNum() || this.lcnt > 0 || this.qans);
 			}
 		}
 	},
