@@ -311,7 +311,8 @@ pzpr.classmgr.makeCommon({
 							"battleship" === this.pid ||
 							"tents" === this.pid ||
 							"aquarium" === this.pid ||
-							"easyasabc" === this.pid) &&
+							"easyasabc" === this.pid ||
+							"skyscrapers" === this.pid) &&
 						"green" === h.color &&
 						h.x % 2 === 1 &&
 						h.y % 2 === 1
