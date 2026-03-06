@@ -112,6 +112,17 @@ ui.debug.addDebugData("edamame", {
 			input: ["mouse,right,3,1"],
 			result:
 				"pzprv3/edamame/2/3/. . . /. . . /1 4 0 /1 16 4 /1 1 /0 0 /0 0 0 /"
+		},
+		{
+			input: [
+				"setconfig,use,1",
+				"mouse,right,3,1",
+				"mouse,right,3,3",
+				"mouse,right,5,3",
+				"mouse,left,1,3"
+			],
+			result:
+				"pzprv3/edamame/2/3/. . . /. . . /1 0 0 /0 0 16 /1 1 /0 0 /0 0 0 /"
 		}
 	]
 });

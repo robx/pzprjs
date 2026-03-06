@@ -31,7 +31,7 @@
 				this.inputData = cell.qans !== 1 ? 1 : 0;
 			} else if (this.inputMode === "subcross") {
 				this.inputData = cell.qsub !== 1 ? 2 : 0;
-			} else if (this.pid === "edamame" && this.puzzle.getConfig("use") === 2) {
+			} else if (this.pid === "edamame") {
 				this.decIC_edamame(cell);
 			} else {
 				this.common.decIC.call(this, cell);
@@ -237,15 +237,25 @@
 			this.inputFixedQsub(2);
 		},
 		decIC_edamame: function(cell) {
-			var current = cell.qsub > 0 ? cell.qsub + 1 : cell.qans;
-			var next = this.btn === "left" ? current + 1 : current - 1;
-			next = (next + 4) % 4;
+			if (this.puzzle.getConfig("use") === 1) {
+				if (this.btn === "left") {
+					this.inputData = cell.qans !== 1 ? 1 : 0;
+				} else if (cell.qsub === 1) {
+					this.inputData = cell.lcnt > 0 ? 0 : 3;
+				} else {
+					this.inputData = cell.qsub === 2 ? 0 : 2;
+				}
+			} else {
+				var current = cell.qsub > 0 ? cell.qsub + 1 : cell.qans;
+				var next = this.btn === "left" ? current + 1 : current - 1;
+				next = (next + 4) % 4;
 
-			if (cell.lcnt > 0 && next === 3) {
-				next = this.btn === "left" ? 0 : 2;
+				if (cell.lcnt > 0 && next === 3) {
+					next = this.btn === "left" ? 0 : 2;
+				}
+
+				this.inputData = next;
 			}
-
-			this.inputData = next;
 		},
 		inputcell: function() {
 			var cell = this.getcell();
