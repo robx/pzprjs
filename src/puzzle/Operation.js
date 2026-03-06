@@ -72,11 +72,13 @@ pzpr.classmgr.makeCommon({
 			U: "ques",
 			N: "qnum",
 			Z: "qnum2",
+			// R is "qnums"
 			C: "qchar",
 			M: "anum",
 			D: "qdir",
 			A: "qans",
 			S: "qsub",
+			E: "qsub2",
 			K: "qcmp",
 			B: "snum",
 			L: "line"

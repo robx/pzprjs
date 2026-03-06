@@ -35,6 +35,7 @@ pzpr.classmgr.makeCommon({
 
 		/* 補助データを保持するプロパティ */
 		qsub: 0, // cell  :(1:白マス 1-2:背景色/○× 3:絵になる部分)
+		qsub2: 0,
 		// border:(1:補助線 2:× 11-14:方向記号)
 		qcmp: 0, // cell  :(1:cmpマス 1-2:○×)
 		snum: -1, // cell  :補助数字を保持する
@@ -55,7 +56,7 @@ pzpr.classmgr.makeCommon({
 			"qnums"
 		],
 		propans: ["qans", "anum", "line", "trial"],
-		propsub: ["qsub", "qcmp", "snum"],
+		propsub: ["qsub", "qsub2", "qcmp", "snum"],
 		propinfo: ["error", "qinfo"],
 		propnorec: { color: 1, error: 1, qinfo: 1 },
 
@@ -113,6 +114,9 @@ pzpr.classmgr.makeCommon({
 		},
 		setQsub: function(val) {
 			this.setdata("qsub", val);
+		},
+		setQsub2: function(val) {
+			this.setdata("qsub2", val);
 		},
 		setQcmp: function(val) {
 			this.setdata("qcmp", val);

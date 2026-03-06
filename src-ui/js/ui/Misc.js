@@ -143,6 +143,7 @@ function toBGimage(pid) {
 		"dotchi2",
 		"doubleback",
 		"easyasabc",
+		"edamame",
 		"energywalk",
 		"evolmino",
 		"fakearrow",
