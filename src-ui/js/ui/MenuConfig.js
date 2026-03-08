@@ -174,6 +174,7 @@
 				case "morningwalk":
 				case "wataridori":
 				case "bhaibahan":
+				case "bwloop":
 					idname = "loop_full";
 					break;
 			}
