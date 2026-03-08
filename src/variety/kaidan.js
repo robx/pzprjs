@@ -45,13 +45,14 @@
 					// Copy dots
 					this.isDraggingBG = 2;
 					this.inputData = 2;
+					this.initFirstCell(this.getcell());
 				} else {
 					this.isDraggingBG = 0;
 				}
 			}
 			if (this.isDraggingBG === 2 && this.mouseend && this.notInputted()) {
 				var cell = this.getcell();
-				if (!cell.isnull) {
+				if (!cell.isnull && cell === this.firstCell) {
 					cell.setQsub(0);
 					cell.draw();
 				}
