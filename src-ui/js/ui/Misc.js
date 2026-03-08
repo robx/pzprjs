@@ -150,6 +150,7 @@ function toBGimage(pid) {
 		"firewalk",
 		"forestwalk",
 		"geradeweg",
+		"hasunomura",
 		"heteromino",
 		"heyapin",
 		"icewalk",
