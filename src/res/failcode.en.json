@@ -151,6 +151,7 @@
     "bkMSGe2.nondango": "An area has two or more shaded circles.",
     "bkMSPassedGt2.moonsun": "A line passes the marks of the moon for two rooms in a row.",
     "bkMUPassedGt2.moonsun": "A line passes the marks of the sun for two rooms in a row.",
+    "bkNoBorder.tetroctb": "A block does not cross a region border.",
     "bkNoChain.chainedb": "A block is not diagonally adjacent to another block.",
     "bkNoChain.mrtile": "A block is not diagonally adjacent to another identical block.",
     "bkNoChain.sendai": "A city is not adjacent to another city with the same shape and orientation.",

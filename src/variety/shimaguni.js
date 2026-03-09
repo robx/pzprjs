@@ -17,7 +17,8 @@
 		"cocktail",
 		"martini",
 		"nuritwin",
-		"marutaring"
+		"marutaring",
+		"tetroctb"
 	],
 	{
 		//---------------------------------------------------------
@@ -37,13 +38,13 @@
 				play: ["shade", "unshade", "number"]
 			}
 		},
-		"MouseEvent@cocktail,nuritwin,marutaring": {
+		"MouseEvent@cocktail,nuritwin,marutaring,tetroctb": {
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
 			}
 		},
-		"MouseEvent@cocktail,martini#2": {
+		"MouseEvent@cocktail,martini,tetroctb#2": {
 			dispInfoBlk: function() {
 				var cell = this.getcell();
 				this.mousereset();
@@ -123,7 +124,7 @@
 			enableSubNumberArray: true,
 			disableAnum: true
 		},
-		"Cell@chocona,hinge,heyablock,cocktail": {
+		"Cell@chocona,hinge,heyablock,cocktail,tetroctb": {
 			minnum: 0
 		},
 		"Cell@martini": {
@@ -182,7 +183,7 @@
 		Board: {
 			hasborder: 1
 		},
-		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring": {
+		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb": {
 			addExtraInfo: function() {
 				this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
 			}
@@ -301,7 +302,7 @@
 			}
 		},
 
-		"AreaShadeGraph@chocona": {
+		"AreaShadeGraph@chocona,tetroctb": {
 			enabled: true
 		},
 		"AreaShadeGraph@nuritwin,marutaring": {
@@ -316,7 +317,7 @@
 				component.hinge = null;
 			}
 		},
-		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring": {
+		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb": {
 			// Same as LITS AreaTetrominoGraph
 			enabled: true,
 			relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -356,7 +357,7 @@
 		"AreaRoomGraph@martini": {
 			hastop: false
 		},
-		"AreaShade8Graph@cocktail,martini": {
+		"AreaShade8Graph@cocktail,martini,tetroctb": {
 			enabled: true
 		},
 
@@ -645,6 +646,19 @@
 				"checkShadeCellCount",
 				"checkConnectShade",
 				"checkShadeDeadEnd"
+			]
+		},
+		"AnsCheck@tetroctb#1": {
+			checklist: [
+				"checkShadeCellExist+",
+				"checkOverShadeCell",
+				"checkAdjacentShapes",
+				"checkUnderShadeCell",
+
+				"checkShadeCellCount",
+				"checkBlockHasBorder",
+				"checkConnect8Shade",
+				"doneShadingDecided"
 			]
 		},
 		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini": {
@@ -1053,6 +1067,89 @@
 					},
 					"csNotRect"
 				);
+			}
+		},
+		"AnsCheck@tetroctb": {
+			checkOverShadeCell: function() {
+				this.checkAllArea(
+					this.board.sblkmgr,
+					function(w, h, a, n) {
+						return a <= 4;
+					},
+					"csGt4"
+				);
+			},
+			checkUnderShadeCell: function() {
+				this.checkAllArea(
+					this.board.sblkmgr,
+					function(w, h, a, n) {
+						return a >= 4;
+					},
+					"csLt4"
+				);
+			},
+			checkAdjacentShapes: function() {
+				var bd = this.board;
+				for (var c = 0; c < bd.cell.length; c++) {
+					var cell = bd.cell[c];
+					if (cell.bx === bd.maxbx - 1 || cell.by === bd.maxby - 1) {
+						continue;
+					}
+
+					var i,
+						adc = cell.adjacent;
+					var cells = [
+						[cell, adc.right.adjacent.bottom],
+						[adc.right, adc.bottom]
+					];
+					for (i = 0; i < 2; i++) {
+						if (cells[i][0].isShade() && cells[i][1].isShade()) {
+							break;
+						}
+					}
+					if (i === 2) {
+						continue;
+					}
+
+					var block1 = cells[i][0].sblk,
+						block2 = cells[i][1].sblk;
+					if (
+						block1 === block2 ||
+						block1.clist.length !== 4 ||
+						this.isDifferentShapeBlock(block1, block2)
+					) {
+						continue;
+					}
+
+					this.failcode.add("bsSameShape");
+					if (this.checkOnly) {
+						break;
+					}
+					block1.clist.seterr(1);
+					block2.clist.seterr(1);
+				}
+			},
+			checkBlockHasBorder: function() {
+				var areas = this.board.sblkmgr.components;
+				for (var id = 0; id < areas.length; id++) {
+					var area = areas[id],
+						clist = area.clist;
+					if (
+						clist.length < 4 ||
+						clist.length !== clist[0].stone.clist.length
+					) {
+						continue;
+					}
+
+					this.failcode.add("bkNoBorder");
+					if (this.checkOnly) {
+						break;
+					}
+					clist.seterr(1);
+				}
+			},
+			checkConnect8Shade: function() {
+				this.checkOneArea(this.board.sblk8mgr, "csDivide");
 			}
 		},
 
