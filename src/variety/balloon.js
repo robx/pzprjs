@@ -325,6 +325,7 @@
 			"checkAdjacency",
 			"checkEndpointIce",
 			"checkDisconnectLine",
+			"checkLineCircuit",
 
 			"checkNumberMatch",
 			"checkRegionShape",
@@ -444,6 +445,23 @@
 				}
 				area.clist.seterr(1);
 			}
+		},
+		checkLineCircuit: function() {
+			var lines = this.board.linegraph.components;
+			for (var r = 0; r < lines.length; r++) {
+				if (lines[r].circuits === 0) {
+					continue;
+				}
+
+				this.failcode.add("lnHasLoop");
+				if (this.checkOnly) {
+					return;
+				}
+				lines[r].clist.seterr(1);
+			}
 		}
+	},
+	FailCode: {
+		lnHasLoop: "lnNoIce.balloon"
 	}
 });

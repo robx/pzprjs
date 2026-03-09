@@ -171,7 +171,9 @@
 				case "waterwalk":
 				case "firewalk":
 				case "forestwalk":
+				case "morningwalk":
 				case "wataridori":
+				case "bhaibahan":
 					idname = "loop_full";
 					break;
 			}

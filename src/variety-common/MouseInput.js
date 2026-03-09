@@ -599,7 +599,7 @@ pzpr.classmgr.makeCommon({
 			}
 			cross.draw();
 		},
-		inputcrossMark: function() {
+		inputcrossMark: function(value) {
 			var pos = this.getpos(0.24);
 			if (!pos.oncross()) {
 				return;
@@ -619,9 +619,12 @@ pzpr.classmgr.makeCommon({
 			if (cross.isnull) {
 				return;
 			}
+			if (value === undefined) {
+				value = 1;
+			}
 
 			this.puzzle.opemgr.disCombine = true;
-			cross.setQnum(cross.qnum === 1 ? -1 : 1);
+			cross.setQnum(cross.qnum === value ? -1 : value);
 			this.puzzle.opemgr.disCombine = false;
 
 			cross.draw();

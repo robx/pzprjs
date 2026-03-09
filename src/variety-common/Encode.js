@@ -750,41 +750,44 @@ pzpr.classmgr.makeCommon({
 		// enc.decodeCircle() 白丸・黒丸をデコードする
 		// enc.encodeCircle() 白丸・黒丸をエンコードする
 		//---------------------------------------------------------------------------
-		genericDecodeThree: function(set_func) {
-			var bd = this.board;
+		genericDecodeTriple: function(length, set_func) {
 			var bstr = this.outbstr,
 				c = 0,
 				tri = [9, 3, 1];
-			var pos = bstr
-				? Math.min(((bd.cols * bd.rows + 2) / 3) | 0, bstr.length)
-				: 0;
+			var pos = bstr ? Math.min(((length + 2) / 3) | 0, bstr.length) : 0;
 			for (var i = 0; i < pos; i++) {
 				var ca = parseInt(bstr.charAt(i), 27);
 				for (var w = 0; w < 3; w++) {
-					if (!!bd.cell[c]) {
-						var val = ((ca / tri[w]) | 0) % 3;
-						if (val > 0) {
-							set_func(bd.cell[c], val);
-						}
-						c++;
+					var val = ((ca / tri[w]) | 0) % 3;
+					if (val > 0) {
+						set_func(c, val);
 					}
+					c++;
 				}
 			}
 			this.outbstr = bstr.substr(pos);
+		},
+		genericDecodeThree: function(set_func) {
+			var bd = this.board;
+			this.genericDecodeTriple(bd.cell.length, function(c, val) {
+				var cell = bd.cell[c];
+				if (cell) {
+					set_func(cell, val);
+				}
+			});
 		},
 		decodeCircle: function() {
 			this.genericDecodeThree(function(cell, val) {
 				cell.qnum = val;
 			});
 		},
-		genericEncodeThree: function(get_func) {
-			var bd = this.board;
+		genericEncodeTriple: function(length, get_func) {
 			var cm = "",
 				num = 0,
 				pass = 0,
 				tri = [9, 3, 1];
-			for (var c = 0; c < bd.cell.length; c++) {
-				pass += get_func(bd.cell[c]) * tri[num];
+			for (var c = 0; c < length; c++) {
+				pass += get_func(c) * tri[num];
 				num++;
 				if (num === 3) {
 					cm += pass.toString(27);
@@ -797,6 +800,12 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.outbstr += cm;
+		},
+		genericEncodeThree: function(get_func) {
+			var bd = this.board;
+			this.genericEncodeTriple(bd.cell.length, function(c) {
+				return get_func(bd.cell[c]);
+			});
 		},
 		encodeCircle: function() {
 			this.genericEncodeThree(function(cell) {
