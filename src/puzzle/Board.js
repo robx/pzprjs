@@ -135,7 +135,7 @@ pzpr.classmgr.makeCommon({
 				if (window.Worker) {
 					this.isAlt = false;
 					this.isRunning = false;
-					ui.setdisplay();
+					if (typeof ui.setdisplay === "function") ui.setdisplay();
 					if (!!this.solverWorker) {
 						this.solverWorker.terminate();
 					}
