@@ -71,6 +71,18 @@
 				}
 
 				if (this.btn === "right") {
+					if (
+						this.pid === "edamame" &&
+						this.firstCell &&
+						this.firstCell.isNum()
+					) {
+						var cell = this.getcell();
+						if (!cell.isnull && !cell.isNum()) {
+							this.firstCell = cell;
+							this.inputData = null;
+						}
+					}
+
 					this.inputdragcross();
 				} else {
 					this.inputLine();

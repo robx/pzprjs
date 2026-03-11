@@ -123,6 +123,21 @@ ui.debug.addDebugData("edamame", {
 			],
 			result:
 				"pzprv3/edamame/2/3/. . . /. . . /1 0 0 /0 0 16 /1 1 /0 0 /0 0 0 /"
+		},
+		{
+			input: [
+				"newboard,2,2",
+				"editmode",
+				"key,1",
+				"playmode,auto",
+				"setconfig,use,1",
+				"mouse,right,1,1,3,1,3,3"
+			],
+			result: "pzprv3/edamame/2/2/1 . /. . /0 4 /0 4 /0 /0 /0 0 /"
+		},
+		{
+			input: ["mouse,right,1,1,3,1,3,3"],
+			result: "pzprv3/edamame/2/2/1 . /. . /0 16 /0 16 /0 /0 /0 0 /"
 		}
 	]
 });
