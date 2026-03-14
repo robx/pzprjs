@@ -486,6 +486,7 @@
 			turnaround: [0, 0, "ターンアラウンド", "Turnaround"],
 			turnrun: [0, 0, "トツゲキループ", "Turn and Run", "trainstations"],
 			twinarea: [0, 0, "ツインエリア", "Twin Area", "hanare"],
+			ubahn: [0, 0, "U-Bahn", "U-Bahn"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],
 			uturns: [0, 0, "U-Turns", "U-Turns", "kusabi"],
