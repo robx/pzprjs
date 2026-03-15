@@ -357,9 +357,9 @@ pzpr.classmgr.makeCommon({
 			}
 			if (this.inputData !== null) {
 			} else if (this.inputMode === "bgcolor1") {
-				this.inputMode = cell.qsub !== 1 ? 11 : 10;
+				this.inputData = cell.qsub !== 1 ? 11 : 10;
 			} else if (this.inputMode === "bgcolor2") {
-				this.inputMode = cell.qsub !== 2 ? 12 : 10;
+				this.inputData = cell.qsub !== 2 ? 12 : 10;
 			} else if (this.btn === "left") {
 				if (cell.qsub === 0) {
 					this.inputData = 11;

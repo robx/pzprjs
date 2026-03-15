@@ -158,6 +158,7 @@
 			dotchi2: [0, 0, "ドッチドッチループ", "Dotchi Dotchi Loop", "country"],
 			doubleback: [0, 0, "Double Back", "Double Back", "country"],
 			easyasabc: [0, 0, "ABCプレース", "Easy as ABC"],
+			edamame: [0, 0, "Edamame", "Edamame", "kaidan"],
 			energywalk: [0, 0, "Energy Walk", "Energy Walk", "icewalk"],
 			evolmino: [0, 0, "シンカミノ", "Evolmino"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],

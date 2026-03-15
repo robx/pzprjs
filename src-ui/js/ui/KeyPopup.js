@@ -246,6 +246,7 @@ ui.keypopup = {
 		keywest: [4, 4],
 		oasis: [10, 0],
 		bhaibahan: [10, 0],
+		edamame: [4, 0],
 		heavydots: [10, 0],
 		marutaring: [10, 0]
 	},
