@@ -16,7 +16,8 @@
 		"heyablock",
 		"cocktail",
 		"martini",
-		"nuritwin"
+		"nuritwin",
+		"marutaring"
 	],
 	{
 		//---------------------------------------------------------
@@ -36,7 +37,7 @@
 				play: ["shade", "unshade", "number"]
 			}
 		},
-		"MouseEvent@cocktail,nuritwin": {
+		"MouseEvent@cocktail,nuritwin,marutaring": {
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
@@ -181,7 +182,7 @@
 		Board: {
 			hasborder: 1
 		},
-		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin": {
+		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring": {
 			addExtraInfo: function() {
 				this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
 			}
@@ -303,7 +304,7 @@
 		"AreaShadeGraph@chocona": {
 			enabled: true
 		},
-		"AreaShadeGraph@nuritwin": {
+		"AreaShadeGraph@nuritwin,marutaring": {
 			enabled: true,
 			coloring: true
 		},
@@ -315,7 +316,7 @@
 				component.hinge = null;
 			}
 		},
-		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin": {
+		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring": {
 			// Same as LITS AreaTetrominoGraph
 			enabled: true,
 			relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -375,7 +376,11 @@
 					this.drawGrid();
 				}
 
-				if (this.pid === "stostone" || this.pid === "nuritwin") {
+				if (
+					this.pid === "stostone" ||
+					this.pid === "nuritwin" ||
+					this.pid === "marutaring"
+				) {
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
@@ -416,7 +421,7 @@
 				);
 			}
 		},
-		"Graphic@stostone,nuritwin#1": {
+		"Graphic@stostone,nuritwin,marutaring#1": {
 			irowakeblk: true,
 			bgcellcolor_func: "error1",
 			bcolor: "rgb(80, 204, 80)",
@@ -628,6 +633,18 @@
 				"checkConnectShade",
 				"checkNoShadeCellInArea",
 				"doneShadingDecided"
+			]
+		},
+		"AnsCheck@marutaring#1": {
+			checklist: [
+				"checkShadeCellExist+",
+				"check2x2ShadeCell",
+				"checkShadeRect",
+				"checkShadeBranch",
+				"checkNoShadeCellInArea",
+				"checkShadeCellCount",
+				"checkConnectShade",
+				"checkShadeDeadEnd"
 			]
 		},
 		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini": {
@@ -1004,6 +1021,38 @@
 					}
 				});
 				return Array.from(set);
+			}
+		},
+		"AnsCheck@marutaring": {
+			checkNeighborCount: function(sign, error) {
+				this.checkAllCell(function(cell) {
+					return (
+						cell.isShade() &&
+						(cell.countDir4Cell(function(adj) {
+							return adj.isShade();
+						}) -
+							2) *
+							sign >
+							0
+					);
+				}, error);
+			},
+
+			checkShadeBranch: function() {
+				this.checkNeighborCount(+1, "shBranch");
+			},
+			checkShadeDeadEnd: function() {
+				this.checkNeighborCount(-1, "shDeadEnd");
+			},
+
+			checkShadeRect: function() {
+				this.checkAllArea(
+					this.board.stonegraph,
+					function(w, h, a, n) {
+						return w * h === a;
+					},
+					"csNotRect"
+				);
 			}
 		},
 
