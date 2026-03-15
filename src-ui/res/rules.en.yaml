@@ -402,3 +402,16 @@ heavydots: |-
   3. A black dot touches exactly 3 lines, and a white dot touches exactly 4 lines.
   4. A regular grid point that's located next to a white/black dot cannot have more than 2 lines touching it.
   5. A block cannot contain a 2x2 square of cells.
+hasunomura: |-
+  Shade some cells on the board.
+  1. Cells with numbers cannot be shaded.
+  2. Clues indicate the sum of the areas of the unshaded regions using the (up to 4) cells diagonally adjacent to the clue. If a region uses multiple of these cells, it is only counted once. 
+  3. The shaded cells cannot form a 2x2 square.
+  4. All shaded cells form an orthogonally contiguous area.
+tetroctb: |-
+  Place several tetrominoes (blocks of 4 cells) in the grid.
+  1. Tetrominoes cannot be orthogonally adjacent.
+  2. Numbered regions must contain the indicated amount of shaded cells.
+  3. Each tetromino must cross at least one region border.
+  4. Two tetrominoes which touch each other at the corners must have different shapes, counting rotations and reflections as the same.
+  5. All tetrominoes form a diagonally contiguous area.
