@@ -33,6 +33,7 @@
 							return;
 						}
 						cell.ques = 1 - cell.ques;
+						this.board.autoSolve(true);
 						cell.draw();
 					}
 				}
@@ -63,6 +64,7 @@
 					}
 				}
 			}
+			this.board.autoSolve(true);
 			cell.draw();
 		},
 		decIC: function(cell) {
@@ -165,6 +167,7 @@
 					}
 					this.key_inputqnum(ca);
 				}
+				this.board.autoSolve(true);
 			}
 		}
 	},
@@ -218,7 +221,7 @@
 
 	Graphic: {
 		gridcolor_type: "DARK",
-		undefcolor: "silver",
+		undefcolor: "gainsboro",
 		trialcolor: "rgb(80, 0, 80)",
 
 		paint: function() {
