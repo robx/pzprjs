@@ -32,7 +32,29 @@
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
-					this.inputtile_nurimaze();
+					if (this.mousestart) {
+						this.inputData = null;
+						this.isLineDrag = false;
+						this.dragStartCell = this.getcell();
+					} else if (this.mousemove && !this.isLineDrag) {
+						var curCell = this.getcell();
+						if (!curCell.isnull && !this.dragStartCell.isnull && curCell !== this.dragStartCell) {
+							this.isLineDrag = true;
+							// ドラッグ開始セルを prevPos にセットして最初の線分も確実に描画する
+							this.prevPos = this.dragStartCell.getaddr();
+						}
+					}
+					if (this.isLineDrag) {
+						this.inputLine();
+					}
+					// isLineDrag が false の間は何もしない（mouseend でクリック判定する）
+				} else if (this.mouseend) {
+					if (!this.isLineDrag) {
+						// ドラッグなし＝クリックのみ → 部屋の補助記号を切り替え
+						this.mousestart = true;
+						this.inputtile_nurimaze();
+						this.mousestart = false;
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
@@ -59,7 +81,8 @@
 					if (
 						clist[i].ques !== 0 ||
 						bd.startpos.equals(clist[i]) ||
-						bd.goalpos.equals(clist[i])
+						bd.goalpos.equals(clist[i]) ||
+						clist[i].lcnt > 0
 					) {
 						if (this.mousestart) {
 							this.inputData = cell.qsub !== 1 ? 2 : 0;
@@ -295,6 +318,32 @@
 	LineGraph: {
 		enabled: true
 	},
+	Border: {
+		posthook: {
+			line: function() {
+				// 補助線が引かれたら、両側のエリアを通路として確定する（壁かどうかに関わらず）
+				if (this.line > 0) {
+					for (var i = 0; i < this.sidecell.length; i++) {
+						var cell = this.sidecell[i];
+						if (!cell.isnull) {
+							var clist = cell.room.clist;
+							var changed = false;
+							for (var j = 0; j < clist.length; j++) {
+								if (clist[j].isShade() || clist[j].qsub !== 1) {
+									clist[j].clrShade();
+									clist[j].setQsub(1);
+									changed = true;
+								}
+							}
+							if (changed) {
+								clist.draw();
+							}
+						}
+					}
+				}
+			}
+		}
+	},
 	BorderList: {
 		subclear: function() {
 			this.propclear(["sub", "info", "ans"], true);
@@ -308,6 +357,7 @@
 		bgcellcolor_func: "qsub1",
 		errbcolor2: "rgb(192, 192, 255)",
 		bbcolor: "rgb(96, 96, 96)",
+		linecolor: "rgb(160, 160, 160)",
 
 		irowake: true,
 
@@ -315,6 +365,8 @@
 			this.drawBGCells();
 			this.drawShadedCells();
 			this.drawGrid();
+
+			this.drawLines();
 
 			this.drawQuesMarks();
 			this.drawStartGoal();
@@ -326,8 +378,6 @@
 			this.drawBoxBorders(true);
 
 			this.drawTarget();
-
-			this.drawLines();
 		},
 
 		drawQuesMarks: function() {
