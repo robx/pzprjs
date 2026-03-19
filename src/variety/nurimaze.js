@@ -38,7 +38,11 @@
 						this.dragStartCell = this.getcell();
 					} else if (this.mousemove && !this.isLineDrag) {
 						var curCell = this.getcell();
-						if (!curCell.isnull && !this.dragStartCell.isnull && curCell !== this.dragStartCell) {
+						if (
+							!curCell.isnull &&
+							!this.dragStartCell.isnull &&
+							curCell !== this.dragStartCell
+						) {
 							this.isLineDrag = true;
 							// ドラッグ開始セルを prevPos にセットして最初の線分も確実に描画する
 							this.prevPos = this.dragStartCell.getaddr();
