@@ -457,6 +457,7 @@
 			teri: [0, 0, "テリトリー", "Territory", "kurodoko"],
 			tetrochain: [0, 0, "テトロチェーンＹ", "Tetro Chain-Y"],
 			tetrochaink: [0, 0, "テトロチェーンＫ", "Tetro Chain-K", "kurarin"],
+			tetroctb: [0, 0, "テトロチェーンＣＴＢ", "Tetro Chain-CTB", "shimaguni"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilecity: [0, 0, "タイルシティー", "Tile City"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
