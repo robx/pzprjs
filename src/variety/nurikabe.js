@@ -15,7 +15,8 @@
 		"mochinyoro",
 		"canal",
 		"norinuri",
-		"cornerch"
+		"cornerch",
+		"hasunomura"
 	],
 	{
 		//---------------------------------------------------------
@@ -26,7 +27,7 @@
 			autoedit_func: "qnum",
 			autoplay_func: "cell"
 		},
-		"MouseEvent@nurikabe": {
+		"MouseEvent@nurikabe,hasunomura": {
 			inputModes: {
 				edit: ["number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
@@ -239,7 +240,7 @@
 				this.drawTarget();
 			}
 		},
-		"Graphic@nuribou,mochikoro,mochinyoro,norinuri,cornerch": {
+		"Graphic@nuribou,mochikoro,mochinyoro,norinuri,cornerch,hasunomura": {
 			bgcellcolor_func: "qsub1",
 			enablebcolor: true
 		},
@@ -431,6 +432,15 @@
 				"doneShadingDecided"
 			]
 		},
+		"AnsCheck@hasunomura#1": {
+			checklist: [
+				"checkShadeCellExist",
+				"check2x2ShadeCell",
+				"checkDiagonalSums",
+				"checkConnectShade",
+				"doneShadingDecided"
+			]
+		},
 		AnsCheck: {
 			checkDoubleNumberInUnshade: function() {
 				this.checkAllBlock(
@@ -613,6 +623,32 @@
 					},
 					"cuRect"
 				);
+			}
+		},
+		"AnsCheck@hasunomura": {
+			checkDiagonalSums: function() {
+				this.checkAllCell(function(cell) {
+					if (!cell.isValidNum()) {
+						return false;
+					}
+
+					var set = new Set();
+					for (var dy = -2; dy <= 2; dy += 4) {
+						for (var dx = -2; dx <= 2; dx += 4) {
+							var room = cell.relcell(dx, dy).ublk;
+							if (room) {
+								set.add(room);
+							}
+						}
+					}
+
+					var count = 0;
+					set.forEach(function(block) {
+						count += block.clist.length;
+					});
+
+					return cell.getNum() !== count;
+				}, "bkSizeNe");
 			}
 		},
 		"FailCode@mochikoro,mochinyoro": {
