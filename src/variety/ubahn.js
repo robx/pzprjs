@@ -7,7 +7,10 @@
 })(["ubahn"], {
 	MouseEvent: {
 		use: true,
-		inputModes: { edit: ["number"], play: ["line", "peke", "completion"] },
+		inputModes: {
+			edit: ["number"],
+			play: ["line", "peke", "number", "completion"]
+		},
 
 		mouseinput_number: function() {
 			if (this.mousestart) {
@@ -53,11 +56,18 @@
 
 			this.mousereset();
 		}
+
+		// TODO mouse input for pencil marks
 	},
 
 	KeyEvent: {
 		enablemake: true,
+		enableplay: true,
 		moveTarget: function(ca) {
+			if (this.puzzle.playmode) {
+				return this.moveTCell(ca);
+			}
+
 			var cursor = this.cursor;
 			var excell0 = cursor.getex(),
 				dir = excell0.NDIR;
@@ -102,7 +112,27 @@
 		},
 
 		keyinput: function(ca) {
-			this.key_inputexcell(ca);
+			if (this.puzzle.playmode) {
+				this.key_inputqnum(ca);
+			} else {
+				this.key_inputexcell(ca);
+			}
+		},
+
+		getNewNumber: function(cell, ca, cur) {
+			if (cell.numberAsLetter) {
+				var idx = "olitx".indexOf(ca);
+				if (idx !== -1) {
+					return idx;
+				} else if (ca === "-") {
+					return -2;
+				} else if (ca === "BS" || ca === " ") {
+					return -1;
+				}
+				return null;
+			} else {
+				return this.common.getNewNumber.call(this, cell, ca, cur);
+			}
 		},
 
 		key_inputexcell: function(ca) {
@@ -137,6 +167,14 @@
 			}
 			return by < 0 ? this.board.rows : this.board.cols;
 		}
+	},
+
+	Cell: {
+		enableSubNumberArray: true,
+		numberAsLetter: true,
+		disableAnum: true,
+		minnum: 0,
+		maxnum: 4
 	},
 
 	Board: {
@@ -176,7 +214,7 @@
 			this.drawDotCells();
 
 			this.drawGrid();
-
+			this.drawTargetSubNumber(true);
 			this.drawNumbersExCell();
 
 			this.drawChassis(true);
@@ -187,6 +225,19 @@
 			this.drawExCellDecorations();
 
 			this.drawTarget();
+			this.drawSubNumbers(true);
+		},
+
+		getNumberTextCore_letter: function(num) {
+			return "OLITX"[num] || "";
+		},
+
+		drawTarget: function() {
+			this.drawCursor(
+				true,
+				this.puzzle.editmode ||
+					this.puzzle.mouse.inputMode.indexOf("number") >= 0
+			);
 		},
 
 		drawGrid: function() {
@@ -292,6 +343,7 @@
 
 	FileIO: {
 		decodeData: function() {
+			// TODO save pencil marks
 			this.decodeCellExCell(function(obj, ca) {
 				if (ca === ".") {
 					return;
