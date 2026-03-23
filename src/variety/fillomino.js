@@ -144,12 +144,19 @@
 			return false;
 		}
 	},
-	"MouseEvent@wafusuma,topo": {
+	"MouseEvent@wafusuma": {
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["copynum", "number", "clear", "border", "subline"]
-		},
-		// TODO: editmode mouse drag enters the wrong type of lines
+		}
+	},
+	"MouseEvent@topo": {
+		inputModes: {
+			edit: ["number", "border", "clear"],
+			play: ["copynum", "number", "clear", "border", "subline"]
+		}
+	},
+	"MouseEvent@wafusuma,topo#1": {
 		inputqnum: function() {
 			if (this.puzzle.editmode) {
 				this.inputmark_mouseup();
@@ -597,6 +604,26 @@
 				this.sidecell[0].isEmpty() ||
 				this.sidecell[1].isEmpty()
 			);
+		},
+		setBorder: function() {
+			if (this.puzzle.editmode && this.qnum === -1) {
+				this.setQnum(-2);
+			} else if (this.puzzle.playmode && !this.isQuesBorder()) {
+				this.setQans(1);
+			}
+		},
+		removeBorder: function() {
+			if (this.puzzle.editmode) {
+				this.setQnum(-1);
+			}
+			this.setQans(0);
+		},
+		posthook: {
+			qnum: function(num) {
+				if (num !== -1) {
+					this.setQans(0);
+				}
+			}
 		}
 	},
 	"CellList@wafusuma,topo": {
