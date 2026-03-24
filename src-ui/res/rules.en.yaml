@@ -428,3 +428,7 @@ bramble: |-
   3. Shaded cells cannot be adjacent across region borders.
   4. All blocks form a diagonally connected area, without loops.
   5. Two blocks which touch diagonally cannot both be single cells.
+ubahn: |-
+  Draw horizontal and vertical lines to form a single network.
+  1. The network cannot have dead ends.
+  2. The numbers outside the grid indicate how many cells of a specific type (i.e. crossing, junction, straight line or curve) appear in the respective row or column, regardless of their rotation.
