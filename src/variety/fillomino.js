@@ -228,7 +228,7 @@
 				return this.moveTBorder(ca);
 			} else if (
 				this.puzzle.playmode &&
-				(this.isCTRL || this.isX || this.isZ)
+				(this.isCTRL || this.isALT || this.isX || this.isZ)
 			) {
 				return this.move_fillomino(ca);
 			}
@@ -244,6 +244,9 @@
 			var adc = cell.adjacent,
 				adb = cell.adjborder;
 			var nc, nb;
+
+			var tokens = ca.split("+");
+			ca = tokens[tokens.length - 1];
 			switch (ca) {
 				case "up":
 					nc = adc.top;
@@ -265,23 +268,24 @@
 					return false;
 			}
 			if (!nc.isnull) {
-				var isMoved = this.isCTRL || this.isX || this.isZ;
+				var isMoved = this.isCTRL || this.isALT || this.isX || this.isZ;
 				if (!isMoved) {
 					return false;
 				}
 
-				if (this.isCTRL) {
+				if (this.isCTRL || this.isALT) {
 					if (!nb.isnull) {
 						nb.setQsub(nb.qsub === 0 ? 1 : 0);
 						this.cursor.setaddr(nc);
 					}
-				} else if (this.isZ) {
+				} else if (this.isZ && this.pid !== "numcity") {
 					if (!nb.isnull) {
 						nb.setQans(!nb.isBorder() ? 1 : 0);
 					}
 				} else if (this.isX) {
 					if (!nc.isnull) {
 						nc.setAnum(cell.getNum());
+						nc.draw();
 						this.cursor.setaddr(nc);
 					}
 				}
