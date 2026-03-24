@@ -81,6 +81,9 @@
 				return this.board.cols * this.board.rows;
 			}
 		},
+		"Cell@hasunomura": {
+			minnum: 0
+		},
 		"Cell@canal": {
 			maxnum: function() {
 				return this.board.cols + this.board.rows - 2;
