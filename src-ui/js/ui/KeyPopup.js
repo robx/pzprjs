@@ -249,6 +249,8 @@ ui.keypopup = {
 		edamame: [4, 0],
 		heavydots: [10, 0],
 		marutaring: [10, 0],
+		tetroctb: [10, 0],
+		hasunomura: [10, 0],
 		topo: [10, 10]
 	},
 

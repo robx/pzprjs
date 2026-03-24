@@ -194,6 +194,7 @@
 				"",
 				{ pzprurl: "hashi", kanpen: "hashi", alias: "bridges" }
 			],
+			hasunomura: [0, 0, "はすのむら", "Hasu no Mura", "nurikabe"],
 			heavydots: [0, 0, "Heavy Dots", "Heavy Dots"],
 			hebi: [1, 0, "へびいちご", "Hebi-Ichigo", "", { old: "snakes" }],
 			herugolf: [0, 0, "ヘルゴルフ", "Herugolf"],
@@ -457,6 +458,7 @@
 			teri: [0, 0, "テリトリー", "Territory", "kurodoko"],
 			tetrochain: [0, 0, "テトロチェーンＹ", "Tetro Chain-Y"],
 			tetrochaink: [0, 0, "テトロチェーンＫ", "Tetro Chain-K", "kurarin"],
+			tetroctb: [0, 0, "テトロチェーンＣＴＢ", "Tetro Chain-CTB", "shimaguni"],
 			tetrominous: [0, 0, "Tetrominous", "Tetrominous", "fillomino"],
 			tilecity: [0, 0, "タイルシティー", "Tile City"],
 			tilepaint: [1, 0, "タイルペイント", "Tilepaint"],
