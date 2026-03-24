@@ -37,5 +37,27 @@ ui.debug.addDebugData("topo", {
 			"pzprv3/topo/5/5/. . . . /. 1 . 3 /-2 -2 . . /. . . . /. -2 2 -2 /-2 -2 . . -2 /. . . . . /. -2 . . -2 /1 . . -2 . /2 2 2 3 3 /1 1 2 3 4 /2 1 2 3 3 /2 2 2 2 2 /1 1 2 3 2 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /0 0 0 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			label: "Add borders",
+			input: [
+				"newboard,2,2",
+				"editmode",
+				"mouse,left,2,0,2,2",
+				"playmode",
+				"mouse,left,2,2,4,2"
+			],
+			result: "pzprv3/topo/2/2/-2 /. /. . /. . /. . /0 /0 /0 1 /"
+		},
+		{
+			label: "Remove ans border",
+			input: ["mouse,left,4,2,2,2,2,0"],
+			result: "pzprv3/topo/2/2/-2 /. /. . /. . /. . /0 /0 /0 0 /"
+		},
+		{
+			label: "Remove ques border",
+			input: ["editmode", "mouse,left,2,2,2,0"],
+			result: "pzprv3/topo/2/2/. /. /. . /. . /. . /0 /0 /0 0 /"
+		}
+	]
 });
