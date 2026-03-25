@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["ripple", "cojun", "meander"], {
+})(["ripple", "cojun", "meander", "suguru"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -120,7 +120,7 @@
 	Board: {
 		hasborder: 1
 	},
-	"Board@cojun": {
+	"Board@cojun,suguru": {
 		cols: 8,
 		rows: 8
 	},
@@ -223,7 +223,7 @@
 			"checkRippleNumber@ripple",
 			"checkAdjacentDiffNumber@cojun",
 			"checkUpperNumber@cojun",
-			"checkAdjacentNumbers@meander",
+			"checkAdjacentNumbers@meander,suguru",
 			"checkConsecutiveNeighbors@meander",
 			"checkNoNumCell+"
 		],
