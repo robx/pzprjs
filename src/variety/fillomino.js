@@ -720,8 +720,17 @@
 				--numkind;
 			}
 			component.numkind = numkind;
-			component.number =
-				numkind === 1 ? filled : numkind === 0 ? clist.length : -1;
+			if (numkind === 1) {
+				if (filled === -2) {
+					component.number = clist.length;
+				} else {
+					component.number = filled;
+				}
+			} else if (numkind === 0) {
+				component.number = clist.length;
+			} else {
+				component.number = -1;
+			}
 			component.complete = clist.length === component.number;
 			component.looseborders = null;
 		},
