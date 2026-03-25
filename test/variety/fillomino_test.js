@@ -59,7 +59,6 @@ describe("Variety:fillomino", function() {
 		p.board.getb(6, 1).setQans(0);
 		p.board.getb(8, 1).setQans(1);
 		p.board.getc(9, 1).setNum(1);
-		p.board.numblkgraph.rebuild();
 		var check = p.check(true);
 		assert.equal(check[0], "bsSameNum");
 	});
