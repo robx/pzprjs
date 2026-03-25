@@ -421,3 +421,14 @@ topo: |-
   2. Region borders cannot branch off or cross.
   3. A clue shows the average of the numbers in the two adjacent regions.
   4. Given borders must divide two regions. There can not be any dead ends.
+bramble: |-
+  Shade some cells on the board to form blocks.
+  1. Blocks must be 1 or 2 cells in size.
+  2. Numbered regions must contain the indicated amount of shaded cells.
+  3. Shaded cells cannot be adjacent across region borders.
+  4. All blocks form a diagonally connected area, without loops.
+  5. Two blocks which touch diagonally cannot both be single cells.
+ubahn: |-
+  Draw horizontal and vertical lines to form a single network.
+  1. The network cannot have dead ends.
+  2. The numbers outside the grid indicate how many cells of a specific type (i.e. crossing, junction, straight line or curve) appear in the respective row or column, regardless of their rotation.
