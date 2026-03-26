@@ -247,7 +247,6 @@
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
-			this.drawPekes();
 			this.drawBorderAuxDir();
 			this.drawArrowNumbersExCell_skyscrapers();
 
