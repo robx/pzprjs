@@ -11,7 +11,19 @@
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
-		inputModes: { edit: ["number"], play: ["number", "clear"] },
+		inputModes: {
+			edit: ["number"],
+			play: ["number", "diraux", "clear"]
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				if (this.mousestart || this.mousemove) {
+					this.inputdiraux_mousemove();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			}
+		},
 		mouseinput_number: function() {
 			if (this.mousestart) {
 				if (!this.puzzle.editmode || !this.inputqnum_excell()) {
@@ -21,12 +33,18 @@
 		},
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
+				if (this.btn === "right") {
+					if (this.mousestart || this.mousemove) {
+						this.inputdiraux_mousemove();
+					}
+					return;
+				}
 				if (this.mousestart) {
 					var piece = this.getcell_excell();
-					if (piece.isnull) {
-					} else if (piece.group === "cell") {
+					var group = piece.group;
+					if (group === "cell") {
 						this.inputqnum();
-					} else {
+					} else if (group === "excell") {
 						this.inputflash();
 					}
 				} else {
@@ -229,6 +247,8 @@
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
+			this.drawPekes();
+			this.drawBorderAuxDir();
 			this.drawArrowNumbersExCell_skyscrapers();
 
 			this.drawChassis();
