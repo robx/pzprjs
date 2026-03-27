@@ -432,3 +432,13 @@ ubahn: |-
   Draw horizontal and vertical lines to form a single network.
   1. The network cannot have dead ends.
   2. The numbers outside the grid indicate how many cells of a specific type (i.e. crossing, junction, straight line or curve) appear in the respective row or column, regardless of their rotation.
+suguru: |-
+  Place a number in each cell. Some numbers are given.
+  1. Numbers must be between 1 and N, where N is the size of the region.
+  2. Each region contains exactly one of each number.
+  3. Two equal numbers cannot be horizontally, vertically or diagonally adjacent.
+roboticwalk: |-
+  Draw a loop that goes through every numbered cell.
+  1. The loop cannot branch off or cross itself.
+  2. A number indicates how many cells make up the continuous unshaded section of the loop that the number is on.
+  3. The loop must alternate between turning and going straight in any successively visited pair of shaded cells. 
