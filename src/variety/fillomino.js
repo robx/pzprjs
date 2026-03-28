@@ -166,7 +166,7 @@
 		},
 		inputmark_mouseup: function() {
 			var pos = this.getpos(0.33);
-			if (!pos.isinside()) {
+			if (!pos.isinside() || !pos.onborder()) {
 				return;
 			}
 
@@ -181,7 +181,7 @@
 
 				var qn = border.qnum,
 					min = border.getminnum(),
-					max = border.maxnum();
+					max = border.getmaxnum();
 				if (this.btn === "left") {
 					if (qn === -1) {
 						border.setQnum(-2);
