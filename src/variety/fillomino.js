@@ -872,7 +872,7 @@
 		paint: function() {
 			this.drawBGCells();
 			this.drawTargetSubNumber();
-			this.drawDashedGrid();
+			this.drawDashedGrid(this.pid !== "topo");
 
 			this.drawBorders();
 			this.drawCursor(this.puzzle.playmode);
@@ -883,7 +883,9 @@
 
 			this.drawBorderQsubs();
 
-			this.drawChassis();
+			if (this.pid !== "topo") {
+				this.drawChassis();
+			}
 		},
 
 		drawQuesNumbersBD: function() {
