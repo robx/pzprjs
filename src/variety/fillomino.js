@@ -166,7 +166,7 @@
 		},
 		inputmark_mouseup: function() {
 			var pos = this.getpos(0.33);
-			if (!pos.isinside() || !pos.onborder()) {
+			if (!pos.isinside() || pos.oncross()) {
 				return;
 			}
 
@@ -176,6 +176,10 @@
 			} else {
 				var border = pos.getb();
 				if (border.isnull) {
+					var cell = this.getcell();
+					if (!cell.isnull) {
+						this.inputqnum_main(cell);
+					}
 					return;
 				}
 
@@ -376,6 +380,9 @@
 		key_inputmark: function(ca) {
 			var border = this.cursor.getb();
 			if (border.isnull) {
+				if (this.cursor.oncell()) {
+					this.key_inputqnum(ca);
+				}
 				return;
 			}
 
@@ -880,6 +887,7 @@
 
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
+			this.drawQuesNumbers();
 
 			this.drawBorderQsubs();
 
@@ -1034,12 +1042,20 @@
 			this.genericDecodeNumber16(bds.length, function(r, val) {
 				bds[r].qnum = val;
 			});
+			this.decodeNumber16();
 		},
 		encodePzpr: function(type) {
 			var bds = this.board.border;
 			this.genericEncodeNumber16(bds.length, function(r) {
 				return bds[r].qnum;
 			});
+			if (
+				this.board.cell.some(function(cell) {
+					return cell.qnum !== -1;
+				})
+			) {
+				this.encodeNumber16();
+			}
 		}
 	},
 	//---------------------------------------------------------
@@ -1052,6 +1068,10 @@
 						border.qnum = +ca;
 					}
 				});
+
+				if (this.filever === 1) {
+					this.decodeCellQnum();
+				}
 			} else {
 				this.decodeCellQnum();
 			}
@@ -1067,12 +1087,13 @@
 		encodeData: function() {
 			this.encodeConfigFlag("t", "fillomino_tri");
 			if (this.puzzle.pid === "wafusuma" || this.puzzle.pid === "topo") {
+				this.filever = 1;
 				this.encodeBorder(function(border) {
 					return border.qnum === -1 ? ". " : border.qnum + " ";
 				});
-			} else {
-				this.encodeCellQnum();
 			}
+			this.encodeCellQnum();
+
 			if (this.puzzle.pid === "snakepit") {
 				this.encodeCell(function(cell) {
 					return cell.ques >= 0 ? cell.ques + " " : ". ";

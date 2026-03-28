@@ -47,17 +47,17 @@ ui.debug.addDebugData("topo", {
 				"playmode",
 				"mouse,left,2,2,4,2"
 			],
-			result: "pzprv3/topo/2/2/-2 /. /. . /. . /. . /0 /0 /0 1 /"
+			result: "pzprv3.1/topo/2/2/-2 /. /. . /. . /. . /. . /. . /0 /0 /0 1 /"
 		},
 		{
 			label: "Remove ans border",
 			input: ["mouse,left,4,2,2,2,2,0"],
-			result: "pzprv3/topo/2/2/-2 /. /. . /. . /. . /0 /0 /0 0 /"
+			result: "pzprv3.1/topo/2/2/-2 /. /. . /. . /. . /. . /. . /0 /0 /0 0 /"
 		},
 		{
 			label: "Remove ques border",
 			input: ["editmode", "mouse,left,2,2,2,0"],
-			result: "pzprv3/topo/2/2/. /. /. . /. . /. . /0 /0 /0 0 /"
+			result: "pzprv3.1/topo/2/2/. /. /. . /. . /. . /. . /. . /0 /0 /0 0 /"
 		}
 	]
 });
