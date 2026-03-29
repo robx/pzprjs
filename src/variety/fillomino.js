@@ -605,7 +605,7 @@
 	},
 	"Border@topo": {
 		minnum: 0,
-		maxnum: 99,
+		maxnum: 98,
 
 		updateGhostBorder: function() {},
 		isBorder: function() {
