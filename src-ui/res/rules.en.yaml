@@ -416,7 +416,7 @@ tetroctb: |-
   4. Two tetrominoes which touch each other at the corners must have different shapes, counting rotations and reflections as the same.
   5. All tetrominoes form a diagonally contiguous area.
 topo: |-
-  Divide the grid into regions, then assign a number to each region. Some region borders are given.
+  Divide the grid into regions, then assign a non-negative number to each region. Some region borders are given.
   1. The numbers in adjacent regions must have a difference of exactly one.
   2. Region borders cannot branch off or cross.
   3. A clue shows the average of the numbers in the two adjacent regions.
