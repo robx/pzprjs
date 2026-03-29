@@ -468,6 +468,7 @@
 			toichika2: [0, 0, "遠い誓い２", "Toichika 2", "toichika"],
 			tontonbeya: [0, 0, "とんとんべや", "Tontonbeya", "hakoiri"],
 			tontti: [0, 0, "Tonttiraja", "Tonttiraja"],
+			topo: [0, 0, "Topo", "Topo", "fillomino"],
 			trainstations: [0, 0, "Train Stations", "Train Stations"],
 			tren: [0, 0, "パーキング", "Tren"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],

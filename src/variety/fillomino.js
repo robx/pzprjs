@@ -10,7 +10,8 @@
 		"snakepit",
 		"wafusuma",
 		"tetrominous",
-		"numcity"
+		"numcity",
+		"topo"
 	];
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -147,7 +148,15 @@
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["copynum", "number", "clear", "border", "subline"]
-		},
+		}
+	},
+	"MouseEvent@topo": {
+		inputModes: {
+			edit: ["number", "border", "clear"],
+			play: ["copynum", "number", "clear", "border", "subline"]
+		}
+	},
+	"MouseEvent@wafusuma,topo#1": {
 		inputqnum: function() {
 			if (this.puzzle.editmode) {
 				this.inputmark_mouseup();
@@ -157,7 +166,7 @@
 		},
 		inputmark_mouseup: function() {
 			var pos = this.getpos(0.33);
-			if (!pos.isinside()) {
+			if (!pos.isinside() || pos.oncross()) {
 				return;
 			}
 
@@ -167,12 +176,16 @@
 			} else {
 				var border = pos.getb();
 				if (border.isnull) {
+					var cell = this.getcell();
+					if (!cell.isnull) {
+						this.inputqnum_main(cell);
+					}
 					return;
 				}
 
 				var qn = border.qnum,
 					min = border.getminnum(),
-					max = border.maxnum();
+					max = border.getmaxnum();
 				if (this.btn === "left") {
 					if (qn === -1) {
 						border.setQnum(-2);
@@ -224,7 +237,10 @@
 		enablemake: true,
 		enableplay: true,
 		moveTarget: function(ca) {
-			if (this.pid === "wafusuma" && this.puzzle.editmode) {
+			if (
+				(this.pid === "wafusuma" || this.pid === "topo") &&
+				this.puzzle.editmode
+			) {
 				return this.moveTBorder(ca);
 			} else if (
 				this.puzzle.playmode &&
@@ -353,7 +369,7 @@
 			return null;
 		}
 	},
-	"KeyEvent@wafusuma": {
+	"KeyEvent@wafusuma,topo": {
 		keyinput: function(ca) {
 			if (this.puzzle.editmode) {
 				this.key_inputmark(ca);
@@ -364,6 +380,9 @@
 		key_inputmark: function(ca) {
 			var border = this.cursor.getb();
 			if (border.isnull) {
+				if (this.cursor.oncell()) {
+					this.key_inputqnum(ca);
+				}
 				return;
 			}
 
@@ -377,7 +396,7 @@
 			border.draw();
 		}
 	},
-	"TargetCursor@wafusuma": {
+	"TargetCursor@wafusuma,topo": {
 		adjust_modechange: function() {
 			this.bx -= (this.bx + 1) % 2;
 			this.by -= (this.by + 1) % 2;
@@ -494,6 +513,12 @@
 			return Math.floor(Math.sqrt(size * 2 + 0.25) - 0.5);
 		}
 	},
+	"Cell@topo": {
+		minnum: 0,
+		maxnum: function() {
+			return this.puzzle.editmode ? 99 : this.board.getHighestNumber();
+		}
+	},
 	Border: {
 		posthook: {
 			ques: function() {
@@ -578,7 +603,44 @@
 			return false;
 		}
 	},
-	"CellList@wafusuma": {
+	"Border@topo": {
+		minnum: 0,
+		maxnum: 99,
+
+		updateGhostBorder: function() {},
+		isBorder: function() {
+			return this.qans > 0 || this.qnum !== -1;
+		},
+		isQuesBorder: function() {
+			return (
+				this.qnum !== -1 ||
+				this.sidecell[0].isEmpty() ||
+				this.sidecell[1].isEmpty()
+			);
+		},
+		setBorder: function() {
+			if (this.puzzle.editmode && this.qnum === -1) {
+				this.setQnum(-2);
+			} else if (this.puzzle.playmode && !this.isQuesBorder()) {
+				this.setQans(1);
+			}
+		},
+		removeBorder: function() {
+			if (this.puzzle.editmode) {
+				this.setQnum(-1);
+			}
+			this.setQans(0);
+		},
+		posthook: {
+			qnum: function(num) {
+				this.board.highestNum = -1;
+				if (num !== -1) {
+					this.setQans(0);
+				}
+			}
+		}
+	},
+	"CellList@wafusuma,topo": {
 		hasLooseBorder: function() {
 			for (var i = 0; i < this.length; i++) {
 				var cell = this[i];
@@ -616,6 +678,33 @@
 	"Board@numcity": {
 		rows: 7,
 		cols: 7
+	},
+
+	"Board@topo": {
+		highestNum: -1,
+		getHighestNumber: function() {
+			if (this.highestNum < 0) {
+				var lowest = Infinity;
+				for (var i = 0; i < this.border.length; i++) {
+					var border = this.border[i];
+					if (border.qnum >= 0 && lowest > border.qnum) {
+						lowest = border.qnum;
+					}
+				}
+				for (var i = 0; i < this.cell.length; i++) {
+					var cell = this.cell[i];
+					if (cell.qnum >= 0 && lowest > cell.qnum) {
+						lowest = cell.qnum;
+					}
+				}
+
+				this.highestNum = Math.min(
+					lowest + Math.max(this.rows, this.cols) - 1,
+					99
+				);
+			}
+			return this.highestNum;
+		}
 	},
 
 	"AreaRoomGraph@numcity": {
@@ -731,7 +820,9 @@
 			} else {
 				component.number = -1;
 			}
-			component.complete = clist.length === component.number;
+			if (this.pid !== "topo") {
+				component.complete = clist.length === component.number;
+			}
 			component.looseborders = null;
 		},
 
@@ -823,11 +914,11 @@
 		fontsizeratio: 0.65
 	},
 
-	"Graphic@wafusuma": {
+	"Graphic@wafusuma,topo": {
 		paint: function() {
 			this.drawBGCells();
 			this.drawTargetSubNumber();
-			this.drawDashedGrid();
+			this.drawDashedGrid(this.pid !== "topo");
 
 			this.drawBorders();
 			this.drawCursor(this.puzzle.playmode);
@@ -835,10 +926,13 @@
 
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
+			this.drawQuesNumbers();
 
 			this.drawBorderQsubs();
 
-			this.drawChassis();
+			if (this.pid !== "topo") {
+				this.drawChassis();
+			}
 		},
 
 		drawQuesNumbersBD: function() {
@@ -847,7 +941,7 @@
 			var csize = this.cw * 0.27;
 
 			g.lineWidth = 1;
-			g.strokeStyle = this.quescolor;
+			g.strokeStyle = this.pid === "wafusuma" ? this.quescolor : null;
 
 			var option = { ratio: 0.45 };
 			var blist = this.range.borders;
@@ -858,7 +952,7 @@
 
 				// ○の描画
 				g.vid = "b_cp_" + border.id;
-				if (border.qnum !== -1) {
+				if (this.pid === "topo" ? border.qnum >= 0 : border.qnum !== -1) {
 					g.fillStyle = border.error === 1 ? this.errbcolor1 : "white";
 					g.shapeCircle(px, py, csize);
 				} else {
@@ -867,9 +961,13 @@
 
 				// 数字の描画
 				g.vid = "border_text_" + border.id;
-				if (border.qnum > 0) {
+				if (border.qnum >= 0) {
 					g.fillStyle = this.quescolor;
-					this.disptext("" + border.qnum, px, py, option);
+					var text = "" + border.qnum;
+					if (this.pid === "topo") {
+						text += ".5";
+					}
+					this.disptext(text, px, py, option);
 				} else {
 					g.vhide();
 				}
@@ -977,30 +1075,42 @@
 			});
 		}
 	},
-	"Encode@wafusuma": {
+	"Encode@wafusuma,topo": {
 		decodePzpr: function(type) {
 			var bds = this.board.border;
 			this.genericDecodeNumber16(bds.length, function(r, val) {
 				bds[r].qnum = val;
 			});
+			this.decodeNumber16();
 		},
 		encodePzpr: function(type) {
 			var bds = this.board.border;
 			this.genericEncodeNumber16(bds.length, function(r) {
 				return bds[r].qnum;
 			});
+			if (
+				this.board.cell.some(function(cell) {
+					return cell.qnum !== -1;
+				})
+			) {
+				this.encodeNumber16();
+			}
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
 			this.decodeConfigFlag("t", "fillomino_tri");
-			if (this.puzzle.pid === "wafusuma") {
+			if (this.puzzle.pid === "wafusuma" || this.puzzle.pid === "topo") {
 				this.decodeBorder(function(border, ca) {
 					if (ca !== ".") {
 						border.qnum = +ca;
 					}
 				});
+
+				if (this.filever === 1) {
+					this.decodeCellQnum();
+				}
 			} else {
 				this.decodeCellQnum();
 			}
@@ -1015,13 +1125,14 @@
 		},
 		encodeData: function() {
 			this.encodeConfigFlag("t", "fillomino_tri");
-			if (this.puzzle.pid === "wafusuma") {
+			if (this.puzzle.pid === "wafusuma" || this.puzzle.pid === "topo") {
+				this.filever = 1;
 				this.encodeBorder(function(border) {
 					return border.qnum === -1 ? ". " : border.qnum + " ";
 				});
-			} else {
-				this.encodeCellQnum();
 			}
+			this.encodeCellQnum();
+
 			if (this.puzzle.pid === "snakepit") {
 				this.encodeCell(function(cell) {
 					return cell.ques >= 0 ? cell.ques + " " : ". ";
@@ -1598,6 +1709,114 @@
 				false,
 				"nmAdjacent"
 			);
+		}
+	},
+	"AnsCheck@topo": {
+		checklist: [
+			"checkLineBranch",
+			"checkBorderNumbers",
+			"checkNumKinds",
+			"checkSequentialBlockNumber",
+			"checkGivenLines",
+			"checkNoNumber",
+			"checkNoNumCell_fillomino+"
+		],
+
+		checkNoNumber: function() {
+			if (!this.puzzle.getConfig("forceallcell")) {
+				this.checkAllErrorRoom(function(area) {
+					return area.numkind !== 0;
+				}, "bkNoNum");
+			}
+		},
+
+		checkBorderNumbers: function() {
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (
+					border.isnull ||
+					border.qnum < 0 ||
+					border.sidecell[0].isSameBlock(border.sidecell[1])
+				) {
+					continue;
+				}
+
+				for (var side = 0; side <= 1; side++) {
+					var cell = border.sidecell[side];
+					if (
+						cell.nblk.numkind === 1 &&
+						(cell.nblk.number < border.qnum ||
+							cell.nblk.number > border.qnum + 1)
+					) {
+						this.failcode.add("nmAverageNe");
+						if (this.checkOnly) {
+							return;
+						}
+						cell.seterr(1);
+
+						borders.setnoerr();
+						border.seterr(1);
+					}
+				}
+			}
+		},
+
+		checkLineBranch: function() {
+			var bd = this.board;
+
+			var boardcross = bd.cross;
+			for (var c = 0; c < boardcross.length; c++) {
+				var cross = boardcross[c];
+
+				var borders = bd.borderinside(
+					cross.bx - 1,
+					cross.by - 1,
+					cross.bx + 1,
+					cross.by + 1
+				);
+
+				if (
+					borders.filter(function(border) {
+						return border.isBorder() || border.isCmp();
+					}).length <= 2
+				) {
+					continue;
+				}
+
+				if (this.checkOnly) {
+					break;
+				}
+
+				this.failcode.add("lnBranch");
+				bd.cellinside(
+					cross.bx - 1,
+					cross.by - 1,
+					cross.bx + 1,
+					cross.by + 1
+				).seterr(1);
+			}
+		},
+
+		checkSequentialBlockNumber: function() {
+			var sides = this.board.numblkgraph.getSideAreaInfo();
+			for (var i = 0; i < sides.length; i++) {
+				var area1 = sides[i][0],
+					area2 = sides[i][1];
+				if (area1.numkind !== 1 || area2.numkind !== 1) {
+					continue;
+				}
+				if (Math.abs(area1.number - area2.number) === 1) {
+					continue;
+				}
+
+				this.failcode.add("bkConsecutive");
+				if (this.checkOnly) {
+					break;
+				}
+				area1.clist.seterr(1);
+				area2.clist.seterr(1);
+			}
 		}
 	}
 });
