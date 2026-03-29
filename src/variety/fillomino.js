@@ -515,7 +515,9 @@
 	},
 	"Cell@topo": {
 		minnum: 0,
-		maxnum: 99
+		maxnum: function() {
+			return this.puzzle.editmode ? 99 : this.board.getHighestNumber();
+		}
 	},
 	Border: {
 		posthook: {
@@ -631,6 +633,7 @@
 		},
 		posthook: {
 			qnum: function(num) {
+				this.board.highestNum = -1;
 				if (num !== -1) {
 					this.setQans(0);
 				}
@@ -675,6 +678,33 @@
 	"Board@numcity": {
 		rows: 7,
 		cols: 7
+	},
+
+	"Board@topo": {
+		highestNum: -1,
+		getHighestNumber: function() {
+			if (this.highestNum < 0) {
+				var lowest = Infinity;
+				for (var i = 0; i < this.border.length; i++) {
+					var border = this.border[i];
+					if (border.qnum >= 0 && lowest > border.qnum) {
+						lowest = border.qnum;
+					}
+				}
+				for (var i = 0; i < this.cell.length; i++) {
+					var cell = this.cell[i];
+					if (cell.qnum >= 0 && lowest > cell.qnum) {
+						lowest = cell.qnum;
+					}
+				}
+
+				this.highestNum = Math.min(
+					lowest + Math.max(this.rows, this.cols) - 1,
+					99
+				);
+			}
+			return this.highestNum;
+		}
 	},
 
 	"AreaRoomGraph@numcity": {
