@@ -713,9 +713,11 @@
 
 	"AreaEqualNumberGraph:AreaNumberGraph": {
 		relation: {
+			"cell.ques": "node",
 			"cell.qnum": "node",
 			"cell.anum": "node",
 			"border.ques": "separator",
+			"border.qnum": "separator",
 			"border.qans": "separator"
 		},
 		enabled: true,
@@ -768,6 +770,7 @@
 			"cell.qnum": "node",
 			"cell.anum": "node",
 			"border.ques": "separator",
+			"border.qnum": "separator",
 			"border.qans": "separator",
 			"border.qcmp": "separator"
 		},
