@@ -194,10 +194,10 @@
 
 	BoardExec: {
 		adjustBoardData: function(key, d) {
-			this.adjustExCellTopLeft_1(key, d, true);
+			this.adjustExCellTopLeft_1(key, d);
 		},
 		adjustBoardData2: function(key, d) {
-			this.adjustExCellTopLeft_2(key, d);
+			this.adjustExCellTopLeft_2(key, d, true);
 		}
 	},
 
