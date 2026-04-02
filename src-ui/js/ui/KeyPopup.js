@@ -251,6 +251,7 @@ ui.keypopup = {
 		marutaring: [10, 0],
 		tetroctb: [10, 0],
 		hasunomura: [10, 0],
+		bramble: [10, 0],
 		topo: [10, 10]
 	},
 

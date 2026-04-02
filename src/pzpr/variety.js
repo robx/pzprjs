@@ -112,6 +112,7 @@
 			bosanowa: [1, 0, "ボサノワ", "Bosanowa", "", { alias: "bossanova" }],
 			bosnianroad: [0, 0, "Bosnian Road", "Bosnian Road"],
 			box: [0, 0, "ボックス", "Box"],
+			bramble: [0, 0, "Bramble", "Bramble", "shimaguni"],
 			brownies: [0, 0, "ブラウニー", "Brownies", "yosenabe"],
 			bunnyhop: [0, 0, "Bunnyhop", "Bunnyhop", "", { alias: "bnuuyhop" }],
 			cave: [1, 0, "バッグ", "Cave", "kurodoko", { alias: "bag" }],
