@@ -47,7 +47,7 @@ ui.debug.addDebugData("ladders", {
 				"mouse,left,1,1",
 				"mouse,left,2,1,4,1"
 			],
-			result: "pzprv3/ladders/1/3/3/0 1 2 /1 . . /0 2 0 /0 0 /1 0 0 /"
+			result: "pzprv3.1/ladders/1/3/1 1 /1 . . /0 2 0 /0 0 /1 0 0 /"
 		},
 		{
 			input: ["playmode,info-room", "mouse,left,1,1"],
