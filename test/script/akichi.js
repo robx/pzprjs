@@ -46,7 +46,7 @@ ui.debug.addDebugData("akichi", {
 	inputs: [
 		{
 			input: ["newboard,2,2", "editmode", "cursor,3,3", "mouse,right,3,3"],
-			result: "pzprv3/akichi/2/2/1/0 0 /0 0 /4 . /. . /. . /. . /"
+			result: "pzprv3.1/akichi/2/2/0 /0 /0 0 /4 . /. . /. . /. . /"
 		}
 	]
 });

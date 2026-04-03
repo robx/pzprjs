@@ -41,11 +41,11 @@ ui.debug.addDebugData("sumiwake", {
 				"mouse,leftx2,2,2",
 				"mouse,rightx2,4,2"
 			],
-			result: "pzprv3/sumiwake/2/2/2/0 0 /1 1 /. . . /. 1 2 /. . . /. . /. . /"
+			result: "pzprv3.1/sumiwake/2/2/0 /0 /1 1 /. . . /. 1 2 /. . . /. . /. . /"
 		},
 		{
 			input: ["cursor,0,0", "key,right,1,down,2"],
-			result: "pzprv3/sumiwake/2/2/2/0 0 /1 1 /. 1 . /. 2 2 /. . . /. . /. . /"
+			result: "pzprv3.1/sumiwake/2/2/0 /0 /1 1 /. 1 . /. 2 2 /. . . /. . /. . /"
 		}
 	]
 });

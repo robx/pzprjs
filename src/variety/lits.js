@@ -225,11 +225,16 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			this.decodeAreaRoom();
+			if (this.filever >= 1) {
+				this.decodeBorderQues();
+			} else {
+				this.decodeAreaRoom();
+			}
 			this.decodeCellAns();
 		},
 		encodeData: function() {
-			this.encodeAreaRoom();
+			this.filever = 1;
+			this.encodeBorderQues();
 			this.encodeCellAns();
 		},
 

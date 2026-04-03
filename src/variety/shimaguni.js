@@ -562,7 +562,11 @@
 		//---------------------------------------------------------
 		FileIO: {
 			decodeData: function() {
-				this.decodeAreaRoom();
+				if (this.filever >= 1) {
+					this.decodeBorderQues();
+				} else {
+					this.decodeAreaRoom();
+				}
 				this.decodeCellQnum();
 				this.decodeCellAns();
 				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {
@@ -570,7 +574,8 @@
 				}
 			},
 			encodeData: function() {
-				this.encodeAreaRoom();
+				this.filever = 1;
+				this.encodeBorderQues();
 				this.encodeCellQnum();
 				this.encodeCellAns();
 				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {

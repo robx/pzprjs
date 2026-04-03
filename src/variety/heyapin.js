@@ -275,15 +275,20 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeConfigFlag("o", "heyapin_overlap");
-			this.decodeAreaRoom();
+			if (this.filever >= 1) {
+				this.decodeBorderQues();
+			} else {
+				this.decodeAreaRoom();
+			}
 			this.decodeCellQnum();
 			this.decodeCross(function(cross, ca) {
 				cross.setPin(+ca);
 			});
 		},
 		encodeData: function() {
+			this.filever = 1;
 			this.encodeConfigFlag("o", "heyapin_overlap");
-			this.encodeAreaRoom();
+			this.encodeBorderQues();
 			this.encodeCellQnum();
 			this.encodeCross(function(cross) {
 				return cross.getPin() + " ";
