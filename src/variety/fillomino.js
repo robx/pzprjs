@@ -1787,11 +1787,11 @@
 					continue;
 				}
 
+				this.failcode.add("lnBranch");
 				if (this.checkOnly) {
 					break;
 				}
 
-				this.failcode.add("lnBranch");
 				bd.cellinside(
 					cross.bx - 1,
 					cross.by - 1,
