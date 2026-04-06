@@ -18,7 +18,8 @@
 		"martini",
 		"nuritwin",
 		"marutaring",
-		"tetroctb"
+		"tetroctb",
+		"bramble"
 	],
 	{
 		//---------------------------------------------------------
@@ -38,13 +39,13 @@
 				play: ["shade", "unshade", "number"]
 			}
 		},
-		"MouseEvent@cocktail,nuritwin,marutaring,tetroctb": {
+		"MouseEvent@cocktail,nuritwin,marutaring,tetroctb,bramble": {
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
 			}
 		},
-		"MouseEvent@cocktail,martini,tetroctb#2": {
+		"MouseEvent@cocktail,martini,tetroctb,bramble#2": {
 			dispInfoBlk: function() {
 				var cell = this.getcell();
 				this.mousereset();
@@ -124,7 +125,7 @@
 			enableSubNumberArray: true,
 			disableAnum: true
 		},
-		"Cell@chocona,hinge,heyablock,cocktail,tetroctb": {
+		"Cell@chocona,hinge,heyablock,cocktail,tetroctb,bramble": {
 			minnum: 0
 		},
 		"Cell@martini": {
@@ -302,7 +303,7 @@
 			}
 		},
 
-		"AreaShadeGraph@chocona,tetroctb": {
+		"AreaShadeGraph@chocona,tetroctb,bramble": {
 			enabled: true
 		},
 		"AreaShadeGraph@nuritwin,marutaring": {
@@ -338,7 +339,7 @@
 		"AreaStoneGraph@stostone": {
 			coloring: true
 		},
-		"AreaUnshadeGraph@heyablock,martini": {
+		"AreaUnshadeGraph@heyablock,martini,bramble": {
 			enabled: true
 		},
 		"AreaUnshadeGraph@martini#1": {
@@ -357,7 +358,7 @@
 		"AreaRoomGraph@martini": {
 			hastop: false
 		},
-		"AreaShade8Graph@cocktail,martini,tetroctb": {
+		"AreaShade8Graph@cocktail,martini,tetroctb,bramble": {
 			enabled: true
 		},
 
@@ -666,7 +667,19 @@
 				"doneShadingDecided"
 			]
 		},
-		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini": {
+		"AnsCheck@bramble#1": {
+			checklist: [
+				"checkShadeCellExist+",
+				"checkOverShadeCell",
+				"checkSideAreaShadeCell",
+				"checkConnectUnshadeOutside",
+				"checkAdjacentSingle",
+				"checkShadeCellCount",
+				"checkConnect8Shade",
+				"doneShadingDecided"
+			]
+		},
+		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini,bramble": {
 			checkSideAreaShadeCell: function() {
 				this.checkSideAreaCell(
 					function(cell1, cell2) {
@@ -1155,6 +1168,66 @@
 			},
 			checkConnect8Shade: function() {
 				this.checkOneArea(this.board.sblk8mgr, "csDivide");
+			}
+		},
+		"AnsCheck@bramble": {
+			checkOverShadeCell: function() {
+				this.checkAllArea(
+					this.board.sblkmgr,
+					function(w, h, a, n) {
+						return a <= 2;
+					},
+					"csGt2"
+				);
+			},
+			checkConnect8Shade: function() {
+				this.checkOneArea(this.board.sblk8mgr, "csDivide");
+			},
+			checkAdjacentSingle: function() {
+				var bd = this.board;
+				for (var c = 0; c < bd.cell.length; c++) {
+					var cell = bd.cell[c];
+					if (cell.bx >= bd.maxbx - 1 || cell.by >= bd.maxby - 1) {
+						continue;
+					}
+
+					var bx = cell.bx,
+						by = cell.by;
+					var clist = bd
+						.cellinside(bx, by, bx + 2, by + 2)
+						.filter(function(cc) {
+							return cc.sblk && cc.sblk.clist.length === 1;
+						});
+					if (clist.length !== 2) {
+						continue;
+					}
+
+					this.failcode.add("shDiag");
+					if (this.checkOnly) {
+						break;
+					}
+					clist.seterr(1);
+				}
+			},
+			checkConnectUnshadeOutside: function() {
+				var bd = this.board;
+				for (var r = 0; r < bd.ublkmgr.components.length; r++) {
+					var clist = bd.ublkmgr.components[r].clist;
+					var d = clist.getRectSize();
+					if (
+						d.x1 === 1 ||
+						d.x2 === bd.maxbx - 1 ||
+						d.y1 === 1 ||
+						d.y2 === bd.maxby - 1
+					) {
+						continue;
+					}
+					this.failcode.add("csLoop");
+					if (this.checkOnly) {
+						break;
+					}
+					clist.seterr(1);
+				}
 			}
 		},
 
