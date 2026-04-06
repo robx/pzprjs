@@ -7,12 +7,12 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["ripple", "cojun", "meander"], {
+})(["ripple", "cojun", "meander", "suguru"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
 		inputModes: {
-			edit: ["border", "number", "clear"],
+			edit: ["border", "empty", "number", "clear"],
 			play: ["number", "clear"]
 		},
 		autoedit_func: "areanum",
@@ -20,7 +20,7 @@
 	},
 	"MouseEvent@meander": {
 		inputModes: {
-			edit: ["border", "number", "clear"],
+			edit: ["border", "empty", "number", "clear"],
 			play: ["number", "dragnum+", "dragnum-", "clear"]
 		},
 		mouseinput: function() {
@@ -106,7 +106,18 @@
 	// キーボード入力系
 	KeyEvent: {
 		enablemake: true,
-		enableplay: true
+		enableplay: true,
+
+		keyinput: function(ca) {
+			if ((ca === "q" || ca === "w") && this.puzzle.editmode) {
+				var cell = this.cursor.getc();
+				if (!cell.isnull) {
+					cell.setValid(cell.ques !== 7 ? 7 : 0);
+				}
+			} else {
+				this.key_inputqnum(ca);
+			}
+		}
 	},
 
 	//---------------------------------------------------------
@@ -117,10 +128,17 @@
 			return this.room.clist.length;
 		}
 	},
+	Border: {
+		isQuesBorder: function() {
+			return (
+				this.ques || this.sidecell[0].isEmpty() || this.sidecell[1].isEmpty()
+			);
+		}
+	},
 	Board: {
 		hasborder: 1
 	},
-	"Board@cojun": {
+	"Board@cojun,suguru": {
 		cols: 8,
 		rows: 8
 	},
@@ -139,6 +157,13 @@
 	Graphic: {
 		gridcolor_type: "DLIGHT",
 
+		getBGCellColor: function(cell) {
+			if (!cell.isValid()) {
+				return "black";
+			}
+			return this.getBGCellColor_error1(cell);
+		},
+
 		paint: function() {
 			this.drawBGCells();
 			this.drawTargetSubNumber();
@@ -153,6 +178,14 @@
 			this.drawChassis();
 
 			this.drawCursor();
+		},
+
+		getBorderColor: function(border) {
+			if (border.isQuesBorder()) {
+				return border.error === 1 ? this.errcolor1 : "black";
+			}
+
+			return this.getBorderColor_qans(border);
 		}
 	},
 
@@ -162,10 +195,12 @@
 		decodePzpr: function(type) {
 			this.decodeBorder();
 			this.decodeNumber16();
+			this.decodeEmpty();
 		},
 		encodePzpr: function(type) {
 			this.encodeBorder();
 			this.encodeNumber16();
+			this.encodeEmpty();
 		},
 
 		decodeKanpen: function() {
@@ -212,6 +247,31 @@
 			this.encodeCellAnum_XMLAnswer();
 		},
 
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "# ";
+				} else if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else if (cell.qnum === -2) {
+					return "- ";
+				} else {
+					return ". ";
+				}
+			});
+		},
+
 		UNDECIDED_NUM_XML: 0
 	},
 
@@ -223,7 +283,7 @@
 			"checkRippleNumber@ripple",
 			"checkAdjacentDiffNumber@cojun",
 			"checkUpperNumber@cojun",
-			"checkAdjacentNumbers@meander",
+			"checkAdjacentNumbers@meander,suguru",
 			"checkConsecutiveNeighbors@meander",
 			"checkNoNumCell+"
 		],

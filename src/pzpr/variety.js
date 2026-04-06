@@ -433,6 +433,7 @@
 			stostone: [0, 0, "ストストーン", "Stostone", "shimaguni"],
 			subomino: [0, 0, "Subomino", "Subomino", "nawabari"],
 			sudoku: [0, 1, "数独", "Sudoku"],
+			suguru: [0, 0, "ナンバーブロック", "Suguru (Capsules)", "ripple"],
 			sukoro: [1, 0, "数コロ", "Sukoro", "sukoro"],
 			sukororoom: [0, 0, "数コロ部屋", "Sukoro-room", "sukoro"],
 			sumiwake: [0, 0, "すみわけ", "Sumiwake", "heyawake"],
