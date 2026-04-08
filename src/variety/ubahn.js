@@ -273,8 +273,8 @@
 
 				g.vid = "bdy_" + i;
 				var px = i * bw,
-					py1 = i < 0 ? 0 : y1 * bh,
-					py2 = y2 * bh;
+					py1 = i < 0 ? 0 : bd.minby * bh,
+					py2 = bd.maxby * bh;
 				g.strokeLine(px, py1, px, py2);
 			}
 			for (var i = ya; i <= yb; i += 2) {
@@ -283,10 +283,30 @@
 				}
 				g.vid = "bdx_" + i;
 				var py = i * bh,
-					px1 = i < 0 ? 0 : x1 * bw,
-					px2 = x2 * bw;
+					px1 = i < 0 ? 0 : bd.minbx * bw,
+					px2 = bd.maxbx * bw;
 				g.strokeLine(px1, py, px2, py);
 			}
+		},
+
+		drawChassis: function() {
+			this.common.drawChassis.call(this, true);
+
+			var g = this.vinc("chassis2", "crispEdges", true),
+				bd = this.board;
+
+			var exWidth = bd.minbx * -0.5 * this.cw;
+			var exHeight = bd.minby * -0.5 * this.ch;
+
+			var boardWidth = bd.cols * this.cw,
+				boardHeight = bd.rows * this.ch;
+			var lw = this.lw,
+				lm = this.lm;
+			g.fillStyle = this.quescolor;
+			g.vid = "chs5_";
+			g.fillRect(-(exHeight + lm), 0, lw, boardHeight);
+			g.vid = "chs6_";
+			g.fillRect(0, -(exWidth + lm), boardWidth, lw);
 		},
 
 		drawExCellDecorations: function() {
