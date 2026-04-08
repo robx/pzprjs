@@ -208,6 +208,7 @@ function toBGimage(pid) {
 		"retroships",
 		"retsurin",
 		"roundtrip",
+		"ruleofthree",
 		"sananko",
 		"sansaroad",
 		"sashikabe",

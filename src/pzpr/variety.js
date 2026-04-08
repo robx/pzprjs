@@ -391,6 +391,7 @@
 			],
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
 			roundtrip: [0, 0, "Round Trip", "Round Trip"],
+			ruleofthree: [0, 0, "Rule of Three", "Rule of Three", "amibo"],
 			sananko: [0, 0, "サンアンコー", "San-Anko", "kakuru"],
 			sansaroad: [0, 0, "サンサロード", "Sansa Road", "kurarin"],
 			sashikabe: [0, 0, "Sashikabe", "Sashikabe", "loute"],
