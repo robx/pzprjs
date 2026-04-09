@@ -33,7 +33,7 @@
 							return;
 						}
 						cell.ques = 1 - cell.ques;
-						this.board.autoSolve(true);
+						this.board.autoSolve();
 						cell.draw();
 					}
 				}
@@ -63,8 +63,9 @@
 						cell.setQnum(-2);
 					}
 				}
+				this.board.autoSolve();
 			}
-			this.board.autoSolve(true);
+
 			cell.draw();
 		},
 		decIC: function(cell) {
@@ -167,7 +168,7 @@
 					}
 					this.key_inputqnum(ca);
 				}
-				this.board.autoSolve(true);
+				this.board.autoSolve();
 			}
 		}
 	},

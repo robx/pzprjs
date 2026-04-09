@@ -319,8 +319,9 @@ pzpr.classmgr.makeCommon({
 					) {
 						b[(h.y - 3) / 2][(h.x - 3) / 2].push(h.item);
 					} else {
-						("statuepark" === this.pid ||
-							"circlesquare" === this.pid ||
+						((("statuepark" === this.pid || 
+							"isowatari" === this.pid ||
+							"circlesquare" === this.pid) && "black" === h.color)||
 							"green" === h.color) &&
 							h.x % 2 === 1 &&
 							h.y % 2 === 1 &&
@@ -340,7 +341,7 @@ pzpr.classmgr.makeCommon({
 							"filledCircle" === j[k] ||
 							("fill" === j[k] && "firewalk" !== this.pid) ||
 							("circle" === j[k] &&
-								"doppelblock" !== this.pid &&
+								"doppelblock" !== this.pid && "statuepark" !== this.pid && "isowatari" !== this.pid &&
 								"yinyang" !== this.pid && "usoone" !== this.pid) ||
 							"firewalkCellUl" === j[k] ||
 							"firewalkCellDr" === j[k] ||
@@ -361,7 +362,7 @@ pzpr.classmgr.makeCommon({
 						} else if (
 							"dot" === j[k] ||
 							("circle" === j[k] &&
-								("doppelblock" === this.pid || "yinyang" === this.pid))
+								("doppelblock" === this.pid || "yinyang" === this.pid || "statuepark" === this.pid || "isowatari" === this.pid ))
 						) {
 							i.qsubBySolver = 1;
 						} else if ("cross" === j[k]) {

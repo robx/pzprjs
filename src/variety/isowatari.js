@@ -218,6 +218,7 @@
 				this.board.maxbx,
 				-1
 			);
+			this.board.autoSolve()
 		}
 	},
 	"ClusterSizeOperation:Operation": {

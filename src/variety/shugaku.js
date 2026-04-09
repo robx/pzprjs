@@ -279,7 +279,11 @@
 			} else {
 				return !!this.isbdh_cc1[qa1] || !!this.isbdh_cc2[qa2];
 			}
+		},
+		isBorderBySolver: function() {
+			return this.edgeBySolver !== 0
 		}
+	
 	},
 
 	Board: {
@@ -454,21 +458,32 @@
 				}
 
 				g.vid = "c_pillow_" + cell.id;
-				if (isdraw) {
+				if (isdraw || cell.qsubBySolver !== 0) {
 					g.lineWidth = 1;
-					g.strokeStyle = !cell.trial ? "black" : this.trialcolor;
+					g.strokeStyle = !cell.trial ? this.getColorSolverAwareEdge(isdraw, cell.qsubBySolver !== 0, "black") : this.trialcolor;
 					if (inputting && tc === cell) {
 						g.fillStyle = this.targetbgcolor;
 					} else if (cell.error === 1) {
 						g.fillStyle = this.errbcolor1;
-					} else {
+					} else if (isdraw) {
 						g.fillStyle = "white";
+					}
+					else {
+						g.fillStyle = null;
 					}
 					g.shapeRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+
+		getColorSolverAwareEdge: function(answerBool, solverBool, color) {
+			return answerBool && solverBool
+				? this.solverqanscolor
+				: solverBool
+				? "rgb(120, 120, 160)"
+				: color || this.qanscolor;
 		},
 
 		getBorderColor: function(border) {
@@ -500,7 +515,7 @@
 					(cell2.trial || cell2.qans === 0);
 			}
 
-			return isdraw ? (!trial ? this.shadecolor : this.trialcolor) : null;
+			return (isdraw | border.isBorderBySolver()) ? ((!trial || border.isBorderBySolver()) ? this.getColorSolverAwareEdge(border.isBorder(), border.isBorderBySolver(), this.shadecolor) : this.trialcolor) : null;
 		}
 	},
 
