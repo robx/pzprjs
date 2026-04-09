@@ -458,9 +458,9 @@
 				}
 
 				g.vid = "c_pillow_" + cell.id;
-				if (isdraw || cell.qsubBySolver !== 0) {
+				if (isdraw || cell.qansBySolver === 3) {
 					g.lineWidth = 1;
-					g.strokeStyle = !cell.trial ? this.getColorSolverAwareEdge(isdraw, cell.qsubBySolver !== 0, "black") : this.trialcolor;
+					g.strokeStyle = !cell.trial ? this.getColorSolverAwareEdge(isdraw, cell.qansBySolver === 3, "black") : this.trialcolor;
 					if (inputting && tc === cell) {
 						g.fillStyle = this.targetbgcolor;
 					} else if (cell.error === 1) {
