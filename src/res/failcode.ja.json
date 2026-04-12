@@ -845,7 +845,7 @@
     "lnAdjacent.tjunction": "同じ方向の枝分かれした線が隣接しています。",
     "bkMaxSizeNe.tilecity": "県の中で最も大きい市の面積と数字が違います。",
     "bkSizeNe.balloon": "風船の大きさと数字が一致していません。",
-    "bkUnitNe2.nuritwin": "領域に置かれているブロックの数が2つではありません。",
+    "bkUnitNe2": "領域に置かれているブロックの数が2つではありません。",
     "lcDivided.tjunction": "線が分断されています。",
     "csSameJunction": "黒マスが同じ方向をした複数の枝分かれした線に触れています。",
     "haisuSG.recoil": "菱形から複数本の線が伸びています。",

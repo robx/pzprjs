@@ -335,7 +335,7 @@
     "bkSumNeBn.yosenabe": "Sum of filling is not equal to a crock.",
     "bkUCGe2.dosufuwa": "An area has two or more balloons.",
     "bkUnitNe2.kuroclone": "There is an area without exactly two units.",
-    "bkUnitNe2.nuritwin": "An area doesn't have exactly two blocks.",
+    "bkUnitNe2": "An area doesn't have exactly two blocks.",
     "bkUnknown.lohkous": "A room has a segment of invalid length.",
     "bkUnshade.lapaz": "A 1x1 region is unshaded.",
     "bkUnshadeConsecGt3": "There is a line of consecutive unshaded cells that goes through 2 region borders.",
