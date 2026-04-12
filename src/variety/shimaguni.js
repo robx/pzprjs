@@ -19,8 +19,7 @@
 		"nuritwin",
 		"marutaring",
 		"tetroctb",
-		"bramble",
-		"disco"
+		"bramble"
 	],
 	{
 		//---------------------------------------------------------
@@ -44,15 +43,6 @@
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
-			}
-		},
-		"MouseEvent@disco": {
-			inputModes: {
-				edit: ["info-blk"],
-				play: ["shade", "unshade", "info-blk"]
-			},
-			mouseinputAutoEdit: function() {
-				this.inputborder();
 			}
 		},
 		"MouseEvent@cocktail,martini,tetroctb,bramble#2": {
@@ -194,7 +184,7 @@
 		Board: {
 			hasborder: 1
 		},
-		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb,disco": {
+		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb": {
 			addExtraInfo: function() {
 				this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
 			}
@@ -316,7 +306,7 @@
 		"AreaShadeGraph@chocona,tetroctb,bramble": {
 			enabled: true
 		},
-		"AreaShadeGraph@nuritwin,marutaring,disco": {
+		"AreaShadeGraph@nuritwin,marutaring": {
 			enabled: true,
 			coloring: true
 		},
@@ -328,7 +318,7 @@
 				component.hinge = null;
 			}
 		},
-		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb,disco": {
+		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb": {
 			// Same as LITS AreaTetrominoGraph
 			enabled: true,
 			relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -384,21 +374,20 @@
 			paint: function() {
 				this.drawBGCells();
 
-				if (this.pid !== "nuritwin" && this.pid !== "disco") {
+				if (this.pid !== "nuritwin") {
 					this.drawGrid();
 				}
 
 				if (
 					this.pid === "stostone" ||
 					this.pid === "nuritwin" ||
-					this.pid === "disco" ||
 					this.pid === "marutaring"
 				) {
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
 
-				if (this.pid === "nuritwin" || this.pid === "disco") {
+				if (this.pid === "nuritwin") {
 					this.drawGrid();
 				}
 
@@ -434,7 +423,7 @@
 				);
 			}
 		},
-		"Graphic@stostone,nuritwin,marutaring,disco#1": {
+		"Graphic@stostone,nuritwin,marutaring#1": {
 			irowakeblk: true,
 			bgcellcolor_func: "error1",
 			bcolor: "rgb(80, 204, 80)",
@@ -545,7 +534,7 @@
 					: this.getCircleFillColor_qnum(cell);
 			}
 		},
-		"Graphic@martini,nuritwin,disco#2": {
+		"Graphic@martini,nuritwin#2": {
 			shadecolor: "#444444"
 		},
 
@@ -571,14 +560,6 @@
 				this.encodeNumber16();
 			}
 		},
-		"Encode@disco": {
-			decodePzpr: function(type) {
-				this.decodeBorder();
-			},
-			encodePzpr: function(type) {
-				this.encodeBorder();
-			}
-		},
 		//---------------------------------------------------------
 		FileIO: {
 			decodeData: function() {
@@ -601,16 +582,6 @@
 				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {
 					this.encodeCellSnum();
 				}
-			}
-		},
-		"FileIO@disco": {
-			decodeData: function() {
-				this.decodeBorderQues();
-				this.decodeCellAns();
-			},
-			encodeData: function() {
-				this.encodeBorderQues();
-				this.encodeCellAns();
 			}
 		},
 
@@ -660,11 +631,11 @@
 				"checkShadeCellCount"
 			]
 		},
-		"AnsCheck@nuritwin,disco#1": {
+		"AnsCheck@nuritwin#1": {
 			checklist: [
 				"check2x2ShadeCell",
-				"checkShadeBlockSize@nuritwin",
-				"checkSizesEqual@nuritwin",
+				"checkShadeBlockSize",
+				"checkSizesEqual",
 				"checkTwoBlocks",
 				"checkConnectShade",
 				"checkNoShadeCellInArea",
@@ -1016,7 +987,7 @@
 				this.checkOneArea(this.board.sblk8mgr, "csDivide");
 			}
 		},
-		"AnsCheck@nuritwin,disco": {
+		"AnsCheck@nuritwin": {
 			checkShadeBlockSize: function() {
 				var blocks = this.board.stonegraph.components;
 				for (var id = 0; id < blocks.length; id++) {
