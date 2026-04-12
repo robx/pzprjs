@@ -442,3 +442,8 @@ roboticwalk: |-
   1. The loop cannot branch off or cross itself.
   2. A number indicates how many cells make up the continuous unshaded section of the loop that the number is on.
   3. The loop must alternate between turning and going straight in any successively visited pair of shaded cells. 
+disco: |-
+  Shade some cells on the board.
+  1. Each connected group of shaded cells within the same region is called a block. Every region has exactly 2 blocks.
+  2. The shaded cells cannot form a 2x2 square.
+  3. All shaded cells form an orthogonally contiguous area.
