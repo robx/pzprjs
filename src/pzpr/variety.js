@@ -389,6 +389,7 @@
 				"ripple",
 				{ kanpen: "hakyukoka" }
 			],
+			roboticwalk: [0, 0, "Robotic Walk", "Robotic Walk", "icewalk"],
 			roma: [0, 0, "ろーま", "Roma", "", { alias: "rome" }],
 			roundtrip: [0, 0, "Round Trip", "Round Trip"],
 			sananko: [0, 0, "サンアンコー", "San-Anko", "kakuru"],
