@@ -207,6 +207,7 @@ function toBGimage(pid) {
 		"remlen",
 		"retroships",
 		"retsurin",
+		"roboticwalk",
 		"roundtrip",
 		"sananko",
 		"sansaroad",
