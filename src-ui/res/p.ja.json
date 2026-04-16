@@ -305,5 +305,7 @@
     "pause.desc.mobile": "「スタート」を押して再開",
     "aqre_borders": "線が黒マスに触れるのは一度だけ",
     "slither_full": "全ての点に線が通る",
-    "outlineshaded": "黒マスを線で囲む"
+    "outlineshaded": "黒マスを線で囲む",
+    "inputmode.diamond": "",
+    "balloon_adjacent": ""
 }
