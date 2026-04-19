@@ -370,6 +370,9 @@ pzpr.classmgr.makeCommon({
 				case "bar":
 					this.inputTateyoko();
 					break;
+				case "crossbar":
+					this.inputTateyoko(true);
+					break;
 				case "empty":
 					this.inputempty();
 					break;

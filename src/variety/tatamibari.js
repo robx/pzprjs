@@ -23,7 +23,7 @@
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart || this.mousemove) {
-					this.inputTateyoko();
+					this.inputTateyoko(true);
 				} else if (this.mouseend && this.notInputted()) {
 					this.mouseCell = null;
 					this.inputqnum();

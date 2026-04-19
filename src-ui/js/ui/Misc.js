@@ -209,6 +209,7 @@ function toBGimage(pid) {
 		"retsurin",
 		"roboticwalk",
 		"roundtrip",
+		"ruleofthree",
 		"sananko",
 		"sansaroad",
 		"sashikabe",
