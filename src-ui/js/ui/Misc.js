@@ -138,6 +138,7 @@ function toBGimage(pid) {
 		"dbchoco",
 		"detour",
 		"diamond",
+		"disco",
 		"dominion",
 		"doppelblock",
 		"dotchi",
