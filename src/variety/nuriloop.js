@@ -9,7 +9,7 @@
 		use: true,
 		inputModes: {
 			edit: ["number", "clear", "info-line"],
-			play: ["line", "peke", "subcircle", "subcross", "info-line"]
+			play: ["line", "peke", "bgcolor", "bgcolor1", "bgcolor2", "info-line"]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "lineMB"
@@ -52,6 +52,7 @@
 		irowake: true,
 		gridcolor_type: "LIGHT",
 		numbercolor_func: "qnum",
+		bgcellcolor_func: "qsub2",
 		qanscolor: "black",
 
 		paint: function() {
@@ -60,7 +61,6 @@
 
 			this.drawQuesNumbers();
 
-			this.drawMBs();
 			this.drawLines();
 			this.drawPekes();
 
