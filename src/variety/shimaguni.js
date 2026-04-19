@@ -384,7 +384,7 @@
 			paint: function() {
 				this.drawBGCells();
 
-				if (this.pid !== "nuritwin" && this.pid !== "disco") {
+				if (this.pid !== "nuritwin") {
 					this.drawGrid();
 				}
 
@@ -398,7 +398,7 @@
 				}
 				this.drawShadedCells();
 
-				if (this.pid === "nuritwin" || this.pid === "disco") {
+				if (this.pid === "nuritwin") {
 					this.drawGrid();
 				}
 
