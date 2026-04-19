@@ -251,6 +251,7 @@ ui.keypopup = {
 		heavydots: [10, 0],
 		suguru: [10, 10],
 		marutaring: [10, 0],
+		nuriloop: [10, 0],
 		tetroctb: [10, 0],
 		hasunomura: [10, 0],
 		bramble: [10, 0],

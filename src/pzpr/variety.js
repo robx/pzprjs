@@ -329,6 +329,7 @@
 			numrope: [0, 0, "ナンバーロープ", "Number Rope", "kakuru"],
 			nuribou: [1, 0, "ぬりぼう", "Nuribou", "nurikabe"],
 			nurikabe: [0, 1, "ぬりかべ", "Nurikabe", "nurikabe"],
+			nuriloop: [0, 0, "面積リンク", "Nurikabe Loop"],
 			nurimaze: [0, 0, "ぬりめいず", "Nuri-Maze", "nurimaze"],
 			nurimisaki: [0, 0, "ぬりみさき", "Nurimisaki", "kurodoko"],
 			nuritwin: [0, 0, "ぬりツイン", "Nuritwin", "shimaguni"],
