@@ -278,6 +278,7 @@ pzpr.classmgr.makeCommon({
 		},
 
 		updateSolverAnswerForCells: function(result) {
+			console.log(result);
 			if ((this.clearSolverAnswerForCells(), "string" !== typeof result) && result.hasAnswer) {
 				for (var b = [], c = 0; c < this.rows; ++c) {
 					for (var d = [], e = 0; e < this.cols; ++e) {
@@ -312,6 +313,7 @@ pzpr.classmgr.makeCommon({
 							"tents" === this.pid ||
 							"aquarium" === this.pid ||
 							"easyasabc" === this.pid ||
+							"snake" === this.pid ||
 							"skyscrapers" === this.pid) &&
 						"green" === h.color &&
 						h.x % 2 === 1 &&
@@ -396,7 +398,7 @@ pzpr.classmgr.makeCommon({
 										j[k].data
 									);
 								} else {
-									i.qnumBySolver = parseInt(j[k].data);
+									i.qnumBySolver = "easyasabc" === this.pid ? "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghiklmnopqrstuvwxyz".indexOf(j[k].data) + 1 : parseInt(j[k].data);
 								}
 							} else if ("sudokuCandidateSet" === j[k].kind) {
 								i.qcandBySolver = [];
