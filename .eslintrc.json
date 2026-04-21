@@ -1,6 +1,7 @@
 {
   "env": {
-    "browser": true                     // Allow to use browser defined variable (not console, alert etc.)
+    "browser": true,                     // Allow to use browser defined variable (not console, alert etc.)
+    "es6": true
   },
   "parserOptions": {
     "ecmaVersion": 5

@@ -351,7 +351,11 @@
 	FileIO: {
 		decodeData: function() {
 			this.decodeConfig();
-			this.decodeAreaRoom();
+			if (this.filever >= 1) {
+				this.decodeBorderQues();
+			} else {
+				this.decodeAreaRoom();
+			}
 			if (this.pid === "sumiwake") {
 				this.decodeCrossNum();
 			} else {
@@ -361,8 +365,9 @@
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
+			this.filever = 1;
 			this.encodeConfig();
-			this.encodeAreaRoom();
+			this.encodeBorderQues();
 			if (this.pid === "sumiwake") {
 				this.encodeCrossNum();
 			} else {

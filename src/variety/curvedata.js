@@ -2,8 +2,6 @@
 // curvedata.js: Implementation of Curve Data puzzle type.
 //
 
-/* global Set:false */
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];

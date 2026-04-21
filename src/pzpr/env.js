@@ -64,13 +64,25 @@ pzpr.env = (function() {
 		anchor_download:
 			isbrowser && document.createElement("a").download !== void 0
 	};
+	//Taken directly from stackoverflow. Apparently this is the most broadly compatible version. https://stackoverflow.com/questions/16427636/check-if-localstorage-is-available
+	var localStorageAvailable = (function() {
+		var test = "test";
+		try {
+			localStorage.setItem(test, test);
+			localStorage.removeItem(test);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	})();
 
 	return {
 		bz: bz,
 		OS: os,
 		API: api,
 		browser: isbrowser,
-		node: pzpr.Candle.env.node
+		node: pzpr.Candle.env.node,
+		localStorageAvailable: localStorageAvailable
 	};
 })();
 

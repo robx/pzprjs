@@ -39,11 +39,11 @@ ui.debug.addDebugData("heyapin", {
 				"mouse,left,2,2,4,2",
 				"mouse,right,1,1"
 			],
-			result: "pzprv3/heyapin/2/2/3/0 1 /0 2 /6 . /. . /0 0 0 /0 0 0 /0 0 0 /"
+			result: "pzprv3.1/heyapin/2/2/1 /1 /0 1 /6 . /. . /0 0 0 /0 0 0 /0 0 0 /"
 		},
 		{
 			input: ["playmode", "mouse,left,2,0"],
-			result: "pzprv3/heyapin/2/2/3/0 1 /0 2 /6 . /. . /0 1 0 /0 0 0 /0 0 0 /"
+			result: "pzprv3.1/heyapin/2/2/1 /1 /0 1 /6 . /. . /0 1 0 /0 0 0 /0 0 0 /"
 		},
 		{
 			input: ["editmode,info-room", "mouse,left,1,1"],
@@ -62,7 +62,7 @@ ui.debug.addDebugData("heyapin", {
 				"playmode,clear",
 				"mouse,left,0,4"
 			],
-			result: "pzprv3/heyapin/2/2/3/0 1 /0 2 /6 . /. . /1 1 0 /1 0 0 /0 2 0 /"
+			result: "pzprv3.1/heyapin/2/2/1 /1 /0 1 /6 . /. . /1 1 0 /1 0 0 /0 2 0 /"
 		},
 		{
 			input: [
@@ -71,7 +71,7 @@ ui.debug.addDebugData("heyapin", {
 				"mouse,left,0,0",
 				"mouse,right,2,4"
 			],
-			result: "pzprv3/heyapin/2/2/3/0 1 /0 2 /6 . /. . /2 1 0 /1 0 0 /0 1 0 /"
+			result: "pzprv3.1/heyapin/2/2/1 /1 /0 1 /6 . /. . /2 1 0 /1 0 0 /0 1 0 /"
 		}
 	]
 });

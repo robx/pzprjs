@@ -50,6 +50,11 @@
 				volatile: true
 			}); /* マウスの左右ボタンを反転する設定 */
 
+			//Autosave feature. Not on by default, but persists once enabled
+			this.add("autosave", false, {
+				volatile: false
+			});
+
 			this.add("language", pzpr.lang, { option: ["en", "ja"] }); /* 言語設定 */
 
 			/* puzzle.configを一括で扱うため登録 */
@@ -166,7 +171,10 @@
 				case "waterwalk":
 				case "firewalk":
 				case "forestwalk":
+				case "morningwalk":
+				case "roboticwalk":
 				case "wataridori":
+				case "bhaibahan":
 					idname = "loop_full";
 					break;
 			}
@@ -264,11 +272,11 @@
 			}
 
 			try {
-				localStorage.setItem(
+				pzpr.util.store(
 					"pzprv3_config:puzzle",
 					JSON.stringify(ui.puzzle.saveConfig())
 				);
-				localStorage.setItem("pzprv3_config:ui", JSON.stringify(this.getAll()));
+				pzpr.util.store("pzprv3_config:ui", JSON.stringify(this.getAll()));
 			} catch (ex) {
 				console.warn(ex);
 			}
@@ -336,6 +344,11 @@
 		// config.configevent()  設定変更時の動作を記述する (modeはlistener.onModeChangeで変更)
 		//---------------------------------------------------------------------------
 		configevent: function(idname, newval) {
+			if (idname === "autosave") {
+				var saveIcon = document.getElementById("saveicon");
+				saveIcon.style.display = newval ? null : "none";
+			}
+
 			if (!ui.menuarea.menuitem) {
 				return;
 			}

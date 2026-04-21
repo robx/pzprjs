@@ -94,6 +94,7 @@ if ('serviceWorker' in navigator) {
      <li class="check" data-config="lattice"><span>__lattice.menu__</span></li>
      <li class="check" data-config="singlenum"><span>__singlenum.menu__</span></li>
      <li class="check" data-config="discolor"><span>__discolor__</span></li>
+     <li class="check" data-config="autosave"><span>__autosave__</span></li>
      <li data-config="autocheck_mode"><span>__autocheck__</span>&nbsp;-&gt;<menu label="__autocheck__">
        <li class="child" data-value="off"><span>__autocheck.off__</span></li>
        <li class="child" data-value="guarded"><span>__autocheck.guarded__</span></li>
@@ -112,6 +113,7 @@ if ('serviceWorker' in navigator) {
      <li class="link"><a target="_blank" href="https://hosted.weblate.org/projects/pzprjs/">__translate__</a></li>
      <li class="link"><a target="_blank" href="https://github.com/robx/pzprjs/issues">__issues__</a></li>
    </menu></li>
+   <div id="saveicon" style="display:none;">&#x1F4BE</div>
   </menu>
   <div id="usepanel" style="display:none;">
     <div class="config" data-config="mode">
@@ -181,6 +183,7 @@ if ('serviceWorker' in navigator) {
       <div class="child" data-value="peke">__inputmode.peke__</div>
       <div class="child" data-value="diraux">__inputmode.diraux__</div>
       <div class="child" data-value="bar">__inputmode.bar__</div>
+      <div class="child" data-value="crossbar">__inputmode.bar__</div>
       <div class="child" data-value="akari">__inputmode.akari__</div>
       <div class="child" data-value="star">__inputmode.star__</div>
       <div class="child" data-value="dot">__inputmode.dot__</div>

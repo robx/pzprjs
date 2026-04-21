@@ -239,9 +239,23 @@ ui.keypopup = {
 		cityspace: [10, 0],
 		diamond: [4, 0],
 		sendai: [10, 0],
+		circuitwalk: [10, 0],
 		morningwalk: [10, 0],
 		energywalk: [10, 0],
-		keywest: [4, 4]
+		roboticwalk: [10, 0],
+		cornerch: [10, 0],
+		keywest: [4, 4],
+		oasis: [10, 0],
+		bhaibahan: [10, 0],
+		edamame: [4, 0],
+		heavydots: [10, 0],
+		suguru: [10, 10],
+		marutaring: [10, 0],
+		nuriloop: [10, 0],
+		tetroctb: [10, 0],
+		hasunomura: [10, 0],
+		bramble: [10, 0],
+		topo: [10, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -509,6 +523,7 @@ ui.keypopup = {
 			pid === "forestwalk" ||
 			pid === "morningwalk" ||
 			pid === "energywalk" ||
+			pid === "circuitwalk" ||
 			pid === "dbchoco" ||
 			pid === "balloon"
 		) {
@@ -517,7 +532,7 @@ ui.keypopup = {
 				{
 					text: "■",
 					color:
-						pid === "dbchoco" || pid === "balloon"
+						pid === "dbchoco" || pid === "balloon" || pid === "roboticwalk"
 							? "rgb(204,204,204)"
 							: pid === "firewalk"
 							? "rgb(255,192,192)"
@@ -527,6 +542,8 @@ ui.keypopup = {
 							? "rgb(212,180,212)"
 							: pid === "energywalk"
 							? "rgb(255,255,163)"
+							: pid === "circuitwalk"
+							? "rgb(118,165,175)"
 							: "rgb(192,224,255)"
 				}
 			]);

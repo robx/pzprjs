@@ -370,6 +370,9 @@ pzpr.classmgr.makeCommon({
 				case "bar":
 					this.inputTateyoko();
 					break;
+				case "crossbar":
+					this.inputTateyoko(true);
+					break;
 				case "empty":
 					this.inputempty();
 					break;
@@ -442,7 +445,7 @@ pzpr.classmgr.makeCommon({
 				this.savedInputMode[this.puzzle.editmode ? "edit" : "play"] = mode;
 				this.puzzle.redraw();
 			} else {
-				throw Error("Invalid input mode :" + mode);
+				throw Error("Invalid input mode: " + mode);
 			}
 		},
 		getInputModeList: function(type) {

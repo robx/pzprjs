@@ -24,7 +24,7 @@ pzpr.classmgr.makeCommon({
 		// kc.keyreset()     キーボード入力に関する情報を初期化する
 		// kc.isenablemode() 現在のモードでキー入力が有効か判定する
 		//---------------------------------------------------------------------------
-		keyreset: function() {
+		keyreset: function(isTest) {
 			this.isCTRL = false;
 			this.isMETA = false; // MacのCommandキーなど
 			this.isALT = false; // ALTはメニュー用なので基本的に使わない
@@ -36,9 +36,11 @@ pzpr.classmgr.makeCommon({
 			this.keydown = false;
 			this.keyup = false;
 
-			this.ca = "";
+			if (!isTest) {
+				this.ca = "";
 
-			this.prev = null;
+				this.prev = null;
+			}
 		},
 		isenablemode: function() {
 			return (
@@ -190,8 +192,19 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		inputKeys: function(array) {
 			for (var i = 0; i < arguments.length; i++) {
-				this.keyevent(arguments[i], 0);
-				this.keyevent(arguments[i], 1);
+				var ca = arguments[i];
+
+				this.isSHIFT = ca.match(/shift\+/);
+				this.isCTRL = ca.match(/ctrl\+/);
+				this.isALT = ca.match(/alt\+/);
+				this.isMETA = ca.match(/meta\+/);
+				this.isX = ca.match(/x\+/);
+				this.isY = ca.match(/y\+/);
+				this.isZ = ca.match(/z\+/);
+
+				this.keyevent(ca, 0);
+				this.keyevent(ca, 1);
+				this.keyreset(true);
 			}
 		},
 

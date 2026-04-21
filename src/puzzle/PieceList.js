@@ -1,7 +1,5 @@
 // PieceList.js v3.4.1
 
-/* global Set:false */
-
 pzpr.classmgr.makeCommon({
 	//----------------------------------------------------------------------------
 	// ★PieceListクラス オブジェクトの配列を扱う

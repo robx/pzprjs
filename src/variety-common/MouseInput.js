@@ -339,7 +339,12 @@ pzpr.classmgr.makeCommon({
 		},
 		inputFixedQsub: function(val) {
 			var cell = this.getcell();
-			if (cell.isnull || cell.is51cell() || cell === this.mouseCell) {
+			if (
+				cell.isnull ||
+				cell.is51cell() ||
+				!cell.isValid() ||
+				cell === this.mouseCell
+			) {
 				return;
 			}
 
@@ -357,9 +362,9 @@ pzpr.classmgr.makeCommon({
 			}
 			if (this.inputData !== null) {
 			} else if (this.inputMode === "bgcolor1") {
-				this.inputMode = cell.qsub !== 1 ? 11 : 10;
+				this.inputData = cell.qsub !== 1 ? 11 : 10;
 			} else if (this.inputMode === "bgcolor2") {
-				this.inputMode = cell.qsub !== 2 ? 12 : 10;
+				this.inputData = cell.qsub !== 2 ? 12 : 10;
 			} else if (this.btn === "left") {
 				if (cell.qsub === 0) {
 					this.inputData = 11;
@@ -599,7 +604,7 @@ pzpr.classmgr.makeCommon({
 			}
 			cross.draw();
 		},
-		inputcrossMark: function() {
+		inputcrossMark: function(value) {
 			var pos = this.getpos(0.24);
 			if (!pos.oncross()) {
 				return;
@@ -619,9 +624,12 @@ pzpr.classmgr.makeCommon({
 			if (cross.isnull) {
 				return;
 			}
+			if (value === undefined) {
+				value = 1;
+			}
 
 			this.puzzle.opemgr.disCombine = true;
-			cross.setQnum(cross.qnum === 1 ? -1 : 1);
+			cross.setQnum(cross.qnum === value ? -1 : value);
 			this.puzzle.opemgr.disCombine = false;
 
 			cross.draw();
@@ -912,7 +920,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// mv.inputTateyoko() 縦棒・横棒をドラッグで入力する
 		//---------------------------------------------------------------------------
-		inputTateyoko: function() {
+		inputTateyoko: function(plus) {
 			if (this.mouseend && this.notInputted() && !!this.clickTateyoko) {
 				this.clickTateyoko();
 				return;
@@ -924,7 +932,7 @@ pzpr.classmgr.makeCommon({
 			}
 
 			// 黒マス上なら何もしない
-			if (this.pid !== "amibo" && cell.ques === 1) {
+			if (this.pid !== "amibo" && (!cell.isValid() || cell.ques === 1)) {
 			} else if (this.pid === "amibo" && cell.isNum()) {
 			}
 			// 初回 or 入力し続けていて別のマスに移動した場合
@@ -943,8 +951,6 @@ pzpr.classmgr.makeCommon({
 				}
 
 				if (val !== null) {
-					var plus = this.pid === "amibo" || this.pid === "tatamibari";
-
 					var shape = 0;
 					if (this.puzzle.playmode) {
 						shape = { 0: 0, 11: 3, 12: 1, 13: 2 }[cell.qans];

@@ -354,7 +354,7 @@
 
 		decodeKurarin: function() {
 			var bd = this.board;
-			this.genericDecodeNumber16((bd.dots.length >> 1) | 1, function(idx, val) {
+			this.genericDecodeNumber16((bd.dots.length + 1) >> 1, function(idx, val) {
 				var dot = bd.dots[idx * 2];
 				var dot2 = bd.dots[idx * 2 + 1];
 				dot.setDot((val >> 2) & 3);
@@ -366,7 +366,7 @@
 
 		encodeKurarin: function() {
 			var bd = this.board;
-			this.genericEncodeNumber16((bd.dots.length >> 1) | 1, function(idx) {
+			this.genericEncodeNumber16((bd.dots.length + 1) >> 1, function(idx) {
 				var dot = bd.dots[idx * 2];
 				var dot2 = bd.dots[idx * 2 + 1];
 				var value = (dot.getDot() << 2) | (dot2 ? dot2.getDot() : 0);

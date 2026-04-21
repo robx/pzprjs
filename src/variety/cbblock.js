@@ -2,8 +2,6 @@
 // パズル固有スクリプト部 コンビブロック版 cbblock.js
 //
 
-/* global Set:false */
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];

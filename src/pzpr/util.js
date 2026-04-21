@@ -220,6 +220,39 @@
 				}
 			}
 			return true;
+		},
+
+		// "Safe" set to local storage. Catches quota exceeded errors and removes the oldest puzzles.
+		// Separated here so that settings can be set safely as well
+		store: function(key, value) {
+			try {
+				localStorage.setItem(key, value);
+			} catch (e) {
+				if (e.name === "QuotaExceededError") {
+					//If storage was full: load all of the puzzles in localStorage, sort by least recent, and delete until saving is successful
+					var pairs = [];
+					for (var i = 0; i < localStorage.length; i++) {
+						var lsKey = localStorage.key(i);
+						var lsValue = JSON.parse(localStorage.getItem(lsKey));
+						if (lsKey.indexOf("pzpr_") === 0) {
+							pairs.push({ key: lsKey, value: lsValue });
+						}
+					}
+					pairs.sort(function(a, b) {
+						var ta = a.value.t;
+						var tb = b.value.t;
+						return ta - tb;
+					});
+					for (var i = 0; i < pairs.length; i++) {
+						try {
+							localStorage.setItem(key, value);
+							break;
+						} catch (e) {
+							localStorage.removeItem(pairs[i].key);
+						}
+					}
+				}
+			}
 		}
 	};
 })();

@@ -73,7 +73,7 @@ ui.debug.addDebugData("nurikabe", {
 			result: "pzprv3/nurikabe/1/5/. . . . . /"
 		},
 		/* 問題入力テスト */
-		{ input: ["editmode", "newboard,5,1"] },
+		{ input: ["editmode", "newboard,5,2"] },
 		{
 			input: [
 				"cursor,1,1",
@@ -87,7 +87,7 @@ ui.debug.addDebugData("nurikabe", {
 				"key,right",
 				"key,1,0"
 			],
-			result: "pzprv3/nurikabe/1/5/- . 1 2 10 /"
+			result: "pzprv3/nurikabe/2/5/- . 1 2 10 /. . . . . /"
 		},
 		{
 			input: [
@@ -99,7 +99,7 @@ ui.debug.addDebugData("nurikabe", {
 				"key,-",
 				"key,-"
 			],
-			result: "pzprv3/nurikabe/1/5/. - . 2 10 /"
+			result: "pzprv3/nurikabe/2/5/. - . 2 10 /. . . . . /"
 		},
 		{ input: ["newboard,6,1"] },
 		{
@@ -112,7 +112,7 @@ ui.debug.addDebugData("nurikabe", {
 				"mouse,leftx6, 9,1",
 				"mouse,rightx2, 11,1"
 			],
-			result: "pzprv3/nurikabe/1/6/- 1 2 3 4 999 /"
+			result: "pzprv3/nurikabe/1/6/- 1 2 3 4 6 /"
 		}
 	]
 });

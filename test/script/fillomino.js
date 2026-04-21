@@ -77,6 +77,20 @@ ui.debug.addDebugData("fillomino", {
 			input: ["mouse,left, 2,0, 2,2, 0,2"],
 			result:
 				"pzprv3/fillomino/2/4/3 . . . /. . . . /. . . . /. . . . /2 -1 0 /0 0 0 /1 0 0 0 /"
+		},
+		{
+			input: ["playmode,copynum", "mouse,left,1.9,1.9,1.9,3.9"],
+			result:
+				"pzprv3/fillomino/2/4/3 . . . /. . . . /. . . . /3 . . . /2 -1 0 /0 0 0 /1 0 0 0 /"
+		},
+		{
+			input: [
+				"playmode",
+				"cursor,5,1",
+				"key,alt+down,left,left,x+right,z+right"
+			],
+			result:
+				"pzprv3/fillomino/2/4/3 . . . /. . . . /. . . . /3 3 . . /2 -1 0 /0 1 0 /1 0 -1 0 /"
 		}
 	]
 });

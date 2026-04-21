@@ -466,7 +466,8 @@
 						pid === "fillomino" ||
 						pid === "symmarea" ||
 						pid === "snakepit" ||
-						pid === "keywest";
+						pid === "keywest" ||
+						pid === "topo";
 					break;
 				case "dontpassallcell":
 					exec = pid === "arukone";
@@ -549,7 +550,9 @@
 							"firewalk",
 							"forestwalk",
 							"morningwalk",
-							"wataridori"
+							"roboticwalk",
+							"wataridori",
+							"bhaibahan"
 						].indexOf(pid) >= 0;
 					break;
 				case "autosolver":

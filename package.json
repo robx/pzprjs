@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/sabo2/pzprjs",
   "engines": {
-    "node": ">= 14.0"
+    "node": ">= 24.0"
   },
   "scripts": {
     "build": "eslint --cache --quiet src src-ui && grunt default",
@@ -35,12 +35,12 @@
     "@babel/eslint-parser": "^7.27.1",
     "del-cli": "^4.0.1",
     "eslint": "^8.43.0",
-    "grunt": "^1.5.3",
+    "grunt": "^1.6.1",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^5.2.1",
-    "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
+    "mocha": "^12.0.0-beta-10",
+    "nyc": "^18.0.0",
     "prettier": "^1.19.1"
   },
 

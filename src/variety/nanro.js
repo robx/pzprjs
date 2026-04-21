@@ -221,12 +221,17 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			this.decodeAreaRoom();
+			if (this.filever >= 1) {
+				this.decodeBorderQues();
+			} else {
+				this.decodeAreaRoom();
+			}
 			this.decodeCellQnum();
 			this.decodeCellAnumsub();
 		},
 		encodeData: function() {
-			this.encodeAreaRoom();
+			this.filever = 1;
+			this.encodeBorderQues();
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
 		}

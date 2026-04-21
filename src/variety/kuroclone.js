@@ -2,8 +2,6 @@
 // パズル固有スクリプト部 クロクローン版 kuroclone.js
 //
 
-/* global Set:false */
-
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];

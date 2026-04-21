@@ -1,4 +1,3 @@
-/* global Set:false */
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
@@ -12,7 +11,9 @@
 		"firewalk",
 		"forestwalk",
 		"morningwalk",
-		"energywalk"
+		"energywalk",
+		"circuitwalk",
+		"roboticwalk"
 	],
 	{
 		MouseEvent: {
@@ -78,7 +79,7 @@
 				}
 			}
 		},
-		"MouseEvent@morningwalk,energywalk": {
+		"MouseEvent@morningwalk,energywalk,circuitwalk,roboticwalk": {
 			inputModes: {
 				edit: ["shade", "number", "clear", "info-line"],
 				play: ["line", "peke", "info-line"]
@@ -387,6 +388,9 @@
 				line: function(val) {
 					this.board.scanResult = null;
 					this.board.roommgr.isStale = true;
+					if (this.board.linesupergraph) {
+						this.board.linesupergraph.isStale = true;
+					}
 					for (var sc = 0; sc <= 1; sc++) {
 						var cell = this.sidecell[sc];
 						cell.updateFireQans();
@@ -395,6 +399,7 @@
 			}
 		},
 		Cell: {
+			l2cnt: 0,
 			updateFireQans: function() {},
 			posthook: {
 				qnum: function(val) {
@@ -404,6 +409,9 @@
 				},
 				ques: function(val) {
 					this.board.roommgr.isStale = true;
+					if (this.board.linesupergraph) {
+						this.board.linesupergraph.isStale = true;
+					}
 					if (val === 6) {
 						this.setQnum(-1);
 					}
@@ -427,6 +435,11 @@
 				return ret;
 			}
 		},
+		"Cell@roboticwalk": {
+			isLineShapeEndpoint: function() {
+				return this.ice();
+			}
+		},
 		"Cell@firewalk": {
 			updateFireQans: function() {
 				if (this.ice() && this.isLineCurve()) {
@@ -442,9 +455,6 @@
 					this.setQans(0);
 				}
 			}
-		},
-		Cross: {
-			l2cnt: 0
 		},
 		"Dot@firewalk": {
 			getDot: function() {
@@ -503,6 +513,11 @@
 		"Board@firewalk": {
 			hasdots: 1
 		},
+		"Board@circuitwalk": {
+			addExtraInfo: function() {
+				this.linesupergraph = this.addInfoList(this.klass.LineSuperGraph);
+			}
+		},
 		"BoardExec@firewalk": {
 			adjustBoardData: function(key, d) {
 				if (key & this.TURNFLIP) {
@@ -555,6 +570,14 @@
 		},
 		"Graphic@energywalk": {
 			icecolor: "rgb(255, 255, 163)"
+		},
+		"Graphic@circuitwalk": {
+			icecolor: "rgb(118, 165, 175)"
+		},
+		"Graphic@roboticwalk": {
+			icecolor: "rgb(192, 192, 192)"
+			// TODO new line no err color
+			// TODO new trial color
 		},
 		"Graphic@firewalk": {
 			icecolor: "rgb(255, 192, 192)",
@@ -819,8 +842,25 @@
 		LineGraph: {
 			enabled: true
 		},
-		"LineGraph@icewalk": {
+		"LineGraph@icewalk,circuitwalk": {
 			isLineCross: true
+		},
+		"LineSuperGraph:LineGraph@circuitwalk": {
+			enabled: true,
+			isLineCross: false,
+			countprop: "l3cnt",
+			getComponentRefs: function(obj) {
+				return obj.lgrph;
+			},
+			setComponentRefs: function(obj, component) {
+				obj.lgrph = component;
+			},
+			getObjNodeList: function(nodeobj) {
+				return nodeobj.lgrphnodes;
+			},
+			resetObjNodeList: function(nodeobj) {
+				nodeobj.lgrphnodes = [];
+			}
 		},
 		"LineGraph@firewalk": {
 			relation: { "border.line": "link", "cell.qans": "arcs" },
@@ -984,6 +1024,7 @@
 		},
 		AnsCheck: {
 			checklist: [
+				"checkLineExist+",
 				"checkBranchLine",
 				"checkCrossLine",
 				"checkIceLines@icewalk",
@@ -995,6 +1036,9 @@
 				"checkForestCell@forestwalk",
 				"checkEnergyCell@energywalk",
 				"checkEnergyLoop@energywalk",
+				"checkSequentialMoves@roboticwalk",
+				"checkCircuitCell@circuitwalk",
+				"checkSelfIntersect@circuitwalk",
 
 				"checkOneLoop",
 				"checkDoubleTurnOutside@firewalk",
@@ -1016,8 +1060,6 @@
 
 			checkWalkLength: function(flag, code) {
 				if (this.board.roommgr.isStale) {
-					// TODO The room manager will break in certain conditions.
-					// It is rebuilt here as a workaround.
 					this.board.roommgr.isStale = false;
 					this.board.roommgr.rebuild();
 				}
@@ -1056,7 +1098,7 @@
 				}, "lnIsolate");
 			}
 		},
-		"AnsCheck@icewalk,energywalk#1": {
+		"AnsCheck@icewalk,energywalk,circuitwalk#1": {
 			checkCrossLine: function() {
 				this.checkAllCell(function(cell) {
 					return cell.lcnt === 4 && !cell.ice();
@@ -1155,6 +1197,34 @@
 				}
 			}
 		},
+		"AnsCheck@circuitwalk": {
+			checkCircuitCell: function() {
+				this.checkAllCell(function(cell) {
+					return cell.lcnt > 1 && cell.ice() && cell.lcnt < 4;
+				}, "lnNoBranch");
+			},
+			checkSelfIntersect: function() {
+				this.checkAllCell(function(cell) {
+					return (
+						cell.lcnt === 4 &&
+						cell.adjborder.top.path === cell.adjborder.right.path
+					);
+				}, "lnCrossSelf");
+			},
+			checkOneLoop: function() {
+				var bd = this.board;
+				if (bd.linesupergraph.isStale) {
+					bd.linesupergraph.isStale = false;
+					bd.linesupergraph.rebuild();
+				}
+				var paths = bd.linesupergraph.components;
+				if (paths.length > 1) {
+					this.failcode.add("lnPlLoop");
+					bd.border.setnoerr();
+					paths[0].setedgeerr(1);
+				}
+			}
+		},
 		"FailCode@energywalk": {
 			lnPlLoop: "lnPlLoop.forestwalk"
 		},
@@ -1186,6 +1256,19 @@
 					room1.clist.seterr(1);
 					room2.clist.seterr(1);
 				}
+			}
+		},
+		"AnsCheck@roboticwalk": {
+			checkSequentialMoves: function() {
+				this.checkLineShape(function(path) {
+					var cell1 = path.cells[0],
+						cell2 = path.cells[1];
+					return (
+						cell1.lcnt === 2 &&
+						cell2.lcnt === 2 &&
+						cell1.isLineCurve() === cell2.isLineCurve()
+					);
+				}, "lnCurveEq");
 			}
 		}
 	}

@@ -83,9 +83,6 @@
 			return this.checkComplete();
 		}
 	},
-	"Cell@island": {
-		minnum: 1
-	},
 	"Board@island": {
 		addExtraInfo: function() {
 			this.islandgraph = this.addInfoList(this.klass.AreaIslandGraph);
