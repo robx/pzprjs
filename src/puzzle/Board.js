@@ -278,7 +278,6 @@ pzpr.classmgr.makeCommon({
 		},
 
 		updateSolverAnswerForCells: function(result) {
-			console.log(result);
 			if ((this.clearSolverAnswerForCells(), "string" !== typeof result) && result.hasAnswer) {
 				for (var b = [], c = 0; c < this.rows; ++c) {
 					for (var d = [], e = 0; e < this.cols; ++e) {
