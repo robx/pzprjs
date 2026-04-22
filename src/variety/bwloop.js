@@ -85,7 +85,6 @@
 		},
 		encodeData: function() {
 			this.encodeConfigFlag("f", "loop_full");
-			this.board.revCircle();
 			this.encodeCellQnum();
 			this.encodeBorderLine();
 		}
