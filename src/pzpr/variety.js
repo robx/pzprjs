@@ -187,6 +187,7 @@
 			guidearrow: [0, 0, "ガイドアロー", "Guide Arrow"],
 			haisu: [0, 0, "Haisu", "Haisu"],
 			hakoiri: [1, 0, "はこいり○△□", "Hakoiri-masashi"],
+			hamlepaths: [0, 0, "Hamle Paths", "Hamle Paths", "bonsan"],
 			hanare: [0, 0, "はなれ組", "Hanare-gumi", "hanare"],
 			hashikake: [
 				0,
