@@ -69,6 +69,7 @@ ui.keypopup = {
 		bonsan: [10, 0],
 		heyabon: [10, 0],
 		rectslider: [10, 0],
+		hamlepaths: [10, 0],
 		satogaeri: [10, 0],
 		yosenabe: [10, 0],
 		herugolf: [10, 0],
@@ -496,6 +497,7 @@ ui.keypopup = {
 			cap = "□";
 		} else if (
 			pid === "rectslider" ||
+			pid === "hamlepaths" ||
 			pid === "aquapelago" ||
 			pid === "mrtile"
 		) {
