@@ -468,3 +468,9 @@ bwloop: |-
   1. The loop cannot branch off or cross itself.
   2. Between two successively passed circles of the same color, the loop must not turn.
   3. Between two successively passed circles of different colors, the loop must turn exactly once.
+yokeimoji: |-
+  Shade some cells on the board.
+  1. Shaded cells cannot be horizontally or vertically adjacent.
+  2. Every run of 2 or more consecutive unshaded cells forms a word (left-to-right or top-to-bottom). Each word can appear no more than once in the grid.
+  3. Words cannot start with "ン" or "ー". The sequences "ーー", "ンン" or "ンー" cannot appear in a word.
+  4. All unshaded cells on the board form an orthogonally connected area.
