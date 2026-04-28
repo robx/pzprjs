@@ -256,6 +256,7 @@ ui.keypopup = {
 		tetroctb: [10, 0],
 		hasunomura: [10, 0],
 		bramble: [10, 0],
+		golemgrad: [10, 0],
 		topo: [10, 10]
 	},
 
