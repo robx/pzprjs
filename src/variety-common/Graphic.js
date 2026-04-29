@@ -1524,7 +1524,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		// pc.drawMBs()    Cell上の○,×をCanvasに書き込む
 		//---------------------------------------------------------------------------
-		drawMBs: function() {
+		drawMBs: function(withcross) {
 			var g = this.vinc("cell_mb", "auto", true);
 			g.lineWidth = 1;
 
@@ -1548,7 +1548,7 @@ pzpr.classmgr.makeCommon({
 				}
 
 				g.vid = "c_MB2_" + cell.id;
-				if (cell.qsub === 2) {
+				if (withcross !== false && cell.qsub === 2) {
 					g.strokeCross(px, py, rsize);
 				} else {
 					g.vhide();

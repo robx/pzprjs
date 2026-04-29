@@ -659,7 +659,7 @@
 				this.drawCrosses();
 			} else {
 				this.drawDotCells();
-				this.drawMBs();
+				this.drawMBs(false);
 			}
 			if (this.pid === "edamame") {
 				this.drawDotCells();
@@ -839,28 +839,6 @@
 				return this.errcolor1;
 			}
 			return cell.qcmp ? this.qcmpcolor : this.quescolor;
-		},
-		drawMBs: function() {
-			var g = this.vinc("cell_mb", "auto", true);
-			g.lineWidth = 1;
-
-			var rsize = this.cw * 0.35;
-			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i],
-					px,
-					py;
-
-				g.vid = "c_MB1_" + cell.id;
-				if (cell.qsub === 1) {
-					px = cell.bx * this.bw;
-					py = cell.by * this.bh;
-					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
-					g.strokeCircle(px, py, rsize);
-				} else {
-					g.vhide();
-				}
-			}
 		}
 	},
 	"Graphic@wittgen#2": {
