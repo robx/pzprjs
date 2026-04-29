@@ -474,3 +474,15 @@ yokeimoji: |-
   2. Every run of 2 or more consecutive unshaded cells forms a word (left-to-right or top-to-bottom). Each word can appear no more than once in the grid.
   3. Words cannot start with "ン" or "ー". The sequences "ーー", "ンン" or "ンー" cannot appear in a word.
   4. All unshaded cells on the board form an orthogonally connected area.
+soulmates: |-
+  Place a number into some of the cells.
+  1. For each numbered cell, exactly one other number of the same value is able to be reached by traveling through only empty cells.
+  2. The value of each number must be equal to the distance of the shortest possible path from it to its partner.
+golemgrad: |-
+  Draw lines to form pairs between the circles.
+  1. Lines cannot cross or overlap each other.
+  2. Cells with numbers cannot be visited by a line.
+  3. Orthogonally adjacent cells unused by the lines form regions. Each region contains no more than one number.
+  4. A number indicates the size of the region that contains it.
+  5. All cells used by lines must form an orthogonally contiguous area.
+  6. The cells used by lines cannot form a 2x2 square.
