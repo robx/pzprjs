@@ -440,14 +440,19 @@
 	},
 	FileIO: {
 		decodeData: function() {
-			this.decodeAreaRoom();
+			if (this.filever >= 1) {
+				this.decodeBorderQues();
+			} else {
+				this.decodeAreaRoom();
+			}
 			this.decodeCellQnum();
 			this.decodeCellBar();
 			this.decodeBorderLine();
 			this.decodeCellQsub();
 		},
 		encodeData: function() {
-			this.encodeAreaRoom();
+			this.filever = 1;
+			this.encodeBorderQues();
 			this.encodeCellQnum();
 			this.encodeCellBar();
 			this.encodeBorderLine();

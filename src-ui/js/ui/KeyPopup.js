@@ -69,6 +69,7 @@ ui.keypopup = {
 		bonsan: [10, 0],
 		heyabon: [10, 0],
 		rectslider: [10, 0],
+		hamlepaths: [10, 0],
 		satogaeri: [10, 0],
 		yosenabe: [10, 0],
 		herugolf: [10, 0],
@@ -242,11 +243,20 @@ ui.keypopup = {
 		circuitwalk: [10, 0],
 		morningwalk: [10, 0],
 		energywalk: [10, 0],
+		roboticwalk: [10, 0],
 		cornerch: [10, 0],
 		keywest: [4, 4],
 		oasis: [10, 0],
 		bhaibahan: [10, 0],
-		heavydots: [10, 0]
+		edamame: [4, 0],
+		heavydots: [10, 0],
+		suguru: [10, 10],
+		marutaring: [10, 0],
+		nuriloop: [10, 0],
+		tetroctb: [10, 0],
+		hasunomura: [10, 0],
+		bramble: [10, 0],
+		topo: [10, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -487,6 +497,7 @@ ui.keypopup = {
 			cap = "□";
 		} else if (
 			pid === "rectslider" ||
+			pid === "hamlepaths" ||
 			pid === "aquapelago" ||
 			pid === "mrtile"
 		) {
@@ -523,7 +534,7 @@ ui.keypopup = {
 				{
 					text: "■",
 					color:
-						pid === "dbchoco" || pid === "balloon"
+						pid === "dbchoco" || pid === "balloon" || pid === "roboticwalk"
 							? "rgb(204,204,204)"
 							: pid === "firewalk"
 							? "rgb(255,192,192)"

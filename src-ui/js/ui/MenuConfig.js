@@ -172,6 +172,7 @@
 				case "firewalk":
 				case "forestwalk":
 				case "morningwalk":
+				case "roboticwalk":
 				case "wataridori":
 				case "bhaibahan":
 				case "bwloop":

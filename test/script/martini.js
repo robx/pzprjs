@@ -45,19 +45,23 @@ ui.debug.addDebugData("martini", {
 				"editmode,circle-unshade",
 				"mouse,left,3,1"
 			],
-			result: "pzprv3/martini/2/3/1/0 0 0 /0 0 0 /0 - . /. . . /. . . /. . . /"
+			result:
+				"pzprv3.1/martini/2/3/0 0 /0 0 /0 0 0 /0 - . /. . . /. . . /. . . /"
 		},
 		{
 			input: ["editmode,auto", "cursor,5,1", "key,2"],
-			result: "pzprv3/martini/2/3/1/0 0 0 /0 0 0 /0 - 2 /. . . /. . . /. . . /"
+			result:
+				"pzprv3.1/martini/2/3/0 0 /0 0 /0 0 0 /0 - 2 /. . . /. . . /. . . /"
 		},
 		{
 			input: ["playmode", "mouse,left,1,1,5,1,5,3"],
-			result: "pzprv3/martini/2/3/1/0 0 0 /0 0 0 /0 - 2 /. . . /# . . /. . # /"
+			result:
+				"pzprv3.1/martini/2/3/0 0 /0 0 /0 0 0 /0 - 2 /. . . /# . . /. . # /"
 		},
 		{
 			input: ["mouse,right,1,1,5,1,5,3"],
-			result: "pzprv3/martini/2/3/1/0 0 0 /0 0 0 /0 - 2 /. . . /# + + /. . + /"
+			result:
+				"pzprv3.1/martini/2/3/0 0 /0 0 /0 0 0 /0 - 2 /. . . /# + + /. . + /"
 		},
 		{
 			input: [

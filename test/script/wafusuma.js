@@ -36,27 +36,29 @@ ui.debug.addDebugData("wafusuma", {
 		{
 			label: "Right-click to input clue",
 			input: ["newboard,2,2", "editmode", "cursor,3,2", "mouse,right,3,2"],
-			result: "pzprv3/wafusuma/2/2/. /. /. 4 /. . /. . /0 /0 /0 0 /"
+			result: "pzprv3.1/wafusuma/2/2/. /. /. 4 /. . /. . /. . /. . /0 /0 /0 0 /"
 		},
 		{
 			label: "Input clues with keyboard",
 			input: ["key,left,down,-"],
-			result: "pzprv3/wafusuma/2/2/. /-2 /. 4 /. . /. . /0 /0 /0 0 /"
+			result:
+				"pzprv3.1/wafusuma/2/2/. /-2 /. 4 /. . /. . /. . /. . /0 /0 /0 0 /"
 		},
 		{
 			label: "Adjust cursor when switching modes",
 			input: ["playmode", "key,3"],
-			result: "pzprv3/wafusuma/2/2/. /-2 /. 4 /. . /3 . /0 /0 /0 0 /"
+			result:
+				"pzprv3.1/wafusuma/2/2/. /-2 /. 4 /. . /. . /. . /3 . /0 /0 /0 0 /"
 		},
 		{
 			label: "Erase clues",
 			input: ["editmode,clear", "mouse,left,1,3,2,3"],
-			result: "pzprv3/wafusuma/2/2/. /. /. 4 /. . /3 . /0 /0 /0 0 /"
+			result: "pzprv3.1/wafusuma/2/2/. /. /. 4 /. . /. . /. . /3 . /0 /0 /0 0 /"
 		},
 		{
 			label: "Erase answer",
 			input: ["playmode,clear", "mouse,left,1,3,3,3,3,2"],
-			result: "pzprv3/wafusuma/2/2/. /. /. 4 /. . /. . /0 /0 /0 0 /"
+			result: "pzprv3.1/wafusuma/2/2/. /. /. 4 /. . /. . /. . /. . /0 /0 /0 0 /"
 		}
 	]
 });

@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["bonsan", "heyabon", "rectslider", "satogaeri", "timebomb"], {
+})(["bonsan", "heyabon", "rectslider", "satogaeri", "timebomb", "hamlepaths"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	"MouseEvent@bonsan,heyabon": {
@@ -22,7 +22,7 @@
 			play: ["line", "clear", "completion"]
 		}
 	},
-	"MouseEvent@rectslider": {
+	"MouseEvent@rectslider,hamlepaths": {
 		inputModes: {
 			edit: ["number", "clear"],
 			play: ["line", "bgcolor", "subcircle", "subcross", "clear"]
@@ -123,7 +123,11 @@
 			}
 
 			var puzzle = this.puzzle;
-			if (puzzle.pid !== "rectslider" && this.inputdark(cell, 1)) {
+			if (
+				puzzle.pid !== "rectslider" &&
+				puzzle.pid !== "hamlepaths" &&
+				this.inputdark(cell, 1)
+			) {
 				return;
 			}
 			if (puzzle.pid === "satogaeri") {
@@ -522,10 +526,22 @@
 			this.setEdgeByNodeObj(border.sidecell[1]);
 		}
 	},
+	"AreaUnshadeGraph@hamlepaths": {
+		enabled: true,
+		relation: { "cell.qnum": "node", "border.line": "move" },
+		isnodevalid: function(cell) {
+			return cell.base.qnum === -1;
+		},
+
+		modifyOtherInfo: function(border, relation) {
+			this.setEdgeByNodeObj(border.sidecell[0]);
+			this.setEdgeByNodeObj(border.sidecell[1]);
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
-	"Graphic@bonsan,heyabon,rectslider": {
+	"Graphic@bonsan,heyabon,rectslider,hamlepaths": {
 		bgcellcolor_func: "qsub2",
 		autocmp: "number"
 	},
@@ -576,11 +592,13 @@
 			this.drawTarget();
 		}
 	},
-	"Graphic@rectslider": {
+	"Graphic@rectslider,hamlepaths": {
 		fontShadecolor: "white",
 		qcmpcolor: "gray",
 
 		paint: function() {
+			this.drawBGCells();
+
 			this.drawDashedGrid();
 
 			this.drawTip();
@@ -607,12 +625,7 @@
 			}
 
 			var info = cell.error || cell.qinfo;
-			if (info === 0) {
-				return this.quescolor;
-			} else if (info === 1) {
-				return this.errcolor1;
-			}
-			return null;
+			return info > 0 ? this.errcolor1 : this.quescolor;
 		},
 		getQuesNumberColor: function(cell) {
 			return cell.isCmp() ? this.qcmpcolor : this.fontShadecolor;
@@ -758,7 +771,7 @@
 			this.fio.encodeQnum_PBox_Sato();
 		}
 	},
-	"Encode@rectslider,timebomb": {
+	"Encode@rectslider,timebomb,hamlepaths": {
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 		},
@@ -771,7 +784,11 @@
 		decodeData: function() {
 			this.decodeCellQnum();
 			this.decodeCellQsubQcmp();
-			if (this.pid !== "rectslider" && this.pid !== "timebomb") {
+			if (
+				this.pid !== "rectslider" &&
+				this.pid !== "timebomb" &&
+				this.pid !== "hamlepaths"
+			) {
 				this.decodeBorderQues();
 			}
 			this.decodeBorderLine();
@@ -779,7 +796,11 @@
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellQsubQcmp();
-			if (this.pid !== "rectslider" && this.pid !== "timebomb") {
+			if (
+				this.pid !== "rectslider" &&
+				this.pid !== "timebomb" &&
+				this.pid !== "hamlepaths"
+			) {
 				this.encodeBorderQues();
 			}
 			this.encodeBorderLine();
@@ -889,6 +910,9 @@
 
 			"checkMovedBlockRect@rectslider",
 			"checkMovedBlockSize@rectslider",
+
+			"checkMovedAdjacent@hamlepaths",
+			"checkConnectUnshade@hamlepaths",
 
 			"checkLineLength",
 
@@ -1032,5 +1056,18 @@
 				});
 			}, "ceNoBomb");
 		}
+	},
+	"AnsCheck@hamlepaths": {
+		checkMovedAdjacent: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				return cell1.base.isNum() && cell2.base.isNum();
+			}, "csAdjacent");
+		}
+	},
+	"FailCode@hamlepaths": {
+		nmConnected: "nmConnected.rectslider",
+		laOnNum: "laOnNum.rectslider",
+		laIsolate: "laIsolate.rectslider",
+		nmNoMove: "nmNoMove.rectslider"
 	}
 });

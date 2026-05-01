@@ -16,7 +16,11 @@
 		"heyablock",
 		"cocktail",
 		"martini",
-		"nuritwin"
+		"nuritwin",
+		"marutaring",
+		"tetroctb",
+		"bramble",
+		"disco"
 	],
 	{
 		//---------------------------------------------------------
@@ -36,13 +40,22 @@
 				play: ["shade", "unshade", "number"]
 			}
 		},
-		"MouseEvent@cocktail,nuritwin": {
+		"MouseEvent@cocktail,nuritwin,marutaring,tetroctb,bramble": {
 			inputModes: {
 				edit: ["border", "number", "clear", "info-blk"],
 				play: ["shade", "unshade", "info-blk"]
 			}
 		},
-		"MouseEvent@cocktail,martini#2": {
+		"MouseEvent@disco": {
+			inputModes: {
+				edit: ["info-blk"],
+				play: ["shade", "unshade", "info-blk"]
+			},
+			mouseinputAutoEdit: function() {
+				this.inputborder();
+			}
+		},
+		"MouseEvent@cocktail,martini,tetroctb,bramble#2": {
 			dispInfoBlk: function() {
 				var cell = this.getcell();
 				this.mousereset();
@@ -122,7 +135,7 @@
 			enableSubNumberArray: true,
 			disableAnum: true
 		},
-		"Cell@chocona,hinge,heyablock,cocktail": {
+		"Cell@chocona,hinge,heyablock,cocktail,tetroctb,bramble": {
 			minnum: 0
 		},
 		"Cell@martini": {
@@ -181,7 +194,7 @@
 		Board: {
 			hasborder: 1
 		},
-		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin": {
+		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb,disco": {
 			addExtraInfo: function() {
 				this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
 			}
@@ -300,10 +313,10 @@
 			}
 		},
 
-		"AreaShadeGraph@chocona": {
+		"AreaShadeGraph@chocona,tetroctb,bramble": {
 			enabled: true
 		},
-		"AreaShadeGraph@nuritwin": {
+		"AreaShadeGraph@nuritwin,marutaring,disco": {
 			enabled: true,
 			coloring: true
 		},
@@ -315,7 +328,7 @@
 				component.hinge = null;
 			}
 		},
-		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin": {
+		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb,disco": {
 			// Same as LITS AreaTetrominoGraph
 			enabled: true,
 			relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -336,7 +349,7 @@
 		"AreaStoneGraph@stostone": {
 			coloring: true
 		},
-		"AreaUnshadeGraph@heyablock,martini": {
+		"AreaUnshadeGraph@heyablock,martini,bramble": {
 			enabled: true
 		},
 		"AreaUnshadeGraph@martini#1": {
@@ -355,7 +368,7 @@
 		"AreaRoomGraph@martini": {
 			hastop: false
 		},
-		"AreaShade8Graph@cocktail,martini": {
+		"AreaShade8Graph@cocktail,martini,tetroctb,bramble": {
 			enabled: true
 		},
 
@@ -375,7 +388,12 @@
 					this.drawGrid();
 				}
 
-				if (this.pid === "stostone" || this.pid === "nuritwin") {
+				if (
+					this.pid === "stostone" ||
+					this.pid === "nuritwin" ||
+					this.pid === "disco" ||
+					this.pid === "marutaring"
+				) {
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
@@ -416,7 +434,7 @@
 				);
 			}
 		},
-		"Graphic@stostone,nuritwin#1": {
+		"Graphic@stostone,nuritwin,marutaring,disco#1": {
 			irowakeblk: true,
 			bgcellcolor_func: "error1",
 			bcolor: "rgb(80, 204, 80)",
@@ -527,7 +545,7 @@
 					: this.getCircleFillColor_qnum(cell);
 			}
 		},
-		"Graphic@martini,nuritwin#2": {
+		"Graphic@martini,nuritwin,disco#2": {
 			shadecolor: "#444444"
 		},
 
@@ -553,10 +571,22 @@
 				this.encodeNumber16();
 			}
 		},
+		"Encode@disco": {
+			decodePzpr: function(type) {
+				this.decodeBorder();
+			},
+			encodePzpr: function(type) {
+				this.encodeBorder();
+			}
+		},
 		//---------------------------------------------------------
 		FileIO: {
 			decodeData: function() {
-				this.decodeAreaRoom();
+				if (this.filever >= 1) {
+					this.decodeBorderQues();
+				} else {
+					this.decodeAreaRoom();
+				}
 				this.decodeCellQnum();
 				this.decodeCellAns();
 				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {
@@ -564,12 +594,23 @@
 				}
 			},
 			encodeData: function() {
-				this.encodeAreaRoom();
+				this.filever = 1;
+				this.encodeBorderQues();
 				this.encodeCellQnum();
 				this.encodeCellAns();
 				if (this.puzzle.klass.Cell.prototype.enableSubNumberArray) {
 					this.encodeCellSnum();
 				}
+			}
+		},
+		"FileIO@disco": {
+			decodeData: function() {
+				this.decodeBorderQues();
+				this.decodeCellAns();
+			},
+			encodeData: function() {
+				this.encodeBorderQues();
+				this.encodeCellAns();
 			}
 		},
 
@@ -619,18 +660,55 @@
 				"checkShadeCellCount"
 			]
 		},
-		"AnsCheck@nuritwin#1": {
+		"AnsCheck@nuritwin,disco#1": {
 			checklist: [
 				"check2x2ShadeCell",
-				"checkShadeBlockSize",
-				"checkSizesEqual",
+				"checkShadeBlockSize@nuritwin",
+				"checkSizesEqual@nuritwin",
 				"checkTwoBlocks",
 				"checkConnectShade",
 				"checkNoShadeCellInArea",
 				"doneShadingDecided"
 			]
 		},
-		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini": {
+		"AnsCheck@marutaring#1": {
+			checklist: [
+				"checkShadeCellExist+",
+				"check2x2ShadeCell",
+				"checkShadeRect",
+				"checkShadeBranch",
+				"checkNoShadeCellInArea",
+				"checkShadeCellCount",
+				"checkConnectShade",
+				"checkShadeDeadEnd"
+			]
+		},
+		"AnsCheck@tetroctb#1": {
+			checklist: [
+				"checkShadeCellExist+",
+				"checkOverShadeCell",
+				"checkAdjacentShapes",
+				"checkUnderShadeCell",
+
+				"checkShadeCellCount",
+				"checkBlockHasBorder",
+				"checkConnect8Shade",
+				"doneShadingDecided"
+			]
+		},
+		"AnsCheck@bramble#1": {
+			checklist: [
+				"checkShadeCellExist+",
+				"checkOverShadeCell",
+				"checkSideAreaShadeCell",
+				"checkConnectUnshadeOutside",
+				"checkAdjacentSingle",
+				"checkShadeCellCount",
+				"checkConnect8Shade",
+				"doneShadingDecided"
+			]
+		},
+		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini,bramble": {
 			checkSideAreaShadeCell: function() {
 				this.checkSideAreaCell(
 					function(cell1, cell2) {
@@ -938,7 +1016,7 @@
 				this.checkOneArea(this.board.sblk8mgr, "csDivide");
 			}
 		},
-		"AnsCheck@nuritwin": {
+		"AnsCheck@nuritwin,disco": {
 			checkShadeBlockSize: function() {
 				var blocks = this.board.stonegraph.components;
 				for (var id = 0; id < blocks.length; id++) {
@@ -1004,6 +1082,181 @@
 					}
 				});
 				return Array.from(set);
+			}
+		},
+		"AnsCheck@marutaring": {
+			checkNeighborCount: function(sign, error) {
+				this.checkAllCell(function(cell) {
+					return (
+						cell.isShade() &&
+						(cell.countDir4Cell(function(adj) {
+							return adj.isShade();
+						}) -
+							2) *
+							sign >
+							0
+					);
+				}, error);
+			},
+
+			checkShadeBranch: function() {
+				this.checkNeighborCount(+1, "shBranch");
+			},
+			checkShadeDeadEnd: function() {
+				this.checkNeighborCount(-1, "shDeadEnd");
+			},
+
+			checkShadeRect: function() {
+				this.checkAllArea(
+					this.board.stonegraph,
+					function(w, h, a, n) {
+						return w * h === a;
+					},
+					"csNotRect"
+				);
+			}
+		},
+		"AnsCheck@tetroctb": {
+			checkOverShadeCell: function() {
+				this.checkAllArea(
+					this.board.sblkmgr,
+					function(w, h, a, n) {
+						return a <= 4;
+					},
+					"csGt4"
+				);
+			},
+			checkUnderShadeCell: function() {
+				this.checkAllArea(
+					this.board.sblkmgr,
+					function(w, h, a, n) {
+						return a >= 4;
+					},
+					"csLt4"
+				);
+			},
+			checkAdjacentShapes: function() {
+				var bd = this.board;
+				for (var c = 0; c < bd.cell.length; c++) {
+					var cell = bd.cell[c];
+					if (cell.bx === bd.maxbx - 1 || cell.by === bd.maxby - 1) {
+						continue;
+					}
+
+					var i,
+						adc = cell.adjacent;
+					var cells = [
+						[cell, adc.right.adjacent.bottom],
+						[adc.right, adc.bottom]
+					];
+					for (i = 0; i < 2; i++) {
+						if (cells[i][0].isShade() && cells[i][1].isShade()) {
+							break;
+						}
+					}
+					if (i === 2) {
+						continue;
+					}
+
+					var block1 = cells[i][0].sblk,
+						block2 = cells[i][1].sblk;
+					if (
+						block1 === block2 ||
+						block1.clist.length !== 4 ||
+						this.isDifferentShapeBlock(block1, block2)
+					) {
+						continue;
+					}
+
+					this.failcode.add("bsSameShape");
+					if (this.checkOnly) {
+						break;
+					}
+					block1.clist.seterr(1);
+					block2.clist.seterr(1);
+				}
+			},
+			checkBlockHasBorder: function() {
+				var areas = this.board.sblkmgr.components;
+				for (var id = 0; id < areas.length; id++) {
+					var area = areas[id],
+						clist = area.clist;
+					if (
+						clist.length < 4 ||
+						clist.length !== clist[0].stone.clist.length
+					) {
+						continue;
+					}
+
+					this.failcode.add("bkNoBorder");
+					if (this.checkOnly) {
+						break;
+					}
+					clist.seterr(1);
+				}
+			},
+			checkConnect8Shade: function() {
+				this.checkOneArea(this.board.sblk8mgr, "csDivide");
+			}
+		},
+		"AnsCheck@bramble": {
+			checkOverShadeCell: function() {
+				this.checkAllArea(
+					this.board.sblkmgr,
+					function(w, h, a, n) {
+						return a <= 2;
+					},
+					"csGt2"
+				);
+			},
+			checkConnect8Shade: function() {
+				this.checkOneArea(this.board.sblk8mgr, "csDivide");
+			},
+			checkAdjacentSingle: function() {
+				var bd = this.board;
+				for (var c = 0; c < bd.cell.length; c++) {
+					var cell = bd.cell[c];
+					if (cell.bx >= bd.maxbx - 1 || cell.by >= bd.maxby - 1) {
+						continue;
+					}
+
+					var bx = cell.bx,
+						by = cell.by;
+					var clist = bd
+						.cellinside(bx, by, bx + 2, by + 2)
+						.filter(function(cc) {
+							return cc.sblk && cc.sblk.clist.length === 1;
+						});
+					if (clist.length !== 2) {
+						continue;
+					}
+
+					this.failcode.add("shDiag");
+					if (this.checkOnly) {
+						break;
+					}
+					clist.seterr(1);
+				}
+			},
+			checkConnectUnshadeOutside: function() {
+				var bd = this.board;
+				for (var r = 0; r < bd.ublkmgr.components.length; r++) {
+					var clist = bd.ublkmgr.components[r].clist;
+					var d = clist.getRectSize();
+					if (
+						d.x1 === 1 ||
+						d.x2 === bd.maxbx - 1 ||
+						d.y1 === 1 ||
+						d.y2 === bd.maxby - 1
+					) {
+						continue;
+					}
+					this.failcode.add("csLoop");
+					if (this.checkOnly) {
+						break;
+					}
+					clist.seterr(1);
+				}
 			}
 		},
 
