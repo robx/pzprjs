@@ -122,6 +122,7 @@ function toBGimage(pid) {
 		"bramble",
 		"brownies",
 		"bunnyhop",
+		"bwloop",
 		"castle",
 		"cbanana",
 		"chainedb",
