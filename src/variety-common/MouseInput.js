@@ -1067,7 +1067,14 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 		mouseinputAutoPlay_lineMB: function() {
-			this.mouseinputAutoPlay_line(true);
+			if (this.mousestart) {
+				this.isDraggingBG = this.puzzle.key.isALT;
+			}
+			if (this.isDraggingBG) {
+				this.inputBGcolor();
+			} else {
+				this.mouseinputAutoPlay_line(true);
+			}
 		},
 
 		//---------------------------------------------------------------------------
