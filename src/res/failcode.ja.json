@@ -384,7 +384,7 @@
     "lbLenLt.amibo": "白丸から出る棒の長さが短いです。",
     "lbLoop.amibo": "棒で輪っかができています。",
     "lbNotCrossEq.amibo": "同じ長さの棒と交差していません。",
-    "lcCurveGt1.ichimaga": "線が2回以上曲がっています。",
+    "lcCurveGt1": "線が2回以上曲がっています。",
     "lcCurveGt2.kusabi": "線が2回以上曲がっています。",
     "lcCurveLt2.kusabi": "線が2回曲がっていません。",
     "lcCurveNe.firefly": "線の曲がった回数が数字と違っています。",

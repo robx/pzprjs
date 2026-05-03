@@ -495,6 +495,7 @@
 			wataridori: [0, 0, "わたりどり", "Wataridori", "country"],
 			waterwalk: [0, 0, "ウォーターウォーク", "Water Walk", "icewalk"],
 			wblink: [0, 0, "シロクロリンク", "Shirokuro-link"],
+			bwloop: [0, 0, "クロシロループ", "Kuroshiro Loop"],
 			wittgen: [0, 0, "デスクプレース", "Wittgenstein Briquet", "kaidan"],
 			yajikazu: [1, 0, "やじさんかずさん", "Yajisan-Kazusan"],
 			yajilin: [
