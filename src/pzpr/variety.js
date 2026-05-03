@@ -520,6 +520,7 @@
 			yajisoko: [0, 0, "やじさん倉庫番", "Yajisan-Sokoban", "yosenabe"],
 			yajitatami: [0, 0, "ヤジタタミ", "Yajitatami"],
 			yinyang: [0, 0, "しろまるくろまる", "Yin-Yang"],
+			yokeimoji: [0, 0, "余計文字クロス", "Yokeimoji Cross"],
 			yosenabe: [0, 0, "よせなべ", "Yosenabe"],
 			zabajaba: [0, 0, "Zabajaba", "Zabajaba", "kaidan"]
 		}

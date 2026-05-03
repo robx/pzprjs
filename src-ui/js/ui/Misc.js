@@ -259,6 +259,7 @@ function toBGimage(pid) {
 		"waterwalk",
 		"wittgen",
 		"yinyang",
+		"yokeimoji",
 		"zabajaba"
 	];
 	if (imgs.indexOf(pid) >= 0) {
