@@ -136,6 +136,8 @@ pzpr.classmgr.makeCommon({
 				key = "left";
 			} else if (keycode === 39) {
 				key = "right";
+			} else if (keycode === 13) {
+				key = "enter";
 			} else if (48 <= keycode && keycode <= 57) {
 				key = (keycode - 48).toString(36);
 			} else if (65 <= keycode && keycode <= 90) {
