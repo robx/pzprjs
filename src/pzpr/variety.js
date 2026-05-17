@@ -279,6 +279,7 @@
 			lixloop: [0, 0, "LIX Loop", "LIX Loop", "yajilin"],
 			lohkous: [0, 0, "Lohkous", "Lohkous"],
 			lollipops: [0, 0, "ペロペロキャンディ", "Lollipops"],
+			longest: [0, 0, "短辺消失", "The Longest"],
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],

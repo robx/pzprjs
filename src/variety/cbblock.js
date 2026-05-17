@@ -463,52 +463,10 @@
 	// URLエンコード/デコード処理
 	"Encode@cbblock": {
 		decodePzpr: function(type) {
-			this.decodeCBBlock();
+			this.decodeOuterBorder();
 		},
 		encodePzpr: function(type) {
-			this.encodeCBBlock();
-		},
-
-		decodeCBBlock: function() {
-			var bstr = this.outbstr,
-				bd = this.board,
-				twi = [16, 8, 4, 2, 1];
-			var pos = bstr
-					? Math.min(((bd.border.length + 4) / 5) | 0, bstr.length)
-					: 0,
-				id = 0;
-			for (var i = 0; i < pos; i++) {
-				var ca = parseInt(bstr.charAt(i), 32);
-				for (var w = 0; w < 5; w++) {
-					if (!!bd.border[id]) {
-						bd.border[id].ques = ca & twi[w] ? 1 : 0;
-						id++;
-					}
-				}
-			}
-			this.outbstr = bstr.substr(pos);
-		},
-		encodeCBBlock: function() {
-			var num = 0,
-				pass = 0,
-				cm = "",
-				bd = this.board,
-				twi = [16, 8, 4, 2, 1];
-			for (var id = 0, max = bd.border.length; id < max; id++) {
-				if (bd.border[id].isGround()) {
-					pass += twi[num];
-				}
-				num++;
-				if (num === 5) {
-					cm += pass.toString(32);
-					num = 0;
-					pass = 0;
-				}
-			}
-			if (num > 0) {
-				cm += pass.toString(32);
-			}
-			this.outbstr += cm;
+			this.encodeOuterBorder();
 		}
 	},
 
