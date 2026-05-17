@@ -486,3 +486,7 @@ golemgrad: |-
   4. A number indicates the size of the region that contains it.
   5. All cells used by lines must form an orthogonally contiguous area.
   6. The cells used by lines cannot form a 2x2 square.
+longest: |-
+  Draw lines over the dotted lines to divide the board into polygons.
+  1. For each polygon, the side (or sides) with the biggest length must consist entirely of given borders.
+  2. Each given border must be part of the longest side for at least one of the adjacent polygons.
