@@ -433,6 +433,7 @@
 			snake: [0, 0, "Snake", "Snake"],
 			snakeegg: [0, 0, "Snake Egg", "Snake Egg"],
 			snakepit: [0, 0, "Snake Pit", "Snake Pit", "fillomino"],
+			soulmates: [0, 0, "ソウルメイツ", "Soul Mates"],
 			starbattle: [0, 0, "スターバトル", "Star Battle"],
 			squarejam: [0, 0, "Square Jam", "Square Jam"],
 			statuepark: [0, 0, "Statue Park", "Statue Park"],
