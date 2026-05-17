@@ -7,7 +7,7 @@
 })(["soulmates"], {
 	MouseEvent: {
 		inputModes: {
-			edit: ["number", "clear"],
+			edit: ["number", "empty", "clear"],
 			play: ["number", "numexist", "objblank", "clear"]
 		},
 		autoedit_func: "qnum",
@@ -49,6 +49,15 @@
 			return this.qsub === 2;
 		},
 
+		prehook: {
+			qsub: function() {
+				return !this.isValid();
+			},
+			anum: function() {
+				return !this.isValid();
+			}
+		},
+
 		distanceTo: function(end) {
 			/* Calculate Manhattan distance using Dijkstra's algorithm */
 
@@ -78,7 +87,7 @@
 				for (var dir in current.adjacent) {
 					var next = current.adjacent[dir];
 					if (
-						next.isnull ||
+						!next.isValid() ||
 						(next !== end && next.isNum()) ||
 						visited.has(+next.id)
 					) {
@@ -108,7 +117,7 @@
 
 	"PlainGraph:AreaGraphBase": {
 		enabled: true,
-		relation: { "cell.qnum": "node", "cell.anum": "node" },
+		relation: { "cell.ques": "node", "cell.qnum": "node", "cell.anum": "node" },
 		setExtraData: function(component) {
 			this.common.setExtraData.call(this, component);
 
@@ -126,7 +135,7 @@
 		},
 
 		isnodevalid: function(cell) {
-			return !cell.isNum();
+			return cell.isValid() && !cell.isNum();
 		},
 
 		getComponentRefs: function(obj) {
@@ -158,15 +167,32 @@
 			this.drawChassis();
 
 			this.drawCursor();
+		},
+		getBGCellColor: function(cell) {
+			if (!cell.isValid()) {
+				return "black";
+			}
+			return this.getBGCellColor_error1(cell);
 		}
 	},
 
 	Encode: {
 		decodePzpr: function(type) {
-			this.decodeNumber16();
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				if (!val) {
+					bd.cell[c].ques = 7;
+				} else {
+					bd.cell[c].qnum = val;
+				}
+			});
 		},
 		encodePzpr: function(type) {
-			this.encodeNumber16();
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				var cell = bd.cell[c];
+				return cell.isValid() ? cell.qnum : 0;
+			});
 		}
 	},
 	//---------------------------------------------------------
@@ -178,6 +204,27 @@
 		encodeData: function() {
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
+		},
+
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.qnum >= 0) {
+					return cell.qnum + " ";
+				} else if (cell.ques === 7) {
+					return "# ";
+				} else {
+					return ". ";
+				}
+			});
 		}
 	},
 
