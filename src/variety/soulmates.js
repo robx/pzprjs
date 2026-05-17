@@ -11,8 +11,14 @@
 			play: ["number", "numexist", "objblank", "clear"]
 		},
 		autoedit_func: "qnum",
-		autoplay_func: "qnum",
-
+		mouseinputAutoPlay: function() {
+			if (this.btn === "right" && this.mousemove) {
+				this.inputDot();
+			} else if (this.mouseend && this.notInputted()) {
+				this.mouseCell = null;
+				this.inputqnum();
+			}
+		},
 		inputDot: function() {
 			this.inputFixedQsub(2);
 		}
@@ -50,11 +56,11 @@
 		},
 
 		prehook: {
-			qsub: function() {
-				return !this.isValid();
+			qsub: function(num) {
+				return num && (this.isEmpty() || this.isNum());
 			},
-			anum: function() {
-				return !this.isValid();
+			anum: function(num) {
+				return num !== -1 && this.isEmpty();
 			}
 		},
 
