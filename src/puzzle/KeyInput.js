@@ -193,6 +193,7 @@ pzpr.classmgr.makeCommon({
 		// kc.inputKeys()   キーボードイベントを実行する
 		//---------------------------------------------------------------------------
 		inputKeys: function(array) {
+			this.cursor.isActive = true;
 			for (var i = 0; i < arguments.length; i++) {
 				var ca = arguments[i];
 
@@ -255,6 +256,12 @@ pzpr.classmgr.makeCommon({
 				return;
 			}
 			if (!this.isenablemode()) {
+				return;
+			}
+			if (this.keydown && !this.cursor.isActive) {
+				this.cursor.isActive = true;
+				this.cancelDefault = true;
+				this.cursor.draw();
 				return;
 			}
 			if (this.keydown && this.moveTarget(c)) {
@@ -456,6 +463,7 @@ pzpr.classmgr.makeCommon({
 			} else if (this.disableAnum && this.puzzle.playmode) {
 				this.targetdir = 5;
 			}
+			this.isActive = !this.puzzle.playeronly;
 		},
 		init: function(bx, by) {
 			this.bx = bx;
@@ -480,6 +488,7 @@ pzpr.classmgr.makeCommon({
 		maxy: null,
 
 		crosstype: false,
+		isActive: true,
 
 		//---------------------------------------------------------------------------
 		// tc.initCursor()           初期化時にカーソルの位置を設定する

@@ -2065,12 +2065,16 @@ pzpr.classmgr.makeCommon({
 		},
 
 		drawCursor: function(islarge, isdraw) {
+			if (isdraw !== false) {
+				isdraw = this.puzzle.getConfig("cursor") && this.puzzle.cursor.isActive;
+			}
+
 			this.drawRawCursor(
 				"target_cursor",
 				"",
 				this.puzzle.cursor,
 				islarge,
-				isdraw !== false && this.puzzle.getConfig("cursor"),
+				isdraw,
 				this.puzzle.editmode ? this.targetColorEdit : this.targetColorPlay
 			);
 		},
@@ -2177,10 +2181,7 @@ pzpr.classmgr.makeCommon({
 			var target = cursor.targetdir;
 			var cell = cursor.getc();
 
-			if (
-				cursor.disableAnum &&
-				this.puzzle.mouse.inputMode.indexOf("number") === -1
-			) {
+			if (!cursor.isActive) {
 				target = 0;
 			}
 

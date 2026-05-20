@@ -51,6 +51,11 @@ pzpr.classmgr.makeCommon({
 			cell.setQsub(this.inputData === unshade ? 1 : 0);
 
 			cell.draw();
+
+			if (this.cursor.isActive) {
+				this.cursor.isActive = false;
+				this.cursor.draw();
+			}
 		},
 		initFirstCell: function(cell) {
 			if (!this.firstCell.isnull) {
@@ -136,7 +141,7 @@ pzpr.classmgr.makeCommon({
 				cell.noNum()
 			) {
 				this.setcursorsnum(cell);
-			} else if (cell !== this.cursor.getc()) {
+			} else if (cell !== this.cursor.getc() || !this.cursor.isActive) {
 				this.setcursor(cell);
 			} else {
 				this.inputqnum_main(cell);
@@ -424,6 +429,10 @@ pzpr.classmgr.makeCommon({
 					this.inputarrow_cell_main(cell, dir);
 					cell.draw();
 					this.mousereset();
+					if (this.cursor.isActive) {
+						this.cursor.isActive = false;
+						this.cursor.draw();
+					}
 					return;
 				}
 			}
@@ -677,6 +686,11 @@ pzpr.classmgr.makeCommon({
 					border.removeBorder();
 				}
 				border.draw();
+
+				if (this.cursor.isActive) {
+					this.cursor.isActive = false;
+					this.cursor.draw();
+				}
 			}
 			this.prevPos = pos;
 		},
@@ -697,6 +711,11 @@ pzpr.classmgr.makeCommon({
 					border.setQsub(0);
 				}
 				border.draw();
+
+				if (this.cursor.isActive) {
+					this.cursor.isActive = false;
+					this.cursor.draw();
+				}
 			}
 			this.prevPos = pos;
 		},
@@ -740,6 +759,11 @@ pzpr.classmgr.makeCommon({
 					border.removeLine();
 				}
 				border.draw();
+
+				if (this.cursor.isActive) {
+					this.cursor.isActive = false;
+					this.cursor.draw();
+				}
 			}
 			this.prevPos = pos;
 		},

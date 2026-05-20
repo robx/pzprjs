@@ -7,6 +7,7 @@ var pzpr = require("../../dist/js/pzpr.js");
 var testdata = require("../load_testdata.js");
 
 function execmouse(puzzle, strs) {
+	puzzle.cursor.isActive = true;
 	var buttons = strs[1].split("+");
 	var button = buttons[buttons.length - 1];
 
