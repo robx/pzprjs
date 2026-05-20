@@ -121,6 +121,31 @@
 				border.drawaround();
 			}
 		},
+		
+		inputqnum: function() {
+			var cell = this.getcell();
+			if (
+				cell.isnull ||
+				cell === this.mouseCell ||
+				(cell.ques !== 0 && this.puzzle.playmode)
+			) {
+				return;
+			}
+
+			if (
+				this.cursor.modesnum &&
+				this.puzzle.playmode &&
+				!this.cursor.checksnum(this.inputPoint) &&
+				cell.noNum()
+			) {
+				this.setcursorsnum(cell);
+			} else if (cell !== this.cursor.getc()) {
+				this.setcursor(cell);
+			} else {
+				this.inputqnum_main(cell);
+			}
+			this.mouseCell = cell;
+		},
 		inputclean_all: function() {
 			var pos = this.getpos(0.31);
 			if (this.prevPos.equals(pos)) {
@@ -572,6 +597,8 @@
 						pstr = qn.toString(16);
 					} else if (qn >= 16 && qn < 256) {
 						pstr = "-" + qn.toString(16);
+					} else if (qn >= 256 && qn < 4096) {
+						pstr = "+" + qn.toString(16);
 					} else {
 						count++;
 					}
