@@ -329,7 +329,7 @@
 				var gwdev = Math.max(1, Math.round(gw / pxSize));
 				this.gw = gwdev * pxSize;
 
-				var lw = Math.max(this.cw / this.lwratio, this.lwmin);
+				var lw = Math.max(this.cw / this.lwratio, this.lwmin * this.gw);
 				var lwdev = Math.max(1, Math.round(lw / pxSize));
 				this.lw = lwdev * pxSize;
 				this.lm = this.lw / 2;
