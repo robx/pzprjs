@@ -443,10 +443,27 @@ pzpr.classmgr.makeCommon({
 			) {
 				this.inputMode = mode;
 				this.savedInputMode[this.puzzle.editmode ? "edit" : "play"] = mode;
+				this.autohide_cursor();
 				this.puzzle.redraw();
 			} else {
 				throw Error("Invalid input mode: " + mode);
 			}
+		},
+		autohide_cursor: function() {
+			if (
+				this.inputMode.startsWith("number") ||
+				this.inputMode.startsWith("letter")
+			) {
+				this.cursor.isActive = true;
+			} else if (this.inputMode !== "auto") {
+				this.cursor.isActive = false;
+			} else if (this.puzzle.editmode) {
+				this.cursor.isActive = true;
+			} else if (this.cursor.disableAnum) {
+				this.cursor.isActive = false;
+			}
+
+			this.cursor.draw();
 		},
 		getInputModeList: function(type) {
 			if (this.puzzle.instancetype === "viewer") {
@@ -611,12 +628,14 @@ pzpr.classmgr.makeCommon({
 		setcursor: function(pos) {
 			var pos0 = this.cursor.getaddr();
 			this.cursor.setaddr(pos);
+			this.cursor.isActive = true;
 			pos0.draw();
 			pos.draw();
 		},
 		setcursorsnum: function(pos) {
 			var pos0 = this.cursor.getaddr();
 			this.cursor.setaddr(pos);
+			this.cursor.isActive = true;
 			var target;
 			var bx = this.inputPoint.bx,
 				by = this.inputPoint.by;

@@ -63,10 +63,15 @@
 		}
 	},
 	"MouseEvent@meidjuluk": {
-		autoplay_func: "border",
 		inputModes: {
 			edit: ["number", "empty", "clear"],
 			play: ["number", "border", "subline"]
+		},
+		mouseinputAutoPlay: function() {
+			this.mouseinputAutoPlay_border();
+			if (this.mouseend && this.notInputted()) {
+				this.inputqnum();
+			}
 		}
 	},
 
@@ -450,7 +455,11 @@
 			this.drawChassis();
 
 			this.drawBank();
-			this.drawTarget();
+			if (this.pid === "meidjuluk") {
+				this.drawCursor();
+			} else {
+				this.drawTarget();
+			}
 		},
 
 		getNumberTextCore: function(num) {
@@ -480,14 +489,6 @@
 			g.fillStyle = this.getBankPieceColor(piece);
 			var str = piece.num >= 0 ? "" + piece.num : "";
 			this.disptext(str, x, y, { ratio: 0.65 });
-		},
-
-		drawTarget: function() {
-			this.drawCursor(
-				true,
-				this.puzzle.editmode ||
-					this.puzzle.mouse.inputMode.indexOf("number") >= 0
-			);
 		}
 	},
 	"Graphic@meidjuluk": {

@@ -74,7 +74,6 @@
 			var consonant =
 				cell.qchar === 0 ? "" : String.fromCharCode(97 + cell.qchar);
 
-			// TODO: Support alias of multiple letters
 			if (ca === "enter") {
 				this.cursor.toggleDir();
 			} else if (ca === "BS") {
