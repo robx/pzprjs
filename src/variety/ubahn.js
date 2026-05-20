@@ -13,7 +13,10 @@
 		},
 
 		mouseinput_number: function() {
-			if (this.mousestart) {
+			if (!this.mousestart) {
+			} else if (this.puzzle.playmode) {
+				this.inputqnum();
+			} else {
 				this.inputqnum_excell();
 			}
 		},
@@ -24,6 +27,8 @@
 						this.inputqcmp();
 					}
 					this.mouseinputAutoPlay_line();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputqnum();
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
@@ -47,17 +52,22 @@
 
 		inputqcmp: function() {
 			var excell = this.getcell_excell();
-			if (excell.isnull || excell.noNum() || excell.group !== "excell") {
+			if (excell.isnull || excell.group !== "excell") {
 				return;
 			}
 
-			excell.setQcmp(+!excell.qcmp);
-			excell.draw();
+			if (this.cursor.isActive) {
+				this.cursor.isActive = false;
+				this.cursor.draw();
+			}
 
-			this.mousereset();
+			if (!excell.noNum()) {
+				excell.setQcmp(+!excell.qcmp);
+				excell.draw();
+
+				this.mousereset();
+			}
 		}
-
-		// TODO mouse input for pencil marks
 	},
 
 	KeyEvent: {
@@ -224,20 +234,12 @@
 
 			this.drawExCellDecorations();
 
-			this.drawTarget();
+			this.drawCursor();
 			this.drawSubNumbers(true);
 		},
 
 		getNumberTextCore_letter: function(num) {
 			return "OLITX"[num] || "";
-		},
-
-		drawTarget: function() {
-			this.drawCursor(
-				true,
-				this.puzzle.editmode ||
-					this.puzzle.mouse.inputMode.indexOf("number") >= 0
-			);
 		},
 
 		drawGrid: function() {
