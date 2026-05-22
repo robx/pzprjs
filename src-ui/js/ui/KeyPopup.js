@@ -460,9 +460,10 @@ ui.keypopup = {
 			itemlist = [];
 		if (mode === 3 && ui.puzzle.klass.Cell.prototype.numberWithMB) {
 			var mbcolor = ui.puzzle.painter.mbcolor;
+			var dottext = pid === "soulmates" ? "・" : "×";
 			itemlist.push(
 				["q", { text: "○", color: mbcolor }],
-				["w", { text: "×", color: mbcolor }],
+				["w", { text: dottext, color: mbcolor }],
 				" ",
 				null
 			);
