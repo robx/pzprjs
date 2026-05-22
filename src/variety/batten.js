@@ -286,7 +286,7 @@
 				g.vid = "s_checkerboard_back_" + cross.id;
 				if (cross.qnum === 1) {
 					g.fillStyle = error ? this.errcolor1 : this.quescolor;
-					g.strokeStyle = this.bgcolor;
+					g.strokeStyle = "white";
 					g.shapeRectCenter(px, py, rw + outw, rh + outw);
 				} else {
 					g.vhide();
@@ -294,7 +294,7 @@
 
 				g.vid = "s_checkerboard_front_" + cross.id;
 				if (cross.qnum === 1) {
-					g.fillStyle = error ? this.errbcolor1 : this.bgcolor;
+					g.fillStyle = error ? this.errbcolor1 : "white";
 					g.beginPath();
 					g.moveTo(px - rw, py - rh);
 					g.lineTo(px, py - rh);
