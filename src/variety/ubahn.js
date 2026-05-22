@@ -184,7 +184,32 @@
 		numberAsLetter: true,
 		disableAnum: true,
 		minnum: 0,
-		maxnum: 4
+		maxnum: 4,
+
+		getAutoKind: function() {
+			var snum = null;
+			for (var i = 0; i < this.snum.length; i++) {
+				if (this.snum[i] >= 0) {
+					snum = snum === null ? this.snum[i] : false;
+				}
+			}
+			if (snum) {
+				return snum;
+			}
+
+			for (var dir in this.adjborder) {
+				var border = this.adjborder[dir];
+				if (!border.line && !border.qsub && !border.isnull) {
+					return null;
+				}
+			}
+
+			if (this.isLineStraight()) {
+				return 1;
+			}
+
+			return this.lcnt >= 2 ? this.lcnt : null;
+		}
 	},
 
 	Board: {
@@ -218,6 +243,15 @@
 	Graphic: {
 		enablebcolor: true,
 		shadecolor: "#444444",
+		autocmp: "kinds",
+		// TODO see if autocmp can be off by default
+
+		ttcolor: "rgb(200,200,200)",
+		subcolor: "rgb(100,100,250)",
+		qsubcolor1: "#B3FFB3",
+		qsubcolor2: "#C0E0FF",
+		qsubcolor3: "#FFB3FF",
+		qsubcolor4: "#FFCC80",
 
 		paint: function() {
 			this.drawBGCells();
@@ -236,6 +270,28 @@
 
 			this.drawCursor();
 			this.drawSubNumbers(true);
+		},
+
+		getBGCellColor: function(cell) {
+			if (!this.board.haserror && this.puzzle.execConfig("autocmp")) {
+				switch (cell.getAutoKind()) {
+					case 1:
+						return this.qsubcolor1;
+					case 2:
+						return this.qsubcolor2;
+					case 3:
+						return this.qsubcolor3;
+					case 4:
+						return this.qsubcolor4;
+					default:
+						return null;
+				}
+			}
+
+			if (cell.error === 1 || cell.qinfo === 1) {
+				return this.errbcolor1;
+			}
+			return null;
 		},
 
 		getNumberTextCore_letter: function(num) {
