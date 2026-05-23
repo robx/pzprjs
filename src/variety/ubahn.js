@@ -204,7 +204,7 @@
 				}
 			}
 
-			if (this.isLineStraight()) {
+			if (this.isLineCurve()) {
 				return 1;
 			}
 
@@ -419,7 +419,6 @@
 
 	FileIO: {
 		decodeData: function() {
-			// TODO save pencil marks
 			this.decodeCellExCell(function(obj, ca) {
 				if (ca === ".") {
 					return;
@@ -429,6 +428,8 @@
 						ca = ca.substring(1);
 					}
 					obj.qnum = +ca;
+				} else if (obj.group === "cell") {
+					this.setCellSnum(obj, ca);
 				}
 			});
 			this.decodeBorderLine();
@@ -438,7 +439,10 @@
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
 					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
 				}
-				return ". ";
+
+				var snum = obj.group === "cell" ? this.getCellSnum(obj) || "." : ".";
+
+				return snum + " ";
 			});
 			this.encodeBorderLine();
 		}
