@@ -42,8 +42,6 @@
     "use_tri.2": "引っ張り入力",
     "use_tri.3": "1ボタン",
     "bgcolor.menu": "背景色入力",
-    "autoerr.menu.hitori": "重複した数字を表示",
-    "autoerr.menu.gokigen": "ループした斜線の色分け",
     "multierr": "複数エラー検出",
     "forceallcell.menu": "全マス数字必須",
     "dirauxmark.menu": "方向の補助記号",

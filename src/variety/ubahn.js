@@ -243,8 +243,6 @@
 	Graphic: {
 		enablebcolor: true,
 		shadecolor: "#444444",
-		autocmp: "kinds",
-		// TODO see if autocmp can be off by default
 
 		ttcolor: "rgb(200,200,200)",
 		subcolor: "rgb(100,100,250)",
@@ -273,7 +271,7 @@
 		},
 
 		getBGCellColor: function(cell) {
-			if (!this.board.haserror && this.puzzle.execConfig("autocmp")) {
+			if (!this.board.haserror && this.puzzle.execConfig("autoerr")) {
 				switch (cell.getAutoKind()) {
 					case 1:
 						return this.qsubcolor1;
