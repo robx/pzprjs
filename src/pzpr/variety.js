@@ -264,6 +264,7 @@
 			kusabi: [0, 0, "クサビリンク", "Kusabi"],
 			ladders: [0, 0, "はしごをかけろ", "Ladders"],
 			lapaz: [0, 0, "La Paz", "La Paz"],
+			landmeasure: [0, 0, "Land Measurement", "Land Measurement"],
 			lightshadow: [0, 0, "Light and Shadow", "Light and Shadow"],
 			lightup: [
 				0,

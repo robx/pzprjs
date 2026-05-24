@@ -942,13 +942,17 @@ pzpr.classmgr.makeCommon({
 
 				// 数字の描画
 				g.vid = "cross_text_" + cross.id;
-				if (cross.qnum >= 0) {
+				var txt = this.getCrossNumberText(cross, cross.qnum);
+				if (txt) {
 					g.fillStyle = this.quescolor;
-					this.disptext("" + cross.qnum, px, py, option);
+					this.disptext(txt, px, py, option);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+		getCrossNumberText: function(cross, num) {
+			return num >= 0 ? "" + num : null;
 		},
 		drawCrossMarks: function() {
 			var g = this.vinc("cross_mark", "auto", true);
