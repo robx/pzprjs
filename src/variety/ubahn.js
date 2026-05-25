@@ -166,7 +166,7 @@
 
 	TargetCursor: {
 		initCursor: function() {
-			this.init(-1, -1);
+			this.init(1, -1);
 			this.adjust_init();
 		},
 		setminmax_customize: function() {
@@ -287,6 +287,7 @@
 
 		paint: function() {
 			this.drawBGCells();
+			this.drawBGExCells();
 			this.drawDotCells();
 
 			this.drawGrid();
@@ -304,24 +305,28 @@
 			this.drawSubNumbers(true);
 		},
 
+		colorForType: function(type) {
+			switch (type) {
+				case 1:
+					return this.qsubcolor1;
+				case 2:
+					return this.qsubcolor2;
+				case 3:
+					return this.qsubcolor3;
+				case 4:
+					return this.qsubcolor4;
+				default:
+					return null;
+			}
+		},
+
 		getBGCellColor: function(cell) {
 			if (!cell.isValid()) {
 				return "black";
 			}
 
 			if (!this.board.haserror && this.puzzle.execConfig("autoerr")) {
-				switch (cell.getAutoKind()) {
-					case 1:
-						return this.qsubcolor1;
-					case 2:
-						return this.qsubcolor2;
-					case 3:
-						return this.qsubcolor3;
-					case 4:
-						return this.qsubcolor4;
-					default:
-						return null;
-				}
+				return this.colorForType(cell.getAutoKind());
 			}
 
 			if (cell.error === 1 || cell.qinfo === 1) {
@@ -403,6 +408,34 @@
 			g.fillRect(0, -(exWidth + lm), boardWidth, lw);
 		},
 
+		drawBGExCells: function() {
+			var g = this.vinc("decobg", "crispEdges", true),
+				bw = this.bw,
+				bh = this.bh;
+
+			for (var color = 1; color <= 4; color++) {
+				for (var dir = 0; dir <= 1; dir++) {
+					if (!color && !dir) {
+						continue;
+					}
+
+					g.vid = "bg_deco_" + color + dir;
+					if (this.puzzle.execConfig("autoerr")) {
+						g.fillStyle = this.colorForType(color);
+						var axis = color * -2 + 1;
+						g.fillRectCenter(
+							(dir ? axis : -1) * bw,
+							(dir ? -1 : axis) * bh,
+							bw * 0.8,
+							bh * 0.8
+						);
+					} else {
+						g.vhide();
+					}
+				}
+			}
+		},
+
 		drawExCellDecorations: function() {
 			var g = this.vinc("deco", "crispEdges", true),
 				lm = this.lm,
@@ -458,7 +491,6 @@
 	},
 
 	FileIO: {
-		// TODO encode/decode invalid cells
 		decodeData: function() {
 			this.decodeCellExCell(function(obj, ca) {
 				if (ca === ".") {
