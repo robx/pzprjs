@@ -1,0 +1,606 @@
+(function(pidlist, classbase) {
+	if (typeof module === "object" && module.exports) {
+		module.exports = [pidlist, classbase];
+	} else {
+		pzpr.classmgr.makeCustom(pidlist, classbase);
+	}
+})(["ubahn"], {
+	MouseEvent: {
+		use: true,
+		inputModes: {
+			edit: ["number", "empty"],
+			play: ["line", "peke", "number", "completion"]
+		},
+
+		mouseinput_number: function() {
+			if (!this.mousestart) {
+			} else if (this.puzzle.playmode) {
+				this.inputqnum();
+			} else {
+				this.inputqnum_excell();
+			}
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (this.mousestart || this.mousemove) {
+					if (this.mousestart) {
+						this.inputqcmp();
+					}
+					this.mouseinputAutoPlay_line();
+				} else if (this.mouseend && this.notInputted()) {
+					this.inputqnum();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart) {
+					this.inputqnum_excell();
+				}
+			}
+		},
+
+		inputqnum_excell: function() {
+			var excell = this.getcell_excell();
+			if (excell.isnull || excell.group !== "excell") {
+				return;
+			}
+
+			if (excell !== this.cursor.getex()) {
+				this.setcursor(excell);
+			} else {
+				this.inputqnum_main(excell);
+			}
+		},
+
+		inputqcmp: function() {
+			var excell = this.getcell_excell();
+			if (excell.isnull || excell.group !== "excell") {
+				return;
+			}
+
+			if (this.cursor.isActive) {
+				this.cursor.isActive = false;
+				this.cursor.draw();
+			}
+
+			if (!excell.noNum()) {
+				excell.setQcmp(+!excell.qcmp);
+				excell.draw();
+
+				this.mousereset();
+			}
+		}
+	},
+
+	KeyEvent: {
+		enablemake: true,
+		enableplay: true,
+		moveTarget: function(ca) {
+			if (this.puzzle.playmode) {
+				return this.moveTCell(ca);
+			}
+
+			var cursor = this.cursor;
+			var excell0 = cursor.getex(),
+				dir = excell0.NDIR;
+			switch (ca) {
+				case "up":
+					if (cursor.miny < cursor.by) {
+						dir = excell0.UP;
+					}
+					break;
+				case "down":
+					if (
+						(cursor.bx < 0 && cursor.maxy > cursor.by) ||
+						(cursor.bx > 0 && cursor.by < -1)
+					) {
+						dir = excell0.DN;
+					}
+					break;
+				case "left":
+					if (cursor.minx < cursor.bx) {
+						dir = excell0.LT;
+					}
+					break;
+				case "right":
+					if (
+						(cursor.by < 0 && cursor.maxx > cursor.bx) ||
+						(cursor.by > 0 && cursor.bx < -1)
+					) {
+						dir = excell0.RT;
+					}
+					break;
+			}
+
+			if (dir !== excell0.NDIR) {
+				cursor.movedir(dir, 2);
+
+				excell0.draw();
+				cursor.draw();
+
+				return true;
+			}
+			return false;
+		},
+
+		keyinput: function(ca) {
+			if (this.puzzle.playmode) {
+				this.key_inputqnum(ca);
+			} else {
+				this.key_inputexcell(ca);
+			}
+		},
+
+		getNewNumber: function(cell, ca, cur) {
+			if (cell.numberAsLetter) {
+				if (!cell.isValid()) {
+					return null;
+				}
+				var idx = "olitx".indexOf(ca);
+				if (idx !== -1) {
+					return idx;
+				} else if (ca === "-") {
+					return -2;
+				} else if (ca === "BS" || ca === " ") {
+					return -1;
+				} else if (ca >= "0" && ca <= "4") {
+					return +ca;
+				}
+				return null;
+			} else {
+				return this.common.getNewNumber.call(this, cell, ca, cur);
+			}
+		},
+
+		key_inputexcell: function(ca) {
+			var excell = this.cursor.getex();
+
+			var val = this.getNewNumber(excell, ca, excell.qnum);
+			if (val === null) {
+				return;
+			}
+			excell.setQnum(val);
+
+			this.prev = excell;
+			this.cursor.draw();
+		}
+	},
+
+	TargetCursor: {
+		initCursor: function() {
+			this.init(1, -1);
+			this.adjust_init();
+		},
+		setminmax_customize: function() {
+			if (this.puzzle.editmode) {
+				return;
+			}
+			this.minx = 1;
+			this.miny = 1;
+		}
+	},
+
+	ExCell: {
+		disInputHatena: true,
+
+		minnum: 0,
+		maxnum: function() {
+			var bx = this.bx,
+				by = this.by;
+			if (bx < 0 && by < 0) {
+				return 0;
+			}
+			return by < 0 ? this.board.rows : this.board.cols;
+		}
+	},
+
+	Cell: {
+		enableSubNumberArray: true,
+		numberAsLetter: true,
+		disableAnum: true,
+		minnum: 0,
+		maxnum: 4,
+
+		getAutoKind: function() {
+			var snum = null;
+			for (var i = 0; i < this.snum.length; i++) {
+				if (this.snum[i] >= 0) {
+					snum = snum === null ? this.snum[i] : false;
+				}
+			}
+			if (snum) {
+				return snum;
+			}
+
+			for (var dir in this.adjborder) {
+				var border = this.adjborder[dir];
+				if (!border.line && !border.qsub && !border.isnull) {
+					return null;
+				}
+			}
+
+			if (this.isLineCurve()) {
+				return 1;
+			}
+
+			return this.lcnt >= 2 ? this.lcnt : null;
+		},
+		noLP: function(dir) {
+			return this.isEmpty();
+		},
+		isNum: function() {
+			return this.isEmpty();
+		},
+
+		posthook: {
+			ques: function() {
+				if (!this.noLP()) {
+					return;
+				}
+				this.clrSnum();
+				for (var b in this.adjborder) {
+					this.adjborder[b].removeLine();
+				}
+			}
+		}
+	},
+	Border: {
+		enableLineNG: true
+	},
+
+	Board: {
+		hasborder: 1,
+		hasexcell: 1,
+
+		cols: 6,
+		rows: 6,
+
+		excellRows: function() {
+			return 4;
+		},
+		excellCols: function() {
+			return 4;
+		}
+	},
+
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			this.adjustExCellTopLeft_1(key, d);
+		},
+		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d, true);
+		}
+	},
+
+	LineGraph: {
+		enabled: true
+	},
+
+	Graphic: {
+		enablebcolor: true,
+		shadecolor: "#444444",
+
+		ttcolor: "rgb(200,200,200)",
+		subcolor: "rgb(100,100,250)",
+		qsubcolor1: "#B3FFB3",
+		qsubcolor2: "#C0E0FF",
+		qsubcolor3: "#FFB3FF",
+		qsubcolor4: "#FFCC80",
+
+		paint: function() {
+			this.drawBGCells();
+			this.drawBGExCells();
+			this.drawDotCells();
+
+			this.drawGrid();
+			this.drawTargetSubNumber(true);
+			this.drawNumbersExCell();
+
+			this.drawChassis(true);
+
+			this.drawPekes();
+			this.drawLines();
+
+			this.drawExCellDecorations();
+
+			this.drawCursor();
+			this.drawSubNumbers(true);
+		},
+
+		colorForType: function(type) {
+			switch (type) {
+				case 1:
+					return this.qsubcolor1;
+				case 2:
+					return this.qsubcolor2;
+				case 3:
+					return this.qsubcolor3;
+				case 4:
+					return this.qsubcolor4;
+				default:
+					return null;
+			}
+		},
+
+		getBGCellColor: function(cell) {
+			if (!cell.isValid()) {
+				return "black";
+			}
+
+			if (!this.board.haserror && this.puzzle.execConfig("autoerr")) {
+				return this.colorForType(cell.getAutoKind());
+			}
+
+			if (cell.error === 1 || cell.qinfo === 1) {
+				return this.errbcolor1;
+			}
+			return null;
+		},
+
+		getNumberTextCore_letter: function(num) {
+			return "OLITX"[num] || "";
+		},
+
+		drawGrid: function() {
+			var g = this.vinc("grid", "crispEdges", true),
+				bd = this.board;
+
+			// 外枠まで描画するわけじゃないので、maxbxとか使いません
+			var x1 = this.range.x1,
+				y1 = this.range.y1,
+				x2 = this.range.x2,
+				y2 = this.range.y2;
+
+			x1 -= x1 & 1;
+			y1 -= y1 & 1; /* (x1,y1)を外側の偶数位置に移動する */
+			if (x1 >= x2 || y1 >= y2) {
+				return;
+			}
+
+			var bw = this.bw,
+				bh = this.bh;
+			var xa = Math.max(x1, bd.minbx + 2),
+				xb = Math.min(x2, bd.maxbx - 2);
+			var ya = Math.max(y1, bd.minby + 2),
+				yb = Math.min(y2, bd.maxby - 2);
+
+			// isdraw!==false: 指定無しかtrueのときは描画する
+			g.lineWidth = this.gw;
+			g.strokeStyle = this.gridcolor;
+			for (var i = xa; i <= xb; i += 2) {
+				if (i === 0) {
+					continue;
+				}
+
+				g.vid = "bdy_" + i;
+				var px = i * bw,
+					py1 = i < 0 ? 0 : bd.minby * bh,
+					py2 = bd.maxby * bh;
+				g.strokeLine(px, py1, px, py2);
+			}
+			for (var i = ya; i <= yb; i += 2) {
+				if (i === 0) {
+					continue;
+				}
+				g.vid = "bdx_" + i;
+				var py = i * bh,
+					px1 = i < 0 ? 0 : bd.minbx * bw,
+					px2 = bd.maxbx * bw;
+				g.strokeLine(px1, py, px2, py);
+			}
+		},
+
+		drawChassis: function() {
+			this.common.drawChassis.call(this, true);
+
+			var g = this.vinc("chassis2", "crispEdges", true),
+				bd = this.board;
+
+			var exWidth = bd.minbx * -0.5 * this.cw;
+			var exHeight = bd.minby * -0.5 * this.ch;
+
+			var boardWidth = bd.cols * this.cw,
+				boardHeight = bd.rows * this.ch;
+			var lw = this.lw,
+				lm = this.lm;
+			g.fillStyle = this.quescolor;
+			g.vid = "chs5_";
+			g.fillRect(-(exHeight + lm), 0, lw, boardHeight);
+			g.vid = "chs6_";
+			g.fillRect(0, -(exWidth + lm), boardWidth, lw);
+		},
+
+		drawBGExCells: function() {
+			var g = this.vinc("decobg", "crispEdges", true),
+				bw = this.bw,
+				bh = this.bh;
+
+			for (var color = 1; color <= 4; color++) {
+				for (var dir = 0; dir <= 1; dir++) {
+					if (!color && !dir) {
+						continue;
+					}
+
+					g.vid = "bg_deco_" + color + dir;
+					if (this.puzzle.execConfig("autoerr")) {
+						g.fillStyle = this.colorForType(color);
+						var axis = color * -2 + 1;
+						g.fillRectCenter(
+							(dir ? axis : -1) * bw,
+							(dir ? -1 : axis) * bh,
+							bw * 0.8,
+							bh * 0.8
+						);
+					} else {
+						g.vhide();
+					}
+				}
+			}
+		},
+
+		drawExCellDecorations: function() {
+			var g = this.vinc("deco", "crispEdges", true),
+				lm = this.lm,
+				bw = this.bw,
+				bh = this.bh;
+			g.fillStyle = this.quescolor;
+
+			g.vid = "d_line_1";
+			g.fillRectCenter(-1.5 * bw + lm / 2, -1 * bh, (bw + lm) / 2, lm);
+			g.vid = "d_line_2";
+			g.fillRectCenter(-1 * bw, -1.5 * bh + lm / 2, lm, (bh + lm) / 2);
+			g.vid = "d_line_3";
+			g.fillRectCenter(-1 * bw, -3 * bh, bw, lm);
+			g.vid = "d_line_4";
+			g.fillRectCenter(-3 * bw, -1 * bh, lm, bh);
+			g.vid = "d_line_5";
+			g.fillRectCenter(-1 * bw, -5 * bh, bw, lm);
+			g.vid = "d_line_6";
+			g.fillRectCenter(-4.5 * bw, -1 * bh, bw / 2, lm);
+			g.vid = "d_line_7";
+			g.fillRectCenter(-5 * bw, -1 * bh, lm, bh);
+			g.vid = "d_line_8";
+			g.fillRectCenter(-1 * bw, -4.5 * bh, lm, bh / 2);
+			g.vid = "d_line_9";
+			g.fillRectCenter(-1 * bw, -7 * bh, bw, lm);
+			g.vid = "d_line_10";
+			g.fillRectCenter(-1 * bw, -7 * bh, lm, bh);
+			g.vid = "d_line_11";
+			g.fillRectCenter(-7 * bw, -1 * bh, bw, lm);
+			g.vid = "d_line_12";
+			g.fillRectCenter(-7 * bw, -1 * bh, lm, bh);
+		},
+
+		getQuesNumberColor: function(cell) {
+			if (cell.error === 1) {
+				return this.errcolor1;
+			} else if (cell.qcmp) {
+				return this.qcmpcolor;
+			}
+			return this.quescolor;
+		}
+	},
+
+	Encode: {
+		decodePzpr: function(type) {
+			this.decodeNumber16ExCell();
+			this.decodeEmpty();
+		},
+		encodePzpr: function(type) {
+			this.encodeNumber16ExCell();
+			this.encodeEmpty();
+		}
+	},
+
+	FileIO: {
+		decodeData: function() {
+			this.decodeCellExCell(function(obj, ca) {
+				if (ca === ".") {
+					return;
+				} else if (obj.group === "excell" && !obj.isnull) {
+					if (ca[0] === "c") {
+						obj.qcmp = 1;
+						ca = ca.substring(1);
+					}
+					obj.qnum = +ca;
+				} else if (obj.group === "cell") {
+					if (ca === "#") {
+						obj.ques = 7;
+					} else {
+						this.setCellSnum(obj, ca);
+					}
+				}
+			});
+			this.decodeBorderLine();
+		},
+		encodeData: function() {
+			this.encodeCellExCell(function(obj) {
+				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
+					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
+				} else if (obj.group === "cell" && !obj.isValid()) {
+					return "# ";
+				}
+
+				var snum = obj.group === "cell" ? this.getCellSnum(obj) || "." : ".";
+
+				return snum + " ";
+			});
+			this.encodeBorderLine();
+		}
+	},
+
+	AnsCheck: {
+		checklist: [
+			"checkLineExist+",
+			"checkCurveCount",
+			"checkStraightCount",
+			"checkJunctionCount",
+			"checkCrossCount",
+			"checkDeadendLine+",
+			"checkOneLoop"
+		],
+
+		checkCurveCount: function() {
+			this.checkRowsCols(
+				this.countFunctionGeneric(-1, function(c) {
+					return c.isLineCurve();
+				}),
+				"exCurveNe"
+			);
+		},
+		checkStraightCount: function() {
+			this.checkRowsCols(
+				this.countFunctionGeneric(-3, function(c) {
+					return c.isLineStraight();
+				}),
+				"exStraightNe"
+			);
+		},
+		checkJunctionCount: function() {
+			this.checkRowsCols(
+				this.countFunctionGeneric(-5, function(c) {
+					return c.lcnt === 3;
+				}),
+				"exJunctionNe"
+			);
+		},
+		checkCrossCount: function() {
+			this.checkRowsCols(
+				this.countFunctionGeneric(-7, function(c) {
+					return c.lcnt === 4;
+				}),
+				"exCrossNe"
+			);
+		},
+
+		countFunctionGeneric: function(pos, func) {
+			var bd = this.board;
+			return function(clist) {
+				var d = clist.getRectSize();
+				var count = clist.filter(function(c) {
+					return func(c);
+				}).length;
+
+				var result = true;
+
+				if (d.x1 === d.x2) {
+					var exc = bd.getex(d.x1, pos);
+					if (exc.qnum !== -1 && exc.qnum !== count) {
+						exc.seterr(1);
+						result = false;
+					}
+				}
+				if (d.y1 === d.y2) {
+					var exc = bd.getex(pos, d.y1);
+					if (exc.qnum !== -1 && exc.qnum !== count) {
+						exc.seterr(1);
+						result = false;
+					}
+				}
+
+				if (!result) {
+					clist.seterr(1);
+				}
+				return result;
+			};
+		}
+	}
+});

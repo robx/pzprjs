@@ -438,7 +438,11 @@
 					exec = !!puzzle.painter.autocmp;
 					break;
 				case "autoerr":
-					exec = pid === "hitori" || pid === "gokigen" || pid === "wagiri";
+					exec =
+						pid === "hitori" ||
+						pid === "gokigen" ||
+						pid === "wagiri" ||
+						pid === "ubahn";
 					break;
 				case "singlenum":
 					exec = pid === "hanare" || pid === "putteria" || pid === "twinarea";

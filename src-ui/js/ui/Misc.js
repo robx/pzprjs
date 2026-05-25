@@ -251,6 +251,7 @@ function toBGimage(pid) {
 		"trainstations",
 		"tslither",
 		"turnaround",
+		"ubahn",
 		"voxas",
 		"vslither",
 		"wafusuma",
