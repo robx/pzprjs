@@ -8,7 +8,7 @@
 	MouseEvent: {
 		use: true,
 		inputModes: {
-			edit: ["number"],
+			edit: ["number", "empty"],
 			play: ["line", "peke", "number", "completion"]
 		},
 
@@ -131,6 +131,9 @@
 
 		getNewNumber: function(cell, ca, cur) {
 			if (cell.numberAsLetter) {
+				if (!cell.isValid()) {
+					return null;
+				}
 				var idx = "olitx".indexOf(ca);
 				if (idx !== -1) {
 					return idx;
@@ -138,6 +141,8 @@
 					return -2;
 				} else if (ca === "BS" || ca === " ") {
 					return -1;
+				} else if (ca >= "0" && ca <= "4") {
+					return +ca;
 				}
 				return null;
 			} else {
@@ -217,7 +222,28 @@
 			}
 
 			return this.lcnt >= 2 ? this.lcnt : null;
+		},
+		noLP: function(dir) {
+			return this.isEmpty();
+		},
+		isNum: function() {
+			return this.isEmpty();
+		},
+
+		posthook: {
+			ques: function() {
+				if (!this.noLP()) {
+					return;
+				}
+				this.clrSnum();
+				for (var b in this.adjborder) {
+					this.adjborder[b].removeLine();
+				}
+			}
 		}
+	},
+	Border: {
+		enableLineNG: true
 	},
 
 	Board: {
@@ -279,6 +305,10 @@
 		},
 
 		getBGCellColor: function(cell) {
+			if (!cell.isValid()) {
+				return "black";
+			}
+
 			if (!this.board.haserror && this.puzzle.execConfig("autoerr")) {
 				switch (cell.getAutoKind()) {
 					case 1:
@@ -419,13 +449,16 @@
 	Encode: {
 		decodePzpr: function(type) {
 			this.decodeNumber16ExCell();
+			this.decodeEmpty();
 		},
 		encodePzpr: function(type) {
 			this.encodeNumber16ExCell();
+			this.encodeEmpty();
 		}
 	},
 
 	FileIO: {
+		// TODO encode/decode invalid cells
 		decodeData: function() {
 			this.decodeCellExCell(function(obj, ca) {
 				if (ca === ".") {
@@ -437,7 +470,11 @@
 					}
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
-					this.setCellSnum(obj, ca);
+					if (ca === "#") {
+						obj.ques = 7;
+					} else {
+						this.setCellSnum(obj, ca);
+					}
 				}
 			});
 			this.decodeBorderLine();
@@ -446,6 +483,8 @@
 			this.encodeCellExCell(function(obj) {
 				if (obj.group === "excell" && !obj.isnull && obj.qnum !== -1) {
 					return (obj.qcmp ? "c" : "") + obj.qnum + " ";
+				} else if (obj.group === "cell" && !obj.isValid()) {
+					return "# ";
 				}
 
 				var snum = obj.group === "cell" ? this.getCellSnum(obj) || "." : ".";
