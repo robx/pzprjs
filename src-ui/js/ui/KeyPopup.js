@@ -252,7 +252,7 @@ ui.keypopup = {
 		heavydots: [10, 0],
 		suguru: [10, 10],
 		marutaring: [10, 0],
-		ubahn: [10, 0],
+		ubahn: [10, 135],
 		nuriloop: [10, 0],
 		tetroctb: [10, 0],
 		hasunomura: [10, 0],
@@ -420,6 +420,8 @@ ui.keypopup = {
 			this.generate_kurarin(mode);
 		} else if (type === 134) {
 			this.generate_narrowfence(mode);
+		} else if (type === 135) {
+			this.generate_ubahn(mode);
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -1058,6 +1060,13 @@ ui.keypopup = {
 	generate_lix: function(mode) {
 		this.generate_main(
 			[["l", "L"], ["i", "I"], ["x", "X"], ["-", "?"], " "],
+			3
+		);
+	},
+
+	generate_ubahn: function(mode) {
+		this.generate_main(
+			[["o", "O"], ["l", "L"], ["i", "I"], ["t", "T"], ["x", "X"], " "],
 			3
 		);
 	},
