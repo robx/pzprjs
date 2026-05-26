@@ -482,6 +482,7 @@
 			trainstations: [0, 0, "Train Stations", "Train Stations"],
 			tren: [0, 0, "パーキング", "Tren"],
 			triplace: [0, 0, "トリプレイス", "Tri-place"],
+			trizone: [0, 0, "サントイッチ", "Trizone", "lapaz"],
 			tslither: [0, 0, "Touch Slitherlink", "Touch Slitherlink", "vslither"],
 			turnaround: [0, 0, "ターンアラウンド", "Turnaround"],
 			turnrun: [0, 0, "トツゲキループ", "Turn and Run", "trainstations"],

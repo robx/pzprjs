@@ -428,7 +428,7 @@
 					exec = pid === "lollipops" || pid === "magnets";
 					break;
 				case "patchwork_leftaux":
-					exec = pid === "patchwork";
+					exec = pid === "patchwork" || pid === "trizone";
 					break;
 				case "undefcell":
 					exec =

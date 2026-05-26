@@ -885,6 +885,7 @@
     "nmShadeNe.paintarea": "The number is not equal to the number of shaded cells in the four adjacent cells.",
     "nmShadeNe.retsurin": "The number is not equal to the amount of shaded cells in its row or column.",
     "nmShadeNe.tawa": "The number of shaded cells around a number is not correct.",
+    "nmShadeNe.trizone": "The number of shaded cells around an area is not correct.",
     "nmShadeViewNe.canal": "A cell containing a clue number sees a different number of shaded cells in the four orthogonal directions.",
     "nmShapeNe": "A shape does not match the given letter.",
     "nmShootShadeNe1.kurochute": "There is not exactly one shaded cell at the given distance from the number.",

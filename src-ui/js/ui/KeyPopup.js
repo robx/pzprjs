@@ -41,6 +41,7 @@ ui.keypopup = {
 		lookair: [5, 0],
 		hebi: [5, 5],
 		tawa: [6, 0],
+		trizone: [6, 0],
 		hashikake: [8, 0],
 		tapa: [80, 0],
 		tapaloop: [80, 0],
