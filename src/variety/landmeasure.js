@@ -214,7 +214,6 @@
 			"checkZeroes",
 			"checkAllNumbers",
 			"checkInfinites",
-			"checkOnes",
 			"doneShadingDecided"
 		],
 
@@ -250,12 +249,6 @@
 			}, "crShade0");
 		},
 
-		checkOnes: function() {
-			this.checkQnumCross(function(num, shaded) {
-				return num === 1 && shaded.length !== 1;
-			}, "crShade1");
-		},
-
 		checkInfinites: function() {
 			this.checkQnumCross(function(num, shaded) {
 				if (num !== -2) {
@@ -271,8 +264,8 @@
 				if (num < 2) {
 					return false;
 				}
-				if (num === 3) {
-					return shaded.length !== 3;
+				if (num === 1 || num === 3) {
+					return shaded.length !== num;
 				}
 				if (shaded.length !== 2 || shaded[0].sblk !== shaded[1].sblk) {
 					return true;
