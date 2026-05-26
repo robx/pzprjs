@@ -98,6 +98,9 @@
 		}
 	},
 
+	Board: {
+		hasborder: 1
+	},
 	AreaShadeGraph: {
 		enabled: true,
 		coloring: true
