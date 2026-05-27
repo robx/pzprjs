@@ -510,3 +510,8 @@ syncskating: |-
   3. Chains cannot intersect themselves, but they can intersect each other outside of nodes. Line segments cannot overlap.
   4. Each chain visits each number from 1 to N in ascending order. Empty nodes can be replaced with any number.
   5. Lines of two chains connecting the same number must be parallel.
+trizone: |-
+  Shade some cells on the board, and divide the rest into regions of 3 cells.
+  1. No two shaded cells are horizontally or vertically adjacent.
+  2. Numbers must be contained in a region of 3 cells. Every region has exactly one number.
+  3. Numbers indicate how many shaded cells are horizontally or vertically adjacent to its region.
