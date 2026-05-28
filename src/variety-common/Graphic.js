@@ -927,13 +927,13 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < clist.length; i++) {
 				var cross = clist[i],
 					px = cross.bx * this.bw,
-					py = cross.by * this.bh;
+					py = cross.by * this.bh,
+					iserr = cross.error === 1 || cross.qinfo === 1;
 
 				// ○の描画
 				g.vid = "x_cp_" + cross.id;
 				if (cross.qnum !== -1) {
-					g.fillStyle =
-						cross.error === 1 || cross.qinfo === 1 ? this.errcolor1 : "white";
+					g.fillStyle = iserr ? this.errcolor1 : "white";
 					g.strokeStyle = "black";
 					g.shapeCircle(px, py, csize);
 				} else {
@@ -944,7 +944,7 @@ pzpr.classmgr.makeCommon({
 				g.vid = "cross_text_" + cross.id;
 				var txt = this.getCrossNumberText(cross, cross.qnum);
 				if (txt) {
-					g.fillStyle = this.quescolor;
+					g.fillStyle = iserr ? "white" : this.quescolor;
 					this.disptext(txt, px, py, option);
 				} else {
 					g.vhide();
