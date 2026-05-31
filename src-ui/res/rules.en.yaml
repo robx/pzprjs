@@ -490,3 +490,28 @@ longest: |-
   Draw lines over the dotted lines to divide the board into polygons.
   1. For each polygon, the side (or sides) with the biggest length must consist entirely of given borders.
   2. Each given border must be part of the longest side for at least one of the adjacent polygons.
+landmeasure: |-
+  Shade some cells on the board.
+  1. Shaded cells cannot form a loop. This includes 2x2 squares.
+  2. Number clues indicate the length of the smallest path that connects all shaded cells overlapping the clue.
+  3. A zero clue cannot overlap any shaded cells.
+  4. An infinity clue overlaps two shaded cells that do not have a valid path between them.
+mrokmrno: |-
+  Place the letter N, K, O or a smiling face or frowning face in some grid cells.
+  1. Symbols must form groups of 3 cells. Different groups cannot be orthogonally adjacent.
+  2. Two cells with the same symbol cannot share a row or column, unless another symbol is between them.
+  3. Each group contains two adjacent letters, forming the word 'OK' or the word 'NO' when read from left-to-right or from top-to-bottom.
+  4. A group with 'OK' must contain a smiling face, and a group with 'NO' must contain a frowning face.
+  5. A given O may be changed to a face.
+syncskating: |-
+  Draw lines between every node to form two chains.
+  1. Lines go straight from node to node, and can be drawn at any angle.
+  2. A chain cannot branch off. Nodes must be visited exactly once.
+  3. Chains cannot intersect themselves, but they can intersect each other outside of nodes. Line segments cannot overlap.
+  4. Each chain visits each number from 1 to N in ascending order. Empty nodes can be replaced with any number.
+  5. Lines of two chains connecting the same number must be parallel.
+trizone: |-
+  Shade some cells on the board, and divide the rest into regions of 3 cells.
+  1. No two shaded cells are horizontally or vertically adjacent.
+  2. Numbers must be contained in a region of 3 cells. Every region has exactly one number.
+  3. Numbers indicate how many shaded cells are horizontally or vertically adjacent to its region.
