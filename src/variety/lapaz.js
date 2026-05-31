@@ -1,13 +1,10 @@
-//
-// パズル固有スクリプト部 あみぼー版 amibo.js
-//
 (function(pidlist, classbase) {
 	if (typeof module === "object" && module.exports) {
 		module.exports = [pidlist, classbase];
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["lapaz"], {
+})(["lapaz", "trizone"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -26,7 +23,18 @@
 						this.inputdragcross();
 					}
 				} else if (this.mouseend && this.notInputted()) {
-					this.inputcell();
+					if (
+						this.puzzle.getConfig("patchwork_leftaux") &&
+						!this.getpos(0.25).oncell()
+					) {
+						var border = this.getborder();
+						if (!border.isnull) {
+							border.setQsub(border.qsub === 1 ? 0 : 1);
+							border.draw();
+						}
+					} else {
+						this.inputcell();
+					}
 				}
 			} else if (this.puzzle.editmode) {
 				if (this.mousestart) {
@@ -56,6 +64,12 @@
 			} else {
 				this.inputFixedQsub(1);
 			}
+		}
+	},
+	"MouseEvent@trizone": {
+		inputModes: {
+			edit: ["number", "empty", "clear"],
+			play: ["border", "shade", "unshade", "subline"]
 		}
 	},
 
@@ -110,6 +124,9 @@
 			return this.reldirbd(this.getdir(cell2, 2), 1);
 		}
 	},
+	"Cell@trizone": {
+		maxnum: 6
+	},
 	Border: {
 		isGrid: function() {
 			return (
@@ -157,6 +174,23 @@
 			return !border.isBorder();
 		}
 	},
+	"AreaRoomGraph@trizone": {
+		setExtraData: function(component) {
+			component.clist = new this.klass.CellList(component.getnodeobjs());
+
+			var set = new Set();
+
+			component.clist.each(function(cell) {
+				for (var dir in cell.adjacent) {
+					var adj = cell.adjacent[dir];
+					if (!adj.isnull && adj.room !== component) {
+						set.add(adj);
+					}
+				}
+			});
+			component.adjclist = new this.klass.CellList(Array.from(set));
+		}
+	},
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
@@ -172,6 +206,7 @@
 
 			this.drawValidDashedGrid();
 			this.drawBorders();
+			this.drawBorderQsubs();
 
 			this.drawQuesNumbers();
 
@@ -269,10 +304,14 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"checkNumberRegionSize",
+			"checkNumberRegionSize@lapaz",
 			"check1x1Shaded",
 			"checkAdjacentShadeCell",
-			"checkShadeCounts",
+			"checkLessThreeCells@trizone",
+			"checkShadeCounts@lapaz",
+			"checkDoubleNumber@trizone",
+			"checkNoNumber@trizone",
+			"checkShadeAdjacentCount@trizone",
 			"checkRegionSize"
 		],
 
@@ -290,21 +329,23 @@
 
 		checkRegionSize: function() {
 			var areas = this.board.roommgr.components;
+			var max = this.pid === "trizone" ? 3 : 2;
 			for (var id = 0; id < areas.length; id++) {
 				var area = areas[id];
 
-				if (area.clist.length <= 2) {
+				if (area.clist.length <= max) {
 					continue;
 				}
 
-				this.failcode.add("bkSizeGt2");
+				this.failcode.add(max === 3 ? "bkSizeGt3" : "bkSizeGt2");
 				if (this.checkOnly) {
 					break;
 				}
 				area.clist.seterr(1);
 			}
-		},
-
+		}
+	},
+	"AnsCheck@lapaz": {
 		checkShadeCounts: function() {
 			this.checkRowsColsPartly(
 				this.isRowCount,
@@ -344,6 +385,81 @@
 				return false;
 			}
 			return true;
+		}
+	},
+	"AnsCheck@trizone": {
+		checkNoNumber: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r],
+					num = room.clist.getQnumCell().getNum();
+				if (num !== -1 || room.clist.length !== 3) {
+					continue;
+				}
+
+				this.failcode.add("bkNoNum");
+				if (this.checkOnly) {
+					return;
+				}
+				room.clist.seterr(1);
+			}
+		},
+		checkDoubleNumber: function() {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				if (room.clist.length !== 3) {
+					continue;
+				}
+				var num = room.clist.filter(function(cell) {
+					return cell.isNum();
+				}).length;
+				if (num < 2) {
+					continue;
+				}
+
+				this.failcode.add("bkNumGe2");
+				if (this.checkOnly) {
+					return;
+				}
+				room.clist.seterr(1);
+			}
+		},
+		checkLessThreeCells: function() {
+			this.checkAllArea(
+				this.board.roommgr,
+				function(w, h, a, n) {
+					return a !== 2;
+				},
+				"bkSizeLt3"
+			);
+		},
+		checkShadeAdjacentCount: function() {
+			var checkSingleError = !this.puzzle.getConfig("multierr");
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r],
+					num = room.clist.getQnumCell().getNum();
+				if (num < 0 || room.clist.length !== 3) {
+					continue;
+				}
+
+				var actual = room.adjclist.filter(function(cell) {
+					return cell.isShade();
+				});
+
+				if (actual.length !== num) {
+					this.failcode.add("nmShadeNe");
+					if (this.checkOnly) {
+						return;
+					}
+					room.clist.seterr(1);
+					actual.seterr(1);
+					if (checkSingleError) {
+						return;
+					}
+				}
+			}
 		}
 	}
 });

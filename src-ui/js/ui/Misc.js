@@ -246,6 +246,7 @@ function toBGimage(pid) {
 		"tilecity",
 		"timebomb",
 		"tjunction",
+		"trizone",
 		"tontonbeya",
 		"topo",
 		"trainstations",
