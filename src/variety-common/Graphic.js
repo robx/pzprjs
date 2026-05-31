@@ -927,13 +927,13 @@ pzpr.classmgr.makeCommon({
 			for (var i = 0; i < clist.length; i++) {
 				var cross = clist[i],
 					px = cross.bx * this.bw,
-					py = cross.by * this.bh;
+					py = cross.by * this.bh,
+					iserr = cross.error === 1 || cross.qinfo === 1;
 
 				// ○の描画
 				g.vid = "x_cp_" + cross.id;
 				if (cross.qnum !== -1) {
-					g.fillStyle =
-						cross.error === 1 || cross.qinfo === 1 ? this.errcolor1 : "white";
+					g.fillStyle = iserr ? this.errcolor1 : "white";
 					g.strokeStyle = "black";
 					g.shapeCircle(px, py, csize);
 				} else {
@@ -942,13 +942,17 @@ pzpr.classmgr.makeCommon({
 
 				// 数字の描画
 				g.vid = "cross_text_" + cross.id;
-				if (cross.qnum >= 0) {
-					g.fillStyle = this.quescolor;
-					this.disptext("" + cross.qnum, px, py, option);
+				var txt = this.getCrossNumberText(cross, cross.qnum);
+				if (txt) {
+					g.fillStyle = iserr ? "white" : this.quescolor;
+					this.disptext(txt, px, py, option);
 				} else {
 					g.vhide();
 				}
 			}
+		},
+		getCrossNumberText: function(cross, num) {
+			return num >= 0 ? "" + num : null;
 		},
 		drawCrossMarks: function() {
 			var g = this.vinc("cross_mark", "auto", true);

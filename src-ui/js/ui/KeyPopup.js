@@ -259,7 +259,8 @@ ui.keypopup = {
 		bramble: [10, 0],
 		golemgrad: [10, 0],
 		topo: [10, 10],
-		soulmates: [10, 10]
+		soulmates: [10, 10],
+		landmeasure: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -508,6 +509,8 @@ ui.keypopup = {
 			pid === "mrtile"
 		) {
 			cap = "■";
+		} else if (pid === "landmeasure") {
+			cap = "∞";
 		} else if (pid === "patchwork") {
 			cap = {
 				text: "■",
