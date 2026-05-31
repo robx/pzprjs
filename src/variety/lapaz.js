@@ -17,10 +17,18 @@
 		mouseinput_auto: function() {
 			if (this.puzzle.playmode) {
 				if (this.mousestart || this.mousemove) {
-					if (this.btn === "left") {
-						this.inputborder();
-					} else if (this.btn === "right") {
+					if (this.btn === "right") {
 						this.inputdragcross();
+					} else if (this.isBorderMode()) {
+						this.inputborder();
+					} else if (
+						this.pid === "lapaz" ||
+						(this.puzzle.getConfig("use") === 2 &&
+							this.puzzle.getConfig("patchwork_leftaux"))
+					) {
+						this.inputdragcross();
+					} else {
+						this.inputQsubLine();
 					}
 				} else if (this.mouseend && this.notInputted()) {
 					if (
