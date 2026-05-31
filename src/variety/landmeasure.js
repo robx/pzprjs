@@ -264,7 +264,7 @@
 
 		checkAllNumbers: function() {
 			this.checkQnumCross(function(num, shaded) {
-				if (num < 2) {
+				if (num < 1) {
 					return false;
 				}
 				if (num === 1 || num === 3) {
