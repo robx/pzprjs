@@ -415,6 +415,7 @@
 				"bonsan",
 				{ alias: "sato", kanpen: "satogaeri" }
 			],
+			scrabble: [0, 0, "Scrabble", "Scrabble"],
 			scrin: [0, 0, "スクリン", "Scrin"],
 			sendai: [0, 0, "宮城県仙台市", "Sendai-Miyagi"],
 			shakashaka: [0, 1, "シャカシャカ", "Shakashaka"],
