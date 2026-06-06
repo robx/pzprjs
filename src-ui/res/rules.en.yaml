@@ -515,3 +515,8 @@ trizone: |-
   1. No two shaded cells are horizontally or vertically adjacent.
   2. Numbers must be contained in a region of 3 cells. Every region has exactly one number.
   3. Numbers indicate how many shaded cells are horizontally or vertically adjacent to its region.
+scrabble: |-
+  Write one letter in some of the cells to form the given words. Some letters are given.
+  1. Every run of 2 or more consecutive letters forms a word (left-to-right or top-to-bottom). There cannot be words that aren't present in the word bank.
+  2. Each word in the bank appears exactly once in the grid.
+  3. All cells with letters must be connected.
