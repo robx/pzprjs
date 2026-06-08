@@ -396,6 +396,7 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkLineExist",
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkLineOnShadeCell",
