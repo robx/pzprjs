@@ -32,6 +32,7 @@
 					}
 				} else if (this.mouseend && this.notInputted()) {
 					if (
+						this.pid !== "lapaz" &&
 						this.puzzle.getConfig("patchwork_leftaux") &&
 						!this.getpos(0.25).oncell()
 					) {
