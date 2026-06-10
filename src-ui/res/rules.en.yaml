@@ -520,3 +520,10 @@ scrabble: |-
   1. Every run of 2 or more consecutive letters forms a word (left-to-right or top-to-bottom). There cannot be words that aren't present in the word bank.
   2. Each word in the bank appears exactly once in the grid.
   3. All cells with letters must be connected.
+elasticlink: |-
+  Draw lines to form pairs between the circles.
+  1. Lines cannot cross or overlap each other.
+  2. Each line must turn at least once.
+  3. For every turn, the lengths of the line segments on both sides of the turn must differ by exactly one.
+  4. A number indicates the length of the line segment overlapping that cell. All cells with numbers must be visited.
+  5. If the line turns on a number, the number indicates the length of either the horizontal or vertical line segment overlapping the cell.
