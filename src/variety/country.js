@@ -1858,25 +1858,6 @@
 				return cell1.lcnt === 1 && cell2.lcnt === 1;
 			}, "lnDeadEndAround");
 		},
-		checkLoop: function() {
-			var bd = this.board;
-			var paths = bd.linegraph.components;
-			for (var r = 0; r < paths.length; r++) {
-				if (
-					paths[r].clist.some(function(cell) {
-						return cell.lcnt !== 2;
-					})
-				) {
-					continue;
-				}
-				this.failcode.add("laLoop");
-				if (this.checkOnly) {
-					break;
-				}
-				this.board.border.setnoerr();
-				paths[r].setedgeerr(1);
-			}
-		},
 		checkLinesInRoom: function() {
 			var bd = this.board;
 			var paths = bd.linegraph.components;

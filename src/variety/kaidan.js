@@ -1077,22 +1077,6 @@
 			return this.isIndividualObject(clist, function(cell) {
 				return cell.qans === 1 && cell.path ? cell.path.id : -1;
 			});
-		},
-		checkLoop: function() {
-			var paths = this.board.linegraph.components;
-			for (var r = 0; r < paths.length; r++) {
-				var path = paths[r];
-				if (path.circuits === 0) {
-					continue;
-				}
-
-				this.failcode.add("laLoop");
-				if (this.checkOnly) {
-					break;
-				}
-				this.board.border.setnoerr();
-				path.setedgeerr(1);
-			}
 		}
 	},
 	"AnsCheck@takoyaki,edamame#2": {

@@ -214,21 +214,6 @@
 				return cell.lcnt === 1 && cell.qnum !== 0;
 			}, "lnDeadEnd");
 		},
-		checkLoop: function() {
-			var bd = this.board;
-			var paths = bd.linegraph.components;
-			for (var r = 0; r < paths.length; r++) {
-				if (paths[r].circuits === 0) {
-					continue;
-				}
-				this.failcode.add("laLoop");
-				if (this.checkOnly) {
-					break;
-				}
-				this.board.border.setnoerr();
-				paths[r].setedgeerr(1);
-			}
-		},
 		checkNoLineObject: function() {
 			this.checkAllCell(function(cell) {
 				return cell.qnum === 0 && cell.lcnt === 0;

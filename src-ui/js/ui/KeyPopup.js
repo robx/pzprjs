@@ -261,7 +261,8 @@ ui.keypopup = {
 		golemgrad: [10, 0],
 		topo: [10, 10],
 		soulmates: [10, 10],
-		landmeasure: [10, 0]
+		landmeasure: [10, 0],
+		elasticlink: [10, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -525,6 +526,9 @@ ui.keypopup = {
 		}
 		if (pid === "familyphoto") {
 			itemlist.push(["q", "●"]);
+		}
+		if (pid === "elasticlink") {
+			itemlist.push(["q", "○"]);
 		}
 		if (
 			pid === "icelom" ||
