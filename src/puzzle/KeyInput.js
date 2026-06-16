@@ -324,17 +324,16 @@ pzpr.classmgr.makeCommon({
 		},
 		moveTC: function(ca, mv) {
 			var cursor = this.cursor,
+				editmode = this.puzzle.editmode,
 				pos0 = cursor.getaddr(),
 				flag = true,
 				dir = cursor.NDIR;
 
-			var hasIndicator = this.pid === "easyasabc" || this.pid === "isowatari";
-
 			switch (ca) {
 				case "up":
 					if (
-						(hasIndicator && cursor.by === cursor.miny) ||
-						cursor.by - mv >= cursor.miny
+						cursor.by - mv >= cursor.miny ||
+						(editmode && cursor.hasIndicator && cursor.by === cursor.miny)
 					) {
 						dir = cursor.UP;
 					}
@@ -622,12 +621,11 @@ pzpr.classmgr.makeCommon({
 		// tc.setaddr() ターゲットの位置をAddressクラス等のオブジェクトで設定する
 		//---------------------------------------------------------------------------
 		setaddr: function(pos) {
-			var hasIndicator = this.pid === "easyasabc" || this.pid === "isowatari";
 			/* Address, Cellなどのオブジェクトいずれを入力しても良い */
 			if (
 				pos.bx < this.minx ||
 				this.maxx < pos.bx ||
-				pos.by < this.miny - (hasIndicator ? 2 : 0) ||
+				pos.by < this.miny - (this.hasIndicator ? 2 : 0) ||
 				this.maxy < pos.by
 			) {
 				return;

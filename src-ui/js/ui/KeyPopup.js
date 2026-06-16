@@ -262,7 +262,8 @@ ui.keypopup = {
 		topo: [10, 10],
 		soulmates: [10, 10],
 		landmeasure: [10, 0],
-		elasticlink: [10, 0]
+		elasticlink: [10, 0],
+		slovak: [136, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -425,6 +426,8 @@ ui.keypopup = {
 			this.generate_narrowfence(mode);
 		} else if (type === 135) {
 			this.generate_ubahn(mode);
+		} else if (type === 136) {
+			this.generate_slovak(mode);
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -788,6 +791,16 @@ ui.keypopup = {
 			],
 			5
 		);
+	},
+	generate_slovak: function() {
+		var itemlist = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " "];
+		itemlist.push(["-", "?"]);
+		itemlist.push(["q", "⠐"]);
+		itemlist.push(["w", "⠒"]);
+		itemlist.push(["e", "…"]);
+		itemlist.push(["r", "⸬"]);
+
+		this.generate_main(itemlist, 4);
 	},
 	generate_interbd: function() {
 		this.generate_main(
