@@ -527,3 +527,15 @@ elasticlink: |-
   3. For every turn, the lengths of the line segments on both sides of the turn must differ by exactly one.
   4. A number indicates the length of the line segment overlapping that cell. All cells with numbers must be visited.
   5. If the line turns on a number, the number indicates the length of either the horizontal or vertical line segment overlapping the cell.
+anymino: |-
+  Shade some cells on the board to form shapes.
+  1. All regions contain exactly one shape, which is an orthogonally connected group of shaded cells.
+  2. Two identical shapes cannot share an edge, counting rotations and reflections as the same.
+  3. Every shape must be orthogonally adjacent to at least one other shape of the same size.
+  4. The shaded cells cannot form a 2x2 square.
+  5. All shaded cells form an orthogonally contiguous area.
+slovak: |-
+  Place numbers from the given range into some of the empty cells.
+  1. Each row and column contains exactly one of each number (excluding numbers on shaded cells). Some cells remain empty.
+  2. Numbers on shaded cells indicate the sum of numbers in the (up to four) orthogonally adjacent cells.
+  3. The amount of circles on a shaded cell indicates how many of the (up to four) orthogonally adjacent cells must be filled with a number. Clues without any circles have an unknown amount.
