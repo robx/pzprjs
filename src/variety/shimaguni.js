@@ -20,7 +20,8 @@
 		"marutaring",
 		"tetroctb",
 		"bramble",
-		"disco"
+		"disco",
+		"anymino"
 	],
 	{
 		//---------------------------------------------------------
@@ -46,7 +47,7 @@
 				play: ["shade", "unshade", "info-blk"]
 			}
 		},
-		"MouseEvent@disco": {
+		"MouseEvent@disco,anymino": {
 			inputModes: {
 				edit: ["info-blk"],
 				play: ["shade", "unshade", "info-blk"]
@@ -192,9 +193,7 @@
 		},
 
 		Board: {
-			hasborder: 1
-		},
-		"Board@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb,disco": {
+			hasborder: 1,
 			addExtraInfo: function() {
 				this.stonegraph = this.addInfoList(this.klass.AreaStoneGraph);
 			}
@@ -316,7 +315,7 @@
 		"AreaShadeGraph@chocona,tetroctb,bramble": {
 			enabled: true
 		},
-		"AreaShadeGraph@nuritwin,marutaring,disco": {
+		"AreaShadeGraph@nuritwin,marutaring,disco,anymino": {
 			enabled: true,
 			coloring: true
 		},
@@ -328,7 +327,7 @@
 				component.hinge = null;
 			}
 		},
-		"AreaStoneGraph:AreaShadeGraph@shimaguni,stostone,heyablock,cocktail,martini,nuritwin,marutaring,tetroctb,disco": {
+		"AreaStoneGraph:AreaShadeGraph": {
 			// Same as LITS AreaTetrominoGraph
 			enabled: true,
 			relation: { "cell.qans": "node", "border.ques": "separator" },
@@ -388,12 +387,7 @@
 					this.drawGrid();
 				}
 
-				if (
-					this.pid === "stostone" ||
-					this.pid === "nuritwin" ||
-					this.pid === "disco" ||
-					this.pid === "marutaring"
-				) {
+				if (this.irowakeblk) {
 					this.drawDotCells_stostone();
 				}
 				this.drawShadedCells();
@@ -434,7 +428,7 @@
 				);
 			}
 		},
-		"Graphic@stostone,nuritwin,marutaring,disco#1": {
+		"Graphic@stostone,nuritwin,marutaring,disco,anymino#1": {
 			irowakeblk: true,
 			bgcellcolor_func: "error1",
 			bcolor: "rgb(80, 204, 80)",
@@ -571,7 +565,7 @@
 				this.encodeNumber16();
 			}
 		},
-		"Encode@disco": {
+		"Encode@disco,anymino": {
 			decodePzpr: function(type) {
 				this.decodeBorder();
 			},
@@ -603,7 +597,7 @@
 				}
 			}
 		},
-		"FileIO@disco": {
+		"FileIO@disco,anymino": {
 			decodeData: function() {
 				this.decodeBorderQues();
 				this.decodeCellAns();
@@ -708,7 +702,19 @@
 				"doneShadingDecided"
 			]
 		},
-		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini,bramble": {
+		"AnsCheck@anymino#1": {
+			checklist: [
+				"checkShadeCellExist+",
+				"check2x2ShadeCell",
+				"checkSeqBlocksInRoom",
+				"checkAdjacentShapes",
+				"checkConnectShade",
+				"checkHasAdjacentSize",
+				"checkNoShadeCellInArea",
+				"doneShadingDecided"
+			]
+		},
+		"AnsCheck@shimaguni,stostone,heyablock,cocktail,martini,bramble,anymino": {
 			checkSideAreaShadeCell: function() {
 				this.checkSideAreaCell(
 					function(cell1, cell2) {
@@ -1257,6 +1263,68 @@
 					}
 					clist.seterr(1);
 				}
+			}
+		},
+		"AnsCheck@anymino#3": {
+			checkHasAdjacentSize: function() {
+				var bd = this.board;
+
+				var blocks = bd.stonegraph.components;
+				for (var r = 0; r < blocks.length; r++) {
+					blocks[r].valid = false;
+				}
+
+				for (var c = 0; c < bd.cell.length; c++) {
+					var cell = bd.cell[c];
+					var current = cell.stone;
+					if (!current) {
+						continue;
+					}
+					var right = cell.adjacent.right.stone;
+					var bottom = cell.adjacent.bottom.stone;
+
+					if (
+						right &&
+						right !== current &&
+						right.clist.length === current.clist.length
+					) {
+						right.valid = true;
+						current.valid = true;
+					}
+					if (
+						bottom &&
+						bottom !== current &&
+						bottom.clist.length === current.clist.length
+					) {
+						bottom.valid = true;
+						current.valid = true;
+					}
+				}
+
+				for (var r = 0; r < blocks.length; r++) {
+					if (!blocks[r].valid) {
+						this.failcode.add("bkNoChain");
+						if (this.checkOnly) {
+							break;
+						}
+						blocks[r].clist.seterr(1);
+					}
+				}
+			},
+			checkAdjacentShapes: function() {
+				var self = this;
+
+				this.checkSideAreaCell(
+					function(cell1, cell2) {
+						return (
+							cell1.isShade() &&
+							cell2.isShade() &&
+							!self.isDifferentShapeBlock(cell1.stone, cell2.stone)
+						);
+					},
+					true,
+					"bsSameShape"
+				);
 			}
 		},
 
