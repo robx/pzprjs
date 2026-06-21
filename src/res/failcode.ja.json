@@ -586,7 +586,7 @@
     "nmUnpass.icebarn": "通過していない数字があります。",
     "nonCirclePromontory.kurodoko": "丸のないマスが岬になっています。",
     "nqAroundDup.kakuru": "初めから出ている数字の周りに同じ数字が入っています。",
-    "nqAroundSumNe.kakuru": "初めから出ている数字の周りに入る数の合計が正しくありません。",
+    "nqAroundSumNe": "初めから出ている数字の周りに入る数の合計が正しくありません。",
     "numNoLine": "線の通っていない数字があります。",
     "objShaded.nurimaze": "オブジェクトが黒マスになっています。",
     "pairedLetterNe.kinkonkan": "光が同じ文字の場所へ到達しません。",
