@@ -8,7 +8,7 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["mark-circle", "number", "empty", "clear"],
-			play: ["border", "subline"]
+			play: ["line", "peke", "info-line"]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "line",
