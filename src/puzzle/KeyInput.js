@@ -157,7 +157,7 @@ pzpr.classmgr.makeCommon({
 				key = "-";
 			} else if (keycode === 106) {
 				key = "*";
-			} else if (keycode === 107) {
+			} else if (keycode === 107 || keycode === 59 || keycode === 61) {
 				key = "+";
 			}
 
@@ -171,7 +171,7 @@ pzpr.classmgr.makeCommon({
 			if (this.isCTRL) {
 				keylist.unshift("ctrl");
 			}
-			if (this.isSHIFT) {
+			if (this.isSHIFT && key !== "+") {
 				keylist.unshift("shift");
 			}
 			key = keylist.join("+");

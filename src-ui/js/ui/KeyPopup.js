@@ -259,6 +259,7 @@ ui.keypopup = {
 		hasunomura: [10, 0],
 		bramble: [10, 0],
 		golemgrad: [10, 0],
+		mrokmrno: [137, 137],
 		topo: [10, 10],
 		soulmates: [10, 10],
 		landmeasure: [10, 0],
@@ -428,6 +429,8 @@ ui.keypopup = {
 			this.generate_ubahn(mode);
 		} else if (type === 136) {
 			this.generate_slovak(mode);
+		} else if (type === 137) {
+			this.generate_mrokmrno(mode);
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -1133,6 +1136,24 @@ ui.keypopup = {
 			[["1", "○"], ["2", "╋"], " ", ["3", "×"], ["4", "◇"]],
 			3
 		);
+	},
+
+	generate_mrokmrno: function(mode) {
+		var mbcolor = ui.puzzle.painter.mbcolor;
+		var items = [
+			["1", "N"],
+			["2", "K"],
+			["3", "O"],
+			["4", "😶"],
+			["5", "🙂"],
+			["6", "🙁"],
+			" "
+		];
+		if (mode === 3) {
+			items.push(["q", { text: "⋅", color: mbcolor }]);
+		}
+
+		this.generate_main(items, 3);
 	},
 
 	generate_main: function(list, split) {
