@@ -207,3 +207,31 @@ ui.popupmgr.addpopup("applypreset", {
 		}
 	}
 });
+
+ui.popupmgr.addpopup("wordbank", {
+	formname: "wordbank",
+
+	show: function(px, py) {
+		ui.popupmgr.popups.template.show.call(this, px, py);
+		ui.puzzle.key.enableKey = false;
+	},
+
+	reset: function() {
+		var words = ui.puzzle.board.bank.pieces.map(function(p) {
+			return p.serialize();
+		});
+
+		var field = getEL("wordbank_field");
+		field.value = words.join("\n");
+	},
+
+	apply: function() {
+		var field = getEL("wordbank_field");
+		var words = field.value.split("\n");
+
+		console.log("words", words);
+
+		// TODO trim all words
+		this.close();
+	}
+});

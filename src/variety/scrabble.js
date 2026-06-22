@@ -18,7 +18,17 @@
 		autohide_cursor: function() {},
 
 		mouseinput_auto: function() {
-			var cell = this.getcell();
+			var pos = this.getpos(0);
+			if (
+				this.puzzle.editmode &&
+				this.mousestart &&
+				pos.by > this.board.maxby
+			) {
+				this.puzzle.emit("request-wordbank");
+				return;
+			}
+
+			var cell = pos.getc();
 			if (cell.isnull || cell === this.mouseCell) {
 				return;
 			}
@@ -39,8 +49,6 @@
 				}
 			}
 		}
-
-		// TODO draw the bank
 	},
 
 	//---------------------------------------------------------

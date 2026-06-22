@@ -784,6 +784,16 @@ if ('serviceWorker' in navigator) {
     </form>
   </div>
 
+  <div class="popup" id="popwordbank">
+    <div class="titlebar">W O R D B A N K</div>
+    <form name="wordbank">
+      <textarea id="wordbank_field" name="bank" cols=48 rows=8 wrap="hard"></textarea>
+      <br>
+      <button type="button" class="btn btn-ok" data-button-exec="apply">__applypreset.submit__</button>
+      <button type="button" class="btn" data-button-exec="close">__cancel__</button>
+    </form>
+  </div>
+
   <div class="popup" id="popapplypreset">
     <div class="titlebar">__applypreset.title__</div>
     <form name="applypreset">

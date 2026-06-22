@@ -1,4 +1,5 @@
 // Boot.js v3.4.0
+/* global getEL:readonly */
 
 (function() {
 	/********************************/
@@ -110,6 +111,16 @@
 		}
 
 		puzzle.on("request-aux-editor", ui.auxeditor.open);
+		puzzle.on("request-wordbank", function() {
+			ui.popupmgr.open("wordbank", 0, 0);
+			var rect = pzpr.util.getRect(getEL("btnarea"));
+			var bounds = pzpr.util.getRect(getEL("popwordbank"));
+			ui.popupmgr.open(
+				"wordbank",
+				rect.left + (rect.width - bounds.width) / 2,
+				Math.max(16, rect.top - bounds.height - 16)
+			);
+		});
 
 		if (!!onload_option.net) {
 			ui.network.configure(onload_option.net, onload_option.key);
