@@ -226,20 +226,17 @@ ui.popupmgr.addpopup("wordbank", {
 	apply: function() {
 		var field = getEL("wordbank_field");
 		var words = field.value.split("\n");
+		var bank = ui.puzzle.board.bank;
 
 		for (var i = 0; i < words.length; i++) {
-			var tokens = words[i].toUpperCase().split("");
-			tokens = tokens.filter(function(ca) {
-				return ca >= "A" && ca <= "Z";
-			});
-			words[i] = tokens.join("");
+			words[i] = bank.sanitizeItem(words[i]);
 		}
 
 		words = words.filter(function(word) {
 			return !!word;
 		});
 
-		ui.puzzle.board.bank.applyPreset(words);
+		bank.applyPreset(words);
 		this.close();
 	}
 });

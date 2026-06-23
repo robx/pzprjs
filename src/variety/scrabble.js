@@ -238,6 +238,14 @@
 
 			pieces.sort();
 			return pieces;
+		},
+
+		sanitizeItem: function(str) {
+			var tokens = str.toUpperCase().split("");
+			tokens = tokens.filter(function(ca) {
+				return ca >= "A" && ca <= "Z";
+			});
+			return tokens.join("");
 		}
 		// TODO adjust piece layout into several columns
 	},

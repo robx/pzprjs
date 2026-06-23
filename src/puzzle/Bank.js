@@ -120,6 +120,10 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 
+		sanitizeItem: function(str) {
+			return str;
+		},
+
 		setPiece: function(piece, index) {
 			var ope = new this.klass.BankEditOperation(piece, index);
 			if (!ope.isNoop()) {
