@@ -1530,7 +1530,7 @@ pzpr.classmgr.makeCommon({
 		//---------------------------------------------------------------------------
 		drawMBs: function(withcross) {
 			var g = this.vinc("cell_mb", "auto", true);
-			g.lineWidth = 1;
+			g.lineWidth = Math.max(1, this.cw * 0.04);
 
 			var rsize = this.cw * 0.35;
 			var clist = this.range.cells;
