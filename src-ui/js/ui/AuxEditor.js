@@ -214,9 +214,7 @@ ui.popupmgr.addpopup("wordbank", {
 	show: function(px, py) {
 		ui.popupmgr.popups.template.show.call(this, px, py);
 		ui.puzzle.key.enableKey = false;
-	},
 
-	reset: function() {
 		var words = ui.puzzle.board.bank.pieces.map(function(p) {
 			return p.serialize();
 		});
@@ -229,9 +227,19 @@ ui.popupmgr.addpopup("wordbank", {
 		var field = getEL("wordbank_field");
 		var words = field.value.split("\n");
 
-		console.log("words", words);
+		for (var i = 0; i < words.length; i++) {
+			var tokens = words[i].toUpperCase().split("");
+			tokens = tokens.filter(function(ca) {
+				return ca >= "A" && ca <= "Z";
+			});
+			words[i] = tokens.join("");
+		}
 
-		// TODO trim all words
+		words = words.filter(function(word) {
+			return !!word;
+		});
+
+		ui.puzzle.board.bank.applyPreset(words);
 		this.close();
 	}
 });

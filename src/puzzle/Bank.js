@@ -35,6 +35,8 @@ pzpr.classmgr.makeCommon({
 				pieces = this[preset.func](param);
 			} else if (preset.constant) {
 				pieces = preset.constant;
+			} else if (Array.isArray(preset)) {
+				pieces = preset;
 			} else {
 				return;
 			}
