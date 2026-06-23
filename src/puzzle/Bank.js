@@ -80,8 +80,11 @@ pzpr.classmgr.makeCommon({
 				y = 0,
 				nexty = 0;
 
-			var showAdd = !this.puzzle.playeronly && !!this.allowAdd;
+			var showAdd = !this.puzzle.playeronly ? this.allowAdd : false;
 			var len = this.pieces.length;
+			if (showAdd === "empty") {
+				showAdd = len === 0;
+			}
 
 			for (var i = 0; i < len + (showAdd ? 1 : 0); i++) {
 				var p = i < len ? this.pieces[i] : this.addButton;

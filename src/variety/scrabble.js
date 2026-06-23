@@ -216,6 +216,7 @@
 	},
 	Bank: {
 		enabled: true,
+		allowAdd: "empty",
 		presets: [
 			// TODO function that sorts existing bank
 			{
@@ -289,19 +290,22 @@
 		},
 
 		drawBankPiece: function(g, piece, idx) {
-			var str = piece ? piece.str : "";
+			g.vid = "pb_piece_" + idx;
+			if (!piece) {
+				g.vhide();
+				return;
+			}
 
 			var x = this.cw * 0.5 * (piece.x + 5);
 			var y = this.ch * 0.5 * piece.y;
 			x -= this.bw * 5;
 			y += (this.board.rows + 1) * this.ch;
 
-			g.vid = "pb_piece_" + idx;
 			g.fillStyle = this.getBankPieceColor(piece);
 			g.font = ((this.ch * 0.66) | 0) + "px " + this.fontfamily;
 			g.textAlign = "left";
 			g.textBaseline = "bottom";
-			g.fillText(str, x, y);
+			g.fillText(piece.str, x, y);
 		}
 	},
 
