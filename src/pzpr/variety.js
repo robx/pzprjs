@@ -422,7 +422,7 @@
 			shugaku: [1, 0, "修学旅行の夜", "School Trip"],
 			shwolf: [0, 0, "ヤギとオオカミ", "Goats and Wolves", "kramma"],
 			simplegako: [0, 0, "シンプルガコ", "Simple Gako"],
-			simpleloop: [0, 0, "シンプルループ", "Simple Loop", "country"],
+			simpleloop: [0, 0, "シンプルループ", "Simple Loop"],
 			slalom: [1, 1, "スラローム", "Slalom", "", { alias: "suraromu" }],
 			slashpack: [0, 0, "Slash Pack", "Slash Pack"],
 			slither: [

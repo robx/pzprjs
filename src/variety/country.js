@@ -8,7 +8,6 @@
 		"onsen",
 		"doubleback",
 		"maxi",
-		"simpleloop",
 		"detour",
 		"dotchi",
 		"ovotovata",
@@ -106,12 +105,6 @@
 			clist.draw();
 		}
 	},
-	"MouseEvent@simpleloop": {
-		inputModes: {
-			edit: ["clear", "info-line", "empty"],
-			play: ["line", "peke", "clear", "info-line"]
-		}
-	},
 	"MouseEvent@dotchi,dotchi2": {
 		inputModes: {
 			edit: ["border", "circle-shade", "circle-unshade", "clear", "info-line"],
@@ -201,11 +194,7 @@
 							this.inputpeke();
 						}
 					}
-				} else if (
-					this.mouseend &&
-					this.notInputted() &&
-					this.pid !== "simpleloop"
-				) {
+				} else if (this.mouseend && this.notInputted()) {
 					if (
 						this.inputpeke_ifborder() ||
 						this.pid === "maxi" ||
@@ -220,10 +209,6 @@
 					}
 				}
 			} else if (this.puzzle.editmode) {
-				if (this.pid === "simpleloop") {
-					this.inputempty();
-					return;
-				}
 				if (this.mousestart || this.mousemove) {
 					this.inputborder();
 				} else if (this.mouseend && this.notInputted()) {
@@ -362,7 +347,7 @@
 			return this.qnum === 2;
 		}
 	},
-	"Cell@doubleback,simpleloop,rassi,remlen": {
+	"Cell@doubleback,rassi,remlen": {
 		noLP: function(dir) {
 			return this.isEmpty();
 		}
@@ -372,7 +357,7 @@
 			return Math.max(this.board.cols, this.board.rows) - 1;
 		}
 	},
-	"Border@doubleback,simpleloop,dotchi,remlen": {
+	"Border@doubleback,dotchi,remlen": {
 		enableLineNG: true
 	},
 	"Border@moonsun,dotchi,dotchi2#1": {
@@ -555,7 +540,7 @@
 		gridcolor_type: "SLIGHT",
 
 		paint: function() {
-			if (this.pid !== "remlen" && this.pid !== "simpleloop") {
+			if (this.pid !== "remlen") {
 				this.drawBGCells();
 			}
 
@@ -567,7 +552,7 @@
 			if (this.pid === "remlen") {
 				this.drawBorderDirBG();
 			}
-			if (this.pid === "remlen" || this.pid === "simpleloop") {
+			if (this.pid === "remlen") {
 				this.drawBGCells();
 			}
 			if (
@@ -607,8 +592,7 @@
 			if (
 				this.pid !== "rassi" &&
 				this.pid !== "doubleback" &&
-				this.pid !== "nothing" &&
-				this.pid !== "simpleloop"
+				this.pid !== "nothing"
 			) {
 				this.drawTarget();
 			}
@@ -683,24 +667,14 @@
 			}
 		}
 	},
-	"Graphic@simpleloop": {
-		getBGCellColor: function(cell) {
-			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);
-		}
-	},
 	"Graphic@doubleback,rassi,remlen": {
 		getBGCellColor: function(cell) {
 			return cell.ques === 7 ? "darkgray" : this.getBGCellColor_error1(cell);
-		}
-	},
-	"Graphic@simpleloop,doubleback,rassi,remlen": {
+		},
 		getBorderColor: function(border) {
 			var cell1 = border.sidecell[0],
 				cell2 = border.sidecell[1];
 			if (cell1.ques === 7 && cell2.ques === 7) {
-				return null;
-			}
-			if (this.pid === "simpleloop" && (cell1.ques === 7 || cell2.ques === 7)) {
 				return null;
 			}
 			if (
@@ -769,9 +743,7 @@
 			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.puzzle.setConfig("loop_full", this.checkpflag("f"));
 			}
-			if (this.pid !== "simpleloop") {
-				this.decodeBorder();
-			}
+			this.decodeBorder();
 			if (this.pid === "remlen") {
 				if (this.outbstr[0] !== "/") {
 					this.decodeEmpty();
@@ -795,11 +767,7 @@
 				this.decodeCircle();
 			} else if (this.pid === "onsen" || this.pid === "wataridori") {
 				this.decodeNumber16();
-			} else if (
-				this.pid === "doubleback" ||
-				this.pid === "simpleloop" ||
-				this.pid === "rassi"
-			) {
+			} else if (this.pid === "doubleback" || this.pid === "rassi") {
 				this.decodeEmpty();
 			}
 		},
@@ -810,9 +778,7 @@
 			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.outpflag = this.puzzle.getConfig("loop_full") ? "f" : null;
 			}
-			if (this.pid !== "simpleloop") {
-				this.encodeBorder();
-			}
+			this.encodeBorder();
 			if (this.pid === "remlen" && !this.encodeEmpty()) {
 				this.outbstr += "/";
 			}
@@ -832,11 +798,7 @@
 				this.encodeCircle();
 			} else if (this.pid === "onsen" || this.pid === "wataridori") {
 				this.encodeNumber16();
-			} else if (
-				this.pid === "doubleback" ||
-				this.pid === "simpleloop" ||
-				this.pid === "rassi"
-			) {
+			} else if (this.pid === "doubleback" || this.pid === "rassi") {
 				this.encodeEmpty();
 			}
 		}
@@ -884,18 +846,12 @@
 			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.decodeConfigFlag("f", "loop_full");
 			}
-			if (this.pid !== "simpleloop") {
-				if (this.filever >= 2) {
-					this.decodeBorderQues();
-				} else {
-					this.decodeAreaRoom();
-				}
+			if (this.filever >= 2) {
+				this.decodeBorderQues();
+			} else {
+				this.decodeAreaRoom();
 			}
-			if (
-				this.pid === "doubleback" ||
-				this.pid === "simpleloop" ||
-				this.pid === "rassi"
-			) {
+			if (this.pid === "doubleback" || this.pid === "rassi") {
 				this.decodeEmpty();
 			} else {
 				this.decodeCellQnum();
@@ -904,11 +860,7 @@
 				this.decodeBorderArrowAns();
 			} else {
 				this.decodeBorderLine();
-				if (
-					this.pid !== "onsen" &&
-					this.pid !== "simpleloop" &&
-					this.pid !== "wataridori"
-				) {
+				if (this.pid !== "onsen" && this.pid !== "wataridori") {
 					this.decodeCellQsub();
 				}
 			}
@@ -920,15 +872,9 @@
 			if (this.pid === "ovotovata" || this.pid === "wataridori") {
 				this.encodeConfigFlag("f", "loop_full");
 			}
-			if (this.pid !== "simpleloop") {
-				this.filever = 2;
-				this.encodeBorderQues();
-			}
-			if (
-				this.pid === "doubleback" ||
-				this.pid === "simpleloop" ||
-				this.pid === "rassi"
-			) {
+			this.filever = 2;
+			this.encodeBorderQues();
+			if (this.pid === "doubleback" || this.pid === "rassi") {
 				this.encodeEmpty();
 			} else {
 				this.encodeCellQnum();
@@ -937,11 +883,7 @@
 				this.encodeBorderArrowAns();
 			} else {
 				this.encodeBorderLine();
-				if (
-					this.pid !== "onsen" &&
-					this.pid !== "simpleloop" &&
-					this.pid !== "wataridori"
-				) {
+				if (this.pid !== "onsen" && this.pid !== "wataridori") {
 					this.encodeCellQsub();
 				}
 			}
@@ -1050,15 +992,6 @@
 			"checkOneLoop",
 			"checkNoLine",
 			"checkRoomPassTwice"
-		]
-	},
-	"AnsCheck@simpleloop#1": {
-		checklist: [
-			"checkBranchLine",
-			"checkCrossLine",
-			"checkDeadendLine+",
-			"checkOneLoop",
-			"checkNoLine"
 		]
 	},
 	"AnsCheck@moonsun#1": {
