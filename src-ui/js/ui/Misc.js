@@ -253,6 +253,7 @@ function toBGimage(pid) {
 		"tslither",
 		"turnaround",
 		"ubahn",
+		"vertigo",
 		"voxas",
 		"vslither",
 		"wafusuma",
