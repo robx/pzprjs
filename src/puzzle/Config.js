@@ -442,6 +442,7 @@
 						pid === "hitori" ||
 						pid === "gokigen" ||
 						pid === "wagiri" ||
+						pid === "narrow" ||
 						pid === "ubahn";
 					break;
 				case "singlenum":

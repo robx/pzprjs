@@ -92,7 +92,17 @@
 	},
 	"Cell@narrow": {
 		maxnum: 4,
-		disInputHatena: true
+		qcmp1: 0,
+		qcmp2: 0,
+
+		disInputHatena: true,
+		displayNum: function() {
+			var qcmp = this.qcmp1 || this.qcmp2;
+			if (this.puzzle.execConfig("autoerr") && this.qnum === -1 && qcmp) {
+				return qcmp;
+			}
+			return this.qnum;
+		}
 	},
 	"Cell@subomino": {
 		maxnum: function() {
@@ -180,6 +190,12 @@
 		}
 	},
 
+	"Board@narrow": {
+		addExtraInfo: function() {
+			this.eqblkgraph = this.addInfoList(this.klass.AreaEqualNumberGraph);
+		}
+	},
+
 	AreaRoomGraph: {
 		enabled: true
 	},
@@ -192,14 +208,46 @@
 		}
 	},
 	"AreaRoomGraph@narrow": {
+		numprop: "qcmp1",
 		setExtraData: function(component) {
+			var prop = this.numprop;
 			var clist = (component.clist = new this.klass.CellList(
 				component.getnodeobjs()
 			));
 			var numlist = clist.filter(function(cell) {
 				return cell.isNum();
 			});
-			component.num = numlist.length === 1 ? numlist[0].getNum() : -1;
+			component.num = numlist.length === 1 ? numlist[0].getNum() : 0;
+
+			clist.each(function(cell) {
+				if (cell[prop] !== component.num) {
+					cell[prop] = component.num;
+					cell.draw();
+				}
+			});
+		}
+	},
+	"AreaEqualNumberGraph:AreaRoomGraph@narrow": {
+		numprop: "qcmp2",
+		enabled: true,
+		relation: {
+			"cell.ques": "node",
+			"border.qsub": "separator",
+			"border.qnum": "separator",
+			"border.qans": "separator"
+		},
+
+		setComponentRefs: function(obj, component) {
+			obj.eqblk = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.eqblknodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.eqblknodes = [];
+		},
+		isedgevalidbylinkobj: function(border) {
+			return !border.isBorder() && border.qsub;
 		}
 	},
 
@@ -281,6 +329,16 @@
 	},
 
 	"Graphic@narrow": {
+		getQuesNumberColor: function(cell) {
+			if (cell.qnum === -1) {
+				return this.qcmpcolor;
+			}
+			if ((cell.error || cell.qinfo) === 1) {
+				return this.errcolor1;
+			}
+			return this.quescolor;
+		},
+
 		drawQuesNumbers: function() {
 			var g = this.vinc("cell_mark", "auto");
 
@@ -294,7 +352,7 @@
 				g.strokeStyle = this.getQuesNumberColor(cell);
 				var px = cell.bx * this.bw,
 					py = cell.by * this.bh;
-				switch (cell.getNum()) {
+				switch (cell.displayNum()) {
 					case 1:
 						g.strokeCircle(px, py, rsize);
 						break;
