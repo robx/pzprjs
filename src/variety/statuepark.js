@@ -356,7 +356,7 @@
 
 	"MouseEvent@pentatouch": {
 		inputModes: {
-			edit: ["completion"],
+			edit: ["completion", "empty"],
 			play: ["shade", "unshade", "clear", "completion"]
 		}
 	},
@@ -910,7 +910,7 @@
 		}
 	},
 
-	"Cell@kissing,regional-poly": {
+	"Cell@kissing,regional-poly,pentatouch": {
 		allowShade: function() {
 			return this.isValid();
 		},
@@ -1182,6 +1182,7 @@
 
 			if (this.pid === "pentatouch") {
 				this.drawCrossMarks();
+				this.drawXCells();
 			} else if (this.pid === "statuepark") {
 				this.drawCircles();
 			} else if (this.pid === "distopia") {
@@ -1312,7 +1313,9 @@
 
 	"Graphic@kissing,regional-poly": {
 		shadecolor: "#777",
-		trialcolor: "rgb(255, 160, 0)",
+		trialcolor: "rgb(255, 160, 0)"
+	},
+	"Graphic@kissing,regional-poly,pentatouch": {
 		drawXCells: function() {
 			var g = this.vinc("cell_x", "auto", true);
 
@@ -1817,10 +1820,14 @@
 			if (this.outbstr[0] !== "/") {
 				this.decodeCrossMark();
 			}
+			if (this.outbstr[0] !== "/") {
+				this.decodeEmpty();
+			}
 			this.decodePieceBank();
 		},
 		encodePzpr: function(type) {
 			this.encodeCrossMark();
+			this.encodeEmpty();
 			this.encodePieceBank();
 		}
 	},
@@ -1890,7 +1897,31 @@
 		},
 
 		decodeConfig: function() {},
-		encodeConfig: function() {}
+		encodeConfig: function() {},
+
+		decodeCellAns: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "x") {
+					cell.ques = 7;
+				} else if (ca === "#") {
+					cell.qans = 1;
+				} else if (ca === "+") {
+					cell.qsub = 1;
+				}
+			});
+		},
+		encodeCellAns: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "x ";
+				} else if (cell.qans) {
+					return "# ";
+				} else if (cell.qsub) {
+					return "+ ";
+				}
+				return ". ";
+			});
+		}
 	},
 
 	"FileIO@pentopia,distopia": {
@@ -1918,30 +1949,13 @@
 		decodeData: function() {
 			this.decodePieceBank();
 			this.decodeBorderQues();
-			this.decodeCell(function(cell, ca) {
-				if (ca === "x") {
-					cell.ques = 7;
-				} else if (ca === "#") {
-					cell.qans = 1;
-				} else if (ca === "+") {
-					cell.qsub = 1;
-				}
-			});
+			this.decodeCellAns();
 			this.decodePieceBankQcmp();
 		},
 		encodeData: function() {
 			this.encodePieceBank();
 			this.encodeBorderQues();
-			this.encodeCell(function(cell) {
-				if (cell.ques === 7) {
-					return "x ";
-				} else if (cell.qans) {
-					return "# ";
-				} else if (cell.qsub) {
-					return "+ ";
-				}
-				return ". ";
-			});
+			this.encodeCellAns();
 			this.encodePieceBankQcmp();
 		}
 	},
