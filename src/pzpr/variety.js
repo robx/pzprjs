@@ -305,6 +305,7 @@
 			mochinyoro: [1, 0, "モチにょろ", "Mochinyoro", "nurikabe"],
 			moonsun: [0, 0, "月か太陽", "Moon or Sun", "country"],
 			morningwalk: [0, 0, "Morning Walk", "Morning Walk", "icewalk"],
+			mrokmrno: [0, 0, "OKさんとNOくん", "Mr. OK and Mr. NO"],
 			mrtile: [0, 0, "ミラーリングタイル", "Mirroring Tile", "chainedb"],
 			mukkonn: [0, 0, "Mukkonn Enn", "Mukkonn Enn", "compass"],
 			myopia: [0, 0, "Myopia", "Myopia"],
