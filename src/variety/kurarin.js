@@ -162,6 +162,9 @@
 		allowShade: function() {
 			return this.lcnt === 0;
 		},
+		allowUnshade: function() {
+			return this.lcnt === 0;
+		},
 
 		qnum: 0,
 		minnum: 0,
