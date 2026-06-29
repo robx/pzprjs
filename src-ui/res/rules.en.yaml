@@ -539,3 +539,9 @@ slovak: |-
   1. Each row and column contains exactly one of each number (excluding numbers on shaded cells). Some cells remain empty.
   2. Numbers on shaded cells indicate the sum of numbers in the (up to four) orthogonally adjacent cells.
   3. The amount of circles on a shaded cell indicates how many of the (up to four) orthogonally adjacent cells must be filled with a number. Clues without any circles have an unknown amount.
+vertigo: |-
+  Draw a loop that goes through every unshaded cell.
+  1. The loop cannot branch off.
+  2. All turns along the entire loop must be in the same direction.
+  3. The loop cannot go through shaded cells.
+  4. Two perpendicular line segments may intersect each other, but they may not turn at their intersection or otherwise overlap.
