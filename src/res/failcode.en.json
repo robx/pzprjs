@@ -694,6 +694,7 @@
     "lnNotRect.nagenawa": "There is a non-rectangle loop.",
     "lnNotSq.tajmahal": "A segment doesn't form a square.",
     "lcNotUTurns.uturns": "A line does not turn twice in the same direction between circles.",
+    "lcNotUTurns.vertigo": "A line turns in the wrong direction.",
     "lnOnCenter.midloop": "A circle is not the center point of a line.",
     "lnOnClue.tajmahal": "A corner is on top of a clue.",
     "lnOnCorner.tajmahal": "A segment overlaps a corner.",

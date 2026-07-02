@@ -4,7 +4,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["simpleloop"], {
+})(["simpleloop", "vertigo"], {
 	MouseEvent: {
 		inputModes: {
 			edit: ["clear", "info-line", "empty"],
@@ -16,9 +16,44 @@
 
 		autoplay_func: "line"
 	},
+	"MouseEvent@vertigo": {
+		inputModes: {
+			edit: ["clear", "info-line", "empty"],
+			play: ["line", "diraux", "peke", "clear", "info-line"]
+		},
+		mouseinputAutoPlay: function() {
+			if (this.btn === "right") {
+				if (this.mousestart) {
+					this.inputdiraux_mousedown();
+				} else if (this.inputData === 2 || this.inputData === 3) {
+					this.inputpeke();
+				} else if (this.mousemove) {
+					this.inputdiraux_mousemove();
+				}
+			} else {
+				if (this.mousestart || this.mousemove) {
+					this.inputLine();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			}
+		},
+		mouseinput_other: function() {
+			if (this.inputMode === "diraux") {
+				if (this.mousestart || this.mousemove) {
+					this.inputdiraux_mousemove();
+				} else if (this.mouseend && this.notInputted()) {
+					this.clickdiraux();
+				}
+			}
+		}
+	},
 	Cell: {
 		noLP: function(dir) {
 			return this.isEmpty();
+		},
+		isLineShapeEndpoint: function() {
+			return this.isLineCurve();
 		}
 	},
 	Border: {
@@ -30,11 +65,12 @@
 	LineGraph: {
 		enabled: true
 	},
+	"LineGraph@vertigo": {
+		isLineCross: true
+	},
 
 	Graphic: {
 		irowake: true,
-
-		numbercolor_func: "qnum",
 
 		gridcolor_type: "SLIGHT",
 
@@ -46,6 +82,9 @@
 
 			this.drawLines();
 			this.drawPekes();
+			if (this.pid === "vertigo") {
+				this.drawBorderAuxDir();
+			}
 
 			this.drawChassis();
 		},
@@ -85,14 +124,51 @@
 			});
 		}
 	},
+	"FileIO@vertigo": {
+		decodeData: function() {
+			this.decodeEmpty();
+			this.decodeBorderArrowAns();
+		},
+		encodeData: function() {
+			this.encodeEmpty();
+			this.encodeBorderArrowAns();
+		}
+	},
 
 	AnsCheck: {
 		checklist: [
 			"checkBranchLine",
-			"checkCrossLine",
+			"checkCrossLine@!vertigo",
+			"checkSameTurns@vertigo",
 			"checkDeadendLine+",
 			"checkOneLoop",
-			"checkNoLine"
-		]
+			"checkNoLine+"
+		],
+
+		checkSameTurns: function() {
+			var checkOnly = this.checkOnly;
+			this.checkLineShape(function(path) {
+				if (path.cells[0].isnull || path.cells[1].isnull) {
+					return false;
+				}
+
+				var dirs1 = path.cells[0].adjborder;
+				var dirs2 = path.cells[1].adjborder;
+
+				for (var dir in dirs1) {
+					if (!dirs1[dir].isLine() && !dirs2[dir].isLine()) {
+						return false;
+					}
+				}
+
+				if (!checkOnly) {
+					for (var dir in dirs1) {
+						dirs1[dir].seterr(1);
+						dirs2[dir].seterr(1);
+					}
+				}
+				return true;
+			}, "lcNotUTurns");
+		}
 	}
 });
