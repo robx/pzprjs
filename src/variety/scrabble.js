@@ -69,22 +69,21 @@
 		},
 
 		key_inputqnum_main: function(cell, ca) {
-			// TODO this interferes with snum input
-
 			if (ca === "enter") {
 				this.cursor.toggleDir();
 				return;
 			}
 
 			var current = this.puzzle.editmode ? cell.qnum : cell.anum;
-			if (ca === "BS" && current === -1) {
+			if (this.cursor.targetdir === 0 && ca === "BS" && current === -1) {
 				this.cursor.goPrevious();
 				cell.draw();
 				cell = this.cursor.getc();
 			}
 
 			this.common.key_inputqnum_main.call(this, cell, ca);
-			if (ca >= "a" && ca <= "z" && ca.length === 1) {
+			var wasInput = ca === " " || (ca >= "a" && ca <= "z" && ca.length === 1);
+			if (this.cursor.targetdir === 0 && wasInput) {
 				this.cursor.goNext();
 			}
 			this.cursor.draw();
@@ -96,6 +95,7 @@
 	Cell: {
 		numberWithMB: true,
 		numberAsLetter: true,
+		enableSubNumberArray: true,
 
 		maxnum: 26,
 
@@ -121,6 +121,11 @@
 			var addr = this.getaddr();
 			addr.drawRowOrCol(true);
 			addr.drawRowOrCol(false);
+		},
+
+		chtarget: function(mouse, dx, dy) {
+			this.common.chtarget.call(this, mouse, dx, dy);
+			this.getaddr().drawRowOrCol(this.isVert);
 		},
 
 		goNext: function() {
@@ -272,9 +277,11 @@
 	Graphic: {
 		paint: function() {
 			this.drawBGCells();
+			this.drawTargetSubNumber();
 			this.drawGrid();
 
 			this.drawMBs();
+			this.drawSubNumbers();
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
 
@@ -285,8 +292,15 @@
 		},
 
 		getBGCellColor: function(cell) {
-			if (!this.board.haserror && !this.board.hasinfo) {
-				var cursor = this.puzzle.cursor;
+			var cursor = this.puzzle.cursor;
+			if (
+				!this.board.haserror &&
+				!this.board.hasinfo &&
+				!this.outputImage &&
+				this.puzzle.getConfig("cursor") &&
+				cursor.targetdir === 0 &&
+				cursor.isActive
+			) {
 				if (cursor.isVert && cell.bx === cursor.bx) {
 					return this.qsubcolor2;
 				}
