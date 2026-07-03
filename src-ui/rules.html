@@ -189,6 +189,8 @@ pzpr.on("load", function(){
       }
       player.id = "rules";
       player.appendChild(rulediv);
+
+		  pzpr.connectKeyEvents(puzzle);
     });
 
     heading = document.createElement('h1');

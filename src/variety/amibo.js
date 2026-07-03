@@ -26,6 +26,11 @@
 				this.clickTateyoko();
 			}
 		},
+		mouseinput_other: function() {
+			if (this.inputMode === "pekeborder") {
+				this.inputpeke();
+			}
+		},
 
 		clickTateyoko: function() {
 			if (this.pid === "ruleofthree" && this.inputMode === "auto") {
@@ -48,13 +53,13 @@
 		}
 	},
 	"MouseEvent@amibo": {
-		inputModes: { edit: ["number", "clear"], play: ["crossbar", "peke"] },
+		inputModes: { edit: ["number", "clear"], play: ["crossbar", "pekeborder"] },
 		autoedit_func: "qnum"
 	},
 	"MouseEvent@ruleofthree": {
 		inputModes: {
 			edit: ["empty", "clear"],
-			play: ["crossbar", "subcircle", "peke"]
+			play: ["crossbar", "subcircle", "pekeborder"]
 		},
 		mouseinputAutoEdit: function() {
 			this.inputempty();

@@ -41,6 +41,7 @@ ui.keypopup = {
 		lookair: [5, 0],
 		hebi: [5, 5],
 		tawa: [6, 0],
+		trizone: [6, 0],
 		hashikake: [8, 0],
 		tapa: [80, 0],
 		tapaloop: [80, 0],
@@ -69,6 +70,7 @@ ui.keypopup = {
 		bonsan: [10, 0],
 		heyabon: [10, 0],
 		rectslider: [10, 0],
+		hamlepaths: [10, 0],
 		satogaeri: [10, 0],
 		yosenabe: [10, 0],
 		herugolf: [10, 0],
@@ -251,11 +253,18 @@ ui.keypopup = {
 		heavydots: [10, 0],
 		suguru: [10, 10],
 		marutaring: [10, 0],
+		ubahn: [10, 135],
 		nuriloop: [10, 0],
 		tetroctb: [10, 0],
 		hasunomura: [10, 0],
 		bramble: [10, 0],
-		topo: [10, 10]
+		golemgrad: [10, 0],
+		mrokmrno: [137, 137],
+		topo: [10, 10],
+		soulmates: [10, 10],
+		landmeasure: [10, 0],
+		elasticlink: [10, 0],
+		slovak: [136, 10]
 	},
 
 	//---------------------------------------------------------------------------
@@ -416,6 +425,12 @@ ui.keypopup = {
 			this.generate_kurarin(mode);
 		} else if (type === 134) {
 			this.generate_narrowfence(mode);
+		} else if (type === 135) {
+			this.generate_ubahn(mode);
+		} else if (type === 136) {
+			this.generate_slovak(mode);
+		} else if (type === 137) {
+			this.generate_mrokmrno(mode);
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -457,9 +472,10 @@ ui.keypopup = {
 			itemlist = [];
 		if (mode === 3 && ui.puzzle.klass.Cell.prototype.numberWithMB) {
 			var mbcolor = ui.puzzle.painter.mbcolor;
+			var dottext = pid === "soulmates" ? "・" : "×";
 			itemlist.push(
 				["q", { text: "○", color: mbcolor }],
-				["w", { text: "×", color: mbcolor }],
+				["w", { text: dottext, color: mbcolor }],
 				" ",
 				null
 			);
@@ -496,10 +512,13 @@ ui.keypopup = {
 			cap = "□";
 		} else if (
 			pid === "rectslider" ||
+			pid === "hamlepaths" ||
 			pid === "aquapelago" ||
 			pid === "mrtile"
 		) {
 			cap = "■";
+		} else if (pid === "landmeasure") {
+			cap = "∞";
 		} else if (pid === "patchwork") {
 			cap = {
 				text: "■",
@@ -513,6 +532,9 @@ ui.keypopup = {
 		}
 		if (pid === "familyphoto") {
 			itemlist.push(["q", "●"]);
+		}
+		if (pid === "elasticlink") {
+			itemlist.push(["q", "○"]);
 		}
 		if (
 			pid === "icelom" ||
@@ -772,6 +794,16 @@ ui.keypopup = {
 			],
 			5
 		);
+	},
+	generate_slovak: function() {
+		var itemlist = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " "];
+		itemlist.push(["-", "?"]);
+		itemlist.push(["q", "⠐"]);
+		itemlist.push(["w", "⠒"]);
+		itemlist.push(["e", "…"]);
+		itemlist.push(["r", "⸬"]);
+
+		this.generate_main(itemlist, 4);
 	},
 	generate_interbd: function() {
 		this.generate_main(
@@ -1057,6 +1089,13 @@ ui.keypopup = {
 		);
 	},
 
+	generate_ubahn: function(mode) {
+		this.generate_main(
+			[["o", "O"], ["l", "L"], ["i", "I"], ["t", "T"], ["x", "X"], " "],
+			3
+		);
+	},
+
 	generate_swslither: function() {
 		this.generate_main(
 			[["5", "🐑"], ["6", "🐺"], null, "1", "2", "3", "0", " ", ["-", "?"]],
@@ -1097,6 +1136,24 @@ ui.keypopup = {
 			[["1", "○"], ["2", "╋"], " ", ["3", "×"], ["4", "◇"]],
 			3
 		);
+	},
+
+	generate_mrokmrno: function(mode) {
+		var mbcolor = ui.puzzle.painter.mbcolor;
+		var items = [
+			["1", "N"],
+			["2", "K"],
+			["3", "O"],
+			["4", "😶"],
+			["5", "🙂"],
+			["6", "🙁"],
+			" "
+		];
+		if (mode === 3) {
+			items.push(["q", { text: "⋅", color: mbcolor }]);
+		}
+
+		this.generate_main(items, 3);
 	},
 
 	generate_main: function(list, split) {

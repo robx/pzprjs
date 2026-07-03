@@ -28,7 +28,13 @@
 		},
 
 		autoedit_func: "qnum",
-		autoplay_func: "border"
+
+		mouseinputAutoPlay: function() {
+			this.mouseinputAutoPlay_border();
+			if (this.mouseend && this.notInputted()) {
+				this.inputqnum();
+			}
+		}
 	},
 	KeyEvent: {
 		enablemake: true,
@@ -194,15 +200,7 @@
 			this.drawQuesNumbers();
 			this.drawSubNumbers(true);
 
-			this.drawTarget();
-		},
-
-		drawTarget: function() {
-			this.drawCursor(
-				true,
-				this.puzzle.editmode ||
-					this.puzzle.mouse.inputMode.indexOf("number") >= 0
-			);
+			this.drawCursor();
 		},
 
 		fontsizeratio: 0.75,

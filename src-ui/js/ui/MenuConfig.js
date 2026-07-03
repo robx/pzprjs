@@ -175,6 +175,7 @@
 				case "roboticwalk":
 				case "wataridori":
 				case "bhaibahan":
+				case "bwloop":
 					idname = "loop_full";
 					break;
 			}

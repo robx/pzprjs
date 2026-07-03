@@ -136,6 +136,8 @@ pzpr.classmgr.makeCommon({
 				key = "left";
 			} else if (keycode === 39) {
 				key = "right";
+			} else if (keycode === 13) {
+				key = "enter";
 			} else if (48 <= keycode && keycode <= 57) {
 				key = (keycode - 48).toString(36);
 			} else if (65 <= keycode && keycode <= 90) {
@@ -155,7 +157,7 @@ pzpr.classmgr.makeCommon({
 				key = "-";
 			} else if (keycode === 106) {
 				key = "*";
-			} else if (keycode === 107) {
+			} else if (keycode === 107 || keycode === 59 || keycode === 61) {
 				key = "+";
 			}
 
@@ -169,7 +171,7 @@ pzpr.classmgr.makeCommon({
 			if (this.isCTRL) {
 				keylist.unshift("ctrl");
 			}
-			if (this.isSHIFT) {
+			if (this.isSHIFT && key !== "+") {
 				keylist.unshift("shift");
 			}
 			key = keylist.join("+");
@@ -191,6 +193,7 @@ pzpr.classmgr.makeCommon({
 		// kc.inputKeys()   キーボードイベントを実行する
 		//---------------------------------------------------------------------------
 		inputKeys: function(array) {
+			this.cursor.isActive = true;
 			for (var i = 0; i < arguments.length; i++) {
 				var ca = arguments[i];
 
@@ -255,6 +258,12 @@ pzpr.classmgr.makeCommon({
 			if (!this.isenablemode()) {
 				return;
 			}
+			if (this.keydown && !this.cursor.isActive) {
+				this.cursor.isActive = true;
+				this.cancelDefault = true;
+				this.cursor.draw();
+				return;
+			}
 			if (this.keydown && this.moveTarget(c)) {
 				this.cancelDefault = true;
 				return;
@@ -315,17 +324,16 @@ pzpr.classmgr.makeCommon({
 		},
 		moveTC: function(ca, mv) {
 			var cursor = this.cursor,
+				editmode = this.puzzle.editmode,
 				pos0 = cursor.getaddr(),
 				flag = true,
 				dir = cursor.NDIR;
 
-			var hasIndicator = this.pid === "easyasabc" || this.pid === "isowatari";
-
 			switch (ca) {
 				case "up":
 					if (
-						(hasIndicator && cursor.by === cursor.miny) ||
-						cursor.by - mv >= cursor.miny
+						cursor.by - mv >= cursor.miny ||
+						(editmode && cursor.hasIndicator && cursor.by === cursor.miny)
 					) {
 						dir = cursor.UP;
 					}
@@ -454,6 +462,7 @@ pzpr.classmgr.makeCommon({
 			} else if (this.disableAnum && this.puzzle.playmode) {
 				this.targetdir = 5;
 			}
+			this.isActive = !this.puzzle.playeronly;
 		},
 		init: function(bx, by) {
 			this.bx = bx;
@@ -478,6 +487,7 @@ pzpr.classmgr.makeCommon({
 		maxy: null,
 
 		crosstype: false,
+		isActive: true,
 
 		//---------------------------------------------------------------------------
 		// tc.initCursor()           初期化時にカーソルの位置を設定する
@@ -611,12 +621,11 @@ pzpr.classmgr.makeCommon({
 		// tc.setaddr() ターゲットの位置をAddressクラス等のオブジェクトで設定する
 		//---------------------------------------------------------------------------
 		setaddr: function(pos) {
-			var hasIndicator = this.pid === "easyasabc" || this.pid === "isowatari";
 			/* Address, Cellなどのオブジェクトいずれを入力しても良い */
 			if (
 				pos.bx < this.minx ||
 				this.maxx < pos.bx ||
-				pos.by < this.miny - (hasIndicator ? 2 : 0) ||
+				pos.by < this.miny - (this.hasIndicator ? 2 : 0) ||
 				this.maxy < pos.by
 			) {
 				return;

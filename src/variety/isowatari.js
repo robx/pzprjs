@@ -130,6 +130,8 @@
 	},
 
 	TargetCursor: {
+		hasIndicator: true,
+
 		draw: function() {
 			if (this.by >= this.board.minby) {
 				this.common.draw.call(this);

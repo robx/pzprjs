@@ -464,8 +464,7 @@
 			// pc.resetRange()     rangeオブジェクトを初期化する
 			//---------------------------------------------------------------------------
 			prepaint: function() {
-				var hasIndicator =
-					this.pid === "starbattle" || this.pid === "isowatari";
+				var hasIndicator = this.puzzle.cursor.hasIndicator;
 				if (this.suspended || !this.context) {
 					return;
 				}

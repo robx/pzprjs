@@ -360,6 +360,7 @@ div#keypopup {
 }
 div.panelbase {
   margin: 1pt;
+  font-variant-emoji: text;
 }
 
 div.kpcell {

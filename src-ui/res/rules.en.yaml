@@ -257,7 +257,7 @@ wblink: "Draw lines between the circles to form pairs.\n1. Lines must be horizon
 yajikazu: "Shade some cells on the board.\n1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number indicates the amount of shaded cells in the given direction. If a clue is shaded, the number becomes meaningless (it may be true or false).\n3. All unshaded cells on the board form an orthogonally connected area."
 yajilin: "Shade some cells on the board, and draw a single loop that goes through all remaining cells.\n1. The loop cannot branch off or cross itself.\n2. Shaded cells cannot be orthogonally adjacent.\n3. Cells with numbers or question marks cannot be shaded, and are not part of the loop.\n4. A number indicates the amount of shaded cells in the given direction."
 yajilin-regions: "Shade some cells on the board, and draw a single loop that goes through all remaining cells.\n1. The loop cannot branch off or cross itself.\n2. Shaded cells cannot be orthogonally adjacent.\n3. A number indicates the amount of shaded cells in the outlined region."
-yajitatami: "Draw lines over the dotted lines to divide the board into several regions.\n 1. All regions must be a rectangle or square with a width of 1 and a length of at least 2.\n2. There must be a border immediately in front of each arrow.\n3. A number indicates how many other regions are in the direction of the arrow.\n4. A number also indicates the size of its region.\n5. Region borders must not form 4-way intersections."
+yajitatami: "Draw lines over the dotted lines to divide the board into several regions.\n1. All regions must be a rectangle with a width of 1 and a length of at least 2.\n2. There must be a border immediately in front of each arrow.\n3. A number indicates how many other regions are in the direction of the arrow.\n4. A number also indicates the size of its region.\n5. Region borders must not form 4-way intersections."
 yinyang: "Place a black or white circle in every cell. Some circles are given.\n1. All circles of the same color must be orthogonally contiguous.\n2. There can not be a 2x2 square of all black or all white circles."
 yosenabe: "Draw lines to move every circle into one of the pots (denoted by a group of gray cells).\n1. A circle can be moved horizontally or vertically, but cannot make a turn.\n2. Movement lines cannot cross or overlap each other. Lines can also not go through the start- or endpoint of other circles.\n3. Numbers indicate the sum of the values on the circles that are moved into the pot.\n4. A pot without a number must have at least one circle."
 lightshadow: "Shade some cells on the board to form shaded and unshaded areas.\n1. Each orthogonally connected area contains exactly one clue.\n2. The color of clued cells cannot be changed.\n3. A clue represents the size of the area of shaded or unshaded cells that the clue belongs to."
@@ -456,3 +456,92 @@ ruleofthree: |-
   Draw 1 or 2 orthogonal lines in every cell, connecting two opposite edges and going through the center.
   1. Every line must be exactly three cells in length.
   2. Cells where two lines cross cannot be orthogonally adjacent.
+hamlepaths: |-
+  Draw lines to move some of the panels.
+  1. A panel can be moved horizontally or vertically, but cannot make a turn.
+  2. Movement lines cannot cross or overlap each other. Lines can also not go through the start- or endpoint of other panels.
+  3. A number indicates how many spaces the panel must move.
+  4. Two panels cannot be orthogonally adjacent.
+  5. All cells unused by panels form an orthogonally connected area.
+bwloop: |-
+  Draw lines through orthogonally adjacent cells to form a loop that goes through every circle.
+  1. The loop cannot branch off or cross itself.
+  2. Between two successively passed circles of the same color, the loop must not turn.
+  3. Between two successively passed circles of different colors, the loop must turn exactly once.
+yokeimoji: |-
+  Shade some cells on the board.
+  1. Shaded cells cannot be horizontally or vertically adjacent.
+  2. Every run of 2 or more consecutive unshaded cells forms a word (left-to-right or top-to-bottom). Each word can appear no more than once in the grid.
+  3. Words cannot start with "ン" or "ー". The sequences "ーー", "ンン" or "ンー" cannot appear in a word.
+  4. All unshaded cells on the board form an orthogonally connected area.
+soulmates: |-
+  Place a number into some of the cells.
+  1. For each numbered cell, exactly one other number of the same value is able to be reached by traveling through only empty cells.
+  2. The value of each number must be equal to the distance of the shortest possible path from it to its partner.
+golemgrad: |-
+  Draw lines to form pairs between the circles.
+  1. Lines cannot cross or overlap each other.
+  2. Cells with numbers cannot be visited by a line.
+  3. Orthogonally adjacent cells unused by the lines form regions. Each region contains no more than one number.
+  4. A number indicates the size of the region that contains it.
+  5. All cells used by lines must form an orthogonally contiguous area.
+  6. The cells used by lines cannot form a 2x2 square.
+longest: |-
+  Draw lines over the dotted lines to divide the board into polygons.
+  1. For each polygon, the side (or sides) with the biggest length must consist entirely of given borders.
+  2. Each given border must be part of the longest side for at least one of the adjacent polygons.
+landmeasure: |-
+  Shade some cells on the board.
+  1. Shaded cells cannot form a loop. This includes 2x2 squares.
+  2. Number clues indicate the length of the smallest path that connects all shaded cells overlapping the clue.
+  3. A zero clue cannot overlap any shaded cells.
+  4. An infinity clue overlaps two shaded cells that do not have a valid path between them.
+mrokmrno: |-
+  Place the letter N, K, O or a smiling face or frowning face in some grid cells.
+  1. Symbols must form groups of 3 cells. Different groups cannot be orthogonally adjacent.
+  2. Two cells with the same symbol cannot share a row or column, unless another symbol is between them.
+  3. Each group contains two adjacent letters, forming the word 'OK' or the word 'NO' when read from left-to-right or from top-to-bottom.
+  4. A group with 'OK' must contain a smiling face, and a group with 'NO' must contain a frowning face.
+  5. A given O may be changed to a face.
+syncskating: |-
+  Draw lines between every node to form two chains.
+  1. Lines go straight from node to node, and can be drawn at any angle.
+  2. A chain cannot branch off. Nodes must be visited exactly once.
+  3. Chains cannot intersect themselves, but they can intersect each other outside of nodes. Line segments cannot overlap.
+  4. Each chain visits each number from 1 to N in ascending order. Empty nodes can be replaced with any number.
+  5. Lines of two chains connecting the same number must be parallel.
+trizone: |-
+  Shade some cells on the board, and divide the rest into regions of 3 cells.
+  1. No two shaded cells are horizontally or vertically adjacent.
+  2. Numbers must be contained in a region of 3 cells. Every region has exactly one number.
+  3. Numbers indicate how many shaded cells are horizontally or vertically adjacent to its region.
+scrabble: |-
+  Write one letter in some of the cells to form the given words. Some letters are given.
+  1. Every run of 2 or more consecutive letters forms a word (left-to-right or top-to-bottom). There cannot be words that aren't present in the word bank.
+  2. Each word in the bank appears exactly once in the grid.
+  3. All cells with letters must be connected.
+elasticlink: |-
+  Draw lines to form pairs between the circles.
+  1. Lines cannot cross or overlap each other.
+  2. Each line must turn at least once.
+  3. For every turn, the lengths of the line segments on both sides of the turn must differ by exactly one.
+  4. A number indicates the length of the line segment overlapping that cell. All cells with numbers must be visited.
+  5. If the line turns on a number, the number indicates the length of either the horizontal or vertical line segment overlapping the cell.
+anymino: |-
+  Shade some cells on the board to form shapes.
+  1. All regions contain exactly one shape, which is an orthogonally connected group of shaded cells.
+  2. Two identical shapes cannot share an edge, counting rotations and reflections as the same.
+  3. Every shape must be orthogonally adjacent to at least one other shape of the same size.
+  4. The shaded cells cannot form a 2x2 square.
+  5. All shaded cells form an orthogonally contiguous area.
+slovak: |-
+  Place numbers from the given range into some of the empty cells.
+  1. Each row and column contains exactly one of each number (excluding numbers on shaded cells). Some cells remain empty.
+  2. Numbers on shaded cells indicate the sum of numbers in the (up to four) orthogonally adjacent cells.
+  3. The amount of circles on a shaded cell indicates how many of the (up to four) orthogonally adjacent cells must be filled with a number. Clues without any circles have an unknown amount.
+vertigo: |-
+  Draw a loop that goes through every unshaded cell.
+  1. The loop cannot branch off.
+  2. All turns along the entire loop must be in the same direction.
+  3. The loop cannot go through shaded cells.
+  4. Two perpendicular line segments may intersect each other, but they may not turn at their intersection or otherwise overlap.

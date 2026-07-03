@@ -433,7 +433,7 @@
 					exec = pid === "lollipops" || pid === "magnets";
 					break;
 				case "patchwork_leftaux":
-					exec = pid === "patchwork";
+					exec = pid === "patchwork" || pid === "trizone";
 					break;
 				case "undefcell":
 					exec =
@@ -443,7 +443,11 @@
 					exec = !!puzzle.painter.autocmp;
 					break;
 				case "autoerr":
-					exec = pid === "hitori" || pid === "gokigen" || pid === "wagiri";
+					exec =
+						pid === "hitori" ||
+						pid === "gokigen" ||
+						pid === "wagiri" ||
+						pid === "ubahn";
 					break;
 				case "singlenum":
 					exec = pid === "hanare" || pid === "putteria" || pid === "twinarea";
@@ -552,7 +556,8 @@
 							"morningwalk",
 							"roboticwalk",
 							"wataridori",
-							"bhaibahan"
+							"bhaibahan",
+							"bwloop"
 						].indexOf(pid) >= 0;
 					break;
 				case "autosolver":

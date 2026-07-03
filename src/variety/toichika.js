@@ -440,7 +440,7 @@
 				this.drawQuesCells();
 				this.drawQuesNumbers();
 				this.drawCellArrows();
-				this.drawMBs();
+				this.drawMBs(false);
 			} else if (this.pid === "yajirushi") {
 				this.drawQuesCells();
 				this.drawCellArrows();
@@ -453,7 +453,7 @@
 			}
 			if (this.pid === "news") {
 				this.drawXCells();
-				this.drawMBs();
+				this.drawMBs(false);
 				this.drawSubNumbers();
 			}
 
@@ -516,32 +516,6 @@
 					g.strokeStyle = this.quescolor;
 					g.lineWidth = 2;
 					g.strokeCross(px, py, rsize);
-				} else {
-					g.vhide();
-				}
-			}
-		}
-	},
-	"Graphic@news,yajirushi2#1": {
-		drawMBs: function() {
-			var g = this.vinc("cell_mb", "auto", true);
-			g.lineWidth = 1;
-
-			var rsize = this.cw * 0.35;
-			var clist = this.range.cells;
-			for (var i = 0; i < clist.length; i++) {
-				var cell = clist[i],
-					px,
-					py;
-				if (cell.qsub > 0) {
-					px = cell.bx * this.bw;
-					py = cell.by * this.bh;
-					g.strokeStyle = !cell.trial ? this.mbcolor : "rgb(192, 192, 192)";
-				}
-
-				g.vid = "c_MB1_" + cell.id;
-				if (cell.qsub === 1) {
-					g.strokeCircle(px, py, rsize);
 				} else {
 					g.vhide();
 				}

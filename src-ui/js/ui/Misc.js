@@ -122,6 +122,7 @@ function toBGimage(pid) {
 		"bramble",
 		"brownies",
 		"bunnyhop",
+		"bwloop",
 		"castle",
 		"cbanana",
 		"chainedb",
@@ -152,6 +153,7 @@ function toBGimage(pid) {
 		"firewalk",
 		"forestwalk",
 		"geradeweg",
+		"hamlepaths",
 		"hasunomura",
 		"heteromino",
 		"heyapin",
@@ -244,11 +246,13 @@ function toBGimage(pid) {
 		"tilecity",
 		"timebomb",
 		"tjunction",
+		"trizone",
 		"tontonbeya",
 		"topo",
 		"trainstations",
 		"tslither",
 		"turnaround",
+		"ubahn",
 		"voxas",
 		"vslither",
 		"wafusuma",
@@ -257,6 +261,7 @@ function toBGimage(pid) {
 		"waterwalk",
 		"wittgen",
 		"yinyang",
+		"yokeimoji",
 		"zabajaba"
 	];
 	if (imgs.indexOf(pid) >= 0) {

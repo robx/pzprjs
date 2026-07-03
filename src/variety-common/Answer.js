@@ -448,6 +448,23 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 
+		checkLoop: function() {
+			var paths = this.board.linegraph.components;
+			for (var r = 0; r < paths.length; r++) {
+				var path = paths[r];
+				if (path.circuits === 0) {
+					continue;
+				}
+
+				this.failcode.add("laLoop");
+				if (this.checkOnly) {
+					break;
+				}
+				this.board.border.setnoerr();
+				path.setedgeerr(1);
+			}
+		},
+
 		//---------------------------------------------------------------------------
 		// ans.checkConnectLineCount() ○などがないセルから出ている線の本数について判定する
 		//---------------------------------------------------------------------------

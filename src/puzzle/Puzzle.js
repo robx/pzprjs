@@ -357,9 +357,10 @@
 			this.playmode = !this.editmode;
 
 			if (!!this.klass) {
-				this.cursor.adjust_modechange();
 				this.key.keyreset();
 				this.mouse.modechange();
+				this.cursor.adjust_modechange();
+				this.mouse.autohide_cursor();
 				this.board.errclear();
 				this.redraw();
 			}
