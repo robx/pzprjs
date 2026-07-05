@@ -19,14 +19,21 @@
 
 		mouseinput_auto: function() {
 			var pos = this.getpos(0);
-			if (
-				this.puzzle.editmode &&
-				this.mousestart &&
-				pos.bx > this.board.maxbx
-			) {
-				var paint = this.puzzle.painter;
-				var x = this.board.cols * paint.cw + paint.bh;
-				this.puzzle.emit("request-wordbank", { x: x });
+			var paint = this.puzzle.painter;
+
+			if (this.mousestart && pos.bx > this.board.maxbx) {
+				if (this.puzzle.editmode) {
+					var x = this.board.cols * paint.cw + paint.bh;
+					this.puzzle.emit("request-wordbank", { x: x });
+				} else {
+					// TODO for some reason this is incorrect...
+					var y = (this.inputPoint.by * paint.bankfontsize) | 0;
+					var piece = this.board.bank.pieces[y];
+					if (piece) {
+						piece.setQcmp(piece.qcmp ? 0 : 1);
+						piece.draw();
+					}
+				}
 				return;
 			}
 
@@ -355,6 +362,7 @@
 			return this.getBGCellColor_qsub1(cell);
 		},
 
+		bankfontsize: 0.66,
 		drawBankPiece: function(g, piece, idx) {
 			g.vid = "pb_piece_" + idx;
 			if (!piece) {
@@ -362,12 +370,12 @@
 				return;
 			}
 
-			var fontsize = (this.ch * 0.66) | 0;
+			var fontsize = this.ch * this.bankfontsize;
 			var x = this.board.cols * this.cw + this.bh;
 			var y = fontsize * (piece.y + 1);
 
 			g.fillStyle = this.getBankPieceColor(piece);
-			g.font = fontsize + "px " + this.fontfamily;
+			g.font = (fontsize | 0) + "px " + this.fontfamily;
 			g.textAlign = "left";
 			g.textBaseline = "bottom";
 			g.fillText(piece.str, x, y);
