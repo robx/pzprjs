@@ -111,15 +111,9 @@
 		}
 
 		puzzle.on("request-aux-editor", ui.auxeditor.open);
-		puzzle.on("request-wordbank", function() {
-			ui.popupmgr.open("wordbank", 0, 0);
-			var rect = pzpr.util.getRect(getEL("btnarea"));
-			var bounds = pzpr.util.getRect(getEL("popwordbank"));
-			ui.popupmgr.open(
-				"wordbank",
-				rect.left + (rect.width - bounds.width) / 2,
-				Math.max(16, rect.top - bounds.height - 16)
-			);
+		puzzle.on("request-wordbank", function(sender, args) {
+			var rect = pzpr.util.getRect(getEL("divques"));
+			ui.popupmgr.open("wordbank", rect.left + args.x + 16, rect.top - 16);
 		});
 
 		if (!!onload_option.net) {

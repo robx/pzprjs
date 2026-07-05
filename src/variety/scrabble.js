@@ -24,7 +24,9 @@
 				this.mousestart &&
 				pos.bx > this.board.maxbx
 			) {
-				this.puzzle.emit("request-wordbank");
+				var paint = this.puzzle.painter;
+				var x = this.board.cols * paint.cw + paint.bh;
+				this.puzzle.emit("request-wordbank", { x: x });
 				return;
 			}
 
@@ -360,11 +362,12 @@
 				return;
 			}
 
+			var fontsize = (this.ch * 0.66) | 0;
 			var x = this.board.cols * this.cw + this.bh;
-			var y = this.ch * 0.6 * (piece.y + 1);
+			var y = fontsize * (piece.y + 1);
 
 			g.fillStyle = this.getBankPieceColor(piece);
-			g.font = ((this.ch * 0.66) | 0) + "px " + this.fontfamily;
+			g.font = fontsize + "px " + this.fontfamily;
 			g.textAlign = "left";
 			g.textBaseline = "bottom";
 			g.fillText(piece.str, x, y);
