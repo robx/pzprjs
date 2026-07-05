@@ -22,7 +22,7 @@
 			if (
 				this.puzzle.editmode &&
 				this.mousestart &&
-				pos.by > this.board.maxby
+				pos.bx > this.board.maxbx
 			) {
 				this.puzzle.emit("request-wordbank");
 				return;
@@ -251,8 +251,33 @@
 				return ca >= "A" && ca <= "Z";
 			});
 			return tokens.join("");
+		},
+		performLayout: function() {
+			if (!this.pieces) {
+				return;
+			}
+
+			this.width = 0;
+
+			var showAdd = !this.puzzle.playeronly ? this.allowAdd : false;
+			var len = this.pieces.length;
+			if (showAdd === "empty") {
+				showAdd = len === 0;
+			}
+
+			for (var i = 0; i < len + (showAdd ? 1 : 0); i++) {
+				var p = i < len ? this.pieces[i] : this.addButton;
+				p.x = 0;
+				p.y = i;
+				p.index = i;
+				this.height = i + (p.height - 1);
+				this.width = Math.max(this.width, p.w);
+			}
+
+			if (!showAdd) {
+				this.addButton.index = null;
+			}
 		}
-		// TODO adjust piece layout into several columns
 	},
 	BankPiece: {
 		str: "",
@@ -291,6 +316,23 @@
 			this.drawCursor();
 		},
 
+		getCanvasCols: function() {
+			var cols = this.getBoardCols() + 2 * this.margin;
+			cols += this.board.bank.width * this.bankratio + 1 / 16;
+			return cols;
+		},
+		getCanvasRows: function() {
+			return this.getBoardRows() + 2 * this.margin;
+		},
+		getOffsetCols: function() {
+			var cols = (0 - this.board.minbx) / 2;
+			cols -= (this.board.bank.width * this.bankratio) / 2;
+			return cols;
+		},
+		getOffsetRows: function() {
+			return (0 - this.board.minby) / 2;
+		},
+
 		getBGCellColor: function(cell) {
 			var cursor = this.puzzle.cursor;
 			if (
@@ -318,10 +360,8 @@
 				return;
 			}
 
-			var x = this.cw * 0.5 * (piece.x + 5);
-			var y = this.ch * 0.5 * piece.y;
-			x -= this.bw * 5;
-			y += (this.board.rows + 1) * this.ch;
+			var x = this.board.cols * this.cw + this.bh;
+			var y = this.ch * 0.6 * (piece.y + 1);
 
 			g.fillStyle = this.getBankPieceColor(piece);
 			g.font = ((this.ch * 0.66) | 0) + "px " + this.fontfamily;
