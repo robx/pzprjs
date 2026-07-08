@@ -1,8 +1,9 @@
 pzpr.classmgr.makeCommon({
 	Bank: {
 		enabled: false,
+		isVerticalList: false,
 
-		// Valid values are: boolean | function(): boolean
+		// Valid values are: boolean | "empty" | function(): boolean
 		allowAdd: false,
 
 		// One entry contains one of these:
@@ -72,13 +73,17 @@ pzpr.classmgr.makeCommon({
 		},
 
 		performLayout: function() {
-			if (!this.pieces || !this.width) {
+			if (!this.pieces || !this.puzzle.board.cols) {
 				return;
 			}
 
 			var x = 0,
 				y = 0,
 				nexty = 0;
+
+			if (this.isVerticalList) {
+				this.width = 0;
+			}
 
 			var showAdd = !this.puzzle.playeronly ? this.allowAdd : false;
 			var len = this.pieces.length;
@@ -88,16 +93,25 @@ pzpr.classmgr.makeCommon({
 
 			for (var i = 0; i < len + (showAdd ? 1 : 0); i++) {
 				var p = i < len ? this.pieces[i] : this.addButton;
-				if (x + p.w + 1 > this.width) {
-					x = 0;
-					y = nexty;
-				}
 
-				p.x = x;
-				p.y = y;
-				nexty = Math.max(nexty, y + p.h + 1);
-				p.index = i;
-				x += p.w + 1;
+				if (this.isVerticalList) {
+					p.x = 0;
+					p.y = i;
+					p.index = i;
+					nexty = i + (p.height - 1);
+					this.width = Math.max(this.width, p.w);
+				} else {
+					if (x + p.w + 1 > this.width) {
+						x = 0;
+						y = nexty;
+					}
+
+					p.x = x;
+					p.y = y;
+					nexty = Math.max(nexty, y + p.h + 1);
+					p.index = i;
+					x += p.w + 1;
+				}
 			}
 
 			if (!showAdd) {
