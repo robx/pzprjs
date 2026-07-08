@@ -2757,7 +2757,11 @@ pzpr.classmgr.makeCommon({
 				var r = this.bankratio;
 				var px = this.cw * r * (addButton.x + 0.25) + 1;
 				var py = this.ch * r * (addButton.y + 0.25) + 1;
-				py += (this.board.rows + this.bankVerticalOffset) * this.ch;
+				if (bd.bank.isVerticalList) {
+					px += (this.board.cols + this.bankHorizontalOffset) * this.cw;
+				} else {
+					py += (this.board.rows + this.bankVerticalOffset) * this.ch;
+				}
 				var px2 = px + this.cw * r * addButton.w - 1;
 				var py2 = py + this.ch * r * addButton.h - 1;
 				for (var i = 0; i < 4; i++) {

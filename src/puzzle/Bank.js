@@ -82,7 +82,7 @@ pzpr.classmgr.makeCommon({
 				nexty = 0;
 
 			if (this.isVerticalList) {
-				this.width = 0;
+				this.width = 3;
 			}
 
 			var showAdd = !this.puzzle.playeronly ? this.allowAdd : false;
@@ -219,8 +219,6 @@ pzpr.classmgr.makeCommon({
 	},
 
 	"BankAddButton:BankPiece": {
-		isadd: true,
-
 		w: 2,
 		h: 2,
 
