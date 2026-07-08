@@ -225,7 +225,7 @@ ui.popupmgr.addpopup("wordbank", {
 
 	apply: function() {
 		var field = getEL("wordbank_field");
-		var words = field.value.split("\n");
+		var words = field.value.split(/[^a-zA-Z]/g);
 		var bank = ui.puzzle.board.bank;
 
 		for (var i = 0; i < words.length; i++) {

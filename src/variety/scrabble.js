@@ -10,13 +10,15 @@
 	MouseEvent: {
 		inputModes: {
 			edit: ["clear"],
-			play: ["numexist", "numblank", "clear"]
+			play: ["numexist", "objblank", "clear"]
 		},
 		autoedit_func: "qnum",
 		autoplay_func: "qnum",
 
 		autohide_cursor: function() {},
-
+		inputDot: function() {
+			this.inputFixedQsub(2);
+		},
 		mouseinput_auto: function() {
 			var pos = this.getpos(0);
 			var paint = this.puzzle.painter;
@@ -83,6 +85,12 @@
 				return;
 			}
 
+			if (ca === "+" && this.puzzle.playmode) {
+				ca = "s1";
+			} else if ((ca === " " || ca === "-") && this.puzzle.playmode) {
+				ca = "s2";
+			}
+
 			var current = this.puzzle.editmode ? cell.qnum : cell.anum;
 			if (this.cursor.targetdir === 0 && ca === "BS" && current === -1) {
 				this.cursor.goPrevious();
@@ -91,7 +99,12 @@
 			}
 
 			this.common.key_inputqnum_main.call(this, cell, ca);
-			var wasInput = ca === " " || (ca >= "a" && ca <= "z" && ca.length === 1);
+			var wasInput =
+				ca === " " ||
+				ca === "-" ||
+				ca === "s1" ||
+				ca === "s2" ||
+				(ca >= "a" && ca <= "z" && ca.length === 1);
 			if (this.cursor.targetdir === 0 && wasInput) {
 				this.cursor.goNext();
 			}
@@ -108,6 +121,9 @@
 
 		maxnum: 26,
 
+		isDot: function() {
+			return this.qsub === 2;
+		},
 		drawRowOrCol: function(isVert) {
 			this.klass.Position.prototype.drawRowOrCol.call(this, isVert);
 		}
@@ -314,7 +330,8 @@
 			this.drawTargetSubNumber();
 			this.drawGrid();
 
-			this.drawMBs();
+			this.drawDotCells();
+			this.drawMBs(false);
 			this.drawSubNumbers();
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
