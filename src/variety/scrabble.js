@@ -28,8 +28,7 @@
 					var x = this.board.cols * paint.cw + paint.bh;
 					this.puzzle.emit("request-wordbank", { x: x });
 				} else {
-					// TODO for some reason this is incorrect...
-					var y = (this.inputPoint.by * paint.bankfontsize) | 0;
+					var y = (this.inputPoint.by / (paint.bankfontsize * 2)) | 0;
 					var piece = this.board.bank.pieces[y];
 					if (piece) {
 						piece.setQcmp(piece.qcmp ? 0 : 1);
