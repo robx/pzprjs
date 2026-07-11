@@ -344,14 +344,17 @@
 			}
 
 			var fontsize = this.ch * this.bankfontsize;
+			var canvasw = this.getCanvasCols() * this.cw;
 			var x = this.board.cols * this.cw + this.bh;
+			var maxw =
+				piece.w === this.board.bank.width ? canvasw - x - this.bw : undefined;
 			var y = fontsize * (piece.y + 1);
 
 			g.fillStyle = this.getBankPieceColor(piece);
 			g.font = (fontsize | 0) + "px " + this.fontfamily;
 			g.textAlign = "left";
 			g.textBaseline = "bottom";
-			g.fillText(piece.str, x, y);
+			g.fillText(piece.str, x, y, maxw);
 		}
 	},
 
