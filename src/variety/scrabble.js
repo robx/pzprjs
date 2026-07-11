@@ -90,7 +90,7 @@
 				ca = "s2";
 			}
 
-			var current = this.puzzle.editmode ? cell.qnum : cell.anum;
+			var current = this.puzzle.editmode ? cell.qnum : cell.qsub || cell.anum;
 			if (this.cursor.targetdir === 0 && ca === "BS" && current === -1) {
 				this.cursor.goPrevious();
 				cell.draw();
@@ -248,7 +248,6 @@
 		isVerticalList: true,
 		allowAdd: "empty",
 		presets: [
-			// TODO function that sorts existing bank
 			{
 				name: "preset.copy_answer",
 				func: "copyAnswer"
