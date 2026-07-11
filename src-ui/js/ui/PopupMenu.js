@@ -249,8 +249,8 @@ ui.popupmgr.addpopup("newboard", {
 		ui.misc.displayByPid(this.pop);
 
 		if (ui.puzzle.klass.Bank.prototype.enabled) {
-			getEL("nb_piecebank").style.display = "";
-			this.loadpresets();
+			var presets = this.loadpresets();
+			getEL("nb_piecebank").style.display = presets > 1 ? "" : "none";
 		} else {
 			getEL("nb_piecebank").style.display = "none";
 		}
@@ -417,15 +417,18 @@ ui.popupmgr.addpopup("newboard", {
 		root.replaceChildren();
 
 		var presets = ui.puzzle.board.bank.presets;
+		var count = 0;
 		for (var i = 0; i < presets.length; i++) {
 			if (!presets[i].constant) {
 				continue;
 			}
+			count++;
 			var option = document.createElement("option");
 			option.value = presets[i].shortkey;
 			option.textContent = ui.i18n(presets[i].name) || presets[i].name;
 			root.appendChild(option);
 		}
+		return count;
 	},
 
 	//---------------------------------------------------------------------------
