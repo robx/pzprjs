@@ -211,6 +211,7 @@
     "aqre_borders": "Borders must touch exactly one shaded cell",
     "fillomino_tri": "Maximum block size is 3",
     "trizone_ghost": "Regions can have no clues",
+    "lapaz_liar": "Liar (clues can be erased by shading)",
     "slither_full": "All points must be visited",
     "loop_full": "All cells must be visited",
     "variant": "This puzzle uses variant rules",
