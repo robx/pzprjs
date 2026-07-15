@@ -265,8 +265,10 @@
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodeEmpty();
+			this.puzzle.setConfig("trizone_ghost", this.checkpflag("g"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("trizone_ghost") ? "g" : null;
 			this.encodeNumber16();
 			this.encodeEmpty();
 		}
@@ -274,11 +276,13 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("g", "trizone_ghost");
 			this.decodeCellQnum();
 			this.decodeBorderAns(1);
 			this.decodeCellAns();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("g", "trizone_ghost");
 			this.encodeCellQnum();
 			this.encodeBorderAns(1);
 			this.encodeCellAns();
@@ -398,6 +402,10 @@
 	},
 	"AnsCheck@trizone": {
 		checkNoNumber: function() {
+			if (this.puzzle.getConfig("trizone_ghost")) {
+				return;
+			}
+
 			var rooms = this.board.roommgr.components;
 			for (var r = 0; r < rooms.length; r++) {
 				var room = rooms[r],

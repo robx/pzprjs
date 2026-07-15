@@ -210,6 +210,7 @@
     "heyapin_overlap": "Pins must overlap 2 or more regions",
     "aqre_borders": "Borders must touch exactly one shaded cell",
     "fillomino_tri": "Maximum block size is 3",
+    "trizone_ghost": "Regions can have no clues",
     "slither_full": "All points must be visited",
     "loop_full": "All cells must be visited",
     "variant": "This puzzle uses variant rules",

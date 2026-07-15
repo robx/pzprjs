@@ -153,6 +153,10 @@
 				variant: true,
 				volatile: true
 			}); /* Maximum number is 3 */
+			this.add("trizone_ghost", false, {
+				variant: true,
+				volatile: true
+			}); /* Groups may have no number */
 			this.add("slither_full", false, {
 				variant: true,
 				volatile: true
@@ -533,6 +537,9 @@
 							"myopia",
 							"lineofsight"
 						].indexOf(pid) >= 0;
+					break;
+				case "trizone_ghost":
+					exec = pid === "trizone";
 					break;
 				case "loop_full":
 					exec =
