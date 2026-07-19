@@ -175,7 +175,7 @@ pzpr.classmgr.makeCommon({
 					g.fillStyle = color;
 					g.fillRectCenter(
 						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
-						cell.by * this.bh,
+						cell.by * this.bh + this.getCellVerticalOffset(cell),
 						this.bw + 0.5,
 						this.bh + 0.5
 					);
@@ -186,6 +186,9 @@ pzpr.classmgr.makeCommon({
 		},
 
 		getCellHorizontalOffset: function(cell) {
+			return 0;
+		},
+		getCellVerticalOffset: function(cell) {
 			return 0;
 		},
 
@@ -544,7 +547,10 @@ pzpr.classmgr.makeCommon({
 				if (!!text) {
 					g.fillStyle = colorfunc.call(this, cell);
 					var x = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
-					var y = cell.by * this.bh + this.getNumberVerticalOffset(cell);
+					var y =
+						cell.by * this.bh +
+						this.getCellVerticalOffset(cell) +
+						this.getNumberVerticalOffset(cell);
 					this.disptext(text, x, y, textoption);
 				} else {
 					g.vhide();
@@ -1668,7 +1674,7 @@ pzpr.classmgr.makeCommon({
 					g.fillStyle = color;
 					g.fillCircle(
 						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
-						cell.by * this.bh,
+						cell.by * this.bh + this.getCellVerticalOffset(cell),
 						rsize_fill
 					);
 				} else {
@@ -1688,7 +1694,7 @@ pzpr.classmgr.makeCommon({
 					g.strokeStyle = color;
 					g.strokeCircle(
 						cell.bx * this.bw + this.getCellHorizontalOffset(cell),
-						cell.by * this.bh,
+						cell.by * this.bh + this.getCellVerticalOffset(cell),
 						rsize_stroke
 					);
 				} else {

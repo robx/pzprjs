@@ -187,6 +187,7 @@
 			goishi: [0, 1, "碁石ひろい", "Goishi"],
 			gokigen: [1, 0, "ごきげんななめ", "Slant", "gokigen"],
 			golemgrad: [0, 0, "Golem Grad", "Golem Grad", "nuriloop"],
+			gravel: [0, 0, "Gravel", "Gravel"],
 			guidearrow: [0, 0, "ガイドアロー", "Guide Arrow"],
 			haisu: [0, 0, "Haisu", "Haisu"],
 			hakoiri: [1, 0, "はこいり○△□", "Hakoiri-masashi"],
