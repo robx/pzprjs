@@ -567,7 +567,8 @@
 							"roboticwalk",
 							"wataridori",
 							"bhaibahan",
-							"bwloop"
+							"bwloop",
+							"lring"
 						].indexOf(pid) >= 0;
 					break;
 				default:
