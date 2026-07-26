@@ -268,6 +268,14 @@
 	BoardExec: {
 		allowedOperations: function(isplaymode) {
 			return isplaymode ? 0 : this.ALLOWALL;
+		},
+		execadjust_main: function(key, d) {
+			this.common.execadjust_main.call(this, key, d);
+
+			if (key & this.FLIP) {
+				var d2 = this.adjustSize();
+				this.execadjust_main(this.TURNL, d2);
+			}
 		}
 	},
 	AreaShadeGraph: {
