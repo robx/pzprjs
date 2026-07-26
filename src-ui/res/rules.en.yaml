@@ -545,3 +545,15 @@ vertigo: |-
   2. All turns along the entire loop must be in the same direction.
   3. The loop cannot go through shaded cells.
   4. Two perpendicular line segments may intersect each other, but they may not turn at their intersection or otherwise overlap.
+gravel: |-
+  Shade some cells and divide the remaining cells into squares.
+  1. Each unshaded square must touch at least one other square or the edge of the grid on each of its lower sides.
+  2. Unshaded squares of identical size cannot share an edge.
+  3. Black circles must be shaded, while white circles must remain unshaded.
+  4. Number clues inside shaded regions indicate the total area of the region.
+  5. Number clues inside unshaded squares indicate the side-length of the square.
+lring: |-
+  Draw lines through orthogonally adjacent cells to form a loop.
+  1. The loop cannot branch off or cross itself.
+  2. The loop must make a turn on every cell containing a clue.
+  3. Every arrow must have a line segment going in that direction, which should be exactly one cell longer than the other line segment overlapping the arrow.
