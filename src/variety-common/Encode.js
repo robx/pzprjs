@@ -840,7 +840,12 @@ pzpr.classmgr.makeCommon({
 				pass = 0,
 				tri = [9, 3, 1];
 			for (var c = 0; c < length; c++) {
-				pass += get_func(c) * tri[num];
+				var value = get_func(c);
+				if (value >= 0 && value <= 2) {
+					pass += value * tri[num];
+				} else {
+					throw Error("Value out of range");
+				}
 				num++;
 				if (num === 3) {
 					cm += pass.toString(27);

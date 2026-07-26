@@ -264,7 +264,8 @@ ui.keypopup = {
 		soulmates: [10, 10],
 		landmeasure: [10, 0],
 		elasticlink: [10, 0],
-		slovak: [136, 10]
+		slovak: [136, 10],
+		gravel: [120, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -881,6 +882,9 @@ ui.keypopup = {
 		this.generate_main(items, 4);
 	},
 	generate_snakepit: function() {
+		var pid = ui.puzzle.pid;
+		var w = pid === "snakepit" ? { text: "■", color: "gray" } : { text: "●" };
+
 		this.generate_main(
 			[
 				"0",
@@ -896,7 +900,7 @@ ui.keypopup = {
 				" ",
 				["-", "?"],
 				["q", { text: "○" }],
-				["w", { text: "■", color: "gray" }]
+				["w", w]
 			],
 			4
 		);
@@ -1256,10 +1260,7 @@ ui.keypopup = {
 	// kp.resizepanel() キーポップアップのセルのサイズを変更する
 	//---------------------------------------------------------------------------
 	resizepanel: function() {
-		var cellsize = Math.min(ui.puzzle.painter.cw, 120);
-		if (cellsize < 20) {
-			cellsize = 20;
-		}
+		var cellsize = 48;
 
 		var dsize = (cellsize * 0.9) | 0,
 			tsize = (cellsize * 0.7) | 0;
