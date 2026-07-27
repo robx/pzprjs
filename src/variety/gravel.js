@@ -12,7 +12,7 @@
 		use: true,
 		inputModes: {
 			edit: ["circle-shade", "circle-unshade", "number", "empty", "clear"],
-			play: ["shade", "unshade", "border", "subline"]
+			play: ["shade", "unshade", "border", "subline", "clear"]
 		},
 
 		mouseinputAutoEdit: function() {
@@ -63,6 +63,24 @@
 			this.mouseCell = cell;
 		},
 
+		inputclean_cell: function() {
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			this.mouseCell = cell;
+
+			cell.setQans(0);
+			cell.setQsub(0);
+			if (this.puzzle.editmode) {
+				cell.setQnum(-1);
+				cell.setQues(0);
+			}
+
+			cell.draw();
+		},
+
 		mouseinput: function() {
 			switch (this.inputMode) {
 				case "circle-shade":
@@ -107,16 +125,16 @@
 				return;
 			}
 			if ((ca === " " || ca === "BS") && cell.qnum === -1) {
-				cell.ques = 0;
+				cell.setQues(0);
 				cell.draw();
 			} else if (ca === "q" || ca === "a" || ca === "z") {
-				cell.ques = cell.ques === 1 ? 0 : 1;
+				cell.setQues(cell.ques === 1 ? 0 : 1);
 				cell.draw();
 			} else if (ca === "w" || ca === "s" || ca === "x") {
-				cell.ques = cell.ques === 2 ? 0 : 2;
+				cell.setQues(cell.ques === 2 ? 0 : 2);
 				cell.draw();
 			} else if (ca === "e" || ca === "d" || ca === "c") {
-				cell.ques = cell.ques === 7 ? 0 : 7;
+				cell.setQues(cell.ques === 7 ? 0 : 7);
 				cell.draw();
 			} else {
 				this.key_inputqnum(ca);
@@ -463,7 +481,7 @@
 		drawBorders_common: function(header) {
 			var g = this.context;
 			g.lineWidth = (this.lw + this.addlw) / 2;
-			var lm = g.lineWidth / 2 - 1; // TODO find precise number, this isn't right in xsmall grids
+			var lm = g.lineWidth / 2 - 1;
 
 			var blist = this.range.borders;
 			for (var i = 0; i < blist.length; i++) {
@@ -643,7 +661,9 @@
 					ca = ca.substring(1);
 				}
 
-				if (ca) {
+				if (ca === "-") {
+					cell.qnum = -2;
+				} else if (ca) {
 					cell.qnum = +ca;
 				}
 			});

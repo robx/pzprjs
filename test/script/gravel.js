@@ -57,6 +57,16 @@ ui.debug.addDebugData("gravel", {
 			input: ["editmode,circle-shade", "mouse,left,3,3,2,4", "mouse,left,3,3"],
 			result:
 				"pzprv3/gravel/3/3/# _ _ /_ _ + /_- _b2 _ /0 0 /0 0 /0 0 /0 0 0 /0 0 1 /"
+		},
+		{
+			input: ["playmode,clear", "mouse,left,3,1", "mouse,left,2,4"],
+			result:
+				"pzprv3/gravel/3/3/_ _ _ /_ _ + /_- _b2 _ /0 0 /0 0 /0 0 /0 0 0 /0 0 1 /"
+		},
+		{
+			input: ["editmode,clear", "mouse,left,2,4"],
+			result:
+				"pzprv3/gravel/3/3/_ _ _ /_ _ + /_- _ _ /0 0 /0 0 /0 0 /0 0 0 /0 0 1 /"
 		}
 	]
 });
