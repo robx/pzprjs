@@ -220,6 +220,7 @@ function toBGimage(pid) {
 		"sashikazune",
 		"satogaeri",
 		"scrin",
+		"seiza",
 		"sendai",
 		"simplegako",
 		"simpleloop",

@@ -419,6 +419,7 @@
 			],
 			scrabble: [0, 0, "Scrabble", "Scrabble"],
 			scrin: [0, 0, "スクリン", "Scrin"],
+			seiza: [0, 0, "星座になれたら", "Seiza"],
 			sendai: [0, 0, "宮城県仙台市", "Sendai-Miyagi"],
 			shakashaka: [0, 1, "シャカシャカ", "Shakashaka"],
 			shikaku: [0, 1, "四角に切れ", "Shikaku", "shikaku"],
