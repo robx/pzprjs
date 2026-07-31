@@ -557,3 +557,9 @@ lring: |-
   1. The loop cannot branch off or cross itself.
   2. The loop must make a turn on every cell containing a clue.
   3. Every arrow must have a line segment going in that direction, which should be exactly one cell longer than the other line segment overlapping the arrow.
+seiza: |-
+  Place exactly one star in each outlined region, then draw lines between the stars to form a single network.
+  1. Stars do not touch each other orthogonally or diagonally.
+  2. Lines must be drawn perpendicular to the edges of cells and must not turn or overlap each other.
+  3. Each number in a region represents how many lines are drawn from the star in that region.
+  4. Stars and lines cannot overlap black cells.
