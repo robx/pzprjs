@@ -287,6 +287,7 @@
 			lookair: [0, 0, "るっくえあ", "Look-Air"],
 			loopsp: [1, 0, "環状線スペシャル", "Loop Special", "pipelink"],
 			loute: [0, 0, "エルート", "L-route"],
+			lring: [0, 0, "えるりんぐ", "L-Ring", "balance"],
 			magnets: [0, 0, "Magnets", "Magnets"],
 			makaro: [0, 0, "マカロ", "Makaro"],
 			mannequin: [0, 0, "マネキンゲート", "Mannequin Gate"],

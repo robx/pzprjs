@@ -182,6 +182,7 @@
 				case "wataridori":
 				case "bhaibahan":
 				case "bwloop":
+				case "lring":
 					idname = "loop_full";
 					break;
 			}
