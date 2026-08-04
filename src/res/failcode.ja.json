@@ -624,7 +624,7 @@
     "slLoopGiri.gokigen": "'切'が含まれた線が輪っかになっています。",
     "slNotLoopWa.gokigen": "'輪'が含まれた線が輪っかになっていません。",
     "snakeAttack.hebi": "蛇の視線の先に別の蛇がいます。",
-    "starAround.starbattle": "星がタテヨコナナメに隣接しています。",
+    "starAround": "星がタテヨコナナメに隣接しています。",
     "stInvalid.icebarn": "スタート位置を特定できませんでした。",
     "stLineNe2.slalom": "○から線が２本出ていません。",
     "stNoLine.icebarn": "INに線が通っていません。",
