@@ -165,7 +165,7 @@
 		},
 		encodePzpr: function(type) {
 			this.encodeBorder();
-			this.encodeEmpty();
+			this.encodeBinary("ques", 7);
 			this.encodeRoomNumber16();
 		},
 		encodeBorder_makaro: function() {
