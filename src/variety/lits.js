@@ -27,7 +27,28 @@
 	"MouseEvent@lits,invlitso": {
 		inputModes: {
 			edit: ["border", "info-blk"],
-			play: ["shade", "unshade", "info-blk"]
+			play: ["shade", "unshade", "peke", "info-blk"]
+		},
+		mouseinput_auto: function() {
+			if (this.puzzle.playmode) {
+				if (
+					this.btn === "right" &&
+					this.mousestart &&
+					this.inputpeke_ifborder()
+				) {
+					return;
+				}
+				if (
+					(this.mousestart || this.mousemove) &&
+					(!this.firstCell.isnull || this.notInputted())
+				) {
+					this.inputcell();
+				}
+			} else if (this.puzzle.editmode) {
+				if (this.mousestart || this.mousemove) {
+					this.inputborder();
+				}
+			}
 		}
 	},
 	"MouseEvent@norinori": {
@@ -171,6 +192,7 @@
 			this.drawGrid();
 
 			this.drawBorders();
+			this.drawPekes();
 
 			this.drawChassis();
 		}
