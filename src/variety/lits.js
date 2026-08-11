@@ -253,11 +253,13 @@
 				this.decodeAreaRoom();
 			}
 			this.decodeCellAns();
+			this.decodeBorderLine();
 		},
 		encodeData: function() {
 			this.filever = 1;
 			this.encodeBorderQues();
 			this.encodeCellAns();
+			this.encodeBorderLineIfPresent();
 		},
 
 		kanpenOpen: function() {
