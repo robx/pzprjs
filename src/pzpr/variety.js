@@ -237,6 +237,7 @@
 			island: [0, 0, "アイランド", "Inaba's Island", "kurotto"],
 			isowatari: [0, 0, "イソワタリ", "Isowatari"],
 			japanesesums: [0, 0, "Japanese Sums", "Japanese Sums"],
+			jatahoku: [0, 0, "JaTaHoKu", "JaTaHoKu"],
 			juosan: [0, 0, "縦横さん", "Juosan"],
 			kaero: [1, 0, "お家に帰ろう", "Return Home"],
 			kaidan: [0, 0, "かいだんしばり", "Stairwell"],

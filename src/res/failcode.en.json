@@ -1017,5 +1017,12 @@
     "tentAround.tents": "Some tents touch.",
     "tooFewUnspecified.railpool": "The region contains fewer unspecified segment lengths than question marks.",
     "tooManyUnspecified.railpool": "The region contains more unspecified segment lengths than question marks.",
-    "unusedCell": "A cell is unused."
+    "unusedCell": "A cell is unused.",
+    "bkMissNum.jatahoku": "A number is missing from a block.",
+    "ceTapaNe.jatahoku": "A gray clue does not match the groups of surrounding numbered cells.",
+    "nm2x2.jatahoku": "There is a 2x2 block of numbered cells.",
+    "nmMissRow.jatahoku": "A number is missing from a row or column.",
+    "nmRange.jatahoku": "A number is outside the specified range.",
+    "nmSightNe.jatahoku": "The number of visible buildings is wrong.",
+    "nmSumOrderRowNe.jatahoku": "The sums of consecutive numbered cells do not match the outside clues."
 }

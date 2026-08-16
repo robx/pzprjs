@@ -78,6 +78,7 @@
     "inputmode.unshade": "白マス",
     "inputmode.number": "数字",
     "inputmode.number-": "数字(逆順)",
+    "inputmode.tapa": "グレーヒント",
     "inputmode.letter": "アルファベット",
     "inputmode.letter-": "アルファベット(逆順)",
     "inputmode.quesmark": "盤面記号",
