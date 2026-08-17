@@ -10,15 +10,10 @@
 })(["jatahoku"], {
 	MouseEvent: {
 		inputModes: {
-			edit: ["number", "tapa", "border", "clear"],
+			edit: ["number", "border", "clear"],
 			play: ["number", "subcircle", "subcross", "clear"]
 		},
 
-		mouseinput_other: function() {
-			if (this.inputMode === "tapa" && this.mousestart) {
-				this.inputTapaClue();
-			}
-		},
 		mouseinput_number: function() {
 			if (!this.mousestart) {
 				return;
@@ -88,26 +83,35 @@
 			if (cell !== this.cursor.getc()) {
 				this.setcursor(cell);
 			} else {
-				var states = cell.qnum_states,
-					state = 0;
-				for (var i = 0; i < states.length; i++) {
-					if (this.puzzle.pzpr.util.sameArray(cell.qnums, states[i])) {
-						state = i;
-						break;
-					}
-				}
-				state =
-					this.btn === "right"
-						? (state + states.length - 1) % states.length
-						: (state + 1) % states.length;
-				cell.setQnum(-1);
-				cell.setQnums(states[state]);
-				cell.setAnum(-1);
-				cell.setQsub(0);
-				cell.clrSnum();
-				cell.draw();
+				this.inputqnum_tapa_main(cell);
 			}
 			this.mouseCell = cell;
+		},
+		inputqnum_tapa_main: function(cell) {
+			var states = cell.qnum_states,
+				state = 0;
+			for (var i = 0; i < states.length; i++) {
+				if (this.puzzle.pzpr.util.sameArray(cell.qnums, states[i])) {
+					state = i;
+					break;
+				}
+			}
+
+			var isinc =
+				this.inputMode === "number" ||
+				(this.inputMode === "auto" && this.btn === "left");
+			if (isinc) {
+				state = state < states.length - 1 ? state + 1 : 0;
+			} else {
+				state = state > 0 ? state - 1 : states.length - 1;
+			}
+			cell.setQnum(-1);
+			cell.setQnums(states[state]);
+			cell.setAnum(-1);
+			cell.setQans(0);
+			cell.setQsub(0);
+			cell.clrSnum();
+			cell.draw();
 		},
 
 		inputqnum_excell: function() {
@@ -219,6 +223,8 @@
 			this.key_inputqnums(ca);
 			if (cell.qnums.length > 0) {
 				cell.setQnum(-1);
+				cell.setAnum(-1);
+				cell.clrSnum();
 			}
 		},
 		key_inputqnum_excell_jatahoku: function(excell, ca) {
@@ -234,32 +240,6 @@
 			} else {
 				this.key_inputqnum_main(excell, ca);
 			}
-		},
-		key_inputqnums: function(ca) {
-			var cell = this.cursor.getc(),
-				nums = cell.qnums,
-				val = [];
-			if (("0" <= ca && ca <= "8") || ca === "-") {
-				var num = ca === "-" ? -2 : +ca;
-				if (this.prev === cell) {
-					val = nums.slice();
-				}
-				val.push(num);
-				if (!cell.isValidQnums(val)) {
-					val = [num];
-				}
-			} else if (ca === "BS") {
-				val = nums.slice(0, -1);
-			} else if (ca !== " ") {
-				return;
-			}
-			cell.setQnums(val);
-			cell.setQnum(-1);
-			cell.setQans(0);
-			cell.setQsub(0);
-			cell.clrSnum();
-			this.prev = cell;
-			cell.draw();
 		},
 		key_inputqnum_indicator: function(ca) {
 			var bd = this.board,
@@ -298,27 +278,33 @@
 		enableSubNumberArray: true,
 		numberWithMB: true,
 		disInputHatena: true,
-		minnum: 1,
+		minnum: function() {
+			return this.puzzle.editmode ? 0 : 1;
+		},
 		maxnum: function() {
-			return this.board.indicator.count;
+			return this.puzzle.editmode ? 8 : this.board.indicator.count;
 		},
 		qnum_states: (function() {
 			var states = [[], [-2], [0], [1], [2], [3], [4], [5], [6], [7], [8]],
-				sum;
-			for (var n1 = 1; n1 <= 5; n1++) {
-				for (var n2 = n1; n2 <= 5; n2++) {
-					sum = n1 + n2;
+				sum = 0;
+			for (var n1 = 0; n1 <= 5; n1++) {
+				for (var n2 = 0; n2 <= 5; n2++) {
+					sum = (n1 > 0 ? n1 : 1) + (n2 > 0 ? n2 : 1);
 					if (sum <= 6) {
-						states.push([n1, n2]);
+						states.push([n1 > 0 ? n1 : -2, n2 > 0 ? n2 : -2]);
 					}
 				}
 			}
-			for (var a = 1; a <= 3; a++) {
-				for (var b = a; b <= 3; b++) {
-					for (var c = b; c <= 3; c++) {
-						sum = a + b + c;
+			for (var n1 = 0; n1 <= 3; n1++) {
+				for (var n2 = 0; n2 <= 3; n2++) {
+					for (var n3 = 0; n3 <= 3; n3++) {
+						sum = (n1 > 0 ? n1 : 1) + (n2 > 0 ? n2 : 1) + (n3 > 0 ? n3 : 1);
 						if (sum <= 5) {
-							states.push([a, b, c]);
+							states.push([
+								n1 > 0 ? n1 : -2,
+								n2 > 0 ? n2 : -2,
+								n3 > 0 ? n3 : -2
+							]);
 						}
 					}
 				}
@@ -327,17 +313,19 @@
 			return states;
 		})(),
 		isValidQnums: function(val) {
-			if (val.length <= 1) {
-				return (
-					val.length === 0 || val[0] === -2 || (val[0] >= 0 && val[0] <= 8)
-				);
+			if (val.length === 0) {
+				return true;
 			}
+			if (val.length === 1) {
+				return val[0] <= 8;
+			}
+
 			var sum = 0;
 			for (var i = 0; i < val.length; i++) {
-				if (val[i] === 0 || val[i] < -2) {
+				if (val[i] === 0) {
 					return false;
 				}
-				sum += val[i] < 0 ? 1 : val[i];
+				sum += val[i] >= 0 ? val[i] : 1;
 			}
 			return val.length + sum <= 8;
 		},
@@ -534,11 +522,69 @@
 	},
 
 	BoardExec: {
-		allowedOperations: function() {
-			return 0;
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? 0 : this.FLIPX | this.FLIPY;
 		},
-		adjustBoardData2: function() {
+		adjustBoardData: function(key, d) {
+			this.adjustExCellTopLeft_1(key, d);
+			var bd = this.board;
+			this.jatahokuBottom = [];
+			this.jatahokuRight = [];
+			for (var bx = 1; bx < bd.cols * 2; bx += 2) {
+				this.jatahokuBottom.push(bd.getex(bx, bd.rows * 2 + 1).qnum);
+			}
+			for (var by = 1; by < bd.rows * 2; by += 2) {
+				this.jatahokuRight.push(bd.getex(bd.cols * 2 + 1, by).qnum);
+			}
+		},
+		adjustBoardData2: function(key, d) {
+			this.adjustExCellTopLeft_2(key, d, true);
+			var bd = this.board;
+			if (key === this.FLIPY) {
+				var rowmin = bd.excellRows(bd.cols, bd.rows) * -2 + 1;
+				for (var bx = 1; bx < bd.cols * 2; bx += 2) {
+					var top = [];
+					for (var topby = rowmin; topby <= -1; topby += 2) {
+						top.push(bd.getex(bx, topby));
+					}
+					this.reverseJatahokuClues(top);
+				}
+				for (var by = 1, row = 0; by < bd.rows * 2; by += 2, row++) {
+					bd.getex(bd.cols * 2 + 1, by).setQnum(
+						this.jatahokuRight[bd.rows - row - 1]
+					);
+				}
+			} else if (key === this.FLIPX) {
+				var colmin = bd.excellCols(bd.cols, bd.rows) * -2 + 1;
+				for (var by = 1; by < bd.rows * 2; by += 2) {
+					var left = [];
+					for (var leftbx = colmin; leftbx <= -1; leftbx += 2) {
+						left.push(bd.getex(leftbx, by));
+					}
+					this.reverseJatahokuClues(left);
+				}
+				for (var bx = 1, col = 0; bx < bd.cols * 2; bx += 2, col++) {
+					bd.getex(bx, bd.rows * 2 + 1).setQnum(
+						this.jatahokuBottom[bd.cols - col - 1]
+					);
+				}
+			}
 			this.board.indicator.init();
+		},
+		reverseJatahokuClues: function(excells) {
+			var clues = excells
+				.filter(function(excell) {
+					return excell.qnum !== -1;
+				})
+				.map(function(excell) {
+					return excell.qnum;
+				})
+				.reverse();
+			for (var i = 0, clue = 0; i < excells.length; i++) {
+				if (excells[i].qnum !== -1) {
+					excells[i].setQnum(clues[clue++]);
+				}
+			}
 		}
 	},
 

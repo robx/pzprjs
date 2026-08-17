@@ -92,7 +92,7 @@ describe("Variety:jatahoku", function() {
 		puzzle.board.indicator.count = 4;
 		puzzle.setMode("edit");
 
-		puzzle.mouse.setInputMode("tapa");
+		puzzle.mouse.setInputMode("number");
 		puzzle.cursor.init(1, 1);
 		puzzle.key.inputKeys("2", "1");
 		assert.deepEqual(puzzle.board.getc(1, 1).qnums, [2, 1]);
@@ -134,6 +134,27 @@ describe("Variety:jatahoku", function() {
 		assert.equal(puzzle.mouse.getNewNumber(puzzle.board.getc(7, 1), -1), -3);
 	});
 
+	it("uses the same gray clue input rules as Tapa", function() {
+		var puzzle = new pzpr.Puzzle().open("jatahoku/5/5");
+		var tapa = new pzpr.Puzzle().open("tapa/5/5");
+		puzzle.setMode("edit");
+		tapa.setMode("edit");
+		assert.deepEqual(
+			puzzle.board.getc(1, 1).qnum_states,
+			tapa.board.getc(1, 1).qnum_states
+		);
+
+		puzzle.cursor.init(1, 1);
+		tapa.cursor.init(1, 1);
+		puzzle.key.inputKeys("-", "2", "1");
+		tapa.key.inputKeys("-", "2", "1");
+		assert.deepEqual(
+			puzzle.board.getc(1, 1).qnums,
+			tapa.board.getc(1, 1).qnums
+		);
+		assert.deepEqual(puzzle.board.getc(1, 1).qnums, [-2, 2, 1]);
+	});
+
 	it("does not allow candidate numbers in gray clue cells", function() {
 		var puzzle = new pzpr.Puzzle().open("jatahoku/4/4");
 		var cell = puzzle.board.getc(1, 1);
@@ -169,6 +190,48 @@ describe("Variety:jatahoku", function() {
 			.replace("jatahoku/3/5/3/", "jatahoku/3/5/9/");
 		var reopened = new pzpr.Puzzle().open(oversizedUrl);
 		assert.equal(reopened.board.indicator.count, 3);
+	});
+
+	it("reverses top clue order when flipping vertically", function() {
+		var puzzle = new pzpr.Puzzle().open("jatahoku/6/6");
+		var board = puzzle.board;
+		board.getex(1, -5).qnum = 11;
+		board.getex(1, -1).qnum = 12;
+		board.getex(-1, 1).qnum = 21;
+		board.getex(-1, 11).qnum = 27;
+		board.getex(13, 1).qnum = 31;
+		board.getex(13, 11).qnum = 37;
+
+		board.exec.execadjust("flipy");
+
+		assert.equal(board.getex(1, -5).qnum, 12);
+		assert.equal(board.getex(1, -3).qnum, -1);
+		assert.equal(board.getex(1, -1).qnum, 11);
+		assert.equal(board.getex(-1, 1).qnum, 27);
+		assert.equal(board.getex(-1, 11).qnum, 21);
+		assert.equal(board.getex(13, 1).qnum, 37);
+		assert.equal(board.getex(13, 11).qnum, 31);
+	});
+
+	it("reverses left clue order when flipping horizontally", function() {
+		var puzzle = new pzpr.Puzzle().open("jatahoku/6/6");
+		var board = puzzle.board;
+		board.getex(-5, 1).qnum = 21;
+		board.getex(-1, 1).qnum = 22;
+		board.getex(1, -1).qnum = 11;
+		board.getex(11, -1).qnum = 17;
+		board.getex(1, 13).qnum = 31;
+		board.getex(11, 13).qnum = 37;
+
+		board.exec.execadjust("flipx");
+
+		assert.equal(board.getex(-5, 1).qnum, 22);
+		assert.equal(board.getex(-3, 1).qnum, -1);
+		assert.equal(board.getex(-1, 1).qnum, 21);
+		assert.equal(board.getex(1, -1).qnum, 17);
+		assert.equal(board.getex(11, -1).qnum, 11);
+		assert.equal(board.getex(1, 13).qnum, 37);
+		assert.equal(board.getex(11, 13).qnum, 31);
 	});
 
 	it("does not mark gray clues for a block with missing numbers", function() {
