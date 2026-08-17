@@ -212,7 +212,9 @@
 				var ca = bstr.charAt(i),
 					cell = bd.cell[c];
 
-				if (ca === "x") {
+				if (ca === ".") {
+					cell.qnum = -2;
+				} else if (ca === "x") {
 					cell.ques = 1;
 				} else if (this.include(ca, "o", "s")) {
 					cell.ques = 1;
