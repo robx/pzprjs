@@ -874,6 +874,7 @@
     "nmNotConseq.kouchoku": "Equal letters are not connected directly.",
     "nmNotConseq.trainstations": "A number doesn't connect to the next consecutive number.",
     "nmNotConseqFull.trainstations": "A number doesn't connect to the next consecutive number.",
+    "nmNotGiven.scrabble": "There are too many instances of the given letter.",
     "nmNotLink.kazunori": "A number doesn't link to other cells in the room.",
     "nmNotSeq.numrope": "The numbers on a line are not consecutive.",
     "nmNumberEq.oyakodori": "Two identical birds are in the same nest.",

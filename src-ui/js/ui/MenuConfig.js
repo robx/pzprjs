@@ -158,6 +158,9 @@
 				case "trizone":
 					idname = "trizone_ghost";
 					break;
+				case "scrabble":
+					idname = "scrabble_given";
+					break;
 				case "slither":
 				case "tslither":
 				case "swslither":
