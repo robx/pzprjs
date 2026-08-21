@@ -161,6 +161,10 @@
 				variant: true,
 				volatile: true
 			}); /* Clues may be erased by shading over them */
+			this.add("scrabble_given", false, {
+				variant: true,
+				volatile: true
+			}); /* All letters of a certain type are given */
 			this.add("slither_full", false, {
 				variant: true,
 				volatile: true

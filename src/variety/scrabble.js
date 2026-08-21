@@ -362,8 +362,10 @@
 		decodePzpr: function(type) {
 			this.decodeNumber16();
 			this.decodePieceBank();
+			this.puzzle.setConfig("scrabble_given", this.checkpflag("g"));
 		},
 		encodePzpr: function(type) {
+			this.outpflag = this.puzzle.getConfig("scrabble_given") ? "g" : null;
 			this.encodeNumber16();
 			this.encodePieceBank();
 		}
@@ -371,12 +373,14 @@
 
 	FileIO: {
 		decodeData: function() {
+			this.decodeConfigFlag("g", "scrabble_given");
 			this.decodeCellQnum();
 			this.decodeCellAnumsub();
 			this.decodePieceBank();
 			this.decodePieceBankQcmp();
 		},
 		encodeData: function() {
+			this.encodeConfigFlag("g", "scrabble_given");
 			this.encodeCellQnum();
 			this.encodeCellAnumsub();
 			this.encodePieceBank();
@@ -388,8 +392,26 @@
 		checklist: [
 			"checkBankPiecesAvailable",
 			"checkBankPiecesInvalid",
+			"checkGivenLetters",
 			"checkConnectNumber",
 			"checkBankPiecesUsed"
-		]
+		],
+
+		checkGivenLetters: function() {
+			if (!this.puzzle.getConfig("scrabble_given")) {
+				return;
+			}
+
+			var letters = new Set();
+			this.board.cell.each(function(cell) {
+				if (cell.qnum >= 0) {
+					letters.add(cell.qnum);
+				}
+			});
+
+			this.checkAllCell(function(cell) {
+				return cell.qnum === -1 && cell.anum >= 0 && letters.has(cell.anum);
+			}, "nmNotGiven");
+		}
 	}
 });
