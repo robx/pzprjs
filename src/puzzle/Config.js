@@ -552,6 +552,9 @@
 				case "trizone_ghost":
 					exec = pid === "trizone";
 					break;
+				case "scrabble_given":
+					exec = pid === "scrabble";
+					break;
 				case "loop_full":
 					exec =
 						[
