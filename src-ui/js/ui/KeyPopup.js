@@ -106,6 +106,7 @@ ui.keypopup = {
 		aqre: [10, 0],
 		doppelblock: [10, 115],
 		japanesesums: [10, 115],
+		jatahoku: [80, 138],
 		interbd: [116, 0],
 		toichika2: [10, 10],
 		crossstitch: [10, 0],
@@ -275,6 +276,14 @@ ui.keypopup = {
 	display: function() {
 		var mode = ui.puzzle.editmode ? 1 : 3;
 		if (
+			ui.puzzle.pid === "jatahoku" &&
+			mode === 3 &&
+			this.jatahokuCount !== ui.puzzle.board.indicator.count
+		) {
+			this.createtable(3);
+			this.resizepanel();
+		}
+		if (
 			this.element &&
 			!!this.paneltype[mode] &&
 			ui.menuconfig.get("keypopup")
@@ -433,6 +442,8 @@ ui.keypopup = {
 			this.generate_slovak(mode);
 		} else if (type === 137) {
 			this.generate_mrokmrno(mode);
+		} else if (type === 138) {
+			this.generate_jatahoku();
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -643,6 +654,21 @@ ui.keypopup = {
 			["1", "2", "3", "4", "5", "6", "7", "8", "0", " ", ["-", "?"]],
 			4
 		);
+	},
+	generate_jatahoku: function() {
+		var count = ui.puzzle.board.indicator.count,
+			mbcolor = ui.puzzle.painter.mbcolor,
+			items = [
+				["q", { text: "○", color: mbcolor }],
+				["w", { text: "×", color: mbcolor }],
+				" ",
+				null
+			];
+		for (var n = 1; n <= count; n++) {
+			items.push("" + n);
+		}
+		this.jatahokuCount = count;
+		this.generate_main(items, 4);
 	},
 
 	//---------------------------------------------------------------------------

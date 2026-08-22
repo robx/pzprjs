@@ -969,5 +969,12 @@
     "bk2x2": "",
     "nmArrowGt": "",
     "cuGt3.sansaroad": "",
-    "cePluralLine.bunnyhop": ""
+    "cePluralLine.bunnyhop": "",
+    "bkMissNum.jatahoku": "ブロックに入っていない数字があります。",
+    "ceTapaNe.jatahoku": "グレーのヒントと周囲の数字マスのつながり方が一致していません。",
+    "nm2x2.jatahoku": "数字の入るマスが2×2のカタマリになっています。",
+    "nmMissRow.jatahoku": "行または列に入っていない数字があります。",
+    "nmRange.jatahoku": "数字が指定された範囲外です。",
+    "nmSightNe.jatahoku": "見えるビルの数が正しくありません。",
+    "nmSumOrderRowNe.jatahoku": "数字マスの連続区間の和が、枠外のヒントと一致していません。"
 }

@@ -563,3 +563,12 @@ seiza: |-
   2. Lines must be drawn perpendicular to the edges of cells and must not turn or overlap each other.
   3. Each number in a region represents how many lines are drawn from the star in that region.
   4. Stars and lines cannot overlap black cells.
+jatahoku: |-
+  Enter one number into some of the empty cells.
+  1. Every row, column, and outlined block must contain each number from 1 through X exactly once, where X is shown as “[1-X]” at the top-left of the grid.
+  2. All numbered cells must be orthogonally connected.
+  3. Numbered cells cannot form a 2×2 block.
+  4. A number in a gray cell gives the length of a consecutive group of numbered cells among its eight surrounding cells. Multiple clues are unordered and their groups are separated by at least one unnumbered cell.
+  5. Clues above and to the left of the grid give, in order, the sums of consecutive groups of numbered cells in that column or row. Groups are separated by at least one unnumbered cell.
+  6. For the top and left clues, “?” represents an unknown one-digit sum and “??” represents an unknown two-digit sum.
+  7. Clues below and to the right give the number of visible buildings when cell numbers are treated as building heights. Unnumbered cells do not block the view.
