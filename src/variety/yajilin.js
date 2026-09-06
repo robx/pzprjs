@@ -241,23 +241,26 @@
 				});
 			},
 
+			redrawAffected: function() {
+				var cells = [this];
+				var adc = this.adjacent;
+				var cs = [adc.top, adc.bottom, adc.left, adc.right];
+				for (var i = 0; i < cs.length; i++) {
+					var c = cs[i];
+					if (!c.isnull && c.qans === 0 && c.qsub === 0) {
+						cells.push(c);
+					}
+				}
+				this.board.redrawAffected(cells);
+			},
+
 			// trigger redraw for autocompletion
 			posthook: {
 				qsub: function() {
-					var cells = [this];
-					this.board.redrawAffected(cells);
+					this.board.redrawAffected([this]);
 				},
 				qans: function() {
-					var cells = [this];
-					var adc = this.adjacent;
-					var cs = [adc.top, adc.bottom, adc.left, adc.right];
-					for (var i = 0; i < cs.length; i++) {
-						var c = cs[i];
-						if (!c.isnull && c.qans === 0 && c.qsub === 0) {
-							cells.push(c);
-						}
-					}
-					this.board.redrawAffected(cells);
+					this.redrawAffected();
 				}
 			}
 		},
@@ -384,10 +387,15 @@
 				this.setQcmp(0);
 			},
 			posthook: {
+				qsub: function() {
+					this.board.redrawAffected([this]);
+				},
+				qans: function() {
+					this.redrawAffected();
+				},
 				qdir: function() {
 					if (this.qdir > 0 && this.qnum2 !== -1) {
-						this.setQnum(this.qnum2);
-						this.setQnum2(-1);
+						this.swapNums();
 					}
 				}
 			},
