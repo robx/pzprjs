@@ -116,6 +116,27 @@
 					this.common.mouseinput.call(this);
 				}
 			},
+			inputqnum_main: function(cell) {
+				var maxCircle = Math.max(this.board.cols, this.board.rows);
+				if (this.btn === "left" && cell.qdir === 0 && cell.qnum === -2) {
+					cell.setQnum(1);
+				} else if (this.btn === "right" && cell.qdir === 0 && cell.qnum === 1) {
+					cell.setQnum(-2);
+				} else if (
+					this.btn === "left" &&
+					cell.qdir === 0 &&
+					cell.qnum === maxCircle
+				) {
+					cell.setQnum(-1);
+					cell.setQnum2(0);
+				} else if (this.btn === "right" && cell.qnum2 === 0) {
+					cell.setQnum2(-1);
+					cell.setQnum(maxCircle);
+				} else {
+					cell.setNum(this.getNewNumber(cell, cell.getNum()));
+				}
+				cell.draw();
+			},
 			inputdirec: function() {
 				var pos = this.getpos(0);
 				if (this.prevPos.equals(pos)) {
@@ -349,6 +370,10 @@
 		},
 		"Cell@heyajirimisaki#2": {
 			maxnum: function() {
+				if (this.qnum > 0) {
+					return Math.max(this.board.cols, this.board.rows);
+				}
+
 				var room = this.room ? this.room.clist.length : 0;
 				return Math.max(room, this.board.cols, this.board.rows);
 			},

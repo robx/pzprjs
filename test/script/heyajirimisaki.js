@@ -56,5 +56,46 @@ ui.debug.addDebugData("heyajirimisaki", {
 			"pzprv3/heyajirimisaki/6/6/0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 1 0 0 0 /0 0 0 0 0 0 /1 1 0 0 0 0 /0 0 1 1 1 1 /1 1 0 0 0 0 /0 0 0 0 0 0 /. . 5,2 . . . /0,4 . . . . . /. . . . . . /. . . . . . /. . . . . . /. . . . . 3,1 /# . . . . . /. . + + # . /# + # . + . /+ . . . . . /. # + . . . /. . . . # . /0 1 0 1 1 /0 0 1 0 0 /0 0 0 1 0 /1 0 1 0 0 /0 0 1 0 1 /1 1 1 0 0 /0 1 1 1 0 1 /0 1 0 0 0 1 /0 1 0 1 1 1 /1 0 1 0 1 1 /1 0 0 1 0 0 /"
 		]
 	],
-	inputs: []
+	inputs: [
+		{
+			input: ["newboard,4,2", "editmode", "key,1,right,2,q,right,3,shift+down"],
+			result:
+				"pzprv3/heyajirimisaki/2/4/0 0 0 /0 0 0 /0 0 0 0 /5,1 0,2 2,3 . /. . . . /. . . . /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+		},
+		{
+			input: ["playmode", "mouse,left,1,1", "mouse,left,3,1", "mouse,left,7,1"],
+			result:
+				"pzprv3/heyajirimisaki/2/4/0 0 0 /0 0 0 /0 0 0 0 /5,1 0,2 2,3 . /. . . . /# . . # /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+		},
+		{
+			input: [
+				"editmode",
+				"mouse,leftx2,1,3",
+				"mouse,leftx3,3,3",
+				"mouse,rightx2,5,3",
+				"mouse,left,5,1,3,1",
+				"mouse,left,6,0,6,4"
+			],
+			result:
+				"pzprv3/heyajirimisaki/2/4/0 0 1 /0 0 1 /0 0 0 0 /5,1 0,2 3,3 . /0,- 0,1 5,8 . /# . . # /. . . . /0 0 0 /0 0 0 /0 0 0 0 /"
+		},
+		{
+			input: [
+				"newboard,3,1",
+				"cursor,5,1",
+				"mouse,leftx5,1,1",
+				"mouse,leftx6,3,1"
+			],
+			result: "pzprv3/heyajirimisaki/1/3/0 0 /0,3 5,0 . /. . . /0 0 /"
+		},
+		{
+			input: [
+				"editmode,circle-unshade",
+				"mouse,left,1,1",
+				"mouse,left,3,1",
+				"mouse,left,5,1"
+			],
+			result: "pzprv3/heyajirimisaki/1/3/0 0 /5,3 0,0 0,- /. . . /0 0 /"
+		}
+	]
 });
