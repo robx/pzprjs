@@ -156,7 +156,7 @@
 	"KeyEvent@korokoro": {
 		enableplay: true,
 		keyinput: function(ca) {
-			if (this.puzzle.mouse.inputMode.indexOf("number") !== -1) {
+			if (this.cursor.isActive) {
 				this.key_inputqnum(ca);
 			}
 		}
@@ -658,8 +658,8 @@
 			this.drawQuesBorders();
 			this.drawInvalidIndicators(this.puzzle.editmode);
 
-			this.drawSubNumbers(true);
-			this.drawCursor(true);
+			this.drawSubNumbers();
+			this.drawCursor(true, this.puzzle.playmode);
 		},
 		getCircleStrokeColor: function() {
 			return null;
@@ -715,6 +715,43 @@
 				g.fill();
 			} else {
 				g.vhide();
+			}
+		},
+
+		drawSubNumbers: function() {
+			var g = this.vinc("cell_subnumber", "auto");
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				for (var n = 0; n < 4; n++) {
+					var text = this.getNumberTextCore(cell.snum[n]);
+					g.vid = "cell_subtext_" + cell.id + "_" + n;
+					if (!!text) {
+						g.fillStyle = !cell.trial ? this.subcolor : this.trialcolor;
+						var bw = this.bw,
+							bh = this.bh;
+						var px = cell.bx * bw + this.getCellHorizontalOffset(cell),
+							py = cell.by * bh + this.getCellVerticalOffset(cell);
+						var tw = bw * 0.45,
+							th = bh * 0.45;
+						if (n === 0) {
+							py -= th;
+						} else if (n === 1) {
+							px -= tw;
+						} else if (n === 2) {
+							px += tw;
+						} else if (n === 3) {
+							py += th;
+						}
+						this.disptext(text, px, py, {
+							ratio: 0.33,
+							hoffset: 0.8
+						});
+					} else {
+						g.vhide();
+					}
+				}
 			}
 		}
 	},
