@@ -254,7 +254,13 @@
 				"statuepark"
 			],
 			koburin: [0, 0, "コブリン", "Koburin", "yajilin"],
-			korokoro: [0, 0, "k", "k", "gravel"],
+			korokoro: [
+				0,
+				0,
+				"ころころボールプレース",
+				"Korokoro Ball Place",
+				"gravel"
+			],
 			kouchoku: [0, 0, "交差は直角に限る", "Kouchoku"],
 			kramma: [0, 0, "快刀乱麻", "KaitoRamma", "kramma"],
 			kramman: [0, 0, "新・快刀乱麻", "New KaitoRamma", "kramma"],
