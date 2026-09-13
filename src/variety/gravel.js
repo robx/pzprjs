@@ -312,6 +312,11 @@
 			return list;
 		}
 	},
+	"Board@korokoro": {
+		addExtraInfo: function() {
+			this.invalidgraph = this.addInfoList(this.klass.AreaInvalidGraph);
+		}
+	},
 	BoardExec: {
 		allowedOperations: function(isplaymode) {
 			return isplaymode ? 0 : this.ALLOWALL;
@@ -347,6 +352,41 @@
 			component.valid = d.cols === d.rows && d.cols * d.rows === d.cnt;
 		}
 	},
+	"AreaInvalidGraph:AreaGraphBase@korokoro": {
+		enabled: true,
+		relation: { "cell.ques": "node" },
+		getComponentRefs: function(obj) {
+			return obj.invblk;
+		},
+		setComponentRefs: function(obj, component) {
+			obj.invblk = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.invblknodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.invblknodes = [];
+		},
+
+		isnodevalid: function(cell) {
+			return cell.isEmpty();
+		},
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			var d = component.clist.getRectSize();
+			var bd = this.board;
+			var prev = !!component.isoutside;
+			component.isoutside =
+				d.x1 === 1 ||
+				d.x2 === bd.maxbx - 1 ||
+				d.y1 === 1 ||
+				d.y2 === bd.maxby - 1;
+
+			if (prev !== component.isoutside) {
+				component.clist.draw();
+			}
+		}
+	},
 
 	Graphic: {
 		enablebcolor: true,
@@ -377,10 +417,10 @@
 			return -this.board.getPerimeters().left / 2;
 		},
 		getBGCellColor: function(cell) {
-			return (
-				this.getBGCellColor_qsub1(cell) ||
-				(cell.ques !== 7 ? this.bgcolor : null)
-			);
+			return cell.invblk && !cell.invblk.isoutside
+				? "black"
+				: this.getBGCellColor_qsub1(cell) ||
+						(cell.ques !== 7 ? this.bgcolor : null);
 		},
 		flushCanvas: function() {},
 
@@ -414,7 +454,11 @@
 					py = cell.by * this.bh + this.getCellVerticalOffset(cell);
 
 				g.vid = "c_MB2_" + cell.id;
-				if (isDraw && cell.ques === 7) {
+				if (
+					isDraw &&
+					cell.ques === 7 &&
+					(!cell.invblk || cell.invblk.isoutside)
+				) {
 					g.strokeCross(px, py, rsize);
 				} else {
 					g.vhide();
