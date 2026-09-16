@@ -580,25 +580,11 @@ pzpr.classmgr.makeCommon({
 		checksnum: function(pos) {
 			var bx = ((((pos.bx + 12) / 2) | 0) - 6) * 2 + 1;
 			var by = ((((pos.by + 12) / 2) | 0) - 6) * 2 + 1;
-			var result = this.bx === bx && this.by === by;
-			if (result && this.modesnum && this.puzzle.playmode) {
-				if (this.disableAnum) {
-					var tmpx = pos.bx % 2 | 0;
-					var tmpy = pos.by % 2 | 0;
-					result = [5, 4, 2, 3][tmpy * 2 + tmpx] === this.targetdir;
-				} else {
-					var tmpx = (((pos.bx + 12) % 2) * 1.5) | 0;
-					var tmpy = (((pos.by + 12) % 2) * 1.5) | 0;
-					if (this.pid !== "factors") {
-						result =
-							[5, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx] === this.targetdir;
-					} else {
-						result =
-							[0, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx] === this.targetdir;
-					}
-				}
-			}
-			return result;
+			return (
+				this.bx === bx &&
+				this.by === by &&
+				this.puzzle.mouse.getSnumDir(pos) === this.targetdir
+			);
 		},
 
 		//---------------------------------------------------------------------------
