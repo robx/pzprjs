@@ -97,6 +97,7 @@
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkTripleObject",
+			// TODO over invalid cells
 			"checkLinkSymmetry",
 			"checkLineOverLetter",
 			"checkLinkSameNumber",
@@ -115,38 +116,66 @@
 					return false;
 				}
 
+				if (path.objs <= 2) {
+					return false;
+				}
+
 				var map = self.getSymmetryMap(path.dir1, path.dir2);
 				if (!map) {
 					return true;
 				}
 
-				// TODO iterate over objs array, since it's in order
+				var prev1 = cell1,
+					prev2 = cell2;
+				for (var i = 0; i <= path.objs.length / 2; i++) {
+					var j = path.objs.length - (i + 1);
+
+					var link1 = path.objs[i],
+						link2 = path.objs[j];
+
+					var next1 =
+							link1.sidecell[0] === prev1
+								? link1.sidecell[1]
+								: link1.sidecell[0],
+						next2 =
+							link2.sidecell[0] === prev2
+								? link2.sidecell[1]
+								: link2.sidecell[0];
+
+					var dir1 = prev1.getdir(next1, 2),
+						dir2 = prev2.getdir(next2, 2);
+
+					if (map[dir1] !== dir2) {
+						return true;
+					}
+
+					prev1 = next1;
+					prev2 = next2;
+				}
 
 				return false;
 			}, "lnNotSymm");
 		},
 
 		getSymmetryMap: function(dir1, dir2) {
-			switch (Math.max(dir1, dir2) + "," + Math.min(dir1, dir2)) {
+			switch (Math.min(dir1, dir2) + "," + Math.max(dir1, dir2)) {
 				case "1,1": // up, up
 				case "2,2": // dn, dn
-					return {}; // TODO
+				case "3,4": // lt, rt
+					return { 1: 1, 2: 2, 3: 4, 4: 3 };
 
 				case "3,3": // lt, lt
 				case "4,4": // rt, rt
-					return {}; // TODO
-
 				case "1,2": // up, dn
-				case "3,4": // lt, rt
-					return {}; // TODO
+					return { 1: 2, 2: 1, 3: 3, 4: 4 };
 
 				case "1,3": // up, lt
 				case "2,4": // dn, rt
-					return {}; // TODO
+					return { 1: 3, 2: 4, 3: 3, 4: 2 };
 
 				case "1,4": // up, rt
 				case "2,3": // dn, lt
-					return {}; // TODO
+					return { 1: 4, 2: 3, 3: 2, 4: 1 };
 
 				default:
 					return null;
