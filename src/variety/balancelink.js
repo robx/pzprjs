@@ -19,13 +19,39 @@
 	//---------------------------------------------------------
 	// キーボード入力系
 	KeyEvent: {
-		enablemake: true
+		enablemake: true,
+		keyinput: function(ca) {
+			if (ca === "q") {
+				var cell = this.cursor.getc();
+				cell.setQues(cell.ques !== 7 ? 7 : 0);
+				this.prev = cell;
+				cell.draw();
+			} else {
+				this.key_inputqnum(ca);
+			}
+		},
+		getNewNumber: function(cell, ca, cur) {
+			if (ca === "BS" || ca === " ") {
+				return -1;
+			} else if (ca === "-") {
+				return -2;
+			} else if (ca >= "1" && ca <= "6") {
+				return cur === +ca ? cur + 6 : +ca;
+			}
+			return null;
+		}
 	},
 
 	//---------------------------------------------------------
 	// 盤面管理系
 	Cell: {
-		maxnum: 8
+		maxnum: 12,
+		noLP: function() {
+			return this.isEmpty();
+		}
+	},
+	Border: {
+		enableLineNG: true
 	},
 	Board: {
 		hasborder: 1
@@ -66,26 +92,55 @@
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
-		decodePzpr: function(type) {
-			// TODO decode obstacle
-			this.decodeNumber16();
+		decodePzpr: function() {
+			var bd = this.board;
+			this.genericDecodeNumber16(bd.cell.length, function(c, val) {
+				var cell = bd.cell[c];
+				if (val === 0) {
+					cell.ques = 7;
+				} else {
+					cell.qnum = val;
+				}
+			});
 		},
-		encodePzpr: function(type) {
-			// TODO encode obstacle
-			this.encodeNumber16();
+		encodePzpr: function() {
+			var bd = this.board;
+			this.genericEncodeNumber16(bd.cell.length, function(c) {
+				var cell = bd.cell[c];
+				return cell.ques === 7 ? 0 : cell.qnum;
+			});
 		}
 	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			// TODO decode obstacle
 			this.decodeCellQnum();
 			this.decodeBorderLine();
 		},
 		encodeData: function() {
-			// TODO encode obstacle
 			this.encodeCellQnum();
 			this.encodeBorderLine();
+		},
+
+		decodeCellQnum: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "#") {
+					cell.ques = 7;
+				} else if (ca !== ".") {
+					cell.qnum = +ca;
+				}
+			});
+		},
+		encodeCellQnum: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "# ";
+				} else if (cell.qnum !== -1) {
+					return cell.qnum + " ";
+				} else {
+					return ". ";
+				}
+			});
 		}
 	},
 
@@ -97,7 +152,7 @@
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkTripleObject",
-			// TODO over invalid cells
+			"checkLineOnShaded",
 			"checkLinkSymmetry",
 			"checkLineOverLetter",
 			"checkLinkSameNumber",
@@ -105,6 +160,12 @@
 			"checkDisconnectLine",
 			"checkNoLineObject+"
 		],
+
+		checkLineOnShaded: function() {
+			this.checkAllCell(function(cell) {
+				return cell.noLP() && cell.lcnt > 0;
+			}, "lnOnShade");
+		},
 
 		checkLinkSymmetry: function() {
 			var self = this;
@@ -186,7 +247,7 @@
 			this.checkSameObjectInRoom(
 				this.board.linegraph,
 				function(cell) {
-					return cell.qnum;
+					return Math.max(cell.qnum, -1);
 				},
 				"nmConnDiff"
 			);
