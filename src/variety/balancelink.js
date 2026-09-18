@@ -76,13 +76,102 @@
 			this.drawGrid();
 
 			this.drawPekes();
+			this.drawQuesMarks();
 			this.drawLines();
-
-			this.drawQuesNumbers();
 
 			this.drawChassis();
 
 			this.drawTarget();
+		},
+
+		drawQuesMarks: function() {
+			var g = this.vinc("cell_mark", "auto");
+
+			g.lineWidth = Math.max(this.cw / 18, 2);
+			var rsize = this.cw * 0.4;
+
+			var triy = 0.867 * rsize,
+				trix = rsize;
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				g.vid = "c_mk_" + cell.id;
+				g.strokeStyle = this.getQuesNumberColor(cell);
+				g.fillStyle = g.strokeStyle;
+				var px = cell.bx * this.bw,
+					py = cell.by * this.bh;
+				var value = cell.qnum > 6 ? cell.qnum - 6 : cell.qnum;
+				switch (value) {
+					case 1:
+						g.strokeCircle(px, py, rsize);
+						if (cell.qnum > 6) {
+							g.fillCircle(px, py, rsize);
+						}
+						continue;
+					case 2:
+						g.beginPath();
+						g.setOffsetLinePath(
+							px,
+							py,
+							0,
+							-rsize,
+							rsize,
+							0,
+							0,
+							rsize,
+							-rsize,
+							0,
+							true
+						);
+						break;
+					case 3:
+						g.beginPath();
+						g.setOffsetLinePath(
+							px,
+							py,
+							0,
+							-triy,
+							-trix,
+							triy,
+							trix,
+							triy,
+							true
+						);
+						break;
+					case 4:
+						if (cell.qnum > 6) {
+							g.fillRectCenter(px, py, triy, triy);
+						} else {
+							g.strokeRectCenter(px, py, triy, triy);
+						}
+						continue;
+					case 5:
+						this.pathStar(g, px, py, rsize, rsize);
+						break;
+					case 6:
+						g.beginPath();
+						g.setOffsetLinePath(
+							px,
+							py,
+							0,
+							triy,
+							-trix,
+							-triy,
+							trix,
+							-triy,
+							true
+						);
+						break;
+					default:
+						g.vhide();
+						continue;
+				}
+				g.stroke();
+				if (cell.qnum > 6) {
+					g.fill();
+				}
+			}
 		},
 		getBGCellColor: function(cell) {
 			return cell.ques === 7 ? "black" : this.getBGCellColor_error1(cell);

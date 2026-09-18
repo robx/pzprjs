@@ -2300,7 +2300,7 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 
-		fillStar: function(g, px, py, sizeX, sizeY) {
+		pathStar: function(g, px, py, sizeX, sizeY) {
 			// 星を描画するときの頂点の位置
 			var starXOffset = [
 				0,
@@ -2333,6 +2333,9 @@ pzpr.classmgr.makeCommon({
 				g.lineTo(px + sizeX * starXOffset[p], py + sizeY * starYOffset[p]);
 			}
 			g.closePath();
+		},
+		fillStar: function(g, px, py, sizeX, sizeY) {
+			this.pathStar(g, px, py, sizeX, sizeY);
 			g.fill();
 		},
 
