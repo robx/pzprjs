@@ -62,7 +62,15 @@
 			if (!this.puzzle.execConfig("autocmp")) {
 				return false;
 			}
-			return this.checkComplete();
+			return this.checkComplete() && this.checkUnambiguous();
+		},
+
+		allowShade: function() {
+			return !this.isNum();
+		},
+
+		allowUnshade: function() {
+			return !this.isNum();
 		},
 
 		checkComplete: function() {
@@ -87,6 +95,32 @@
 			}
 
 			return this.isValidNum() ? this.qnum === cnt : cnt > 0;
+		},
+
+		checkUnambiguous: function() {
+			if (!this.isValidNum()) {
+				return true;
+			}
+			var cellsAndAdjacent = new Set();
+			var list = this.getdir4clist();
+			for (var i = 0; i < list.length; i++) {
+				var area = list[i][0].sblk;
+				if (area !== null) {
+					for (var j = 0; j < area.clist.length; j++) {
+						var sublist = area.clist[j].getdir4clist();
+						for (var k = 0; k < sublist.length; k++) {
+							cellsAndAdjacent.add(sublist[k][0]);
+						}
+					}
+				}
+			}
+			var satisfied = true;
+			cellsAndAdjacent.forEach(function(cell) {
+				if (!cell.isShadeDecided()) {
+					satisfied = false;
+				}
+			});
+			return satisfied;
 		}
 	},
 
