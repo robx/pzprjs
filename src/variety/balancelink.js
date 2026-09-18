@@ -232,14 +232,14 @@
 
 				case "1,3": // up, lt
 				case "2,4": // dn, rt
-					return { 1: 3, 2: 4, 3: 3, 4: 2 };
+					return { 1: 3, 2: 4, 3: 1, 4: 2 };
 
 				case "1,4": // up, rt
 				case "2,3": // dn, lt
 					return { 1: 4, 2: 3, 3: 2, 4: 1 };
 
 				default:
-					return null;
+					throw Error("Unknown symmetry for " + dir1 + "," + dir2);
 			}
 		},
 
