@@ -268,7 +268,8 @@ ui.keypopup = {
 		slovak: [136, 10],
 		gravel: [120, 0],
 		seiza: [4, 0],
-		heyajirimisaki: [10, 0]
+		heyajirimisaki: [10, 0],
+		balancelink: [139, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -445,6 +446,8 @@ ui.keypopup = {
 			this.generate_mrokmrno(mode);
 		} else if (type === 138) {
 			this.generate_jatahoku();
+		} else if (type === 139) {
+			this.generate_balancelink();
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -853,6 +856,21 @@ ui.keypopup = {
 				" "
 			],
 			4
+		);
+	},
+	generate_balancelink: function() {
+		this.generate_main(
+			[
+				["1", { text: "●" }],
+				["2", { text: "◆" }],
+				["3", { text: "▲" }],
+				["4", { text: "■" }],
+				["5", { text: "★" }],
+				["6", { text: "▼" }],
+				["-", { text: "?" }],
+				" "
+			],
+			3
 		);
 	},
 	generate_bdwalk: function() {

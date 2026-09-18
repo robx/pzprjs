@@ -104,9 +104,10 @@
 				var value = cell.qnum > 6 ? cell.qnum - 6 : cell.qnum;
 				switch (value) {
 					case 1:
-						g.strokeCircle(px, py, rsize);
 						if (cell.qnum > 6) {
 							g.fillCircle(px, py, rsize);
+						} else {
+							g.strokeCircle(px, py, rsize);
 						}
 						continue;
 					case 2:
@@ -167,9 +168,10 @@
 						g.vhide();
 						continue;
 				}
-				g.stroke();
 				if (cell.qnum > 6) {
 					g.fill();
+				} else {
+					g.stroke();
 				}
 			}
 		},
