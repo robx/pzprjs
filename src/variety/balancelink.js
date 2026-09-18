@@ -251,9 +251,18 @@
 		],
 
 		checkLineOnShaded: function() {
-			this.checkAllCell(function(cell) {
-				return cell.noLP() && cell.lcnt > 0;
-			}, "lnOnShade");
+			for (var c = 0; c < this.board.cell.length; c++) {
+				var cell = this.board.cell[c];
+				if (cell.ques !== 7 || cell.lcnt === 0) {
+					continue;
+				}
+
+				this.failcode.add("lnOnShade");
+				if (this.checkOnly) {
+					break;
+				}
+				cell.seterr(1);
+			}
 		},
 
 		checkLinkSymmetry: function() {
