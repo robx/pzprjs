@@ -113,6 +113,7 @@ function toBGimage(pid) {
 		"araf",
 		"archipelago",
 		"balance",
+		"balancelink",
 		"balloon",
 		"batten",
 		"battleship",

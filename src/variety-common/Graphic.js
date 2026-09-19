@@ -2300,39 +2300,22 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 
-		fillStar: function(g, px, py, sizeX, sizeY) {
-			// 星を描画するときの頂点の位置
-			var starXOffset = [
-				0,
-				0.235,
-				0.95,
-				0.38,
-				0.588,
-				0,
-				-0.588,
-				-0.38,
-				-0.95,
-				-0.235
-			];
-			var starYOffset = [
-				-1,
-				-0.309,
-				-0.309,
-				0.124,
-				0.809,
-				0.4,
-				0.809,
-				0.124,
-				-0.309,
-				-0.309
-			];
+		pathStar: function(g, px, py, sizeX, sizeY, factor) {
+			if (!factor) {
+				factor = 0.38;
+			}
 
 			g.beginPath();
 			g.moveTo(px, py - sizeY);
 			for (var p = 1; p < 10; p++) {
-				g.lineTo(px + sizeX * starXOffset[p], py + sizeY * starYOffset[p]);
+				var starY = Math.cos(p * Math.PI * 0.2) * (p & 1 ? factor : 1),
+					starX = Math.sin(p * Math.PI * 0.2) * (p & 1 ? factor : 1);
+				g.lineTo(px + sizeX * starX, py + sizeY * -starY);
 			}
 			g.closePath();
+		},
+		fillStar: function(g, px, py, sizeX, sizeY, factor) {
+			this.pathStar(g, px, py, sizeX, sizeY, factor);
 			g.fill();
 		},
 
