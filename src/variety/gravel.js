@@ -123,6 +123,17 @@
 		},
 		mouseinputAutoPlay: function() {
 			this.inputShade();
+		},
+		// TODO this is sometimes called when it should just input a number instead
+		getSnumDir: function(pos) {
+			var inputx = pos.bx - this.board.rows,
+				inputy = pos.by;
+			var newx = inputx + inputy,
+				newy = inputy - inputx;
+
+			var tmpx = newx % 2 | 0;
+			var tmpy = newy % 2 | 0;
+			return [5, 2, 4, 3][tmpy * 2 + tmpx];
 		}
 	},
 
