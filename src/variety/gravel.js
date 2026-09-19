@@ -212,9 +212,13 @@
 			return this.qans > 0 || this.isQuesBorder();
 		},
 		isQuesBorder: function() {
-			return (
-				this.ques || !!(this.sidecell[0].isEmpty() ^ this.sidecell[1].isEmpty())
-			);
+			var empt0 = this.sidecell[0].isEmpty(),
+				empt1 = this.sidecell[1].isEmpty();
+			if (empt0 && empt1) {
+				return null;
+			}
+
+			return this.ques || empt0 || empt1;
 		},
 
 		prehook: {
@@ -375,14 +379,13 @@
 			this.common.setExtraData.call(this, component);
 			var d = component.clist.getRectSize();
 			var bd = this.board;
-			var prev = !!component.isoutside;
 			component.isoutside =
 				d.x1 === 1 ||
 				d.x2 === bd.maxbx - 1 ||
 				d.y1 === 1 ||
 				d.y2 === bd.maxby - 1;
 
-			if (prev !== component.isoutside) {
+			if (!this.rebuildmode) {
 				component.clist.draw();
 			}
 		}
@@ -390,10 +393,8 @@
 
 	Graphic: {
 		enablebcolor: true,
-		shadecolor: "rgb(80, 80, 80)",
 		ghostcolor: "rgb(40, 40, 40)",
 		linetrialcolor: "rgb(80, 0, 80)",
-		gridcolor_type: "DLIGHT",
 		bordercolor_func: "qans",
 
 		circleratio: [0.3, 0.3],
@@ -417,10 +418,10 @@
 			return -this.board.getPerimeters().left / 2;
 		},
 		getBGCellColor: function(cell) {
-			return cell.invblk && !cell.invblk.isoutside
-				? "black"
-				: this.getBGCellColor_qsub1(cell) ||
-						(cell.ques !== 7 ? this.bgcolor : null);
+			return (
+				this.getBGCellColor_qsub1(cell) ||
+				(cell.ques !== 7 ? this.bgcolor : null)
+			);
 		},
 		flushCanvas: function() {},
 
@@ -530,7 +531,11 @@
 						tsy = border.tsy * this.bh,
 						tex = border.tex * this.bw,
 						tey = border.tey * this.bh;
-					g.strokeDashedLine(tsx, tsy, tex, tey, dasharray);
+					if (dasharray) {
+						g.strokeDashedLine(tsx, tsy, tex, tey, dasharray);
+					} else {
+						g.strokeLine(tsx, tsy, tex, tey);
+					}
 				} else {
 					g.vhide();
 				}
@@ -675,6 +680,8 @@
 		}
 	},
 	"Graphic@gravel": {
+		gridcolor_type: "DLIGHT",
+		shadecolor: "rgb(80, 80, 80)",
 		getCircleStrokeColor: function(cell) {
 			if (cell.ques === 1) {
 				return cell.error === 1 ? this.errcolor1 : this.quescolor;
@@ -691,6 +698,8 @@
 		}
 	},
 	"Graphic@korokoro": {
+		errbcolor1: "rgb(255, 216, 216)",
+		errbcolor2: "rgb(255, 160, 160)",
 		circleratio: [0.25, 0.25],
 		paint: function() {
 			this.drawBGCells();
@@ -710,6 +719,20 @@
 		},
 		getCircleFillColor: function(cell) {
 			return this.common.getShadedCellColor.call(this, cell);
+		},
+		getBGCellColor: function(cell) {
+			if (cell.invblk && !cell.invblk.isoutside) {
+				return "black";
+			} else if (cell.qans && !cell.trial) {
+				return cell.error ? this.errbcolor2 : "#ccc";
+			}
+			return (
+				this.getBGCellColor_qsub1(cell) ||
+				(cell.ques !== 7 ? this.bgcolor : null)
+			);
+		},
+		getDashArray: function() {
+			return null;
 		},
 
 		drawTargetSubNumber: function() {
