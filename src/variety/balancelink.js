@@ -88,10 +88,11 @@
 			var g = this.vinc("cell_mark", "auto");
 
 			g.lineWidth = Math.max(this.cw / 18, 2);
-			var rsize = this.cw * 0.4;
+			var rsize = this.cw * 0.35;
 
 			var triy = 0.867 * rsize,
-				trix = rsize;
+				trix = rsize,
+				sqsize = rsize * 0.75;
 			var clist = this.range.cells;
 			for (var i = 0; i < clist.length; i++) {
 				var cell = clist[i];
@@ -142,9 +143,9 @@
 						break;
 					case 4:
 						if (cell.qnum > 6) {
-							g.fillRectCenter(px, py, triy, triy);
+							g.fillRectCenter(px, py, sqsize, sqsize);
 						} else {
-							g.strokeRectCenter(px, py, triy, triy);
+							g.strokeRectCenter(px, py, sqsize, sqsize);
 						}
 						continue;
 					case 5:
