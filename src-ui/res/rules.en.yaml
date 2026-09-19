@@ -99,7 +99,7 @@ koburin: "Shade some cells on the board, and draw a single loop that goes throug
 heyablock: "Shade some cells on the board.\n1. All shaded cells in one region must be connected.\n2. A number indicates the amount of shaded cells in a region.\n3. If a region has no number, it must have at least one shaded cell.\n4. Shaded cells cannot be adjacent across region borders.\n5. There cannot be a horizontal or vertical line of unshaded cells that goes through 2 or more region borders.\n6. All unshaded cells form an orthogonally contiguous area."
 slashpack: "Draw diagonal lines through the center of some cells to divide the board into regions.\n1. Two lines cannot overlap within a cell. All lines must be drawn from one corner to the opposite corner of the cell.\n2. A cell with a number cannot overlap a line.\n3. Each region must contain exactly one of each kind of number on the board.\n4. Question marks can be replaced with any number, as long as it appears elsewhere on the grid."
 icewalk: "Draw a loop that goes through every numbered cell.\n1. Two perpendicular line segments may intersect each other only on icy cells, but the loop may not branch or otherwise overlap.\n2. The loop may not turn on icy cells.\n3. A number indicates how many cells make up the continuous non-icy section of the loop that the number is on."
-mirrorbk: "Draw lines over the dotted lines to divide the board into regions.\n1. A number indicates the size of the region that contains it.\n2. Regions can have no more than 1 number.\n3. A thick line represents a mirror, and divides two regions. These regions must have reflectional symmetry across this mirror."
+mirrorbk: "Draw lines over the dotted lines to divide the board into regions.\n1. A number indicates the size of the region that contains it.\n2. Regions can have no more than 1 number.\n3. A thick line represents a mirror, and divides two regions. These regions must have reflection symmetry across this mirror."
 takoyaki: "Draw lines through all unshaded cells, then place circles on top of them.\n 1. Every line goes through exactly three circles: One on each endpoint, and another somewhere in the middle.\n2. Lines cannot cross or branch off, and cannot form loops.\n 3. Two circles cannot be orthogonally adjacent.\n4. Circles belonging to the same line cannot share a row or column.\n5. A number indicates the amount of circles in the 4 orthogonally adjacent cells.\n6. Lines and circles cannot overlap shaded cells."
 akichi: "You're given a board divided into rooms. Shade some cells on the board.\n 1. Shaded cells cannot be horizontally or vertically adjacent.\n2. A number indicates the size of the largest group of connected unshaded cells within its region.\n3. There cannot be a horizontal or vertical line of unshaded cells that goes through 2 or more region borders.\n4. All unshaded cells on the board form an orthogonally connected area."
 aho: "Draw lines over the dotted lines to divide the board into several blocks.\n 1. Each block contains exactly one black circle.\n2. A number indicates the size of the block, in cells.\n3. If the number of cells in the region is a multiple of 3, the region must be an L shape (a rectangle with another rectangle smaller in both dimensions removed from a corner).\n4. If the number of cells in the region is not a multiple of 3, the region must be rectangular."
@@ -582,3 +582,15 @@ heyajirimisaki: |-
   6. Numbers with arrows indicate the amount of shaded cells in the given direction.
   7. Circles are orthogonally adjacent to exactly one unshaded cell.
   8. Circled numbers represent the total amount of unshaded cells that can be seen in a straight line vertically or horizontally, including itself.
+korokoro: |-
+  Place a ball in some cells of the grid.
+  1. Every outlined region must contain at least one ball.
+  2. Two regions with the same number of balls cannot share an edge.
+  3. Every ball must be supported by another ball or a region edge on each of its lower sides.
+  4. Cells with balls cannot form a 2x2 square.
+  5. All cells with balls form an orthogonally connected area.
+balancelink: |-
+  Draw paths going through the cells to connect identical symbols.
+  1. Two paths cannot occupy the same cell.
+  2. A path cannot go through a shaded cell.
+  3. Every path must be a shape with reflection symmetry.
