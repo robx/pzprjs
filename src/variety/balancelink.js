@@ -149,7 +149,7 @@
 						}
 						continue;
 					case 5:
-						this.pathStar(g, px, py, rsize, rsize);
+						this.pathStar(g, px, py, rsize, rsize, 0.6);
 						break;
 					case 6:
 						g.beginPath();
