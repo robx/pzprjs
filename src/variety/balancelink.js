@@ -76,6 +76,7 @@
 			this.drawGrid();
 
 			this.drawPekes();
+			this.drawHatenas();
 			this.drawQuesMarks();
 			this.drawLines();
 
