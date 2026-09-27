@@ -166,6 +166,7 @@ function toBGimage(pid) {
 		"kaidan",
 		"kaisu",
 		"kissing",
+		"korokoro",
 		"kropki",
 		"kurarin",
 		"kuroclone",

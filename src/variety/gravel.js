@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["gravel"], {
+})(["gravel", "korokoro"], {
 	MouseEvent: {
 		use: true,
 		inputModes: {
@@ -113,10 +113,33 @@
 			return new this.klass.Address(bx, by);
 		}
 	},
+	"MouseEvent@korokoro": {
+		inputModes: {
+			edit: ["border", "empty", "info-blk"],
+			play: ["shade", "unshade", "number", "info-blk"]
+		},
+		mouseinputAutoEdit: function() {
+			this.inputborder();
+		},
+		mouseinputAutoPlay: function() {
+			this.inputShade();
+		},
+		// TODO this is sometimes called when it should just input a number instead
+		getSnumDir: function(pos) {
+			var inputx = pos.bx - this.board.rows,
+				inputy = pos.by;
+			var newx = inputx + inputy,
+				newy = inputy - inputx;
+
+			var tmpx = newx % 2 | 0;
+			var tmpy = newy % 2 | 0;
+			return [5, 2, 4, 3][tmpy * 2 + tmpx];
+		}
+	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
-	KeyEvent: {
+	"KeyEvent@gravel": {
 		enablemake: true,
 
 		keyinput: function(ca) {
@@ -137,6 +160,14 @@
 				cell.setQues(cell.ques === 7 ? 0 : 7);
 				cell.draw();
 			} else {
+				this.key_inputqnum(ca);
+			}
+		}
+	},
+	"KeyEvent@korokoro": {
+		enableplay: true,
+		keyinput: function(ca) {
+			if (this.cursor.isActive) {
 				this.key_inputqnum(ca);
 			}
 		}
@@ -176,6 +207,13 @@
 			}
 		}
 	},
+	"Cell@korokoro": {
+		enableSubNumberArray: true,
+		disableAnum: true,
+		maxnum: function() {
+			return Math.min(999, this.room.clist.length);
+		}
+	},
 
 	Border: {
 		isGrid: function() {
@@ -185,7 +223,13 @@
 			return this.qans > 0 || this.isQuesBorder();
 		},
 		isQuesBorder: function() {
-			return !!(this.sidecell[0].isEmpty() ^ this.sidecell[1].isEmpty());
+			var empt0 = this.sidecell[0].isEmpty(),
+				empt1 = this.sidecell[1].isEmpty();
+			if (empt0 && empt1) {
+				return null;
+			}
+
+			return this.ques || empt0 || empt1;
 		},
 
 		prehook: {
@@ -283,6 +327,11 @@
 			return list;
 		}
 	},
+	"Board@korokoro": {
+		addExtraInfo: function() {
+			this.invalidgraph = this.addInfoList(this.klass.AreaInvalidGraph);
+		}
+	},
 	BoardExec: {
 		allowedOperations: function(isplaymode) {
 			return isplaymode ? 0 : this.ALLOWALL;
@@ -300,13 +349,15 @@
 		enabled: true
 	},
 	AreaRoomGraph: {
+		enabled: true
+	},
+	"AreaRoomGraph@gravel": {
 		relation: {
 			"cell.ques": "node",
 			"cell.qans": "node",
 			"border.ques": "separator",
 			"border.qans": "separator"
 		},
-		enabled: true,
 		isnodevalid: function(cell) {
 			return cell.isValid() && cell.isUnshade() && cell.allowUnshade();
 		},
@@ -316,13 +367,45 @@
 			component.valid = d.cols === d.rows && d.cols * d.rows === d.cnt;
 		}
 	},
+	"AreaInvalidGraph:AreaGraphBase@korokoro": {
+		enabled: true,
+		relation: { "cell.ques": "node" },
+		getComponentRefs: function(obj) {
+			return obj.invblk;
+		},
+		setComponentRefs: function(obj, component) {
+			obj.invblk = component;
+		},
+		getObjNodeList: function(nodeobj) {
+			return nodeobj.invblknodes;
+		},
+		resetObjNodeList: function(nodeobj) {
+			nodeobj.invblknodes = [];
+		},
+
+		isnodevalid: function(cell) {
+			return cell.isEmpty();
+		},
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			var d = component.clist.getRectSize();
+			var bd = this.board;
+			component.isoutside =
+				d.x1 === 1 ||
+				d.x2 === bd.maxbx - 1 ||
+				d.y1 === 1 ||
+				d.y2 === bd.maxby - 1;
+
+			if (!this.rebuildmode) {
+				component.clist.draw();
+			}
+		}
+	},
 
 	Graphic: {
 		enablebcolor: true,
-		shadecolor: "rgb(80, 80, 80)",
 		ghostcolor: "rgb(40, 40, 40)",
 		linetrialcolor: "rgb(80, 0, 80)",
-		gridcolor_type: "DLIGHT",
 		bordercolor_func: "qans",
 
 		circleratio: [0.3, 0.3],
@@ -383,7 +466,11 @@
 					py = cell.by * this.bh + this.getCellVerticalOffset(cell);
 
 				g.vid = "c_MB2_" + cell.id;
-				if (isDraw && cell.ques === 7) {
+				if (
+					isDraw &&
+					cell.ques === 7 &&
+					(!cell.invblk || cell.invblk.isoutside)
+				) {
 					g.strokeCross(px, py, rsize);
 				} else {
 					g.vhide();
@@ -455,7 +542,11 @@
 						tsy = border.tsy * this.bh,
 						tex = border.tex * this.bw,
 						tey = border.tey * this.bh;
-					g.strokeDashedLine(tsx, tsy, tex, tey, dasharray);
+					if (dasharray) {
+						g.strokeDashedLine(tsx, tsy, tex, tey, dasharray);
+					} else {
+						g.strokeLine(tsx, tsy, tex, tey);
+					}
 				} else {
 					g.vhide();
 				}
@@ -597,8 +688,11 @@
 				border.sidecell[0].isShade() !== border.sidecell[1].isShade()
 				? this.ghostcolor
 				: null;
-		},
-
+		}
+	},
+	"Graphic@gravel": {
+		gridcolor_type: "DLIGHT",
+		shadecolor: "rgb(80, 80, 80)",
 		getCircleStrokeColor: function(cell) {
 			if (cell.ques === 1) {
 				return cell.error === 1 ? this.errcolor1 : this.quescolor;
@@ -614,8 +708,133 @@
 			return null;
 		}
 	},
+	"Graphic@korokoro": {
+		errbcolor1: "rgb(255, 216, 216)",
+		errbcolor2: "rgb(255, 160, 160)",
+		circleratio: [0.25, 0.25],
+		paint: function() {
+			this.drawBGCells();
+			this.drawValidDashedGrid();
 
-	Encode: {
+			this.drawCircles();
+			this.drawTargetSubNumber();
+
+			this.drawQuesBorders();
+			this.drawInvalidIndicators(this.puzzle.editmode);
+
+			this.drawSubNumbers();
+			this.drawCursor(true, this.puzzle.playmode);
+		},
+		getCircleStrokeColor: function() {
+			return null;
+		},
+		getCircleFillColor: function(cell) {
+			return this.common.getShadedCellColor.call(this, cell);
+		},
+		getBGCellColor: function(cell) {
+			if (cell.invblk && !cell.invblk.isoutside) {
+				return "black";
+			} else if (cell.qans && !cell.trial) {
+				return cell.error ? this.errbcolor2 : "#ccc";
+			}
+			return (
+				this.getBGCellColor_qsub1(cell) ||
+				(cell.ques !== 7 ? this.bgcolor : null)
+			);
+		},
+		getDashArray: function() {
+			return null;
+		},
+
+		drawTargetSubNumber: function() {
+			var g = this.vinc("target_subnum", "crispEdges");
+
+			var d = this.range,
+				cursor = this.puzzle.cursor;
+			if (cursor.bx < d.x1 || d.x2 < cursor.bx) {
+				return;
+			}
+			if (cursor.by < d.y1 || d.y2 < cursor.by) {
+				return;
+			}
+
+			var target = cursor.targetdir;
+			var cell = cursor.getc();
+
+			if (!cursor.isActive) {
+				target = 0;
+			}
+
+			g.vid = "target_subnum";
+			g.fillStyle = this.ttcolor;
+			if (this.puzzle.playmode && target !== 0) {
+				var bw = this.bw,
+					bh = this.bh;
+				var px = cursor.bx * bw + this.getCellHorizontalOffset(cell),
+					py = cursor.by * bh + this.getCellVerticalOffset(cell);
+				var tw = bw * 0.45,
+					th = bh * 0.45;
+				if (target === 5) {
+					py -= th;
+				} else if (target === 4) {
+					px -= tw;
+				} else if (target === 2) {
+					px += tw;
+				} else if (target === 3) {
+					py += th;
+				}
+
+				g.beginPath();
+				g.moveTo(px + tw, py);
+				g.lineTo(px, py + th);
+				g.lineTo(px - tw, py);
+				g.lineTo(px, py - th);
+				g.closePath();
+				g.fill();
+			} else {
+				g.vhide();
+			}
+		},
+
+		drawSubNumbers: function() {
+			var g = this.vinc("cell_subnumber", "auto");
+
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				for (var n = 0; n < 4; n++) {
+					var text = this.getNumberTextCore(cell.snum[n]);
+					g.vid = "cell_subtext_" + cell.id + "_" + n;
+					if (!!text) {
+						g.fillStyle = !cell.trial ? this.subcolor : this.trialcolor;
+						var bw = this.bw,
+							bh = this.bh;
+						var px = cell.bx * bw + this.getCellHorizontalOffset(cell),
+							py = cell.by * bh + this.getCellVerticalOffset(cell);
+						var tw = bw * 0.45,
+							th = bh * 0.45;
+						if (n === 0) {
+							py -= th;
+						} else if (n === 1) {
+							px -= tw;
+						} else if (n === 2) {
+							px += tw;
+						} else if (n === 3) {
+							py += th;
+						}
+						this.disptext(text, px, py, {
+							ratio: 0.33,
+							hoffset: 0.8
+						});
+					} else {
+						g.vhide();
+					}
+				}
+			}
+		}
+	},
+
+	"Encode@gravel": {
 		decodePzpr: function(type) {
 			this.genericDecodeThree(function(cell, val) {
 				cell.ques = val;
@@ -631,8 +850,17 @@
 			this.encodeEmpty();
 		}
 	},
-
-	FileIO: {
+	"Encode@korokoro": {
+		decodePzpr: function(type) {
+			this.decodeBorder();
+			this.decodeEmpty();
+		},
+		encodePzpr: function(type) {
+			this.encodeBorder();
+			this.encodeEmpty();
+		}
+	},
+	"FileIO@gravel": {
 		decodeData: function() {
 			this.decodeCellQnumAns();
 			this.decodeBorderAns(1);
@@ -685,8 +913,43 @@
 			});
 		}
 	},
+	"FileIO@korokoro": {
+		decodeData: function() {
+			this.decodeBorderQues();
+			this.decodeCellAns();
+			this.decodeCellSnum();
+		},
+		encodeData: function() {
+			this.encodeBorderQues();
+			this.encodeCellAns();
+			this.encodeCellSnum();
+		},
+		decodeCellAns: function() {
+			this.decodeCell(function(cell, ca) {
+				if (ca === "x") {
+					cell.ques = 7;
+				} else if (ca === "#") {
+					cell.qans = 1;
+				} else if (ca === "+") {
+					cell.qsub = 1;
+				}
+			});
+		},
+		encodeCellAns: function() {
+			this.encodeCell(function(cell) {
+				if (cell.ques === 7) {
+					return "x ";
+				} else if (cell.qans) {
+					return "# ";
+				} else if (cell.qsub) {
+					return "+ ";
+				}
+				return ". ";
+			});
+		}
+	},
 
-	AnsCheck: {
+	"AnsCheck@gravel": {
 		checklist: [
 			"checkUnshadeOnCircle",
 			"checkShadeOnCircle",
@@ -816,7 +1079,49 @@
 			}
 		}
 	},
-	FailCode: {
+	"AnsCheck@korokoro": {
+		checklist: [
+			"check2x2ShadeCell",
+			"checkGravity",
+			"checkSideAreaShadeCount",
+			"checkConnectShade",
+			"checkNoShadeCellInArea",
+			"doneShadingDecided"
+		],
+		checkGravity: function() {
+			this.checkAllCell(function(cell) {
+				if (!cell.isShade()) {
+					return false;
+				}
+
+				if (
+					!cell.adjacent.bottom.isShade() &&
+					!cell.adjborder.bottom.isQuesBorder()
+				) {
+					return true;
+				}
+				if (
+					!cell.adjacent.right.isShade() &&
+					!cell.adjborder.right.isQuesBorder()
+				) {
+					return true;
+				}
+				return false;
+			}, "csNoSupport");
+		},
+		checkSideAreaShadeCount: function() {
+			this.checkSideAreaSize(
+				this.board.roommgr,
+				function(area) {
+					return area.clist.filter(function(cell) {
+						return cell.isShade();
+					}).length;
+				},
+				"bsEqShade"
+			);
+		}
+	},
+	"FailCode@gravel": {
 		bkSideNe: "bkSideNe.squarejam"
 	}
 });
