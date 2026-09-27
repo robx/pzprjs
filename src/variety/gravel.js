@@ -709,6 +709,7 @@
 		}
 	},
 	"Graphic@korokoro": {
+		gridcolor_type: "LIGHT",
 		errbcolor1: "rgb(255, 216, 216)",
 		errbcolor2: "rgb(255, 160, 160)",
 		circleratio: [0.25, 0.25],
