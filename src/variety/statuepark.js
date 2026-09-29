@@ -910,7 +910,7 @@
 		}
 	},
 
-	"Cell@kissing,regional-poly,pentatouch": {
+	"Cell@kissing,regional-poly": {
 		allowShade: function() {
 			return this.isValid();
 		},
@@ -921,6 +921,11 @@
 			qans: function() {
 				this.drawaround();
 			}
+		}
+	},
+	"Cell@pentatouch": {
+		allowShade: function() {
+			return this.isValid();
 		}
 	},
 
@@ -1901,7 +1906,10 @@
 
 		decodeCellAns: function() {
 			this.decodeCell(function(cell, ca) {
-				if (ca === "x") {
+				if (ca === "X") {
+					cell.ques = 7;
+					cell.qsub = 1;
+				} else if (ca === "x") {
 					cell.ques = 7;
 				} else if (ca === "#") {
 					cell.qans = 1;
@@ -1913,7 +1921,7 @@
 		encodeCellAns: function() {
 			this.encodeCell(function(cell) {
 				if (cell.ques === 7) {
-					return "x ";
+					return cell.qsub ? "X " : "x ";
 				} else if (cell.qans) {
 					return "# ";
 				} else if (cell.qsub) {
