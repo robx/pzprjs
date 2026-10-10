@@ -88,11 +88,22 @@
 		],
 
 		checkLineTurnDir: function() {
-			// TODO etc
+			this.tracePath(true, "lcNotUTurns");
 		},
 
 		checkLineDecreasing: function() {
-			// TODO etc
+			this.tracePath(false, "lnLenSeq");
+		},
+
+		tracePath: function(isTurn, code) {
+			var bd = this.board;
+			for (var c = 0; c < bd.cell.length; c++) {
+				var cell = bd.cell[c];
+				if (!cell.isNum() || cell.lcnt !== 1) {
+					continue;
+				}
+				// TODO etc
+			}
 		},
 
 		checkLineLengthOver: function() {
@@ -106,7 +117,7 @@
 			var bd = this.board;
 			for (var c = 0; c < bd.cell.length; c++) {
 				var cell = bd.cell[c];
-				if (!cell.isValidNum() || !cell.path) {
+				if (!cell.isValidNum() || cell.lcnt !== 1) {
 					continue;
 				}
 
@@ -125,5 +136,8 @@
 				cell.path.setedgeerr(1);
 			}
 		}
+	},
+	FailCode: {
+		lcNotUTurns: "lcNotUTurns.vertigo"
 	}
 });
