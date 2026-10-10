@@ -22,9 +22,20 @@
 		hasborder: 1
 	},
 
+	BoardExec: {
+		allowedOperations: function(isplaymode) {
+			return this.TURN;
+		}
+	},
+
 	LineGraph: {
 		enabled: true,
 		makeClist: true
+	},
+	Cell: {
+		maxnum: function() {
+			return this.board.cols * this.board.rows - 1;
+		}
 	},
 
 	//---------------------------------------------------------
@@ -87,23 +98,42 @@
 			"checkNoLine+"
 		],
 
-		checkLineTurnDir: function() {
-			this.tracePath(true, "lcNotUTurns");
-		},
-
 		checkLineDecreasing: function() {
-			this.tracePath(false, "lnLenSeq");
+			this.checkLineShape(function(path) {
+				for (var i = 1; i < path.length.length; i++) {
+					if (path.length[i] > path.length[i - 1]) {
+						return true;
+					}
+				}
+				return false;
+			}, "lnLenSeq");
 		},
 
-		tracePath: function(isTurn, code) {
-			var bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
-				var cell = bd.cell[c];
-				if (!cell.isNum() || cell.lcnt !== 1) {
-					continue;
+		checkLineTurnDir: function() {
+			this.checkLineShape(function(path) {
+				var prev = path.cells[0];
+				var prevdir = path.dir1;
+
+				for (var i = 0; i < path.objs.length; i++) {
+					var link = path.objs[i];
+
+					var next =
+						link.sidecell[0] === prev ? link.sidecell[1] : link.sidecell[0];
+					var nextdir = prev.getdir(next, 2);
+
+					if (prevdir !== nextdir) {
+						var expect = [0, 4, 3, 1, 2][prevdir];
+						if (expect !== nextdir) {
+							return true;
+						}
+					}
+
+					prev = next;
+					prevdir = nextdir;
 				}
-				// TODO etc
-			}
+
+				return false;
+			}, "lcNotUTurns");
 		},
 
 		checkLineLengthOver: function() {
