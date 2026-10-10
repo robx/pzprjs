@@ -594,3 +594,9 @@ balancelink: |-
   1. Two paths cannot occupy the same cell.
   2. A path cannot go through a shaded cell.
   3. Every path must be a shape with reflection symmetry.
+urumi: |-
+  Draw a path starting from every circle, so every cell is visited by exactly one path.
+  1. Paths cannot cross or branch off.
+  2. Paths cannot turn left.
+  3. A line segment after a turn must be shorter or have equal length to the line segment before the turn.
+  4. A number indicates the length of the path starting from that cell. The length is equal to the amount of visited cells minus one.
