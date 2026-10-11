@@ -91,6 +91,7 @@
 			"checkLineExist+",
 			"checkBranchLine",
 			"checkCrossLine",
+			"checkLineOverLetter",
 			"checkLineTurnDir",
 			"checkLineDecreasing",
 			"checkLineLengthOver",
