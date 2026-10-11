@@ -621,6 +621,7 @@
     "lcDivided.seiza": "Not all stars are connected.",
     "lcDivided.tjunction": "Not all T-junctions are connected.",
     "lcDivided": "All lines and numbers are not connected to each other.",
+    "lcDoubleNum": "Two or more objects are connected.",
     "lcGrayGt.coffeemilk": "A group has more than one gray circle.",
     "lcInvalid.coffeemilk": "A white and black circle are connected directly.",
     "lcInvalid.kusabi": "The types of connected circles don't match.",

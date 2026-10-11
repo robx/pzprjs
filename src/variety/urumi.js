@@ -92,12 +92,20 @@
 			"checkBranchLine",
 			"checkCrossLine",
 			"checkLineOverLetter",
+			"checkDoubleNumber",
 			"checkLineTurnDir",
 			"checkLineDecreasing",
 			"checkLineLengthOver",
 			"checkLineLengthUnder",
+			"checkDisconnectLine",
 			"checkNoLine+"
 		],
+
+		checkDoubleNumber: function() {
+			this.checkLineShape(function(path) {
+				return path.cells[0].isNum() && path.cells[1].isNum();
+			}, "lcDoubleNum");
+		},
 
 		checkLineDecreasing: function() {
 			this.checkLineShape(function(path) {
