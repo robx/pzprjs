@@ -66,10 +66,10 @@
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
-			this.decodeNumber10();
+			this.decodeNumber16();
 		},
 		encodePzpr: function(type) {
-			this.encodeNumber10();
+			this.encodeNumber16();
 		}
 	},
 	//---------------------------------------------------------

@@ -1,7 +1,7 @@
 /* urumi.js */
 
 ui.debug.addDebugData("urumi", {
-	url: "5/5/9d3n5a2a1",
+	url: "5/5/9d3n5a2a1o",
 	failcheck: [
 		[
 			"brNoLine",
