@@ -305,5 +305,6 @@
     "slither_full": "全ての点に線が通る",
     "outlineshaded": "黒マスを線で囲む",
     "inputmode.diamond": "",
-    "balloon_adjacent": ""
+    "balloon_adjacent": "",
+    "pinbuttons": "Pin buttons to screen"
 }
