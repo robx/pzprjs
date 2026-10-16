@@ -216,6 +216,7 @@ ui.menuarea = {
 		this.setdisplay("operation");
 		this.setdisplay("trialmode");
 		this.setdisplay("toolarea");
+		this.pinbuttons(!!ui.menuconfig.get("pinbuttons"));
 
 		/* キャプションの設定 */
 		for (var i = 0; i < this.captions.length; i++) {
@@ -357,6 +358,10 @@ ui.menuarea = {
 	toolarea: function() {
 		ui.menuconfig.set("toolarea", !ui.menuconfig.get("toolarea"));
 		ui.displayAll();
+	},
+	pinbuttons: function(newval) {
+		var btnarea = getEL("btnarea");
+		btnarea.classList.toggle("pinned", !!newval);
 	},
 	disppopup: function(e) {
 		var el = e.target;

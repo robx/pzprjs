@@ -241,6 +241,20 @@ div#btnarea {
   position: relative;
   margin: 1em auto 1em auto;
 }
+div#btnarea.pinned {
+  position: fixed;
+  display: inline-block;
+  bottom: 0;
+  left: 50%;
+  right: auto;
+  margin: 0;
+  transform: translateX(-50%);
+  z-index: 50;
+  background-color: white;
+  border-top: 2pt green solid;
+  border-left: 2pt green solid;
+  border-right: 2pt green solid;
+}
 
 /* OK/Cancel表示用 */
 div#notifies {

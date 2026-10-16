@@ -311,5 +311,6 @@
     "network.start": "Start",
     "network.share": "Share this link to play with someone:",
     "list.sort.date": "Sort by date",
-    "list.sort.alpha": "Sort alphabetically"
+    "list.sort.alpha": "Sort alphabetically",
+    "pinbuttons": "Pin buttons to screen"
 }
