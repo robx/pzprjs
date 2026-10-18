@@ -241,6 +241,26 @@ div#btnarea {
   position: relative;
   margin: 1em auto 1em auto;
 }
+div#btnarea.pinned {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 50;
+  background-color: white;
+  border-top: 2pt green solid;
+  border-left: 2pt green solid;
+  border-right: 2pt green solid;
+}
+div#btnarea.pinned > * {
+  flex: 0 0 auto;
+}
 
 /* OK/Cancel表示用 */
 div#notifies {

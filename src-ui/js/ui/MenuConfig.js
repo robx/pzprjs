@@ -42,6 +42,7 @@
 			); /* キャンバスを横幅いっぱいに広げる */
 
 			this.add("toolarea", true); /* ツールエリアの表示 */
+			this.add("pinbuttons", false); /* ボタン領域を固定するかどうか */
 
 			this.add("inputmode", "auto", { volatile: true }); /* inputMode */
 			this.add("auxeditor_inputmode", "auto", { volatile: true });
@@ -381,6 +382,10 @@
 
 				case "timer":
 					ui.toolarea.display();
+					break;
+
+				case "pinbuttons":
+					ui.menuarea.pinbuttons(newval);
 					break;
 				case "language":
 					ui.displayAll();
