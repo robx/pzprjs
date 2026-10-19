@@ -632,27 +632,29 @@ pzpr.classmgr.makeCommon({
 			pos0.draw();
 			pos.draw();
 		},
+		getSnumDir: function(pos) {
+			if (!this.cursor.modesnum || !this.puzzle.playmode) {
+				return 0;
+			}
+			if (this.cursor.disableAnum) {
+				var tmpx = pos.bx % 2 | 0;
+				var tmpy = pos.by % 2 | 0;
+				return [5, 4, 2, 3][tmpy * 2 + tmpx];
+			} else {
+				var tmpx = (((pos.bx + 12) % 2) * 1.5) | 0;
+				var tmpy = (((pos.by + 12) % 2) * 1.5) | 0;
+				if (this.pid !== "factors") {
+					return [5, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx];
+				} else {
+					return [0, 0, 4, 0, 0, 0, 2, 0, 3][tmpy * 3 + tmpx];
+				}
+			}
+		},
 		setcursorsnum: function(pos) {
 			var pos0 = this.cursor.getaddr();
 			this.cursor.setaddr(pos);
 			this.cursor.isActive = true;
-			var target;
-			var bx = this.inputPoint.bx,
-				by = this.inputPoint.by;
-
-			if (this.cursor.disableAnum) {
-				bx = bx % 2 | 0;
-				by = by % 2 | 0;
-				target = [5, 4, 2, 3][by * 2 + bx];
-			} else {
-				bx = (((bx + 12) % 2) * 1.5) | 0;
-				by = (((by + 12) % 2) * 1.5) | 0;
-				if (this.pid !== "factors") {
-					target = [5, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
-				} else {
-					target = [0, 0, 4, 0, 0, 0, 2, 0, 3][by * 3 + bx];
-				}
-			}
+			var target = this.getSnumDir(this.inputPoint);
 			if (this.cursor.targetdir !== target) {
 				this.cursor.targetdir = target;
 			}

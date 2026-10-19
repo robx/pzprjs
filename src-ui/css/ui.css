@@ -232,6 +232,10 @@ div#divques {
   margin-right: auto;
   padding: 8px;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+div#divques > div {
+  -webkit-tap-highlight-color: transparent;
 }
 div#btnarea {
   position: relative;

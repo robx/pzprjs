@@ -137,8 +137,9 @@ pzpr.classmgr.makeCommon({
 			if (
 				this.cursor.modesnum &&
 				this.puzzle.playmode &&
-				!this.cursor.checksnum(this.inputPoint) &&
-				cell.noNum()
+				cell.noNum() &&
+				(cell !== this.cursor.getc() ||
+					this.getSnumDir(this.inputPoint) !== this.cursor.targetdir)
 			) {
 				this.setcursorsnum(cell);
 			} else if (cell !== this.cursor.getc() || !this.cursor.isActive) {

@@ -212,6 +212,7 @@
     "fillomino_tri": "Maximum block size is 3",
     "trizone_ghost": "Regions can have no clues",
     "lapaz_liar": "Liar (clues can be erased by shading)",
+    "scrabble_given": "All letters of a certain type are given",
     "slither_full": "All points must be visited",
     "loop_full": "All cells must be visited",
     "variant": "This puzzle uses variant rules",

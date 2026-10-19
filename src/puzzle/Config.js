@@ -161,6 +161,10 @@
 				variant: true,
 				volatile: true
 			}); /* Clues may be erased by shading over them */
+			this.add("scrabble_given", false, {
+				variant: true,
+				volatile: true
+			}); /* All letters of a certain type are given */
 			this.add("slither_full", false, {
 				variant: true,
 				volatile: true
@@ -548,6 +552,9 @@
 				case "trizone_ghost":
 					exec = pid === "trizone";
 					break;
+				case "scrabble_given":
+					exec = pid === "scrabble";
+					break;
 				case "loop_full":
 					exec =
 						[
@@ -567,7 +574,8 @@
 							"roboticwalk",
 							"wataridori",
 							"bhaibahan",
-							"bwloop"
+							"bwloop",
+							"lring"
 						].indexOf(pid) >= 0;
 					break;
 				default:

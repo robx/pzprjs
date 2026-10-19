@@ -682,7 +682,8 @@ pzpr.classmgr.makeCommon({
 								? this.subcolor
 								: this.trialcolor;
 						var px = cell.bx * this.bw + this.getCellHorizontalOffset(cell);
-						this.disptext(text, px, cell.by * this.bh, {
+						var py = cell.by * this.bh + this.getCellVerticalOffset(cell);
+						this.disptext(text, px, py, {
 							position: posarray[n],
 							ratio: 0.33,
 							hoffset: 0.8
@@ -2202,7 +2203,7 @@ pzpr.classmgr.makeCommon({
 				var bw = this.bw,
 					bh = this.bh;
 				var px = cursor.bx * bw + 0.5 + this.getCellHorizontalOffset(cell),
-					py = cursor.by * bh + 0.5;
+					py = cursor.by * bh + 0.5 + this.getCellVerticalOffset(cell);
 				var tw = bw * 0.8,
 					th = bh * 0.8;
 				if (target === 5) {
@@ -2300,39 +2301,22 @@ pzpr.classmgr.makeCommon({
 			}
 		},
 
-		fillStar: function(g, px, py, sizeX, sizeY) {
-			// 星を描画するときの頂点の位置
-			var starXOffset = [
-				0,
-				0.235,
-				0.95,
-				0.38,
-				0.588,
-				0,
-				-0.588,
-				-0.38,
-				-0.95,
-				-0.235
-			];
-			var starYOffset = [
-				-1,
-				-0.309,
-				-0.309,
-				0.124,
-				0.809,
-				0.4,
-				0.809,
-				0.124,
-				-0.309,
-				-0.309
-			];
+		pathStar: function(g, px, py, sizeX, sizeY, factor) {
+			if (!factor) {
+				factor = 0.38;
+			}
 
 			g.beginPath();
 			g.moveTo(px, py - sizeY);
 			for (var p = 1; p < 10; p++) {
-				g.lineTo(px + sizeX * starXOffset[p], py + sizeY * starYOffset[p]);
+				var starY = Math.cos(p * Math.PI * 0.2) * (p & 1 ? factor : 1),
+					starX = Math.sin(p * Math.PI * 0.2) * (p & 1 ? factor : 1);
+				g.lineTo(px + sizeX * starX, py + sizeY * -starY);
 			}
 			g.closePath();
+		},
+		fillStar: function(g, px, py, sizeX, sizeY, factor) {
+			this.pathStar(g, px, py, sizeX, sizeY, factor);
 			g.fill();
 		},
 
