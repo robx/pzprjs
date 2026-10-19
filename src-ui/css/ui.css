@@ -108,6 +108,18 @@ div#menuboard {
   text-align: left;
   user-select: none;
 }
+#menuboard.pinned {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: white;
+  border-top: none;
+  border-bottom: 2px #404040 solid;
+  border-left: 2px #404040 solid;
+  border-right: 2px #404040 solid;
+}
 
 /* メニューより下の管理領域 */
 div#menuboard > div {

@@ -217,6 +217,7 @@ ui.menuarea = {
 		this.setdisplay("trialmode");
 		this.setdisplay("toolarea");
 		this.pinbuttons(ui.menuconfig.get("pinbuttons"));
+		// this.pinmenu(ui.menuconfig.get("pinmenu"));
 
 		/* キャプションの設定 */
 		for (var i = 0; i < this.captions.length; i++) {
@@ -362,6 +363,29 @@ ui.menuarea = {
 	pinbuttons: function(newval) {
 		var btnarea = getEL("btnarea");
 		btnarea.classList.toggle("pinned", !!newval);
+	},
+	pinmenu: function(newval) {
+		var menuboard = getEL("menuboard");
+		var title2 = getEL("title2");
+		menuboard.classList.toggle("pinned", !!newval);
+		if (!title2) {
+			return;
+		}
+		if (!newval) {
+			title2.style.marginTop = "";
+			return;
+		}
+
+		var menurect = menuboard.getBoundingClientRect();
+		var titlerect = title2.getBoundingClientRect();
+		var margin = 16 * 96 / 72; //Convert default margin of 16pt in CSS to pixels
+		var extra = menurect.bottom + margin - titlerect.top;
+		if (extra > 0) {
+			var current = parseFloat(window.getComputedStyle(title2).marginTop) || 0;
+			title2.style.marginTop = current + extra + "px";
+		} else {
+			title2.style.marginTop = "";
+		}
 	},
 	disppopup: function(e) {
 		var el = e.target;

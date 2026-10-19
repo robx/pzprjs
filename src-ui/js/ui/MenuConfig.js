@@ -43,6 +43,7 @@
 
 			this.add("toolarea", true); /* ツールエリアの表示 */
 			this.add("pinbuttons", false); /* ボタン領域を固定するかどうか */
+			this.add("pinmenu", false); /* メニュー領域を固定するかどうか */
 
 			this.add("inputmode", "auto", { volatile: true }); /* inputMode */
 			this.add("auxeditor_inputmode", "auto", { volatile: true });
@@ -386,6 +387,9 @@
 
 				case "pinbuttons":
 					ui.menuarea.pinbuttons(newval);
+					break;
+				case "pinmenu":
+					ui.menuarea.pinmenu(newval);
 					break;
 				case "language":
 					ui.displayAll();
