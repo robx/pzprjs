@@ -51,8 +51,8 @@
 				volatile: true
 			}); /* マウスの左右ボタンを反転する設定 */
 
-			//Autosave feature. Not on by default, but persists once enabled
-			this.add("autosave", false, {
+			//Autosave feature.
+			this.add("autosave", true, {
 				volatile: false
 			});
 
@@ -356,11 +356,6 @@
 		// config.configevent()  設定変更時の動作を記述する (modeはlistener.onModeChangeで変更)
 		//---------------------------------------------------------------------------
 		configevent: function(idname, newval) {
-			if (idname === "autosave") {
-				var saveIcon = document.getElementById("saveicon");
-				saveIcon.style.display = newval ? null : "none";
-			}
-
 			if (!ui.menuarea.menuitem) {
 				return;
 			}
