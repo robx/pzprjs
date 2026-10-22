@@ -71,7 +71,6 @@ ui.event = {
 		// onbeforeunloadイベントを割り当てる
 		this.addEvent(window, "beforeunload", this, this.onbeforeunload_func);
 
-
 		// onpagehideイベントを割り当てる
 		this.addEvent(window, "pagehide", this, this.onpagehide_func);
 
