@@ -23,7 +23,7 @@
 
 			// ui.menuconfig is not yet populated, so need to manually check
 			var json_menu = localStorage.getItem("pzprv3_config:ui");
-			if (json_menu && JSON.parse(json_menu)["autosave"]) {
+			if (json_menu && JSON.parse(json_menu)["autosave"] !== false) {
 				var str = getPuzzleString();
 				var index = str.indexOf("/");
 
