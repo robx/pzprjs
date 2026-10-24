@@ -243,13 +243,20 @@
 		},
 		togglePause: function() {
 			if (this.pausetime === null) {
-				document.body.classList.add("paused");
-				this.pausetime = pzpr.util.currentTime();
+				this.pause();
 			} else {
-				document.body.classList.remove("paused");
-				this.starttime += pzpr.util.currentTime() - this.pausetime;
-				this.pausetime = null;
+				this.unpause();
 			}
+		},
+		pause: function() {
+			if (this.pausetime !== null) { return } // Don't overwrite pause time if there already is one
+			document.body.classList.add("paused");
+			this.pausetime = pzpr.util.currentTime();
+		},
+		unpause: function() {
+			document.body.classList.remove("paused");
+			this.starttime += pzpr.util.currentTime() - (this.pausetime || 0);
+			this.pausetime = null;
 		},
 
 		//---------------------------------------------------------------------------
