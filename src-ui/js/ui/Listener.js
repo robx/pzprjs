@@ -66,6 +66,16 @@ ui.listener = {
 		ui.event.addVisibilityCallback(function() {
 			ui.timer.start();
 		});
+		document.addEventListener("visibilitychange", function() {
+			if (document.visibilityState === "hidden") {
+				puzzle.wasPaused = puzzle.pausetime !== null;
+				puzzle.pause();
+			} else {
+				if (!puzzle.wasPaused) {
+					puzzle.unpause();
+				}
+			}
+		});
 
 		ui.network.start();
 	},
