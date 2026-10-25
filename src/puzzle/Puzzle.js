@@ -233,7 +233,8 @@
 		// owner.getTime()        開始からの時間をミリ秒単位で取得する
 		//---------------------------------------------------------------------------
 		resetTime: function() {
-			this.starttime = pzpr.util.currentTime();
+			var savedTime = ui.savedTime || 0;
+			this.starttime = pzpr.util.currentTime() - savedTime;
 		},
 		getTime: function() {
 			return this.pausetime === null
@@ -242,13 +243,27 @@
 		},
 		togglePause: function() {
 			if (this.pausetime === null) {
-				document.body.classList.add("paused");
-				this.pausetime = pzpr.util.currentTime();
+				this.pause();
 			} else {
-				document.body.classList.remove("paused");
-				this.starttime += pzpr.util.currentTime() - this.pausetime;
-				this.pausetime = null;
+				this.unpause();
 			}
+		},
+		pause: function() {
+			if (this.pausetime !== null) {
+				return;
+			} // Don't overwrite pause time if there already is one
+			document.body.classList.add("paused");
+			this.pausetime = pzpr.util.currentTime();
+		},
+		unpause: function() {
+			document.body.classList.remove("paused");
+			this.starttime += pzpr.util.currentTime() - (this.pausetime || 0);
+			this.pausetime = null;
+		},
+		hardResetTime: function() {
+			this.unpause();
+			delete ui.savedTime;
+			ui.disableAutosave = true;
 		},
 
 		//---------------------------------------------------------------------------
