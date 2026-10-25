@@ -41,8 +41,9 @@
 		if (storedGame) {
 			var valObject = JSON.parse(storedGame);
 			pzl = importData(valObject.pzl);
-			if (Object.hasOwn(valObject, "st")) {
-				ui.savedTime = valObject.st;
+			const savedTime = valObject.st;
+			if (isFinite(savedTime) && savedTime > 0) {
+				ui.savedTime = savedTime;
 			}
 		} else {
 			pzl = importData();
