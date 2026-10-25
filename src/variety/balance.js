@@ -46,6 +46,10 @@
 		}
 	},
 	"MouseEvent@lring": {
+		inputModes: {
+			edit: ["undef", "clear"],
+			play: ["line", "peke", "info-line"]
+		},
 		mouseinputAutoEdit: function() {
 			if (this.mousestart || this.mousemove) {
 				this.inputarrow_cell();
