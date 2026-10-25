@@ -63,13 +63,12 @@ ui.listener = {
 		ui.adjustcellsize();
 		ui.keypopup.display();
 		ui.menuarea.pinmenu(ui.menuconfig.get("pinmenu"));
-		
+
 		ui.event.addVisibilityCallback(function() {
 			ui.timer.start();
 		});
 
 		ui.network.start();
-		
 	},
 
 	//---------------------------------------------------------------------------

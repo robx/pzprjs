@@ -377,7 +377,7 @@ ui.menuarea = {
 
 		var menurect = menuboard.getBoundingClientRect();
 		var titlerect = title2.getBoundingClientRect();
-		var margin = 16 * 96 / 72; //Convert default margin of 16pt in CSS to pixels
+		var margin = (16 * 96) / 72; //Convert default margin of 16pt in CSS to pixels
 		var extra = menurect.bottom + margin - titlerect.top;
 		if (extra > 0) {
 			var current = parseFloat(window.getComputedStyle(title2).marginTop) || 0;
