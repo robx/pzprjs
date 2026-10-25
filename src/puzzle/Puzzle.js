@@ -260,6 +260,11 @@
 			this.starttime += pzpr.util.currentTime() - (this.pausetime || 0);
 			this.pausetime = null;
 		},
+		hardResetTime: function() {
+			this.unpause();
+			delete ui.savedTime;
+			ui.disableAutosave = true;
+		},
 
 		//---------------------------------------------------------------------------
 		// owner.undo()  Undoを実行する

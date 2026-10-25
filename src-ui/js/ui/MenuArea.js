@@ -389,6 +389,7 @@ ui.menuarea = {
 					pzpr.parser.URL_PZPRFILE,
 					ui.puzzle.playeronly ? "player" : "editor"
 				);
+				ui.puzzle.hardResetTime();
 				el.setAttribute("href", url);
 				break;
 		}

@@ -474,6 +474,7 @@ ui.popupmgr.addpopup("urlinput", {
 	//------------------------------------------------------------------------------
 	urlinput: function() {
 		this.close();
+		ui.puzzle.hardResetTime();
 		ui.puzzle.open(this.form.ta.value.replace(/\n/g, ""));
 	}
 });
@@ -552,7 +553,7 @@ ui.popupmgr.addpopup("fileopen", {
 			if (!fitem) {
 				return;
 			}
-
+			ui.puzzle.hardResetTime();
 			if (!!ui.reader) {
 				ui.reader.readAsText(fitem);
 			} else {
