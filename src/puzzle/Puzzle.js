@@ -249,7 +249,9 @@
 			}
 		},
 		pause: function() {
-			if (this.pausetime !== null) { return } // Don't overwrite pause time if there already is one
+			if (this.pausetime !== null) {
+				return;
+			} // Don't overwrite pause time if there already is one
 			document.body.classList.add("paused");
 			this.pausetime = pzpr.util.currentTime();
 		},
