@@ -199,7 +199,12 @@
 
 	//Events that trigger a board state save
 	document.addEventListener("visibilitychange", function() {
-		if (document.visibilityState === "hidden" && ui.disableAutosave !== true) {
+		var state = document.visibilityState;
+		if (ui.event.visibilitystate === state) {
+			return;
+		}
+		ui.event.visibilitystate = state;
+		if (state === "hidden" && ui.disableAutosave !== true) {
 			saveBoardState();
 		}
 	});

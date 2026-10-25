@@ -67,6 +67,11 @@ ui.listener = {
 			ui.timer.start();
 		});
 		document.addEventListener("visibilitychange", function() {
+			var state = document.visibilityState;
+			if (ui.event.visibilitystate === state) {
+				return;
+			}
+			ui.event.visibilitystate = state;
 			if (document.visibilityState === "hidden") {
 				puzzle.wasPaused = puzzle.pausetime !== null;
 				puzzle.pause();

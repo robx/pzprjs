@@ -141,14 +141,15 @@ ui.event = {
 
 	onvisibilitychange_func: function(e) {
 		var state = document.visibilityState;
-		if (state !== this.visibilitystate) {
-			this.visibilitystate = state;
-			if (state === "visible") {
-				for (var i = 0; i < this.visibilityCallbacks.length; i++) {
-					this.visibilityCallbacks[i]();
-				}
-				this.visibilityCallbacks = [];
+		if (state === this.visibilitystate) {
+			return;
+		}
+		this.visibilitystate = state;
+		if (state === "visible") {
+			for (var i = 0; i < this.visibilityCallbacks.length; i++) {
+				this.visibilityCallbacks[i]();
 			}
+			this.visibilityCallbacks = [];
 		}
 	},
 
