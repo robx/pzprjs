@@ -142,19 +142,25 @@ ui.event = {
 	onvisibilitychange_func: function(e) {
 		var state = document.visibilityState;
 		var puzzle = ui.puzzle;
-		if (state !== this.visibilitystate) {
-			this.visibilitystate = state;
-			if (state === "visible") {
-				if (puzzle.wasPaused === false) {
-					puzzle.unpause();
-				}
-				for (var i = 0; i < this.visibilityCallbacks.length; i++) {
-					this.visibilityCallbacks[i]();
-				}
-				this.visibilityCallbacks = [];
-			} else {
-				puzzle.wasPaused = puzzle.pausetime !== null;
-				puzzle.pause();
+		//Early exit on multiple calls to same visibility
+		if (state === this.visibilitystate) {
+			return;
+		}
+		this.visibilitystate = state;
+
+		if (state === "visible") {
+			if (puzzle.wasPaused === false) {
+				puzzle.unpause();
+			}
+			for (var i = 0; i < this.visibilityCallbacks.length; i++) {
+				this.visibilityCallbacks[i]();
+			}
+			this.visibilityCallbacks = [];
+		} else {
+			puzzle.wasPaused = puzzle.pausetime !== null;
+			puzzle.pause();
+			if (ui.disableAutosave !== true) {
+				pzpr.saveBoardState();
 			}
 		}
 	},

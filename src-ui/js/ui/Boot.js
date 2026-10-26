@@ -174,7 +174,7 @@
 	//Save board state. Creates an entry in localStorage whose key is a 'pzpr_' identifier plus the current board state puzzle string.
 	//Board state puzzle string is the same thing you get from duplicating the board state
 	//Auto-exits if the correct setting is not set, so safe to call from anywhere without checking
-	function saveBoardState() {
+	pzpr.saveBoardState = function() {
 		if (!ui.menuconfig.get("autosave") || !ui.puzzle.playeronly) {
 			return;
 		}
@@ -196,12 +196,5 @@
 			// bufferToForceStorageLimitErrors: "0".repeat(1700000) //Include for testing to force out-of-storage errors
 		};
 		pzpr.util.store(key, JSON.stringify(valObject));
-	}
-
-	//Events that trigger a board state save
-	document.addEventListener("visibilitychange", function() {
-		if (document.visibilityState === "hidden" && ui.disableAutosave !== true) {
-			saveBoardState();
-		}
-	});
+	};
 })();

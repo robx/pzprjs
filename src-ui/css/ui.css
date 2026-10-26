@@ -672,6 +672,11 @@ button#resumebtn {
   float: right;
   margin: 0;
 }
+button#resettimerbtn {
+  float: right;
+  margin: 0;
+  margin-right: 4pt;
+}
 body.paused button#pausebtn {
   display: none;
 }

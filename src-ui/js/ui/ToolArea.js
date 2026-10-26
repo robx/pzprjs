@@ -386,5 +386,13 @@ ui.toolarea = {
 
 	togglePause: function() {
 		ui.puzzle.togglePause();
+	},
+
+	resetTimerTime: function() {
+		ui.savedTime = 0;
+		if (ui.puzzle.pausetime) {
+			ui.puzzle.pausetime = pzpr.util.currentTime();
+		}
+		ui.puzzle.resetTime();
 	}
 };
