@@ -390,6 +390,9 @@ ui.toolarea = {
 
 	resetTimerTime: function() {
 		ui.savedTime = 0;
+		if (ui.puzzle.pausetime) {
+			ui.puzzle.pausetime = pzpr.util.currentTime()
+		}
 		ui.puzzle.resetTime();
 	}
 };
