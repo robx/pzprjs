@@ -313,5 +313,6 @@
     "list.sort.date": "Sort by date",
     "list.sort.alpha": "Sort alphabetically",
     "pinmenu": "Pin menu and tools to screen edge",
-    "pinbuttons": "Pin buttons to screen edge"
+    "pinbuttons": "Pin buttons to screen edge",
+    "resettimer": "Reset"
 }
