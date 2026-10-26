@@ -386,5 +386,9 @@ ui.toolarea = {
 
 	togglePause: function() {
 		ui.puzzle.togglePause();
+	},
+
+	resetTimer: function() {
+		ui.puzzle.resetTime(true);
 	}
 };

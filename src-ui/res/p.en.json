@@ -223,6 +223,7 @@
     "pause.desc": "Click 'Resume' or press F4",
     "pause.desc.mobile": "Press 'Resume' to continue",
     "resume": "Resume",
+    "reset": "Reset",
     "check": "Check",
     "check.variant": "Check base type",
     "undo": "<-",
