@@ -249,7 +249,7 @@
 			}
 		},
 		pause: function() {
-			if (this.pausetime !== null) {
+			if (this.pausetime) {
 				return;
 			} // Don't overwrite pause time if there already is one
 			document.body.classList.add("paused");
@@ -257,8 +257,10 @@
 		},
 		unpause: function() {
 			document.body.classList.remove("paused");
-			this.starttime += pzpr.util.currentTime() - (this.pausetime || 0);
-			this.pausetime = null;
+			if (this.pausetime) {
+				this.starttime += pzpr.util.currentTime() - this.pausetime;
+				this.pausetime = null;
+			}
 		},
 		hardResetTime: function() {
 			this.unpause();
