@@ -468,7 +468,9 @@
 					postCanvasReady(puzzle);
 				}
 
-				puzzle.resetTime();
+				if (puzzle.instancetype === "player") {
+					puzzle.resetTime();
+				}
 
 				if (!!callback) {
 					callback(puzzle);
