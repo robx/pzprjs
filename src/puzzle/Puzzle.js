@@ -19,7 +19,9 @@
 		this.editmode = !this.playeronly; // 問題配置モード
 		this.playmode = !this.editmode; // 回答モード
 
-		this.resetTime();
+		if (modeid === 1) {
+			this.resetTime();
+		}
 
 		this.preInitCanvasInfo = {
 			type: option.graphic || "",
@@ -233,7 +235,7 @@
 		// owner.getTime()        開始からの時間をミリ秒単位で取得する
 		//---------------------------------------------------------------------------
 		resetTime: function(toZero) {
-			var savedTime = toZero ? 0 : ui.savedTime || 0;
+			var savedTime = ui && !toZero ? ui.savedTime || 0 : 0;
 			this.starttime = pzpr.util.currentTime() - savedTime;
 			if (this.pausetime) {
 				this.pausetime = this.starttime;
@@ -267,8 +269,10 @@
 		},
 		hardResetTime: function() {
 			this.unpause();
-			delete ui.savedTime;
-			ui.disableAutosave = true;
+			if (ui) {
+				delete ui.savedTime;
+				ui.disableAutosave = true;
+			}
 		},
 
 		//---------------------------------------------------------------------------
@@ -467,7 +471,9 @@
 					postCanvasReady(puzzle);
 				}
 
-				puzzle.resetTime();
+				if (puzzle.instancetype === "player") {
+					puzzle.resetTime();
+				}
 
 				if (!!callback) {
 					callback(puzzle);
