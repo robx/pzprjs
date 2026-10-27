@@ -126,7 +126,7 @@ ui.toolarea = {
 		var hasTimer = ui.puzzle.playeronly && ui.menuconfig.get("timer");
 		getEL("separator2").style.display =
 			hasTimer && ui.menuconfig.get("toolarea") ? "" : "none";
-		getEL("timerpanel").style.display = hasTimer ? "block" : "none";
+		getEL("timerpanel").style.display = hasTimer ? "flex" : "none";
 		getEL("pausedesc").innerText = ui.i18n(
 			pzpr.env.OS.mobile ? "pause.desc.mobile" : "pause.desc"
 		);

@@ -653,7 +653,7 @@ form#fileform2 {
 
 div#timertext {
   display: inline-block;
-  padding: 2pt 0;
+  padding: 3px 0;
 }
 body.paused div#timertext {
   animation: pulse 2s ease-in-out infinite;
@@ -669,7 +669,6 @@ body.paused div#btnarea {
 }
 button#pausebtn,
 button#resumebtn {
-  float: right;
   margin: 0;
 }
 button#resettimerbtn {
