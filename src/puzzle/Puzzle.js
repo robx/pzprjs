@@ -233,7 +233,7 @@
 		// owner.getTime()        開始からの時間をミリ秒単位で取得する
 		//---------------------------------------------------------------------------
 		resetTime: function() {
-			var savedTime = ui.savedTime || 0;
+			var savedTime = ui ? ui.savedTime || 0 : 0;
 			this.starttime = pzpr.util.currentTime() - savedTime;
 		},
 		getTime: function() {
@@ -264,8 +264,10 @@
 		},
 		hardResetTime: function() {
 			this.unpause();
-			delete ui.savedTime;
-			ui.disableAutosave = true;
+			if (ui) {
+				delete ui.savedTime;
+				ui.disableAutosave = true;
+			}
 		},
 
 		//---------------------------------------------------------------------------
