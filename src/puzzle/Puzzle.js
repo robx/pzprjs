@@ -19,7 +19,9 @@
 		this.editmode = !this.playeronly; // 問題配置モード
 		this.playmode = !this.editmode; // 回答モード
 
-		this.resetTime();
+		if (modeid === 1) {
+			this.resetTime();
+		}
 
 		this.preInitCanvasInfo = {
 			type: option.graphic || "",
