@@ -143,7 +143,9 @@
 		enabled: true
 	},
 	AreaRoomGraph: {
-		enabled: true,
+		enabled: true
+	},
+	"AreaRoomGraph@nanro": {
 		relation: {
 			"cell.qnum": "info",
 			"cell.anum": "info",
@@ -358,6 +360,33 @@
 
 		checkRoomSequence: function() {
 			// TODO sequential numbers
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var area = rooms[id];
+				var cells = area.clist.filter(function(c) {
+					return c.isNum();
+				});
+				Array.prototype.sort.call(cells, function(c1, c2) {
+					return c1.id - c2.id;
+				});
+
+				var valid = true;
+				for (var c = 0; valid && c < cells.length; c++) {
+					if (cells[c].getNum() !== c + 1) {
+						valid = false;
+					}
+				}
+
+				if (valid) {
+					continue;
+				}
+
+				this.failcode.add("nmNoSequence");
+				if (this.checkOnly) {
+					break;
+				}
+				area.clist.seterr(1);
+			}
 		}
 	}
 });
