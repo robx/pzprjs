@@ -7,7 +7,7 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["nanro", "falling"], {
+})(["nanro"], {
 	//---------------------------------------------------------
 	// マウス入力系
 	MouseEvent: {
@@ -88,12 +88,6 @@
 			cell.draw();
 		}
 	},
-	"MouseEvent@falling": {
-		inputModes: {
-			edit: ["number", "clear"],
-			play: ["number", "numexist", "numblank", "clear"]
-		}
-	},
 
 	//---------------------------------------------------------
 	// キーボード入力系
@@ -133,19 +127,12 @@
 
 		hasborder: 1
 	},
-	"BoardExec@falling": {
-		allowedOperations: function(isplaymode) {
-			return isplaymode ? 0 : this.ALLOWALL;
-		}
-	},
 
 	AreaNumberGraph: {
 		enabled: true
 	},
 	AreaRoomGraph: {
-		enabled: true
-	},
-	"AreaRoomGraph@nanro": {
+		enabled: true,
 		relation: {
 			"cell.qnum": "info",
 			"cell.anum": "info",
@@ -252,7 +239,7 @@
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	"AnsCheck@nanro": {
+	AnsCheck: {
 		checklist: [
 			"check2x2NumberCell",
 			"checkSideAreaNumber",
@@ -323,65 +310,6 @@
 				}
 
 				this.failcode.add(code);
-				if (this.checkOnly) {
-					break;
-				}
-				area.clist.seterr(1);
-			}
-		}
-	},
-	"AnsCheck@falling": {
-		checklist: [
-			"checkRoomHasEmpty",
-			"checkAdjacentDiffNumber",
-			"checkAdjacentEmpty",
-			"checkRoomSequence",
-			"checkConnectNumber"
-		],
-
-		checkAdjacentEmpty: function() {
-			this.checkSideCell(function(cell1, cell2) {
-				return !cell1.isNum() && !cell2.isNum();
-			}, "csAdjacent");
-		},
-
-		checkRoomHasEmpty: function() {
-			this.checkAllBlock(
-				this.board.roommgr,
-				function(cell) {
-					return !cell.isNum();
-				},
-				function(w, h, a, n) {
-					return a > 0;
-				},
-				"bkNoShade"
-			);
-		},
-
-		checkRoomSequence: function() {
-			// TODO sequential numbers
-			var rooms = this.board.roommgr.components;
-			for (var id = 0; id < rooms.length; id++) {
-				var area = rooms[id];
-				var cells = area.clist.filter(function(c) {
-					return c.isNum();
-				});
-				Array.prototype.sort.call(cells, function(c1, c2) {
-					return c1.id - c2.id;
-				});
-
-				var valid = true;
-				for (var c = 0; valid && c < cells.length; c++) {
-					if (cells[c].getNum() !== c + 1) {
-						valid = false;
-					}
-				}
-
-				if (valid) {
-					continue;
-				}
-
-				this.failcode.add("nmNoSequence");
 				if (this.checkOnly) {
 					break;
 				}

@@ -168,7 +168,7 @@
 			evolmino: [0, 0, "シンカミノ", "Evolmino"],
 			factors: [0, 0, "因子の部屋", "Rooms of Factors"],
 			fakearrow: [0, 0, "フェイクアロー", "Fake Arrow", "nagare"],
-			falling: [0, 0, "Falling Letters", "Falling Letters", "nanro"],
+			falling: [0, 0, "Falling Letters", "Falling Letters", "doppelblock"],
 			familyphoto: [0, 0, "家族写真", "Family Photo"],
 			fillmat: [1, 0, "フィルマット", "Fillmat", "fillmat"],
 			fillomino: [

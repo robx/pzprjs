@@ -7,10 +7,10 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["doppelblock"], {
+})(["doppelblock", "falling"], {
 	//---------------------------------------------------------
 	// マウス入力系
-	MouseEvent: {
+	"MouseEvent@doppelblock": {
 		inputModes: {
 			edit: ["number"],
 			play: ["number", "objblank", "shade"]
@@ -46,8 +46,17 @@
 			} else {
 				this.inputqnum_main(excell);
 			}
+		}
+	},
+	"MouseEvent@falling": {
+		inputModes: {
+			edit: ["border", "number"],
+			play: ["number", "objblank", "shade"]
 		},
-
+		autoedit_func: "areanum"
+		// TODO auto mode should be cursor first
+	},
+	MouseEvent: {
 		getNewNumber: function(cell, val) {
 			var bound = this.puzzle.editmode ? -1 : -3;
 			if (this.btn === "left") {
@@ -208,19 +217,36 @@
 		}
 	},
 
-	Board: {
+	"Board@doppelblock": {
 		cols: 5,
 		rows: 5,
 		hasexcell: 1
 	},
+	"Board@falling": {
+		cols: 8,
+		rows: 8,
 
-	BoardExec: {
+		hasborder: 1
+	},
+
+	"BoardExec@doppelblock": {
 		adjustBoardData: function(key, d) {
 			this.adjustExCellTopLeft_1(key, d);
 		},
 		adjustBoardData2: function(key, d) {
 			this.adjustExCellTopLeft_2(key, d);
 		}
+	},
+	"BoardExec@falling": {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? 0 : this.ALLOWALL;
+		}
+	},
+	"AreaNumberGraph@falling": {
+		enabled: true
+	},
+	"AreaRoomGraph@falling": {
+		enabled: true
 	},
 
 	//---------------------------------------------------------
@@ -264,6 +290,16 @@
 			) {
 				this.encodeNumber16();
 			}
+		}
+	},
+	"Encode@falling": {
+		decodePzpr: function(type) {
+			this.decodeBorder();
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeBorder();
+			this.encodeNumber16();
 		}
 	},
 	//---------------------------------------------------------
@@ -326,10 +362,24 @@
 			});
 		}
 	},
+	"FileIO@falling": {
+		decodeData: function() {
+			this.decodeBorderQues();
+			this.decodeCellQnum();
+			// TODO anumsub does not include qans shaded
+			this.decodeCellAnumsub();
+		},
+		encodeData: function() {
+			this.encodeBorderQues();
+			this.encodeCellQnum();
+			// TODO anumsub does not include qans shaded
+			this.encodeCellAnumsub();
+		}
+	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
+	"AnsCheck@doppelblock": {
 		checklist: [
 			"checkDifferentNumberInLine",
 			"checkTwoBlocks",
@@ -400,6 +450,64 @@
 				return false;
 			} else {
 				return true;
+			}
+		}
+	},
+	"AnsCheck@falling": {
+		checklist: [
+			"checkRoomHasEmpty",
+			"checkAdjacentDiffNumber",
+			"checkAdjacentEmpty",
+			"checkRoomSequence",
+			"checkConnectNumber"
+		],
+
+		checkAdjacentEmpty: function() {
+			this.checkSideCell(function(cell1, cell2) {
+				return !cell1.isNum() && !cell2.isNum();
+			}, "csAdjacent");
+		},
+
+		checkRoomHasEmpty: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return !cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a > 0;
+				},
+				"bkNoShade"
+			);
+		},
+
+		checkRoomSequence: function() {
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var area = rooms[id];
+				var cells = area.clist.filter(function(c) {
+					return c.isNum();
+				});
+				Array.prototype.sort.call(cells, function(c1, c2) {
+					return c1.id - c2.id;
+				});
+
+				var valid = true;
+				for (var c = 0; valid && c < cells.length; c++) {
+					if (cells[c].getNum() !== c + 1) {
+						valid = false;
+					}
+				}
+
+				if (valid) {
+					continue;
+				}
+
+				this.failcode.add("nmNoSequence");
+				if (this.checkOnly) {
+					break;
+				}
+				area.clist.seterr(1);
 			}
 		}
 	}
