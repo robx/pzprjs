@@ -49,12 +49,13 @@
 		}
 	},
 	"MouseEvent@falling": {
+		RBShadeCell: true,
 		inputModes: {
 			edit: ["border", "number"],
 			play: ["number", "objblank", "shade"]
 		},
-		autoedit_func: "areanum"
-		// TODO auto mode should be cursor first
+		autoedit_func: "areanum",
+		autoplay_func: "qnum"
 	},
 	MouseEvent: {
 		getNewNumber: function(cell, val) {
@@ -205,6 +206,11 @@
 			this.clrSnum();
 		}
 	},
+	"Cell@falling": {
+		maxnum: function() {
+			return Math.max(1, this.room.clist.length - 1);
+		}
+	},
 
 	ExCell: {
 		disInputHatena: true,
@@ -242,7 +248,7 @@
 			return isplaymode ? 0 : this.ALLOWALL;
 		}
 	},
-	"AreaNumberGraph@falling": {
+	"AreaUnshadeGraph@falling": {
 		enabled: true
 	},
 	"AreaRoomGraph@falling": {
@@ -268,6 +274,10 @@
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
 			this.drawNumbersExCell();
+
+			if (this.pid === "falling") {
+				this.drawBoxBorders(false);
+			}
 
 			this.drawChassis();
 			this.drawCursor(true);
@@ -313,25 +323,10 @@
 
 		decodeCellExCellQnumAnumsub: function() {
 			this.decodeCellExCell(function(obj, ca) {
-				if (ca === ".") {
-					return;
-				} else if (obj.group === "excell") {
+				if (obj.group === "excell" && ca !== ".") {
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
-					if (ca[0] === "q") {
-						obj.qnum = +ca.substr(1);
-						return;
-					}
-					if (ca.indexOf("[") >= 0) {
-						ca = this.setCellSnum(obj, ca);
-					}
-					if (ca === "+") {
-						obj.qsub = 1;
-					} else if (ca === "-") {
-						obj.qans = 1;
-					} else if (ca !== ".") {
-						obj.anum = +ca;
-					}
+					this.decode_func(obj, ca);
 				}
 			});
 		},
@@ -342,38 +337,58 @@
 						return "" + obj.qnum + " ";
 					}
 				} else if (obj.group === "cell") {
-					if (obj.qnum !== -1) {
-						return "q" + obj.qnum + " ";
-					}
-					var ca = ".";
-					if (obj.anum !== -1) {
-						ca = "" + obj.anum;
-					} else if (obj.qsub === 1) {
-						ca = "+";
-					} else if (obj.qans === 1) {
-						ca = "-";
-					}
-					if (obj.anum === -1) {
-						ca += this.getCellSnum(obj);
-					}
-					return ca + " ";
+					return this.encode_func(obj);
 				}
 				return ". ";
 			});
+		},
+
+		decode_func: function(obj, ca) {
+			if (ca === ".") {
+				return;
+			}
+			if (ca[0] === "q") {
+				obj.qnum = +ca.substr(1);
+				return;
+			}
+			if (ca.indexOf("[") >= 0) {
+				ca = this.setCellSnum(obj, ca);
+			}
+			if (ca === "+") {
+				obj.qsub = 1;
+			} else if (ca === "-") {
+				obj.qans = 1;
+			} else if (ca !== ".") {
+				obj.anum = +ca;
+			}
+		},
+
+		encode_func: function(obj) {
+			if (obj.qnum !== -1) {
+				return "q" + obj.qnum + " ";
+			}
+			var ca = ".";
+			if (obj.anum !== -1) {
+				ca = "" + obj.anum;
+			} else if (obj.qsub === 1) {
+				ca = "+";
+			} else if (obj.qans === 1) {
+				ca = "-";
+			}
+			if (obj.anum === -1) {
+				ca += this.getCellSnum(obj);
+			}
+			return ca + " ";
 		}
 	},
 	"FileIO@falling": {
 		decodeData: function() {
 			this.decodeBorderQues();
-			this.decodeCellQnum();
-			// TODO anumsub does not include qans shaded
-			this.decodeCellAnumsub();
+			this.decodeCell(this.decode_func);
 		},
 		encodeData: function() {
 			this.encodeBorderQues();
-			this.encodeCellQnum();
-			// TODO anumsub does not include qans shaded
-			this.encodeCellAnumsub();
+			this.encodeCell(this.encode_func);
 		}
 	},
 
@@ -457,15 +472,16 @@
 		checklist: [
 			"checkRoomHasEmpty",
 			"checkAdjacentDiffNumber",
-			"checkAdjacentEmpty",
+			"checkAdjacentShadeCell",
 			"checkRoomSequence",
-			"checkConnectNumber"
+			"checkConnectUnshadeRB",
+			"checkNoNumCell+"
 		],
 
-		checkAdjacentEmpty: function() {
-			this.checkSideCell(function(cell1, cell2) {
-				return !cell1.isNum() && !cell2.isNum();
-			}, "csAdjacent");
+		checkNoNumCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.ques === 0 && cell.noNum();
+			}, "ceNoNum");
 		},
 
 		checkRoomHasEmpty: function() {
