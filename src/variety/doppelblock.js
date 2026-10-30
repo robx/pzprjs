@@ -473,8 +473,8 @@
 			"checkRoomHasEmpty",
 			"checkAdjacentDiffNumber",
 			"checkAdjacentShadeCell",
-			"checkRoomSequence",
 			"checkConnectUnshadeRB",
+			"checkRoomSequence",
 			"checkNoNumCell+"
 		],
 
