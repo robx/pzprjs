@@ -882,6 +882,7 @@
     "nmNoMove.bonsan": "A circle doesn't move.",
     "nmNoMove.rectslider": "A shaded cell doesn't move.",
     "nmNoOrbit.orbital": "A black circle is not inside a loop.",
+    "nmNoSequence.falling": "A region does not contain a sequence from 1 to N.",
     "nmNoSequence.numcity": "A city does not contain one district of every number from 1 to N.",
     "nmNoSideShade.tasquare": "No shaded cells are adjacent to square marks.",
     "nmNotConsecNeighbors.ripple": "A number is not the neighbor of its consecutive numbers.",

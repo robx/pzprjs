@@ -7,10 +7,10 @@
 	} else {
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
-})(["doppelblock"], {
+})(["doppelblock", "falling"], {
 	//---------------------------------------------------------
 	// マウス入力系
-	MouseEvent: {
+	"MouseEvent@doppelblock": {
 		inputModes: {
 			edit: ["number"],
 			play: ["number", "objblank", "shade"]
@@ -46,8 +46,18 @@
 			} else {
 				this.inputqnum_main(excell);
 			}
+		}
+	},
+	"MouseEvent@falling": {
+		RBShadeCell: true,
+		inputModes: {
+			edit: ["border", "number"],
+			play: ["number", "objblank", "shade"]
 		},
-
+		autoedit_func: "areanum",
+		autoplay_func: "qnum"
+	},
+	MouseEvent: {
 		getNewNumber: function(cell, val) {
 			var bound = this.puzzle.editmode ? -1 : -3;
 			if (this.btn === "left") {
@@ -196,6 +206,11 @@
 			this.clrSnum();
 		}
 	},
+	"Cell@falling": {
+		maxnum: function() {
+			return Math.max(1, this.room.clist.length - 1);
+		}
+	},
 
 	ExCell: {
 		disInputHatena: true,
@@ -208,19 +223,36 @@
 		}
 	},
 
-	Board: {
+	"Board@doppelblock": {
 		cols: 5,
 		rows: 5,
 		hasexcell: 1
 	},
+	"Board@falling": {
+		cols: 8,
+		rows: 8,
 
-	BoardExec: {
+		hasborder: 1
+	},
+
+	"BoardExec@doppelblock": {
 		adjustBoardData: function(key, d) {
 			this.adjustExCellTopLeft_1(key, d);
 		},
 		adjustBoardData2: function(key, d) {
 			this.adjustExCellTopLeft_2(key, d);
 		}
+	},
+	"BoardExec@falling": {
+		allowedOperations: function(isplaymode) {
+			return isplaymode ? 0 : this.ALLOWALL;
+		}
+	},
+	"AreaUnshadeGraph@falling": {
+		enabled: true
+	},
+	"AreaRoomGraph@falling": {
+		enabled: true
 	},
 
 	//---------------------------------------------------------
@@ -242,6 +274,10 @@
 			this.drawAnsNumbers();
 			this.drawQuesNumbers();
 			this.drawNumbersExCell();
+
+			if (this.pid === "falling") {
+				this.drawBoxBorders(false);
+			}
 
 			this.drawChassis();
 			this.drawCursor(true);
@@ -266,6 +302,16 @@
 			}
 		}
 	},
+	"Encode@falling": {
+		decodePzpr: function(type) {
+			this.decodeBorder();
+			this.decodeNumber16();
+		},
+		encodePzpr: function(type) {
+			this.encodeBorder();
+			this.encodeNumber16();
+		}
+	},
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
@@ -277,25 +323,10 @@
 
 		decodeCellExCellQnumAnumsub: function() {
 			this.decodeCellExCell(function(obj, ca) {
-				if (ca === ".") {
-					return;
-				} else if (obj.group === "excell") {
+				if (obj.group === "excell" && ca !== ".") {
 					obj.qnum = +ca;
 				} else if (obj.group === "cell") {
-					if (ca[0] === "q") {
-						obj.qnum = +ca.substr(1);
-						return;
-					}
-					if (ca.indexOf("[") >= 0) {
-						ca = this.setCellSnum(obj, ca);
-					}
-					if (ca === "+") {
-						obj.qsub = 1;
-					} else if (ca === "-") {
-						obj.qans = 1;
-					} else if (ca !== ".") {
-						obj.anum = +ca;
-					}
+					this.decode_func(obj, ca);
 				}
 			});
 		},
@@ -306,30 +337,64 @@
 						return "" + obj.qnum + " ";
 					}
 				} else if (obj.group === "cell") {
-					if (obj.qnum !== -1) {
-						return "q" + obj.qnum + " ";
-					}
-					var ca = ".";
-					if (obj.anum !== -1) {
-						ca = "" + obj.anum;
-					} else if (obj.qsub === 1) {
-						ca = "+";
-					} else if (obj.qans === 1) {
-						ca = "-";
-					}
-					if (obj.anum === -1) {
-						ca += this.getCellSnum(obj);
-					}
-					return ca + " ";
+					return this.encode_func(obj);
 				}
 				return ". ";
 			});
+		},
+
+		decode_func: function(obj, ca) {
+			if (ca === ".") {
+				return;
+			}
+			if (ca[0] === "q") {
+				obj.qnum = +ca.substr(1);
+				return;
+			}
+			if (ca.indexOf("[") >= 0) {
+				ca = this.setCellSnum(obj, ca);
+			}
+			if (ca === "+") {
+				obj.qsub = 1;
+			} else if (ca === "-") {
+				obj.qans = 1;
+			} else if (ca !== ".") {
+				obj.anum = +ca;
+			}
+		},
+
+		encode_func: function(obj) {
+			if (obj.qnum !== -1) {
+				return "q" + obj.qnum + " ";
+			}
+			var ca = ".";
+			if (obj.anum !== -1) {
+				ca = "" + obj.anum;
+			} else if (obj.qsub === 1) {
+				ca = "+";
+			} else if (obj.qans === 1) {
+				ca = "-";
+			}
+			if (obj.anum === -1) {
+				ca += this.getCellSnum(obj);
+			}
+			return ca + " ";
+		}
+	},
+	"FileIO@falling": {
+		decodeData: function() {
+			this.decodeBorderQues();
+			this.decodeCell(this.decode_func);
+		},
+		encodeData: function() {
+			this.encodeBorderQues();
+			this.encodeCell(this.encode_func);
 		}
 	},
 
 	//---------------------------------------------------------
 	// 正解判定処理実行部
-	AnsCheck: {
+	"AnsCheck@doppelblock": {
 		checklist: [
 			"checkDifferentNumberInLine",
 			"checkTwoBlocks",
@@ -400,6 +465,65 @@
 				return false;
 			} else {
 				return true;
+			}
+		}
+	},
+	"AnsCheck@falling": {
+		checklist: [
+			"checkRoomHasEmpty",
+			"checkAdjacentDiffNumber",
+			"checkAdjacentShadeCell",
+			"checkConnectUnshadeRB",
+			"checkRoomSequence",
+			"checkNoNumCell+"
+		],
+
+		checkNoNumCell: function() {
+			this.checkAllCell(function(cell) {
+				return cell.ques === 0 && cell.noNum();
+			}, "ceNoNum");
+		},
+
+		checkRoomHasEmpty: function() {
+			this.checkAllBlock(
+				this.board.roommgr,
+				function(cell) {
+					return !cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a > 0;
+				},
+				"bkNoShade"
+			);
+		},
+
+		checkRoomSequence: function() {
+			var rooms = this.board.roommgr.components;
+			for (var id = 0; id < rooms.length; id++) {
+				var area = rooms[id];
+				var cells = area.clist.filter(function(c) {
+					return c.isNum();
+				});
+				Array.prototype.sort.call(cells, function(c1, c2) {
+					return c1.id - c2.id;
+				});
+
+				var valid = true;
+				for (var c = 0; valid && c < cells.length; c++) {
+					if (cells[c].getNum() !== c + 1) {
+						valid = false;
+					}
+				}
+
+				if (valid) {
+					continue;
+				}
+
+				this.failcode.add("nmNoSequence");
+				if (this.checkOnly) {
+					break;
+				}
+				area.clist.seterr(1);
 			}
 		}
 	}
