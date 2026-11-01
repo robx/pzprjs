@@ -600,3 +600,9 @@ urumi: |-
   2. Paths cannot turn left.
   3. A line segment after a turn must be shorter or have equal length to the line segment before the turn.
   4. A number indicates the length of the path starting from that cell. The length is equal to the amount of visited cells minus one.
+falling: |-
+  Place a number in some cells, and shade the rest of the cells.
+  1. Every outlined region contains at least one shaded cell.
+  2. Two shaded cells cannot be adjacent, and two identical numbers cannot be adjacent.
+  3. When reading the rows within a region from left to right and from top to bottom, the numbers should form an increasing sequence starting at 1.
+  4. All numbers form an orthogonally contiguous area.
