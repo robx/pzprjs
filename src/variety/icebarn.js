@@ -262,6 +262,7 @@
 		adjustBoardData: function(key, d) {
 			var bd = this.board;
 			this.adjustBorderArrow(key, d);
+			this.adjustBorderAuxDir(key, d);
 
 			this.posinfo_in = this.getAfterPos(key, d, bd.arrowin.getb());
 			this.posinfo_out = this.getAfterPos(key, d, bd.arrowout.getb());
