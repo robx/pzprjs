@@ -199,3 +199,74 @@ pzpr.variety.each(function(pid) {
 		});
 	});
 });
+
+describe("Directional aux marks on borders", function() {
+	[
+		"bdwalk",
+		"fakearrow",
+		"haisu",
+		"icebarn",
+		"icelom",
+		"icelom2",
+		"kaisu",
+		"nagare",
+		"recoil",
+		"remlen",
+		"slalom",
+		"trainstations",
+		"turnrun",
+		"vertigo"
+	].forEach(function(pid) {
+		it(pid + " turns and flips aux marks with the board", function() {
+			var puzzle = new pzpr.Puzzle().open(pid + "/4/4");
+			var bd = puzzle.board;
+			puzzle.setMode("play");
+			bd.getb(2, 1).setQsub(14); // right
+			bd.getb(1, 2).setQsub(11); // up
+
+			bd.operate("turnr");
+			assert.equal(bd.getb(7, 2).qsub, 12); // down
+			assert.equal(bd.getb(6, 1).qsub, 14); // right
+
+			bd.operate("flipx");
+			assert.equal(bd.getb(1, 2).qsub, 12); // down
+			assert.equal(bd.getb(2, 1).qsub, 13); // left
+
+			bd.operate("flipy");
+			assert.equal(bd.getb(1, 6).qsub, 11); // up
+			assert.equal(bd.getb(2, 7).qsub, 13); // left
+
+			bd.operate("turnl");
+			assert.equal(bd.getb(6, 7).qsub, 13); // left
+			assert.equal(bd.getb(7, 6).qsub, 12); // down
+
+			for (var i = 0; i < 4; i++) {
+				puzzle.undo();
+			}
+			assert.equal(bd.getb(2, 1).qsub, 14);
+			assert.equal(bd.getb(1, 2).qsub, 11);
+
+			for (i = 0; i < 4; i++) {
+				puzzle.redo();
+			}
+			assert.equal(bd.getb(6, 7).qsub, 13);
+			assert.equal(bd.getb(7, 6).qsub, 12);
+		});
+	});
+
+	it("bosanowa keeps number notes on borders", function() {
+		var puzzle = new pzpr.Puzzle().open("bosanowa/4/4");
+		var bd = puzzle.board;
+		puzzle.setMode("play");
+		bd.getb(2, 1).setQsub(11);
+		bd.getb(1, 2).setQsub(13);
+
+		bd.operate("turnr");
+		assert.equal(bd.getb(7, 2).qsub, 11);
+		assert.equal(bd.getb(6, 1).qsub, 13);
+
+		bd.operate("flipx");
+		assert.equal(bd.getb(1, 2).qsub, 11);
+		assert.equal(bd.getb(2, 1).qsub, 13);
+	});
+});

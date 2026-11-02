@@ -532,6 +532,11 @@
 	},
 	//---------------------------------------------------------
 	// 画像表示系
+	"BoardExec@remlen": {
+		adjustBoardData: function(key, d) {
+			this.adjustBorderAuxDir(key, d);
+		}
+	},
 	Graphic: {
 		irowake: true,
 

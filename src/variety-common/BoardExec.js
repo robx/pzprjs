@@ -13,6 +13,7 @@ pzpr.classmgr.makeCommon({
 		// bd.exec.adjustNumberArrow()  回転・反転開始前の矢印つき数字の調整
 		// bd.exec.adjustCellArrow()    回転・反転開始前の矢印セルの調整
 		// bd.exec.adjustBorderArrow()  回転・反転開始前の境界線にある矢印セル等の調整
+		// bd.exec.adjustBorderAuxDir() turn/flip the directional aux marks on borders
 		//------------------------------------------------------------------------------
 		adjustNumberArrow: function(key, d) {
 			this.adjustCellArrowField(key, d, "qdir");
@@ -51,6 +52,20 @@ pzpr.classmgr.makeCommon({
 					val = trans[border.qdir];
 					if (!!val) {
 						border.qdir = val;
+					}
+				}
+			}
+		},
+		adjustBorderAuxDir: function(key, d) {
+			if (key & this.TURNFLIP) {
+				var trans = this.getTranslateDir(key);
+				var blist = this.board.borderinside(d.x1, d.y1, d.x2, d.y2);
+				for (var i = 0; i < blist.length; i++) {
+					var border = blist[i],
+						val;
+					val = trans[border.qsub - 10];
+					if (!!val) {
+						border.qsub = val + 10;
 					}
 				}
 			}
