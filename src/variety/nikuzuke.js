@@ -16,6 +16,7 @@
 			if (this.mousestart || this.mousemove) {
 				this.inputLine();
 			}
+			// TODO diagonal line input
 			if (this.mouseend && this.notInputted()) {
 				this.mouseCell = null;
 				this.inputqnum();
@@ -64,7 +65,19 @@
 		}
 	},
 
-	// TODO BoardExec flip crosses
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			if (key & this.TURNFLIP) {
+				var clist = this.board.cross;
+				for (var i = 0; i < clist.length; i++) {
+					var cross = clist[i];
+					if (cross.ques === 1 || cross.ques === 2) {
+						cross.ques = 3 - cross.ques;
+					}
+				}
+			}
+		}
+	},
 
 	//---------------------------------------------------------
 	// 画像表示系
@@ -127,7 +140,7 @@
 	//---------------------------------------------------------
 	// URLエンコード/デコード処理
 	Encode: {
-		decodePzpr: function(type) {
+		decodePzpr: function() {
 			this.decodeBorder();
 			var bd = this.board;
 			this.genericDecodeNumber4(bd.cross.length, function(c, val) {
@@ -135,7 +148,7 @@
 			});
 			this.decodeNumber16();
 		},
-		encodePzpr: function(type) {
+		encodePzpr: function() {
 			this.encodeBorder();
 			var bd = this.board;
 			this.genericEncodeNumber4(bd.cross.length, function(c) {
