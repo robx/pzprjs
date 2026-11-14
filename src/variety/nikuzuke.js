@@ -37,6 +37,20 @@
 		hasdots: 1,
 		hascross: 1
 	},
+	Border: {
+		isBorder: function() {
+			return this.qans > 0;
+		},
+		isLine: function() {
+			return this.ques > 0;
+		},
+		setLine: function() {
+			this.setQues(1);
+		},
+		removeLine: function(id) {
+			this.setQues(0);
+		}
+	},
 
 	AreaRoomGraph: {
 		enabled: true
@@ -46,7 +60,7 @@
 			return this.piece.line;
 		},
 		setDot: function(val) {
-			this.piece.setLineVal(val);
+			this.piece.setQues(val);
 		}
 	},
 
@@ -55,8 +69,6 @@
 	//---------------------------------------------------------
 	// 画像表示系
 	Graphic: {
-		hideHatena: true,
-
 		gridcolor_type: "DLIGHT",
 
 		bordercolor_func: "qans",
@@ -87,7 +99,7 @@
 					py = cross.by * this.bh;
 
 				g.vid = "x_linea_" + cross.id;
-				if (cross.line & 1) {
+				if (cross.ques & 1) {
 					g.beginPath();
 					g.moveTo(px - this.bw, py - this.bh);
 					g.lineTo(px + this.bw, py + this.bh);
@@ -97,7 +109,7 @@
 				}
 
 				g.vid = "x_lineb_" + cross.id;
-				if (cross.line & 2) {
+				if (cross.ques & 2) {
 					g.beginPath();
 					g.moveTo(px - this.bw, py + this.bh);
 					g.lineTo(px + this.bw, py - this.bh);
@@ -116,11 +128,20 @@
 	// URLエンコード/デコード処理
 	Encode: {
 		decodePzpr: function(type) {
-			// TODO border
+			this.decodeBorder();
+			var bd = this.board;
+			this.genericDecodeNumber4(bd.cross.length, function(c, val) {
+				bd.cross[c].ques = Math.max(0, val);
+			});
 			this.decodeNumber16();
 		},
 		encodePzpr: function(type) {
-			// TODO border
+			this.encodeBorder();
+			var bd = this.board;
+			this.genericEncodeNumber4(bd.cross.length, function(c) {
+				var num = bd.cross[c].ques;
+				return num > 0 ? num : -1;
+			});
 			this.encodeNumber16();
 		}
 	},
