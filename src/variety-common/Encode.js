@@ -14,47 +14,50 @@ pzpr.classmgr.makeCommon({
 		// enc.decode4Cell()  quesが0～4までの場合、デコードする
 		// enc.encode4Cell()  quesが0～4までの場合、問題部をエンコードする
 		//---------------------------------------------------------------------------
-		decode4Cell: function() {
+		genericDecodeNumber4: function(length, set_func) {
 			var c = 0,
 				i = 0,
-				bstr = this.outbstr,
-				bd = this.board;
+				bstr = this.outbstr;
 			for (i = 0; i < bstr.length; i++) {
-				var cell = bd.cell[c],
-					ca = bstr.charAt(i);
+				var ca = bstr.charAt(i);
 				if (this.include(ca, "0", "4")) {
-					cell.qnum = parseInt(ca, 16);
+					set_func(c, parseInt(ca, 16));
 				} else if (this.include(ca, "5", "9")) {
-					cell.qnum = parseInt(ca, 16) - 5;
+					set_func(c, parseInt(ca, 16) - 5);
 					c++;
 				} else if (this.include(ca, "a", "e")) {
-					cell.qnum = parseInt(ca, 16) - 10;
+					set_func(c, parseInt(ca, 16) - 10);
 					c += 2;
 				} else if (this.include(ca, "g", "z")) {
 					c += parseInt(ca, 36) - 16;
 				} else if (ca === ".") {
-					cell.qnum = -2;
+					set_func(c, -2);
 				}
 
 				c++;
-				if (!bd.cell[c]) {
+				if (c >= length) {
 					break;
 				}
 			}
 			this.outbstr = bstr.substr(i + 1);
 		},
-		encode4Cell: function() {
+		decode4Cell: function() {
+			var bd = this.board;
+			this.genericDecodeNumber4(bd.cell.length, function(c, val) {
+				bd.cell[c].qnum = val;
+			});
+		},
+		genericEncodeNumber4: function(length, get_func) {
 			var count = 0,
-				cm = "",
-				bd = this.board;
-			for (var c = 0; c < bd.cell.length; c++) {
+				cm = "";
+			for (var c = 0; c < length; c++) {
 				var pstr = "",
-					qn = bd.cell[c].qnum;
+					qn = get_func(c);
 
 				if (qn >= 0) {
-					if (!!bd.cell[c + 1] && bd.cell[c + 1].qnum !== -1) {
+					if (c < length - 1 && get_func(c + 1) !== -1) {
 						pstr = "" + qn.toString(16);
-					} else if (!!bd.cell[c + 2] && bd.cell[c + 2].qnum !== -1) {
+					} else if (c < length - 2 && get_func(c + 2) !== -1) {
 						pstr = "" + (5 + qn).toString(16);
 						c++;
 					} else {
@@ -79,6 +82,12 @@ pzpr.classmgr.makeCommon({
 			}
 
 			this.outbstr += cm;
+		},
+		encode4Cell: function() {
+			var bd = this.board;
+			this.genericEncodeNumber4(bd.cell.length, function(c) {
+				return bd.cell[c].qnum;
+			});
 		},
 
 		//---------------------------------------------------------------------------
@@ -151,70 +160,16 @@ pzpr.classmgr.makeCommon({
 		// enc.encode4Cross()  quesが0～4までの場合、問題部をエンコードする
 		//---------------------------------------------------------------------------
 		decode4Cross: function() {
-			var c = 0,
-				i = 0,
-				bstr = this.outbstr,
-				bd = this.board;
-			for (i = 0; i < bstr.length; i++) {
-				var cross = bd.cross[c],
-					ca = bstr.charAt(i);
-				if (this.include(ca, "0", "4")) {
-					cross.qnum = parseInt(ca, 16);
-				} else if (this.include(ca, "5", "9")) {
-					cross.qnum = parseInt(ca, 16) - 5;
-					c++;
-				} else if (this.include(ca, "a", "e")) {
-					cross.qnum = parseInt(ca, 16) - 10;
-					c += 2;
-				} else if (this.include(ca, "g", "z")) {
-					c += parseInt(ca, 36) - 16;
-				} else if (ca === ".") {
-					cross.qnum = -2;
-				}
-
-				c++;
-				if (!bd.cross[c]) {
-					break;
-				}
-			}
-			this.outbstr = bstr.substr(i + 1);
+			var bd = this.board;
+			this.genericDecodeNumber4(bd.cross.length, function(c, val) {
+				bd.cross[c].qnum = val;
+			});
 		},
 		encode4Cross: function() {
-			var count = 0,
-				cm = "",
-				bd = this.board;
-			for (var c = 0; c < bd.cross.length; c++) {
-				var pstr = "",
-					qn = bd.cross[c].qnum;
-
-				if (qn >= 0) {
-					if (!!bd.cross[c + 1] && bd.cross[c + 1].qnum !== -1) {
-						pstr = "" + qn.toString(16);
-					} else if (!!bd.cross[c + 2] && bd.cross[c + 2].qnum !== -1) {
-						pstr = "" + (5 + qn).toString(16);
-						c++;
-					} else {
-						pstr = "" + (10 + qn).toString(16);
-						c += 2;
-					}
-				} else if (qn === -2) {
-					pstr = ".";
-				} else {
-					count++;
-				}
-
-				if (count === 0) {
-					cm += pstr;
-				} else if (pstr || count === 20) {
-					cm += (count + 15).toString(36) + pstr;
-					count = 0;
-				}
-			}
-			if (count > 0) {
-				cm += (count + 15).toString(36);
-			}
-
-			this.outbstr += cm;
+			var bd = this.board;
+			this.genericEncodeNumber4(bd.cross.length, function(c) {
+				return bd.cross[c].qnum;
+			});
 		},
 
 		//---------------------------------------------------------------------------
