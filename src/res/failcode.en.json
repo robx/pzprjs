@@ -986,7 +986,6 @@
     "rmDeadend.scrin": "There is a dead-end rectangle.",
     "rmIsolated.scrin": "There is an isolated rectangle.",
     "rmRectUnshade.scrin": "A rectangle is not part of the solution.",
-    "routeLenLoop": "The route does not contain a loop.",
     "routeIgnoreCP.nurimaze": "There is a circle out of the shortest route from S to G.",
     "routePassDeadEnd.nurimaze": "There is a triangle on the shortest route from S to G.",
     "segAlternate": "Two connected segments don't have a length difference of exactly 1.",
