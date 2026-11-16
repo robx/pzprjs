@@ -968,7 +968,7 @@
     "bk2x2": "ブロックが2x2の領域を含んでいます。",
     "nmArrowGt": "",
     "cuGt3.sansaroad": "",
-    "cePluralLine.bunnyhop": "",
+    "cePluralLine.bunnyhop": "一つのマスに複数の線が引かれています。",
     "bkMissNum.jatahoku": "ブロックに入っていない数字があります。",
     "ceTapaNe.jatahoku": "グレーのヒントと周囲の数字マスのつながり方が一致していません。",
     "nm2x2.jatahoku": "数字の入るマスが2×2のカタマリになっています。",
@@ -991,5 +991,9 @@
     "bkSameTouch.gravel": "同じ大きさの正方形が隣り合っています。",
     "bkStarGt.seiza": "エリアに星が2つ以上あります。",
     "bkStarLt.seiza": "エリアに星がありません。",
-    "bsEqShade.korokoro": "隣り合う領域に入る●の数が同じです。"
+    "bsEqShade.korokoro": "隣り合う領域に入る●の数が同じです。",
+    "arHatenaNe.lring": "？から出ている二つの線分の差が1ではありません。",
+    "ceNoMouth.mrokmrno": "口がない顔が配置されています。",
+    "ceWrongSmile.mrokmrno": "「NO」の横に🙂があります。",
+    "ceWrongFrown.mrokmrno": "「OK」の隣に🙁があります。"
 }
