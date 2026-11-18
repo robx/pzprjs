@@ -6,10 +6,12 @@
 		pzpr.classmgr.makeCustom(pidlist, classbase);
 	}
 })(["uto"], {
-	// Ques 0: None, or wildcard
-	// Ques 1: U
-	// Ques 2: O
-	// Ques 3: T
+	/*
+	 * Ques 0: None, or wildcard
+	 * Ques 1: U
+	 * Ques 2: O
+	 * Ques 3: T
+	 */
 
 	MouseEvent: {
 		inputModes: {
@@ -97,7 +99,53 @@
 		}
 	},
 	CellList: {
-		singleQnumCell: true
+		singleQnumCell: true,
+
+		getRegionType: function() {
+			var bd = this.board;
+			var d = this.getRectSize();
+
+			/* Detect O-shape */
+			if (d.rows * d.cols === this.length) {
+				return [this.length, -1];
+			}
+
+			var set = new Set();
+			this.each(function(cell) {
+				set.add(cell);
+			});
+
+			var topleft = set.has(bd.getc(d.x1, d.y1)),
+				topright = set.has(bd.getc(d.x2, d.y1)),
+				botleft = set.has(bd.getc(d.x1, d.y2)),
+				botright = set.has(bd.getc(d.x2, d.y2));
+
+			/* Detect U-shape */
+			if (topleft && topright && botleft && botright) {
+				var missing = bd
+					.cellinside(d.x1, d.y1, d.x2, d.y2)
+					.filter(function(cell) {
+						return !set.has(cell);
+					});
+
+				var dmiss = missing.getRectSize();
+
+				if (
+					dmiss.rows * dmiss.cols === missing.length &&
+					(dmiss.x1 === d.x1 ||
+						dmiss.x2 === d.x2 ||
+						dmiss.y1 === d.y1 ||
+						dmiss.y2 === d.y2)
+				) {
+					return [1, d.rows * d.cols, missing.length];
+				}
+				return [0, -1, -1];
+			}
+
+			// TODO find shape 3
+
+			return [0, -1, -1];
+		}
 	},
 
 	Border: {
@@ -128,7 +176,14 @@
 		rows: 8
 	},
 	AreaRoomGraph: {
-		enabled: true
+		enabled: true,
+
+		setExtraData: function(component) {
+			var clist = (component.clist = new this.klass.CellList(
+				component.getnodeobjs()
+			));
+			component.type = clist.getRegionType();
+		}
 	},
 
 	//---------------------------------------------------------
@@ -313,11 +368,34 @@
 	},
 
 	AnsCheck: {
-		checklist: ["checkNoNumber", "checkDoubleNumber", "checkBorderDeadend+"]
-		// TODO check shape matches 1
-		// TODO check shape matches 2
-		// TODO check shape matches 3
-		// TODO check wildcard matches one of three regions
-		// TODO check wildcard isn't in region 2 with two non-hatena numbers
+		checklist: [
+			"checkNoNumber",
+			"checkShape1",
+			"checkShape2",
+			"checkShape3",
+			"checkShapeNone",
+
+			// TODO check numbers match for region 1
+			// TODO check numbers match for region 2
+			// TODO check numbers match for region 3
+			"checkDoubleNumber",
+			"checkBorderDeadend+"
+		],
+
+		checkShapeNone: function() {
+			this.checkShapeGeneric(0, "bkUtoNone");
+		},
+		checkShape1: function() {
+			this.checkShapeGeneric(1, "bkUtoNe1");
+		},
+		checkShape2: function() {
+			this.checkShapeGeneric(1, "bkUtoNe2");
+		},
+		checkShape3: function() {
+			this.checkShapeGeneric(1, "bkUtoNe3");
+		},
+		checkShapeGeneric: function(type, code) {
+			// TODO implement
+		}
 	}
 });
