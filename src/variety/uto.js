@@ -101,27 +101,43 @@
 	CellList: {
 		singleQnumCell: true,
 
+		partition: function(func) {
+			var accept = new this.klass.CellList();
+			var reject = new this.klass.CellList();
+			this.each(function(item) {
+				if (func(item)) {
+					accept.add(item);
+				} else {
+					reject.add(item);
+				}
+			});
+			return [accept, reject];
+		},
+
 		getRegionType: function() {
 			var bd = this.board;
 			var d = this.getRectSize();
 
 			/* Detect O-shape */
-			if (d.rows * d.cols === this.length) {
-				return [this.length, -1];
+			if (d.rows * d.cols === d.cnt) {
+				return [2, this.length, -1];
 			}
 
 			var set = new Set();
 			this.each(function(cell) {
-				set.add(cell);
+				if (!cell.isnull) {
+					set.add(cell);
+				}
 			});
 
 			var topleft = set.has(bd.getc(d.x1, d.y1)),
 				topright = set.has(bd.getc(d.x2, d.y1)),
 				botleft = set.has(bd.getc(d.x1, d.y2)),
 				botright = set.has(bd.getc(d.x2, d.y2));
+			var corners = +topleft + +topright + +botleft + +botright;
 
 			/* Detect U-shape */
-			if (topleft && topright && botleft && botright) {
+			if (corners === 4) {
 				var missing = bd
 					.cellinside(d.x1, d.y1, d.x2, d.y2)
 					.filter(function(cell) {
@@ -140,9 +156,41 @@
 					return [1, d.rows * d.cols, missing.length];
 				}
 				return [0, -1, -1];
+			} else if (corners !== 2) {
+				return [0, -1, -1];
 			}
 
-			// TODO find shape 3
+			var lists = [];
+			if (topleft === topright && botleft === botright) {
+				/* T-shape points up or down */
+				var div_y = d.y1 - 1;
+				while (set.has(bd.getc(d.x1, div_y + 1)) === topleft) {
+					div_y += 2;
+				}
+
+				lists = this.partition(function(cell) {
+					return cell.by < div_y;
+				});
+			} else if (topleft === botleft && topright === botright) {
+				/* T-shape points left or right */
+				var div_x = d.x1 - 1;
+				while (set.has(bd.getc(div_x + 1, d.y1)) === topleft) {
+					div_x += 2;
+				}
+
+				lists = this.partition(function(cell) {
+					return cell.bx < div_x;
+				});
+			} else {
+				return [0, -1, -1];
+			}
+
+			var d1 = lists[0].getRectSize(),
+				d2 = lists[1].getRectSize();
+
+			if (d1.rows * d1.cols === d1.cnt && d2.rows * d2.cols === d2.cnt) {
+				return [3, d1.cnt, d2.cnt];
+			}
 
 			return [0, -1, -1];
 		}
@@ -389,13 +437,34 @@
 			this.checkShapeGeneric(1, "bkUtoNe1");
 		},
 		checkShape2: function() {
-			this.checkShapeGeneric(1, "bkUtoNe2");
+			this.checkShapeGeneric(2, "bkUtoNe2");
 		},
 		checkShape3: function() {
-			this.checkShapeGeneric(1, "bkUtoNe3");
+			this.checkShapeGeneric(3, "bkUtoNe3");
 		},
 		checkShapeGeneric: function(type, code) {
-			// TODO implement
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var numcell = room.clist.getQnumCell();
+
+				if (numcell.isnull) {
+					continue;
+				}
+				var actual = room.type[0];
+				if (actual !== type) {
+					continue;
+				}
+				if (actual > 0 && (numcell.ques === 0 || numcell.ques === actual)) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				room.clist.seterr(1);
+			}
 		}
 	}
 });
