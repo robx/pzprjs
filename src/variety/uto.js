@@ -423,9 +423,10 @@
 			"checkShape3",
 			"checkShapeNone",
 
-			// TODO check numbers match for region 1
-			// TODO check numbers match for region 2
-			// TODO check numbers match for region 3
+			"checkSize1",
+			"checkSize2",
+			"checkSize3",
+
 			"checkDoubleNumber",
 			"checkBorderDeadend+"
 		],
@@ -456,6 +457,61 @@
 					continue;
 				}
 				if (actual > 0 && (numcell.ques === 0 || numcell.ques === actual)) {
+					continue;
+				}
+
+				this.failcode.add(code);
+				if (this.checkOnly) {
+					break;
+				}
+				room.clist.seterr(1);
+			}
+		},
+
+		checkSize1: function() {
+			this.checkSizeGeneric(1, "bkUtoSizeNe1");
+		},
+		checkSize2: function() {
+			this.checkSizeGeneric(2, "bkUtoSizeNe2");
+		},
+		checkSize3: function() {
+			this.checkSizeGeneric(3, "bkUtoSizeNe3");
+		},
+		checkSizeGeneric: function(type, code) {
+			var rooms = this.board.roommgr.components;
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var numcell = room.clist.getQnumCell();
+
+				if (numcell.isnull) {
+					continue;
+				}
+				var actual = room.type[0];
+				if (actual !== type || (numcell.ques > 0 && numcell.ques !== actual)) {
+					continue;
+				}
+
+				var expect_a = Math.max(-1, numcell.qnum),
+					expect_b = Math.max(-1, numcell.qnum2),
+					actual_a = room.type[1],
+					actual_b = room.type[2];
+
+				if (expect_a === -1 && expect_b === -1) {
+					continue;
+				} else if (
+					expect_a === -1 &&
+					(expect_b === actual_a || expect_b === actual_b)
+				) {
+					continue;
+				} else if (
+					expect_b === -1 &&
+					(expect_a === actual_a || expect_a === actual_b)
+				) {
+					continue;
+				} else if (
+					(expect_a === actual_a && expect_b === actual_b) ||
+					(expect_a === actual_b && expect_b === actual_a)
+				) {
 					continue;
 				}
 
