@@ -355,7 +355,6 @@
 	},
 
 	Encode: {
-		// TODO one or both of these functions is wrong
 		decodePzpr: function() {
 			var bd = this.board;
 			this.genericDecodeNumber4(bd.cell.length, function(c, val) {
@@ -365,22 +364,9 @@
 				var cell = bd.cell[c >> 1];
 
 				if (c & 1) {
-					if (val === -2) {
-						if (cell.qnum === 0) {
-							cell.ques = 7;
-							cell.qnum = -1;
-						} else {
-							cell.ques = 0;
-						}
-					} else {
-						cell.qnum2 = val;
-						if (cell.qnum === -2) {
-							cell.qnum === -1;
-						}
-					}
+					cell.qnum2 = val;
 				} else {
 					cell.qnum = val;
-					cell.ques = 51;
 				}
 			});
 		},
@@ -476,7 +462,7 @@
 					continue;
 				}
 				var actual = room.type[0];
-				if ((actual > 0 && type === 0) || type === actual) {
+				if ((type === 0 && actual > 0) || (type > 0 && type === actual)) {
 					continue;
 				}
 
