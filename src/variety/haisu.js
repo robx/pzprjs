@@ -322,6 +322,7 @@
 		posinfo: {},
 		adjustBoardData: function(key, d) {
 			var bd = this.board;
+			this.adjustBorderAuxDir(key, d);
 
 			this.posinfo_start = this.getAfterPos(key, d, bd.startpos.getc());
 			this.posinfo_goal = this.getAfterPos(key, d, bd.goalpos.getc());

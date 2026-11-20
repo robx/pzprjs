@@ -381,19 +381,7 @@
 	BoardExec: {
 		adjustBoardData: function(key, d) {
 			this.adjustCellArrow(key, d);
-
-			if (key & this.TURNFLIP) {
-				var trans = this.getTranslateDir(key);
-				var blist = this.board.borderinside(d.x1, d.y1, d.x2, d.y2);
-				for (var i = 0; i < blist.length; i++) {
-					var border = blist[i],
-						val;
-					val = trans[border.qsub - 10];
-					if (!!val) {
-						border.qsub = val + 10;
-					}
-				}
-			}
+			this.adjustBorderAuxDir(key, d);
 		}
 	},
 
