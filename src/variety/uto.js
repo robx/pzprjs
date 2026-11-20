@@ -41,11 +41,25 @@
 	KeyEvent: {
 		enablemake: true,
 		keyinput: function(ca) {
-			var value = "qwe".indexOf(ca) + 1;
+			var value = "qwer".indexOf(ca);
+			var cell = this.cursor.getc();
 
-			if (value) {
-				var cell = this.cursor.getc();
+			if (value > 0) {
 				cell.setQues(cell.ques === value ? 0 : value);
+				cell.draw();
+			} else if (value === 0) {
+				cell.setQues(0);
+				if (cell.qnum === -2 && cell.qnum2 === -2) {
+					cell.setQnum(-1);
+					cell.setQnum2(-1);
+				} else {
+					if (cell.qnum === -1) {
+						cell.setQnum(-2);
+					}
+					if (cell.qnum2 === -1) {
+						cell.setQnum2(-2);
+					}
+				}
 				cell.draw();
 			} else {
 				this.inputnumber51(ca);
@@ -240,6 +254,9 @@
 		gridcolor_type: "SLIGHT",
 		bordercolor_func: "qans",
 
+		// TODO drawQuesNumbersOn51 conditionally has white letters
+		// TODO drawQuesNumbers must assume light background
+
 		paint: function() {
 			this.drawBGCells();
 
@@ -257,12 +274,17 @@
 			this.drawTarget();
 		},
 
+		// TODO draw square clues
+		// TODO add inset to 51 numbers on square clues
+
 		getQuesBorderColor: function(border) {
 			return border.isQuesBorder() ? this.quescolor : null;
 		},
 
 		getBGCellColor: function(cell) {
 			switch (cell.ques) {
+				case 0:
+					return cell.isNum() ? "#dddddd" : null;
 				case 1:
 					return "#ff8080";
 				case 2:
@@ -333,6 +355,7 @@
 	},
 
 	Encode: {
+		// TODO one or both of these functions is wrong
 		decodePzpr: function() {
 			var bd = this.board;
 			this.genericDecodeNumber4(bd.cell.length, function(c, val) {
@@ -449,14 +472,11 @@
 				var room = rooms[r];
 				var numcell = room.clist.getQnumCell();
 
-				if (numcell.isnull) {
+				if (numcell.isnull || numcell.ques !== type) {
 					continue;
 				}
 				var actual = room.type[0];
-				if (actual !== type) {
-					continue;
-				}
-				if (actual > 0 && (numcell.ques === 0 || numcell.ques === actual)) {
+				if ((actual > 0 && type === 0) || type === actual) {
 					continue;
 				}
 
