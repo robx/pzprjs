@@ -253,13 +253,13 @@
 	Graphic: {
 		gridcolor_type: "SLIGHT",
 		bordercolor_func: "qans",
-
-		// TODO drawQuesNumbersOn51 conditionally has white letters
-		// TODO drawQuesNumbers must assume light background
+		numbercolor_func: "fixed",
+		textoption: { ratio: 0.65 },
 
 		paint: function() {
 			this.drawBGCells();
 
+			this.drawCellSquare();
 			this.drawTargetTriangle();
 			this.drawQuesNumbersOn51();
 			this.drawQuesNumbers();
@@ -274,28 +274,46 @@
 			this.drawTarget();
 		},
 
-		// TODO draw square clues
-		// TODO add inset to 51 numbers on square clues
-
 		getQuesBorderColor: function(border) {
 			return border.isQuesBorder() ? this.quescolor : null;
 		},
 
-		getBGCellColor: function(cell) {
+		drawCellSquare: function() {
+			var g = this.vinc("cell_square", "crispEdges");
+
+			var rw = this.bw * 0.8 - 1;
+			var rh = this.bh * 0.8 - 1;
+
+			g.lineWidth = 1;
+			g.strokeStyle = "black";
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+				g.vid = "c_sq_" + cell.id;
+
+				var color = this.getSquareColor(cell);
+
+				if (color) {
+					g.fillStyle = color;
+					g.shapeRectCenter(cell.bx * this.bw, cell.by * this.bh, rw, rh);
+				} else {
+					g.vhide();
+				}
+			}
+		},
+
+		getSquareColor: function(cell) {
 			switch (cell.ques) {
 				case 0:
-					return cell.isNum() ? "#dddddd" : null;
+					return cell.isNum() ? "#80ffff" : null;
 				case 1:
-					return "#ff8080";
+					return "#111111";
 				case 2:
-					return "#ff80ff";
+					return "#bbbbbb";
 				case 3:
-					return "#8080ff";
-				case 7:
-					// TODO change this?
-					return "black";
+					return "#ffffff";
 				default:
-					return this.getBGCellColor_error1(cell);
+					return null;
 			}
 		},
 		drawTriangle1: function(px, py, num) {
@@ -318,7 +336,7 @@
 			if (cell.shouldDraw51cell()) {
 				return null;
 			}
-			return cell.qnum > 0 ? cell.qnum + " " : "";
+			return cell.qnum > 0 ? cell.qnum + "" : "";
 		},
 
 		drawQuesNumbersOn51_1: function(piece) {
@@ -326,11 +344,9 @@
 				val,
 				px = piece.bx * this.bw,
 				py = piece.by * this.bh;
-			var option = { ratio: 0.45 };
-			g.fillStyle =
-				piece.error === 1 || piece.qinfo === 1
-					? this.errcolor1
-					: this.quescolor;
+			var option = { ratio: 0.4, hoffset: 0.6, voffset: 0.6 };
+
+			g.fillStyle = piece.ques === 1 ? "white" : this.quescolor;
 
 			val = piece.shouldDraw51cell() ? piece.qnum : -1;
 
