@@ -44,7 +44,13 @@
 			var value = "qwer".indexOf(ca);
 			var cell = this.cursor.getc();
 
-			if (value > 0) {
+			if (ca === "-") {
+				var target = this.cursor.detectTarget(cell);
+				if (target > 0) {
+					cell.setQnumDir(target, -2);
+				}
+				cell.draw();
+			} else if (value > 0) {
 				cell.setQues(cell.ques === value ? 0 : value);
 				cell.draw();
 			} else if (value === 0) {
@@ -367,22 +373,24 @@
 				case 2:
 					return "#bbbbbb";
 				case 3:
-					return "#ffffff";
+					return "#fbfbfb";
 				default:
 					return null;
 			}
 		},
 		drawTriangle1: function(px, py, num) {
 			var g = this.context;
-			var bw = this.bw + 1 - 0.5,
+			var width = this.bw * 1.5,
 				bh = this.bh + 1 - 0.5;
 			g.beginPath();
 			switch (num) {
 				case 2:
-					g.fillRect(px, py, bw, bh);
+					// Bottom
+					g.fillRect(px + this.bw - width, py, width, bh);
 					break;
 				case 4:
-					g.fillRect(px - bw, py - bh, bw, bh);
+					// Top
+					g.fillRect(px - this.bw, py - bh, width, bh);
 					break;
 			}
 			g.fill();
@@ -401,11 +409,16 @@
 				px = piece.bx * this.bw,
 				py = piece.by * this.bh;
 			var option = { ratio: 0.4, hoffset: 0.6, voffset: 0.6 };
+			var cursor = this.puzzle.cursor;
+			var isActive = cursor.bx === piece.bx && cursor.by === piece.by;
 
-			// TODO don't use white text if target triangle is present
-			g.fillStyle = piece.ques === 1 ? "white" : this.quescolor;
-
+			g.fillStyle =
+				piece.ques === 1 && (!isActive || cursor.targetdir !== 4)
+					? "white"
+					: this.quescolor;
 			val = piece.shouldDraw51cell() ? piece.qnum : -1;
+			// TODO in play mode, render a "?" if the other number is set
+			// TODO render nothing in play mode if both fields are < 0
 
 			g.vid = "text_ques51a_" + piece.id;
 			if (val !== -1) {
@@ -415,10 +428,16 @@
 				g.vhide();
 			}
 
+			g.fillStyle =
+				piece.ques === 1 && (!isActive || cursor.targetdir !== 2)
+					? "white"
+					: this.quescolor;
 			val = piece.shouldDraw51cell() ? piece.qnum2 : -1;
+			// TODO in play mode, render a "?" if the other number is set
+			// TODO render nothing in play mode if both fields are < 0
 
 			g.vid = "text_ques51b_" + piece.id;
-			if (val >= 0) {
+			if (val !== -1) {
 				option.position = this.BOTTOMRIGHT;
 				this.disptext(this.getNumberTextCore(val), px, py, option);
 			} else {
