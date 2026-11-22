@@ -98,12 +98,9 @@
 		is51cell: function() {
 			return true;
 		},
-		set51cell: function() {
-			// no-op
-		},
-		remove51cell: function() {
-			// TODO no-op?
-		},
+		// no-ops
+		set51cell: function() {},
+		remove51cell: function() {},
 
 		maxnum: function() {
 			return this.board.rows * this.board.cols;
@@ -259,6 +256,7 @@
 		paint: function() {
 			this.drawBGCells();
 
+			this.drawDashedCellSquare();
 			this.drawCellSquare();
 			this.drawTargetTriangle();
 			this.drawQuesNumbersOn51();
@@ -276,6 +274,66 @@
 
 		getQuesBorderColor: function(border) {
 			return border.isQuesBorder() ? this.quescolor : null;
+		},
+
+		drawDashedCellSquare: function() {
+			var g = this.vinc("cell_dash_square", "crispEdges", true);
+
+			var rw = this.bw * 0.8 - 1;
+			var rh = this.bh * 0.8 - 1;
+			var dasharray = this.getDashArray();
+
+			g.lineWidth = 1;
+			g.strokeStyle = "black";
+			g.fillStyle = "blue";
+			var clist = this.range.cells;
+			for (var i = 0; i < clist.length; i++) {
+				var cell = clist[i];
+
+				if (cell.ques === 0 && cell.isNum()) {
+					g.vid = "c_dsq1_" + cell.id;
+					g.strokeDashedLine(
+						cell.bx * this.bw - rw,
+						cell.by * this.bh - rh,
+						cell.bx * this.bw + rw,
+						cell.by * this.bh - rh,
+						dasharray
+					);
+					g.vid = "c_dsq2_" + cell.id;
+					g.strokeDashedLine(
+						cell.bx * this.bw - rw,
+						cell.by * this.bh + rh,
+						cell.bx * this.bw + rw,
+						cell.by * this.bh + rh,
+						dasharray
+					);
+					g.vid = "c_dsq3_" + cell.id;
+					g.strokeDashedLine(
+						cell.bx * this.bw - rw,
+						cell.by * this.bh - rh,
+						cell.bx * this.bw - rw,
+						cell.by * this.bh + rh,
+						dasharray
+					);
+					g.vid = "c_dsq4_" + cell.id;
+					g.strokeDashedLine(
+						cell.bx * this.bw + rw,
+						cell.by * this.bh - rh,
+						cell.bx * this.bw + rw,
+						cell.by * this.bh + rh,
+						dasharray
+					);
+				} else {
+					g.vid = "c_dsq1_" + cell.id;
+					g.vhide();
+					g.vid = "c_dsq2_" + cell.id;
+					g.vhide();
+					g.vid = "c_dsq3_" + cell.id;
+					g.vhide();
+					g.vid = "c_dsq4_" + cell.id;
+					g.vhide();
+				}
+			}
 		},
 
 		drawCellSquare: function() {
@@ -304,8 +362,6 @@
 
 		getSquareColor: function(cell) {
 			switch (cell.ques) {
-				case 0:
-					return cell.isNum() ? "#80ffff" : null;
 				case 1:
 					return "#111111";
 				case 2:
@@ -323,10 +379,10 @@
 			g.beginPath();
 			switch (num) {
 				case 2:
-					g.setOffsetLinePath(px, py, bw, -bh, -bw, bh, bw, bh, true);
+					g.fillRect(px, py, bw, bh);
 					break;
 				case 4:
-					g.setOffsetLinePath(px, py, -bw, -bh, bw, -bh, -bw, bh, true);
+					g.fillRect(px - bw, py - bh, bw, bh);
 					break;
 			}
 			g.fill();
@@ -346,6 +402,7 @@
 				py = piece.by * this.bh;
 			var option = { ratio: 0.4, hoffset: 0.6, voffset: 0.6 };
 
+			// TODO don't use white text if target triangle is present
 			g.fillStyle = piece.ques === 1 ? "white" : this.quescolor;
 
 			val = piece.shouldDraw51cell() ? piece.qnum : -1;
