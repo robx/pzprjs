@@ -15,7 +15,7 @@
 
 	MouseEvent: {
 		inputModes: {
-			edit: ["number", "empty", "clear"],
+			edit: ["number", "clear"],
 			play: ["border", "subline"]
 		},
 		mouseinput_auto: function() {
@@ -32,7 +32,16 @@
 			}
 		},
 		mouseinput_clear: function() {
-			this.input51_fixed();
+			var cell = this.getcell();
+			if (cell.isnull || cell === this.mouseCell) {
+				return;
+			}
+
+			cell.setQues(0);
+			cell.setQnum(-1);
+			cell.setQnum2(-1);
+			cell.draw();
+			this.mouseCell = cell;
 		}
 	},
 
