@@ -2,7 +2,7 @@
 
 var pzpr = require("../dist/js/pzpr.js");
 
-var testdata = require("./load_testdata.js");
+var testdata = require("../test/load_testdata.js");
 
 var puzzle = new pzpr.Puzzle();
 
