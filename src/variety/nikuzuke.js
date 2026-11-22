@@ -16,10 +16,94 @@
 			if (this.mousestart || this.mousemove) {
 				this.inputLine();
 			}
-			// TODO diagonal line input
 			if (this.mouseend && this.notInputted()) {
 				this.mouseCell = null;
 				this.inputqnum();
+			}
+		},
+		inputLine: function() {
+			if (this.mouseCell.isnull) {
+				var cell = this.getcell();
+				if (cell.isnull) {
+					return;
+				}
+				var dx = this.inputPoint.bx - cell.bx,
+					dy = this.inputPoint.by - cell.by;
+				if (dx * dx + dy * dy < 0.64) {
+					this.mouseCell = cell;
+				}
+			} else {
+				var cell = this.mouseCell,
+					dx = this.inputPoint.bx - cell.bx,
+					dy = this.inputPoint.by - cell.by;
+				if (dx * dx + dy * dy < 1.44) {
+					return;
+				}
+
+				var second,
+					angle = Math.atan2(dy, dx) / Math.PI;
+
+				if (Math.abs(angle) < 0.125) {
+					second = cell.relcell(2, 0);
+				} else if (angle > 0.125 && angle < 0.375) {
+					second = cell.relcell(2, 2);
+				} else if (angle > 0.375 && angle < 0.625) {
+					second = cell.relcell(0, 2);
+				} else if (angle > 0.625 && angle < 0.875) {
+					second = cell.relcell(-2, 2);
+				} else if (Math.abs(angle) > 0.875) {
+					second = cell.relcell(-2, 0);
+				} else if (angle < -0.125 && angle > -0.375) {
+					second = cell.relcell(2, -2);
+				} else if (angle < -0.375 && angle > -0.625) {
+					second = cell.relcell(0, -2);
+				} else if (angle < -0.625 && angle > -0.875) {
+					second = cell.relcell(-2, -2);
+				}
+
+				if (!second || second.isnull) {
+					return;
+				}
+
+				this.mouseCell = second;
+
+				var x1 = Math.min(cell.bx, second.bx);
+				var x2 = Math.max(cell.bx, second.bx);
+				var y1 = Math.min(cell.by, second.by);
+				var y2 = Math.max(cell.by, second.by);
+
+				if (x1 === x2 || y1 === y2) {
+					var border = this.board.borderinside(x1, y1, x2, y2)[0];
+					if (!border || border.isnull || !border.inside) {
+						return;
+					}
+					if (this.inputData === null) {
+						this.inputData = border.isLine() ? 0 : 1;
+					}
+					if (this.inputData === 1) {
+						border.setLine();
+					} else if (this.inputData === 0) {
+						border.removeLine();
+					}
+					border.draw();
+				} else {
+					var cross = this.board.crossinside(x1, y1, x2, y2)[0];
+					if (!cross || cross.isnull) {
+						return;
+					}
+					var num = dx * dy > 0 ? 1 : 2;
+					var val = cross.ques;
+					if (this.inputData === null) {
+						this.inputData = val & num ? 0 : 1;
+					}
+					if (val & num && this.inputData === 0) {
+						cross.setQues(val & ~num);
+						cross.draw();
+					} else if (!(val & num) && this.inputData === 1) {
+						cross.setQues(val | num);
+						cross.draw();
+					}
+				}
 			}
 		},
 		autoplay_func: "border"
@@ -48,7 +132,7 @@
 		setLine: function() {
 			this.setQues(1);
 		},
-		removeLine: function(id) {
+		removeLine: function() {
 			this.setQues(0);
 		}
 	},
