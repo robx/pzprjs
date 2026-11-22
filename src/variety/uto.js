@@ -411,17 +411,22 @@
 			var option = { ratio: 0.4, hoffset: 0.6, voffset: 0.6 };
 			var cursor = this.puzzle.cursor;
 			var isActive = cursor.bx === piece.bx && cursor.by === piece.by;
+			var isPlayer = this.puzzle.playeronly || this.puzzle.painter.outputImage;
+			var isHidden =
+				isPlayer &&
+				(!piece.shouldDraw51cell() || (piece.qnum < 0 && piece.qnum2 < 0));
 
 			g.fillStyle =
 				piece.ques === 1 && (!isActive || cursor.targetdir !== 4)
 					? "white"
 					: this.quescolor;
-			val = piece.shouldDraw51cell() ? piece.qnum : -1;
-			// TODO in play mode, render a "?" if the other number is set
-			// TODO render nothing in play mode if both fields are < 0
+			val = piece.qnum;
+			if (val < 0 && isPlayer) {
+				val = -2;
+			}
 
 			g.vid = "text_ques51a_" + piece.id;
-			if (val !== -1) {
+			if (val !== -1 && !isHidden) {
 				option.position = this.TOPLEFT;
 				this.disptext(this.getNumberTextCore(val), px, py, option);
 			} else {
@@ -432,12 +437,13 @@
 				piece.ques === 1 && (!isActive || cursor.targetdir !== 2)
 					? "white"
 					: this.quescolor;
-			val = piece.shouldDraw51cell() ? piece.qnum2 : -1;
-			// TODO in play mode, render a "?" if the other number is set
-			// TODO render nothing in play mode if both fields are < 0
+			val = piece.qnum2;
+			if (val < 0 && isPlayer) {
+				val = -2;
+			}
 
 			g.vid = "text_ques51b_" + piece.id;
-			if (val !== -1) {
+			if (val !== -1 && !isHidden) {
 				option.position = this.BOTTOMRIGHT;
 				this.disptext(this.getNumberTextCore(val), px, py, option);
 			} else {
