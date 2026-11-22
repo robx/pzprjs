@@ -511,6 +511,7 @@
 			urumi: [0, 0, "Urumi Spirals", "Urumi Spirals"],
 			usotatami: [0, 0, "ウソタタミ", "Uso-tatami", "fillmat"],
 			usoone: [0, 0, "ウソワン", "Uso-one"],
+			uto: [0, 0, "凹凸口", "UTO 凹凸口"],
 			uturns: [0, 0, "U-Turns", "U-Turns", "kusabi"],
 			vertigo: [0, 0, "Vertigo", "Vertigo", "simpleloop"],
 			view: [1, 0, "ヴィウ", "View", "sukoro"],

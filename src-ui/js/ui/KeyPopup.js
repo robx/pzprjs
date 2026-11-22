@@ -271,7 +271,8 @@ ui.keypopup = {
 		heyajirimisaki: [10, 0],
 		balancelink: [139, 0],
 		urumi: [10, 0],
-		falling: [10, 115]
+		falling: [10, 115],
+		uto: [140, 0]
 	},
 
 	//---------------------------------------------------------------------------
@@ -450,6 +451,8 @@ ui.keypopup = {
 			this.generate_jatahoku();
 		} else if (type === 139) {
 			this.generate_balancelink();
+		} else if (type === 140) {
+			this.generate_uto();
 		} else if (type === 5339) {
 			this.generate_swslither();
 		}
@@ -874,6 +877,16 @@ ui.keypopup = {
 			],
 			3
 		);
+	},
+	generate_uto: function() {
+		var itemlist = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " "];
+		itemlist.push(["-", "?"]);
+		itemlist.push(["q", "⬚"]);
+		itemlist.push(["w", "■"]);
+		itemlist.push(["e", { text: "■", color: "gray" }]);
+		itemlist.push(["r", "◻"]);
+
+		this.generate_main(itemlist, 4);
 	},
 	generate_bdwalk: function() {
 		this.generate_main(
