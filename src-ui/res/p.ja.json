@@ -304,8 +304,14 @@
     "aqre_borders": "線が黒マスに触れるのは一度だけ",
     "slither_full": "全ての点に線が通る",
     "outlineshaded": "黒マスを線で囲む",
-    "inputmode.diamond": "",
-    "balloon_adjacent": "",
-    "pinmenu": "",
-    "pinbuttons": ""
+    "inputmode.diamond": "ダイヤ",
+    "balloon_adjacent": "ヒモが自分自身と隣り合ってはいけない",
+    "pinmenu": "メニューを画面端に固定",
+    "pinbuttons": "ボタンを画面端に固定",
+    "inputmode.pekeborder": "pekeborder",
+    "autoerr.tool.ubahn": "線の種類ごとに色を付ける",
+    "lapaz_liar": "Liar (数字を黒マスにして無効にしてもよい)",
+    "scrabble_given": "すでに入っている文字をこれ以上置いてはいけない",
+    "reset": "リセット",
+    "wordbank": "単語リスト"
 }
