@@ -606,3 +606,10 @@ falling: |-
   2. Two shaded cells cannot be adjacent, and two identical numbers cannot be adjacent.
   3. When reading the rows within a region from left to right and from top to bottom, the numbers should form an increasing sequence starting at 1.
   4. All numbers form an orthogonally contiguous area.
+uto: |-
+  Draw lines along the dashed gridlines to divide the grid into regions.
+  1. Each region must contain exactly one square hint.
+  2. Each region must have one of the following three shapes: 口 = A rectangle (or square). 凸 = A rectangle with another rectangle attached to one of its edges, forming a T-shape. They must not share corners. 凹 = A rectangle with a smaller rectangle removed from one of its edges, forming a U-shape. They must not share corners.
+  3. Black squares must be in 凹-shaped regions, white squares in 凸-shaped regions, and grey squares in 口-shaped regions. Dashed squares may be in regions of any shape.
+  4. The two numbers in white, black and dashed squares represent the areas of the two rectangles used to form the region, in no particular order. The single number in a grey square represents the area of the rectangular region.
+  5. A question mark can be replaced with any number. In the case of a rectangular region, a question mark can be erased entirely.
