@@ -1,5 +1,7 @@
 // build_failcode_usage.js
 
+var fs = require("fs");
+
 var pzpr = require("../dist/js/pzpr.js");
 
 var testdata = require("../test/load_testdata.js");
@@ -60,4 +62,4 @@ for (var key in result) {
 	result[key] = txt;
 }
 
-console.log(JSON.stringify(result, null, 4));
+fs.writeFileSync("failcodes.json", JSON.stringify(result, null, 2));
