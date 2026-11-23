@@ -142,7 +142,7 @@
 	},
 	Dot: {
 		getDot: function() {
-			return this.piece.line;
+			return this.piece.ques;
 		},
 		setDot: function(val) {
 			this.piece.setQues(val);
@@ -245,11 +245,13 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
+			// TODO where my lines at
 			this.decodeCellQnum();
 			this.decodeDotFile();
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
+			// TODO where my lines at
 			this.encodeCellQnum();
 			this.encodeDotFile();
 			this.encodeBorderAns();
