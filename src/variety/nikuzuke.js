@@ -12,6 +12,21 @@
 			edit: ["number", "line", "clear"],
 			play: ["border", "subline", "info-room"]
 		},
+
+		dispInfoRoom: function() {
+			var cell = this.getcell();
+			this.mousereset();
+			if (cell.isnull) {
+				return;
+			}
+			this.board.rebuildIfStale();
+			var room = cell.room;
+
+			room.fullclist.setinfo(1);
+			this.board.hasinfo = true;
+			this.puzzle.redraw();
+		},
+
 		mouseinputAutoEdit: function() {
 			if (this.mousestart || this.mousemove) {
 				this.inputLine();
@@ -120,7 +135,114 @@
 	Board: {
 		hasborder: 1,
 		hasdots: 1,
-		hascross: 1
+		hascross: 1,
+		isStale: true,
+
+		initialize: function() {
+			this.common.initialize.call(this);
+			this.rebuildIfStale();
+		},
+
+		/* This should really be a GraphBase superclass... */
+		rebuildIfStale: function() {
+			var rooms = this.roommgr.components;
+			if (!this.isStale || !rooms) {
+				return;
+			}
+			this.parentRooms = [];
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				room.id = r;
+				delete room.fullclist;
+			}
+
+			function join(room1, room2) {
+				if (!room1 || !room2 || room1 === room2) {
+					return;
+				}
+				while (room1.parent) {
+					room1 = room1.parent;
+				}
+				while (room2.parent) {
+					room2 = room2.parent;
+				}
+				if (room1 === room2) {
+					return;
+				}
+
+				if (room1.id > room2.id) {
+					var tmp = room1;
+					room1 = room2;
+					room2 = tmp;
+				}
+
+				if (room2.children) {
+					if (!room1.children) {
+						room1.children = room2.children;
+					} else {
+						room2.children.forEach(function(r) {
+							room1.children.add(r);
+						});
+					}
+					room2.children = null;
+				}
+
+				if (!room1.children) {
+					room1.children = new Set();
+				}
+				room1.children.add(room1);
+				room1.children.add(room2);
+				room2.parent = room1;
+			}
+
+			this.cross.each(function(cross) {
+				if (cross.ques & 1) {
+					var c1 = cross.relcell(-1, -1);
+					var c2 = cross.relcell(1, 1);
+					join(c1.room, c2.room);
+				}
+				if (cross.ques & 2) {
+					var c1 = cross.relcell(1, -1);
+					var c2 = cross.relcell(-1, 1);
+					join(c1.room, c2.room);
+				}
+			});
+
+			/* Make fullclist for every parent room */
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				if (room.children) {
+					room.fullclist = new this.klass.CellList();
+					room.children.forEach(function(room2) {
+						room.fullclist.extend(room2.clist);
+					});
+					this.parentRooms.push(room);
+				}
+				if (!room.children && !room.parent) {
+					room.fullclist = room.clist;
+					this.parentRooms.push(room);
+				}
+			}
+			/* Add a reference to fullclist to each child */
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				var parent = room.parent;
+				while (parent && parent.parent) {
+					parent = parent.parent;
+				}
+				if (!room.fullclist) {
+					room.fullclist = parent.fullclist;
+				}
+			}
+			/* Cleanup */
+			for (var r = 0; r < rooms.length; r++) {
+				var room = rooms[r];
+				delete room.parent;
+				delete room.children;
+			}
+
+			this.isStale = false;
+		}
 	},
 	Border: {
 		isBorder: function() {
@@ -138,7 +260,12 @@
 	},
 
 	AreaRoomGraph: {
-		enabled: true
+		enabled: true,
+
+		setExtraData: function(component) {
+			this.common.setExtraData.call(this, component);
+			this.board.isStale = true;
+		}
 	},
 	Dot: {
 		getDot: function() {
@@ -245,13 +372,11 @@
 	//---------------------------------------------------------
 	FileIO: {
 		decodeData: function() {
-			// TODO where my lines at
 			this.decodeCellQnum();
 			this.decodeDotFile();
 			this.decodeBorderAns();
 		},
 		encodeData: function() {
-			// TODO where my lines at
 			this.encodeCellQnum();
 			this.encodeDotFile();
 			this.encodeBorderAns();
@@ -260,14 +385,13 @@
 	//---------------------------------------------------------
 	// 正解判定処理実行部
 	AnsCheck: {
-		// TODO: build a supergraph
 		checklist: [
-			"checkNoNumber",
-			"checkDoubleNumber",
-			"checkNumberAndSize",
+			"checkNoNumber", // TODO use supergraph
+			"checkDoubleNumber", // TODO use supergraph
+			"checkNumberAndSize", // TODO use supergraph
 			// TODO check for line over given border
 			// TODO check for X touching the same region
-			"checkBorderDeadend+"
+			"checkBorderDeadend+" // TODO use supergraph
 		]
 	}
 });
