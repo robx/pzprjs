@@ -69,6 +69,11 @@
 		isLineCross: true
 	},
 
+	"BoardExec@vertigo": {
+		adjustBoardData: function(key, d) {
+			this.adjustBorderAuxDir(key, d);
+		}
+	},
 	Graphic: {
 		irowake: true,
 

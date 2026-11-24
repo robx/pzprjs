@@ -215,6 +215,7 @@
 	BoardExec: {
 		posinfo: {},
 		adjustBoardData: function(key, d) {
+			this.adjustBorderAuxDir(key, d);
 			this.posinfo_start = this.getAfterPos(key, d, this.board.startpos.getc());
 		},
 		adjustBoardData2: function(key, d) {

@@ -122,6 +122,11 @@
 			return (this.maxFoundNumber = max);
 		}
 	},
+	BoardExec: {
+		adjustBoardData: function(key, d) {
+			this.adjustBorderAuxDir(key, d);
+		}
+	},
 	LineGraph: {
 		enabled: true,
 		isLineCross: true

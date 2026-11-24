@@ -338,6 +338,7 @@
 			this.posinfo = this.getAfterPos(key, d, bd.startpos.getc());
 
 			this.adjustNumberArrow(key, d);
+			this.adjustBorderAuxDir(key, d);
 		},
 		adjustBoardData2: function(key, d) {
 			var bd = this.board,
