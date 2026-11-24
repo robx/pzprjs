@@ -143,6 +143,11 @@
 			this.rebuildIfStale();
 		},
 
+		supergraph: function() {
+			this.rebuildIfStale();
+			return { components: this.parentRooms };
+		},
+
 		/* This should really be a GraphBase superclass... */
 		rebuildIfStale: function() {
 			var rooms = this.roommgr.components;
@@ -216,11 +221,11 @@
 					room.children.forEach(function(room2) {
 						room.fullclist.extend(room2.clist);
 					});
-					this.parentRooms.push(room);
+					this.parentRooms.push({ clist: room.fullclist });
 				}
 				if (!room.children && !room.parent) {
 					room.fullclist = room.clist;
-					this.parentRooms.push(room);
+					this.parentRooms.push({ clist: room.fullclist });
 				}
 			}
 			/* Add a reference to fullclist to each child */
@@ -386,12 +391,68 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
-			"checkNoNumber", // TODO use supergraph
-			"checkDoubleNumber", // TODO use supergraph
-			"checkNumberAndSize", // TODO use supergraph
+			"checkNoNumber",
+			"checkDoubleNumber",
+			"checkNumberAndSize",
 			// TODO check for line over given border
 			// TODO check for X touching the same region
-			"checkBorderDeadend+" // TODO use supergraph
-		]
+			"checkBorderUnused+"
+		],
+
+		checkBorderUnused: function() {
+			this.board.rebuildIfStale();
+
+			var borders = this.board.border;
+			for (var id = 0; id < borders.length; id++) {
+				var border = borders[id];
+				if (border.isnull || !border.isBorder()) {
+					continue;
+				}
+				var clist1 = border.sidecell[0].room.fullclist,
+					clist2 = border.sidecell[1].room.fullclist;
+				if (clist1 !== clist2) {
+					continue;
+				}
+				this.failcode.add("bdUnused");
+				if (this.checkOnly) {
+					break;
+				}
+				new this.klass.CellList(border.sidecell).seterr(1);
+			}
+		},
+
+		checkNoNumber: function() {
+			this.checkAllBlock(
+				this.board.supergraph(),
+				function(cell) {
+					return cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a !== 0;
+				},
+				"bkNoNum"
+			);
+		},
+		checkDoubleNumber: function() {
+			this.checkAllBlock(
+				this.board.supergraph(),
+				function(cell) {
+					return cell.isNum();
+				},
+				function(w, h, a, n) {
+					return a < 2;
+				},
+				"bkNumGe2"
+			);
+		},
+		checkNumberAndSize: function() {
+			this.checkAllArea(
+				this.board.supergraph(),
+				function(w, h, a, n) {
+					return n <= 0 || n === a;
+				},
+				"bkSizeNe"
+			);
+		}
 	}
 });

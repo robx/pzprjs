@@ -91,6 +91,7 @@
     "bdUnused.kissing": "A bar is not adjacent to two different blocks.",
     "bdUnused.lohkous": "There is an unused border.",
     "bdUnused.mirrorbk": "A mirror does not divide two regions.",
+    "bdUnused.nikuzuke": "A border does not divide two different regions.",
     "bdUnused.tren": "A border is not adjacent to a block.",
     "bdUnusedCircle.wafusuma": "A circle does not divide two areas.",
     "bdVoxasBlack": "Two areas separated by a black dot have the same size or the same orientation.",
