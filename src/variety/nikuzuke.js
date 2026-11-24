@@ -391,13 +391,45 @@
 	// 正解判定処理実行部
 	AnsCheck: {
 		checklist: [
+			"checkLineOverBorder",
 			"checkNoNumber",
 			"checkDoubleNumber",
 			"checkNumberAndSize",
-			// TODO check for line over given border
-			// TODO check for X touching the same region
+			"checkCrossHasBorders",
 			"checkBorderUnused+"
 		],
+
+		checkCrossHasBorders: function() {
+			var bd = this.board;
+			bd.rebuildIfStale();
+			for (var c = 0; c < bd.cross.length; c++) {
+				var cross = bd.cross[c];
+				if (cross.ques !== 3) {
+					continue;
+				}
+
+				var blist = bd
+					.borderinside(cross.bx - 1, cross.by - 1, cross.bx + 1, cross.by + 1)
+					.filter(function(border) {
+						return border.isBorder();
+					});
+				if (blist.length === 4) {
+					continue;
+				}
+
+				this.failcode.add("cxNoBorder");
+				if (this.checkOnly) {
+					break;
+				}
+				var clist = bd.cellinside(
+					cross.bx - 1,
+					cross.by - 1,
+					cross.bx + 1,
+					cross.by + 1
+				);
+				clist.seterr(1);
+			}
+		},
 
 		checkBorderUnused: function() {
 			this.board.rebuildIfStale();
@@ -418,6 +450,27 @@
 					break;
 				}
 				new this.klass.CellList(border.sidecell).seterr(1);
+			}
+		},
+
+		checkLineOverBorder: function() {
+			var bd = this.board,
+				result = true;
+			for (var id = 0; id < bd.border.length; id++) {
+				var border = bd.border[id];
+				if (!border.isBorder() || !border.isLine()) {
+					continue;
+				}
+
+				result = false;
+				if (this.checkOnly) {
+					break;
+				}
+				border.seterr(1);
+			}
+			if (!result) {
+				this.failcode.add("laOnBorder");
+				bd.border.setnoerr();
 			}
 		},
 
