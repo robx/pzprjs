@@ -613,3 +613,9 @@ uto: |-
   3. Black squares must be in 凹-shaped regions, white squares in 凸-shaped regions, and grey squares in 口-shaped regions. Dashed squares may be in regions of any shape.
   4. The two numbers in white, black and dashed squares represent the areas of the two rectangles used to form the region, in no particular order. The single number in a grey square represents the area of the rectangular region.
   5. A question mark can be replaced with any number. In the case of a rectangular region, a question mark can be erased entirely.
+nikuzuke: |-
+  Draw lines over the dotted lines to divide the board into regions.
+  1. Each region contains exactly one number. A number indicates the size of the region, in cells.
+  2. A line of cells must be part of the same region.
+  3. If two cells are connected by a diagonal line, they are part of the same region even if no orthogonal path exists between them. All diagonal lines are given.
+  4. If two diagonal lines intersect, both lines must belong to different regions.
