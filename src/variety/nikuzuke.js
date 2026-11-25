@@ -130,12 +130,25 @@
 		enablemake: true
 	},
 
+	Cell: {
+		maxnum: function() {
+			return this.board.cols * this.board.rows;
+		}
+	},
+	CellList: {
+		singleQnumCell: true
+	},
+
 	//---------------------------------------------------------
 	// 盤面管理系
 	Board: {
+		rows: 8,
+		cols: 8,
+
 		hasborder: 1,
 		hasdots: 1,
 		hascross: 1,
+
 		isStale: true,
 
 		initialize: function() {
@@ -393,8 +406,8 @@
 		checklist: [
 			"checkLineOverBorder",
 			"checkNoNumber",
-			"checkDoubleNumber",
 			"checkNumberAndSize",
+			"checkDoubleNumber",
 			"checkCrossHasBorders",
 			"checkBorderUnused+"
 		],

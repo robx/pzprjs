@@ -552,7 +552,7 @@
     "cuRoomGt.akichi": "A cluster of unshaded cells is larger than the number.",
     "cuRoomLt.akichi": "All clusters of unshaded cells are smaller than the number.",
     "cxAdjacent": "Crossings are adjacent.",
-    "cxNoBorder.nikuzuke": "A line crossing doesn't separate two different regions.",
+    "cxNoBorder.nikuzuke": "Two intersecting diagonal lines are part of the same region.",
     "cxNoLine": "A point is not visited.",
     "cxOverlap.diamond": "Two diamonds overlap.",
     "cxOverlap.heyapin": "A pin overlaps a single region.",
