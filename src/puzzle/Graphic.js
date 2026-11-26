@@ -75,7 +75,7 @@
 			errbcolor1: "rgb(255, 160, 160)",
 			errbcolor2: "rgb(64, 255, 64)",
 
-			qsubcolor1: "rgb(160,255,160)",
+			qsubcolor1: "rgb(60,180,75)",
 			qsubcolor2: "rgb(255,255,127)",
 			qsubcolor3: "rgb(192,192,192)", // 絵が出るパズルの背景入力
 
